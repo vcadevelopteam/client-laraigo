@@ -3,13 +3,19 @@ import { applyMiddleware, createStore, combineReducers, Middleware } from 'redux
 import thunk from 'redux-thunk';
 
 import ticketReducer, { IState as ITicketState } from './ticket/reducer';
+import loginReducer, { IState as ILogin } from './login/reducer';
+import mainReducer, { IState as IMain } from './main/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
+    login: ILogin,
+    data: IMain;
 }
 
 const rootReducer = combineReducers<IRootState>({
    ticket: ticketReducer,
+   login: loginReducer,
+   data: mainReducer
 });
 
 export default function configureStore(preloadedState?: IRootState) {

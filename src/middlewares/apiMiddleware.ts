@@ -1,17 +1,17 @@
 import { IAction, IActionTypes, IAPIMiddlewareAction } from '@types';
 import { AxiosError } from 'axios';
 import { messages } from 'common/constants';
-import { type } from 'os';
+// import { type } from 'os';
 import { Middleware, Dispatch } from 'redux';
 
 const validTypes = (types: IActionTypes): boolean => {
-    return types.failure != "" && types.success != "" && types.loading != "";
+    return types.failure !== "" && types.success !== "" && types.loading !== "";
 }
 
 const handleError = (error: AxiosError, dispatch: Dispatch<IAction>, actionType: string) => {
     const response = error.response;
     const errorMessage = (error.toJSON() as any)['message'] as string;
-    if (errorMessage.toLocaleLowerCase() == 'network error') {
+    if (errorMessage.toLocaleLowerCase() === 'network error') {
         console.error('Axios network error');
         dispatch({ type: actionType, payload: { error: true, message: 'network error', code: error.code } });
         return;
@@ -21,11 +21,11 @@ const handleError = (error: AxiosError, dispatch: Dispatch<IAction>, actionType:
         dispatch({ type: actionType, payload: { error: true, message: messages.GENERAL_ERROR, code: '500' } });
     } else if (response.data) {
         console.log('Error Code:', response.status);
-        const { message } = response.data;
-        dispatch({ type: actionType, payload: { message: message } }); 
+        const { message, code } = response.data;
+        dispatch({ type: actionType, payload: { message, code } }); 
     }
     // else if (await authorizationHelper.isUnauthorizedCall(dispatch, response)) return;
-    else if (response.status == 400 || response.status == 404) {
+    else if (response.status === 400 || response.status === 404) {
         if (response.data.message) dispatch({ type: actionType, payload: { error: response.data.message } });
         else dispatch({ type: actionType, payload: { error: messages.GENERAL_ERROR } });
     }
@@ -67,7 +67,7 @@ const callAPIMiddleware: Middleware = ({ dispatch, getState }) => {
                     };
                 }
 
-                if (responseData.error && responseData.error === true) {
+                if (!responseData.success) {
                     console.log('Respuesta 2xx con error');
                     dispatch<IAction>({ payload: combinedPayload, type: types.failure });
                     return;

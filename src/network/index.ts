@@ -1,1 +1,1 @@
-export * as ticketService from './service/tickets';
+export * as CommonService from './service/common';

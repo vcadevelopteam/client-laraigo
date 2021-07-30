@@ -1,9 +1,9 @@
 import { IActionCall } from "@types";
-import { ticketService } from "network";
+import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
 export const getTickets = (page = 1, pageSize = 10): IActionCall => ({
-    callAPI: () => ticketService.getTickets(page, pageSize),
+    callAPI: () => CommonService.getTickets(page, pageSize),
     types: {
         loading: actionTypes.GET_TICKETS,
         success: actionTypes.GET_TICKETS_SUCCESS,

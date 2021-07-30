@@ -1,6 +1,6 @@
 // import { Dispatch } from 'redux';
 // import actionTypes from '../../store/auth/actionTypes';
-import { httpStatus, keys } from '../constants';
+import { keys } from '../constants';
 // import { AxiosResponse } from 'axios';
 
 export function getAccessToken(): string | null {
@@ -18,7 +18,7 @@ export function removeAuthorizationToken(): void {
 export function getAuthorizationToken(): string {
     let token = localStorage.getItem(keys.JWT_TOKEN);
     if (!token) token = '';
-    const authString = `Bearer ${token}`;
+    const authString = token;
     return authString;
 }
 

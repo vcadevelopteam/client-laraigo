@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -11,7 +11,14 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Alert from '@material-ui/lab/Alert';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
+import { useSelector } from 'hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
+
+import { useDispatch } from 'react-redux';
+import { login } from 'store/login/actions';
+
+import { useHistory } from 'react-router-dom';
+
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -36,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(3, 0, 2),
     },
     progress: {
-        margin: theme.spacing(0, 'auto', 3),
+        margin: theme.spacing(2, 'auto', 3),
         display: 'block'
     },
     alert: {
@@ -50,49 +57,67 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
-type ParamsProps = {
-    title: string,
-    paragraph: string
-}
-
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <a>Zyxme {new Date().getFullYear()}</a>
+            {'Copyright © '} Zyxme {new Date().getFullYear()}
         </Typography>
     );
 }
 
-type ResponseProps = {
-    success?: boolean,
-    msg?: string,
-    show: boolean,
+type IAuth = {
+    username: string,
+    password: string
 }
 
-const SignIn = ({ title, paragraph }: ParamsProps) => {
+const SignIn = () => {
     const classes = useStyles();
-    const [isloading, setisloading] = useState(false);
-    const [resultrequest, setresultrequest] = useState<ResponseProps>({ show: false});
+    
+
+    const history = useHistory();
+
+    const dispatch = useDispatch();
+    const dataRes = useSelector(state => state.login);
+
+    const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+    const handleMouseDownPassword = (event: any) => event.preventDefault();
+
+    const onSubmitLogin = (e: any) => {
+        e.preventDefault();
+        dispatch(login(dataAuth.username, dataAuth.password));
+    }
+
+    useEffect(() => {
+        console.log(dataRes);
+        if(!dataRes.error && dataRes.user) {
+            //redirect to page tickets
+            history.push('/tickets');
+        }
+    }, [dataRes, history]);
 
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
             <div>
                 <div className={classes.paper}>
-                    {resultrequest.show && (
-                        <Alert className={classes.alertheader} variant="filled" severity={resultrequest.success ? "success" : "error"}>
-                            {resultrequest.msg}
+                    {dataRes.error && (
+                        <Alert className={classes.alertheader} variant="filled" severity="error">
+                            {dataRes.message}
                         </Alert>
                     )}
                     <form
                         className={classes.form}
+                        onSubmit={onSubmitLogin}
                     >
                         <TextField
                             variant="outlined"
                             margin="normal"
                             fullWidth
+                            value={dataAuth.username}
+                            onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
                             label="Usuario"
                             name="usr"
                         />
@@ -104,14 +129,15 @@ const SignIn = ({ title, paragraph }: ParamsProps) => {
                             name="password"
                             type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
-                            // value={formik.values.password}
+                            value={dataAuth.password}
+                            onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <IconButton
                                             aria-label="toggle password visibility"
-                                            // onClick={handleClickShowPassword}
-                                            // onMouseDown={handleMouseDownPassword}
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
                                             edge="end"
                                         >
                                             {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -120,17 +146,15 @@ const SignIn = ({ title, paragraph }: ParamsProps) => {
                                 ),
                             }}
                         />
-                        {!isloading ?
+                        {!dataRes.loading ?
                             <Button
                                 type="submit"
                                 fullWidth
                                 variant="contained"
                                 color="primary"
-                                className={classes.submit}
-                            >
+                                className={classes.submit}>
                                 Ingresar
-                            </Button>
-                            :
+                            </Button> :
                             <CircularProgress className={classes.progress} />
                         }
                         <Grid container>

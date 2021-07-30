@@ -1,7 +1,7 @@
 import React from 'react';
-// import Layout from 'components/Layout';
-import SignIn from 'components/SignIn';
-import { TicketList } from 'pages';
+import Layout from 'components/layout/Layout';
+// import SignIn from 'pages/SignIn';
+import { TicketList, SignIn } from 'pages';
 import Properties from 'components/Properties';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 // import logo from './logo.svg';
@@ -10,18 +10,20 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 function App() {
 	return (
 		<div className="App">
-			{/* <Layout 
-        title="React"
-        paragraph="A JavaScript library for building user interfaces."
-      /> */}
+
 			<Router>
 				<Switch>
 					<Route exact path="/sign-in" component={SignIn} />
-					<Route exact path="/properties" component={Properties} />
-					<Route exact path="/tickets" component={TicketList} />
+					<Layout
+						title="React"
+						paragraph="A JavaScript library for building user interfaces."
+					>
+						<Route exact path="/properties" component={Properties} />
+						<Route exact path="/tickets" component={TicketList} />
+					</Layout>
 				</Switch>
 			</Router>
-		</div>
+		</div >
 	);
 }
 

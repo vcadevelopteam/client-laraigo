@@ -1,4 +1,4 @@
-import { IAction, IListStatePaginated } from "@types";
+import { IAction, IListStatePaginated, ITemplate } from "@types";
 
 interface IHandler<T> {
     [x: string]: (state: T, action: IAction) => any;
@@ -17,6 +17,13 @@ export function createReducer<T>(initialState: T, handlers: IHandler<T>) {
 export const initialListPaginatedState: IListStatePaginated<any> = {
     data: [],
     count: 0,
+    loading: false,
+    code: undefined,
+    error: undefined,
+    message: undefined,
+};
+
+export const initialCommon: ITemplate = {
     loading: false,
     code: undefined,
     error: undefined,

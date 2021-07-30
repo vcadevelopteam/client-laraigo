@@ -21,11 +21,14 @@ function createFormData(object: any, form?: FormData, namespace?: string): FormD
     for (let property in object) {
         const formKey = namespace ? `${namespace}[${property}]` : property;
 
-        if (object[property] instanceof Date) formData.append(formKey, object[property].toString());
+        if (object[property] instanceof Date) 
+            formData.append(formKey, object[property].toString());
         else if (typeof object[property] === 'object' && !(object[property] instanceof File))
             createFormData(object[property], formData, formKey);
-        else if (object[property] instanceof File) formData.append('files', object[property]);
-        else formData.append(formKey, object[property]);
+        else if (object[property] instanceof File) 
+            formData.append('files', object[property]);
+        else 
+            formData.append(formKey, object[property]);
     }
 
     return formData;
