@@ -10,9 +10,10 @@ type IProps = {
 }
 
 const rbApplication: IRequestBody = {
-    method: "CHATWEBAPPLICATION_SEL",
+    method: "UFN_USER_SEL",
     parameters: {
-        applicationid: 0
+        id: 0,
+        all: true
     }
 };
 
@@ -40,7 +41,7 @@ const Tickets: FC<IProps> = ({ title, paragraph }) => {
     return (
         <aside>
             <h2>{title || "TICKETSs"}</h2>
-            {(mainResult.data as ITicket[]).map(element => <p key={element.name}>{element.name}</p>)}
+            {(mainResult.data as ITicket[]).map(element => <p key={element.usr}>{element.usr}</p>)}
         </aside>
     );
 }

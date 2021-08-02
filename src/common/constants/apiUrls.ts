@@ -1,5 +1,5 @@
 // const BASE_URL = 'http://52.116.128.51:5065/api';
-const BASE_URL = 'http://localhost:5065/api';
+const BASE_URL = 'http://52.116.128.51:6065/api';
 
 export const apiUrls = {
     TICKET_URL: `${BASE_URL}/main`,
