@@ -3,14 +3,15 @@ import Layout from 'components/layout/Layout';
 // import SignIn from 'pages/SignIn';
 import { TicketList, SignIn } from 'pages';
 import Properties from 'components/Properties';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from 'react-router-dom';
+import { ThemeProvider } from '@material-ui/core';
 // import logo from './logo.svg';
 // import './App.css';
+
 
 function App() {
 	return (
 		<div className="App">
-
 			<Router>
 				<Switch>
 					<Route exact path="/sign-in" component={SignIn} />
@@ -23,7 +24,7 @@ function App() {
 					</Layout>
 				</Switch>
 			</Router>
-		</div >
+		</div>
 	);
 }
 

@@ -1,12 +1,14 @@
-import React, { useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link, useLocation } from 'react-router-dom';
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
+import { getAccessToken } from 'common/helpers';
+import { createTheme, ThemeProvider } from '@material-ui/core';
 
 type ParamsProps = {
     title: string;
@@ -15,6 +17,19 @@ type ParamsProps = {
 }
 
 const drawerWidth = 240;
+
+const theme = createTheme({
+    overrides: {
+        MuiSvgIcon: {
+            colorPrimary: {
+                color: "white",
+            },
+            colorSecondary: {
+                color: "white",
+            },
+        }
+    }
+});
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -134,6 +149,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+/** Authorized layout */
 const Layout = ({ title, paragraph, children }: ParamsProps) => {
 
     const theme = useTheme();
@@ -141,7 +157,18 @@ const Layout = ({ title, paragraph, children }: ParamsProps) => {
     const dataRes = useSelector(state => state.login);
     const [openDrawer, setOpenDrawer] = useState(true);
 
+    const location = useLocation();
+	const history = useHistory();
+
+	useEffect(() => {
+		if (!getAccessToken()) {
+            console.log("unauthorized");
+			// history.replace("/sign-in");
+		}
+	}, [location]);
+
     return (
+        <ThemeProvider theme={theme}>
         <div className={classes.root}>
             {dataRes.user !== undefined &&
                 <>
@@ -181,6 +208,7 @@ const Layout = ({ title, paragraph, children }: ParamsProps) => {
                 </>
             }
         </div>
+        </ThemeProvider>
     )
 }
 

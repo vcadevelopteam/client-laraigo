@@ -75,8 +75,9 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
             }
         }, [router]);
 
-        if (!dataRes.user)
-            return null;
+        // if (!dataRes.user)
+            // return null;
+        
         // const ff = user.menu.find(x => ["bill-list", "purchase-order-list", "purchase-order-load", "bill-list"].includes(x.application) && !!x.view);
 
         return (
@@ -147,7 +148,7 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
                     itemName="Nota ingreso"
                     listRoutes={listsend}
                     IconLink={() => (
-                        <MonetizationOn style={{ color: theme.palette.primary.light }} />
+                        <MonetizationOn />
                     )}
                 >
                     <LinkList
@@ -163,7 +164,7 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
                     itemName="Orden compra"
                     listRoutes={listbuy}
                     IconLink={() => (
-                        <ShoppingCart style={{ color: theme.palette.primary.light }} />
+                        <ShoppingCart />
                     )}
                 >
                     <LinkList
