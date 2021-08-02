@@ -1,30 +1,44 @@
 import React from 'react';
-import Layout from 'components/layout/Layout';
-// import SignIn from 'pages/SignIn';
-import { TicketList, SignIn } from 'pages';
-import Properties from 'components/Properties';
-import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/core';
-// import logo from './logo.svg';
-// import './App.css';
+import { createTheme } from '@material-ui/core';
+import RouterApp from 'routes';
 
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: "#7721AD",
+            dark: "#381052",
+            light: "#7721AD",
+			contrastText: "#fff",
+        },
+        secondary: {
+            main: "#FFFFFF",
+            light: "#FFFFFF",
+            dark: "#FFFFFF",
+			contrastText: "#000",
+        },
+		text: {
+			primary: "#171717",
+			secondary: "#171717",
+		},
+    },
+	overrides: {
+		MuiSvgIcon: {
+			root: { color: "#8F92A1", fill: "#8F92A1", width: 24, height: 24, minWidth: 0 },
+		},
+		MuiListItemIcon: {
+			root: { minWidth: 38 },
+		}
+	}
+});
 
 function App() {
 	return (
-		<div className="App">
-			<Router>
-				<Switch>
-					<Route exact path="/sign-in" component={SignIn} />
-					<Layout
-						title="React"
-						paragraph="A JavaScript library for building user interfaces."
-					>
-						<Route exact path="/properties" component={Properties} />
-						<Route exact path="/tickets" component={TicketList} />
-					</Layout>
-				</Switch>
-			</Router>
-		</div>
+		<ThemeProvider theme={theme}>
+			<div className="App">
+				<RouterApp />
+			</div>
+		</ThemeProvider>
 	);
 }
 

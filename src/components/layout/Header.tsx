@@ -1,39 +1,26 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import clsx from 'clsx';
 
 import { useHistory } from 'react-router-dom';
 
-// import { useRouter } from 'next/router';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-
-// import authContext from 'context/auth/authContext';
-// import popupsContext from 'context/pop-ups/pop-upsContext';
+import { StatusConnection } from 'components';
+import { AccountMenu, NotificationMenu } from 'components';
 
 type IProps = {
     classes: any;
     open: boolean;
     setOpen: any;
+    title?: React.ReactNode;
 }
 
-const Header = ({ classes, open, setOpen }: IProps) => {
-
-    // const { user, signout, infosys } = useContext(authContext);
-    // const { loading, nameHeader } = useContext(popupsContext);
-
-    // const dispatch = useDispatch();
+const Header = ({ classes, open, setOpen, title }: IProps) => {
     const dataRes = useSelector(state => state.login);
 
 
@@ -60,13 +47,13 @@ const Header = ({ classes, open, setOpen }: IProps) => {
 
     return (
         <AppBar
+            elevation={0}
             position="fixed"
             className={clsx(classes.appBar, {
                 [classes.appBarShift]: open,
             })}
         >
-            <Toolbar
-            >
+            <Toolbar>
                 <IconButton
                     color="inherit"
                     aria-label="open drawer"
@@ -77,44 +64,12 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                     <MenuIcon color="secondary" />
                 </IconButton>
                 <div className={classes.title} style={{ display: 'block', textAlign: 'center' }}>
-                    <Typography gutterBottom variant="h5" component="h2" >
-                        LARAIGO
-                    </Typography>
+                    {title}
                 </div>
-
-                <div style={{ display: 'flex' }}>
-                    <Button
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleMenu}
-                        color="inherit"
-                        startIcon={<AccountCircle />}
-                    >
-                        {dataRes.user ? `${dataRes.user.firstname} ${dataRes.user.lastname}` : ''}
-                    </Button>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorEl}
-                        getContentAnchorEl={null}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={openprofile}
-                        onClose={handleClose}
-                    >
-                        <MenuItem onClick={usersetting}>Cambiar contraseña</MenuItem>
-                        <MenuItem onClick={handleCloseSesion}>Cerrar Sesión</MenuItem>
-                    </Menu>
-                </div>
-
+                <StatusConnection />
+                <NotificationMenu />
+                <AccountMenu />
             </Toolbar>
-            {/* {loading && (<LinearProgress color="secondary" />)} */}
         </AppBar>
 
     );

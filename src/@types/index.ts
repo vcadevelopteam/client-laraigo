@@ -4,3 +4,4 @@ export * from './entities/requestBody';
 export * from './entities/template';
 export * from './reducerState';
 export * from './action';
+export * from './route';

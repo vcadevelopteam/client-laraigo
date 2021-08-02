@@ -4,43 +4,32 @@ import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
 import { useHistory, Link, useLocation } from 'react-router-dom';
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
 import { getAccessToken } from 'common/helpers';
-import { createTheme, ThemeProvider } from '@material-ui/core';
+import { RouteConfig } from '@types';
+import { CssBaseline } from '@material-ui/core';
 
 type ParamsProps = {
-    title: string;
+    title?: React.ReactNode;
     children: any;
     paragraph: string;
+    routes: RouteConfig[];
 }
 
 const drawerWidth = 240;
-
-const theme = createTheme({
-    overrides: {
-        MuiSvgIcon: {
-            colorPrimary: {
-                color: "white",
-            },
-            colorSecondary: {
-                color: "white",
-            },
-        }
-    }
-});
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
     },
     appBar: {
-        zIndex: theme.zIndex.drawer + 1,
+        // zIndex: theme.zIndex.drawer + 1,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        background: theme.palette.secondary.light,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -49,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        border: '#EBEAED solid 1px',
     },
     containermainopen: {
         [theme.breakpoints.down('sm')]: {
@@ -70,12 +60,18 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 36,
     },
     drawer: {
+        display: 'flex',
         width: drawerWidth,
         flexShrink: 0,
+        color: theme.palette.text.primary,
     },
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.secondary.light,
+        borderColor: '#EBEAED',
+    },
+    drawerLabel: {
+        margin: '10px 30px',
     },
     hide: {
         display: 'none',
@@ -100,10 +96,14 @@ const useStyles = makeStyles((theme) => ({
             width: theme.spacing(9) + 1,
         },
     },
+    drawerItemActive: {
+        color: theme.palette.primary.main,
+        fill: theme.palette.primary.main,
+    },
     toolbar: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'center',
         padding: theme.spacing(0, 1),
         // necessary for content to be below app bar
         ...theme.mixins.toolbar,
@@ -116,6 +116,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         marginLeft: -drawerWidth,
+        backgroundColor: '#F9F9FA',
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
@@ -126,7 +127,8 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         flexGrow: 1,
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(1),
+        color: theme.palette.text.primary,
     },
     containerLogin: {
         height: '100vh',
@@ -150,8 +152,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /** Authorized layout */
-const Layout = ({ title, paragraph, children }: ParamsProps) => {
-
+const Layout = ({ title, paragraph, children, routes }: ParamsProps) => {
+    console.log("sssss");
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
@@ -163,22 +165,24 @@ const Layout = ({ title, paragraph, children }: ParamsProps) => {
 	useEffect(() => {
 		if (!getAccessToken()) {
             console.log("unauthorized");
-			// history.replace("/sign-in");
+			history.replace("/sign-in");
 		}
 	}, [location]);
 
     return (
-        <ThemeProvider theme={theme}>
         <div className={classes.root}>
             {dataRes.user !== undefined &&
                 <>
+                    <CssBaseline />
                     <Header
+                        title={title}
                         classes={classes}
                         open={openDrawer}
                         setOpen={setOpenDrawer}
                     />
 
                     <Aside
+                        routes={routes}
                         open={openDrawer}
                         setOpen={setOpenDrawer}
                         classes={classes}
@@ -208,8 +212,7 @@ const Layout = ({ title, paragraph, children }: ParamsProps) => {
                 </>
             }
         </div>
-        </ThemeProvider>
-    )
+    );
 }
 
 export default Layout;

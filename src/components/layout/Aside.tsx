@@ -9,7 +9,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, Link, useLocation } from 'react-router-dom';
 
 // import authContext from 'context/auth/authContext';
 import { useSelector } from 'hooks';
@@ -35,8 +35,12 @@ import {
     Tune as TuneIcon,
     Label as LabelIcon,
     EmojiTransportation,
-    LocalShipping
+    LocalShipping,
 } from '@material-ui/icons/';
+import { RouteConfig } from '@types';
+import { styled, TextField, Typography } from '@material-ui/core';
+import { FC } from 'react';
+import { useTheme } from '@material-ui/core';
 
 const listbuy = ['/purchase-order/load', '/purchase-order/list', '/purchase-order/[id]'];
 const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
@@ -47,6 +51,7 @@ type IProps = {
     setOpen: any;
     classes: any;
     theme: any;
+    routes: RouteConfig[];
 }
 
 type IProps2 = {
@@ -56,11 +61,27 @@ type IProps2 = {
     IconLink: any;
 }
 
-const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
-    const router = useHistory();
-    const dataRes = useSelector(state => state.login);
+const LinkList: FC<{config: RouteConfig, classes: any}> = ({ config, classes }) => {
+    const history = useHistory();
 
-    // const { user, appselected } = useContext(authContext);
+    if (!config.path) {
+        return <Typography className={classes.drawerLabel}>{config.description}</Typography>;
+    }
+
+    console.log(config.path, history.location.pathname);
+    const isSelected = config.path === history.location.pathname;
+    return (
+        <ListItem button key={config.path} onClick={() => history.push(config.path!)} className={clsx(isSelected && classes.drawerItemActive)}>
+            <ListItemIcon>{config.icon?.(clsx(isSelected && classes.drawerItemActive))}</ListItemIcon>
+            <ListItemText primary={config.description} />
+        </ListItem>
+    );
+};
+
+const Aside = ({ open, setOpen, classes, theme, routes } : IProps) => {
+    console.log("aaaa");
+    const history = useHistory();
+    const dataRes = useSelector(state => state.login);
 
     const handleDrawerClose = () => setOpen(false);
 
@@ -69,22 +90,20 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
         const [isCollapse, setIsCollapse] = useState(false);
 
         useEffect(() => {
-            if (router && !isCollapse) {
-                if (listRoutes.includes(router.location.pathname))
+            if (history && !isCollapse) {
+                if (listRoutes.includes(history.location.pathname))
                     setIsCollapse(true)
             }
-        }, [router]);
+        }, [history]);
 
-        // if (!dataRes.user)
-            // return null;
+        if (!dataRes.user)
+            return null;
         
-        // const ff = user.menu.find(x => ["bill-list", "purchase-order-list", "purchase-order-load", "bill-list"].includes(x.application) && !!x.view);
-
         return (
             <>
                 <ListItem style={{ paddingBottom: '5px', paddingTop: '5px' }} button onClick={() => setIsCollapse(!isCollapse)}>
                     <ListItemIcon style={{ minWidth: '45px' }}><IconLink /></ListItemIcon>
-                    <ListItemText style={{ color: 'white' }} primary={itemName} />
+                    <ListItemText primary={itemName} />
                     {isCollapse ? <ExpandLess style={{ color: 'white' }} /> : <ExpandMore style={{ color: 'white' }} />}
                 </ListItem>
                 <Collapse in={isCollapse} timeout="auto" unmountOnExit>
@@ -95,36 +114,6 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
             </>
         )
     }
-
-    const LinkList = React.useCallback(({ IconLink = null, application, routeLink }) => {
-        // if (!appselected)
-        //     return null;
-        if (dataRes.user) {
-            let routertmp = router.location.pathname;
-            if (routeLink === "bill-list" && routertmp === "/bill/[id]")
-                routertmp = "/bill/list";
-            if (routeLink === "purchase-order-list" && routertmp === "/purchase-order/[id]")
-                routertmp = "/purchase-order/list";
-
-            // const appfound = user.menu.find(x => x.application === application);
-
-
-            return (
-                <Link to={routeLink}>
-                    <ListItem
-                        button
-                        key={routeLink}
-                        style={{ paddingBottom: '5px', paddingTop: '5px', paddingLeft: (IconLink ? '16px' : '72px') }}
-                        className={[classes.listItem, (routertmp === routeLink ? classes.activelink : undefined)].join(' ')}
-                    >
-                        {IconLink && <ListItemIcon style={{ minWidth: '45px' }}><IconLink /></ListItemIcon>}
-                        <ListItemText style={{ color: 'white' }} primary={application} />
-                    </ListItem>
-                </Link>
-            )
-        }
-        return null;
-    }, [router.location.pathname])
 
     return (
         <Drawer
@@ -137,130 +126,19 @@ const Aside = React.memo(({ open, setOpen, classes, theme } : IProps) => {
             }}
         >
             <div className={classes.toolbar}>
+                <img src="./Laraigo-final-02.svg" style={{ height: 37 }} />
+            </div>
+            <Divider />
+
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.path} />)}
+
+            <div className={classes.toolbar}>
                 <IconButton onClick={handleDrawerClose}>
                     {theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />}
                 </IconButton>
             </div>
-            <Divider />
-
-            <List>
-                <ListItemCollapse
-                    itemName="Nota ingreso"
-                    listRoutes={listsend}
-                    IconLink={() => (
-                        <MonetizationOn />
-                    )}
-                >
-                    <LinkList
-                        application="bill-load"
-                        routeLink="/bill/load"
-                    />
-                    <LinkList
-                        application="bill-list"
-                        routeLink="/bill/list"
-                    />
-                </ListItemCollapse>
-                <ListItemCollapse
-                    itemName="Orden compra"
-                    listRoutes={listbuy}
-                    IconLink={() => (
-                        <ShoppingCart />
-                    )}
-                >
-                    <LinkList
-                        application="purchase-order-load"
-                        routeLink="/purchase-order/load"
-                    />
-                    <LinkList
-                        application="purchase-order-list"
-                        routeLink="/purchase-order/list"
-                    />
-                </ListItemCollapse>
-                <LinkList
-                    application="inventory"
-                    IconLink={() => (
-                        <ViewComfy style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <Divider />
-                <LinkList
-                    application="tickets"
-                    routeLink="/tickets"
-                    IconLink={() => (
-                        <TuneIcon style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="product"
-                    IconLink={() => (
-                        <LabelIcon style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="client"
-                    IconLink={() => (
-                        <StoreIcon style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="buyer"
-                    IconLink={() => (
-                        <BusinessCenter style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="provider"
-                    IconLink={() => (
-                        <EmojiTransportation style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="vehicle"
-                    IconLink={() => (
-                        <LocalShipping style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="corporation"
-                    IconLink={() => (
-                        <Business style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <Divider />
-                <LinkList
-                    application="user"
-                    IconLink={() => (
-                        <AccountCircle style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="property"
-                    IconLink={() => (
-                        <VpnKey style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="domain"
-                    IconLink={() => (
-                        <ListIcon style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <Divider />
-                <LinkList
-                    application="role-application"
-                    IconLink={() => (
-                        <LockOpen style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-                <LinkList
-                    application="role"
-                    IconLink={() => (
-                        <LockOpen style={{ color: theme.palette.primary.light }} />
-                    )}
-                />
-            </List>
         </Drawer >
     );
-})
+};
 
 export default Aside;
