@@ -6,7 +6,7 @@ const Status: FC = () => {
     const [status, setStatus] = useState(true);
 
     return (
-        <Paper elevation={0} style={{ backgroundColor: '#F9F9FA', padding: '10px 12px', display: 'flex' }}>
+        <Paper elevation={0} style={{ backgroundColor: '#F9F9FA', padding: '10px 12px', display: 'flex', height: 42 }}>
             <label>{status ? 'Connected' : 'Disconnected'}</label>
             <div style={{ width: 6 }} />
             <IOSSwitch checked={status} onChange={() => setStatus(!status)} name="checkedB" />

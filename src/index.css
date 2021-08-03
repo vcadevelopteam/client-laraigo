@@ -6,10 +6,12 @@ html {
 }
 html, body {
     margin:0;
+    font-family: 'dm-sans';
 }
 body {
     margin:0;
     padding:0;
+    font-family: 'dm-sans';
 }
 footer {
     width: 100%;

@@ -15,6 +15,7 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             alignItems: 'center',
             width: 400,
+            height: 42,
             borderColor: '#8F92A1',
             backgroundColor: '#F9F9FA',
         },

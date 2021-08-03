@@ -22,7 +22,7 @@ const AccountMenu: FC = () => {
                 endIcon={<ArrowDropDown style={{ height: 24 }} />}
             >
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ fontSize: 16, textAlign: 'start', fontWeight: 'normal' }}>Victor Virrueta</label>
+                    <label style={{ fontSize: 16, textAlign: 'start' }}>Victor Virrueta</label>
                     <label style={{ color: '#8F92A1', fontSize: 12, textAlign: 'start', fontWeight: 'normal' }}>Admin</label>
                 </div>
             </Button>
