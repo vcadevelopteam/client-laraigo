@@ -68,7 +68,6 @@ const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }
         return <Typography className={classes.drawerLabel}>{config.description}</Typography>;
     }
 
-    console.log(config.path, history.location.pathname);
     const isSelected = config.path === history.location.pathname;
     return (
         <ListItem

@@ -55,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         marginTop: theme.spacing(1),
     },
+    childContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
 }));
 
 function Copyright() {
@@ -101,7 +105,8 @@ const SignIn = () => {
 
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
-            <div>
+            <div className={classes.childContainer}>
+                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} />
                 <div className={classes.paper}>
                     {dataRes.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">

@@ -166,7 +166,6 @@ const useStyles = makeStyles((theme) => ({
 
 /** Authorized layout */
 const Layout = ({ title, paragraph, children, routes }: ParamsProps) => {
-    console.log("sssss");
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
