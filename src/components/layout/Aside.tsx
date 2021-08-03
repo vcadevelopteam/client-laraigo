@@ -71,8 +71,13 @@ const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }
     console.log(config.path, history.location.pathname);
     const isSelected = config.path === history.location.pathname;
     return (
-        <ListItem button key={config.path} onClick={() => history.push(config.path!)} className={clsx(isSelected && classes.drawerItemActive)}>
-            <ListItemIcon>{config.icon?.(clsx(isSelected && classes.drawerItemActive))}</ListItemIcon>
+        <ListItem
+            button
+            key={config.path}
+            onClick={() => history.push(config.path!)}
+            className={clsx(isSelected && classes.drawerItemActive)}
+        >
+            <ListItemIcon>{config.icon?.(isSelected ? classes.drawerItemActive.stroke : "#8F92A1")}</ListItemIcon>
             <ListItemText primary={config.description} />
         </ListItem>
     );

@@ -1,0 +1,12 @@
+export { DashboardIcon } from './Dashboard';
+export { ReactComponent as Dashboardicon } from 'icons/dashboard.svg';
+export { ReactComponent as ReportsIcon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
+export { ReactComponent as EMailInbocIcon } from 'icons/email-mail-letter.svg';
+export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
+export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg';
+export { ReactComponent as OrganizationIcon } from 'icons/high-rise-building.svg';
+export { ReactComponent as ChannelIcon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as BillingSetupIcon } from 'icons/credit-Card.svg';
+export { ReactComponent as ConfigurationIcon } from 'icons/settings.svg';
+export { ReactComponent as ExtrasIcon } from 'icons/grid-layout-menu-more.svg';

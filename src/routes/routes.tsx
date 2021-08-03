@@ -1,37 +1,39 @@
-import { Dashboard, Report, Email, Message, Person, Receipt, Apartment, Equalizer, CreditCard, Tune } from "@material-ui/icons";
+import { SvgIcon } from "@material-ui/core";
 import { RouteConfig } from "@types";
+import { icons } from "common/constants";
 import paths from "common/constants/paths";
+import { DashboardIcon, TicketIcon, Dashboardicon, ReportsIcon, EMailInbocIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ChannelIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
 
 const routes: RouteConfig[] = [
     {
         description: 'Dashboard',
         path: paths.DASHBOARD,
-        icon: (className) => <Dashboard className={className} />,
+        icon: (color) => <Dashboardicon stroke={color} />,
     },
     {
         description: 'Reports',
         path: paths.REPORTS,
-        icon: (className) => <Report className={className} />,
+        icon: (color) => <ReportsIcon stroke={color} />,
     },
     {
         description: 'Tickets',
         path: paths.TICKETS,
-        icon: (className) => <Receipt className={className} />,
+        icon: (color) => <TicketIcon  stroke={color} />,
     },
     {
         description: 'E-Mail Inbox',
         path: paths.EMAIL_INBOX,
-        icon: (className) => <Email className={className} />,
+        icon: (color) => <EMailInbocIcon stroke={color} />,
     },
     {
         description: 'Message Inbox',
         path: paths.MESSAGE_INBOX,
-        icon: (className) => <Message className={className} />,
+        icon: (color) => <MessageInboxIcon stroke={color}  />,
     },
     {
         description: 'Supervisor',
         path: paths.SUPERVISOR,
-        icon: (className) => <Person className={className} />,
+        icon: (color) => <SupervisorIcon stroke={color}  />,
     },
     {
         description: "System",
@@ -39,27 +41,27 @@ const routes: RouteConfig[] = [
     {
         description: 'Organizations',
         path: paths.ORGANIZATIONS,
-        icon: (className) => <Apartment className={className} />,
+        icon: (color) => <OrganizationIcon stroke={color}   />,
     },
     {
         description: 'Channels',
         path: paths.CHANNELS,
-        icon: (className) => <Equalizer className={className} />,
+        icon: (color) => <ChannelIcon stroke={color} />,
     },
     {
         description: 'Billing Setups',
         path: paths.BILLING_SETUPS,
-        icon: (className) => <CreditCard className={className} />,
+        icon: (color) => <BillingSetupIcon stroke={color} />,
     },
     {
         description: 'Configuration',
         path: paths.CONFIGURATION,
-        icon: (className) => <Tune className={className} />,
+        icon: (color) => <ConfigurationIcon stroke={color} />,
     },
     {
         description: 'Extras',
         path: paths.EXTRAS,
-        icon: (className) => <Person className={className} />,
+        icon: (color) => <ExtrasIcon stroke={color} />,
     },
 ];
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ThemeProvider } from '@material-ui/core';
 import { createTheme } from '@material-ui/core';
 import RouterApp from 'routes';
@@ -22,16 +21,19 @@ const theme = createTheme({
 			secondary: "#171717",
 		},
     },
+	typography: {
+		fontFamily: 'dm-sans',
+	},
 	overrides: {
 		MuiSvgIcon: {
-			root: { color: "#8F92A1", fill: "#8F92A1", width: 24, height: 24, minWidth: 0 },
+			root: { color: "#8F92A1", width: 24, height: 24, minWidth: 0 },
 		},
 		MuiListItemIcon: {
 			root: { minWidth: 38 },
 		},
 		MuiListItem: {
 			gutters: { paddingLeft: 28 }
-		}
+		},
 	}
 });
 
