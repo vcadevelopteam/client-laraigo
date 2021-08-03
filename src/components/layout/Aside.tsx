@@ -79,7 +79,6 @@ const LinkList: FC<{config: RouteConfig, classes: any}> = ({ config, classes }) 
 };
 
 const Aside = ({ open, setOpen, classes, theme, routes } : IProps) => {
-    console.log("aaaa");
     const history = useHistory();
     const dataRes = useSelector(state => state.login);
 
@@ -126,18 +125,18 @@ const Aside = ({ open, setOpen, classes, theme, routes } : IProps) => {
             }}
         >
             <div className={classes.toolbar}>
-                <img src="./Laraigo-final-02.svg" style={{ height: 37 }} />
+                <img src="./Laraigo-logo-name.svg" style={{ height: 37 }} />
             </div>
             <Divider />
-
+            <div style={{ height: 18 }} />
             {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.path} />)}
-
+            <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={handleDrawerClose}>
                     {theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />}
                 </IconButton>
             </div>
-        </Drawer >
+        </Drawer>
     );
 };
 

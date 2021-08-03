@@ -1,25 +1,25 @@
 import { createStyles, Switch, SwitchProps, Theme, withStyles } from "@material-ui/core";
 
-interface Props extends SwitchProps {
+interface IProps extends SwitchProps {
     classes: any;
 }
 
-const width = 20;
-const height = 13;
+const defaultWidth = 30;
+const DefaultHeight = 20;
 
 
 const IOSSwitch = withStyles((theme: Theme) =>
   createStyles({
     root: {
-      width: width,
-      height: height,
-      padding: 0,
-      margin: theme.spacing(1),
+      width: defaultWidth,
+      height: DefaultHeight,
+      padding: 1,
+      // margin: theme.spacing(1),
     },
     switchBase: {
-      padding: 2.5,
+      padding: 3.5,
       '&$checked': {
-        transform: 'translateX(8px)',
+        transform: 'translateX(10px)',
         color: theme.palette.common.white,
         '& + $track': {
           backgroundColor: '#52d869',
@@ -33,11 +33,11 @@ const IOSSwitch = withStyles((theme: Theme) =>
       },
     },
     thumb: {
-      width: 6.97,
-      height: 7,
+      width: 12,
+      height: 12,
     },
     track: {
-      borderRadius: 13 / 2,
+      borderRadius: 20 / 2,
       border: `1px solid ${theme.palette.grey[400]}`,
       backgroundColor: theme.palette.grey[50],
       opacity: 1,
@@ -46,7 +46,7 @@ const IOSSwitch = withStyles((theme: Theme) =>
     checked: {},
     focusVisible: {},
   }),
-)(({ classes, ...props }: Props) => {
+)(({ classes, ...props }: IProps) => {
   return (
     <Switch
       focusVisibleClassName={classes.focusVisible}

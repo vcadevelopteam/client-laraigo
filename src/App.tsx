@@ -28,6 +28,9 @@ const theme = createTheme({
 		},
 		MuiListItemIcon: {
 			root: { minWidth: 38 },
+		},
+		MuiListItem: {
+			gutters: { paddingLeft: 28 }
 		}
 	}
 });

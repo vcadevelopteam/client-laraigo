@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         background: theme.palette.secondary.light,
+        minHeight: 73,
+        height: 73,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -71,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
         borderColor: '#EBEAED',
     },
     drawerLabel: {
-        margin: '10px 30px',
+        margin: '22px 21px;',
     },
     hide: {
         display: 'none',
@@ -101,12 +103,14 @@ const useStyles = makeStyles((theme) => ({
         fill: theme.palette.primary.main,
     },
     toolbar: {
+        minHeight: 73,
+        height: 73,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(0, 1),
         // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
+        // ...theme.mixins.toolbar,
     },
     content: {
         flexGrow: 1,

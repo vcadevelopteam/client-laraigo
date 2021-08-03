@@ -2,13 +2,10 @@ import React, { useState } from 'react';
 
 import clsx from 'clsx';
 
-import { useHistory } from 'react-router-dom';
-
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import { useSelector } from 'hooks';
 import { StatusConnection } from 'components';
 import { AccountMenu, NotificationMenu } from 'components';
@@ -23,26 +20,8 @@ type IProps = {
 const Header = ({ classes, open, setOpen, title }: IProps) => {
     const dataRes = useSelector(state => state.login);
 
-
-    const [anchorEl, setAnchorEl] = useState(null);
-    const history = useHistory();
-    const openprofile = Boolean(anchorEl);
-
-    const handleMenu = (event: any) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
     const handleDrawerOpen = () => {
         setOpen(true);
-    };
-    const handleCloseSesion = () => {
-        setAnchorEl(null);
-        // signout()
-    };
-    const usersetting = () => {
-        history.push(`/usersettings/`)
     };
 
     return (
@@ -61,13 +40,19 @@ const Header = ({ classes, open, setOpen, title }: IProps) => {
                     edge="start"
                     className={clsx(classes.menuButton, open && classes.hide)}
                 >
-                    <MenuIcon color="secondary" />
+                    <img 
+                        src="./Laraigo-logo.svg"
+                        style={{ height: 37 }}
+                        onClick={handleDrawerOpen}
+                    />
                 </IconButton>
                 <div className={classes.title} style={{ display: 'block', textAlign: 'center' }}>
                     {title}
                 </div>
                 <StatusConnection />
+                <div style={{ width: 22 }} />
                 <NotificationMenu />
+                <div style={{ width: 24 }} />
                 <AccountMenu />
             </Toolbar>
         </AppBar>
