@@ -42,22 +42,22 @@ const useStyles = makeStyles((theme) => ({
         }),
         border: '#EBEAED solid 1px',
     },
-    containermainopen: {
-        [theme.breakpoints.down('sm')]: {
-            maxWidth: `60vw`,
-        },
-        [theme.breakpoints.up('sm')]: {
-            maxWidth: `calc(100vw - ${drawerWidth}px - 49px)`,
-        },
-    },
-    containermainclose: {
-        [theme.breakpoints.down('sm')]: {
-            maxWidth: `100vw`,
-        },
-        [theme.breakpoints.up('sm')]: {
-            maxWidth: `calc(100vw - 49px)`,
-        },
-    },
+    // containermainopen: {
+    //     [theme.breakpoints.down('sm')]: {
+    //         maxWidth: `60vw`,
+    //     },
+    //     [theme.breakpoints.up('sm')]: {
+    //         maxWidth: `calc(100% - 49px)`,
+    //     },
+    // },
+    // containermainclose: {
+    //     [theme.breakpoints.down('sm')]: {
+    //         maxWidth: `100%`,
+    //     },
+    //     [theme.breakpoints.up('sm')]: {
+    //         maxWidth: `calc(100% - 49px)`,
+    //     },
+    // },
     menuButton: {
         marginRight: 36,
     },
@@ -114,13 +114,16 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(2),
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
+        width: `calc(100vw - ${drawerWidth}px)`,
         marginLeft: -drawerWidth,
         backgroundColor: '#F9F9FA',
+    },
+    paddingbody: {
+        padding: theme.spacing(2, 4),
     },
     contentShift: {
         transition: theme.transitions.create('margin', {
@@ -198,17 +201,15 @@ const Layout = ({ title, paragraph, children, routes }: ParamsProps) => {
                     })}>
                         <div className={classes.toolbar} />
 
-                        <div className='containercon'>
+                        <div className={`containercon ${classes.paddingbody}`}>
                             <Box
                                 component='div' style={{ flex: 1 }}
-                                className={clsx({
-                                    [classes.containermainopen]: openDrawer,
-                                    [classes.containermainclose]: !openDrawer,
-                                })} >
+                                // className={clsx({
+                                //     [classes.containermainopen]: openDrawer,
+                                //     [classes.containermainclose]: !openDrawer,
+                                // })} 
+                                >
                                 {children}
-                            </Box>
-                            <Box component="footer" px={2} pt={1} bgcolor="white">
-                                Todos los derechos reservados, Copyright © 2021
                             </Box>
                         </div>
 

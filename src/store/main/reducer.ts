@@ -3,8 +3,12 @@ import { createReducer, initialListPaginatedState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
+export interface Dictionary {
+    [key: string]: any
+}
+
 export interface IState extends IBaseState {
-    data: object[]
+    data: Dictionary[]
 }
 
 export const initialState: IState = initialListPaginatedState;

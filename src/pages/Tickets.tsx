@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { IRequestBody, ITicket } from '@types';
 import { getCollection, resetMain } from 'store/main/actions';
 
+import TableZyx from '../components/fields/table-simple';
+
 type IProps = {
     title: string,
     paragraph: string
@@ -20,6 +22,58 @@ const rbApplication: IRequestBody = {
 const Tickets: FC<IProps> = ({ title, paragraph }) => {
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.data);
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: 'email',
+                accessor: 'email',
+                NoFilter: true
+            },
+            {
+                Header: 'globalid',
+                accessor: 'globalid',
+                NoFilter: true
+            },
+            {
+                Header: 'groups',
+                accessor: 'groups',
+                NoFilter: true
+            },
+            {
+                Header: 'pwd',
+                accessor: 'pwd',
+                NoFilter: true
+            },
+            {
+                Header: 'roledesc',
+                accessor: 'roledesc',
+                NoFilter: true
+            },
+            {
+                Header: 'status',
+                accessor: 'status',
+                NoFilter: true
+            },
+            {
+                Header: 'type',
+                accessor: 'type',
+                NoFilter: true
+            },
+            {
+                Header: 'userid',
+                accessor: 'userid',
+                NoFilter: true
+            },
+            {
+                Header: 'usr',
+                accessor: 'usr',
+                NoFilter: true
+            },
+
+        ],
+        []
+    );
 
     useEffect(() => {
         dispatch(getCollection(rbApplication));
@@ -39,10 +93,17 @@ const Tickets: FC<IProps> = ({ title, paragraph }) => {
     }
 
     return (
-        <aside>
+        <>
             <h2>{title || "TICKETSs"}</h2>
-            {(mainResult.data as ITicket[]).map(element => <p key={element.usr}>{element.usr}</p>)}
-        </aside>
+            <TableZyx
+                columns={columns}
+                // titlemodule='Dominios'
+                data={mainResult.data}
+                // fetchData={fetchData}
+                // register={!!appfound.insert}
+                // selectrow={selectrow}
+            />
+        </>
     );
 }
 

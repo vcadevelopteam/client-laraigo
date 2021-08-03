@@ -61,7 +61,7 @@ type IProps2 = {
     IconLink: any;
 }
 
-const LinkList: FC<{config: RouteConfig, classes: any}> = ({ config, classes }) => {
+const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }) => {
     const history = useHistory();
 
     if (!config.path) {
@@ -78,13 +78,13 @@ const LinkList: FC<{config: RouteConfig, classes: any}> = ({ config, classes }) 
     );
 };
 
-const Aside = ({ open, setOpen, classes, theme, routes } : IProps) => {
+const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
     const history = useHistory();
     const dataRes = useSelector(state => state.login);
 
     const handleDrawerClose = () => setOpen(false);
 
-    const ListItemCollapse = ({ itemName, listRoutes, children, IconLink } : IProps2) => {
+    const ListItemCollapse = ({ itemName, listRoutes, children, IconLink }: IProps2) => {
 
         const [isCollapse, setIsCollapse] = useState(false);
 
@@ -97,7 +97,7 @@ const Aside = ({ open, setOpen, classes, theme, routes } : IProps) => {
 
         if (!dataRes.user)
             return null;
-        
+
         return (
             <>
                 <ListItem style={{ paddingBottom: '5px', paddingTop: '5px' }} button onClick={() => setIsCollapse(!isCollapse)}>
