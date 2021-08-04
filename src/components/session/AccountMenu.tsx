@@ -1,10 +1,39 @@
-import React, { FC, useState } from "react";
-import { Button, Menu, MenuItem, Paper } from "@material-ui/core";
+import React, { FC } from "react";
+import { Button, createStyles, makeStyles, Menu, MenuItem, Paper, Theme } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { ArrowDropDown } from "@material-ui/icons";
+import { ArrowDropDownIcon } from "icons";
+
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+        root: {
+            display: 'flex',
+        },
+        icon: {
+            height: 32,
+            width: 32,
+        },
+        infoContainer: {
+            display: 'flex',
+            flexDirection: 'column',
+        },
+        infoUserName: {
+            fontSize: 16,
+            textAlign: 'start',
+            lineHeight: 'normal',
+        },
+        infoUserRol: {
+            color: '#8F92A1',
+            fontSize: 12,
+            textAlign: 'start',
+            fontWeight: 'normal',
+            lineHeight: 'normal',
+        },
+    }),
+);
 
 const AccountMenu: FC = () => {
-    const [open, setopen] = useState(false);
+    const classes = useStyles();
+
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -12,18 +41,18 @@ const AccountMenu: FC = () => {
     };
 
     return (
-        <div style={{ display: 'flex' }}>
+        <div className={classes.root}>
             <Button
                 aria-label="account of current user"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
-                startIcon={<AccountCircle style={{ height: 32, width: 32 }} />}
-                endIcon={<ArrowDropDown style={{ height: 24 }} />}
+                startIcon={<AccountCircle className={classes.icon} />}
+                endIcon={<ArrowDropDownIcon />}
             >
-                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <label style={{ fontSize: 16, textAlign: 'start' }}>Victor Virrueta</label>
-                    <label style={{ color: '#8F92A1', fontSize: 12, textAlign: 'start', fontWeight: 'normal' }}>Admin</label>
+                <div className={classes.infoContainer}>
+                    <label className={classes.infoUserName}>Victor Virrueta</label>
+                    <label className={classes.infoUserRol}>Admin</label>
                 </div>
             </Button>
             <Menu

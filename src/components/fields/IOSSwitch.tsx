@@ -17,7 +17,7 @@ const IOSSwitch = withStyles((theme: Theme) =>
       // margin: theme.spacing(1),
     },
     switchBase: {
-      padding: 3.5,
+      padding: 4,
       '&$checked': {
         transform: 'translateX(10px)',
         color: theme.palette.common.white,

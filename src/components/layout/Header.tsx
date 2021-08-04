@@ -50,9 +50,9 @@ const Header = ({ classes, open, setOpen, title }: IProps) => {
                     {title}
                 </div>
                 <StatusConnection />
-                <div style={{ width: 22 }} />
+                <div style={{ width: 12 }} />
                 <NotificationMenu />
-                <div style={{ width: 24 }} />
+                <div style={{ width: 14 }} />
                 <AccountMenu />
             </Toolbar>
         </AppBar>
