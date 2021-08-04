@@ -12,7 +12,6 @@ const RouterApp: FC = () => {
 				<Route exact path="/sign-in" component={SignIn} />
 				<Layout
 					routes={routes}
-					paragraph="A JavaScript library for building user interfaces."
 				>
 					<Route exact path="/properties" component={Properties} />
 					<Route exact path="/tickets" component={TicketList} />

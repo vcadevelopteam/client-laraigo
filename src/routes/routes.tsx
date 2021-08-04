@@ -1,4 +1,3 @@
-import { SvgIcon } from "@material-ui/core";
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import { DashboardIcon, TicketIcon, ReportsIcon, EMailInbocIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ChannelIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
@@ -36,6 +35,7 @@ const routes: RouteConfig[] = [
     },
     {
         description: "System",
+        
     },
     {
         description: 'Organizations',

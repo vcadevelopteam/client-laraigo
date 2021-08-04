@@ -1,90 +1,83 @@
 import React, { FC, useEffect } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { IRequestBody } from '@types';
 import { getCollection, resetMain } from 'store/main/actions';
+import { TemplateIcons } from 'components';
+import { getUserSel } from 'common/helpers';
 
 import TableZyx from '../components/fields/table-simple';
 
-type IProps = {
-    title: string,
-    paragraph: string
-}
-
-const rbApplication: IRequestBody = {
-    method: "UFN_USER_SEL",
-    parameters: {
-        id: 0,
-        all: true
-    }
-};
-
-const Tickets: FC<IProps> = ({ title, paragraph }) => {
+const Tickets: FC = () => {
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.data);
 
     const columns = React.useMemo(
         () => [
+
             {
-                Header: 'email',
+                Header: 'Email',
                 accessor: 'email',
                 NoFilter: true
             },
             {
-                Header: 'globalid',
+                Header: 'Globalid',
                 accessor: 'globalid',
                 NoFilter: true
             },
             {
-                Header: 'groups',
+                Header: 'Groups',
                 accessor: 'groups',
                 NoFilter: true
             },
             {
-                Header: 'pwd',
-                accessor: 'pwd',
-                NoFilter: true
-            },
-            {
-                Header: 'roledesc',
+                Header: 'Rols',
                 accessor: 'roledesc',
                 NoFilter: true
             },
             {
-                Header: 'status',
+                Header: 'Status',
                 accessor: 'status',
                 NoFilter: true
             },
             {
-                Header: 'type',
+                Header: 'Type',
                 accessor: 'type',
                 NoFilter: true
             },
             {
-                Header: 'userid',
-                accessor: 'userid',
-                NoFilter: true
-            },
-            {
-                Header: 'usr',
+                Header: 'User',
                 accessor: 'usr',
                 NoFilter: true
             },
+            {
+                Header: 'Action',
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
 
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => console.log(row)}
+                            deleteFunction={() => console.log(row)}
+                            editFunction={() => console.log(row)}
+                        />
+                    )
+                }
+            },
         ],
         []
     );
 
     useEffect(() => {
-        dispatch(getCollection(rbApplication));
+        dispatch(getCollection(getUserSel(0)));
         return () => {
             dispatch(resetMain());
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    useEffect(() => {
-        console.log(mainResult);
-    }, [mainResult]);
 
     if (mainResult.loading) {
         return <h1>LOADING</h1>;
@@ -94,15 +87,14 @@ const Tickets: FC<IProps> = ({ title, paragraph }) => {
 
     return (
         <>
-            {/* <h2>{title || "TICKETSs"}</h2> */}
             <TableZyx
                 columns={columns}
                 titlemodule='Users'
                 data={mainResult.data}
                 download={true}
-                // fetchData={fetchData}
                 register={true}
-                // selectrow={selectrow}
+            // fetchData={fetchData}
+            // selectrow={selectrow}
             />
         </>
     );

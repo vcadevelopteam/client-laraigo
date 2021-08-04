@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import MaUTable from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -235,6 +235,7 @@ const TableZyx = React.memo(({
                 return useMemo(() => ({
                     ...state,
                     pageIndex: pagination.pageIndex,
+                // eslint-disable-next-line react-hooks/exhaustive-deps
                 }), [state, pagination.pageIndex])
             },
         },
@@ -295,6 +296,7 @@ const TableZyx = React.memo(({
                 endDate: dateRange[0].endDate.toISOString().substring(0, 10)
             }
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange])
 
     return (

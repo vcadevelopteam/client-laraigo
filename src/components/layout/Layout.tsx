@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
@@ -9,13 +9,6 @@ import { useSelector } from 'hooks';
 import { getAccessToken } from 'common/helpers';
 import { RouteConfig } from '@types';
 import { CssBaseline } from '@material-ui/core';
-
-type ParamsProps = {
-    title?: React.ReactNode;
-    children: any;
-    paragraph: string;
-    routes: RouteConfig[];
-}
 
 const drawerWidth = 240;
 
@@ -42,22 +35,6 @@ const useStyles = makeStyles((theme) => ({
         }),
         border: '#EBEAED solid 1px',
     },
-    // containermainopen: {
-    //     [theme.breakpoints.down('sm')]: {
-    //         maxWidth: `60vw`,
-    //     },
-    //     [theme.breakpoints.up('sm')]: {
-    //         maxWidth: `calc(100% - 49px)`,
-    //     },
-    // },
-    // containermainclose: {
-    //     [theme.breakpoints.down('sm')]: {
-    //         maxWidth: `100%`,
-    //     },
-    //     [theme.breakpoints.up('sm')]: {
-    //         maxWidth: `calc(100% - 49px)`,
-    //     },
-    // },
     menuButton: {
         marginRight: 36,
     },
@@ -139,8 +116,6 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
     },
     title: {
-        // flexGrow: 1,
-        // marginTop: theme.spacing(1),
         color: theme.palette.text.primary,
     },
     containerLogin: {
@@ -165,7 +140,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /** Authorized layout */
-const Layout = ({ children, routes }: ParamsProps) => {
+const Layout: FC<{ routes: RouteConfig[] }> = ({ children, routes }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
@@ -179,6 +154,7 @@ const Layout = ({ children, routes }: ParamsProps) => {
             console.log("unauthorized");
 			history.replace("/sign-in");
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [location]);
 
     return (

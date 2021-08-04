@@ -106,7 +106,7 @@ const SignIn = () => {
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
             <div className={classes.childContainer}>
-                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} />
+                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo"/>
                 <div className={classes.paper}>
                     {dataRes.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">

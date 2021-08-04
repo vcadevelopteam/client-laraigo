@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DateRangePicker } from 'react-date-range';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -17,6 +17,7 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
         if (openModal) {
             setdateRange(dateRangeinit);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openModal])
     const handleClick = () => {
         setOpenModal(false);
@@ -37,7 +38,7 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
     }
 
     useEffect(() => {
-        let mounted = true;
+        // let mounted = true;
 
         const stringstart = dateRange[0].startDate ? dateRange[0].startDate.toISOString().substring(0, 10) : "";
         const stringend = dateRange[0].endDate ? dateRange[0].endDate.toISOString().substring(0, 10) : "";
@@ -47,9 +48,9 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
         else
             setrangePickerString('');
 
-        return () => {
-            mounted = false;
-        }
+        // return () => {
+        //     mounted = false;
+        // }
     }, [dateRange])
 
     return (

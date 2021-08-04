@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Button, createStyles, makeStyles, Menu, MenuItem, Paper, Theme } from "@material-ui/core";
+import { Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { ArrowDropDownIcon } from "icons";
 

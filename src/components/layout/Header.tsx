@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import clsx from 'clsx';
 
@@ -17,7 +17,8 @@ type IProps = {
 
 const Header = ({ classes, open, setOpen }: IProps) => {
     const dataRes = useSelector(state => state.login);
-
+    console.log(dataRes);
+    
     const handleDrawerOpen = () => {
         setOpen(true);
     };
@@ -42,7 +43,7 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                         src="./Laraigo-logo.svg"
                         alt="logo"
                         style={{ height: 37 }}
-                        onClick={handleDrawerOpen}
+                        // onClick={handleDrawerOpen}
                     />
                 </IconButton>
 

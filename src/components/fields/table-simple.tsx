@@ -32,12 +32,9 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
-
 import { DownloadIcon } from 'icons';
-
-
 import { optionsMenu } from './table-paginated';
-// import ButtonExport from './buttonexport';
+
 import {
     useTable,
     useFilters,
@@ -122,7 +119,6 @@ const TableZyx = React.memo(({
     selectrow,
     HeadComponent,
     pageSizeDefault = 20,
-    filterGeneral
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -148,6 +144,7 @@ const TableZyx = React.memo(({
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
 
         useEffect(() => {
@@ -165,7 +162,6 @@ const TableZyx = React.memo(({
                     }
                     type={type === "number" ? "number" : "text"}
                     style={{ fontSize: '15px', minWidth: '100px' }}
-                    // size="small"
                     fullWidth
                     value={value}
                     onKeyDown={keyPress}
@@ -262,6 +258,7 @@ const TableZyx = React.memo(({
             Filter: (props: any) => SelectColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         []
     );
 
@@ -295,14 +292,10 @@ const TableZyx = React.memo(({
     )
 
     useEffect(() => {
-
         let next = true;
         if (fetchData && next) {
             fetchData();
         }
-
-        // return () => next = false;
-
     }, [fetchData])
 
     return (
@@ -335,11 +328,10 @@ const TableZyx = React.memo(({
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
                             onClick={() => selectrow && selectrow(null)}
-                            style={{backgroundColor: "#55BD84"}}
+                            style={{ backgroundColor: "#55BD84" }}
                         >Register
                         </Button>
                     )}
-
                     {download && (
                         <Button
                             className={classes.button}
@@ -362,47 +354,46 @@ const TableZyx = React.memo(({
                     />
                 </div>
             </Box>
+
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
+                    <Table {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell style={{ padding: '14px 24px 13px 16px' }} key={ii}>
+                                            <TableCell key={ii}>
                                                 {column.isComponent ?
-                                                    column.render('Header')
-                                                    : (
-                                                        <>
-                                                            <Box
-                                                                component="div"
-                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
-                                                                style={{
-                                                                    whiteSpace: 'nowrap',
-                                                                    wordWrap: 'break-word',
-                                                                    display: 'flex',
-                                                                    alignItems: 'center',
-                                                                    cursor: 'pointer'
-                                                                }}
-                                                            >
-                                                                {column.render('Header')}
-                                                                {column.isSorted ? (
-                                                                    column.isSortedDesc ?
-                                                                        <ArrowDownwardIcon className={classes.iconOrder} color="action" />
-                                                                        :
-                                                                        <ArrowUpwardIcon className={classes.iconOrder} color="action" />
-                                                                )
+                                                    column.render('Header') :
+                                                    (<>
+                                                        <Box
+                                                            component="div"
+                                                            {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
+                                                            style={{
+                                                                whiteSpace: 'nowrap',
+                                                                wordWrap: 'break-word',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            {column.render('Header')}
+                                                            {column.isSorted ? (
+                                                                column.isSortedDesc ?
+                                                                    <ArrowDownwardIcon className={classes.iconOrder} color="action" />
                                                                     :
-                                                                    null
-                                                                }
-                                                            </Box>
-                                                            <div>{!column.NoFilter && column.render('Filter')}</div>
-                                                        </>
-                                                    )
+                                                                    <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                            )
+                                                                :
+                                                                null
+                                                            }
+                                                        </Box>
+                                                        <div>{!column.NoFilter && column.render('Filter')}</div>
+                                                    </>)
                                                 }
                                             </TableCell>
                                     ))}

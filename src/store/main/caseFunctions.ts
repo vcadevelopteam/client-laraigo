@@ -10,8 +10,6 @@ export const main = (state: IState): IState => ({
 
 export const mainSuccess = (state: IState, action: IAction): IState => {
     // saveAuthorizationToken(action.payload.data.token);
-    console.log(action);
-    
     return {
         ...state,
         data: action.payload.data || [],

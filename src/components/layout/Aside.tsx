@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
@@ -75,6 +75,7 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
 
     const handleDrawerClose = () => setOpen(false);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ListItemCollapse = ({ itemName, listRoutes, children, IconLink }: IProps2) => {
 
         const [isCollapse, setIsCollapse] = useState(false);
@@ -84,6 +85,7 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
                 if (listRoutes.includes(history.location.pathname))
                     setIsCollapse(true)
             }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [history]);
 
         if (!dataRes.user)
@@ -116,11 +118,11 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
             }}
         >
             <div className={classes.toolbar}>
-                <img src="./Laraigo-logo-name.svg" style={{ height: 37 }} />
+                <img src="./Laraigo-logo-name.svg" style={{ height: 37 }} alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.path} />)}
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.path || ele.description} />)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={handleDrawerClose}>

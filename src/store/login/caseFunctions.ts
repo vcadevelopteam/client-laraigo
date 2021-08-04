@@ -11,6 +11,7 @@ export const login = (state: IState): IState => ({
 
 export const loginSuccess = (state: IState, action: IAction): IState => {
     saveAuthorizationToken(action.payload.data.token);
+    
     return {
         ...state,
         user: action.payload.data,
