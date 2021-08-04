@@ -34,6 +34,9 @@ const theme = createTheme({
 		MuiListItem: {
 			gutters: { paddingLeft: 28 }
 		},
+		MuiTypography: {
+			body1: { fontSize: 14 }
+		}
 	}
 });
 

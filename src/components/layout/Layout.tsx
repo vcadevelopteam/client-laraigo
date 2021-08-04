@@ -3,7 +3,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
-import { useHistory, Link, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
 import { getAccessToken } from 'common/helpers';

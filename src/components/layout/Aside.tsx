@@ -1,4 +1,5 @@
 import React, {  useEffect, useState } from 'react';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
@@ -48,6 +49,7 @@ type IProps2 = {
 
 const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }) => {
     const history = useHistory();
+    const theme = useTheme();
 
     if (!config.path) {
         return <Typography className={classes.drawerLabel}>{config.description}</Typography>;
@@ -61,7 +63,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }
             onClick={() => history.push(config.path!)}
             className={clsx(isSelected && classes.drawerItemActive)}
         >
-            <ListItemIcon>{config.icon?.(isSelected ? classes.drawerItemActive.stroke : "#8F92A1")}</ListItemIcon>
+            <ListItemIcon>{config.icon?.(isSelected ? theme.palette.primary.main : "#8F92A1")}</ListItemIcon>
             <ListItemText primary={config.description} />
         </ListItem>
     );

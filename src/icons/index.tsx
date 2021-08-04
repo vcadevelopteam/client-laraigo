@@ -1,5 +1,4 @@
-export { DashboardIcon } from './Dashboard';
-export { ReactComponent as Dashboardicon } from 'icons/dashboard.svg';
+export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as ReportsIcon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
 export { ReactComponent as EMailInbocIcon } from 'icons/email-mail-letter.svg';
@@ -11,3 +10,6 @@ export { ReactComponent as BillingSetupIcon } from 'icons/credit-Card.svg';
 export { ReactComponent as ConfigurationIcon } from 'icons/settings.svg';
 export { ReactComponent as ExtrasIcon } from 'icons/grid-layout-menu-more.svg';
 export { ReactComponent as DownloadIcon } from 'icons/download.svg';
+export { ReactComponent as SearchIcon } from './shearch.svg';
+export { ReactComponent as BellNotificationIcon } from './bell-notification.svg';
+export { ReactComponent as ArrowDropDownIcon } from './arrow-drop-down.svg';

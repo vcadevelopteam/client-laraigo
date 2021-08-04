@@ -25,6 +25,12 @@ const useStyles = makeStyles((theme: Theme) =>
             marginLeft: theme.spacing(1),
             flex: 1,
         },
+        inputPlaceholder: {
+            '&::placeholder': {
+                fontSize: 14,
+                fontWeight: 500,
+            },
+        },
         iconButton: {
             padding: 10,
         },

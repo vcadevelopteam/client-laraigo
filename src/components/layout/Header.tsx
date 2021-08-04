@@ -60,7 +60,6 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                         <AccountMenu />
                     </div>
                 </div>
-
             </Toolbar>
         </AppBar>
 
