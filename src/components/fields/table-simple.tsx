@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Table from '@material-ui/core/Table';
+import Button from '@material-ui/core/Button';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
@@ -21,7 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
@@ -30,7 +30,11 @@ import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import { TableConfig, Pagination } from '@types'
+import { TableConfig } from '@types'
+import { SearchField } from 'components';
+
+import { DownloadIcon } from 'icons';
+
 
 import { optionsMenu } from './table-paginated';
 // import ButtonExport from './buttonexport';
@@ -66,6 +70,12 @@ const useStyles = makeStyles((theme) => ({
             }
         },
     },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#FFF',
+        padding: theme.spacing(2),
+    },
     containerfloat: {
         borderBottom: 'none',
         padding: '4px 24px 4px 16px',
@@ -75,6 +85,30 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 9999,
         left: 0,
         visibility: 'hidden'
+    },
+    iconOrder: {
+        width: 20,
+        height: 20,
+        color: theme.palette.text.primary,
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
+    title: {
+        fontSize: '22px',
+        lineHeight: '48px',
+        fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
+
+    },
+    containerButtons: {
+        gridGap: theme.spacing(1),
+        display: 'grid',
+        gridAutoFlow: 'column',
     }
 }));
 
@@ -87,7 +121,8 @@ const TableZyx = React.memo(({
     register,
     selectrow,
     HeadComponent,
-    pageSizeDefault = 20
+    pageSizeDefault = 20,
+    filterGeneral
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -245,6 +280,7 @@ const TableZyx = React.memo(({
         previousPage,
         setPageSize,
         preGlobalFilteredRows,
+        setGlobalFilter,
         state: { pageIndex, pageSize },
     } = useTable({
         columns,
@@ -271,26 +307,14 @@ const TableZyx = React.memo(({
 
     return (
         <Box style={{ height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={titlemodule ? 2 : 0} ml={1}>
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb="30px">
                 {titlemodule ?
-                    <Typography variant="h6" id="tableTitle" component="div">
+                    <span className={classes.title}>
                         {titlemodule}
-                    </Typography>
+                    </span>
                     : <span></span>
                 }
-                <span>
-                    {register && (
-                        <Tooltip title="Registrar">
-                            <Fab
-                                size="small"
-                                aria-label="add"
-                                style={{ marginLeft: '1rem', backgroundColor: '#E0AD30' }}
-                                onClick={() => selectrow && selectrow(null)}
-                            >
-                                <AddIcon/>
-                            </Fab>
-                        </Tooltip>
-                    )}
+                <span className={classes.containerButtons}>
                     {fetchData && (
                         <Tooltip title="Refrescar">
                             <Fab
@@ -300,24 +324,46 @@ const TableZyx = React.memo(({
                                 style={{ marginLeft: '1rem' }}
                                 onClick={() => fetchData && fetchData({})}
                             >
-                                <RefreshIcon/>
+                                <RefreshIcon />
                             </Fab>
                         </Tooltip>
                     )}
+                    {register && (
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={() => selectrow && selectrow(null)}
+                            style={{backgroundColor: "#55BD84"}}
+                        >Register
+                        </Button>
+                    )}
+
                     {download && (
-                        <Tooltip title="Descargar">
-                            <span style={{ marginLeft: '1rem' }}>
-                                {/* <ButtonExport
-                                    csvData={data}
-                                    fileName={`report${titlemodule}`}
-                                    columnsexport={columns.filter(x => (!x.isComponent && !x.activeOnHover))}
-                                /> */}
-                            </span>
-                        </Tooltip>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<DownloadIcon />}
+                        >Download
+                        </Button>
                     )}
                 </span>
             </Box>
+
+            <Box className={classes.containerFilterGeneral}>
+                <span></span>
+                <div style={{ width: '50%' }}>
+                    <SearchField
+                        colorPlaceHolder='#FFF'
+                        handleChangeOther={setGlobalFilter}
+
+                    />
+                </div>
+            </Box>
             {HeadComponent && <HeadComponent />}
+
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
                     <Table {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
@@ -326,8 +372,8 @@ const TableZyx = React.memo(({
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
-                                            <th style={{width: "0px"}} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <th style={{ width: "0px" }} key="header-floating"></th> :
+                                            <TableCell style={{ padding: '14px 24px 13px 16px' }} key={ii}>
                                                 {column.isComponent ?
                                                     column.render('Header')
                                                     : (
@@ -338,15 +384,18 @@ const TableZyx = React.memo(({
                                                                 style={{
                                                                     whiteSpace: 'nowrap',
                                                                     wordWrap: 'break-word',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
                                                                     cursor: 'pointer'
                                                                 }}
                                                             >
                                                                 {column.render('Header')}
                                                                 {column.isSorted ? (
                                                                     column.isSortedDesc ?
-                                                                        <ArrowDownwardIcon style={{ fontSize: 15 }} color="action" />
+                                                                        <ArrowDownwardIcon className={classes.iconOrder} color="action" />
                                                                         :
-                                                                        <ArrowUpwardIcon style={{ fontSize: 15 }} color="action" />)
+                                                                        <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                                )
                                                                     :
                                                                     null
                                                                 }
@@ -360,7 +409,7 @@ const TableZyx = React.memo(({
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()} style={{backgroundColor: 'white'}}>
+                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
                             {page.map(row => {
                                 prepareRow(row);
                                 return (
@@ -401,7 +450,7 @@ const TableZyx = React.memo(({
                 <Box className={classes.footerTable}>
                     <Box>
                         <IconButton
-                            onClick={() => gotoPage(0)} 
+                            onClick={() => gotoPage(0)}
                             disabled={!canPreviousPage}
                         >
                             <FirstPage />
@@ -425,12 +474,12 @@ const TableZyx = React.memo(({
                             <LastPage />
                         </IconButton>
                         <Box component="span" fontSize={14}>
-                            Página <Box fontWeight="700" component="span">{pageIndex + 1}</Box> de <Box fontWeight="700" component="span">{pageOptions.length}</Box>
+                            Page <Box fontWeight="700" component="span">{pageIndex + 1}</Box> of <Box fontWeight="700" component="span">{pageOptions.length}</Box>
                         </Box >
 
                     </Box>
                     <Box>
-                        Mostrando {page.length} registros de {preGlobalFilteredRows.length}
+                        Showing {page.length} record of {preGlobalFilteredRows.length}
                     </Box>
                     <Box>
                         <Select
@@ -448,7 +497,7 @@ const TableZyx = React.memo(({
                             ))}
                         </Select>
                         <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                            Registros por página
+                            Records per page
                         </Box>
                     </Box>
                 </Box>

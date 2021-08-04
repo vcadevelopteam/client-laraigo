@@ -4,8 +4,6 @@ import { TicketList, SignIn } from 'pages';
 import Properties from 'components/Properties';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import routes from "./routes";
-import { TextField } from "@material-ui/core";
-import { SearchField } from "components";
 
 const RouterApp: FC = () => {
     return (
@@ -14,7 +12,6 @@ const RouterApp: FC = () => {
 				<Route exact path="/sign-in" component={SignIn} />
 				<Layout
 					routes={routes}
-					title={<SearchField />}
 					paragraph="A JavaScript library for building user interfaces."
 				>
 					<Route exact path="/properties" component={Properties} />

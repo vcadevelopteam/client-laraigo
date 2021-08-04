@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {  useEffect, useState } from 'react';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
@@ -9,7 +10,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { useHistory, Link, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 // import authContext from 'context/auth/authContext';
 import { useSelector } from 'hooks';
@@ -20,30 +21,15 @@ import Collapse from '@material-ui/core/Collapse';
 import {
     ChevronLeft,
     ChevronRight,
-    VpnKey,
-    List as ListIcon,
-    AccountCircle,
     ExpandLess,
     ExpandMore,
-    LockOpen,
-    ShoppingCart,
-    Business,
-    MonetizationOn,
-    Store as StoreIcon,
-    ViewComfy,
-    BusinessCenter,
-    Tune as TuneIcon,
-    Label as LabelIcon,
-    EmojiTransportation,
-    LocalShipping,
 } from '@material-ui/icons/';
 import { RouteConfig } from '@types';
-import { styled, TextField, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { FC } from 'react';
-import { useTheme } from '@material-ui/core';
 
-const listbuy = ['/purchase-order/load', '/purchase-order/list', '/purchase-order/[id]'];
-const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
+// const listbuy = ['/purchase-order/load', '/purchase-order/list', '/purchase-order/[id]'];
+// const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
 
 type IProps = {
     // children: any;

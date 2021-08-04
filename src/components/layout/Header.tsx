@@ -4,11 +4,9 @@ import clsx from 'clsx';
 
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
-
 import IconButton from '@material-ui/core/IconButton';
 import { useSelector } from 'hooks';
-import { StatusConnection } from 'components';
-import { AccountMenu, NotificationMenu } from 'components';
+import { SearchField, StatusConnection, AccountMenu, NotificationMenu } from 'components';
 
 type IProps = {
     classes: any;
@@ -17,7 +15,7 @@ type IProps = {
     title?: React.ReactNode;
 }
 
-const Header = ({ classes, open, setOpen, title }: IProps) => {
+const Header = ({ classes, open, setOpen }: IProps) => {
     const dataRes = useSelector(state => state.login);
 
     const handleDrawerOpen = () => {
@@ -40,20 +38,28 @@ const Header = ({ classes, open, setOpen, title }: IProps) => {
                     edge="start"
                     className={clsx(classes.menuButton, open && classes.hide)}
                 >
-                    <img 
+                    <img
                         src="./Laraigo-logo.svg"
+                        alt="logo"
                         style={{ height: 37 }}
                         onClick={handleDrawerOpen}
                     />
                 </IconButton>
-                <div className={classes.title} style={{ display: 'block', textAlign: 'center' }}>
-                    {title}
+
+                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
+                    <div className={classes.title} style={{ width: '400px' }}>
+                        <SearchField
+                            colorPlaceHolder='#F9F9FA'
+                        />
+                    </div>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <StatusConnection />
+                        <div style={{ width: 22 }} />
+                        <NotificationMenu />
+                        <div style={{ width: 24 }} />
+                        <AccountMenu />
+                    </div>
                 </div>
-                <StatusConnection />
-                <div style={{ width: 12 }} />
-                <NotificationMenu />
-                <div style={{ width: 14 }} />
-                <AccountMenu />
             </Toolbar>
         </AppBar>
 

@@ -1,20 +1,25 @@
-import { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
-import { SearchIcon } from 'icons';
+import SearchIcon from '@material-ui/icons/Search';
+
+type Props = { 
+    colorPlaceHolder: string,
+    handleChangeOther?: (params: any) => void,
+    handleSubmitOther?: (params: any) => void
+}
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+    createStyles({
         root: {
             padding: '2px 4px',
             display: 'flex',
             alignItems: 'center',
-            width: 400,
             height: 42,
-            borderColor: '#8F92A1',
-            backgroundColor: '#F9F9FA',
+            border: '1px solid #EBEAED',
+            backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
         },
         input: {
             marginLeft: theme.spacing(1),
@@ -36,21 +41,39 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-const SearchField: FC = () => {
-  const classes = useStyles();
+const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther }: Props) => {
 
-  return (
-    <Paper component="div" className={classes.root} elevation={0}>
-        <IconButton type="button" className={classes.iconButton} aria-label="search">
-            <SearchIcon />
-        </IconButton>
-        <InputBase
-            className={classes.input}
-            placeholder="Search"
-            inputProps={{ className: classes.inputPlaceholder }}
-        />
-    </Paper>
-  );
+    const classes = useStyles({ colorPlaceHolder });
+    const [value, setvalue] = useState('');
+
+    // const handleChange = React.useCallback((event: any) => {
+    //     setvalue(event.target.value);
+    //     handleChangeOther && handleChangeOther(event.target.value)
+    // }, [value, handleChangeOther]);
+
+    const handleChange = (event: any) => {
+        setvalue(event.target.value);
+        handleChangeOther && handleChangeOther(event.target.value)
+    }
+    
+    const handleSubmit = (event: any) => {
+        setvalue(event.target.value);
+        handleSubmitOther && handleSubmitOther(event.target.value)
+    };
+
+    return (
+        <Paper component="form" className={classes.root} elevation={0} onSubmit={handleSubmit}>
+            <IconButton type="submit" className={classes.iconButton} aria-label="search">
+                <SearchIcon />
+            </IconButton>
+            <InputBase
+                className={classes.input}
+                value={value}
+                onChange={handleChange}
+                placeholder="Search"
+            />
+        </Paper>
+    );
 };
 
 export default SearchField;
