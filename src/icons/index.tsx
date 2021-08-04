@@ -10,3 +10,4 @@ export { ReactComponent as ChannelIcon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as BillingSetupIcon } from 'icons/credit-Card.svg';
 export { ReactComponent as ConfigurationIcon } from 'icons/settings.svg';
 export { ReactComponent as ExtrasIcon } from 'icons/grid-layout-menu-more.svg';
+export { ReactComponent as DownloadIcon } from 'icons/download.svg';

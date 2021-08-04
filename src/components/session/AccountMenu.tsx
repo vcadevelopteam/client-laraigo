@@ -1,10 +1,9 @@
 import React, { FC, useState } from "react";
-import { Button, Menu, MenuItem, Paper } from "@material-ui/core";
+import { Button, Menu, MenuItem } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { ArrowDropDown } from "@material-ui/icons";
 
 const AccountMenu: FC = () => {
-    const [open, setopen] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -18,6 +17,7 @@ const AccountMenu: FC = () => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
+                style={{padding: '0'}}
                 startIcon={<AccountCircle style={{ height: 32, width: 32 }} />}
                 endIcon={<ArrowDropDown style={{ height: 24 }} />}
             >

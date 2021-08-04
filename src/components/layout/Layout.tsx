@@ -139,8 +139,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 0,
     },
     title: {
-        flexGrow: 1,
-        marginTop: theme.spacing(1),
+        // flexGrow: 1,
+        // marginTop: theme.spacing(1),
         color: theme.palette.text.primary,
     },
     containerLogin: {
@@ -165,7 +165,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 /** Authorized layout */
-const Layout = ({ title, paragraph, children, routes }: ParamsProps) => {
+const Layout = ({ children, routes }: ParamsProps) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
@@ -187,7 +187,6 @@ const Layout = ({ title, paragraph, children, routes }: ParamsProps) => {
                 <>
                     <CssBaseline />
                     <Header
-                        title={title}
                         classes={classes}
                         open={openDrawer}
                         setOpen={setOpenDrawer}

@@ -16,7 +16,8 @@ export interface TableConfig {
     register?: boolean,
     selectrow?(param: any): void,
     HeadComponent?: () => JSX.Element |null ,
-    pageSizeDefault?: number
+    pageSizeDefault?: number,
+    filterGeneral?: boolean
 }
 
 export interface Pagination {

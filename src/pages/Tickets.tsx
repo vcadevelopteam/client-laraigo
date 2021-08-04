@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { IRequestBody, ITicket } from '@types';
+import { IRequestBody } from '@types';
 import { getCollection, resetMain } from 'store/main/actions';
 
 import TableZyx from '../components/fields/table-simple';
@@ -94,13 +94,14 @@ const Tickets: FC<IProps> = ({ title, paragraph }) => {
 
     return (
         <>
-            <h2>{title || "TICKETSs"}</h2>
+            {/* <h2>{title || "TICKETSs"}</h2> */}
             <TableZyx
                 columns={columns}
-                // titlemodule='Dominios'
+                titlemodule='Users'
                 data={mainResult.data}
+                download={true}
                 // fetchData={fetchData}
-                // register={!!appfound.insert}
+                register={true}
                 // selectrow={selectrow}
             />
         </>
