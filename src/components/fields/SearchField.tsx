@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
             '&::placeholder': {
                 fontSize: 14,
                 fontWeight: 500,
+                color: '#84818A',
             },
         },
         iconButton: {
@@ -62,8 +63,8 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
     };
 
     return (
-        <Paper component="form" className={classes.root} elevation={0} onSubmit={handleSubmit}>
-            <IconButton type="submit" className={classes.iconButton} aria-label="search">
+        <Paper component="div" className={classes.root} elevation={0} onSubmit={handleSubmit}>
+            <IconButton type="button" className={classes.iconButton} aria-label="search">
                 <SearchIcon />
             </IconButton>
             <InputBase
@@ -71,6 +72,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
                 value={value}
                 onChange={handleChange}
                 placeholder="Search"
+                inputProps={{ className: classes.inputPlaceholder }}
             />
         </Paper>
     );

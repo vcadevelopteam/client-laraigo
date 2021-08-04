@@ -63,7 +63,6 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                 </div>
             </Toolbar>
         </AppBar>
-
     );
 }
 
