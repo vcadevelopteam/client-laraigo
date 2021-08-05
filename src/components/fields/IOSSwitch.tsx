@@ -5,14 +5,14 @@ interface IProps extends SwitchProps {
 }
 
 const defaultWidth = 30;
-const DefaultHeight = 20;
+const defaultHeight = 20;
 
 
 const IOSSwitch = withStyles((theme: Theme) =>
   createStyles({
     root: {
       width: defaultWidth,
-      height: DefaultHeight,
+      height: defaultHeight,
       padding: 1,
       // margin: theme.spacing(1),
     },
@@ -37,7 +37,7 @@ const IOSSwitch = withStyles((theme: Theme) =>
       height: 12,
     },
     track: {
-      borderRadius: 20 / 2,
+      borderRadius: defaultHeight / 2,
       border: `1px solid ${theme.palette.grey[400]}`,
       backgroundColor: theme.palette.grey[50],
       opacity: 1,
