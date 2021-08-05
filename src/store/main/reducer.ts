@@ -1,11 +1,7 @@
-import { IBaseState } from "@types";
+import { IBaseState, Dictionary } from "@types";
 import { createReducer, initialListPaginatedState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
-
-export interface Dictionary {
-    [key: string]: any
-}
 
 export interface IState extends IBaseState {
     data: Dictionary[]

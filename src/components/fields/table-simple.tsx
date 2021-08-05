@@ -7,6 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
+import { exportExcel } from 'common/helpers';
 import clsx from 'clsx';
 import {
     FirstPage,
@@ -116,9 +117,10 @@ const TableZyx = React.memo(({
     data,
     download = true,
     register,
-    selectrow,
+    handleRegister,
     HeadComponent,
     pageSizeDefault = 20,
+    hoverShadow = false
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -144,7 +146,7 @@ const TableZyx = React.memo(({
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
 
         useEffect(() => {
@@ -327,7 +329,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
-                            onClick={() => selectrow && selectrow(null)}
+                            
                             style={{ backgroundColor: "#55BD84" }}
                         >Register
                         </Button>
@@ -337,6 +339,7 @@ const TableZyx = React.memo(({
                             className={classes.button}
                             variant="contained"
                             color="primary"
+                            onClick={() => exportExcel("report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         >Download
                         </Button>
@@ -404,7 +407,7 @@ const TableZyx = React.memo(({
                             {page.map(row => {
                                 prepareRow(row);
                                 return (
-                                    <TableRow {...row.getRowProps()} className={classes.trdynamic}>
+                                    <TableRow {...row.getRowProps()} className={hoverShadow ? classes.trdynamic : ''}>
                                         {row.cells.map((cell, i) =>
                                             <TableCell
                                                 {...cell.getCellProps()}

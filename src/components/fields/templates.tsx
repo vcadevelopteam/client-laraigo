@@ -5,14 +5,18 @@ import MenuItem from '@material-ui/core/MenuItem';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import IconButton from '@material-ui/core/IconButton';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Link from '@material-ui/core/Link';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
-export interface TemplateIconsProps {
+interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
 }
 
-const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction}) => {
+export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -63,4 +67,38 @@ const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunct
     )
 }
 
-export default TemplateIcons;
+interface TemplateBreadcrumbsProps {
+    breadcrumbs: Array<{ id: string, name: string }>;
+    handleClick?: (param: any) => void;
+}
+
+export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadcrumbs, handleClick }) => {
+
+    const handleClickBreadcrumb = (event: any, id: string) => {
+        event.preventDefault();
+        handleClick && handleClick(id)
+    }
+
+    return (
+        <Breadcrumbs aria-label="breadcrumb">
+            {breadcrumbs.map((x, i) => (breadcrumbs.length - 1 === i) ?
+                <Typography key={x.id} color="textPrimary">{x.name}</Typography>
+                :
+                <Link color="textSecondary" key={x.id} href="/" onClick={e => handleClickBreadcrumb(e, x.id)}>
+                    {x.name}
+                </Link>
+            )}
+        </Breadcrumbs>
+    );
+}
+
+export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
+    <Typography style={{fontSize: 32}} color="textPrimary">{title}</Typography>
+)
+
+export const FieldView: React.FC<{ label: string, value: string, className?: any }> = ({ label, value, className }) => (
+    <div className={className}>
+        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+        <Box lineHeight="20px" fontSize={15} color="textPrimary">{value}</Box>
+    </div>
+)

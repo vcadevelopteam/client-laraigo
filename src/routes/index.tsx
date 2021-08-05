@@ -1,7 +1,6 @@
 import { FC } from "react";
 import Layout from 'components/layout/Layout';
-import { TicketList, SignIn } from 'pages';
-import Properties from 'components/Properties';
+import { Users, SignIn, Properties } from 'pages';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import routes from "./routes";
 
@@ -14,7 +13,7 @@ const RouterApp: FC = () => {
 					routes={routes}
 				>
 					<Route exact path="/properties" component={Properties} />
-					<Route exact path="/tickets" component={TicketList} />
+					<Route exact path="/users" component={Users} />
 				</Layout>
 			</Switch>
 		</Router>

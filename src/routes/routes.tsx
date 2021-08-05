@@ -35,7 +35,6 @@ const routes: RouteConfig[] = [
     },
     {
         description: "System",
-        
     },
     {
         description: 'Organizations',
@@ -60,6 +59,16 @@ const routes: RouteConfig[] = [
     {
         description: 'Extras',
         path: paths.EXTRAS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        description: 'User',
+        path: paths.USERS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        description: 'Properties',
+        path: paths.PROPERTIES,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
 ];

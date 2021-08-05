@@ -10,6 +10,8 @@ const paths = {
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
+    PROPERTIES: '/properties',
+    USERS: '/users',
 };
 
 export default paths;
