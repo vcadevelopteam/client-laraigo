@@ -37,10 +37,11 @@ const theme = createTheme({
 		MuiTypography: {
 			body1: { fontSize: 14 }
 		},
-		MuiButtonBase: {
-			root: { minHeight: 48 },
-		},
+		// MuiButtonBase: {
+		// 	root: { minHeight: 48 },
+		// },
 		MuiButton: {
+			root: { minHeight: 48 },
 			label: { fontWeight: 600, fontSize: 14, fontStyle: 'normal' },
 		},
 	}
