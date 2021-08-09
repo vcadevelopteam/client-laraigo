@@ -7,6 +7,7 @@ export const main = (state: IState): IState => ({
 });
 
 export const mainSuccess = (state: IState, action: IAction): IState => {
+    console.log("sss", action.payload);
     return {
         ...state,
         mainData: {

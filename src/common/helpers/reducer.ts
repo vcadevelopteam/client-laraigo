@@ -19,7 +19,7 @@ export const initialListPaginatedState: IListStatePaginated<any> = {
     count: 0,
     loading: false,
     code: undefined,
-    error: undefined,
+    error: false,
     message: undefined,
 };
 

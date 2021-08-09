@@ -103,10 +103,10 @@ export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
     <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
 
-export const FieldView: React.FC<{ label: string, value: string, className?: any }> = ({ label, value, className }) => (
+export const FieldView: React.FC<{ label: string, value?: string, className?: any }> = ({ label, value, className }) => (
     <div className={className}>
         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-        <Box lineHeight="20px" fontSize={15} color="textPrimary">{value}</Box>
+        <Box lineHeight="20px" fontSize={15} color="textPrimary">{value || ""}</Box>
     </div>
 )
 

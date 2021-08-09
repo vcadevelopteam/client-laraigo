@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
 import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
 import { Dictionary } from "@types";
-import TableZyx from '../components/fields/table-simple';
+import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { langKeys } from 'lang/keys';
 import { useForm, NestedValue } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -232,6 +233,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
 }
 
 const Properties: FC = () => {
+    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -290,10 +292,10 @@ const Properties: FC = () => {
                 isComponent: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            // viewFunction={() => handleView(row)}
+                            viewFunction={() => history.push(`/properties/${row.propertyid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
