@@ -1,15 +1,14 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-
-import { getCollection, resetMain, getMultiCollection, resetMultiMain } from 'store/main/actions';
-
+import Button from '@material-ui/core/Button';
+import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getPropertySel, getChannelsByOrg, getValuesFromDomain } from 'common/helpers';
+import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
-
+import SaveIcon from '@material-ui/icons/Save';
 import { useForm, NestedValue } from 'react-hook-form';
 
 interface RowSelected {
@@ -24,6 +23,7 @@ interface DetailPropertyProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
+    fetchData: () => void
 }
 const arrayBread = [
     { id: "view-1", name: "Properties" },
@@ -37,25 +37,33 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
 }));
 
-const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData }) => {
+const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+    const dispatch = useDispatch();
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
-
-    console.log(dataStatus)
 
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             communicationchannelid: row ? row.communicationchannelid : 0,
-            id: row ? row.id : 0,
+            id: row ? row.propertyid : 0,
             propertyname: row ? row.propertyname : '',
             propertyvalue: row ? row.propertyvalue : '',
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
+            operation: row ? "EDIT" : "INSERT"
         }
     });
 
@@ -69,7 +77,18 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [edit, register]);
 
-    const onSubmit = handleSubmit((data) => console.log(data));
+    useEffect(() => {
+        if (!executeRes.loading && !executeRes.error && waitSave) {
+            setWaitSave(false)
+            fetchData();
+            alert("Registro guardado satisfactoriamente")
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        dispatch(execute(insProperty(data)));
+        setWaitSave(true)
+    });
 
     return (
         <div>
@@ -81,7 +100,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                 title={row ? `${row.propertyname}` : "New property"}
             />
             <form onSubmit={onSubmit}>
-
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -187,11 +205,23 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 className="col-6"
                             />}
                     </div>
+                    {edit &&
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                // onClick={handleRegister}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >Save
+                            </Button>
+                        </div>
+                    }
                 </div>
-                <input type="submit" />
-
             </form>
-
+            
         </div>
     );
 }
@@ -268,15 +298,16 @@ const Properties: FC = () => {
         []
     );
 
+    const fetchData = () => dispatch(getCollection(getPropertySel(0)));
+
     useEffect(() => {
-        dispatch(getCollection(getPropertySel(0)));
+        fetchData();
         dispatch(getMultiCollection([getChannelsByOrg(), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -298,14 +329,15 @@ const Properties: FC = () => {
         // setRowSelected(row);
     }
 
-    if (mainResult.mainData.loading) {
-        return <h1>LOADING</h1>;
-    }
-    else if (mainResult.mainData.error) {
-        return <h1>ERROR</h1>;
-    }
-
     if (viewSelected === "view-1") {
+
+        if (mainResult.mainData.loading) {
+            return <h1>LOADING</h1>;
+        }
+        else if (mainResult.mainData.error) {
+            return <h1>ERROR</h1>;
+        }
+
         return (
             <TableZyx
                 columns={columns}
@@ -324,6 +356,7 @@ const Properties: FC = () => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
+                fetchData={fetchData}
             />
         )
     } else

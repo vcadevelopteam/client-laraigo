@@ -67,3 +67,41 @@ export const multiMainReset = (state: IState): IState => ({
     ...state,
     multiData: initialState.multiData,
 });
+
+
+
+
+
+
+export const execute = (state: IState): IState => ({
+    ...state,
+    execute: { ...state.execute, loading: true, error: false }
+});
+
+export const executeSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        execute: {
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const executeFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    execute: {
+        ...state.execute,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'loginFailure:error',
+        message: action.payload.message || 'Error al intentar loguearse',
+    }
+});
+
+export const executeReset = (state: IState): IState => ({
+    ...state,
+    execute: initialState.execute,
+});

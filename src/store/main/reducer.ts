@@ -12,11 +12,13 @@ export interface itemMulti {
 export interface IState {
     mainData: IListStatePaginated<Dictionary>,
     multiData: IListStatePaginated<itemMulti>,
+    execute: IListStatePaginated<Dictionary>,
 }
 
 export const initialState: IState = { 
     mainData: initialListPaginatedState,
-    multiData: initialListPaginatedState
+    multiData: initialListPaginatedState,
+    execute: initialListPaginatedState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -29,6 +31,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MULTI_MAIN_SUCCESS]: caseFunctions.multiMainSuccess,
     [actionTypes.MULTI_MAIN_FAILURE]: caseFunctions.multiMainFailure,
     [actionTypes.MULTI_MAIN_RESET]: caseFunctions.multiMainReset,
+
+    [actionTypes.EXECUTE_MAIN]: caseFunctions.execute,
+    [actionTypes.EXECUTE_MAIN_SUCCESS]: caseFunctions.executeSuccess,
+    [actionTypes.EXECUTE_MAIN_FAILURE]: caseFunctions.executeFailure,
+    [actionTypes.EXECUTE_MAIN_RESET]: caseFunctions.executeReset,
 
 
 });

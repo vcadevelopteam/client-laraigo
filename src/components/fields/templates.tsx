@@ -172,7 +172,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <Autocomplete
-
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
