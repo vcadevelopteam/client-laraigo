@@ -103,6 +103,9 @@ export const langKeys = {
 
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
+
+    successful_transaction: 'successful_transaction',
+    successful_edit: 'successful_edit',
 };
 
 export type LangKeys = typeof langKeys;

@@ -108,6 +108,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
+
+    successful_transaction: 'Transacción exitosa',
+    successful_edit: 'Se editó correctamente',
 };
 
 const esResource: ResourceLanguage = {

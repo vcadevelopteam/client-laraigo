@@ -37,7 +37,7 @@ export const initialState: IState = {
 }
 
 export default createReducer<IState>(initialState, {
-    [actionTypes.SHOW_BACKDROP]: caseFUnctions.showSnackbar,
+    [actionTypes.SHOW_BACKDROP]: caseFUnctions.showBackdrop,
     [actionTypes.SHOW_QUESTION]: caseFUnctions.showSnackbar,
     [actionTypes.SHOWSNACKBAR]: caseFUnctions.showSnackbar,
 });

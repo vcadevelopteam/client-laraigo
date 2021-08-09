@@ -108,6 +108,9 @@ const translation: LangKeys = {
 
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
+
+    successful_transaction: 'Successful transaction',
+    successful_edit: 'Edited successfully'
 };
 
 const enResource: ResourceLanguage = {

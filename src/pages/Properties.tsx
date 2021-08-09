@@ -2,7 +2,6 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
 import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
 import { Dictionary } from "@types";
@@ -12,6 +11,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, NestedValue } from 'react-hook-form';
+import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -82,14 +83,16 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
 
     useEffect(() => {
         if (!executeRes.loading && !executeRes.error && waitSave) {
-            setWaitSave(false)
+            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+            setWaitSave(false);
+            dispatch(showBackdrop(false));
             fetchData();
-            alert("Registro guardado satisfactoriamente")
         }
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
         dispatch(execute(insProperty(data)));
+        dispatch(showBackdrop(true));
         setWaitSave(true)
     });
 
