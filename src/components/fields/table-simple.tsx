@@ -334,7 +334,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             startIcon={<AddIcon color="secondary" />}
-                            
+                            onClick={handleRegister}
                             style={{ backgroundColor: "#55BD84" }}
                         >Register
                         </Button>

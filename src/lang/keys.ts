@@ -1,42 +1,3 @@
-// export interface LangKeys {
-//     dashboard: string;
-//     dashboard_plural: string;
-
-//     organization: string;
-//     organization_plural: string;
-
-//     report: string,
-//     report_plural: string;
-
-//     ticket: string;
-//     ticket_plural: string;
-
-//     eMailInbox: string;
-
-//     messageInbox: string;
-
-//     supervisor: string;
-//     supervisor_plural: string;
-
-//     channel: string;
-//     channel_plural: string;
-
-//     billingSetup: string;
-//     billingSetup_plural: string;
-
-//     configuration: string;
-//     configuration_plural: string;
-
-//     extra: string;
-//     extra_plural: string;
-
-//     system: string;
-//     system_plural: string;
-
-//     online: string;
-//     offline: string;
-// }
-
 export const langKeys = {
     dashboard: 'dashboard',
     dashboard_plural: 'dashboard_plural',
@@ -74,7 +35,8 @@ export const langKeys = {
 
     online: 'online',
     offline: 'offline',
-
+    logIn: 'logIn',
+    newRegisterMessage: 'newRegisterMessage',
     signoff: 'signoff',
 
     changePassword: 'changePassword',
@@ -110,11 +72,27 @@ export const langKeys = {
     action: 'action',
     action_plural: 'action_plural',
 
+    corporation: 'corporation',
+    corporation_plural: 'corporation_plural',
+
+    name: 'name',
+    name_plural: 'name_plural',
+
+    username: 'username',
+    password: 'password',
+
+    value: 'value',
+    value_plural: 'value_plural',
+
+    description: 'description',
+    description_plural: 'description_plural',
+
     active: 'active',
     inactive: 'inactive',
 
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
+    changeDate: 'changeDate',
 
     edit: 'edit',
     delete: 'delete',
@@ -122,7 +100,7 @@ export const langKeys = {
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
-    
+
     recordPerPage: 'recordPerPage',
     recordPerPage_plural: 'recordPerPage_plural',
 };

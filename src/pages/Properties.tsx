@@ -1,22 +1,35 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getCollection, resetMain } from 'store/main/actions';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView } from 'components';
-import { getUserSel } from 'common/helpers';
+
+import { getCollection, resetMain, getMultiCollection, resetMultiMain } from 'store/main/actions';
+
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { getPropertySel, getChannelsByOrg, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 
-export interface DetailPropertyProps {
-    data: Dictionary | null;
+import { useForm, NestedValue } from 'react-hook-form';
+
+interface RowSelected {
+    row: Dictionary | null,
+    edit: boolean
+}
+interface MultiData {
+    data: Dictionary[];
+    success: boolean;
+}
+interface DetailPropertyProps {
+    data: RowSelected;
     setViewSelected: (view: string) => void;
+    multiData: MultiData[];
 }
 const arrayBread = [
-    { id: "view-1", name: "Users" },
-    { id: "view-2", name: "User detail" }
+    { id: "view-1", name: "Properties" },
+    { id: "view-2", name: "Property detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -28,9 +41,38 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailProperty: React.FC<DetailPropertyProps> = ({ data, setViewSelected }) => {
+const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
+
+    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
+
+    console.log(dataStatus)
+
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+        defaultValues: {
+            type: 'NINGUNO',
+            communicationchannelid: row ? row.communicationchannelid : 0,
+            id: row ? row.id : 0,
+            propertyname: row ? row.propertyname : '',
+            propertyvalue: row ? row.propertyvalue : '',
+            description: row ? (row.description || '') : '',
+            status: row ? row.status : 'ACTIVO',
+        }
+    });
+
+    React.useEffect(() => {
+        register('communicationchannelid');
+        register('type');
+        register('id');
+        register('propertyname', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('propertyvalue', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+    }, [edit, register]);
+
+    const onSubmit = handleSubmit((data) => console.log(data));
 
     return (
         <div>
@@ -39,70 +81,118 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data, setViewSelected }
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={data ? `${data.firstname} ${data.lastname}` : "New user"}
+                title={row ? `${row.propertyname}` : "New property"}
             />
-            <div className={classes.containerDetail}>
-                <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.firstname)} // "Firstname"
-                        value={data ? data.firstname : ""}
-                        className="col-6"
-                    />
-                    <FieldView
-                        label={t(langKeys.lastname)}
-                        value={data ? data.lastname : ""}
-                        className="col-6"
-                    />
+            <form onSubmit={onSubmit}>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.corporation)} // "Corporation"
+                                className="col-6"
+                                valueDefault={row ? (row.corpdesc || "") : ""}
+                                disabled={true}
+                            />
+                            : <FieldView
+                                label={t(langKeys.corporation)}
+                                value={row ? (row.corpdesc || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.organization)} // "Organization"
+                                className="col-6"
+                                valueDefault={row ? (row.orgdesc || "") : ""}
+                                disabled={true}
+                            />
+                            : <FieldView
+                                label={t(langKeys.organization)}
+                                value={row ? (row.orgdesc || "") : ""}
+                                className="col-6"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.channel)}
+                                valueDefault={row ? (row.communicationchanneldesc || "") : ""}
+                                className="col-6"
+                                onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
+                                error={errors?.status?.message}
+                                data={dataChannel}
+                                optionDesc="description"
+                                optionValue="communicationchannelid"
+                            />
+                            : <FieldView
+                                label={t(langKeys.channel)}
+                                value={row ? (row.communicationchanneldesc || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.name)}
+                                className="col-6"
+                                valueDefault={row ? (row.propertyname || "") : ""}
+                                onChange={(value) => setValue('propertyname', value)}
+                                error={errors?.propertyname?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.name)}
+                                value={row ? (row.propertyname || "") : ""}
+                                className="col-6"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.value)}
+                                className="col-6"
+                                valueDefault={row ? (row.propertyvalue || "") : ""}
+                                onChange={(value) => setValue('propertyvalue', value)}
+                                error={errors?.propertyvalue?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.value)}
+                                value={row ? (row.propertyvalue || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.status)}
+                                className="col-6"
+                                valueDefault={row ? (row.status || "") : ""}
+                                onChange={(value) => setValue('status', value.domainvalue)}
+                                error={errors?.status?.message}
+                                data={dataStatus}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.status)}
+                                value={row ? (row.status || "") : ""}
+                                className="col-6"
+                            />}
+                    </div>
+
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                className="col-6"
+                                valueDefault={row ? (row.description || "") : ""}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
+                                className="col-6"
+                            />}
+                    </div>
                 </div>
-                <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.user)}
-                        value={data ? data.usr : ""}
-                        className="col-6"
-                    />
-                    <FieldView
-                        label={t(langKeys.email)}
-                        value={data ? data.email : ""}
-                        className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.docType)}
-                        value={data ? data.doctype : ""}
-                        className="col-6"
-                    />
-                    <FieldView
-                        label={t(langKeys.docNumber)}
-                        value={data ? data.docnum : ""}
-                        className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.company)}
-                        value={data ? data.company : ""}
-                        className="col-6"
-                    />
-                    <FieldView
-                        label={t(langKeys.doubleAuthentication)}
-                        value={data ? (t(data.twofactorauthentication ? langKeys.active : langKeys.inactive)) : ""}
-                        className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <FieldView
-                        label={t(langKeys.billingGroup)}
-                        value={data ? data.billinggroup : ""}
-                        className="col-6"
-                    />
-                    <FieldView
-                        label={t(langKeys.registerCode)}
-                        value={data ? data.docnum : ""}
-                        className="col-6"
-                    />
-                </div>
-            </div>
+                <input type="submit" />
+            </form>
+
         </div>
     );
 }
@@ -110,32 +200,27 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data, setViewSelected }
 const Properties: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.data);
+    const mainResult = useSelector(state => state.main);
 
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const columns = React.useMemo(
         () => [
 
             {
-                Header: t(langKeys.email),
-                accessor: 'email',
+                Header: t(langKeys.name),
+                accessor: 'propertyname',
                 NoFilter: true
             },
             {
-                Header: 'Globalid',
-                accessor: 'globalid',
+                Header: t(langKeys.description),
+                accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.group, { count: 2 }),
-                accessor: 'groups',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.role, { count: 2 }),
-                accessor: 'roledesc',
+                Header: t(langKeys.value),
+                accessor: 'propertyvalue',
                 NoFilter: true
             },
             {
@@ -143,14 +228,25 @@ const Properties: FC = () => {
                 accessor: 'status',
                 NoFilter: true
             },
+
             {
-                Header: t(langKeys.type),
-                accessor: 'type',
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.user),
-                accessor: 'usr',
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.channel),
+                accessor: 'communicationchanneldesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.changeDate),
+                accessor: 'changedate',
                 NoFilter: true
             },
             {
@@ -175,36 +271,38 @@ const Properties: FC = () => {
     );
 
     useEffect(() => {
-        dispatch(getCollection(getUserSel(0)));
+        dispatch(getCollection(getPropertySel(0)));
+        dispatch(getMultiCollection([getChannelsByOrg(), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };
     }, []);
 
+
     const handleRegister = () => {
         setViewSelected("view-2");
-        setRowSelected(null);
+        setRowSelected({ row: null, edit: true });
     }
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected(row);
+        setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected(row);
+        setRowSelected({ row, edit: true });
     }
 
     const handleDelete = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
+        // setViewSelected("view-2");
+        // setRowSelected(row);
     }
 
-    if (mainResult.loading) {
+    if (mainResult.mainData.loading) {
         return <h1>LOADING</h1>;
     }
-    else if (mainResult.error) {
+    else if (mainResult.mainData.error) {
         return <h1>ERROR</h1>;
     }
 
@@ -213,7 +311,7 @@ const Properties: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.property, { count: 2 })}
-                data={mainResult.data}
+                data={mainResult.mainData.data}
                 download={true}
                 register={true}
                 handleRegister={handleRegister}
@@ -226,6 +324,7 @@ const Properties: FC = () => {
             <DetailProperty
                 data={rowSelected}
                 setViewSelected={setViewSelected}
+                multiData={mainResult.multiData.data}
             />
         )
     } else

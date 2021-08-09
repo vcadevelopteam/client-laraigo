@@ -109,7 +109,7 @@ const DetailTicket: React.FC<DetailTicketProps> = ({ data, setViewSelected }) =>
 const Tickets: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const mainResult = useSelector(state => state.data);
+    const mainResult = useSelector(state => state.main);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
@@ -201,10 +201,10 @@ const Tickets: FC = () => {
         setRowSelected(row);
     }
 
-    if (mainResult.loading) {
+    if (mainResult.mainData.loading) {
         return <h1>LOADING</h1>;
     }
-    else if (mainResult.error) {
+    else if (mainResult.mainData.error) {
         return <h1>ERROR</h1>;
     }
 
@@ -213,7 +213,7 @@ const Tickets: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.user, { count: 2 })}
-                data={mainResult.data}
+                data={mainResult.mainData.data}
                 download={true}
                 register={true}
                 handleRegister={handleRegister}

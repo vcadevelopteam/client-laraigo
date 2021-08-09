@@ -38,7 +38,8 @@ const translation: LangKeys = {
 
     online: 'Online',
     offline: 'Offline',
-
+    logIn: 'Log in',
+    newRegisterMessage: 'Don\'t have an account? Sign up',
     signoff: 'Sign Off',
 
     changePassword: 'Change password',
@@ -76,11 +77,27 @@ const translation: LangKeys = {
     type: 'Type',
     type_plural: 'Types',
 
+    corporation: 'Corporation',
+    corporation_plural: 'Corporations',
+
+    name: 'Name',
+    name_plural: 'Names',
+
+    username: 'Username',
+    password: 'Password',
+
+    value: 'Value',
+    value_plural: 'Values',
+
+    description: 'Description',
+    description_plural: 'Descriptions',
+
     active: 'Active',
     inactive: 'Inactive',
 
     editRecord: 'Edit record',
     deleteRecord: 'Delete record',
+    changeDate: 'Change date',
 
     edit: 'Editar',
     delete: 'Eliminar',

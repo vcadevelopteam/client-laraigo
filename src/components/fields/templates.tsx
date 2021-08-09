@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -11,6 +11,11 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+
+import { Dictionary } from '@types';
+
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -62,8 +67,8 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={deleteFunction}><Trans i18nKey={langKeys.edit} /></MenuItem>
-                <MenuItem onClick={editFunction}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                <MenuItem onClick={editFunction}><Trans i18nKey={langKeys.edit} /></MenuItem>
+                <MenuItem onClick={deleteFunction}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </>
     )
@@ -95,7 +100,7 @@ export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadc
 }
 
 export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
-    <Typography style={{fontSize: 32}} color="textPrimary">{title}</Typography>
+    <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
 
 export const FieldView: React.FC<{ label: string, value: string, className?: any }> = ({ label, value, className }) => (
@@ -104,3 +109,93 @@ export const FieldView: React.FC<{ label: string, value: string, className?: any
         <Box lineHeight="20px" fontSize={15} color="textPrimary">{value}</Box>
     </div>
 )
+
+interface InputProps {
+    label: string;
+    className?: any;
+    valueDefault?: string;
+    disabled?: boolean;
+    onChange?: (param: any) => void;
+    style?: any;
+    error?: string;
+}
+
+interface TemplateAutocompleteProps extends InputProps {
+    data: Dictionary[],
+    optionValue: string;
+    optionDesc: string;
+}
+
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error }) => {
+    const [value, setvalue] = useState(valueDefault);
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <TextField
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                value={value}
+                helperText={error || null}
+                onChange={(e) => {
+                    setvalue(e.target.value);
+                    onChange && onChange(e.target.value);
+                }}
+            />
+        </div>
+    )
+}
+
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
+
+    const [value, setValue] = useState<Dictionary | null>(null);
+    const [inputValue, setInputValue] = useState('');
+
+    const setHardValue = (dataoptions: Dictionary[], valuetoset: string) => {
+        if (valuetoset) {
+            const optionfound = dataoptions.find((o: Dictionary) => o[optionValue] === valuetoset);
+            if (optionfound) {
+                setInputValue(optionfound[optionDesc]);
+                setValue(optionfound);
+
+                if (onChange)
+                    onChange(optionfound)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (data instanceof Array) {
+            setHardValue(data, valueDefault);
+        }
+    }, []);
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <Autocomplete
+
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                value={value}
+                inputValue={inputValue}
+                onChange={(_, newValue) => {
+                    setValue(newValue);
+                    if (onChange)
+                        onChange(newValue);
+                }}
+                onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
+                getOptionLabel={option => option ? option[optionDesc] : ''}
+                options={data}
+                // loading={loading}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        helperText={error || null}
+                    />
+                )}
+            />
+        </div>
+    )
+}

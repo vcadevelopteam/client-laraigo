@@ -7,8 +7,12 @@ export function login(usr: string, password: string) {
     return APIManager.post(apiUrls.LOGIN_URL, { data: { data } }, false);
 }
 
-export function main(requestBody: IRequestBody) {
+export function main(requestBody: IRequestBody | IRequestBody[]) {
     return APIManager.post(apiUrls.MAIN_URL, { data: requestBody }, true);
+}
+
+export function multiMain(requestBody: IRequestBody | IRequestBody[]) {
+    return APIManager.post(apiUrls.MAIN_MULTI, { data: requestBody }, true);
 }
 
 export function getTickets(page: number, pageSize: number) {

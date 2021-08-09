@@ -52,7 +52,7 @@ const theme = createTheme({
 
 i18n.use(initReactI18next).init({
 	resources,
-	lng:  navigator.language,
+	lng: navigator.language,
 	fallbackLng: 'en',
 	interpolation: {
 		escapeValue: false,
