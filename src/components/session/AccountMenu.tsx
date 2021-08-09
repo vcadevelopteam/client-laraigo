@@ -2,6 +2,8 @@ import React, { FC } from "react";
 import { Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import { ArrowDropDownIcon } from "icons";
+import { Trans } from "react-i18next";
+import { langKeys } from "lang/keys";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -71,8 +73,8 @@ const AccountMenu: FC = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {}}>Cambiar contraseña</MenuItem>
-                <MenuItem onClick={(e) => {}}>Cerrar Sesión</MenuItem>
+                <MenuItem onClick={(e) => {}}><Trans>{langKeys.changePassword}</Trans></MenuItem>
+                <MenuItem onClick={(e) => {}}><Trans>{langKeys.signoff}</Trans></MenuItem>
             </Menu>
         </div>
     );

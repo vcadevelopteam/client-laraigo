@@ -1,6 +1,9 @@
 import { ThemeProvider } from '@material-ui/core';
 import { createTheme } from '@material-ui/core';
 import RouterApp from 'routes';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import resources from 'lang';
 
 const theme = createTheme({
     palette: {
@@ -45,6 +48,15 @@ const theme = createTheme({
 			label: { fontWeight: 600, fontSize: 14, fontStyle: 'normal' },
 		},
 	}
+});
+
+i18n.use(initReactI18next).init({
+	resources,
+	lng:  navigator.language,
+	fallbackLng: 'en',
+	interpolation: {
+		escapeValue: false,
+	},
 });
 
 function App() {
