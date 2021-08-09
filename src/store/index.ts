@@ -9,13 +9,13 @@ import mainReducer, { IState as IMain } from './main/reducer';
 export interface IRootState {
     ticket: ITicketState;
     login: ILogin,
-    data: IMain;
+    main: IMain;
 }
 
 const rootReducer = combineReducers<IRootState>({
    ticket: ticketReducer,
    login: loginReducer,
-   data: mainReducer
+   main: mainReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

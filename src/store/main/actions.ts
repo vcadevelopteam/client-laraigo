@@ -13,3 +13,15 @@ export const getCollection = (requestBody: IRequestBody): IActionCall => ({
 });
 
 export const resetMain = (): IActionCall => ({type: actionTypes.MAIN_RESET});
+
+export const getMultiCollection = (requestBodies: IRequestBody[]): IActionCall => ({
+    callAPI: () => CommonService.multiMain(requestBodies),
+    types: {
+        loading: actionTypes.MULTI_MAIN,
+        success: actionTypes.MULTI_MAIN_SUCCESS,
+        failure: actionTypes.MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMultiMain = (): IActionCall => ({type: actionTypes.MULTI_MAIN_RESET});
