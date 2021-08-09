@@ -7,6 +7,8 @@ import { getUserSel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 export interface DetailTicketProps {
     data: Dictionary | null;
@@ -105,6 +107,7 @@ const DetailTicket: React.FC<DetailTicketProps> = ({ data, setViewSelected }) =>
 }
 
 const Tickets: FC = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
 
@@ -209,7 +212,7 @@ const Tickets: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule='Users'
+                titlemodule={t(langKeys.user, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 register={true}

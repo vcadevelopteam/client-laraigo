@@ -18,6 +18,8 @@ import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 
 import { useHistory } from 'react-router-dom';
+import { Trans, useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -76,7 +78,7 @@ type IAuth = {
 
 const SignIn = () => {
     const classes = useStyles();
-    
+    const { t } = useTranslation();
 
     const history = useHistory();
 
@@ -123,14 +125,14 @@ const SignIn = () => {
                             fullWidth
                             value={dataAuth.username}
                             onChange={e => setDataAuth(p => ({ ...p, username: e.target.value.trim() }))}
-                            label="Usuario"
+                            label={t(langKeys.username)}
                             name="usr"
                         />
                         <TextField
                             variant="outlined"
                             margin="normal"
                             fullWidth
-                            label="Contraseña"
+                            label={t(langKeys.password)}
                             name="password"
                             type={showPassword ? 'text' : 'password'}
                             autoComplete="current-password"
@@ -158,13 +160,13 @@ const SignIn = () => {
                                 variant="contained"
                                 color="primary"
                                 className={classes.submit}>
-                                Ingresar
+                                <Trans i18nKey={langKeys.logIn} />
                             </Button> :
                             <CircularProgress className={classes.progress} />
                         }
                         <Grid container>
                             <Grid item>
-                                <p>¿No tienes una cuenta? Registrate</p>
+                                <p><Trans i18nKey={langKeys.newRegisterMessage} /></p>
                             </Grid>
                         </Grid>
                     </form>

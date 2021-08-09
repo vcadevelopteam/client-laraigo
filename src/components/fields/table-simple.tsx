@@ -43,6 +43,8 @@ import {
     useSortBy,
     usePagination
 } from 'react-table'
+import { Trans } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -293,6 +295,9 @@ const TableZyx = React.memo(({
         usePagination
     )
 
+    const currentPage = pageIndex + 1;
+    const totalPages = pageOptions.length;
+
     useEffect(() => {
         let next = true;
         if (fetchData && next) {
@@ -468,12 +473,16 @@ const TableZyx = React.memo(({
                             <LastPage />
                         </IconButton>
                         <Box component="span" fontSize={14}>
-                            Page <Box fontWeight="700" component="span">{pageIndex + 1}</Box> of <Box fontWeight="700" component="span">{pageOptions.length}</Box>
-                        </Box >
-
+                            <Trans i18nKey={langKeys.tablePageOf}>
+                                Page <Box fontWeight="700" component="span">{{currentPage}}</Box> of <Box fontWeight="700" component="span">{{totalPages}}</Box>
+                            </Trans>
+                        </Box>
                     </Box>
                     <Box>
-                        Showing {page.length} record of {preGlobalFilteredRows.length}
+                        <Trans
+                            i18nKey={langKeys.tableShowingRecordOf}
+                            values={{ itemCount: page.length, totalItems: preGlobalFilteredRows.length }}
+                        />
                     </Box>
                     <Box>
                         <Select
@@ -491,7 +500,7 @@ const TableZyx = React.memo(({
                             ))}
                         </Select>
                         <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                            Records per page
+                            <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
                         </Box>
                     </Box>
                 </Box>

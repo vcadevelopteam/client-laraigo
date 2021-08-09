@@ -1,6 +1,8 @@
 import { FC, useState } from "react";
 import { createStyles, makeStyles, Paper, Theme } from "@material-ui/core";
 import IOSSwitch from "components/fields/IOSSwitch";
+import { Trans } from "react-i18next";
+import { langKeys } from "lang/keys";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,7 +22,7 @@ const Status: FC = () => {
 
     return (
         <Paper elevation={0} className={classes.root}>
-            <label className={classes.connectionText}>{status ? 'Connected' : 'Disconnected'}</label>
+            <label className={classes.connectionText}><Trans>{status ? langKeys.online : langKeys.offline}</Trans></label>
             <div style={{ width: 6 }} />
             <IOSSwitch checked={status} onChange={() => setStatus(!status)} name="checkedB" />
         </Paper>

@@ -4,6 +4,8 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import { SearchIcon } from 'icons';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 type Props = { 
     colorPlaceHolder: string,
@@ -43,7 +45,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSubmitOther }: Props) => {
-
+    const { t } = useTranslation();
     const classes = useStyles({ colorPlaceHolder });
     const [value, setvalue] = useState('');
 
@@ -71,7 +73,7 @@ const SearchField: FC<Props> = ({ colorPlaceHolder, handleChangeOther, handleSub
                 className={classes.input}
                 value={value}
                 onChange={handleChange}
-                placeholder="Search"
+                placeholder={t(langKeys.search)}
                 inputProps={{ className: classes.inputPlaceholder }}
             />
         </Paper>

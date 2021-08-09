@@ -122,7 +122,7 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.path || ele.description} />)}
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} />)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={handleDrawerClose}>

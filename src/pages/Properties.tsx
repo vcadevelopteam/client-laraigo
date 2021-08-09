@@ -9,6 +9,8 @@ import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
+import { useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 import { useForm, NestedValue } from 'react-hook-form';
 
 interface RowSelected {
@@ -50,6 +52,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -104,25 +107,25 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label="Corporation"
+                                label={t(langKeys.corporation)} // "Corporation"
                                 className="col-6"
                                 valueDefault={row ? (row.corpdesc || "") : ""}
                                 disabled={true}
                             />
                             : <FieldView
-                                label="Corporation"
+                                label={t(langKeys.corporation)}
                                 value={row ? (row.corpdesc || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label="Organization"
+                                label={t(langKeys.organization)} // "Organization"
                                 className="col-6"
                                 valueDefault={row ? (row.orgdesc || "") : ""}
                                 disabled={true}
                             />
                             : <FieldView
-                                label="Organization"
+                                label={t(langKeys.organization)}
                                 value={row ? (row.orgdesc || "") : ""}
                                 className="col-6"
                             />}
@@ -130,7 +133,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
-                                label="Channel"
+                                label={t(langKeys.channel)}
                                 valueDefault={row ? (row.communicationchanneldesc || "") : ""}
                                 className="col-6"
                                 onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
@@ -140,20 +143,20 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 optionValue="communicationchannelid"
                             />
                             : <FieldView
-                                label="Channel"
+                                label={t(langKeys.channel)}
                                 value={row ? (row.communicationchanneldesc || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label="Name"
+                                label={t(langKeys.name)}
                                 className="col-6"
                                 valueDefault={row ? (row.propertyname || "") : ""}
                                 onChange={(value) => setValue('propertyname', value)}
                                 error={errors?.propertyname?.message}
                             />
                             : <FieldView
-                                label="Name"
+                                label={t(langKeys.name)}
                                 value={row ? (row.propertyname || "") : ""}
                                 className="col-6"
                             />}
@@ -161,20 +164,20 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label="Value"
+                                label={t(langKeys.value)}
                                 className="col-6"
                                 valueDefault={row ? (row.propertyvalue || "") : ""}
                                 onChange={(value) => setValue('propertyvalue', value)}
                                 error={errors?.propertyvalue?.message}
                             />
                             : <FieldView
-                                label="Value"
+                                label={t(langKeys.value)}
                                 value={row ? (row.propertyvalue || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldSelect
-                                label="Status"
+                                label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
                                 onChange={(value) => setValue('status', value.domainvalue)}
@@ -184,7 +187,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 optionValue="domainvalue"
                             />
                             : <FieldView
-                                label="Status"
+                                label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
                                 className="col-6"
                             />}
@@ -193,14 +196,14 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label="Description"
+                                label={t(langKeys.description)}
                                 className="col-6"
                                 valueDefault={row ? (row.description || "") : ""}
                                 onChange={(value) => setValue('description', value)}
                                 error={errors?.description?.message}
                             />
                             : <FieldView
-                                label="Description"
+                                label={t(langKeys.description)}
                                 value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
@@ -221,13 +224,13 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     }
                 </div>
             </form>
-            
         </div>
     );
 }
 
 const Properties: FC = () => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
 
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -237,48 +240,48 @@ const Properties: FC = () => {
         () => [
 
             {
-                Header: 'Name',
+                Header: t(langKeys.name),
                 accessor: 'propertyname',
                 NoFilter: true
             },
             {
-                Header: 'Description',
+                Header: t(langKeys.description),
                 accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: 'Value',
+                Header: t(langKeys.value),
                 accessor: 'propertyvalue',
                 NoFilter: true
             },
             {
-                Header: 'Status',
+                Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },
 
             {
-                Header: 'Corporation',
+                Header: t(langKeys.corporation),
                 accessor: 'corpdesc',
                 NoFilter: true
             },
             {
-                Header: 'Organization',
+                Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
             },
             {
-                Header: 'Channel',
+                Header: t(langKeys.channel),
                 accessor: 'communicationchanneldesc',
                 NoFilter: true
             },
             {
-                Header: 'Change Date',
+                Header: t(langKeys.changeDate),
                 accessor: 'changedate',
                 NoFilter: true
             },
             {
-                Header: 'Action',
+                Header: t(langKeys.action),
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
@@ -306,7 +309,6 @@ const Properties: FC = () => {
         return () => {
             dispatch(resetMain());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleRegister = () => {
@@ -341,7 +343,7 @@ const Properties: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule='Properties'
+                titlemodule={t(langKeys.property, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 register={true}

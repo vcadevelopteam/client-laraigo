@@ -9,6 +9,8 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { Trans } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 import { Dictionary } from '@types';
 
@@ -65,8 +67,8 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={editFunction}>Edit record</MenuItem>
-                <MenuItem onClick={deleteFunction}>Delete record</MenuItem>
+                <MenuItem onClick={editFunction}><Trans i18nKey={langKeys.edit} /></MenuItem>
+                <MenuItem onClick={deleteFunction}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </>
     )
