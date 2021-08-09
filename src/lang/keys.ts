@@ -78,6 +78,53 @@ export const langKeys = {
     signoff: 'signoff',
 
     changePassword: 'changePassword',
+
+    user: 'user',
+    user_plural: 'user_plural',
+
+    property: 'property',
+    property_plural: 'property_plural',
+
+    firstname: 'firstname',
+    lastname: 'lastname',
+    email: 'email',
+    docType: 'docType',
+    docNumber: 'docNumber',
+    company: 'company',
+    doubleAuthentication: 'doubleAuthentication',
+    billingGroup: 'billingGroup',
+    registerCode: 'registerCode',
+    
+    group: 'group',
+    group_plural: 'group_plural',
+
+    role: 'role',
+    role_plural: 'role_plural',
+
+    status: 'status',
+    status_plural: 'status_plural',
+
+    type: 'type',
+    type_plural: 'type_plural',
+
+    action: 'action',
+    action_plural: 'action_plural',
+
+    active: 'active',
+    inactive: 'inactive',
+
+    editRecord: 'editRecord',
+    deleteRecord: 'deleteRecord',
+
+    edit: 'edit',
+    delete: 'delete',
+    search: 'search',
+
+    tablePageOf: 'tablePageOf',
+    tableShowingRecordOf: 'tableShowingRecordOf',
+    
+    recordPerPage: 'recordPerPage',
+    recordPerPage_plural: 'recordPerPage_plural',
 };
 
 export type LangKeys = typeof langKeys;

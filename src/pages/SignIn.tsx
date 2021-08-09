@@ -63,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Copyright() {
     return (
-        <Typography variant="body2" color="textSecondary" align="center">
+        <Typography variant="body2" color="textPrimary" align="center">
             {'Copyright © '} Zyxme {new Date().getFullYear()}
         </Typography>
     );

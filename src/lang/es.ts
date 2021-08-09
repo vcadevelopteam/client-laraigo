@@ -41,7 +41,56 @@ const translation: LangKeys = {
 
     signoff: 'Cerrar Sesión',
 
-    changePassword: 'Cambiar Contraseña',
+    changePassword: 'Cambiar contraseña',
+
+    user: 'Usuario',
+    user_plural: 'Usuarios',
+
+    property: 'Propiedad',
+    property_plural: 'Propiedades',
+
+    firstname: 'Nombre',
+    lastname: 'Apellido',
+    email: 'Correo',
+
+    company: 'Compañia',
+
+    billingGroup: 'Grupo de facturación',
+    registerCode: 'Código de registro',
+    docNumber: 'Número de documento',
+    docType: 'Tipo de documento',
+    doubleAuthentication: 'Doble autenticación',
+
+    group: 'Grupo',
+    group_plural: 'Grupos',
+
+    action: 'Acción',
+    action_plural: 'Acciones',
+
+    role: 'Rol',
+    role_plural: 'Roles',
+
+    status: 'Estado',
+    status_plural: 'Estados',
+
+    type: 'Tipo',
+    type_plural: 'Tipos',
+
+    active: 'Activo',
+    inactive: 'Inactivo',
+
+    editRecord: 'Editar registro',
+    deleteRecord: 'Eliminar registro',
+
+    edit: 'Editar',
+    delete: 'Eliminar',
+    search: 'Buscar',
+
+    tablePageOf: 'Página <1>{{currentPage}}</1> de <1>{{totalPages}}</1>',
+    tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
+
+    recordPerPage: 'Registro por página',
+    recordPerPage_plural: 'Registros por página',
 };
 
 const esResource: ResourceLanguage = {

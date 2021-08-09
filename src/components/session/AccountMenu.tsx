@@ -73,8 +73,8 @@ const AccountMenu: FC = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {}}><Trans>{langKeys.changePassword}</Trans></MenuItem>
-                <MenuItem onClick={(e) => {}}><Trans>{langKeys.signoff}</Trans></MenuItem>
+                <MenuItem onClick={(e) => {}}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
+                <MenuItem onClick={(e) => {}}><Trans i18nKey={langKeys.signoff} /></MenuItem>
             </Menu>
         </div>
     );

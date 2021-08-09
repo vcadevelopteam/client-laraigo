@@ -14,10 +14,11 @@ export interface TableConfig {
     exportPersonalized?(param?: any): void,
     download?: boolean,
     register?: boolean,
-    selectrow?(param: any): void,
+    handleRegister?(param: any): void,
     HeadComponent?: () => JSX.Element |null ,
     pageSizeDefault?: number,
-    filterGeneral?: boolean
+    filterGeneral?: boolean,
+    hoverShadow?: boolean
 }
 
 export interface Pagination {
