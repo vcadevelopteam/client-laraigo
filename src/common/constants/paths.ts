@@ -11,6 +11,7 @@ const paths = {
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
     PROPERTIES: '/properties',
+    QUICKREPLIES: '/quickreplies',
     USERS: '/users',
 };
 

@@ -110,7 +110,9 @@ const translation: LangKeys = {
     recordPerPage_plural: 'Records per page',
 
     successful_transaction: 'Successful transaction',
-    successful_edit: 'Edited successfully'
+    successful_edit: 'Edited successfully',
+    
+    quickreplies: 'Quickreplies',
 };
 
 const enResource: ResourceLanguage = {

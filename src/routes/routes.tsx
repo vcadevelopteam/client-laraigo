@@ -87,6 +87,12 @@ const routes: RouteConfig[] = [
         path: paths.PROPERTIES,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.QUICKREPLIES,
+        description: <Trans i18nKey={langKeys.quickreplies} count={2} />,
+        path: paths.QUICKREPLIES,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;

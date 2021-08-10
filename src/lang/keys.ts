@@ -106,6 +106,8 @@ export const langKeys = {
 
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
+    
+    quickreplies: 'quickreplies',
 };
 
 export type LangKeys = typeof langKeys;
