@@ -50,6 +50,8 @@ const translation: LangKeys = {
     property: 'Property',
     property_plural: 'Properties',
 
+    groupconfig: "Group Configuration",
+
     firstname: 'Firstname',
     lastname: 'Lastname',
     email: 'Email',

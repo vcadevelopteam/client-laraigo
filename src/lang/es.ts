@@ -50,6 +50,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     property: 'Propiedad',
     property_plural: 'Propiedades',
 
+    groupconfig: "Configuración de Grupos",
+
     firstname: 'Nombre',
     lastname: 'Apellido',
     email: 'Correo',

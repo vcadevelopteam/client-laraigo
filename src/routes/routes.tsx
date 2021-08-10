@@ -87,6 +87,12 @@ const routes: RouteConfig[] = [
         path: paths.PROPERTIES,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.GROUPCONFIG,
+        description: <Trans i18nKey={langKeys.groupconfig} count={2} />,
+        path: paths.GROUPCONFIG,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;

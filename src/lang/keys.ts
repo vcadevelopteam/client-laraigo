@@ -33,6 +33,8 @@ export const langKeys = {
     system: 'system',
     system_plural: 'system_plural',
 
+    groupconfig: 'groupconfig',
+
     online: 'online',
     offline: 'offline',
     logIn: 'logIn',

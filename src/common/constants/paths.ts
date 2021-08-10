@@ -12,6 +12,7 @@ const paths = {
     EXTRAS: '/extras',
     PROPERTIES: '/properties',
     USERS: '/users',
+    GROUPCONFIG: '/groupconfig',    
 };
 
 export default paths;
