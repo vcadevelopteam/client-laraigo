@@ -351,11 +351,10 @@ const Properties: FC = () => {
 
     if (viewSelected === "view-1") {
 
-        // if (mainResult.mainData.loading) {
-        //     return <h1>LOADING</h1>;
-        // }
-        // else 
-        if (mainResult.mainData.error) {
+        if (mainResult.mainData.loading) {
+            return <h1>LOADING</h1>;
+        }
+        else if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 
