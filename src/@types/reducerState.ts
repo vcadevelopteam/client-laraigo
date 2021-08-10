@@ -2,7 +2,7 @@ export interface IBaseState {
     loading: boolean;
     /** Error code */
     code?: string;
-    error?: boolean;
+    error: boolean;
     /** Error message */
     message?: string;
 }

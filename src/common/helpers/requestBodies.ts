@@ -12,7 +12,7 @@ export const getPropertySel = (propertyid: number): IRequestBody => ({
     method: "UFN_PROPERTY_SEL",
     parameters: {
         id: propertyid,
-        all: true
+        all: propertyid === 0,
     }
 });
 
