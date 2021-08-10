@@ -45,6 +45,7 @@ import {
 } from 'react-table'
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { Skeleton } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -122,7 +123,8 @@ const TableZyx = React.memo(({
     handleRegister,
     HeadComponent,
     pageSizeDefault = 20,
-    hoverShadow = false
+    hoverShadow = false,
+    loading = false
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -164,6 +166,7 @@ const TableZyx = React.memo(({
                             <SearchIcon color="action" fontSize="small" />
                         </InputAdornment>
                     }
+                    disabled={loading}
                     type={type === "number" ? "number" : "text"}
                     style={{ fontSize: '15px', minWidth: '100px' }}
                     fullWidth
@@ -321,6 +324,7 @@ const TableZyx = React.memo(({
                                 size="small"
                                 aria-label="add"
                                 color="primary"
+                                disabled={loading}
                                 style={{ marginLeft: '1rem' }}
                                 onClick={() => fetchData && fetchData({})}
                             >
@@ -333,6 +337,7 @@ const TableZyx = React.memo(({
                             className={classes.button}
                             variant="contained"
                             color="primary"
+                            disabled={loading}
                             startIcon={<AddIcon color="secondary" />}
                             onClick={handleRegister}
                             style={{ backgroundColor: "#55BD84" }}
@@ -344,6 +349,7 @@ const TableZyx = React.memo(({
                             className={classes.button}
                             variant="contained"
                             color="primary"
+                            disabled={loading}
                             onClick={() => exportExcel("report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         >Download
@@ -356,9 +362,10 @@ const TableZyx = React.memo(({
                 <span></span>
                 <div style={{ width: '50%' }}>
                     <SearchField
+                        disabled={loading}
                         colorPlaceHolder='#FFF'
                         handleChangeOther={setGlobalFilter}
-
+                        lazy
                     />
                 </div>
             </Box>
@@ -409,7 +416,7 @@ const TableZyx = React.memo(({
                             ))}
                         </TableHead>
                         <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
-                            {page.map(row => {
+                            {loading === true ? <LoadingSkeleton columns={headerGroups[0].headers.length} /> : page.map(row => {
                                 prepareRow(row);
                                 return (
                                     <TableRow {...row.getRowProps()} className={hoverShadow ? classes.trdynamic : ''}>
@@ -450,25 +457,25 @@ const TableZyx = React.memo(({
                     <Box>
                         <IconButton
                             onClick={() => gotoPage(0)}
-                            disabled={!canPreviousPage}
+                            disabled={!canPreviousPage || loading}
                         >
                             <FirstPage />
                         </IconButton>
                         <IconButton
                             onClick={() => previousPage()}
-                            disabled={!canPreviousPage}
+                            disabled={!canPreviousPage || loading}
                         >
                             <NavigateBefore />
                         </IconButton>
                         <IconButton
                             onClick={() => nextPage()}
-                            disabled={!canNextPage}
+                            disabled={!canNextPage || loading}
                         >
                             <NavigateNext />
                         </IconButton>
                         <IconButton
                             onClick={() => gotoPage(pageCount - 1)}
-                            disabled={!canNextPage}
+                            disabled={!canNextPage || loading}
                         >
                             <LastPage />
                         </IconButton>
@@ -489,6 +496,7 @@ const TableZyx = React.memo(({
                             disableUnderline
                             style={{ display: 'inline-flex' }}
                             value={pageSize}
+                            disabled={loading}
                             onChange={e => {
                                 setPageSize(Number(e.target.value))
                             }}
@@ -510,3 +518,21 @@ const TableZyx = React.memo(({
 });
 
 export default TableZyx;
+
+const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
+    const items: React.ReactNode[] = [];
+    for (let i = 0; i < columns; i++) {
+        items.push(<TableCell><Skeleton /></TableCell>);
+    }
+
+    return (
+        <>
+            <TableRow>
+                {items}
+            </TableRow>
+            <TableRow>
+                {items}
+            </TableRow>
+        </>
+    );
+};

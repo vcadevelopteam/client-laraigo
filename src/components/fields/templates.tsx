@@ -16,6 +16,8 @@ import { Dictionary } from '@types';
 
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import IOSSwitch from './IOSSwitch';
+import { SwitchProps } from '@material-ui/core';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -197,4 +199,18 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             />
         </div>
     )
+}
+
+interface TemplateSwitchProps extends SwitchProps {
+    className?: any;
+    label: string;
+}
+
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, label, ...props }) => {
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <IOSSwitch {...props} />
+        </div>
+    );
 }
