@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
 import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
 import { Dictionary } from "@types";
-import TableZyx from '../../components/fields/table-simple';
+import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
@@ -232,17 +232,18 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
 }
 
 const Properties: FC = () => {
-    const history = useHistory();
+    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
+    const executeResult = useSelector(state => state.main.execute);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [waitSave, setWaitSave] = useState(false);
 
     const columns = React.useMemo(
         () => [
-
             {
                 Header: t(langKeys.name),
                 accessor: 'propertyname',
@@ -293,8 +294,8 @@ const Properties: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            // viewFunction={() => handleView(row)}
-                            viewFunction={() => history.push(`/properties/${row.propertyid}`)}
+                            viewFunction={() => handleView(row)}
+                            // viewFunction={() => history.push(`/properties/${row.propertyid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -315,6 +316,18 @@ const Properties: FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (!executeResult.loading && !executeResult.error && waitSave) {
+            dispatch(showBackdrop(false));
+            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+            setWaitSave(false);
+            fetchData();
+        } else if (executeResult.error) {
+            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message}))
+            dispatch(showBackdrop(false));
+        }
+    }, [executeResult, waitSave])
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -331,16 +344,18 @@ const Properties: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        // setViewSelected("view-2");
-        // setRowSelected(row);
+        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     }
 
     if (viewSelected === "view-1") {
 
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
+        // if (mainResult.mainData.loading) {
+        //     return <h1>LOADING</h1>;
+        // }
+        // else 
+        if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 

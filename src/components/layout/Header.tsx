@@ -40,7 +40,7 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                     className={clsx(classes.menuButton, open && classes.hide)}
                 >
                     <img
-                        src="./Laraigo-logo.svg"
+                        src="/Laraigo-logo.svg"
                         alt="logo"
                         style={{ height: 37 }}
                         // onClick={handleDrawerOpen}
