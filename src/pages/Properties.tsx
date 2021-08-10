@@ -219,7 +219,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 color="primary"
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
-                                // onClick={handleRegister}
                                 style={{ backgroundColor: "#55BD84" }}
                             >Save
                             </Button>

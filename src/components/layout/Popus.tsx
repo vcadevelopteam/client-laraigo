@@ -16,24 +16,31 @@ import { useDispatch } from 'react-redux';
 
 import { showSnackbar } from 'store/popus/actions';
 
+const useStyles = makeStyles({
+    cookieAlert: {
+      "& svg": {
+        color: 'white'
+      }
+    }
+  });
+
 const Popus: React.FC = () => {
+    const classes = useStyles();
     const dispatch = useDispatch();
     const popus = useSelector(state => state.popus);
 
-    const handleCloseSnackbar = () => dispatch(showSnackbar({ show: false, success: false, message: '' }))
-
-    console.log(popus);
-    
+    const handleCloseSnackbar = () => dispatch(showSnackbar({ ...popus.snackbar, show: false }))
 
     return (
         <>
             <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                color="white"
                 open={popus.snackbar.show}
                 onClose={handleCloseSnackbar}
                 key={'topright'}
             >
-                <MuiAlert elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={popus.snackbar.success ? "success" : "error"}>
+                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClose={handleCloseSnackbar} severity={popus.snackbar.success ? "success" : "error"}>
                     {popus.snackbar.message}
                 </MuiAlert>
             </Snackbar>
