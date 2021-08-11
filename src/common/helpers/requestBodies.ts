@@ -15,6 +15,13 @@ export const getPropertySel = (propertyid: number): IRequestBody => ({
         all: propertyid === 0,
     }
 });
+export const getGroupConfigSel = (propertyid: number): IRequestBody => ({
+    method: "UFN_GROUPCONFIGURATION_SEL",
+    parameters: {
+        id: propertyid,
+        all: propertyid === 0,
+    }
+});
 
 export const getChannelsByOrg = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNELBYORG_LST",
@@ -32,4 +39,10 @@ export const getValuesFromDomain = (domainname: string): IRequestBody => ({
 export const insProperty = ({ communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     parameters: { communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }
+});
+
+
+export const insGroupConfig = ({ id, operation, domainid, description, type, status, quantity, validationtext}: Dictionary): IRequestBody => ({
+    method: "UFN_GROUPCONFIGURATION_INS",
+    parameters: { id, operation, domainid, description, type, status, quantity, validationtext }
 });

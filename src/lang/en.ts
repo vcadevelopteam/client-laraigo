@@ -67,8 +67,15 @@ const translation: LangKeys = {
     group: 'Group',
     group_plural: 'Groups',
 
+    domain: 'Domain',
+
     action: 'Action',
     action_plural: 'Actions',
+
+    quantity: 'Quantity',
+    quantity_plural: 'quantities',
+
+    validationtext: 'Text Validation',
 
     role: 'Role',
     role_plural: 'Roles',

@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
+import { getGroupConfigSel, getChannelsByOrg, getValuesFromDomain, insGroupConfig } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,15 +23,15 @@ interface MultiData {
     data: Dictionary[];
     success: boolean;
 }
-interface DetailPropertyProps {
+interface DetailGroupConfigProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Properties" },
-    { id: "view-2", name: "Property detail" }
+    { id: "view-1", name: "Group Configuration" },
+    { id: "view-2", name: "Group Configuration Detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -57,29 +57,29 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     const { t } = useTranslation();
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataDomain = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            communicationchannelid: row ? row.communicationchannelid : 0,
-            id: row ? row.propertyid : 0,
-            propertyname: row ? row.propertyname : '',
-            propertyvalue: row ? row.propertyvalue : '',
+            id: row ? row.groupconfigurationid : 0,
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
+            quantity: row ? row.quantity : 0,
+            domainid: row ? row.domainid : '',
+            validationtext: row ? row.validationtext : '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
     React.useEffect(() => {
-        register('communicationchannelid');
         register('type');
         register('id');
-        register('propertyname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('propertyvalue', { validate: (value) => (value && value.length) || 'This is required.' });
         register('description', { validate: (value) => (value && value.length) || 'This is required.' });
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('quantity', { validate: (value) => (value) || 'This is required.' });
+        register('domainid', { validate: (value) => (value) || 'This is required.' });
+        register('validationtext', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [edit, register]);
 
     useEffect(() => {
@@ -90,9 +90,10 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
             fetchData();
         }
     }, [executeRes, waitSave])
+    
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insProperty(data)));
+        dispatch(execute(insGroupConfig(data)));
         dispatch(showBackdrop(true));
         setWaitSave(true)
     });
@@ -104,81 +105,42 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.propertyname}` : "New property"}
+                title={row ? `${row.description}` : "New Group Configuration"}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.corporation)} // "Corporation"
-                                className="col-6"
-                                valueDefault={row ? (row.corpdesc || "") : ""}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.corporation)}
-                                value={row ? (row.corpdesc || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.organization)} // "Organization"
-                                className="col-6"
-                                valueDefault={row ? (row.orgdesc || "") : ""}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row ? (row.orgdesc || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
                             <FieldSelect
-                                label={t(langKeys.channel)}
-                                valueDefault={row ? (row.communicationchanneldesc || "") : ""}
+                                label={t(langKeys.domain)}                                
                                 className="col-6"
-                                onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
-                                error={errors?.status?.message}
-                                data={dataChannel}
-                                optionDesc="description"
-                                optionValue="communicationchannelid"
+                                valueDefault={row ? (row.domainid || "") : ""}
+                                onChange={(value) => setValue('domainid', value.domainid)}
+                                error={errors?.domainid?.message}
+                                data={dataDomain}
+                                optionDesc="domaindesc"
+                                optionValue="domainid"
                             />
                             : <FieldView
-                                label={t(langKeys.channel)}
-                                value={row ? (row.communicationchanneldesc || "") : ""}
+                                label={t(langKeys.domain)}
+                                value={row ? (row.domaindesc || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.name)}
+                                label={t(langKeys.description)} 
                                 className="col-6"
-                                valueDefault={row ? (row.propertyname || "") : ""}
-                                onChange={(value) => setValue('propertyname', value)}
-                                error={errors?.propertyname?.message}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={row ? (row.description || "") : ""}
+                                error={errors?.description?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.name)}
-                                value={row ? (row.propertyname || "") : ""}
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.value)}
-                                className="col-6"
-                                valueDefault={row ? (row.propertyvalue || "") : ""}
-                                onChange={(value) => setValue('propertyvalue', value)}
-                                error={errors?.propertyvalue?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.value)}
-                                value={row ? (row.propertyvalue || "") : ""}
-                                className="col-6"
-                            />}
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
@@ -195,20 +157,33 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 value={row ? (row.status || "") : ""}
                                 className="col-6"
                             />}
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.quantity)} 
+                                error={errors?.quantity?.message}
+                                onChange={(value) => setValue('quantity', value)}
+                                className="col-6"
+                                valueDefault={row ? (row.quantity || "") : ""}
+                            />
+                            : <FieldView
+                                label={t(langKeys.quantity)}
+                                value={row ? (row.quantity || "") : ""}
+                                className="col-6"
+                            />}
                     </div>
 
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.description)}
+                                label={t(langKeys.validationtext)}
                                 className="col-6"
-                                valueDefault={row ? (row.description || "") : ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
+                                valueDefault={row ? (row.validationtext || "") : ""}
+                                onChange={(value) => setValue('validationtext', value)}
+                                error={errors?.validationtext?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
+                                label={t(langKeys.validationtext)}
+                                value={row ? (row.validationtext || "") : ""}
                                 className="col-6"
                             />}
                     </div>
@@ -245,8 +220,8 @@ const GroupConfig: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.name),
-                accessor: 'propertyname',
+                Header: t(langKeys.domain),
+                accessor: 'domaindesc',
                 NoFilter: true
             },
             {
@@ -255,34 +230,18 @@ const GroupConfig: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.value),
-                accessor: 'propertyvalue',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },
-
             {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
+                Header: t(langKeys.quantity),
+                accessor: 'quantity',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'communicationchanneldesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.changeDate),
-                accessor: 'changedate',
+                Header: t(langKeys.validationtext),
+                accessor: 'validationtext',
                 NoFilter: true
             },
             {
@@ -295,7 +254,7 @@ const GroupConfig: FC = () => {
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/properties/${row.propertyid}`)}
+                            // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -306,11 +265,11 @@ const GroupConfig: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getPropertySel(0)));
+    const fetchData = () => dispatch(getCollection(getGroupConfigSel(0)));
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getChannelsByOrg(), getValuesFromDomain("ESTADOGENERICO")]));
+        dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };
@@ -344,7 +303,7 @@ const GroupConfig: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+        dispatch(execute(insGroupConfig({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.groupconfigurationid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
@@ -361,7 +320,7 @@ const GroupConfig: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.property, { count: 2 })}
+                titlemodule={t(langKeys.groupconfig, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 register={true}
@@ -372,7 +331,7 @@ const GroupConfig: FC = () => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailProperty
+            <DetailGroupConfig
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}

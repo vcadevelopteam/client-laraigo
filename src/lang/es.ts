@@ -52,6 +52,13 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     groupconfig: "Configuración de Grupos",
 
+    quantity: 'Cantidad',
+    quantity_plural: "Cantidades",
+
+    validationtext: 'Validación de textos',
+
+    domain: 'Dominio',
+
     firstname: 'Nombre',
     lastname: 'Apellido',
     email: 'Correo',

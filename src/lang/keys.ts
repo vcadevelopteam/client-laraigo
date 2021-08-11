@@ -30,6 +30,13 @@ export const langKeys = {
     extra: 'extra',
     extra_plural: 'extra_plural',
 
+    domain: 'domain',
+
+    quantity: 'quantity',
+    quantity_plural: 'quantity_plural',
+
+    validationtext: 'validationtext',
+
     system: 'system',
     system_plural: 'system_plural',
 
