@@ -99,6 +99,12 @@ const routes: RouteConfig[] = [
         path: paths.QUICKREPLIES,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.WHITELIST,
+        description: <Trans i18nKey={langKeys.whitelist} count={2} />,
+        path: paths.WHITELIST,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;

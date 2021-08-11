@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getGroupConfigSel, getChannelsByOrg, getValuesFromDomain, insGroupConfig } from 'common/helpers';
+import { getWhitelistSel, getChannelsByOrg, getValuesFromDomain, insWhitelist } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,15 +23,15 @@ interface MultiData {
     data: Dictionary[];
     success: boolean;
 }
-interface DetailGroupConfigProps {
+interface DetailWhitelistProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Group Configuration" },
-    { id: "view-2", name: "Group Configuration Detail" }
+    { id: "view-1", name: "Whitelist" },
+    { id: "view-2", name: "Whitelist Detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -62,24 +62,23 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.groupconfigurationid : 0,
-            description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
-            quantity: row ? row.quantity : 0,
-            domainid: row ? row.domainid : 0,
-            validationtext: row ? row.validationtext : '',
-            operation: row ? "EDIT" : "INSERT"
+            id: row ? row.whitelistid : 0,
+            username: row ? (row.username || '') : '',
+            documenttype: row ? (row.documenttype || '') : '',
+            documentnumber: row ? row.documentnumber : 0,
+            usergroup: row ? row.usergroup : "",
+            operation: row ? "EDIT" : "INSERT",
+            status: "ACTIVO",
         }
     });
 
     React.useEffect(() => {
         register('type');
         register('id');
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('quantity', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('domainid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('validationtext', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('username', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('documenttype', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('documentnumber', { validate: (value) => (value && value > 0) || 'This is required.' });
+        register('usergroup', { validate: (value) => (value && value.length ) || 'This is required.' });
     }, [edit, register]);
 
     useEffect(() => {
@@ -93,7 +92,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insGroupConfig(data)));
+        dispatch(execute(insWhitelist(data)));
         dispatch(showBackdrop(true));
         setWaitSave(true)
     });
@@ -105,86 +104,67 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Group Configuration"}
+                title={row ? `${row.username}` : "New Whitelist"}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                label={t(langKeys.domain)}                                
+                            <FieldEdit
+                                label={t(langKeys.username)} 
                                 className="col-6"
-                                valueDefault={row ? (row.domainid || "") : ""}
-                                onChange={(value) => setValue('domainid', (value?value.domainid:0))}
-                                error={errors?.domainid?.message}
-                                data={dataDomain}
-                                optionDesc="domaindesc"
-                                optionValue="domainid"
+                                onChange={(value) => setValue('username', value)}
+                                valueDefault={row ? (row.username || "") : ""}
+                                error={errors?.username?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.domain)}
-                                value={row ? (row.domaindesc || "") : ""}
+                                label={t(langKeys.username)}
+                                value={row ? (row.username || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.description)} 
+                                label={t(langKeys.documenttype)} 
                                 className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
+                                onChange={(value) => setValue('documenttype', value)}
+                                valueDefault={row ? (row.documenttype || "") : ""}
+                                error={errors?.documenttype?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
+                                label={t(langKeys.documenttype)}
+                                value={row ? (row.documenttype || "") : ""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
+                            <FieldEdit
+                                label={t(langKeys.documentnumber)} 
+                                error={errors?.documentnumber?.message}
+                                onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
+                                type="number"
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
-                                error={errors?.status?.message}
-                                data={dataStatus}
+                                valueDefault={row ? (row.documentnumber || "") : ""}
+                            />
+                            : <FieldView
+                                label={t(langKeys.documentnumber)}
+                                value={row ? (row.documentnumber || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.usergroup)}                                
+                                className="col-6"
+                                valueDefault={row ? (row.usergroup || "") : ""}
+                                onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
+                                error={errors?.usergroup?.message}
+                                data={dataDomain}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
                             : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.quantity)} 
-                                error={errors?.quantity?.message}
-                                onChange={(value) => setValue('quantity', value ? parseInt(value) : 0)}
-                                type="number"
-                                className="col-6"
-                                valueDefault={row ? (row.quantity || "") : ""}
-                            />
-                            : <FieldView
-                                label={t(langKeys.quantity)}
-                                value={row ? (row.quantity || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.validationtext)}
-                                className="col-6"
-                                valueDefault={row ? (row.validationtext || "") : ""}
-                                onChange={(value) => setValue('validationtext', value)}
-                                error={errors?.validationtext?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.validationtext)}
-                                value={row ? (row.validationtext || "") : ""}
+                                label={t(langKeys.usergroup)}
+                                value={row ? (row.domaindesc || "") : ""}
                                 className="col-6"
                             />}
                     </div>
@@ -207,7 +187,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     );
 }
 
-const GroupConfig: FC = () => {
+const Whitelist: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -221,28 +201,23 @@ const GroupConfig: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.domain),
-                accessor: 'domaindesc',
+                Header: t(langKeys.username),
+                accessor: 'username',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
+                Header: t(langKeys.documenttype),
+                accessor: 'documenttype',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
+                Header: t(langKeys.documentnumber),
+                accessor: 'documentnumber',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.quantity),
-                accessor: 'quantity',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.validationtext),
-                accessor: 'validationtext',
+                Header: t(langKeys.usergroup),
+                accessor: 'usergroup',
                 NoFilter: true
             },
             {
@@ -266,7 +241,7 @@ const GroupConfig: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getGroupConfigSel(0)));
+    const fetchData = () => dispatch(getCollection(getWhitelistSel(0)));
 
     useEffect(() => {
         fetchData();
@@ -304,7 +279,7 @@ const GroupConfig: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insGroupConfig({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.groupconfigurationid })));
+        dispatch(execute(insWhitelist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.whitelistid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
@@ -321,7 +296,7 @@ const GroupConfig: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.groupconfig, { count: 2 })}
+                titlemodule={t(langKeys.whitelist, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 register={true}
@@ -332,7 +307,7 @@ const GroupConfig: FC = () => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailGroupConfig
+            <DetailWhitelist
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
@@ -344,4 +319,4 @@ const GroupConfig: FC = () => {
 
 }
 
-export default GroupConfig;
+export default Whitelist;

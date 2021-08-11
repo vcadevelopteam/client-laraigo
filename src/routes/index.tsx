@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties,Quickreplies, Groupconfig  } from 'pages';
+import { Users, SignIn, Properties,Quickreplies, Groupconfig, Whitelist  } from 'pages';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import routes from "./routes";
 
@@ -17,6 +17,7 @@ const RouterApp: FC = () => {
 					<Route exact path="/users" component={Users} />
 					<Route exact path="/quickreplies" component={Quickreplies} />
 					<Route exact path="/groupconfig" component={Groupconfig} />
+					<Route exact path="/whitelist" component={Whitelist} />
 					<Popus />
 				</Layout>
 			</Switch>

@@ -30,7 +30,12 @@ export const langKeys = {
     extra: 'extra',
     extra_plural: 'extra_plural',
 
+    documenttype: 'documenttype',
+    documentnumber: 'documentnumber',
+    usergroup: 'usergroup',
     domain: 'domain',
+
+    whitelist: 'whitelist',
 
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',

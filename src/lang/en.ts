@@ -68,6 +68,11 @@ const translation: LangKeys = {
     group_plural: 'Groups',
 
     domain: 'Domain',
+    documenttype: 'Document type',
+    documentnumber: 'Document number',
+    usergroup: 'User group',
+
+    whitelist: 'Whitelist',
 
     action: 'Action',
     action_plural: 'Actions',
