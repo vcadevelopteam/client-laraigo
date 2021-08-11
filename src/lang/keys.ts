@@ -122,6 +122,7 @@ export const langKeys = {
     successful_edit: 'successful_edit',
     
     quickreplies: 'quickreplies',
+    twofactorauthentication: 'twofactorauthentication',
 };
 
 export type LangKeys = typeof langKeys;

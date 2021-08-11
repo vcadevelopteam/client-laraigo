@@ -12,10 +12,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -61,7 +60,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             communicationchannelid: row ? row.communicationchannelid : 0,

@@ -126,7 +126,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     successful_transaction: 'Transacción exitosa',
     successful_edit: 'Se editó correctamente',
     quickreplies: 'Repuestas rapidas',
-
+    twofactorauthentication: 'Doble factor autentificación',
 };
 
 const esResource: ResourceLanguage = {
