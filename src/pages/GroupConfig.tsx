@@ -66,7 +66,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
             quantity: row ? row.quantity : 0,
-            domainid: row ? row.domainid : '',
+            domainid: row ? row.domainid : 0,
             validationtext: row ? row.validationtext : '',
             operation: row ? "EDIT" : "INSERT"
         }
@@ -77,8 +77,8 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
         register('id');
         register('description', { validate: (value) => (value && value.length) || 'This is required.' });
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('quantity', { validate: (value) => (value) || 'This is required.' });
-        register('domainid', { validate: (value) => (value) || 'This is required.' });
+        register('quantity', { validate: (value) => (value && value > 0) || 'This is required.' });
+        register('domainid', { validate: (value) => (value && value > 0) || 'This is required.' });
         register('validationtext', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [edit, register]);
 
@@ -161,7 +161,8 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                             <FieldEdit
                                 label={t(langKeys.quantity)} 
                                 error={errors?.quantity?.message}
-                                onChange={(value) => setValue('quantity', value)}
+                                onChange={(value) => setValue('quantity', value ? parseInt(value) : 0)}
+                                type="number"
                                 className="col-6"
                                 valueDefault={row ? (row.quantity || "") : ""}
                             />

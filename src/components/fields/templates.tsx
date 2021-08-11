@@ -118,6 +118,7 @@ interface InputProps {
     onChange?: (param: any) => void;
     style?: any;
     error?: string;
+    type?: string;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -126,7 +127,7 @@ interface TemplateAutocompleteProps extends InputProps {
     optionDesc: string;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
     const [value, setvalue] = useState(valueDefault);
     return (
         <div className={className}>
@@ -135,6 +136,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 color="primary"
                 fullWidth
                 disabled={disabled}
+                type={type}
                 value={value}
                 helperText={error || null}
                 onChange={(e) => {
