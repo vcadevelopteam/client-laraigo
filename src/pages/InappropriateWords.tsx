@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getGroupConfigSel, getChannelsByOrg, getValuesFromDomain, insGroupConfig } from 'common/helpers';
+import { getInappropriateWordsSel, getValuesFromDomain, insInappropriateWords } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,15 +23,15 @@ interface MultiData {
     data: Dictionary[];
     success: boolean;
 }
-interface DetailGroupConfigProps {
+interface DetailInappropriateWordsProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Group Configuration" },
-    { id: "view-2", name: "Group Configuration Detail" }
+    { id: "view-1", name: "Inappropriate words" },
+    { id: "view-2", name: "Inappropriate words detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -62,12 +62,9 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.groupconfigurationid : 0,
+            id: row ? row.inappropriatewordsid : 0,
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
-            quantity: row ? row.quantity : 0,
-            domainid: row ? row.domainid : 0,
-            validationtext: row ? row.validationtext : '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -77,9 +74,6 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
         register('id');
         register('description', { validate: (value) => (value && value.length) || 'This is required.' });
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('quantity', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('domainid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('validationtext', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [edit, register]);
 
     useEffect(() => {
@@ -93,7 +87,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insGroupConfig(data)));
+        dispatch(execute(insInappropriateWords(data)));
         dispatch(showBackdrop(true));
         setWaitSave(true)
     });
@@ -105,27 +99,11 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Group Configuration"}
+                title={row ? `${row.description}` : "New Innapropiate Word"}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.domain)}                                
-                                className="col-6"
-                                valueDefault={row ? (row.domainid || "") : ""}
-                                onChange={(value) => setValue('domainid', (value?value.domainid:0))}
-                                error={errors?.domainid?.message}
-                                data={dataDomain}
-                                optionDesc="domaindesc"
-                                optionValue="domainid"
-                            />
-                            : <FieldView
-                                label={t(langKeys.domain)}
-                                value={row ? (row.domaindesc || "") : ""}
-                                className="col-6"
-                            />}
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.description)} 
@@ -139,9 +117,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                                 value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
+                            {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
@@ -155,36 +131,6 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                             : <FieldView
                                 label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.quantity)} 
-                                error={errors?.quantity?.message}
-                                onChange={(value) => setValue('quantity', value ? parseInt(value) : 0)}
-                                type="number"
-                                className="col-6"
-                                valueDefault={row ? (row.quantity || "") : ""}
-                            />
-                            : <FieldView
-                                label={t(langKeys.quantity)}
-                                value={row ? (row.quantity || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.validationtext)}
-                                className="col-6"
-                                valueDefault={row ? (row.validationtext || "") : ""}
-                                onChange={(value) => setValue('validationtext', value)}
-                                error={errors?.validationtext?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.validationtext)}
-                                value={row ? (row.validationtext || "") : ""}
                                 className="col-6"
                             />}
                     </div>
@@ -221,11 +167,6 @@ const InappropriateWords: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.domain),
-                accessor: 'domaindesc',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.description),
                 accessor: 'description',
                 NoFilter: true
@@ -233,16 +174,6 @@ const InappropriateWords: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.quantity),
-                accessor: 'quantity',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.validationtext),
-                accessor: 'validationtext',
                 NoFilter: true
             },
             {
@@ -255,7 +186,6 @@ const InappropriateWords: FC = () => {
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -266,7 +196,7 @@ const InappropriateWords: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getGroupConfigSel(0)));
+    const fetchData = () => dispatch(getCollection(getInappropriateWordsSel(0)));
 
     useEffect(() => {
         fetchData();
@@ -304,26 +234,20 @@ const InappropriateWords: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insGroupConfig({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.groupconfigurationid })));
+        dispatch(execute(insInappropriateWords({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.inappropriatewordsid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
 
     if (viewSelected === "view-1") {
 
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
-            return <h1>ERROR</h1>;
-        }
-
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.groupconfig, { count: 2 })}
+                titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
             // fetchData={fetchData}
@@ -332,7 +256,7 @@ const InappropriateWords: FC = () => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailGroupConfig
+            <DetailInappropriateWords
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
