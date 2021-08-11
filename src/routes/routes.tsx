@@ -105,6 +105,12 @@ const routes: RouteConfig[] = [
         path: paths.WHITELIST,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.INAPPROPRIATEWORDS,
+        description: <Trans i18nKey={langKeys.inappropriatewords} count={2} />,
+        path: paths.INAPPROPRIATEWORDS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;
