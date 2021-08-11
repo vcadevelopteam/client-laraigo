@@ -49,12 +49,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
-    console.log(detailRes);
-
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
-
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -574,11 +571,8 @@ const Users: FC = () => {
     }
 
     if (viewSelected === "view-1") {
-
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
+        
+        if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 
@@ -588,6 +582,7 @@ const Users: FC = () => {
                 titlemodule={t(langKeys.user, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
             />

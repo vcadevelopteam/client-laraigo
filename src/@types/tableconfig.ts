@@ -23,7 +23,8 @@ export interface TableConfig {
     HeadComponent?: () => JSX.Element |null ,
     pageSizeDefault?: number,
     filterGeneral?: boolean,
-    hoverShadow?: boolean
+    hoverShadow?: boolean,
+    loading?: boolean
 }
 
 export interface Pagination {

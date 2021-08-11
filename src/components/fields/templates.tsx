@@ -18,6 +18,8 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import IOSSwitch from './IOSSwitch';
+import { SwitchProps } from '@material-ui/core';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -33,7 +35,6 @@ interface TemplateIconsProps {
 
 export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -311,4 +312,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             />
         </div>
     )
+}
+interface TemplateSwitchProps extends SwitchProps {
+    className?: any;
+    label: string;
+}
+
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, label, ...props }) => {
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <IOSSwitch {...props} />
+        </div>
+    );
 }

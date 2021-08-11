@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, TemplateSwitch } from 'components';
 import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -207,6 +207,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
+                            <TemplateSwitch checked={false} className="col-6" label="Ejemplo" />
                     </div>
                     {edit &&
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -346,10 +347,7 @@ const Properties: FC = () => {
 
     if (viewSelected === "view-1") {
 
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
+        if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 
@@ -358,6 +356,7 @@ const Properties: FC = () => {
                 columns={columns}
                 titlemodule={t(langKeys.property, { count: 2 })}
                 data={mainResult.mainData.data}
+                loading={mainResult.mainData.loading}
                 download={true}
                 register={true}
                 handleRegister={handleRegister}
