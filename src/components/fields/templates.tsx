@@ -18,6 +18,8 @@ import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import IOSSwitch from './IOSSwitch';
+import { SwitchProps } from '@material-ui/core';
 
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -33,7 +35,6 @@ interface TemplateIconsProps {
 
 export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -125,30 +126,35 @@ interface TemplateDialogProps {
     handleClickButton2?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
     title: string;
+    button2Type?: "button" | "submit" | "reset";
+    button1Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
     <Dialog
         open={open}
         keepMounted
         fullWidth
         maxWidth={maxWidth}
         style={{ zIndex: 99999 }}>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-            {children}
-        </DialogContent>
-        <DialogActions>
-            {!!buttonText1 &&
-                <Button onClick={handleClickButton1} color="primary">
-                    {buttonText1}
-                </Button>}
-            {!!buttonText2 &&
-                <Button onClick={handleClickButton2} color="primary">
-                    {buttonText2}
-                </Button>}
-        </DialogActions>
+        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => {}))}>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                {children}
+            </DialogContent>
+            <DialogActions>
+                {!!buttonText1 &&
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => {})} color="primary"
+                    >
+                        {buttonText1}
+                    </Button>}
+                {!!buttonText2 &&
+                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : () => {})} color="primary">
+                        {buttonText2}
+                    </Button>}
+            </DialogActions>
+        </form>
     </Dialog >
 )
 
@@ -306,4 +312,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
             />
         </div>
     )
+}
+interface TemplateSwitchProps extends SwitchProps {
+    className?: any;
+    label: string;
+}
+
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, label, ...props }) => {
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <IOSSwitch {...props} />
+        </div>
+    );
 }

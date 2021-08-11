@@ -49,10 +49,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
-    console.log(detailRes);
-
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
+    const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
+
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('')
 
@@ -228,6 +228,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         </div>
                     }
                 </div>
+
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -401,59 +402,60 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                         }
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
-                    {detailRes.loading ?
-                        <h1>LOADING</h1> : (detailRes.error ? <h1>ERROR</h1> : (
-                            <TableZyx
-                                columns={columns}
-                                titlemodule={t(langKeys.organization_plural)}
-                                data={detailRes.data}
-                                download={false}
-                                filterGeneral={false}
-                                register={edit}
-                            // handleRegister={handleRegister}
-                            />
-                        ))
-                    }
-                </div>
-                <DialogZyx
-                    open={openDialogStatus}
-                    title={t(langKeys.status)}
-                    buttonText1={t(langKeys.save)}
-                    handleClickButton1={() => setOpenDialogStatus(false)}
-                >
-                    <FieldEdit
-                        label={t(langKeys.description)}
-                        className="col-6"
-                        valueDefault={row?.description || ""}
-                        onChange={(value) => setValue('description', value)}
-                        error={errors?.description?.message}
-                    />
-                </DialogZyx>
-                <DialogZyx
-                    open={openDialogPassword}
-                    title={t(langKeys.setpassword)}
-                    buttonText1={t(langKeys.cancel)}
-                    buttonText2={t(langKeys.save)}
-                    handleClickButton1={() => setOpenDialogPassword(false)}
-                    handleClickButton2={onSubmitPassword}
-                >
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.password)}
-                            className="col-6"
-                            type="password"
-                            onChange={setPassword}
-                        />
-                        <FieldEdit
-                            label={t(langKeys.confirmpassword)}
-                            className="col-6"
-                            type="password"
-                            onChange={setConfirmPassword}
-                        />
-                    </div>
-                </DialogZyx>
             </form>
+
+            <div className={classes.containerDetail}>
+                {detailRes.loading ?
+                    <h1>LOADING</h1> : (detailRes.error ? <h1>ERROR</h1> : (
+                        <TableZyx
+                            columns={columns}
+                            titlemodule={t(langKeys.organization_plural)}
+                            data={detailRes.data}
+                            download={false}
+                            filterGeneral={false}
+                            register={edit}
+                        // handleRegister={handleRegister}
+                        />
+                    ))
+                }
+            </div>
+            <DialogZyx
+                open={openDialogStatus}
+                title={t(langKeys.status)}
+                buttonText1={t(langKeys.save)}
+                handleClickButton1={() => setOpenDialogStatus(false)}
+            >
+                <FieldEdit
+                    label={t(langKeys.description)}
+                    className="col-6"
+                    valueDefault={row?.description || ""}
+                    onChange={(value) => setValue('description', value)}
+                    error={errors?.description?.message}
+                />
+            </DialogZyx>
+            <DialogZyx
+                open={openDialogPassword}
+                title={t(langKeys.setpassword)}
+                buttonText1={t(langKeys.cancel)}
+                buttonText2={t(langKeys.save)}
+                handleClickButton1={() => setOpenDialogPassword(false)}
+                handleClickButton2={onSubmitPassword}
+            >
+                <div className="row-zyx">
+                    <FieldEdit
+                        label={t(langKeys.password)}
+                        className="col-6"
+                        type="password"
+                        onChange={setPassword}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.confirmpassword)}
+                        className="col-6"
+                        type="password"
+                        onChange={setConfirmPassword}
+                    />
+                </div>
+            </DialogZyx>
         </div>
     );
 }
@@ -569,11 +571,8 @@ const Users: FC = () => {
     }
 
     if (viewSelected === "view-1") {
-
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
+        
+        if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 
@@ -583,6 +582,7 @@ const Users: FC = () => {
                 titlemodule={t(langKeys.user, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
             />

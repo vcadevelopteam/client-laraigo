@@ -1,6 +1,6 @@
 import { createStyles, Switch, SwitchProps, Theme, withStyles } from "@material-ui/core";
 
-interface IProps extends SwitchProps {
+interface IOSSwitchProps extends SwitchProps {
     classes: any;
 }
 
@@ -46,7 +46,7 @@ const IOSSwitch = withStyles((theme: Theme) =>
     checked: {},
     focusVisible: {},
   }),
-)(({ classes, ...props }: IProps) => {
+)(({ classes, ...props }: IOSSwitchProps) => {
   return (
     <Switch
       focusVisibleClassName={classes.focusVisible}
