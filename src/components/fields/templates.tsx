@@ -125,30 +125,35 @@ interface TemplateDialogProps {
     handleClickButton2?: (param: any) => void;
     handleClickButton1?: (param: any) => void;
     title: string;
+    button2Type?: "button" | "submit" | "reset";
+    button1Type?: "button" | "submit" | "reset";
     maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
 }
 
-export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm" }) => (
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
     <Dialog
         open={open}
         keepMounted
         fullWidth
         maxWidth={maxWidth}
         style={{ zIndex: 99999 }}>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-            {children}
-        </DialogContent>
-        <DialogActions>
-            {!!buttonText1 &&
-                <Button onClick={handleClickButton1} color="primary">
-                    {buttonText1}
-                </Button>}
-            {!!buttonText2 &&
-                <Button onClick={handleClickButton2} color="primary">
-                    {buttonText2}
-                </Button>}
-        </DialogActions>
+        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => {}))}>
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                {children}
+            </DialogContent>
+            <DialogActions>
+                {!!buttonText1 &&
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => {})} color="primary"
+                    >
+                        {buttonText1}
+                    </Button>}
+                {!!buttonText2 &&
+                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : () => {})} color="primary">
+                        {buttonText2}
+                    </Button>}
+            </DialogActions>
+        </form>
     </Dialog >
 )
 
