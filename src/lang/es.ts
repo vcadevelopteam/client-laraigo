@@ -94,6 +94,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     username: 'Usuario',
     password: 'Contraseña',
+    confirmpassword: 'Confirmar contraseña',
 
     value: 'Valor',
     value_plural: 'Valores',
@@ -122,6 +123,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     successful_edit: 'Se editó correctamente',
     quickreplies: 'Repuestas rapidas',
     twofactorauthentication: 'Doble factor autentificación',
+    save: 'Guardar',
+    setpassword: 'Ingresar contraseña',
+    cancel: 'Cancelar'
 };
 
 const esResource: ResourceLanguage = {

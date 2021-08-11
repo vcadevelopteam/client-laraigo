@@ -8,6 +8,15 @@ export const getUserSel = (userid: number): IRequestBody => ({
     }
 })
 
+export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
+    method: "UFN_ORGUSER_SEL",
+    parameters: {
+        userid,
+        orgid,
+        all: true
+    }
+})
+
 export const getPropertySel = (propertyid: number): IRequestBody => ({
     method: "UFN_PROPERTY_SEL",
     parameters: {

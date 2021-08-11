@@ -118,6 +118,10 @@ export const langKeys = {
     
     quickreplies: 'quickreplies',
     twofactorauthentication: 'twofactorauthentication',
+    save: 'save',
+    setpassword: 'setpassword',
+    confirmpassword: 'confirmpassword',
+    cancel: 'cancel',
 };
 
 export type LangKeys = typeof langKeys;

@@ -44,7 +44,8 @@ const theme = createTheme({
 		// 	root: { minHeight: 48 },
 		// },
 		MuiButton: {
-			root: { minHeight: 48 },
+			root: { minHeight: 48, textTransform: 'initial', fontSize: '14px', padding: 12,
+			fontWeight: 500,},
 			label: { fontWeight: 600, fontSize: 14, fontStyle: 'normal' },
 		},
 	}

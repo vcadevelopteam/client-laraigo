@@ -94,6 +94,7 @@ const translation: LangKeys = {
 
     username: 'Username',
     password: 'Password',
+    confirmpassword: 'Confirm password',
 
     value: 'Value',
     value_plural: 'Values',
@@ -123,6 +124,9 @@ const translation: LangKeys = {
     
     quickreplies: 'Quickreplies',
     twofactorauthentication: 'Two factor authentication',
+    save: 'Save',
+    setpassword: 'Set password',
+    cancel: 'Cancel'
 };
 
 const enResource: ResourceLanguage = {
