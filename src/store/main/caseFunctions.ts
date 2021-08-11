@@ -7,7 +7,6 @@ export const main = (state: IState): IState => ({
 });
 
 export const mainSuccess = (state: IState, action: IAction): IState => {
-    console.log("sss", action.payload);
     return {
         ...state,
         mainData: {
@@ -34,6 +33,52 @@ export const mainReset = (state: IState): IState => ({
     ...state,
     mainData: initialState.mainData,
 });
+
+
+
+
+
+
+
+
+export const mainAux = (state: IState): IState => ({
+    ...state,
+    mainAux: { ...state.mainAux, loading: true, error: false }
+});
+
+export const mainAuxSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainAux: {
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainAuxFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainAux: {
+        ...state.mainAux,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'loginFailure:error',
+        message: action.payload.message || 'Error al intentar loguearse',
+    }
+});
+
+export const mainAuxReset = (state: IState): IState => ({
+    ...state,
+    mainAux: initialState.mainAux,
+});
+
+
+
+
+
+
 
 
 export const multiMain = (state: IState): IState => ({
@@ -68,11 +113,6 @@ export const multiMainReset = (state: IState): IState => ({
     ...state,
     multiData: initialState.multiData,
 });
-
-
-
-
-
 
 export const execute = (state: IState): IState => ({
     ...state,

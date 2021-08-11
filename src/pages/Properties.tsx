@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
 import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
-import { Dictionary } from "@types";
+import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -18,10 +18,6 @@ import { showSnackbar, showBackdrop } from 'store/popus/actions';
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
-}
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
 }
 interface DetailPropertyProps {
     data: RowSelected;

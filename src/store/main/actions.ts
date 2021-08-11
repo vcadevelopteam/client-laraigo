@@ -14,6 +14,18 @@ export const getCollection = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetMain = (): IActionCall => ({type: actionTypes.MAIN_RESET});
 
+export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(requestBody),
+    types: {
+        loading: actionTypes.AUX_MAIN,
+        success: actionTypes.AUX_MAIN_SUCCESS,
+        failure: actionTypes.AUX_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMainAux = (): IActionCall => ({type: actionTypes.AUX_MAIN_RESET});
+
 export const execute = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(requestBody),
     types: {

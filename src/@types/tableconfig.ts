@@ -2,6 +2,11 @@ export interface Dictionary {
     [key: string]: any
 }
 
+export interface MultiData {
+    data: Dictionary[];
+    success: boolean;
+}
+
 export interface TableConfig {
     columns: any,
     data: Dictionary[],

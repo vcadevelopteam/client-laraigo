@@ -19,13 +19,17 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
 }
-
-
 
 export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -114,6 +118,40 @@ export const FieldView: React.FC<{ label: string, value?: string, className?: an
     </div>
 )
 
+interface TemplateDialogProps {
+    open: boolean;
+    buttonText2?: string;
+    buttonText1?: string;
+    handleClickButton2?: (param: any) => void;
+    handleClickButton1?: (param: any) => void;
+    title: string;
+    maxWidth?: false | "sm" | "xs" | "md" | "lg" | "xl" | undefined;
+}
+
+export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm" }) => (
+    <Dialog
+        open={open}
+        keepMounted
+        fullWidth
+        maxWidth={maxWidth}
+        style={{ zIndex: 99999 }}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+            {children}
+        </DialogContent>
+        <DialogActions>
+            {!!buttonText1 &&
+                <Button onClick={handleClickButton1} color="primary">
+                    {buttonText1}
+                </Button>}
+            {!!buttonText2 &&
+                <Button onClick={handleClickButton2} color="primary">
+                    {buttonText2}
+                </Button>}
+        </DialogActions>
+    </Dialog >
+)
+
 interface InputProps {
     label: string;
     className?: any;
@@ -163,9 +201,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             if (optionfound) {
                 setInputValue(optionfound[optionDesc]);
                 setValue(optionfound);
-
-                if (onChange)
-                    onChange(optionfound)
+                // onChange && onChange(optionfound)
             }
         }
     }
@@ -188,8 +224,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 inputValue={inputValue}
                 onChange={(_, newValue) => {
                     setValue(newValue);
-                    if (onChange)
-                        onChange(newValue);
+                    onChange && onChange(newValue);
                 }}
                 onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? option[optionDesc] : ''}
@@ -231,7 +266,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         if (data instanceof Array) {
             setHardValue(data, valueDefault);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

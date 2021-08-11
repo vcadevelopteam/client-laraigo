@@ -122,7 +122,8 @@ const TableZyx = React.memo(({
     handleRegister,
     HeadComponent,
     pageSizeDefault = 20,
-    hoverShadow = false
+    hoverShadow = false,
+    filterGeneral = true,
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -351,17 +352,18 @@ const TableZyx = React.memo(({
                     )}
                 </span>
             </Box>
+            {filterGeneral && (
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div style={{ width: '50%' }}>
+                        <SearchField
+                            colorPlaceHolder='#FFF'
+                            handleChangeOther={setGlobalFilter}
 
-            <Box className={classes.containerFilterGeneral}>
-                <span></span>
-                <div style={{ width: '50%' }}>
-                    <SearchField
-                        colorPlaceHolder='#FFF'
-                        handleChangeOther={setGlobalFilter}
-
-                    />
-                </div>
-            </Box>
+                        />
+                    </div>
+                </Box>
+            )}
 
             {HeadComponent && <HeadComponent />}
 

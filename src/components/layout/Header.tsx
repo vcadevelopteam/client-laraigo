@@ -17,7 +17,6 @@ type IProps = {
 
 const Header = ({ classes, open, setOpen }: IProps) => {
     const dataRes = useSelector(state => state.login);
-    console.log(dataRes);
     
     const handleDrawerOpen = () => {
         setOpen(true);
