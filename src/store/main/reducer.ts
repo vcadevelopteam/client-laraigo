@@ -1,5 +1,5 @@
-import { IListStatePaginated, ITicket } from "@types";
-import { IBaseState, Dictionary } from "@types";
+import { IListStatePaginated } from "@types";
+import { Dictionary } from "@types";
 import { createReducer, initialListPaginatedState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";

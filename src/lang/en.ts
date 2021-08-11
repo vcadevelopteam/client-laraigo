@@ -122,6 +122,7 @@ const translation: LangKeys = {
     successful_edit: 'Edited successfully',
     
     quickreplies: 'Quickreplies',
+    twofactorauthentication: 'Two factor authentication',
 };
 
 const enResource: ResourceLanguage = {

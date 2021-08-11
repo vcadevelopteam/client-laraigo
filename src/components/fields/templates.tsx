@@ -13,7 +13,9 @@ import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 
 import { Dictionary } from '@types';
-
+import Checkbox from '@material-ui/core/Checkbox';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
@@ -22,6 +24,8 @@ interface TemplateIconsProps {
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
 }
+
+
 
 export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -115,7 +119,7 @@ interface InputProps {
     className?: any;
     valueDefault?: string;
     disabled?: boolean;
-    onChange?: (param: any) => void;
+    onChange?: (param: any, param2?: any | null) => void;
     style?: any;
     error?: string;
     type?: string;
@@ -170,6 +174,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
         if (data instanceof Array) {
             setHardValue(data, valueDefault);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
@@ -190,6 +195,73 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
                 // loading={loading}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        helperText={error || null}
+                    />
+                )}
+            />
+        </div>
+    )
+}
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
+
+    const [value, setValue] = useState<Dictionary | null>(null);
+    const [inputValue, setInputValue] = useState('');
+
+    const setHardValue = (dataoptions: Dictionary[], valuetoset: string) => {
+        if (valuetoset) {
+            const optionfound = dataoptions.find((o: Dictionary) => o[optionValue] === valuetoset);
+            if (optionfound) {
+                setInputValue(optionfound[optionDesc]);
+                setValue(optionfound);
+
+                if (onChange)
+                    onChange(optionfound)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (data instanceof Array) {
+            setHardValue(data, valueDefault);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <Autocomplete
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                value={value}
+                inputValue={inputValue}
+                renderOption={(item, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        {item[optionDesc]}
+                    </React.Fragment>
+                )}
+                onChange={(_, values, action, option) => {
+                    setValue(values);
+                    if (onChange)
+                        onChange(values, { action, option });
+                }}
+                onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
+                getOptionLabel={option => option ? option[optionDesc] : ''}
+                options={data}
                 renderInput={(params) => (
                     <TextField
                         {...params}

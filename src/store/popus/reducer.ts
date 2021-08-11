@@ -1,5 +1,4 @@
-import { IListStatePaginated, ITicket } from "@types";
-import { createReducer, initialListPaginatedState } from "common/helpers";
+import { createReducer } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
