@@ -14,6 +14,7 @@ const paths = {
     QUICKREPLIES: '/quickreplies',
     USERS: '/users',
     GROUPCONFIG: '/groupconfig',    
+    WHITELIST: '/whitelist',    
 };
 
 export default paths;

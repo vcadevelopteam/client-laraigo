@@ -58,6 +58,11 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     validationtext: 'Validación de textos',
 
     domain: 'Dominio',
+    documenttype: 'Tipo de documento',
+    documentnumber: 'Número de documento',
+    usergroup: 'Grupo usuario',
+
+    whitelist: 'Whitelist',
 
     firstname: 'Nombre',
     lastname: 'Apellido',

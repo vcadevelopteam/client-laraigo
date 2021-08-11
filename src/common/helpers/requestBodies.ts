@@ -15,11 +15,11 @@ export const getPropertySel = (propertyid: number): IRequestBody => ({
         all: propertyid === 0,
     }
 });
-export const getGroupConfigSel = (propertyid: number): IRequestBody => ({
+export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
     method: "UFN_GROUPCONFIGURATION_SEL",
     parameters: {
-        id: propertyid,
-        all: propertyid === 0,
+        id: groupconfigid,
+        all: groupconfigid === 0,
     }
 });
 
@@ -45,4 +45,17 @@ export const insProperty = ({ communicationchannelid, id, propertyname, property
 export const insGroupConfig = ({ id, operation, domainid, description, type, status, quantity, validationtext}: Dictionary): IRequestBody => ({
     method: "UFN_GROUPCONFIGURATION_INS",
     parameters: { id, operation, domainid, description, type, status, quantity, validationtext }
+});
+
+export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
+    method: "UFN_WHITELIST_SEL",
+    parameters: {
+        id: whitelistid,
+        all: whitelistid === 0,
+    }
+});
+
+export const insWhitelist = ({ id,operation,documenttype,documentnumber,usergroup,type,status,username }: Dictionary): IRequestBody => ({
+    method: "UFN_WHITELIST_INS",
+    parameters: { id,operation,documenttype,documentnumber,usergroup,type,status,asesorname:username }
 });
