@@ -49,3 +49,15 @@ export const getMultiCollection = (requestBodies: IRequestBody[]): IActionCall =
 });
 
 export const resetMultiMain = (): IActionCall => ({type: actionTypes.MULTI_MAIN_RESET});
+
+export const getMultiCollectionAux = (requestBodies: IRequestBody[]): IActionCall => ({
+    callAPI: () => CommonService.multiMain(requestBodies),
+    types: {
+        loading: actionTypes.AUX_MULTI_MAIN,
+        success: actionTypes.AUX_MULTI_MAIN_SUCCESS,
+        failure: actionTypes.AUX_MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMultiMainAux = (): IActionCall => ({type: actionTypes.AUX_MULTI_MAIN_RESET});

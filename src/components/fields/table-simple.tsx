@@ -366,6 +366,7 @@ const TableZyx = React.memo(({
                             disabled={loading}
                             colorPlaceHolder='#FFF'
                             handleChangeOther={setGlobalFilter}
+                            lazy
                         />
                     </div>
                 </Box>

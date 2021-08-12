@@ -137,7 +137,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         keepMounted
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex: 99999 }}>
+        style={{ zIndex: 1200 }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => {}))}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
@@ -173,6 +173,8 @@ interface TemplateAutocompleteProps extends InputProps {
     data: Dictionary[],
     optionValue: string;
     optionDesc: string;
+    loading?: boolean;
+    triggerOnChangeOnFirst?: boolean;
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
@@ -196,7 +198,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
     )
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false }) => {
 
     const [value, setValue] = useState<Dictionary | null>(null);
     const [inputValue, setInputValue] = useState('');
@@ -207,7 +209,8 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             if (optionfound) {
                 setInputValue(optionfound[optionDesc]);
                 setValue(optionfound);
-                // onChange && onChange(optionfound)
+                if (triggerOnChangeOnFirst)
+                    onChange && onChange(optionfound);
             }
         }
     }
@@ -235,7 +238,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
-                // loading={loading}
+                loading={loading}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -253,18 +256,12 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
 
     const [value, setValue] = useState<Dictionary | null>(null);
-    const [inputValue, setInputValue] = useState('');
+    const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
     const setHardValue = (dataoptions: Dictionary[], valuetoset: string) => {
         if (valuetoset) {
-            const optionfound = dataoptions.find((o: Dictionary) => o[optionValue] === valuetoset);
-            if (optionfound) {
-                setInputValue(optionfound[optionDesc]);
-                setValue(optionfound);
-
-                if (onChange)
-                    onChange(optionfound)
-            }
+            const optionsSelected = dataoptions.filter(o => valuetoset.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
         }
     }
 
@@ -279,11 +276,11 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <Autocomplete
+                multiple
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
-                value={value}
-                inputValue={inputValue}
+                value={optionsSelected}
                 renderOption={(item, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
@@ -296,11 +293,10 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
-                    setValue(values);
-                    if (onChange)
-                        onChange(values, { action, option });
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
                 }}
-                onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
+                // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
                 renderInput={(params) => (
