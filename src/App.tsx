@@ -35,7 +35,7 @@ const theme = createTheme({
 			root: { minWidth: 38 },
 		},
 		MuiListItem: {
-			gutters: { paddingLeft: 28 }
+			gutters: { paddingLeft: 25 }
 		},
 		MuiTypography: {
 			body1: { fontSize: 14 }

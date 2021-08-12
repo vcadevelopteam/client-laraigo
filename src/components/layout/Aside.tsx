@@ -47,24 +47,31 @@ type IProps2 = {
     IconLink: any;
 }
 
-const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }) => {
+const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
     const theme = useTheme();
 
     if (!config.path) {
-        return <Typography className={classes.drawerLabel}>{config.description}</Typography>;
+        return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
     }
 
     const isSelected = config.path === history.location.pathname;
+    let className = null;
+    if (isSelected) {
+        className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
+    } else {
+        className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
+    }
+    
     return (
         <ListItem
             button
             key={config.path}
             onClick={() => history.push(config.path!)}
-            className={clsx(isSelected && classes.drawerItemActive)}
+            className={clsx(className)}
         >
-            <ListItemIcon>{config.icon?.(isSelected ? theme.palette.primary.main : "#8F92A1")}</ListItemIcon>
-            <ListItemText primary={config.description} />
+            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+            <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
         </ListItem>
     );
 };
@@ -109,12 +116,18 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
 
     return (
         <Drawer
-            className={classes.drawer}
-            variant="persistent"
+            className={clsx(classes.drawer, {
+                [classes.drawerOpen]: open,
+                [classes.drawerClose]: !open,
+            })}
+            variant="permanent"
             anchor="left"
             open={open}
             classes={{
-                paper: classes.drawerPaper,
+                paper: clsx({
+                  [classes.drawerOpen]: open,
+                  [classes.drawerClose]: !open,
+                }),
             }}
         >
             <div className={classes.toolbar}>
@@ -122,11 +135,11 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} />)}
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} open={open} />)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
-                <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />}
+                <IconButton onClick={() => setOpen(!open)}>
+                    {theme.direction === 'rtl' ? <ChevronRight color="disabled" /> : <ChevronLeft color="primary" />}
                 </IconButton>
             </div>
         </Drawer>

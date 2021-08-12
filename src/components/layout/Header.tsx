@@ -13,9 +13,10 @@ type IProps = {
     open: boolean;
     setOpen: any;
     title?: React.ReactNode;
+    drawerWidth: number;
 }
 
-const Header = ({ classes, open, setOpen }: IProps) => {
+const Header = ({ classes, open, setOpen, drawerWidth }: IProps) => {
     const dataRes = useSelector(state => state.login);
     
     const handleDrawerOpen = () => {
@@ -45,7 +46,6 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                         // onClick={handleDrawerOpen}
                     />
                 </IconButton>
-
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                     <div className={classes.title} style={{ width: '400px' }}>
                         <SearchField

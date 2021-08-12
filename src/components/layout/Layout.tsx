@@ -17,14 +17,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
     },
     appBar: {
-        // zIndex: theme.zIndex.drawer + 1,
+        zIndex: theme.zIndex.drawer + 1,
         transition: theme.transitions.create(['width', 'margin'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         background: theme.palette.secondary.light,
-        minHeight: 73,
-        height: 73,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -42,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         width: drawerWidth,
         flexShrink: 0,
+        whiteSpace: 'nowrap',
         color: theme.palette.text.primary,
     },
     drawerPaper: {
@@ -50,7 +49,16 @@ const useStyles = makeStyles((theme) => ({
         borderColor: '#EBEAED',
     },
     drawerLabel: {
-        margin: '22px 21px;',
+        margin: '22px 20px;',
+        fontWeight: 400,
+        fontSize: 14,
+    },
+    drawerCloseLabel: {
+        fontWeight: 400,
+        fontSize: 14,
+        color: 'white',
+        margin: '22px auto',
+        opacity: .85,
     },
     hide: {
         display: 'none',
@@ -68,41 +76,50 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        backgroundColor: theme.palette.secondary.light,
         overflowX: 'hidden',
         width: theme.spacing(7) + 1,
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
         },
+        backgroundColor: "#7721AD",
     },
     drawerItemActive: {
-        color: theme.palette.primary.main,
-        // fill: theme.palette.primary.main,
+        color: theme.palette.primary.main, 
+        fill: theme.palette.primary.main,
         stroke: theme.palette.primary.main,
     },
+    drawerCloseItemActive: {
+        color: 'white', 
+        fill: 'white',
+        stroke: 'white',
+        opacity: 1,
+    },
     drawerItemInactive: {
-        color: "#8F92A1",
         stroke: "#8F92A1",
-        // fill: "#8F92A1",
+        fill: "#8F92A1",
+    },
+    drawerCloseItemInactive: {
+        fill: 'white',
+        stroke: 'white',
+        opacity: .65,
     },
     toolbar: {
-        minHeight: 73,
-        height: 73,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         padding: theme.spacing(0, 1),
         // necessary for content to be below app bar
-        // ...theme.mixins.toolbar,
+        ...theme.mixins.toolbar,
     },
     content: {
         flexGrow: 1,
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: `calc(100vw - ${drawerWidth}px)`,
-        marginLeft: -drawerWidth,
+        padding: theme.spacing(3),
+        // transition: theme.transitions.create('margin', {
+        //     easing: theme.transitions.easing.sharp,
+        //     duration: theme.transitions.duration.leavingScreen,
+        // }),
+        // width: `calc(100vw - ${drawerWidth}px)`,
+        // marginLeft: -drawerWidth,
         backgroundColor: '#F9F9FA',
     },
     paddingbody: {
@@ -166,6 +183,7 @@ const Layout: FC<{ routes: RouteConfig[] }> = ({ children, routes }) => {
                         classes={classes}
                         open={openDrawer}
                         setOpen={setOpenDrawer}
+                        drawerWidth={drawerWidth}
                     />
 
                     <Aside
@@ -176,19 +194,11 @@ const Layout: FC<{ routes: RouteConfig[] }> = ({ children, routes }) => {
                         theme={theme}
                     />
 
-                    <main className={clsx(classes.content, {
-                        [classes.contentShift]: openDrawer,
-                    })}>
+                    <main className={classes.content}>
                         <div className={classes.toolbar} />
 
                         <div className={`containercon ${classes.paddingbody}`}>
-                            <Box
-                                component='div' style={{ flex: 1 }}
-                                // className={clsx({
-                                //     [classes.containermainopen]: openDrawer,
-                                //     [classes.containermainclose]: !openDrawer,
-                                // })} 
-                                >
+                            <Box component='div' style={{ flex: 1 }}>
                                 {children}
                             </Box>
                         </div>
