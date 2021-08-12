@@ -15,6 +15,7 @@ const paths = {
     USERS: '/users',
     GROUPCONFIG: '/groupconfig',    
     WHITELIST: '/whitelist',    
+    INAPPROPRIATEWORDS: '/inappropriatewords'
 };
 
 export default paths;

@@ -61,6 +61,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     documenttype: 'Tipo de documento',
     documentnumber: 'Número de documento',
     usergroup: 'Grupo usuario',
+    inappropriatewords: 'Palabras inapropiadas',
 
     whitelist: 'Whitelist',
 

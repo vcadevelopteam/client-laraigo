@@ -46,6 +46,7 @@ export const langKeys = {
     system_plural: 'system_plural',
 
     groupconfig: 'groupconfig',
+    inappropriatewords: 'inappropriatewords',
 
     online: 'online',
     offline: 'offline',

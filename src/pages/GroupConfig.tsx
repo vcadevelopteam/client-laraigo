@@ -311,19 +311,13 @@ const GroupConfig: FC = () => {
 
     if (viewSelected === "view-1") {
 
-        if (mainResult.mainData.loading) {
-            return <h1>LOADING</h1>;
-        }
-        else if (mainResult.mainData.error) {
-            return <h1>ERROR</h1>;
-        }
-
         return (
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.groupconfig, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
+                loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
             // fetchData={fetchData}

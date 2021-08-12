@@ -71,6 +71,7 @@ const translation: LangKeys = {
     documenttype: 'Document type',
     documentnumber: 'Document number',
     usergroup: 'User group',
+    inappropriatewords: 'Inappropriate words',
 
     whitelist: 'Whitelist',
 

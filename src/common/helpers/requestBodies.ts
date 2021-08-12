@@ -109,3 +109,16 @@ export const insWhitelist = ({ id,operation,documenttype,documentnumber,usergrou
     key: "UFN_WHITELIST_INS",
     parameters: { id,operation,documenttype,documentnumber,usergroup,type,status,asesorname:username }
 });
+
+export const getInappropriateWordsSel = (id: number): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insInappropriateWords = ({ id,description, status, type, username, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_INS",
+    parameters: { id,description,status, type, username, operation }
+});

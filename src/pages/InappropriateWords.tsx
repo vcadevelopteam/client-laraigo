@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getWhitelistSel, getChannelsByOrg, getValuesFromDomain, insWhitelist } from 'common/helpers';
+import { getInappropriateWordsSel, getValuesFromDomain, insInappropriateWords } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,15 +23,15 @@ interface MultiData {
     data: Dictionary[];
     success: boolean;
 }
-interface DetailWhitelistProps {
+interface DetailInappropriateWordsProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Whitelist" },
-    { id: "view-2", name: "Whitelist Detail" }
+    { id: "view-1", name: "Inappropriate words" },
+    { id: "view-2", name: "Inappropriate words detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -62,23 +62,18 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.whitelistid : 0,
-            username: row ? (row.username || '') : '',
-            documenttype: row ? (row.documenttype || '') : '',
-            documentnumber: row ? row.documentnumber : 0,
-            usergroup: row ? row.usergroup : "",
-            operation: row ? "EDIT" : "INSERT",
-            status: "ACTIVO",
+            id: row ? row.inappropriatewordsid : 0,
+            description: row ? (row.description || '') : '',
+            status: row ? row.status : 'ACTIVO',
+            operation: row ? "EDIT" : "INSERT"
         }
     });
 
     React.useEffect(() => {
         register('type');
         register('id');
-        register('username', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('documenttype', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('documentnumber', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('usergroup', { validate: (value) => (value && value.length ) || 'This is required.' });
+        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [edit, register]);
 
     useEffect(() => {
@@ -92,7 +87,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insWhitelist(data)));
+        dispatch(execute(insInappropriateWords(data)));
         dispatch(showBackdrop(true));
         setWaitSave(true)
     });
@@ -104,67 +99,38 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.username}` : "New Whitelist"}
+                title={row ? `${row.description}` : "New Innapropiate Word"}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.username)} 
+                                label={t(langKeys.description)} 
                                 className="col-6"
-                                onChange={(value) => setValue('username', value)}
-                                valueDefault={row ? (row.username || "") : ""}
-                                error={errors?.username?.message}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={row ? (row.description || "") : ""}
+                                error={errors?.description?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.username)}
-                                value={row ? (row.username || "") : ""}
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documenttype)} 
-                                className="col-6"
-                                onChange={(value) => setValue('documenttype', value)}
-                                valueDefault={row ? (row.documenttype || "") : ""}
-                                error={errors?.documenttype?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documenttype)}
-                                value={row ? (row.documenttype || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.documentnumber)} 
-                                error={errors?.documentnumber?.message}
-                                onChange={(value) => setValue('documentnumber', value ? parseInt(value) : 0)}
-                                type="number"
-                                className="col-6"
-                                valueDefault={row ? (row.documentnumber || "") : ""}
-                            />
-                            : <FieldView
-                                label={t(langKeys.documentnumber)}
-                                value={row ? (row.documentnumber || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
+                            {edit ?
                             <FieldSelect
-                                label={t(langKeys.usergroup)}                                
+                                label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.usergroup || "") : ""}
-                                onChange={(value) => setValue('usergroup', (value?value.domainvalue:""))}
-                                error={errors?.usergroup?.message}
-                                data={dataDomain}
+                                valueDefault={row ? (row.status || "") : ""}
+                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                                error={errors?.status?.message}
+                                data={dataStatus}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
                             : <FieldView
-                                label={t(langKeys.usergroup)}
-                                value={row ? (row.domaindesc || "") : ""}
+                                label={t(langKeys.status)}
+                                value={row ? (row.status || "") : ""}
                                 className="col-6"
                             />}
                     </div>
@@ -187,7 +153,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     );
 }
 
-const Whitelist: FC = () => {
+const InappropriateWords: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -201,23 +167,13 @@ const Whitelist: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.username),
-                accessor: 'username',
+                Header: t(langKeys.description),
+                accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.documenttype),
-                accessor: 'documenttype',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.documentnumber),
-                accessor: 'documentnumber',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usergroup),
-                accessor: 'usergroup',
+                Header: t(langKeys.status),
+                accessor: 'status',
                 NoFilter: true
             },
             {
@@ -230,7 +186,6 @@ const Whitelist: FC = () => {
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -241,7 +196,7 @@ const Whitelist: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getWhitelistSel(0)));
+    const fetchData = () => dispatch(getCollection(getInappropriateWordsSel(0)));
 
     useEffect(() => {
         fetchData();
@@ -279,7 +234,7 @@ const Whitelist: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insWhitelist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.whitelistid })));
+        dispatch(execute(insInappropriateWords({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.inappropriatewordsid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
@@ -289,7 +244,7 @@ const Whitelist: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.whitelist, { count: 2 })}
+                titlemodule={t(langKeys.inappropriatewords, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
@@ -301,7 +256,7 @@ const Whitelist: FC = () => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailWhitelist
+            <DetailInappropriateWords
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
@@ -313,4 +268,4 @@ const Whitelist: FC = () => {
 
 }
 
-export default Whitelist;
+export default InappropriateWords;
