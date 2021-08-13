@@ -4,7 +4,7 @@ import { DashboardIcon, TicketIcon, ReportsIcon, EMailInbocIcon, MessageInboxIco
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 
-const routes: RouteConfig[] = [
+export const routes: RouteConfig[] = [
     {
         key: paths.DASHBOARD,
         description: <Trans i18nKey={langKeys.dashboard} />,
@@ -73,43 +73,42 @@ const routes: RouteConfig[] = [
         key: paths.EXTRAS,
         description: <Trans i18nKey={langKeys.extra} count={2} />,
         path: paths.EXTRAS,
+        subroute: true,
+        initialSubroute: paths.USERS,
         icon: (className) => <ExtrasIcon className={className} />,
     },
+];
+
+export const subroutes: RouteConfig[] = [
     {
         key: paths.USERS,
         description: <Trans i18nKey={langKeys.user} />,
         path: paths.USERS,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.PROPERTIES,
         description: <Trans i18nKey={langKeys.property} count={2} />,
         path: paths.PROPERTIES,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.GROUPCONFIG,
-        description: <Trans i18nKey={langKeys.groupconfig} count={2} />,
+        description: <Trans i18nKey={langKeys.groupconfig} />,
         path: paths.GROUPCONFIG,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.QUICKREPLIES,
-        description: <Trans i18nKey={langKeys.quickreplies} count={2} />,
+        description: <Trans i18nKey={langKeys.quickreplies} />,
         path: paths.QUICKREPLIES,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.WHITELIST,
-        description: <Trans i18nKey={langKeys.whitelist} count={2} />,
+        description: <Trans i18nKey={langKeys.whitelist} />,
         path: paths.WHITELIST,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.INAPPROPRIATEWORDS,
-        description: <Trans i18nKey={langKeys.inappropriatewords} count={2} />,
+        description: <Trans i18nKey={langKeys.inappropriatewords} />,
         path: paths.INAPPROPRIATEWORDS,
-        icon: (className) => <ExtrasIcon className={className} />,
     },
     {
         key: paths.INTELLIGENTMODELS,
@@ -130,5 +129,3 @@ const routes: RouteConfig[] = [
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
 ];
-
-export default routes;

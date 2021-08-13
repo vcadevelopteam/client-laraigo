@@ -10,3 +10,8 @@ export const showBackdrop = (state: IState, action: IAction): IState => ({
     ...state,
     showBackDrop: action.payload,
 })
+
+export const openDrawer = (state: IState, action: IAction): IState => ({
+    ...state,
+    openDrawer: action.payload,
+})

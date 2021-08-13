@@ -7,8 +7,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
 import { getAccessToken } from 'common/helpers';
-import { RouteConfig } from '@types';
 import { CssBaseline } from '@material-ui/core';
+import { routes } from 'routes/routes';
+import { setOpenDrawer } from 'store/popus/actions';
+import { useDispatch } from 'react-redux';
 
 const drawerWidth = 240;
 
@@ -114,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
+        // padding: theme.spacing(3),
         // transition: theme.transitions.create('margin', {
         //     easing: theme.transitions.easing.sharp,
         //     duration: theme.transitions.duration.leavingScreen,
@@ -154,15 +156,26 @@ const useStyles = makeStyles((theme) => ({
             color: 'white',
             fontWeight: 'bold',
         }
-    }
+    },
+    mainContent: {
+        minHeight: 'calc(100vh - 81px)',
+    },
+    mainContentBox: {
+        flex: 1,
+        display: 'flex',
+        minHeight: 'inherit',
+    },
 }));
 
+interface LayoutProps {
+    mainClasses?: string;
+}
+
 /** Authorized layout */
-const Layout: FC<{ routes: RouteConfig[] }> = ({ children, routes }) => {
+const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
-    const [openDrawer, setOpenDrawer] = useState(true);
 
     const location = useLocation();
 	const history = useHistory();
@@ -182,24 +195,20 @@ const Layout: FC<{ routes: RouteConfig[] }> = ({ children, routes }) => {
                     <CssBaseline />
                     <Header
                         classes={classes}
-                        open={openDrawer}
-                        setOpen={setOpenDrawer}
                         drawerWidth={drawerWidth}
                     />
 
                     <Aside
                         routes={routes}
-                        open={openDrawer}
-                        setOpen={setOpenDrawer}
                         classes={classes}
                         theme={theme}
                     />
 
-                    <main className={classes.content}>
+                    <main className={clsx(classes.content, mainClasses)}>
                         <div className={classes.toolbar} />
 
-                        <div className={`containercon ${classes.paddingbody}`}>
-                            <Box component='div' style={{ flex: 1 }}>
+                        <div className={classes.mainContent}>
+                            <Box component='div' className={classes.mainContentBox}>
                                 {children}
                             </Box>
                         </div>

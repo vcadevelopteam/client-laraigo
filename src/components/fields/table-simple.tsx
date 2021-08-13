@@ -526,7 +526,7 @@ export default TableZyx;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell key={`aux11ss${i}`}><Skeleton /></TableCell>);
+        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
 
     return (
