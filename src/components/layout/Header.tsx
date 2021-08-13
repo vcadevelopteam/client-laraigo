@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
-import { useSelector } from 'hooks';
+// import { useSelector } from 'hooks';
 import { SearchField, StatusConnection, AccountMenu, NotificationMenu } from 'components';
 
 type IProps = {
@@ -16,7 +16,7 @@ type IProps = {
 }
 
 const Header = ({ classes, open, setOpen }: IProps) => {
-    const dataRes = useSelector(state => state.login);
+    // const dataRes = useSelector(state => state.login);
     
     const handleDrawerOpen = () => {
         setOpen(true);

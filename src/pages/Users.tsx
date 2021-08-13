@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 
@@ -30,6 +30,7 @@ interface DetailProps {
 interface ModalProps {
     data: RowSelected;
     multiData: MultiData[];
+    preData: Dictionary[];
     openModal: boolean;
     setOpenModal: (open: boolean) => void;
     updateRecords?: (record: any) => void;
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
+const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords, preData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -59,9 +60,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
     const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataStatusOrguser = multiData[7] && multiData[7].success ? multiData[7].data : [];
-    const dataOrganizations = multiData[8] && multiData[8].success ? multiData[8].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
-
+    const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
+    const [dataOrganizations, setDataOrganizations] = useState<Dictionary[]>([])
     const [dataSupervisors, setDataSupervisors] = useState<Dictionary[]>([]);
     const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
     const [dataApplications, setDataApplications] = useState<Dictionary[]>([]);
@@ -128,6 +129,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
         register('labels');
         register('bydefault');
+        
+        setDataOrganizations(dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y.orgid === x.orgid)))
     }, [openModal])
 
     const onChangeOrganization = (value: Dictionary) => {
@@ -534,7 +537,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '80%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -796,6 +799,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 setOpenModal={setOpenDialogOrganization}
                 multiData={multiData}
                 updateRecords={setDataOrganizations}
+                preData={dataOrganizations}
             />
         </div>
     );
