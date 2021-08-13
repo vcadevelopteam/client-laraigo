@@ -111,6 +111,18 @@ const routes: RouteConfig[] = [
         path: paths.INAPPROPRIATEWORDS,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.INTELLIGENTMODELS,
+        description: <Trans i18nKey={langKeys.intelligentmodels} count={2} />,
+        path: paths.INTELLIGENTMODELS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        key: paths.SLA,
+        description: <Trans i18nKey={langKeys.sla} count={2} />,
+        path: paths.SLA,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;

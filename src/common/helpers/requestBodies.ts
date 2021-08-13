@@ -81,3 +81,31 @@ export const insInappropriateWords = ({ id,description, status, type, username, 
     method: "UFN_INAPPROPRIATEWORDS_INS",
     parameters: { id,description,status, type, username, operation }
 });
+
+export const getIntelligentModelsSel = (id: number): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELS_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insIntelligentModels = ({ id,operation,description,endpoint,modelid,provider,apikey,type,status }: Dictionary): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELS_INS",
+    parameters: { id,operation,description,endpoint,modelid,provider,apikey,type,status }
+});
+
+export const getSLASel = (id: number): IRequestBody => ({
+    method: "UFN_SLA_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax, 
+                        usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_SLA_INS",
+    parameters: { id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax, 
+        usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }
+});
