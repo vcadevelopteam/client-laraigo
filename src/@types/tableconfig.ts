@@ -5,6 +5,7 @@ export interface Dictionary {
 export interface MultiData {
     data: Dictionary[];
     success: boolean;
+    key?: string;
 }
 
 export interface TableConfig {

@@ -142,6 +142,9 @@ export const langKeys = {
     setpassword: 'setpassword',
     confirmpassword: 'confirmpassword',
     cancel: 'cancel',
+    default_application: 'default_application',
+    default_organization: 'default_organization',
+    password_required: 'password_required',
 };
 
 export type LangKeys = typeof langKeys;

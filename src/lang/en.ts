@@ -146,7 +146,10 @@ const translation: LangKeys = {
     twofactorauthentication: 'Two factor authentication',
     save: 'Save',
     setpassword: 'Set password',
-    cancel: 'Cancel'
+    cancel: 'Cancel',
+    default_application: 'Default application',
+    default_organization: 'Default organization',
+    password_required: 'Password is required',
 };
 
 const enResource: ResourceLanguage = {

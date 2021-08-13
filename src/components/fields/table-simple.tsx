@@ -366,6 +366,7 @@ const TableZyx = React.memo(({
                             disabled={loading}
                             colorPlaceHolder='#FFF'
                             handleChangeOther={setGlobalFilter}
+                            lazy
                         />
                     </div>
                 </Box>
@@ -523,15 +524,15 @@ export default TableZyx;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell><Skeleton /></TableCell>);
+        items.push(<TableCell key={`aux11ss${i}`}><Skeleton /></TableCell>);
     }
 
     return (
         <>
-            <TableRow>
+            <TableRow key="1aux1">
                 {items}
             </TableRow>
-            <TableRow>
+            <TableRow key="2aux2">
                 {items}
             </TableRow>
         </>

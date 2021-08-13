@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody } from "@types";
+import { IActionCall, IRequestBody, ITransaction } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -26,8 +26,8 @@ export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetMainAux = (): IActionCall => ({type: actionTypes.AUX_MAIN_RESET});
 
-export const execute = (requestBody: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.main(requestBody),
+export const execute = (requestBody: IRequestBody | ITransaction, transaction: boolean = false): IActionCall => ({
+    callAPI: () => CommonService.main(requestBody, transaction),
     types: {
         loading: actionTypes.EXECUTE_MAIN,
         success: actionTypes.EXECUTE_MAIN_SUCCESS,
@@ -49,3 +49,15 @@ export const getMultiCollection = (requestBodies: IRequestBody[]): IActionCall =
 });
 
 export const resetMultiMain = (): IActionCall => ({type: actionTypes.MULTI_MAIN_RESET});
+
+export const getMultiCollectionAux = (requestBodies: IRequestBody[]): IActionCall => ({
+    callAPI: () => CommonService.multiMain(requestBodies),
+    types: {
+        loading: actionTypes.AUX_MULTI_MAIN,
+        success: actionTypes.AUX_MULTI_MAIN_SUCCESS,
+        failure: actionTypes.AUX_MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMultiMainAux = (): IActionCall => ({type: actionTypes.AUX_MULTI_MAIN_RESET});
