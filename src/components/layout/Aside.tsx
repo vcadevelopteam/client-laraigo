@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
@@ -11,12 +11,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { useHistory } from 'react-router-dom';
-
-// import authContext from 'context/auth/authContext';
 import { useSelector } from 'hooks';
 
-// import Link from 'next/link';
-// import { useRouter } from 'next/router';
 import Collapse from '@material-ui/core/Collapse';
 import {
     ChevronLeft,
@@ -32,7 +28,6 @@ import { FC } from 'react';
 // const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
 
 type IProps = {
-    // children: any;
     open: boolean;
     setOpen: any;
     classes: any;
@@ -46,6 +41,10 @@ type IProps2 = {
     children: any;
     IconLink: any;
 }
+
+const whiteIconTheme = createTheme({overrides: {MuiSvgIcon: {
+    root: { color: "#FFF", width: 24, height: 24, minWidth: 0 },
+},},},);
 
 const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
@@ -80,7 +79,17 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
     const history = useHistory();
     const dataRes = useSelector(state => state.login);
 
-    const handleDrawerClose = () => setOpen(false);
+    const ChevronIcon: FC = () => {
+        if (!open) {
+            return (
+                <ThemeProvider theme={whiteIconTheme}>
+                    {theme.direction === 'rtl' ?  <ChevronLeft /> : <ChevronRight />}
+                </ThemeProvider>
+            );
+        } else {
+            return theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />;
+        }
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ListItemCollapse = ({ itemName, listRoutes, children, IconLink }: IProps2) => {
@@ -131,7 +140,7 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
             }}
         >
             <div className={classes.toolbar}>
-                <img src="./Laraigo-logo-name.svg" style={{ height: 37 }} alt="logo" />
+                <img src={open ? "./Laraigo-logo-name.svg" : "./Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
@@ -139,7 +148,8 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={() => setOpen(!open)}>
-                    {theme.direction === 'rtl' ? <ChevronRight color="disabled" /> : <ChevronLeft color="primary" />}
+                    {/* {theme.direction === 'rtl' ? <ThemeProvider theme={whiteIconTheme}><ChevronRight/></ThemeProvider> : <ChevronLeft color="primary" />} */}
+                    <ChevronIcon />
                 </IconButton>
             </div>
         </Drawer>

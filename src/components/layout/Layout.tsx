@@ -82,6 +82,7 @@ const useStyles = makeStyles((theme) => ({
             width: theme.spacing(9) + 1,
         },
         backgroundColor: "#7721AD",
+        zIndex: 1202,
     },
     drawerItemActive: {
         color: theme.palette.primary.main, 

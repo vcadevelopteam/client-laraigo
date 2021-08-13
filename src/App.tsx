@@ -6,6 +6,7 @@ import { initReactI18next } from 'react-i18next';
 import resources from 'lang';
 
 const theme = createTheme({
+	direction: 'ltr',
     palette: {
         primary: {
             main: "#7721AD",
