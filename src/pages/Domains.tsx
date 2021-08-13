@@ -297,7 +297,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         debugger
         dispatch(execute({
             header: insDomain({ ...data}),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,x})), ...orgsToDelete.map(x => insDomainvalue(x))]
+            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,...x})), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
     });
 
