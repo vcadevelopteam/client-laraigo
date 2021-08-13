@@ -6,6 +6,7 @@ import { initReactI18next } from 'react-i18next';
 import resources from 'lang';
 
 const theme = createTheme({
+	direction: 'ltr',
     palette: {
         primary: {
             main: "#7721AD",
@@ -35,7 +36,7 @@ const theme = createTheme({
 			root: { minWidth: 38 },
 		},
 		MuiListItem: {
-			gutters: { paddingLeft: 28 }
+			gutters: { paddingLeft: 25 }
 		},
 		MuiTypography: {
 			body1: { fontSize: 14 }

@@ -119,7 +119,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     delete: 'Eliminar',
     search: 'Buscar',
 
-    tablePageOf: 'Página <1>{{currentPage}}</1> de <1>{{totalPages}}</1>',
+    tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
 
     recordPerPage: 'Registro por página',

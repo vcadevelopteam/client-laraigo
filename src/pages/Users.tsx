@@ -30,10 +30,10 @@ interface DetailProps {
 interface ModalProps {
     data: RowSelected;
     multiData: MultiData[];
-    preData: Dictionary[];
+    preData: Dictionary[]; //ORGANIZATIONS
     openModal: boolean;
-    setOpenModal: (open: boolean) => void;
-    updateRecords?: (record: any) => void;
+    setOpenModal: (open: boolean) => void; 
+    updateRecords?: (record: any) => void; //SETDATAORGANIZATION
 }
 const arrayBread = [
     { id: "view-1", name: "Users" },
@@ -84,7 +84,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
     }, [resFromOrg])
 
-    const onSubmit = handleSubmit((data) => {
+    const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
         console.log(data);
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
@@ -432,7 +432,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         []
     );
 
-    useEffect(() => {
+    useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
         if (!detailRes.loading && !detailRes.error) {
             setDataOrganizations(detailRes.data);
         }
@@ -473,7 +473,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
             company: row?.company || '',
-            billinggroup: row?.billinggroup || '',
+            billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
             status: row ? row.status : 'ACTIVO',
@@ -501,13 +501,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('doctype', { validate: (value) => (value && value.length) || 'This is required.' });
         register('docnum', { validate: (value) => (value && value.length) || 'This is required.' });
         register('company', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('billinggroup', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('billinggroupid');
         register('registercode', { validate: (value) => (value && value.length) || 'This is required.' });
         register('description');
         register('twofactorauthentication');
 
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0)));//TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
+        dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -520,6 +520,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
             detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
         }, true));
+        dispatch(showBackdrop(true));
+        setWaitSave(true)
     });
 
     const onSubmitPassword = () => {
@@ -694,12 +696,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <FieldSelect
                                 label={t(langKeys.billingGroup)}
                                 className="col-6"
-                                valueDefault={row?.billinggroup || ""}
-                                onChange={(value) => setValue('billinggroup', (value ? value.domainvalue : ''))}
-                                error={errors?.billinggroup?.message}
+                                valueDefault={row?.billinggroupid || ""}
+                                onChange={(value) => setValue('billinggroupid', (value ? value.domainid : 0))}
+                                error={errors?.billinggroupid?.message}
                                 data={dataBillingGroups}
                                 optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionValue="domainid"
                             /> :
                             <FieldView
                                 label={t(langKeys.billingGroup)}
@@ -921,7 +923,7 @@ const Users: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+        dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
