@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getDomainValueSel, getDomainSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty, insUser, insOrgUser } from 'common/helpers';
+import { getDomainValueSel, getDomainSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -83,11 +83,12 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     }, [resFromOrg])
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         console.log(data);
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
         else
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainid === row.domainid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
         setOpenModal(false)
     });
 
@@ -106,19 +107,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         register('domaindesc', { validate: (value) => (value && value.length) || 'This is required.' });
         register('bydefault', { validate: (value) => (value && value.length) || 'This is required.' });
     }, [openModal])
-
-
-    const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value ? value.roleid : 0);
-        setValue('roledesc', value ? value.roldesc : 0);
-        if (value) {
-            dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.roleid),
-            ]))
-        } else {
-            setDataApplications([])
-        }
-    }
 
     return (
         <DialogZyx
@@ -306,16 +294,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
+        debugger
         dispatch(execute({
-            header: insUser({ ...data}),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
+            header: insDomain({ ...data}),
+            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,x})), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
     });
-
-    const onChangeStatus = (value: Dictionary) => {
-        setValue('status', (value ? value.domainvalue : ''));
-        value && setOpenDialogStatus(true)
-    }
 
     return (
         <div>
