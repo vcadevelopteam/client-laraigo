@@ -38,6 +38,16 @@ const RouterApp: FC = () => {
 				<Route exact path={paths.INAPPROPRIATEWORDS}>
 					<ExtrasLayout><InappropriateWords /></ExtrasLayout>
 				</Route>
+
+				<Route exact path={paths.INTELLIGENTMODELS}>
+					<ExtrasLayout><IntelligentModels /></ExtrasLayout>
+				</Route>
+				<Route exact path={paths.SLA}>
+					<ExtrasLayout><SLA /></ExtrasLayout>
+				</Route>
+				<Route exact path={paths.DOMAINS}>
+					<ExtrasLayout><Domains /></ExtrasLayout>
+				</Route>
 				{/* <ExtrasLayout>
 					<Route exact path={paths.PROPERTIES} component={Properties} />
 					<Route exact path={paths.USERS} component={Users} />
