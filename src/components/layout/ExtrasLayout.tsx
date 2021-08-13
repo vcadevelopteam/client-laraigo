@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     content: {
         padding: theme.spacing(3),
         flexGrow: 1,
-        overflowY: 'scroll',
+        // overflowY: 'scroll',
     },
     main: {
         // overflow: 'hidden',
