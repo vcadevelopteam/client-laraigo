@@ -5,3 +5,9 @@ export interface IRequestBody {
     key?: string,
     parameters: Dictionary
 }
+
+
+export interface ITransaction {
+    header: IRequestBody,
+    detail: IRequestBody[]
+}

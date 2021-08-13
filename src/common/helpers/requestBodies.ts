@@ -82,6 +82,18 @@ export const getValuesFromDomain = (domainname: string): IRequestBody => ({
     }
 });
 
+export const insUser = ({ id, usr, doctype, docnum, password, firstname, lastname, email, type, status, description, operation, company, twofactorauthentication, registercode }: Dictionary): IRequestBody => ({
+    method: "UFN_USER_INS",
+    key: "UFN_USER_INS",
+    parameters: { id, usr, doctype, docnum, pwd: password, firstname, lastname, email, pwdchangefirstlogin: false, type, status, description, operation, company, twofactorauthentication, registercode }
+});
+
+export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor, operation, redirect }: Dictionary): IRequestBody => ({
+    method: "UFN_ORGUSER_INS",
+    key: "UFN_ORGUSER_INS",
+    parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
+});
+
 export const insProperty = ({ communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
@@ -89,7 +101,7 @@ export const insProperty = ({ communicationchannelid, id, propertyname, property
 });
 
 
-export const insGroupConfig = ({ id, operation, domainid, description, type, status, quantity, validationtext}: Dictionary): IRequestBody => ({
+export const insGroupConfig = ({ id, operation, domainid, description, type, status, quantity, validationtext }: Dictionary): IRequestBody => ({
     method: "UFN_GROUPCONFIGURATION_INS",
     key: "UFN_GROUPCONFIGURATION_INS",
     parameters: { id, operation, domainid, description, type, status, quantity, validationtext }
@@ -104,10 +116,10 @@ export const getWhitelistSel = (whitelistid: number): IRequestBody => ({
     }
 });
 
-export const insWhitelist = ({ id,operation,documenttype,documentnumber,usergroup,type,status,username }: Dictionary): IRequestBody => ({
+export const insWhitelist = ({ id, operation, documenttype, documentnumber, usergroup, type, status, username }: Dictionary): IRequestBody => ({
     method: "UFN_WHITELIST_INS",
     key: "UFN_WHITELIST_INS",
-    parameters: { id,operation,documenttype,documentnumber,usergroup,type,status,asesorname:username }
+    parameters: { id, operation, documenttype, documentnumber, usergroup, type, status, asesorname: username }
 });
 
 export const getInappropriateWordsSel = (id: number): IRequestBody => ({
@@ -118,7 +130,7 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insInappropriateWords = ({ id,description, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const insInappropriateWords = ({ id, description, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id,description,status, type, username, operation }
+    parameters: { id, description, status, type, username, operation }
 });

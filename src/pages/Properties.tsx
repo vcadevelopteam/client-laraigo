@@ -207,7 +207,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
-                            <TemplateSwitch checked={false} className="col-6" label="Ejemplo" />
+                            
                     </div>
                     {edit &&
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

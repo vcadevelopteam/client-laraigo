@@ -138,19 +138,19 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         fullWidth
         maxWidth={maxWidth}
         style={{ zIndex: 1200 }}>
-        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => {}))}>
+        <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 {children}
             </DialogContent>
             <DialogActions>
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => {})} color="primary"
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} color="primary"
                     >
                         {buttonText1}
                     </Button>}
                 {!!buttonText2 &&
-                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : () => {})} color="primary">
+                    <Button type={button2Type} onClick={(button2Type !== "submit" ? handleClickButton2 : () => { })} color="primary">
                         {buttonText2}
                     </Button>}
             </DialogActions>
@@ -178,7 +178,12 @@ interface TemplateAutocompleteProps extends InputProps {
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
-    const [value, setvalue] = useState(valueDefault);
+    const [value, setvalue] = useState("");
+
+    useEffect(() => {
+        setvalue(valueDefault);
+    }, [valueDefault])
+
     return (
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
@@ -203,24 +208,21 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
     const [value, setValue] = useState<Dictionary | null>(null);
     const [inputValue, setInputValue] = useState('');
 
-    const setHardValue = (dataoptions: Dictionary[], valuetoset: string) => {
-        if (valuetoset) {
-            const optionfound = dataoptions.find((o: Dictionary) => o[optionValue] === valuetoset);
+    useEffect(() => {
+        if (valueDefault) {
+            const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
             if (optionfound) {
                 setInputValue(optionfound[optionDesc]);
                 setValue(optionfound);
                 if (triggerOnChangeOnFirst)
                     onChange && onChange(optionfound);
             }
-        }
-    }
-
-    useEffect(() => {
-        if (data instanceof Array) {
-            setHardValue(data, valueDefault);
+        } else {
+            setValue(null);
+            setInputValue('');
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [valueDefault]);
 
     return (
         <div className={className}>
@@ -255,22 +257,17 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
 
-    const [value, setValue] = useState<Dictionary | null>(null);
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
-    const setHardValue = (dataoptions: Dictionary[], valuetoset: string) => {
-        if (valuetoset) {
-            const optionsSelected = dataoptions.filter(o => valuetoset.split(",").indexOf(o[optionValue].toString()) > -1)
-            setOptionsSelected(optionsSelected);
-        }
-    }
-
     useEffect(() => {
-        if (data instanceof Array) {
-            setHardValue(data, valueDefault);
+        if (valueDefault) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [valueDefault]);
 
     return (
         <div className={className}>
@@ -309,16 +306,24 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         </div>
     )
 }
-interface TemplateSwitchProps extends SwitchProps {
+interface TemplateSwitchProps extends InputProps {
     className?: any;
     label: string;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, label, ...props }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, valueDefault, label, ...props }) => {
+    const [checkedaux, setChecked] = useState(false);
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
     return (
         <div className={className}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-            <IOSSwitch {...props} />
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
+            <IOSSwitch {...props} checked={checkedaux} onChange={(e) => {
+                setChecked(e.target.checked)
+            }} />
         </div>
     );
 }

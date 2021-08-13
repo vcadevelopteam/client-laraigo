@@ -131,7 +131,11 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     twofactorauthentication: 'Doble factor autentificación',
     save: 'Guardar',
     setpassword: 'Ingresar contraseña',
-    cancel: 'Cancelar'
+    cancel: 'Cancelar',
+    default_application: 'Aplicación por defecto',
+    default_organization: 'Organización por defecto',
+    password_required: 'La contraseña es requerida',
+
 };
 
 const esResource: ResourceLanguage = {

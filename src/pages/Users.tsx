@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty } from 'common/helpers';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty, insUser, insOrgUser } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +32,7 @@ interface ModalProps {
     multiData: MultiData[];
     openModal: boolean;
     setOpenModal: (open: boolean) => void;
-    registerRecord?: (record: any) => void;
+    updateRecords?: (record: any) => void;
 }
 const arrayBread = [
     { id: "view-1", name: "Users" },
@@ -42,7 +42,7 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
+        // maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, registerRecord }) => {
+const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -66,11 +66,45 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
     const [dataApplications, setDataApplications] = useState<Dictionary[]>([]);
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        defaultValues: {
+    const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
+
+    useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
+        const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_USER_SUPERVISOR_LST");
+        const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_COMMUNICATIONCHANNELBYORG_LST");
+        const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_APPS_DATA_SEL");
+
+        if (indexSupervisor > -1)
+            setDataSupervisors(resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : []);
+
+        if (indexChannels > -1)
+            setDataChannels(resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : []);
+
+        if (indexApplications > -1)
+            setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
+    }, [resFromOrg])
+
+    const onSubmit = handleSubmit((data) => {
+        console.log(data);
+        if (!row)
+            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
+        else
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+        setOpenModal(false)
+    });
+
+    useEffect(() => {
+        setDataSupervisors([])
+        setDataChannels([])
+        setDataApplications([])
+        //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
+        reset({
             orgid: row ? row.orgid : 0,
             roleid: row ? row.roleid : 0,
-            supervisor: row ? row.supervisor : 0,
+            roledesc: row ? row.roledesc : '', //for table
+            orgdesc: row ? row.orgdesc : '', //for table
+            supervisordesc: row ? row.supervisordesc : '', //for table
+            channelsdesc: row ? row.channelsdesc : '', //for table
+            supervisor: row ? row.supervisor : '',
             type: row?.type || '',
             channels: row?.channels || '',
             redirect: row?.redirect || '',
@@ -78,48 +112,30 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             labels: row?.labels || '',
             status: row?.status || '',
             bydefault: row?.bydefault || false,
-        }
-    });
+        })
 
-    useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
-        const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_USER_SUPERVISOR_LST");
-        const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_COMMUNICATIONCHANNELBYORG_LST");
-        const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_APPS_DATA_SEL");
-        
-        if (indexSupervisor > -1)
-            setDataSupervisors(resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : []);
-
-        if (indexChannels > -1)
-            setDataChannels(resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : []);
-        
-        if (indexApplications > -1)
-            setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
-    }, [resFromOrg])
-
-    React.useEffect(() => {
         register('orgid', { validate: (value) => (value && value > 0) || 'This is required.' });
         register('roleid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('supervisor', { validate: (value) => (value && value > 0) || 'This is required.' });
+        register('supervisor');
         register('type', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('channels', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('channels');
         register('redirect', { validate: (value) => (value && value.length) || 'This is required.' });
         register('groups');
+        register('roledesc');
+        register('orgdesc');
+        register('supervisordesc');
+        register('channelsdesc');
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
         register('labels');
         register('bydefault');
-    }, [register]);
-
-    useEffect(() => {
-        setDataSupervisors([])
-        setDataChannels([])
-        setDataApplications([])
     }, [openModal])
 
     const onChangeOrganization = (value: Dictionary) => {
         setValue('orgid', value ? value.orgid : 0);
+        setValue('orgdesc', value ? value.orgdesc : '');
         if (value) {
             dispatch(getMultiCollectionAux([
-                getSupervisors(value.orgid, 0), 
+                getSupervisors(value.orgid, 0),
                 getChannelsByOrg(value.orgid)
             ]))
         } else {
@@ -130,9 +146,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
 
     const onChangeRole = (value: Dictionary) => {
         setValue('roleid', value ? value.roleid : 0);
+        setValue('roledesc', value ? value.roldesc : 0);
         if (value) {
             dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.roleid), 
+                getApplicationsByRole(value.roleid),
             ]))
         } else {
             setDataApplications([])
@@ -146,7 +163,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
-            handleClickButton2={registerRecord}
+            handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
@@ -192,7 +209,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             label={t(langKeys.type)}
                             className={classes.mb2}
                             valueDefault={row?.type || ""}
-                            onChange={(value) => setValue('type', value ? value.type : '')}
+                            triggerOnChangeOnFirst={true}
+                            onChange={(value) => setValue('type', value ? value.domainvalue : '')}
                             error={errors?.type?.message}
                             data={dataTypeUser}
                             optionDesc="domaindesc"
@@ -204,22 +222,97 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             className={classes.mb2}
                         />
                     }
+                    {edit ?
+                        <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
+                            label={t(langKeys.channel)}
+                            className={classes.mb2}
+                            valueDefault={row?.channels || ""}
+                            onChange={(value) => {
+                                setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
+                                setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
+                            }}
+                            error={errors?.channels?.message}
+                            // loading={resFromOrg.loading}
+                            data={dataChannels}
+                            optionDesc="description"
+                            optionValue="communicationchannelid"
+                        /> :
+                        <FieldView
+                            label={t(langKeys.channel)}
+                            value={row ? row.channelsdesc : ""}
+                            className={classes.mb2}
+                        />
+                    }
                 </div>
                 <div className="col-6">
+                    {edit ?
+                        <TemplateSwitch
+                            label={t(langKeys.default_organization)}
+                            className={classes.mb2}
+                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                        /> :
+                        <FieldView
+                            label={t(langKeys.default_organization)}
+                            value={row ? (row.bydefault ? "SI" : "NO") : "NO"}
+                            className={classes.mb2}
+                        />
+                    }
                     {edit ?
                         <FieldSelect
                             label={t(langKeys.status)}
                             className={classes.mb2}
                             valueDefault={row?.status || ""}
-                            onChange={(value) => setValue('status', value ? value.status : '')}
+                            triggerOnChangeOnFirst={true}
+                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                             error={errors?.status?.message}
                             data={dataStatusOrguser}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         /> :
                         <FieldView
-                            label={t(langKeys.organization)}
+                            label={t(langKeys.default_organization)}
                             value={row ? row.orgdesc : ""}
+                            className={classes.mb2}
+                        />
+                    }
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.supervisor)}
+                            className={classes.mb2}
+                            valueDefault={row?.supervisor || ""}
+                            triggerOnChangeOnFirst={true}
+                            onChange={(value) => {
+                                setValue('supervisor', value ? value.usr : '');
+                                setValue('supervisordesc', value ? value.userdesc : '');
+                            }}
+                            error={errors?.supervisor?.message}
+                            data={dataSupervisors}
+                            optionDesc="userdesc"
+                            optionValue="usr"
+                        /> :
+                        <FieldView
+                            label={t(langKeys.supervisor)}
+                            value={row ? row.supervisordesc : ""}
+                            className={classes.mb2}
+                        />
+                    }
+
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.default_application)}
+                            className={classes.mb2}
+                            valueDefault={row?.redirect || ""}
+                            onChange={(value) => setValue('redirect', value ? value.path : '')}
+                            error={errors?.redirect?.message}
+                            data={dataApplications}
+                            triggerOnChangeOnFirst={true}
+                            // loading={resFromOrg.loading}
+                            optionDesc="description"
+                            optionValue="path"
+                        /> :
+                        <FieldView
+                            label={t(langKeys.default_application)}
+                            value={row ? row.redirect : ""}
                             className={classes.mb2}
                         />
                     }
@@ -235,65 +328,12 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             optionValue="domainvalue"
                         /> :
                         <FieldView
-                            label={t(langKeys.role)}
-                            value={row ? row.roledesc : ""}
+                            label={t(langKeys.group)}
+                            value={row ? row.groups : ""}
                             className={classes.mb2}
                         />
                     }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.supervisor)}
-                            className={classes.mb2}
-                            valueDefault={row?.supervisor || ""}
-                            onChange={(value) => setValue('supervisor', value ? value.supervisor : '')}
-                            error={errors?.supervisor?.message}
-                            data={dataSupervisors}
-                            // loading={resFromOrg.loading}
-                            optionDesc="userdesc"
-                            optionValue="usr"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.supervisor)}
-                            value={row ? row.supervisordesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                            label={t(langKeys.channel)}
-                            className={classes.mb2}
-                            valueDefault={row?.channels || ""}
-                            onChange={(value) => setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())}
-                            error={errors?.channels?.message}
-                            // loading={resFromOrg.loading}
-                            data={dataChannels}
-                            optionDesc="description"
-                            optionValue="communicationchannelid"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.channel)}
-                            value={row ? row.channels : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldSelect
-                            label="app"
-                            className={classes.mb2}
-                            valueDefault={row?.redirect || ""}
-                            onChange={(value) => setValue('redirect', value ? value.path : '')}
-                            error={errors?.redirect?.message}
-                            data={dataApplications}
-                            // loading={resFromOrg.loading}
-                            optionDesc="description"
-                            optionValue="path"
-                        /> :
-                        <FieldView
-                            label="app"
-                            value={row ? row.redirect : ""}
-                            className={classes.mb2}
-                        />
-                    }
+
                 </div>
             </div>
         </DialogZyx>
@@ -309,6 +349,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
+    const [dataOrganizations, setDataOrganizations] = useState<Dictionary[]>([]);
+    const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
@@ -352,7 +394,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             },
             {
                 Header: 'Channel',
-                accessor: 'channels',
+                accessor: 'channelsdesc',
                 NoFilter: true
             },
             {
@@ -377,7 +419,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
-                            // deleteFunction={() => handleDelete(row)}
+                            deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
                     )
@@ -387,9 +429,21 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         []
     );
 
+    useEffect(() => {
+        if (!detailRes.loading && !detailRes.error) {
+            setDataOrganizations(detailRes.data);
+        }
+    }, [detailRes]);
+
     const handleRegister = () => {
         setOpenDialogOrganization(true)
         setRowSelected({ row: null, edit: true });
+    }
+    const handleDelete = (row: Dictionary) => {
+        if (row.operation !== "INSERT") {
+            setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        }
+        setDataOrganizations(p => p.filter(x => row.orgid !== x.orgid));
     }
 
     const handleView = (row: Dictionary) => {
@@ -448,16 +502,21 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('registercode', { validate: (value) => (value && value.length) || 'This is required.' });
         register('description');
         register('twofactorauthentication');
+
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0)));//TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
+        if (!row && !data.password) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
+            return;
+        }
 
-        // dispatch(execute(insProperty(data)));
-        // dispatch(showBackdrop(true));
-        // setWaitSave(true)
+        dispatch(execute({
+            header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
+            detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
+        }, true));
     });
 
     const onSubmitPassword = () => {
@@ -681,19 +740,18 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             </form>
 
             <div className={classes.containerDetail}>
-                {detailRes.loading ?
-                    <h1>LOADING</h1> : (detailRes.error ? <h1>ERROR</h1> : (
-                        <TableZyx
-                            columns={columns}
-                            titlemodule={t(langKeys.organization_plural)}
-                            data={detailRes.data}
-                            download={false}
-                            filterGeneral={false}
-                            register={edit}
-                        // handleRegister={handleRegister}
-                        />
-                    ))
-                }
+                {detailRes.error ? <h1>ERROR</h1> : (
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.organization_plural)}
+                        data={dataOrganizations}
+                        download={false}
+                        loading={detailRes.loading}
+                        filterGeneral={false}
+                        register={edit}
+                        handleRegister={handleRegister}
+                    />
+                )}
             </div>
             <DialogZyx
                 open={openDialogStatus}
@@ -737,6 +795,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 openModal={openDialogOrganization}
                 setOpenModal={setOpenDialogOrganization}
                 multiData={multiData}
+                updateRecords={setDataOrganizations}
             />
         </div>
     );
@@ -881,7 +940,7 @@ const Users: FC = () => {
             />
         )
     }
-    else if (viewSelected === "view-2") {
+    else
         return (
             <DetailUsers
                 data={rowSelected}
@@ -890,9 +949,6 @@ const Users: FC = () => {
                 fetchData={fetchData}
             />
         )
-    } else
-        return null;
-
 }
 
 export default Users;
