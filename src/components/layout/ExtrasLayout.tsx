@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         height: 'inherit',
         flexGrow: 1,
+        maxHeight: 'calc(100vh - 81px)',
     },
     list: {
         width: 182,
@@ -50,11 +51,7 @@ const useStyles = makeStyles((theme) => ({
     content: {
         padding: theme.spacing(3),
         flexGrow: 1,
-        // overflowY: 'scroll',
-    },
-    main: {
-        // overflow: 'hidden',
-        // maxHeight: '100vh',
+        overflowY: 'overlay' as any,
     },
 }));
 
@@ -86,7 +83,7 @@ const ExtrasLayout: FC = ({children}) => {
     }, []);
 
     return (
-        <Layout mainClasses={classes.main}>
+        <Layout>
             <div className={classes.root}>
                 <List component="nav" className={classes.list}>
                     <label className={classes.subtitle}><Trans i18nKey={langKeys.extra} count={2} /></label>
