@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getDomainValueSel, getDomainSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty, insDomain, insDomainvalue } from 'common/helpers';
+import { getDomainValueSel, getDomainSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -98,14 +98,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         setDataApplications([])
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
-            domainvalue: row ? row.domainvalue : "",
-            domaindesc: row ? row.domaindesc : "",
-            bydefault: row ? row.bydefault : "",
+            domaindesc: row?.domaindesc || '',
+            domainvalue: row?.domainvalue || '',
+            bydefault: row?.bydefault || false,
         })
 
         register('domainvalue', { validate: (value) => (value && value.length) || 'This is required.' });
         register('domaindesc', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('bydefault', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('bydefault');
     }, [openModal])
 
     return (
@@ -132,19 +132,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         value={row ? row.domainvalue : ""}
                         className="col-6"
                     />}
-                {edit ?
-                    <FieldEdit
-                        label={t(langKeys.bydefault)}
-                        className="col-6"
-                        valueDefault={row?.bydefault || ""}
-                        onChange={(value) => setValue('bydefault', value)}
-                        error={errors?.bydefault?.message}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.bydefault)}
-                        value={row ? row.bydefault : ""}
-                        className="col-6"
-                    />}
+                    {edit ?
+                        <TemplateSwitch
+                            label={t(langKeys.bydefault)}
+                            className="col-6"
+                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                        /> :
+                        <FieldView
+                            label={t(langKeys.default_organization)}
+                            value={row ? (row.bydefault ? "SI" : "NO") : "NO"}
+                            className={classes.mb2}
+                        />
+                    }
             <div className="row-zyx"></div>
                 
                 {edit ?
@@ -550,7 +549,7 @@ const Domains: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+        dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
