@@ -5,4 +5,3 @@ export { default as Quickreplies } from './Quickreplies';
 export { default as Groupconfig } from './GroupConfig';
 export { default as Whitelist } from './Whitelist';
 export { default as InappropriateWords } from './InappropriateWords';
-

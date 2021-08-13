@@ -1,7 +1,5 @@
-import React, {  useEffect, useState } from 'react';
 import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,23 +11,20 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
 
-import Collapse from '@material-ui/core/Collapse';
 import {
     ChevronLeft,
     ChevronRight,
-    ExpandLess,
-    ExpandMore,
 } from '@material-ui/icons/';
 import { RouteConfig } from '@types';
 import { Typography } from '@material-ui/core';
 import { FC } from 'react';
+import { useDispatch } from 'react-redux';
+import { setOpenDrawer } from 'store/popus/actions';
 
 // const listbuy = ['/purchase-order/load', '/purchase-order/list', '/purchase-order/[id]'];
 // const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
 
 type IProps = {
-    open: boolean;
-    setOpen: any;
     classes: any;
     theme: any;
     routes: RouteConfig[];
@@ -54,7 +49,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
         return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
     }
 
-    const isSelected = config.path === history.location.pathname;
+    const isSelected = !config.subroute ? config.path === history.location.pathname : history.location.pathname.includes(config.path);
     let className = null;
     if (isSelected) {
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
@@ -62,11 +57,24 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
     
+    const onClick = () => {
+        if (!config.subroute) {
+            history.push(config.path!)
+        } else {
+            if (config.initialSubroute) {
+                history.push(config.initialSubroute);
+            } else {
+                const message = `initialSubroute debe tener valor para la subruta key:${config.key} path:${config.path}`;
+                console.assert(config.initialSubroute != null || config.initialSubroute != undefined, message);
+            }
+        }
+    }
+
     return (
         <ListItem
             button
             key={config.path}
-            onClick={() => history.push(config.path!)}
+            onClick={onClick}
             className={clsx(className)}
         >
             <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
@@ -75,12 +83,14 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
     );
 };
 
-const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
-    const history = useHistory();
+const Aside = ({ classes, theme, routes }: IProps) => {
+    const dispatch = useDispatch();
     const dataRes = useSelector(state => state.login);
+    const openDrawer = useSelector(state =>  state.popus.openDrawer);
+    // const [open, setOpen] = useState(openDrawer);
 
     const ChevronIcon: FC = () => {
-        if (!open) {
+        if (!openDrawer) {
             return (
                 <ThemeProvider theme={whiteIconTheme}>
                     {theme.direction === 'rtl' ?  <ChevronLeft /> : <ChevronRight />}
@@ -91,64 +101,31 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const ListItemCollapse = ({ itemName, listRoutes, children, IconLink }: IProps2) => {
-
-        const [isCollapse, setIsCollapse] = useState(false);
-
-        useEffect(() => {
-            if (history && !isCollapse) {
-                if (listRoutes.includes(history.location.pathname))
-                    setIsCollapse(true)
-            }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [history]);
-
-        if (!dataRes.user)
-            return null;
-
-        return (
-            <>
-                <ListItem style={{ paddingBottom: '5px', paddingTop: '5px' }} button onClick={() => setIsCollapse(!isCollapse)}>
-                    <ListItemIcon style={{ minWidth: '45px' }}><IconLink /></ListItemIcon>
-                    <ListItemText primary={itemName} />
-                    {isCollapse ? <ExpandLess style={{ color: 'white' }} /> : <ExpandMore style={{ color: 'white' }} />}
-                </ListItem>
-                <Collapse in={isCollapse} timeout="auto" unmountOnExit>
-                    <List component="div" disablePadding>
-                        {children}
-                    </List>
-                </Collapse>
-            </>
-        )
-    }
-
     return (
         <Drawer
             className={clsx(classes.drawer, {
-                [classes.drawerOpen]: open,
-                [classes.drawerClose]: !open,
+                [classes.drawerOpen]: openDrawer,
+                [classes.drawerClose]: !openDrawer,
             })}
             variant="permanent"
             anchor="left"
-            open={open}
+            open={openDrawer}
             classes={{
                 paper: clsx({
-                  [classes.drawerOpen]: open,
-                  [classes.drawerClose]: !open,
+                  [classes.drawerOpen]: openDrawer,
+                  [classes.drawerClose]: !openDrawer,
                 }),
             }}
         >
             <div className={classes.toolbar}>
-                <img src={open ? "./Laraigo-logo-name.svg" : "./Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
+                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} open={open} />)}
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} />)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
-                <IconButton onClick={() => setOpen(!open)}>
-                    {/* {theme.direction === 'rtl' ? <ThemeProvider theme={whiteIconTheme}><ChevronRight/></ThemeProvider> : <ChevronLeft color="primary" />} */}
+                <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
                     <ChevronIcon />
                 </IconButton>
             </div>

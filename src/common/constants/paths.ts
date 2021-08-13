@@ -9,13 +9,13 @@ const paths = {
     CHANNELS: '/channels',
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
-    EXTRAS: '/extras',
-    PROPERTIES: '/properties',
-    QUICKREPLIES: '/quickreplies',
-    USERS: '/users',
-    GROUPCONFIG: '/groupconfig',    
-    WHITELIST: '/whitelist',    
-    INAPPROPRIATEWORDS: '/inappropriatewords'
+    EXTRAS: '/extras', // referencial only
+    PROPERTIES: '/extras/properties',
+    QUICKREPLIES: '/extras/quickreplies',
+    USERS: '/extras/users',
+    GROUPCONFIG: '/extras/groupconfig',    
+    WHITELIST: '/extras/whitelist',    
+    INAPPROPRIATEWORDS: '/extras/inappropriatewords'
 };
 
 export default paths;
