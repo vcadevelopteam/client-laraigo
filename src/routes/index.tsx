@@ -1,7 +1,7 @@
 import { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties,Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels,SLA  } from 'pages';
+import { Users, SignIn, Properties,Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels,SLA,Domains  } from 'pages';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import routes from "./routes";
 
@@ -21,6 +21,7 @@ const RouterApp: FC = () => {
 					<Route exact path="/inappropriatewords" component={InappropriateWords} />
 					<Route exact path="/intelligentmodels" component={IntelligentModels} />
 					<Route exact path="/sla" component={SLA} />
+					<Route exact path="/domains" component={Domains} />
 					<Popus />
 				</Layout>
 			</Switch>

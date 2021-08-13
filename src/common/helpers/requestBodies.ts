@@ -162,3 +162,22 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
     parameters: { id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax, 
         usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }
 });
+
+export const getDomainSel = (domainname: string): IRequestBody => ({
+    method: "UFN_DOMAIN_SEL",
+    key: "UFN_DOMAIN_SEL",
+    parameters: {
+        domainname: domainname,
+        all: true
+    }
+})
+
+export const getDomainValueSel = (domainname: string): IRequestBody => ({
+    method: "UFN_DOMAIN_VALUES_SEL",
+    key: "UFN_DOMAIN_VALUES_SEL",
+    parameters: {
+        id: 0,
+        domainname: domainname,
+        all: true
+    }
+})

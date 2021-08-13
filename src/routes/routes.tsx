@@ -123,6 +123,12 @@ const routes: RouteConfig[] = [
         path: paths.SLA,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.DOMAINS,
+        description: <Trans i18nKey={langKeys.domain_plural} count={2} />,
+        path: paths.DOMAINS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];
 
 export default routes;

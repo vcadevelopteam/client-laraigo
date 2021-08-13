@@ -66,8 +66,12 @@ const translation: LangKeys = {
 
     group: 'Group',
     group_plural: 'Groups',
+    code:'Code',
+    bydefault: 'Default Value',
 
     domain: 'Domain',
+    domain_plural: 'Domains',
+    valuelist:'Values list',
     documenttype: 'Document type',
     documentnumber: 'Document number',
     usergroup: 'User group',

@@ -18,6 +18,7 @@ const paths = {
     INAPPROPRIATEWORDS: '/inappropriatewords',
     INTELLIGENTMODELS: '/intelligentmodels',
     SLA: '/sla',
+    DOMAINS: '/domains',
 };
 
 export default paths;

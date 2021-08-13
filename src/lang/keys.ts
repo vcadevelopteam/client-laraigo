@@ -29,11 +29,15 @@ export const langKeys = {
 
     extra: 'extra',
     extra_plural: 'extra_plural',
+    valuelist:'valuelist',
+    code:'code',
+    bydefault: 'bydefault',
 
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
     usergroup: 'usergroup',
     domain: 'domain',
+    domain_plural: 'domain_plural',
     intelligentmodels: 'intelligentmodels',
     endpoint: 'endpoint',
     modelid:'modelid',
