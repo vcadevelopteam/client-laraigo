@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -304,7 +305,7 @@ const Quickreplies: FC = () => {
                 }
             },
         ],
-        []
+        [t]
     );
 
     const fetchData = () => dispatch(getCollection(getPropertySel(0))); //mainResult.mainData.data

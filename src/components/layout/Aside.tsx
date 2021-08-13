@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import List from '@material-ui/core/List';
 import Drawer from '@material-ui/core/Drawer';
@@ -11,12 +11,8 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import { useHistory } from 'react-router-dom';
-
-// import authContext from 'context/auth/authContext';
 import { useSelector } from 'hooks';
 
-// import Link from 'next/link';
-// import { useRouter } from 'next/router';
 import Collapse from '@material-ui/core/Collapse';
 import {
     ChevronLeft,
@@ -32,7 +28,6 @@ import { FC } from 'react';
 // const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
 
 type IProps = {
-    // children: any;
     open: boolean;
     setOpen: any;
     classes: any;
@@ -47,24 +42,35 @@ type IProps2 = {
     IconLink: any;
 }
 
-const LinkList: FC<{ config: RouteConfig, classes: any }> = ({ config, classes }) => {
+const whiteIconTheme = createTheme({overrides: {MuiSvgIcon: {
+    root: { color: "#FFF", width: 24, height: 24, minWidth: 0 },
+},},},);
+
+const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
     const theme = useTheme();
 
     if (!config.path) {
-        return <Typography className={classes.drawerLabel}>{config.description}</Typography>;
+        return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
     }
 
     const isSelected = config.path === history.location.pathname;
+    let className = null;
+    if (isSelected) {
+        className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
+    } else {
+        className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
+    }
+    
     return (
         <ListItem
             button
             key={config.path}
             onClick={() => history.push(config.path!)}
-            className={clsx(isSelected && classes.drawerItemActive)}
+            className={clsx(className)}
         >
-            <ListItemIcon>{config.icon?.(isSelected ? theme.palette.primary.main : "#8F92A1")}</ListItemIcon>
-            <ListItemText primary={config.description} />
+            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+            <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
         </ListItem>
     );
 };
@@ -73,7 +79,17 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
     const history = useHistory();
     const dataRes = useSelector(state => state.login);
 
-    const handleDrawerClose = () => setOpen(false);
+    const ChevronIcon: FC = () => {
+        if (!open) {
+            return (
+                <ThemeProvider theme={whiteIconTheme}>
+                    {theme.direction === 'rtl' ?  <ChevronLeft /> : <ChevronRight />}
+                </ThemeProvider>
+            );
+        } else {
+            return theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />;
+        }
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const ListItemCollapse = ({ itemName, listRoutes, children, IconLink }: IProps2) => {
@@ -109,24 +125,31 @@ const Aside = ({ open, setOpen, classes, theme, routes }: IProps) => {
 
     return (
         <Drawer
-            className={classes.drawer}
-            variant="persistent"
+            className={clsx(classes.drawer, {
+                [classes.drawerOpen]: open,
+                [classes.drawerClose]: !open,
+            })}
+            variant="permanent"
             anchor="left"
             open={open}
             classes={{
-                paper: classes.drawerPaper,
+                paper: clsx({
+                  [classes.drawerOpen]: open,
+                  [classes.drawerClose]: !open,
+                }),
             }}
         >
             <div className={classes.toolbar}>
-                <img src="./Laraigo-logo-name.svg" style={{ height: 37 }} alt="logo" />
+                <img src={open ? "./Laraigo-logo-name.svg" : "./Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} />)}
+            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} open={open} />)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
-                <IconButton onClick={handleDrawerClose}>
-                    {theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />}
+                <IconButton onClick={() => setOpen(!open)}>
+                    {/* {theme.direction === 'rtl' ? <ThemeProvider theme={whiteIconTheme}><ChevronRight/></ThemeProvider> : <ChevronLeft color="primary" />} */}
+                    <ChevronIcon />
                 </IconButton>
             </div>
         </Drawer>

@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 
@@ -30,9 +30,10 @@ interface DetailProps {
 interface ModalProps {
     data: RowSelected;
     multiData: MultiData[];
+    preData: Dictionary[]; //ORGANIZATIONS
     openModal: boolean;
-    setOpenModal: (open: boolean) => void;
-    updateRecords?: (record: any) => void;
+    setOpenModal: (open: boolean) => void; 
+    updateRecords?: (record: any) => void; //SETDATAORGANIZATION
 }
 const arrayBread = [
     { id: "view-1", name: "Users" },
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
+const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords, preData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -59,9 +60,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
     const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataStatusOrguser = multiData[7] && multiData[7].success ? multiData[7].data : [];
-    const dataOrganizations = multiData[8] && multiData[8].success ? multiData[8].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
-
+    const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
+    const [dataOrganizations, setDataOrganizations] = useState<Dictionary[]>([])
     const [dataSupervisors, setDataSupervisors] = useState<Dictionary[]>([]);
     const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
     const [dataApplications, setDataApplications] = useState<Dictionary[]>([]);
@@ -83,7 +84,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
     }, [resFromOrg])
 
-    const onSubmit = handleSubmit((data) => {
+    const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
         console.log(data);
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
@@ -128,6 +129,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         register('status', { validate: (value) => (value && value.length) || 'This is required.' });
         register('labels');
         register('bydefault');
+        
+        setDataOrganizations(dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y.orgid === x.orgid)))
     }, [openModal])
 
     const onChangeOrganization = (value: Dictionary) => {
@@ -429,7 +432,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         []
     );
 
-    useEffect(() => {
+    useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
         if (!detailRes.loading && !detailRes.error) {
             setDataOrganizations(detailRes.data);
         }
@@ -470,7 +473,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             doctype: row?.doctype || '',
             docnum: row?.docnum || '',
             company: row?.company || '',
-            billinggroup: row?.billinggroup || '',
+            billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
             status: row ? row.status : 'ACTIVO',
@@ -498,13 +501,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('doctype', { validate: (value) => (value && value.length) || 'This is required.' });
         register('docnum', { validate: (value) => (value && value.length) || 'This is required.' });
         register('company', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('billinggroup', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('billinggroupid');
         register('registercode', { validate: (value) => (value && value.length) || 'This is required.' });
         register('description');
         register('twofactorauthentication');
 
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0)));//TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
+        dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -517,6 +520,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
             detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
         }, true));
+        dispatch(showBackdrop(true));
+        setWaitSave(true)
     });
 
     const onSubmitPassword = () => {
@@ -534,7 +539,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '80%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -691,12 +696,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <FieldSelect
                                 label={t(langKeys.billingGroup)}
                                 className="col-6"
-                                valueDefault={row?.billinggroup || ""}
-                                onChange={(value) => setValue('billinggroup', (value ? value.domainvalue : ''))}
-                                error={errors?.billinggroup?.message}
+                                valueDefault={row?.billinggroupid || ""}
+                                onChange={(value) => setValue('billinggroupid', (value ? value.domainid : 0))}
+                                error={errors?.billinggroupid?.message}
                                 data={dataBillingGroups}
                                 optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionValue="domainid"
                             /> :
                             <FieldView
                                 label={t(langKeys.billingGroup)}
@@ -796,6 +801,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 setOpenModal={setOpenDialogOrganization}
                 multiData={multiData}
                 updateRecords={setDataOrganizations}
+                preData={dataOrganizations}
             />
         </div>
     );
@@ -917,7 +923,7 @@ const Users: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+        dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }

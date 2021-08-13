@@ -1,19 +1,19 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getWhitelistSel, getChannelsByOrg, getValuesFromDomain, insWhitelist } from 'common/helpers';
+import { getWhitelistSel, getValuesFromDomain, insWhitelist } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -56,10 +56,9 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataDomain = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             id: row ? row.whitelistid : 0,
@@ -238,7 +237,7 @@ const Whitelist: FC = () => {
                 }
             },
         ],
-        []
+        [t]
     );
 
     const fetchData = () => dispatch(getCollection(getWhitelistSel(0)));

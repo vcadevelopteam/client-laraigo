@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
-import { useSelector } from 'hooks';
+// import { useSelector } from 'hooks';
 import { SearchField, StatusConnection, AccountMenu, NotificationMenu } from 'components';
 
 type IProps = {
@@ -13,10 +13,13 @@ type IProps = {
     open: boolean;
     setOpen: any;
     title?: React.ReactNode;
+    drawerWidth: number;
 }
 
 const Header = ({ classes, open, setOpen }: IProps) => {
-    const dataRes = useSelector(state => state.login);
+    // const dataRes = useSelector(state => state.login);
+// const Header = ({ classes, open, setOpen, drawerWidth }: IProps) => {
+//     const dataRes = useSelector(state => state.login);
     
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -45,7 +48,6 @@ const Header = ({ classes, open, setOpen }: IProps) => {
                         // onClick={handleDrawerOpen}
                     />
                 </IconButton>
-
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                     <div className={classes.title} style={{ width: '400px' }}>
                         <SearchField

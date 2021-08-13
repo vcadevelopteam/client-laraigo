@@ -82,10 +82,10 @@ export const getValuesFromDomain = (domainname: string): IRequestBody => ({
     }
 });
 
-export const insUser = ({ id, usr, doctype, docnum, password, firstname, lastname, email, type, status, description, operation, company, twofactorauthentication, registercode }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key: "UFN_USER_INS",
-    parameters: { id, usr, doctype, docnum, pwd: password, firstname, lastname, email, pwdchangefirstlogin: false, type, status, description, operation, company, twofactorauthentication, registercode }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin: false, type, status, description, operation, company, twofactorauthentication, registercode, billinggroup: billinggroupid }
 });
 
 export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor, operation, redirect }: Dictionary): IRequestBody => ({
