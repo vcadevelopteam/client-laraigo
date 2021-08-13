@@ -18,6 +18,7 @@ export interface IState {
     snackbar: ISnackBar;
     question: IQuestion;
     showBackDrop: boolean;
+    openDrawer: boolean;
 }
 
 export const initialState: IState = {
@@ -33,10 +34,12 @@ export const initialState: IState = {
         callbackcancel: null
     },
     showBackDrop: false,
+    openDrawer: true,
 }
 
 export default createReducer<IState>(initialState, {
     [actionTypes.SHOW_BACKDROP]: caseFUnctions.showBackdrop,
     [actionTypes.SHOW_QUESTION]: caseFUnctions.showSnackbar,
     [actionTypes.SHOWSNACKBAR]: caseFUnctions.showSnackbar,
+    [actionTypes.OPEN_DRAWER]: caseFUnctions.openDrawer,
 });
