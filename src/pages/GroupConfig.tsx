@@ -100,7 +100,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     });
 
     return (
-        <div>
+        <div style={{width: '100%'}}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}

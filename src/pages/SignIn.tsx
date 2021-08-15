@@ -16,7 +16,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
-
+import { getAccessToken } from 'common/helpers';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -83,7 +83,7 @@ const SignIn = () => {
     const history = useHistory();
 
     const dispatch = useDispatch();
-    const dataRes = useSelector(state => state.login);
+    const resLogin = useSelector(state => state.login.login);
 
     const [dataAuth, setDataAuth] = useState<IAuth>({ username: '', password: '' });
     const [showPassword, setShowPassword] = useState(false);
@@ -98,21 +98,25 @@ const SignIn = () => {
     }
 
     useEffect(() => {
-        console.log(dataRes);
-        if(!dataRes.error && dataRes.user) {
+        if (getAccessToken())
+            history.push('/');
+    }, [])
+
+    useEffect(() => {
+        if(!resLogin.error && resLogin.user) {
             //redirect to page tickets
-            history.push('/tickets');
+            history.push(resLogin.user.redirect);
         }
-    }, [dataRes, history]);
+    }, [resLogin, history]);
 
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
             <div className={classes.childContainer}>
                 <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo"/>
                 <div className={classes.paper}>
-                    {dataRes.error && (
+                    {resLogin.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">
-                            {dataRes.message}
+                            {resLogin.message}
                         </Alert>
                     )}
                     <form
@@ -153,7 +157,7 @@ const SignIn = () => {
                                 ),
                             }}
                         />
-                        {!dataRes.loading ?
+                        {!resLogin.loading ?
                             <Button
                                 type="submit"
                                 fullWidth

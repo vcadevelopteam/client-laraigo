@@ -100,7 +100,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     });
 
     return (
-        <div>
+        <div style={{width: '100%'}}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}

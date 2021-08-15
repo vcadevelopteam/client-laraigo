@@ -97,7 +97,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     });
 
     return (
-        <div>
+        <div style={{width: '100%'}}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}

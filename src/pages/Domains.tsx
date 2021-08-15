@@ -83,8 +83,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     }, [resFromOrg])
 
     const onSubmit = handleSubmit((data) => {
-        debugger
-        console.log(data);
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
         else
@@ -93,19 +91,21 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     });
 
     useEffect(() => {
-        setDataSupervisors([])
-        setDataChannels([])
-        setDataApplications([])
-        //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
-        reset({
-            domaindesc: row?.domaindesc || '',
-            domainvalue: row?.domainvalue || '',
-            bydefault: row?.bydefault || false,
-        })
-
-        register('domainvalue', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('domaindesc', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('bydefault');
+        if (openModal) {
+            setDataSupervisors([])
+            setDataChannels([])
+            setDataApplications([])
+            //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
+            reset({
+                domaindesc: row?.domaindesc || '',
+                domainvalue: row?.domainvalue || '',
+                bydefault: row?.bydefault || false,
+            })
+    
+            register('domainvalue', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('domaindesc', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('bydefault');
+        }
     }, [openModal])
 
     return (

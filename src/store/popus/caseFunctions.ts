@@ -6,10 +6,14 @@ export const showSnackbar = (state: IState, action: IAction): IState => ({
     snackbar: action.payload,
 })
 
-export const showBackdrop = (state: IState, action: IAction): IState => ({
-    ...state,
-    showBackDrop: action.payload,
-})
+export const showBackdrop = (state: IState, action: IAction): IState => {
+    console.log(action.payload);
+    
+    return {
+        ...state,
+        showBackDrop: action.payload,
+    }
+}
 
 export const openDrawer = (state: IState, action: IAction): IState => ({
     ...state,

@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Dictionary } from '@types';
 import Checkbox from '@material-ui/core/Checkbox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
@@ -74,8 +74,14 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={editFunction}><Trans i18nKey={langKeys.edit} /></MenuItem>
-                <MenuItem onClick={deleteFunction}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                <MenuItem onClick={(e) => {
+                    setAnchorEl(null)
+                    editFunction && editFunction(e)
+                    }}><Trans i18nKey={langKeys.edit} /></MenuItem>
+                <MenuItem onClick={(e) => {
+                    setAnchorEl(null)
+                    deleteFunction && deleteFunction(e)
+                    }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </>
     )
@@ -135,7 +141,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         keepMounted
         fullWidth
         maxWidth={maxWidth}
-        style={{ zIndex: 1200 }}>
+        style={{ zIndex: 1300 }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
@@ -204,23 +210,20 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false }) => {
 
     const [value, setValue] = useState<Dictionary | null>(null);
-    const [inputValue, setInputValue] = useState('');
 
     useEffect(() => {
-        if (valueDefault) {
+        if (valueDefault && data.length > 0) {
             const optionfound = data.find((o: Dictionary) => o[optionValue] === valueDefault);
             if (optionfound) {
-                setInputValue(optionfound[optionDesc]);
                 setValue(optionfound);
                 if (triggerOnChangeOnFirst)
                     onChange && onChange(optionfound);
             }
         } else {
             setValue(null);
-            setInputValue('');
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [valueDefault, data]);
 
     return (
         <div className={className}>
@@ -229,13 +232,12 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
-                value={value}
-                inputValue={inputValue}
+                value={data.length > 0 ?  value : null}
                 onChange={(_, newValue) => {
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
+                // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
                 loading={loading}
@@ -243,6 +245,15 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     <TextField
                         {...params}
                         helperText={error || null}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
                     />
                 )}
             />
@@ -253,19 +264,19 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
     useEffect(() => {
-        if (valueDefault) {
+        if (valueDefault && data.length > 0) {
             const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
             setOptionsSelected(optionsSelected);
         } else {
             setOptionsSelected([]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault]);
+    }, [valueDefault, data]);
 
     return (
         <div className={className}>
@@ -275,6 +286,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
+                loading={loading}
                 value={optionsSelected}
                 renderOption={(item, { selected }: any) => (
                     <React.Fragment>
@@ -297,7 +309,17 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 renderInput={(params) => (
                     <TextField
                         {...params}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
                         helperText={error || null}
+                        
                     />
                 )}
             />
@@ -309,7 +331,7 @@ interface TemplateSwitchProps extends InputProps {
     label: string;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, valueDefault, label, ...props }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label }) => {
     const [checkedaux, setChecked] = useState(false);
 
     useEffect(() => {
@@ -319,8 +341,9 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, value
     return (
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
-            <IOSSwitch {...props} checked={checkedaux} onChange={(e) => {
-                setChecked(e.target.checked)
+            <IOSSwitch checked={checkedaux} onChange={(e) => {
+                setChecked(e.target.checked);
+                onChange && onChange(e.target.checked)
             }} />
         </div>
     );

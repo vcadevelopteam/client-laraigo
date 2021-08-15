@@ -4,6 +4,10 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
+import { useSelector } from 'hooks';
+import { logout } from 'store/login/actions';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,12 +39,22 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const AccountMenu: FC = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const signOut = () => {
+        dispatch(logout());
+        history.push('/sign-in');
+    }
 
     return (
         <div className={classes.root}>
@@ -53,8 +67,8 @@ const AccountMenu: FC = () => {
                 endIcon={<ArrowDropDownIcon />}
             >
                 <div className={classes.infoContainer}>
-                    <label className={classes.infoUserName}>Victor Virrueta</label>
-                    <label className={classes.infoUserRol}>Admin</label>
+                    <label className={classes.infoUserName}>{user?.firstname} {user?.lastname}</label>
+                    <label className={classes.infoUserRol}>{user?.roledesc}</label>
                 </div>
             </Button>
             <Menu
@@ -74,7 +88,7 @@ const AccountMenu: FC = () => {
                 onClose={handleClose}
             >
                 <MenuItem onClick={(e) => {}}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
-                <MenuItem onClick={(e) => {}}><Trans i18nKey={langKeys.signoff} /></MenuItem>
+                <MenuItem onClick={signOut}><Trans i18nKey={langKeys.signoff} /></MenuItem>
             </Menu>
         </div>
     );

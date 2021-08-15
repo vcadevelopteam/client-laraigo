@@ -28,9 +28,11 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
@@ -71,6 +73,12 @@ const useStyles = makeStyles((theme) => ({
             }
         },
     },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
+    },
     containerFilterGeneral: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -79,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerfloat: {
         borderBottom: 'none',
-        padding: '4px 24px 4px 16px',
         backgroundColor: 'white',
         marginTop: '1px',
         position: 'absolute',
@@ -110,6 +117,12 @@ const useStyles = makeStyles((theme) => ({
         gridGap: theme.spacing(1),
         display: 'grid',
         gridAutoFlow: 'column',
+    },
+    containerHeader: {
+        display: 'block',
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        },
     }
 }));
 
@@ -128,6 +141,8 @@ const TableZyx = React.memo(({
     loading = false
 }: TableConfig) => {
     const classes = useStyles();
+    const theme = useTheme();
+    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
     const SelectColumnFilter = ({
         column: { setFilter, type },
@@ -310,8 +325,8 @@ const TableZyx = React.memo(({
     }, [fetchData])
 
     return (
-        <Box style={{ height: '100%' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb="30px">
+        <Box width={1} style={{ height: '100%' }}>
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
                 {titlemodule ?
                     <span className={classes.title}>
                         {titlemodule}
@@ -361,7 +376,7 @@ const TableZyx = React.memo(({
             {filterGeneral && (
                 <Box className={classes.containerFilterGeneral}>
                     <span></span>
-                    <div style={{ width: '50%' }}>
+                    <div className={classes.containerSearch}>
                         <SearchField
                             disabled={loading}
                             colorPlaceHolder='#FFF'
@@ -376,7 +391,7 @@ const TableZyx = React.memo(({
 
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                    <Table size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -437,12 +452,12 @@ const TableZyx = React.memo(({
                                                     :
                                                     (cell.value?.length > 100 ?
                                                         <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={400}>
+                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
                                                                 {cell.render('Cell')}
                                                             </Box>
                                                         </Tooltip>
                                                         :
-                                                        <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={1}>
+                                                        <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
                                                             {cell.render('Cell')}
                                                         </Box>
                                                     )

@@ -1,10 +1,7 @@
 import React from 'react';
-
 import clsx from 'clsx';
-
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
 // import { useSelector } from 'hooks';
 import { useSelector } from 'hooks';
 import { SearchField, StatusConnection, AccountMenu, NotificationMenu } from 'components';
@@ -16,7 +13,6 @@ type IProps = {
 }
 
 const Header = ({ classes, drawerWidth }: IProps) => {
-    const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
 
     return (

@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insProperty, insUser, insOrgUser } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -32,7 +32,7 @@ interface ModalProps {
     multiData: MultiData[];
     preData: Dictionary[]; //ORGANIZATIONS
     openModal: boolean;
-    setOpenModal: (open: boolean) => void; 
+    setOpenModal: (open: boolean) => void;
     updateRecords?: (record: any) => void; //SETDATAORGANIZATION
 }
 const arrayBread = [
@@ -62,10 +62,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     const dataStatusOrguser = multiData[7] && multiData[7].success ? multiData[7].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
-    const [dataOrganizations, setDataOrganizations] = useState<Dictionary[]>([])
-    const [dataSupervisors, setDataSupervisors] = useState<Dictionary[]>([]);
-    const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
-    const [dataApplications, setDataApplications] = useState<Dictionary[]>([]);
+
+    const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] })
+    const [dataSupervisors, setDataSupervisors] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [dataChannels, setDataChannels] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [dataApplications, setDataApplications] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
 
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
 
@@ -75,17 +76,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_APPS_DATA_SEL");
 
         if (indexSupervisor > -1)
-            setDataSupervisors(resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : []);
+            setDataSupervisors({ loading: false, data: resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : [] });
 
         if (indexChannels > -1)
-            setDataChannels(resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : []);
+            setDataChannels({ loading: false, data: resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : [] });
 
         if (indexApplications > -1)
-            setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
+            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
     }, [resFromOrg])
 
     const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
-        console.log(data);
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
         else
@@ -94,56 +94,70 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     });
 
     useEffect(() => {
-        setDataSupervisors([])
-        setDataChannels([])
-        setDataApplications([])
-        //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
-        reset({
-            orgid: row ? row.orgid : 0,
-            roleid: row ? row.roleid : 0,
-            roledesc: row ? row.roledesc : '', //for table
-            orgdesc: row ? row.orgdesc : '', //for table
-            supervisordesc: row ? row.supervisordesc : '', //for table
-            channelsdesc: row ? row.channelsdesc : '', //for table
-            supervisor: row ? row.supervisor : '',
-            type: row?.type || '',
-            channels: row?.channels || '',
-            redirect: row?.redirect || '',
-            groups: row?.groups || '',
-            labels: row?.labels || '',
-            status: row?.status || '',
-            bydefault: row?.bydefault || false,
-        })
+        if (openModal) {
+            //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
+            reset({
+                orgid: row ? row.orgid : 0,
+                roleid: row ? row.roleid : 0,
+                roledesc: row ? row.roledesc : '', //for table
+                orgdesc: row ? row.orgdesc : '', //for table
+                supervisordesc: row ? row.supervisordesc : '', //for table
+                channelsdesc: row ? row.channelsdesc : '', //for table
+                supervisor: row ? row.supervisor : '',
+                type: row?.type || '',
+                channels: row?.channels || '',
+                redirect: row?.redirect || '',
+                groups: row?.groups || '',
+                labels: row?.labels || '',
+                status: row?.status || '',
+                bydefault: row?.bydefault || false,
+            })
 
-        register('orgid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('roleid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('supervisor');
-        register('type', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('channels');
-        register('redirect', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('groups');
-        register('roledesc');
-        register('orgdesc');
-        register('supervisordesc');
-        register('channelsdesc');
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('labels');
-        register('bydefault');
-        
-        setDataOrganizations(dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y.orgid === x.orgid)))
+            register('orgid', { validate: (value) => (value && value > 0) || 'This is required.' });
+            register('roleid', { validate: (value) => (value && value > 0) || 'This is required.' });
+            register('supervisor');
+            register('type', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('channels');
+            register('redirect', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('groups');
+            register('roledesc');
+            register('orgdesc');
+            register('supervisordesc');
+            register('channelsdesc');
+            register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('labels');
+            register('bydefault');
+
+            setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y.orgid === x.orgid)) });
+
+            //forzar a que el select de aplicaciones renderice, por eso se desactivó el triggerOnChangeOnFirst en role
+            if (row) {
+                setDataApplications({ loading: true, data: [] });
+                dispatch(getMultiCollectionAux([
+                    getApplicationsByRole(row.roleid),
+                ]))
+            }
+        } else {
+            setDataOrganizations({ loading: false, data: [] });
+            setDataSupervisors({ loading: false, data: [] })
+            setDataChannels({ loading: false, data: [] })
+            setDataApplications({ loading: false, data: [] })
+        }
     }, [openModal])
 
     const onChangeOrganization = (value: Dictionary) => {
         setValue('orgid', value ? value.orgid : 0);
         setValue('orgdesc', value ? value.orgdesc : '');
         if (value) {
+            setDataSupervisors({ loading: true, data: [] });
+            setDataChannels({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getSupervisors(value.orgid, 0),
                 getChannelsByOrg(value.orgid)
             ]))
         } else {
-            setDataSupervisors([]);
-            setDataChannels([]);
+            setDataSupervisors({ loading: false, data: [] });
+            setDataChannels({ loading: false, data: [] });
         }
     }
 
@@ -151,13 +165,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
         if (value) {
+            setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getApplicationsByRole(value.roleid),
             ]))
         } else {
-            setDataApplications([])
+            setDataApplications({ loading: false, data: [] })
         }
     }
+
+
 
     return (
         <DialogZyx
@@ -179,7 +196,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             onChange={onChangeOrganization}
                             triggerOnChangeOnFirst={true}
                             error={errors?.orgid?.message}
-                            data={dataOrganizations}
+                            data={dataOrganizations.data}
                             optionDesc="orgdesc"
                             optionValue="orgid"
                         /> :
@@ -196,7 +213,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             valueDefault={row?.roleid || ""}
                             onChange={onChangeRole}
                             error={errors?.roleid?.message}
-                            triggerOnChangeOnFirst={true}
+                            // triggerOnChangeOnFirst={true}
                             data={dataRoles}
                             optionDesc="roldesc"
                             optionValue="roleid"
@@ -235,8 +252,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                                 setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
                             }}
                             error={errors?.channels?.message}
-                            // loading={resFromOrg.loading}
-                            data={dataChannels}
+                            loading={dataChannels.loading}
+                            data={dataChannels.data}
                             optionDesc="description"
                             optionValue="communicationchannelid"
                         /> :
@@ -252,7 +269,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         <TemplateSwitch
                             label={t(langKeys.default_organization)}
                             className={classes.mb2}
-                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                            valueDefault={row?.bydefault || ""}
+                            onChange={(value) => setValue('bydefault', value)}
                         /> :
                         <FieldView
                             label={t(langKeys.default_organization)}
@@ -289,7 +307,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                                 setValue('supervisordesc', value ? value.userdesc : '');
                             }}
                             error={errors?.supervisor?.message}
-                            data={dataSupervisors}
+                            data={dataSupervisors.data}
+                            loading={dataSupervisors.loading}
                             optionDesc="userdesc"
                             optionValue="usr"
                         /> :
@@ -307,9 +326,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             valueDefault={row?.redirect || ""}
                             onChange={(value) => setValue('redirect', value ? value.path : '')}
                             error={errors?.redirect?.message}
-                            data={dataApplications}
+                            data={dataApplications.data}
+                            loading={dataApplications.loading}
                             triggerOnChangeOnFirst={true}
-                            // loading={resFromOrg.loading}
                             optionDesc="description"
                             optionValue="path"
                         /> :
@@ -515,12 +534,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
-
+        
+        dispatch(showBackdrop(true));
         dispatch(execute({
             header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
             detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
         }, true));
-        dispatch(showBackdrop(true));
+
         setWaitSave(true)
     });
 
@@ -942,6 +962,7 @@ const Users: FC = () => {
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}
+                hoverShadow={true}
                 handleRegister={handleRegister}
             />
         )

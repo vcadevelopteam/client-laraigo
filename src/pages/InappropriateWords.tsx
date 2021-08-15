@@ -92,7 +92,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     });
 
     return (
-        <div>
+        <div style={{width: '100%'}}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}

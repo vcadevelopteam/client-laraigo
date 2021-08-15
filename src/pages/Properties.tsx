@@ -94,7 +94,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     });
 
     return (
-        <div>
+        <div style={{width: '100%'}}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}

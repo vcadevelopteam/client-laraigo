@@ -5,4 +5,6 @@ export interface IUser {
     status: string;
     token: string;
     usr: string;
+    roledesc: string;
+    redirect: string;
 }

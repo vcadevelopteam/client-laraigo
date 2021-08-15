@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'row',
         height: 'inherit',
         flexGrow: 1,
+        width: '100%',
         maxHeight: 'calc(100vh - 81px)',
     },
     list: {
@@ -25,7 +26,10 @@ const useStyles = makeStyles((theme) => ({
         // width: '100%',
         // maxWidth: 182,
         backgroundColor: theme.palette.background.paper,
-        display: 'flex',
+        display: 'none',
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        },
         flexDirection: 'column' 
       },
       nested: {
@@ -49,9 +53,14 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
     },
     content: {
-        padding: theme.spacing(3),
+        padding: theme.spacing(1),
+        [theme.breakpoints.up('sm')]: {
+            padding: theme.spacing(3),
+        },
         flexGrow: 1,
         overflowY: 'overlay' as any,
+        width: `calc(100% - 182px)`,
+        overflowX: 'auto'
     },
 }));
 

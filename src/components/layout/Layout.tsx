@@ -3,16 +3,21 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
 import Aside from './Aside';
-import { useHistory, useLocation } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import { useSelector } from 'hooks';
-import { getAccessToken } from 'common/helpers';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
-import { setOpenDrawer } from 'store/popus/actions';
+import Popus from 'components/layout/Popus';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { useDispatch } from 'react-redux';
+import { getAccessToken } from 'common/helpers';
+import { useHistory, useLocation } from 'react-router-dom';
+import { validateToken } from 'store/login/actions';
 
 const drawerWidth = 240;
+const drawerWidthCompressed = 73;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     menuButton: {
         marginRight: 36,
     },
+    
     drawer: {
         display: 'flex',
         width: drawerWidth,
@@ -79,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         overflowX: 'hidden',
-        width: theme.spacing(7) + 1,
+        width: theme.spacing(9) + 1,
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
         },
@@ -87,12 +93,12 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 1202,
     },
     drawerItemActive: {
-        color: theme.palette.primary.main, 
+        color: theme.palette.primary.main,
         fill: theme.palette.primary.main,
         stroke: theme.palette.primary.main,
     },
     drawerCloseItemActive: {
-        color: 'white', 
+        color: 'white',
         fill: 'white',
         stroke: 'white',
         opacity: 1,
@@ -157,6 +163,12 @@ const useStyles = makeStyles((theme) => ({
             fontWeight: 'bold',
         }
     },
+    contentDrawerOpen: {
+        maxWidth: `calc(100vw - ${drawerWidth}px)`,
+    },
+    contentDrawerClosed: {
+        maxWidth: `calc(100vw - 138px)`,
+    },
     mainContent: {
         minHeight: 'calc(100vh - 81px)',
     },
@@ -176,47 +188,62 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
+    const dispatch = useDispatch();
+    // const location = useLocation();
+    const history = useHistory();
+    const existToken = getAccessToken();
 
-    const location = useLocation();
-	const history = useHistory();
+    const openDrawer = useSelector(state => state.popus.openDrawer);
+    const resValidateToken = useSelector(state => state.login.validateToken);
 
-	useEffect(() => {
-		if (!getAccessToken()) {
-            console.log("unauthorized");
-			history.replace("/sign-in");
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [location]);
+    // React.useEffect(() => {
+    //     if (existToken)
+    //         dispatch(validateToken());
+    // }, [])
+
+    // if (!existToken) {
+    //     history.push("sign-in");
+    // }
+    // if (resValidateToken.loading) {
+    //     return (
+    //         <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
+    //             <CircularProgress color="inherit" />
+    //         </Backdrop>
+    //     )
+    // } else if (resValidateToken.error) {
+    //     history.push("sign-in");
+    // }
 
     return (
-        <div className={classes.root}>
-            {dataRes.user !== undefined &&
-                <>
-                    <CssBaseline />
-                    <Header
-                        classes={classes}
-                        drawerWidth={drawerWidth}
-                    />
+        <>
+            <div className={classes.root}>
+                {dataRes.login.user !== undefined &&
+                    <>
+                        <CssBaseline />
+                        <Header
+                            classes={classes}
+                            drawerWidth={drawerWidth}
+                        />
+                        <Aside
+                            routes={routes}
+                            classes={classes}
+                            theme={theme}
+                        />
+                        <main className={clsx(classes.content, mainClasses)}>
+                            <div className={classes.toolbar} />
+                            <div className={clsx(classes.mainContent,
+                                openDrawer ? classes.contentDrawerOpen : classes.contentDrawerClosed)}>
+                                <Box component='div' className={classes.mainContentBox}>
+                                    {children}
+                                </Box>
+                            </div>
 
-                    <Aside
-                        routes={routes}
-                        classes={classes}
-                        theme={theme}
-                    />
-
-                    <main className={clsx(classes.content, mainClasses)}>
-                        <div className={classes.toolbar} />
-
-                        <div className={classes.mainContent}>
-                            <Box component='div' className={classes.mainContentBox}>
-                                {children}
-                            </Box>
-                        </div>
-
-                    </main>
-                </>
-            }
-        </div>
+                        </main>
+                    </>
+                }
+            </div>
+            <Popus />
+        </>
     );
 }
 
