@@ -167,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: `calc(100vw - ${drawerWidth}px)`,
     },
     contentDrawerClosed: {
-        maxWidth: `calc(100vw - 138px)`,
+        maxWidth: `calc(100vw - ${drawerWidthCompressed}px)`,
     },
     mainContent: {
         minHeight: 'calc(100vh - 81px)',
