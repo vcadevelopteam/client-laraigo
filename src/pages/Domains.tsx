@@ -95,7 +95,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             setDataSupervisors([])
             setDataChannels([])
             setDataApplications([])
-            //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
+            debugger
             reset({
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
@@ -256,14 +256,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         setOpenDialogOrganization(true)
         setRowSelected({ row, edit: true })
     }
-
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.userid : 0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
-            corporation: row?.corporation || '',
-            organization: row?.organization || '',
+            corporation: row?.corpdesc || '',
+            organization: row?.orgdesc || '',
             domainname: row?.domainname || '',
             type: row?.type || '',
             status: row ? row.status : 'ACTIVO',
@@ -289,7 +288,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('type', { validate: (value) => (value && value.length) || 'This is required.' });
 
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
+        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
@@ -332,26 +331,26 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             <FieldEdit
                                 label={t(langKeys.corporation)}
                                 className="col-6"
-                                valueDefault={row?.corporation || ""}
+                                valueDefault={row?.corpdesc || ""}
                                 onChange={(value) => setValue('corporation', value)}
                                 error={errors?.corporation?.message}
                             />
                             : <FieldView
                                 label={t(langKeys.corporation)}
-                                value={row?.corporation || ""}
+                                value={row?.corpdesc || ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.organization)}
                                 className="col-6"
-                                valueDefault={row?.organization || ""}
+                                valueDefault={row?.orgdesc || ""}
                                 onChange={(value) => setValue('organization', value)}
                                 error={errors?.organization?.message}
                             />
                             : <FieldView
                                 label={t(langKeys.organization)}
-                                value={row?.organization || ""}
+                                value={row?.orgdesc || ""}
                                 className="col-6"
                             />}
                     </div>
