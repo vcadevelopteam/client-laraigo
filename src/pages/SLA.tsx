@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -10,10 +11,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm, NestedValue } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -56,10 +56,9 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
-    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             slaid: row ? row.slaid : 0,
@@ -470,7 +469,7 @@ const SLA: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
+        dispatch(getMultiCollection([getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };

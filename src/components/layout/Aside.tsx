@@ -1,4 +1,4 @@
-import { createTheme, ThemeProvider, useTheme } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -29,21 +29,12 @@ type IProps = {
     theme: any;
     routes: RouteConfig[];
 }
-
-type IProps2 = {
-    itemName: any;
-    listRoutes: any;
-    children: any;
-    IconLink: any;
-}
-
 const whiteIconTheme = createTheme({overrides: {MuiSvgIcon: {
     root: { color: "#FFF", width: 24, height: 24, minWidth: 0 },
 },},},);
 
 const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
-    const theme = useTheme();
 
     if (!config.path) {
         return <Typography className={open ? classes.drawerLabel : classes.drawerCloseLabel}>{config.description}</Typography>;
@@ -65,7 +56,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
                 history.push(config.initialSubroute);
             } else {
                 const message = `initialSubroute debe tener valor para la subruta key:${config.key} path:${config.path}`;
-                console.assert(config.initialSubroute != null || config.initialSubroute != undefined, message);
+                console.assert(config.initialSubroute != null || config.initialSubroute !== undefined, message);
             }
         }
     }
@@ -85,7 +76,6 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 
 const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
-    const dataRes = useSelector(state => state.login);
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
     // const [open, setOpen] = useState(openDrawer);
 

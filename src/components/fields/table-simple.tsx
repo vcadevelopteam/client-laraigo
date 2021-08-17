@@ -28,7 +28,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -141,7 +141,6 @@ const TableZyx = React.memo(({
     loading = false
 }: TableConfig) => {
     const classes = useStyles();
-    const theme = useTheme();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
     const SelectColumnFilter = ({
