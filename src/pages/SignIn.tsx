@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -107,7 +108,6 @@ const SignIn = () => {
     
     useEffect(() => {
         if(!resLogin.error && resLogin.user && getAccessToken()) {
-            console.log('dlkasmdnmsakdsa');
             //redirect to page tickets
             history.push(resLogin.user.redirect);
         }
