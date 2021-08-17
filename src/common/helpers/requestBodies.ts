@@ -176,7 +176,6 @@ export const getDomainValueSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_SEL",
     key: "UFN_DOMAIN_VALUES_SEL",
     parameters: {
-        id: 0,
         domainname: domainname,
         all: true
     }
