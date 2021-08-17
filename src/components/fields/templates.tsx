@@ -339,7 +339,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     }, [valueDefault])
 
     return (
-        <div className={className}>
+        <div className={className} style={{paddingBottom: '3px'}}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
             <IOSSwitch checked={checkedaux} onChange={(e) => {
                 setChecked(e.target.checked);

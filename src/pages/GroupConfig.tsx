@@ -76,11 +76,11 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     React.useEffect(() => {
         register('type');
         register('id');
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('quantity', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('domainid', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('validationtext', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('quantity', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('domainid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('validationtext', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {

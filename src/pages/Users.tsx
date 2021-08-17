@@ -113,18 +113,18 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                 bydefault: row?.bydefault || false,
             })
 
-            register('orgid', { validate: (value) => (value && value > 0) || 'This is required.' });
-            register('roleid', { validate: (value) => (value && value > 0) || 'This is required.' });
+            register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+            register('roleid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
             register('supervisor');
-            register('type', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('channels');
-            register('redirect', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('redirect', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('groups');
             register('roledesc');
             register('orgdesc');
             register('supervisordesc');
             register('channelsdesc');
-            register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('labels');
             register('bydefault');
 
@@ -173,8 +173,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             setDataApplications({ loading: false, data: [] })
         }
     }
-
-
 
     return (
         <DialogZyx
@@ -274,7 +272,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         /> :
                         <FieldView
                             label={t(langKeys.default_organization)}
-                            value={row ? (row.bydefault ? "SI" : "NO") : "NO"}
+                            value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                             className={classes.mb2}
                         />
                     }
@@ -512,16 +510,16 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('type');
         register('id');
         register('password');
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('firstname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('lastname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('usr', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('email', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('doctype', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('docnum', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('company', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('docnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('billinggroupid');
-        register('registercode', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('registercode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description');
         register('twofactorauthentication');
 
@@ -534,7 +532,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
-        
+        if (!dataOrganizations.some(x => x.bydefault)) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+            return;
+        }
         dispatch(showBackdrop(true));
         dispatch(execute({
             header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
@@ -707,7 +708,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             /> :
                             <FieldView
                                 label={t(langKeys.twofactorauthentication)}
-                                value={row?.twofactorauthentication || ""}
+                                value={(row?.twofactorauthentication ? t(langKeys.active) : t(langKeys.inactive)).toUpperCase()}
                                 className="col-6"
                             />}
                     </div>

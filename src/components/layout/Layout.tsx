@@ -188,31 +188,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
     const dataRes = useSelector(state => state.login);
-    const dispatch = useDispatch();
-    // const location = useLocation();
-    const history = useHistory();
-    const existToken = getAccessToken();
-
     const openDrawer = useSelector(state => state.popus.openDrawer);
-    const resValidateToken = useSelector(state => state.login.validateToken);
-
-    // React.useEffect(() => {
-    //     if (existToken)
-    //         dispatch(validateToken());
-    // }, [])
-
-    // if (!existToken) {
-    //     history.push("sign-in");
-    // }
-    // if (resValidateToken.loading) {
-    //     return (
-    //         <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
-    //             <CircularProgress color="inherit" />
-    //         </Backdrop>
-    //     )
-    // } else if (resValidateToken.error) {
-    //     history.push("sign-in");
-    // }
 
     return (
         <>
@@ -229,11 +205,11 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             classes={classes}
                             theme={theme}
                         />
-                        <main className={clsx(classes.content, mainClasses)}>
+                        <main className={clsx(classes.content)}>
                             <div className={classes.toolbar} />
                             <div className={clsx(classes.mainContent,
                                 openDrawer ? classes.contentDrawerOpen : classes.contentDrawerClosed)}>
-                                <Box component='div' className={classes.mainContentBox}>
+                                <Box component='div' className={clsx(classes.mainContentBox, mainClasses)}>
                                     {children}
                                 </Box>
                             </div>

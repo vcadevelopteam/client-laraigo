@@ -78,10 +78,10 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('communicationchannelid');
         register('type');
         register('id');
-        register('Quickreplyname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('Quickreplyvalue', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('Quickreplyname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('Quickreplyvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
