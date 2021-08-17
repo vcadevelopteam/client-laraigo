@@ -98,16 +98,20 @@ const SignIn = () => {
     }
 
     useEffect(() => {
-        if (getAccessToken())
+        if (getAccessToken()) {
             history.push('/');
+            console.log(getAccessToken());
+            
+        }
     }, [])
-
+    
     useEffect(() => {
-        if(!resLogin.error && resLogin.user) {
+        if(!resLogin.error && resLogin.user && getAccessToken()) {
+            console.log('dlkasmdnmsakdsa');
             //redirect to page tickets
             history.push(resLogin.user.redirect);
         }
-    }, [resLogin, history]);
+    }, [resLogin]);
 
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
