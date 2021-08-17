@@ -97,9 +97,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             setDataApplications([])
             debugger
             reset({
-                domaindesc: row?.domaindesc || '',
-                domainvalue: row?.domainvalue || '',
-                bydefault: row?.bydefault || false,
+                domaindesc: row? row.domaindesc : '',
+                domainvalue: row? row.domainvalue : '',
+                bydefault: row? row.bydefault : false,
             })
     
             register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -270,33 +270,40 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     });
 
     useEffect(() => {
-        if (!executeRes.loading && !executeRes.error && waitSave) {
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
-            fetchData && fetchData();
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+                fetchData && fetchData();
+            } else if (executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: executeRes.message }))
+                dispatch(showBackdrop(false));
+            }
         }
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
         register('id');
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status');
         register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
+        debugger
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
         debugger
+        dispatch(showBackdrop(true));
         dispatch(execute({
             header: insDomain({ ...data}),
             detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,...x})), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
+        setWaitSave(true)
     });
 
     return (
