@@ -498,11 +498,16 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     });
 
     useEffect(() => {
-        if (!executeRes.loading && !executeRes.error && waitSave) {
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
-            fetchData && fetchData();
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+                fetchData && fetchData();
+            } else if (executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: executeRes.message }))
+                dispatch(showBackdrop(false));
+            }
         }
     }, [executeRes, waitSave])
 
@@ -917,14 +922,16 @@ const Users: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!executeResult.loading && !executeResult.error && waitSave) {
-            dispatch(showBackdrop(false));
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            fetchData();
-        } else if (executeResult.error) {
-            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
-            dispatch(showBackdrop(false));
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showBackdrop(false));
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                setWaitSave(false);
+                fetchData();
+            } else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
+                dispatch(showBackdrop(false));
+            }
         }
     }, [executeResult, waitSave])
 
