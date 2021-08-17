@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC } from 'react'; // we need this to make JSX compile
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Header from './Header';
 import clsx from 'clsx';
@@ -8,13 +8,6 @@ import { useSelector } from 'hooks';
 import { CssBaseline } from '@material-ui/core';
 import { routes } from 'routes/routes';
 import Popus from 'components/layout/Popus';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import { useDispatch } from 'react-redux';
-import { getAccessToken } from 'common/helpers';
-import { useHistory, useLocation } from 'react-router-dom';
-import { validateToken } from 'store/login/actions';
 
 const drawerWidth = 240;
 const drawerWidthCompressed = 73;

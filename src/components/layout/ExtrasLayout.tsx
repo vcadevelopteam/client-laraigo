@@ -89,6 +89,7 @@ const ExtrasLayout: FC = ({children}) => {
         if (!openDrawer) return;
         // let drawer finish rendering to show the closing transition
         setTimeout(() => dispatch(setOpenDrawer(false)), 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
