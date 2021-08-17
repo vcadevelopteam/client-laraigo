@@ -32,9 +32,12 @@ export const langKeys = {
     valuelist:'valuelist',
     code:'code',
     bydefault: 'bydefault',
-
+    review: 'review',
     person: 'person',
     person_plural: 'person_plural',
+    classification: 'classification',
+    summarize:'summarize',
+    detail:'detail',
 
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
@@ -144,6 +147,7 @@ export const langKeys = {
     successful_edit: 'successful_edit',
     
     quickreplies: 'quickreplies',
+    quickreply: 'quickreply',
     twofactorauthentication: 'twofactorauthentication',
     save: 'save',
     setpassword: 'setpassword',

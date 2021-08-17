@@ -150,8 +150,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataDomainType = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const columns = React.useMemo(
         () => [
@@ -478,16 +477,7 @@ const Domains: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPODOMINIO"),
-            getValuesFromDomain("EMPRESA"),
-            getValuesFromDomain("GRUPOFACTURACION"),
-            getValuesFromDomain("ESTADOUSUARIO"),
-            getValuesFromDomain("TIPOUSUARIO"), //formulario orguser
-            getValuesFromDomain("GRUPOS"), //formulario orguser
-            getValuesFromDomain(""), //formulario orguser
-            getOrgsByCorp(0), //formulario orguser
-            getRolesByOrg(), //formulario orguser
         ]));
         return () => {
             dispatch(resetMain());

@@ -54,12 +54,14 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     quantity: 'Cantidad',
     quantity_plural: "Cantidades",
-
+    summarize:'Resumen',
     validationtext: 'Validación de textos',
-
+    quickreply: 'Respuesta rápida',
+    review: 'Resumen',
     domain: 'Dominio',
     domain_plural: 'Dominios',
     valuelist:'Lista de valores',
+    classification: 'Clasificación',
     code:'Código',
     bydefault: 'Valor por defecto',
     documenttype: 'Tipo de documento',
@@ -82,7 +84,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     usertmopercentmax:'TMO% usuario objetivo',
     person: 'Persona',
     person_plural: 'Personas',
-
+    detail:'Detalle',
     whitelist: 'Whitelist',
 
     firstname: 'Nombre',

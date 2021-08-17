@@ -68,8 +68,10 @@ const translation: LangKeys = {
     group_plural: 'Groups',
     code:'Code',
     bydefault: 'Default Value',
-
+    quickreply: 'Quickreply',
+    review: 'Review',
     domain: 'Domain',
+    classification: 'Classification',
     domain_plural: 'Domains',
     valuelist:'Values list',
     documenttype: 'Document type',
@@ -92,7 +94,8 @@ const translation: LangKeys = {
     usertmopercentmax:'TMO% user objetive',
     person: 'Person',
     person_plural: 'People',
-
+    summarize:'Summarize',
+    detail:'Detail',
     whitelist: 'Whitelist',
 
     action: 'Action',

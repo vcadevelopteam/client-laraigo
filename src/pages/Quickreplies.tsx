@@ -3,9 +3,10 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti } from 'components';
+import Typography from '@material-ui/core/Typography';
 
-import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
+import { getQuickrepliesSel, getChannelsByOrg, getValuesFromDomain, insQuickreplies,getClassificationSel } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -60,14 +61,15 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            communicationchannelid: row ? row.communicationchannelid : 0,
-            id: row ? row.Quickreplyid : 0,
-            Quickreplyname: row ? row.Quickreplyname : '',
-            Quickreplyvalue: row ? row.Quickreplyvalue : '',
+            communicationchannelid: row?.communicationchannelid|| 0,
+            classificationid: row?.classificationid|| 0,
+            id: row?.quickreplyid || 0,
+            quickreply: row?.quickreply || '',
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
@@ -78,8 +80,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('communicationchannelid');
         register('type');
         register('id');
-        register('Quickreplyname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('Quickreplyvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('classificationid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('quickreply', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -94,7 +96,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insProperty(data))); //executeRes
+        dispatch(execute(insQuickreplies(data))); //executeRes
         dispatch(showBackdrop(true));
         setWaitSave(true)
     });
@@ -106,7 +108,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.propertyname}` : "New Quickreply"}
+                title={row ? `${row.quickreply}` : "New Quickreply"}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -114,77 +116,87 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.corporation)} // "Corporation"
-                                className="col-6"
+                                className="col-12"
                                 valueDefault={row ? (row.corpdesc || "") : ""}
                                 disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.corporation)}
                                 value={row ? (row.corpdesc || "") : ""}
-                                className="col-6"
+                                className="col-12"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.organization)} // "Organization"
-                                className="col-6"
+                                className="col-12"
                                 valueDefault={row ? (row.orgdesc || "") : ""}
                                 disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.organization)}
                                 value={row ? (row.orgdesc || "") : ""}
-                                className="col-6"
+                                className="col-12"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
-                                label={t(langKeys.channel)}
-                                valueDefault={row ? (row.communicationchanneldesc || "") : ""}
-                                className="col-6"
-                                onChange={(value) => setValue('communicationchannelid', value.communicationchannelid)}
+                                label={t(langKeys.classification)}
+                                valueDefault={row ? (row.classificationid || "") : ""}
+                                className="col-12"
+                                onChange={(value) => setValue('classificationid', value.classificationid)}
                                 error={errors?.status?.message}
-                                data={dataChannel}
+                                data={dataClassification}
                                 optionDesc="description"
-                                optionValue="communicationchannelid"
+                                optionValue="classificationid"
                             />
                             : <FieldView
-                                label={t(langKeys.channel)}
-                                value={row ? (row.communicationchanneldesc || "") : ""}
-                                className="col-6"
+                                label={t(langKeys.classification)}
+                                value={row ? (row.classificationdesc || "") : ""}
+                                className="col-12"
                             />}
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                <Typography style={{ fontSize: 22, paddingBottom: "10px"}} color="textPrimary">{t(langKeys.quickreply)}</Typography>
+                    
+                    <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.name)}
-                                className="col-6"
-                                valueDefault={row ? (row.Quickreplyname || "") : ""}
-                                onChange={(value) => setValue('Quickreplyname', value)}
-                                error={errors?.Quickreplyname?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.name)}
-                                value={row ? (row.Quickreplyname || "") : ""}
+                                label={t(langKeys.summarize)}
+                                className="col-12"
+                                valueDefault={row?.description || ""}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.summarize)}
+                                value={row?.description||""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.value)}
-                                className="col-6"
-                                valueDefault={row ? (row.Quickreplyvalue || "") : ""}
-                                onChange={(value) => setValue('Quickreplyvalue', value)}
-                                error={errors?.Quickreplyvalue?.message}
+                            <FieldEditMulti
+                                label={t(langKeys.detail)}
+                                className="col-12"
+                                valueDefault={row ? (row.quickreply || "") : ""}
+                                onChange={(value) => setValue('quickreply', value)}
+                                error={errors?.quickreply?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.value)}
-                                value={row ? (row.Quickreplyvalue || "") : ""}
-                                className="col-6"
+                                label={t(langKeys.detail)}
+                                value={row ? (row.quickreply || "") : ""}
+                                className="col-12"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
-                                className="col-6"
+                                className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
                                 onChange={(value) => setValue('status', value.domainvalue)}
                                 error={errors?.status?.message}
@@ -195,23 +207,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             : <FieldView
                                 label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                valueDefault={row ? (row.description || "") : ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-6"
+                                className="col-12"
                             />}
                     </div>
                     {edit &&
@@ -247,18 +243,18 @@ const Quickreplies: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.name),
-                accessor: 'Quickreplyname',
+                Header: t(langKeys.quickreply),
+                accessor: 'quickreply',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.review),
                 accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.value),
-                accessor: 'Quickreplyvalue',
+                Header: t(langKeys.status),
+                accessor: 'statusdesc',
                 NoFilter: true
             },
             {
@@ -278,18 +274,8 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.channel),
-                accessor: 'communicationchanneldesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.changeDate),
-                accessor: 'changedate',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.action),
-                accessor: 'userid',
+                accessor: 'quickreplyid',
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
@@ -308,11 +294,15 @@ const Quickreplies: FC = () => {
         [t]
     );
 
-    const fetchData = () => dispatch(getCollection(getPropertySel(0))); //mainResult.mainData.data
+    const fetchData = () => dispatch(getCollection(getQuickrepliesSel(0))); //mainResult.mainData.data
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getChannelsByOrg(), getValuesFromDomain("ESTADOGENERICO")])); //mainResult.multiData.data
+        dispatch(getMultiCollection([
+            getChannelsByOrg(), 
+            getValuesFromDomain("ESTADOGENERICO"),
+            getClassificationSel(0)
+        ])); //mainResult.multiData.data
         return () => {
             dispatch(resetMain());
         };
@@ -346,7 +336,7 @@ const Quickreplies: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.quickreplyid })));
+        dispatch(execute(insQuickreplies({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.quickreplyid })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }

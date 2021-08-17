@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser } from 'common/helpers';
+import { getDomainValueSel, getPersonSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,9 +12,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -30,14 +29,13 @@ interface DetailProps {
 interface ModalProps {
     data: RowSelected;
     multiData: MultiData[];
-    preData: Dictionary[]; //ORGANIZATIONS
     openModal: boolean;
     setOpenModal: (open: boolean) => void;
-    updateRecords?: (record: any) => void; //SETDATAORGANIZATION
+    updateRecords?: (record: any) => void;
 }
 const arrayBread = [
-    { id: "view-1", name: "Users" },
-    { id: "view-2", name: "User detail" }
+    { id: "view-1", name: "Domains" },
+    { id: "view-2", name: "Domain detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -51,133 +49,39 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords, preData }) => {
+const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
-    const resFromOrg = useSelector(state => state.main.multiDataAux);
-
-    const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
-    const dataStatusOrguser = multiData[7] && multiData[7].success ? multiData[7].data : [];
-    const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
-    const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
-
-    const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] })
-    const [dataSupervisors, setDataSupervisors] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [dataChannels, setDataChannels] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [dataApplications, setDataApplications] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-
+   
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
 
-    useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
-        const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_USER_SUPERVISOR_LST");
-        const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_COMMUNICATIONCHANNELBYORG_LST");
-        const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_APPS_DATA_SEL");
-
-        if (indexSupervisor > -1)
-            setDataSupervisors({ loading: false, data: resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : [] });
-
-        if (indexChannels > -1)
-            setDataChannels({ loading: false, data: resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : [] });
-
-        if (indexApplications > -1)
-            setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
-    }, [resFromOrg])
-
-    const onSubmit = handleSubmit((data) => { //GUARDAR MODAL
+   
+    const onSubmit = handleSubmit((data) => {
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
         else
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainid === row.domainid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
         setOpenModal(false)
     });
 
     useEffect(() => {
         if (openModal) {
-            //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
             reset({
-                orgid: row ? row.orgid : 0,
-                roleid: row ? row.roleid : 0,
-                roledesc: row ? row.roledesc : '', //for table
-                orgdesc: row ? row.orgdesc : '', //for table
-                supervisordesc: row ? row.supervisordesc : '', //for table
-                channelsdesc: row ? row.channelsdesc : '', //for table
-                supervisor: row ? row.supervisor : '',
-                type: row?.type || '',
-                channels: row?.channels || '',
-                redirect: row?.redirect || '',
-                groups: row?.groups || '',
-                labels: row?.labels || '',
-                status: row?.status || '',
-                bydefault: row?.bydefault || false,
+                domaindesc: row?.domaindesc||'',
+                domainvalue: row?.domainvalue||'',
+                bydefault: row?.bydefault||false,
             })
-
-            register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-            register('roleid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-            register('supervisor');
-            register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-            register('channels');
-            register('redirect', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-            register('groups');
-            register('roledesc');
-            register('orgdesc');
-            register('supervisordesc');
-            register('channelsdesc');
-            register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-            register('labels');
+    
+            register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+            register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
-
-            setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y.orgid === x.orgid)) });
-
-            //forzar a que el select de aplicaciones renderice, por eso se desactivó el triggerOnChangeOnFirst en role
-            if (row) {
-                setDataApplications({ loading: true, data: [] });
-                dispatch(getMultiCollectionAux([
-                    getApplicationsByRole(row.roleid),
-                ]))
-            }
-        } else {
-            setDataOrganizations({ loading: false, data: [] });
-            setDataSupervisors({ loading: false, data: [] })
-            setDataChannels({ loading: false, data: [] })
-            setDataApplications({ loading: false, data: [] })
         }
     }, [openModal])
-
-    const onChangeOrganization = (value: Dictionary) => {
-        setValue('orgid', value ? value.orgid : 0);
-        setValue('orgdesc', value ? value.orgdesc : '');
-        if (value) {
-            setDataSupervisors({ loading: true, data: [] });
-            setDataChannels({ loading: true, data: [] });
-            dispatch(getMultiCollectionAux([
-                getSupervisors(value.orgid, 0),
-                getChannelsByOrg(value.orgid)
-            ]))
-        } else {
-            setDataSupervisors({ loading: false, data: [] });
-            setDataChannels({ loading: false, data: [] });
-        }
-    }
-
-    const onChangeRole = (value: Dictionary) => {
-        setValue('roleid', value ? value.roleid : 0);
-        setValue('roledesc', value ? value.roldesc : 0);
-        if (value) {
-            setDataApplications({ loading: true, data: [] });
-            dispatch(getMultiCollectionAux([
-                getApplicationsByRole(value.roleid),
-            ]))
-        } else {
-            setDataApplications({ loading: false, data: [] })
-        }
-    }
 
     return (
         <DialogZyx
             open={openModal}
-            title="Organización de usuario"
+            title="Register value"
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
@@ -185,90 +89,24 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
             button2Type="submit"
         >
             <div className="row-zyx">
-                <div className="col-6">
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.organization)}
-                            className={classes.mb2}
-                            valueDefault={row?.orgid || ""}
-                            onChange={onChangeOrganization}
-                            triggerOnChangeOnFirst={true}
-                            error={errors?.orgid?.message}
-                            data={dataOrganizations.data}
-                            optionDesc="orgdesc"
-                            optionValue="orgid"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.organization)}
-                            value={row ? row.orgdesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.role)}
-                            className={classes.mb2}
-                            valueDefault={row?.roleid || ""}
-                            onChange={onChangeRole}
-                            error={errors?.roleid?.message}
-                            // triggerOnChangeOnFirst={true}
-                            data={dataRoles}
-                            optionDesc="roldesc"
-                            optionValue="roleid"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.role)}
-                            value={row ? row.roledesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.type)}
-                            className={classes.mb2}
-                            valueDefault={row?.type || ""}
-                            triggerOnChangeOnFirst={true}
-                            onChange={(value) => setValue('type', value ? value.domainvalue : '')}
-                            error={errors?.type?.message}
-                            data={dataTypeUser}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.organization)}
-                            value={row ? row.orgdesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                            label={t(langKeys.channel)}
-                            className={classes.mb2}
-                            valueDefault={row?.channels || ""}
-                            onChange={(value) => {
-                                setValue('channels', value.map((o: Dictionary) => o.communicationchannelid).join())
-                                setValue('channelsdesc', value.map((o: Dictionary) => o.description).join())
-                            }}
-                            error={errors?.channels?.message}
-                            loading={dataChannels.loading}
-                            data={dataChannels.data}
-                            optionDesc="description"
-                            optionValue="communicationchannelid"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.channel)}
-                            value={row ? row.channelsdesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                </div>
-                <div className="col-6">
+                {edit ?
+                    <FieldEdit
+                        label={t(langKeys.code)}
+                        className="col-6"
+                        valueDefault={row?.domainvalue || ""}
+                        onChange={(value) => setValue('domainvalue', value)}
+                        error={errors?.domainvalue?.message}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.code)}
+                        value={row?.domainvalue||""}
+                        className="col-6"
+                    />}
                     {edit ?
                         <TemplateSwitch
-                            label={t(langKeys.default_organization)}
-                            className={classes.mb2}
-                            valueDefault={row?.bydefault || ""}
-                            onChange={(value) => setValue('bydefault', value)}
+                            label={t(langKeys.bydefault)}
+                            className="col-6"
+                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
                         /> :
                         <FieldView
                             label={t(langKeys.default_organization)}
@@ -276,91 +114,28 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                             className={classes.mb2}
                         />
                     }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className={classes.mb2}
-                            valueDefault={row?.status || ""}
-                            triggerOnChangeOnFirst={true}
-                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                            error={errors?.status?.message}
-                            data={dataStatusOrguser}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.default_organization)}
-                            value={row ? row.orgdesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.supervisor)}
-                            className={classes.mb2}
-                            valueDefault={row?.supervisor || ""}
-                            triggerOnChangeOnFirst={true}
-                            onChange={(value) => {
-                                setValue('supervisor', value ? value.usr : '');
-                                setValue('supervisordesc', value ? value.userdesc : '');
-                            }}
-                            error={errors?.supervisor?.message}
-                            data={dataSupervisors.data}
-                            loading={dataSupervisors.loading}
-                            optionDesc="userdesc"
-                            optionValue="usr"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.supervisor)}
-                            value={row ? row.supervisordesc : ""}
-                            className={classes.mb2}
-                        />
-                    }
+            <div className="row-zyx"></div>
+                
+                {edit ?
+                    <FieldEdit
+                        label={t(langKeys.description)}
+                        className="col-6"
+                        valueDefault={row?.domaindesc || ""}
+                        onChange={(value) => setValue('domaindesc', value)}
+                        error={errors?.domaindesc?.message}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.description)}
+                        value={row?.domaindesc|| ""}
+                        className="col-6"
+                    />}
 
-                    {edit ?
-                        <FieldSelect
-                            label={t(langKeys.default_application)}
-                            className={classes.mb2}
-                            valueDefault={row?.redirect || ""}
-                            onChange={(value) => setValue('redirect', value ? value.path : '')}
-                            error={errors?.redirect?.message}
-                            data={dataApplications.data}
-                            loading={dataApplications.loading}
-                            triggerOnChangeOnFirst={true}
-                            optionDesc="description"
-                            optionValue="path"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.default_application)}
-                            value={row ? row.redirect : ""}
-                            className={classes.mb2}
-                        />
-                    }
-                    {edit ?
-                        <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
-                            label={t(langKeys.group)}
-                            className={classes.mb2}
-                            valueDefault={row?.groups || ""}
-                            onChange={(value) => setValue('groups', value.map((o: Dictionary) => o.domainvalue).join())}
-                            error={errors?.groups?.message}
-                            data={dataGroups}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        /> :
-                        <FieldView
-                            label={t(langKeys.group)}
-                            value={row ? row.groups : ""}
-                            className={classes.mb2}
-                        />
-                    }
-
-                </div>
             </div>
         </DialogZyx>
     );
 }
 
-const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -369,61 +144,33 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
 
-    const [dataOrganizations, setDataOrganizations] = useState<Dictionary[]>([]);
+    const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
-    const [openDialogPassword, setOpenDialogPassword] = useState(false);
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('')
-
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDocType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCompanies = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataBillingGroups = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const dataDomainType = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Organization',
-                accessor: 'orgdesc',
+                Header: t(langKeys.code),
+                accessor: 'domainvalue',
                 NoFilter: true
             },
             {
-                Header: 'Role',
-                accessor: 'roledesc',
+                Header: t(langKeys.description),
+                accessor: 'domaindesc',
                 NoFilter: true
             },
             {
-                Header: 'Supervisor',
-                accessor: 'supervisordesc',
+                Header: t(langKeys.bydefault),
+                accessor: 'bydefault',
                 NoFilter: true
             },
             {
-                Header: 'Group',
-                accessor: 'groups',
-                NoFilter: true
-            },
-            {
-                Header: 'Label',
-                accessor: 'labels',
-                NoFilter: true
-            },
-            {
-                Header: 'Channel',
-                accessor: 'channelsdesc',
-                NoFilter: true
-            },
-            {
-                Header: 'Type',
-                accessor: 'type',
-                NoFilter: true
-            },
-            {
-                Header: 'Status',
+                Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },
@@ -449,9 +196,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         []
     );
 
-    useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
+    useEffect(() => {
         if (!detailRes.loading && !detailRes.error) {
-            setDataOrganizations(detailRes.data);
+            setdataDomain(detailRes.data);
         }
     }, [detailRes]);
 
@@ -463,7 +210,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         if (row.operation !== "INSERT") {
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
-        setDataOrganizations(p => p.filter(x => row.orgid !== x.orgid));
+        setdataDomain(p => p.filter(x => row.orgid !== x.orgid));
     }
 
     const handleView = (row: Dictionary) => {
@@ -475,24 +222,15 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         setOpenDialogOrganization(true)
         setRowSelected({ row, edit: true })
     }
-
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'NINGUNO',
             id: row ? row.userid : 0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
-            firstname: row?.firstname || '',
-            lastname: row?.lastname || '',
-            password: row?.password || '',
-            usr: row?.usr || '',
-            email: row?.email || '',
-            doctype: row?.doctype || '',
-            docnum: row?.docnum || '',
-            company: row?.company || '',
-            billinggroupid: row?.billinggroupid || 0,
-            registercode: row?.registercode || '',
-            twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
+            corporation: row?.corpdesc || '',
+            organization: row?.orgdesc || '',
+            domainname: row?.domainname || '',
+            type: row?.type || '',
             status: row ? row.status : 'ACTIVO',
         }
     });
@@ -512,78 +250,43 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }, [executeRes, waitSave])
 
     React.useEffect(() => {
-        register('type');
         register('id');
-        register('password');
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('lastname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usr', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('docnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('billinggroupid');
-        register('registercode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('description');
-        register('twofactorauthentication');
-
+        register('status');
+        register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
+        debugger
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
+        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        if (!row && !data.password) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
-            return;
-        }
-        if (!dataOrganizations.some(x => x.bydefault)) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
-            return;
-        }
+        debugger
         dispatch(showBackdrop(true));
         dispatch(execute({
-            header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
-            detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
+            header: insDomain({ ...data}),
+            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,...x})), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
-
         setWaitSave(true)
     });
-
-    const onSubmitPassword = () => {
-        if (password && password === confirmPassword) {
-            setValue('password', password);
-            setOpenDialogPassword(false);
-        }
-    }
-
-    const onChangeStatus = (value: Dictionary) => {
-        setValue('status', (value ? value.domainvalue : ''));
-        value && setOpenDialogStatus(true)
-    }
 
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '80%' }}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.firstname} ${row.lastname}` : "New user"}
+                            title={row ? `${row.domainname}` : "New domain"}
                         />
                     </div>
                     {edit &&
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                type="button"
-                                startIcon={<LockOpenIcon color="secondary" />}
-                                onClick={() => setOpenDialogPassword(true)}
-                            >{t(row ? langKeys.changePassword : langKeys.setpassword)}</Button>
+                        <div style={{ marginRight: "-15%"}}>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -599,173 +302,76 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.firstname)}
+                                label={t(langKeys.corporation)}
                                 className="col-6"
-                                valueDefault={row?.firstname || ""}
-                                onChange={(value) => setValue('firstname', value)}
-                                error={errors?.firstname?.message}
+                                valueDefault={row?.corpdesc || ""}
+                                onChange={(value) => setValue('corporation', value)}
+                                error={errors?.corporation?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.firstname)}
-                                value={row?.firstname || ""}
+                                label={t(langKeys.corporation)}
+                                value={row?.corpdesc || ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.lastname)}
+                                label={t(langKeys.organization)}
                                 className="col-6"
-                                valueDefault={row?.lastname || ""}
-                                onChange={(value) => setValue('lastname', value)}
-                                error={errors?.lastname?.message}
+                                valueDefault={row?.orgdesc || ""}
+                                onChange={(value) => setValue('organization', value)}
+                                error={errors?.organization?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.lastname)}
-                                value={row?.lastname || ""}
+                                label={t(langKeys.organization)}
+                                value={row?.orgdesc || ""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.user)}
+                                label={t(langKeys.domain)}
                                 className="col-6"
-                                valueDefault={row?.usr || ""}
-                                onChange={(value) => setValue('usr', value)}
-                                error={errors?.usr?.message}
+                                valueDefault={row?.domainname || ""}
+                                onChange={(value) => setValue('domainname', value)}
+                                error={errors?.domainname?.message}
                             /> :
                             <FieldView
-                                label={t(langKeys.user)}
-                                value={row ? row.usr : ""}
+                                label={t(langKeys.domain)}
+                                value={row ? row.domainname : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.email)}
+                                label={t(langKeys.description)}
                                 className="col-6"
-                                valueDefault={row?.email || ""}
-                                onChange={(value) => setValue('email', value)}
-                                error={errors?.email?.message}
+                                valueDefault={row?.description || ""}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
                             /> :
                             <FieldView
-                                label={t(langKeys.email)}
-                                value={row ? row.email : ""}
+                                label={t(langKeys.description)}
+                                value={row ? row.description : ""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
-                                label={t(langKeys.docType)}
+                                label={t(langKeys.type)}
                                 className="col-6"
-                                valueDefault={row?.doctype || ""}
-                                onChange={(value) => setValue('doctype', value ? value.domainvalue : '')}
-                                error={errors?.doctype?.message}
-                                data={dataDocType}
+                                valueDefault={row?.type || ""}
+                                onChange={(value) => setValue('type', value ? value.domainvalue : '')}
+                                error={errors?.type?.message}
+                                data={dataDomainType}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             /> :
                             <FieldView
-                                label={t(langKeys.docType)}
-                                value={row ? row.doctype : ""}
+                                label={t(langKeys.type)}
+                                value={row ? row.type : ""}
                                 className="col-6"
                             />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.docNumber)}
-                                className="col-6"
-                                valueDefault={row?.docnum || ""}
-                                onChange={(value) => setValue('docnum', value)}
-                                error={errors?.docnum?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.docNumber)}
-                                value={row ? row.docnum : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.company)}
-                                className="col-6"
-                                valueDefault={row?.company || ""}
-                                onChange={(value) => setValue('company', value ? value.domainvalue : '')}
-                                error={errors?.company?.message}
-                                data={dataCompanies}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.company)}
-                                value={row ? row.company : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.twofactorauthentication)}
-                                className="col-6"
-                                valueDefault={row?.twofactorauthentication ? 'ACTIVO' : "INACTIVO"}
-                                onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue : ''))}
-                                error={errors?.twofactorauthentication?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.twofactorauthentication)}
-                                value={(row?.twofactorauthentication ? t(langKeys.active) : t(langKeys.inactive)).toUpperCase()}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.billingGroup)}
-                                className="col-6"
-                                valueDefault={row?.billinggroupid || ""}
-                                onChange={(value) => setValue('billinggroupid', (value ? value.domainid : 0))}
-                                error={errors?.billinggroupid?.message}
-                                data={dataBillingGroups}
-                                optionDesc="domaindesc"
-                                optionValue="domainid"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.billingGroup)}
-                                value={row ? row.billinggroup : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.registerCode)}
-                                className="col-6"
-                                valueDefault={row?.registercode || ""}
-                                onChange={(value) => setValue('registercode', value)}
-                                error={errors?.registercode?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.registerCode)}
-                                value={row ? row.registercode : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row?.status || ""}
-                                onChange={onChangeStatus}
-                                error={errors?.status?.message}
-                                data={dataStatusUsers}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? row.status : ""}
-                                className="col-6"
-                            />
-                        }
                     </div>
                 </div>
             </form>
@@ -774,8 +380,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 {detailRes.error ? <h1>ERROR</h1> : (
                     <TableZyx
                         columns={columns}
-                        titlemodule={t(langKeys.organization_plural)}
-                        data={dataOrganizations}
+                        titlemodule={t(langKeys.valuelist)}
+                        data={dataDomain}
                         download={false}
                         loading={detailRes.loading}
                         filterGeneral={false}
@@ -798,42 +404,18 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     error={errors?.description?.message}
                 />
             </DialogZyx>
-            <DialogZyx
-                open={openDialogPassword}
-                title={t(langKeys.setpassword)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.save)}
-                handleClickButton1={() => setOpenDialogPassword(false)}
-                handleClickButton2={onSubmitPassword}
-            >
-                <div className="row-zyx">
-                    <FieldEdit
-                        label={t(langKeys.password)}
-                        className="col-6"
-                        type="password"
-                        onChange={setPassword}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.confirmpassword)}
-                        className="col-6"
-                        type="password"
-                        onChange={setConfirmPassword}
-                    />
-                </div>
-            </DialogZyx>
             <DetailOrgUser
                 data={rowSelected}
                 openModal={openDialogOrganization}
                 setOpenModal={setOpenDialogOrganization}
                 multiData={multiData}
-                updateRecords={setDataOrganizations}
-                preData={dataOrganizations}
+                updateRecords={setdataDomain}
             />
         </div>
     );
 }
 
-const Users: FC = () => {
+const Person: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -846,38 +428,28 @@ const Users: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Email',
-                accessor: 'email',
+                Header: t(langKeys.domain),
+                accessor: 'domainname',
                 NoFilter: true
             },
             {
-                Header: 'Globalid',
-                accessor: 'globalid',
+                Header: t(langKeys.description),
+                accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: 'Groups',
-                accessor: 'groups',
-                NoFilter: true
-            },
-            {
-                Header: 'Rols',
-                accessor: 'roledesc',
-                NoFilter: true
-            },
-            {
-                Header: 'Status',
-                accessor: 'status',
-                NoFilter: true
-            },
-            {
-                Header: 'Type',
+                Header: t(langKeys.type),
                 accessor: 'type',
                 NoFilter: true
             },
             {
-                Header: 'User',
-                accessor: 'usr',
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
                 NoFilter: true
             },
             {
@@ -900,21 +472,12 @@ const Users: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getUserSel(0)));
+    const fetchData = () => dispatch(getCollection(getPersonSel(0)));
 
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPODOCUMENTO"),
-            getValuesFromDomain("EMPRESA"),
-            getValuesFromDomain("GRUPOFACTURACION"),
-            getValuesFromDomain("ESTADOUSUARIO"),
-            getValuesFromDomain("TIPOUSUARIO"), //formulario orguser
-            getValuesFromDomain("GRUPOS"), //formulario orguser
-            getValuesFromDomain("ESTADOORGUSER"), //formulario orguser
-            getOrgsByCorp(0), //formulario orguser
-            getRolesByOrg(), //formulario orguser
+            getValuesFromDomain("TIPODOMINIO"),
         ]));
         return () => {
             dispatch(resetMain());
@@ -922,16 +485,14 @@ const Users: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showBackdrop(false));
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-                setWaitSave(false);
-                fetchData();
-            } else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
-                dispatch(showBackdrop(false));
-            }
+        if (!executeResult.loading && !executeResult.error && waitSave) {
+            dispatch(showBackdrop(false));
+            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+            setWaitSave(false);
+            fetchData();
+        } else if (executeResult.error) {
+            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
+            dispatch(showBackdrop(false));
         }
     }, [executeResult, waitSave])
 
@@ -951,7 +512,7 @@ const Users: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
+        dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     }
@@ -965,19 +526,18 @@ const Users: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.user, { count: 2 })}
+                titlemodule={t(langKeys.person_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}
-                hoverShadow={true}
                 handleRegister={handleRegister}
             />
         )
     }
     else
         return (
-            <DetailUsers
+            <DetailDomains
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
@@ -986,4 +546,4 @@ const Users: FC = () => {
         )
 }
 
-export default Users;
+export default Person;

@@ -193,6 +193,28 @@ export const insDomainvalue = ({ id, domainname  ,description ,domainvalue ,doma
     parameters: { id, domainname  ,description ,domainvalue ,domaindesc,system:false,status,type ,bydefault,operation }
 });
 
+export const getQuickrepliesSel = (id:number): IRequestBody => ({
+    method: "UFN_QUICKREPLY_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
+
+export const insQuickreplies = ({ id,classificationid,description,quickreply,status,type,operation}: Dictionary): IRequestBody => ({
+    method: "UFN_QUICKREPLY_INS",
+    key: "UFN_QUICKREPLY_INS",
+    parameters: { id,classificationid,description,quickreply,status,type,operation }
+});
+
+export const getClassificationSel = (id:number): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_SEL",
+    key: "UFN_CLASSIFICATION_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
 export const getPersonSel = (id:number): IRequestBody => ({
     method: "UFN_PERSON_SEL",
     parameters: {

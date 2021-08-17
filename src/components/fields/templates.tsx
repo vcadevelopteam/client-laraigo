@@ -206,6 +206,33 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
+    const [value, setvalue] = useState("");
+
+    useEffect(() => {
+        setvalue(valueDefault);
+    }, [valueDefault])
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <TextField
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                value={value}
+                multiline
+                rows={4}
+                helperText={error || null}
+                onChange={(e) => {
+                    setvalue(e.target.value);
+                    onChange && onChange(e.target.value);
+                }}
+            />
+        </div>
+    )
+}
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false }) => {
 
