@@ -58,6 +58,37 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	)
 }
 
+/*const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
+	const resValidateToken = useSelector(state => state.login.validateToken);
+
+	const dispatch = useDispatch();
+	// const location = useLocation();
+	const existToken = getAccessToken();
+
+	React.useEffect(() => {
+		if (existToken)
+			dispatch(validateToken());
+	}, [])
+
+	if (!existToken) {
+		return <Redirect to={{ pathname: "/sign-in" }} />;
+	} else if (resValidateToken.loading) {
+		return (
+			<Route {...rest}>
+				<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
+					<CircularProgress color="inherit" />
+				</Backdrop>
+			</Route>
+		);
+	} else if (resValidateToken.error) {
+		return <Redirect to={{ pathname: "/" }} />;
+	} else if (Component) {
+		return <Route {...rest} render={props => <Component {...props} />} />;
+	}
+
+	return <Route {...rest}>{children}</Route>;
+}*/
+
 const RouterApp: FC = () => {
 	const classes = useStyles();
 
