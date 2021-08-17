@@ -107,7 +107,6 @@ const SignIn = () => {
     
     useEffect(() => {
         if(!resLogin.error && resLogin.user && getAccessToken()) {
-            console.log('dlkasmdnmsakdsa');
             //redirect to page tickets
             history.push(resLogin.user.redirect);
         }
