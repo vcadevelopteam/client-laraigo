@@ -153,7 +153,10 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     default_application: 'Aplicación por defecto',
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
-
+    field_required: 'El campo es requerido',
+    affirmative: 'Si',
+    negative: 'No',
+    organization_by_default: 'Debe seleccionar una organización por defecto',
 };
 
 const esResource: ResourceLanguage = {

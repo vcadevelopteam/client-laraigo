@@ -102,8 +102,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                 bydefault: row?.bydefault || false,
             })
     
-            register('domainvalue', { validate: (value) => (value && value.length) || 'This is required.' });
-            register('domaindesc', { validate: (value) => (value && value.length) || 'This is required.' });
+            register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+            register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
         }
     }, [openModal])
@@ -140,7 +140,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         /> :
                         <FieldView
                             label={t(langKeys.default_organization)}
-                            value={row ? (row.bydefault ? "SI" : "NO") : "NO"}
+                            value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                             className={classes.mb2}
                         />
                     }
@@ -280,12 +280,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
 
     React.useEffect(() => {
         register('id');
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('corporation', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('organization', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('domainname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('type', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 

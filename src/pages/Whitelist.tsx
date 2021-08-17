@@ -74,10 +74,10 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     React.useEffect(() => {
         register('type');
         register('id');
-        register('username', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('documenttype', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('documentnumber', { validate: (value) => (value && value > 0) || 'This is required.' });
-        register('usergroup', { validate: (value) => (value && value.length ) || 'This is required.' });
+        register('username', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('documenttype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('documentnumber', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('usergroup', { validate: (value) => (value && value.length ) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {

@@ -71,8 +71,8 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     React.useEffect(() => {
         register('type');
         register('id');
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {

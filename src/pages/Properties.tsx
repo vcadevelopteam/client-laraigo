@@ -72,10 +72,10 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
         register('communicationchannelid');
         register('type');
         register('id');
-        register('propertyname', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('propertyvalue', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('description', { validate: (value) => (value && value.length) || 'This is required.' });
-        register('status', { validate: (value) => (value && value.length) || 'This is required.' });
+        register('propertyname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('propertyvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {

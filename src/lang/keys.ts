@@ -149,6 +149,10 @@ export const langKeys = {
     default_application: 'default_application',
     default_organization: 'default_organization',
     password_required: 'password_required',
+    organization_by_default: 'organization_by_default',
+    field_required: 'field_required',
+    affirmative: 'affirmative',
+    negative: 'negative',
 };
 
 export type LangKeys = typeof langKeys;

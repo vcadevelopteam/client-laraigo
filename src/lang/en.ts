@@ -154,6 +154,10 @@ const translation: LangKeys = {
     default_application: 'Default application',
     default_organization: 'Default organization',
     password_required: 'Password is required',
+    field_required: 'Field is required',
+    affirmative: 'Yes',
+    negative: 'No',
+    organization_by_default: 'You must select a default organization',
 };
 
 const enResource: ResourceLanguage = {
