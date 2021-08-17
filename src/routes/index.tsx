@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains } from 'pages';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, RouteProps } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
@@ -12,7 +12,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { getAccessToken } from 'common/helpers';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, Redirect } from 'react-router-dom';
 import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 const useStyles = makeStyles((theme) => ({
@@ -22,34 +22,40 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-const ProtectRoute: FC = ({ children }) => {
+interface PrivateRouteProps extends Omit<RouteProps, "component"> {
+	component?: React.ElementType;
+}
+
+const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
 
 	const dispatch = useDispatch();
 	// const location = useLocation();
-	const history = useHistory();
 	const existToken = getAccessToken();
+
 	React.useEffect(() => {
 		if (existToken)
 			dispatch(validateToken());
 	}, [])
 
-	if (!existToken) {
-		history.push("sign-in");
-	}
-	if (resValidateToken.loading) {
-		return (
-			<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
-				<CircularProgress color="inherit" />
-			</Backdrop>
-		)
-	} else if (resValidateToken.error) {
-		history.push("sign-in");
-	}
-
 	return (
-		<>{children}</>
-	);
+		<Route
+			{...rest}
+			render={props =>
+				!existToken ? (
+					<Redirect to={{ pathname: "/sign-in" }} />
+				) : (resValidateToken.loading ? (
+					<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
+						<CircularProgress color="inherit" />
+					</Backdrop>
+				) : (resValidateToken.error ?
+					<Redirect
+						to={{ pathname: "/" }}
+					/> : Component ? (<Component {...props} />) : children)
+				)
+			}
+		/>
+	)
 }
 
 const RouterApp: FC = () => {
@@ -60,47 +66,45 @@ const RouterApp: FC = () => {
 			<Switch>
 				<Route exact path="/sign-in" component={SignIn} />
 
-				<ProtectRoute>
-					<Route exact path="/email_inbox">
-						<Layout mainClasses={classes.main}>
-							<Properties />
-						</Layout>
-
-					</Route>
-					<Route exact path={paths.PROPERTIES}>
-						<ExtrasLayout><Properties /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.USERS}>
-						<ExtrasLayout><Users /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.QUICKREPLIES}>
-						<ExtrasLayout><Quickreplies /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.GROUPCONFIG}>
-						<ExtrasLayout><Groupconfig /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.WHITELIST}>
-						<ExtrasLayout><Whitelist /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.INAPPROPRIATEWORDS}>
-						<ExtrasLayout><InappropriateWords /></ExtrasLayout>
-					</Route>
-
-					<Route exact path={paths.INTELLIGENTMODELS}>
-						<ExtrasLayout><IntelligentModels /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.SLA}>
-						<ExtrasLayout><SLA /></ExtrasLayout>
-					</Route>
-					<Route exact path={paths.DOMAINS}>
-						<ExtrasLayout><Domains /></ExtrasLayout>
-					</Route>
+				{/* <ProtectRoute> */}
+				<ProtectRoute exact path="/email_inbox">
+					<Layout mainClasses={classes.main}>
+						<Properties />
+					</Layout>
 				</ProtectRoute>
-				{/* <Route>
+				<ProtectRoute exact path={paths.PROPERTIES}>
+					<ExtrasLayout><Properties /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.USERS}>
+					<ExtrasLayout><Users /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.QUICKREPLIES}>
+					<ExtrasLayout><Quickreplies /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.GROUPCONFIG}>
+					<ExtrasLayout><Groupconfig /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.WHITELIST}>
+					<ExtrasLayout><Whitelist /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
+					<ExtrasLayout><InappropriateWords /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.INTELLIGENTMODELS}>
+					<ExtrasLayout><IntelligentModels /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.SLA}>
+					<ExtrasLayout><SLA /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DOMAINS}>
+					<ExtrasLayout><Domains /></ExtrasLayout>
+				</ProtectRoute>
+				{/* </ProtectRoute> */}
+				<ProtectRoute>
 					<Layout mainClasses={classes.main}>
 						<h2>Página no encontrada</h2>
 					</Layout>
-				</Route> */}
+				</ProtectRoute>
 				<Popus />
 			</Switch >
 		</Router >
