@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getDomainValueSel, getDomainSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insDomain, insDomainvalue } from 'common/helpers';
+import { getDomainValueSel, getPersonSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -449,7 +449,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     );
 }
 
-const Domains: FC = () => {
+const Person: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -506,7 +506,7 @@ const Domains: FC = () => {
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getDomainSel('')));
+    const fetchData = () => dispatch(getCollection(getPersonSel(0)));
 
     useEffect(() => {
         fetchData();
@@ -569,7 +569,7 @@ const Domains: FC = () => {
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.domain_plural, { count: 2 })}
+                titlemodule={t(langKeys.person_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
@@ -589,4 +589,4 @@ const Domains: FC = () => {
         )
 }
 
-export default Domains;
+export default Person;

@@ -90,6 +90,8 @@ const translation: LangKeys = {
     usertmepercentmax:'TME% user objetive',
     usertmo:'TMO user',
     usertmopercentmax:'TMO% user objetive',
+    person: 'Person',
+    person_plural: 'People',
 
     whitelist: 'Whitelist',
 

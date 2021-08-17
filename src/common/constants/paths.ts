@@ -19,6 +19,7 @@ const paths = {
     INTELLIGENTMODELS: '/intelligentmodels',
     SLA: '/sla',
     DOMAINS: '/domains',
+    PERSON: '/person'
 };
 
 export default paths;

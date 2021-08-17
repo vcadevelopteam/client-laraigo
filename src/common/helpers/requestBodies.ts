@@ -192,3 +192,11 @@ export const insDomainvalue = ({ id, domainname  ,description ,domainvalue ,doma
     key: "UFN_DOMAIN_VALUES_INS",
     parameters: { id, domainname  ,description ,domainvalue ,domaindesc,system:false,status,type ,bydefault,operation }
 });
+
+export const getPersonSel = (id:number): IRequestBody => ({
+    method: "UFN_PERSON_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})

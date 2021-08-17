@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains } from 'pages';
+import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains,Person } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -98,6 +98,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DOMAINS}>
 					<ExtrasLayout><Domains /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.PERSON}>
+					<ExtrasLayout><Person /></ExtrasLayout>
 				</ProtectRoute>
 				{/* </ProtectRoute> */}
 				<ProtectRoute>

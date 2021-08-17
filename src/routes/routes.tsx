@@ -128,4 +128,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.DOMAINS,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.PERSON,
+        description: <Trans i18nKey={langKeys.person_plural} count={2} />,
+        path: paths.PERSON,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];

@@ -33,6 +33,9 @@ export const langKeys = {
     code:'code',
     bydefault: 'bydefault',
 
+    person: 'person',
+    person_plural: 'person_plural',
+
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
     usergroup: 'usergroup',

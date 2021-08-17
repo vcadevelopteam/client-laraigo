@@ -80,6 +80,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     usertmepercentmax:'TME% usuario objetivo',
     usertmo:'TMO usuario',
     usertmopercentmax:'TMO% usuario objetivo',
+    person: 'Persona',
+    person_plural: 'Personas',
 
     whitelist: 'Whitelist',
 
