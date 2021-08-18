@@ -27,39 +27,39 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 	component?: React.ElementType;
 }
 
+// const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
+// 	const resValidateToken = useSelector(state => state.login.validateToken);
+
+// 	const dispatch = useDispatch();
+// 	// const location = useLocation();
+// 	const existToken = getAccessToken();
+
+// 	React.useEffect(() => {
+// 		if (existToken)
+// 			dispatch(validateToken());
+// 	}, [])
+
+// 	return (
+// 		<Route
+// 			{...rest}
+// 			render={props =>
+// 				!existToken ? (
+// 					<Redirect to={{ pathname: "/sign-in" }} />
+// 				) : (resValidateToken.loading ? (
+// 					<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
+// 						<CircularProgress color="inherit" />
+// 					</Backdrop>
+// 				) : (resValidateToken.error ?
+// 					<Redirect
+// 						to={{ pathname: "/" }}
+// 					/> : Component ? (<Component {...props} />) : children)
+// 				)
+// 			}
+// 		/>
+// 	)
+// }
+
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
-	const resValidateToken = useSelector(state => state.login.validateToken);
-
-	const dispatch = useDispatch();
-	// const location = useLocation();
-	const existToken = getAccessToken();
-
-	React.useEffect(() => {
-		if (existToken)
-			dispatch(validateToken());
-	}, [])
-
-	return (
-		<Route
-			{...rest}
-			render={props =>
-				!existToken ? (
-					<Redirect to={{ pathname: "/sign-in" }} />
-				) : (resValidateToken.loading ? (
-					<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
-						<CircularProgress color="inherit" />
-					</Backdrop>
-				) : (resValidateToken.error ?
-					<Redirect
-						to={{ pathname: "/" }}
-					/> : Component ? (<Component {...props} />) : children)
-				)
-			}
-		/>
-	)
-}
-
-/*const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	console.log("ProtectRoute rendering");
 	const resValidateToken = useSelector(state => state.login.validateToken);
 
@@ -83,13 +83,13 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			</Route>
 		);
 	} else if (resValidateToken.error) {
-		return <Redirect to={{ pathname: "/" }} />;
+		return <Redirect to={{ pathname: "/sign-in" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
 	}
 
 	return <Route {...rest}>{children}</Route>;
-}*/
+}
 
 const RouterApp: FC = () => {
 	const classes = useStyles();
