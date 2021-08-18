@@ -135,7 +135,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     editRecord: 'Editar registro',
     deleteRecord: 'Eliminar registro',
-    changeDate: 'Cambiar fecha',
+    changeDate: 'Fecha de cambio',
 
     edit: 'Editar',
     delete: 'Eliminar',

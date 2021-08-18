@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit } from 'components';
-import { getIntelligentModelsSel, getValuesFromDomain, insIntelligentModels } from 'common/helpers';
+import { getIntelligentModelsSel, insIntelligentModels } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 
 interface RowSelected {
@@ -55,9 +55,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataDomain = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -286,7 +283,6 @@ const IntelligentModels: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };

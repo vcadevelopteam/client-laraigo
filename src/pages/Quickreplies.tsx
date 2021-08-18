@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti } from 'components';
 import Typography from '@material-ui/core/Typography';
 
-import { getQuickrepliesSel, getChannelsByOrg, getValuesFromDomain, insQuickreplies,getClassificationSel } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getClassificationSel } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -59,9 +59,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataClassification = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataClassification = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -299,7 +298,6 @@ const Quickreplies: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getChannelsByOrg(), 
             getValuesFromDomain("ESTADOGENERICO"),
             getClassificationSel(0)
         ])); //mainResult.multiData.data
