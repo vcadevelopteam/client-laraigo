@@ -77,7 +77,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
-    // const [open, setOpen] = useState(openDrawer);
+    const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
     const ChevronIcon: FC = () => {
         if (!openDrawer) {
@@ -112,7 +112,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} />)}
+            {routes.map((ele) => (applications && applications[ele.key || 'x']?.view) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>

@@ -1,4 +1,4 @@
-import { IAction } from "@types";
+import { IAction, IApplication } from "@types";
 import { initialState, IState } from "./reducer";
 import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers";
 
@@ -50,13 +50,14 @@ export const validateToken = (state: IState): IState => ({
 });
 
 export const validateTokenSuccess = (state: IState, action: IAction): IState => {
+    const menuindexed = action.payload.data.menu.reduce((acc: object, item: IApplication) => ({ ...acc, [item.path]: item }), {})
     return {
         ...state,
         validateToken: {
             ...state.validateToken,
             loading: false,
             error: false,
-            user: action.payload.data,
+            user: { ...action.payload.data, menu: menuindexed },
         }
     }
 };
