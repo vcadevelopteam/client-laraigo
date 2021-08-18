@@ -84,6 +84,7 @@ const ExtrasLayout: FC = ({children}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
+    const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
     useEffect(() => {
         if (!openDrawer) return;
@@ -97,7 +98,7 @@ const ExtrasLayout: FC = ({children}) => {
             <div className={classes.root}>
                 <List component="nav" className={classes.list}>
                     <label className={classes.subtitle}><Trans i18nKey={langKeys.extra} count={2} /></label>
-                    {subroutes.map(e => <ListLink config={e} key={e.key} />)}
+                    {subroutes.map((e) => (applications && applications[e.key || 'x']?.view) ? <ListLink config={e} key={e.key} /> : null)}
                     <div style={{flexGrow: 1}} />
                 </List>
                 <div className={classes.content}>
