@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getDomainValueSel, getPersonSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, insDomain, insDomainvalue } from 'common/helpers';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, TemplateSwitch } from 'components';
+import { getDomainValueSel, getPersonSel, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux, resetMultiMain, resetMultiMainAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux} from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 
 interface RowSelected {
@@ -51,36 +51,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
-    const resFromOrg = useSelector(state => state.main.multiDataAux);
-
-    const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
-    const dataStatusOrguser = multiData[7] && multiData[7].success ? multiData[7].data : [];
-    const dataDomain = multiData[8] && multiData[8].success ? multiData[8].data : [];
-    const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
-
-    const [dataSupervisors, setDataSupervisors] = useState<Dictionary[]>([]);
-    const [dataChannels, setDataChannels] = useState<Dictionary[]>([]);
-    const [dataApplications, setDataApplications] = useState<Dictionary[]>([]);
 
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
-
-    useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
-        const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_USER_SUPERVISOR_LST");
-        const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_COMMUNICATIONCHANNELBYORG_LST");
-        const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === "UFN_APPS_DATA_SEL");
-
-        if (indexSupervisor > -1)
-            setDataSupervisors(resFromOrg.data[indexSupervisor] && resFromOrg.data[indexSupervisor].success ? resFromOrg.data[indexSupervisor].data : []);
-
-        if (indexChannels > -1)
-            setDataChannels(resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : []);
-
-        if (indexApplications > -1)
-            setDataApplications(resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : []);
-    }, [resFromOrg])
 
     const onSubmit = handleSubmit((data) => {
         if (!row)
@@ -92,9 +65,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
 
     useEffect(() => {
         if (openModal) {
-            setDataSupervisors([])
-            setDataChannels([])
-            setDataApplications([])
             debugger
             reset({
                 domaindesc: row?.domaindesc||'',
@@ -180,11 +150,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataDomainType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCompanies = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataBillingGroups = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const dataDomainType = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const columns = React.useMemo(
         () => [
@@ -511,16 +477,7 @@ const Person: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPODOMINIO"),
-            getValuesFromDomain("EMPRESA"),
-            getValuesFromDomain("GRUPOFACTURACION"),
-            getValuesFromDomain("ESTADOUSUARIO"),
-            getValuesFromDomain("TIPOUSUARIO"), //formulario orguser
-            getValuesFromDomain("GRUPOS"), //formulario orguser
-            getValuesFromDomain(""), //formulario orguser
-            getOrgsByCorp(0), //formulario orguser
-            getRolesByOrg(), //formulario orguser
         ]));
         return () => {
             dispatch(resetMain());
