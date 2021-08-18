@@ -37,9 +37,18 @@ type IProps2 = {
     IconLink: any;
 }
 
-const whiteIconTheme = createTheme({overrides: {MuiSvgIcon: {
-    root: { color: "#FFF", width: 24, height: 24, minWidth: 0 },
-},},},);
+const whiteIconTheme = createTheme({
+    overrides: {
+        MuiSvgIcon: {
+            root: {
+                color: "#FFF",
+                width: 24,
+                height: 24,
+                minWidth: 0 
+            },
+        },
+    },
+});
 
 const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
@@ -50,7 +59,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
     }
 
     const isSelected = !config.subroute ? config.path === history.location.pathname : history.location.pathname.includes(config.path);
-    let className = null;
+    let className = "";
     if (isSelected) {
         className = open ? classes.drawerItemActive : classes.drawerCloseItemActive;
     } else {

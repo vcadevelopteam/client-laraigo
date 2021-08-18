@@ -8,4 +8,4 @@ export { default as InappropriateWords } from './InappropriateWords';
 export { default as IntelligentModels } from './IntelligentModels';
 export { default as SLA } from './SLA';
 export { default as Domains } from './Domains';
-
+export { default as NotFound } from './NotFound';

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains } from 'pages';
+import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, NotFound } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -59,6 +59,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 }
 
 /*const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
+	console.log("ProtectRoute rendering");
 	const resValidateToken = useSelector(state => state.login.validateToken);
 
 	const dispatch = useDispatch();
@@ -95,9 +96,9 @@ const RouterApp: FC = () => {
 	return (
 		<Router>
 			<Switch>
+				<Route exact path="/"><Redirect to={{ pathname: paths.USERS }} /></Route>
 				<Route exact path="/sign-in" component={SignIn} />
 
-				{/* <ProtectRoute> */}
 				<ProtectRoute exact path="/email_inbox">
 					<Layout mainClasses={classes.main}>
 						<Properties />
@@ -130,15 +131,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.DOMAINS}>
 					<ExtrasLayout><Domains /></ExtrasLayout>
 				</ProtectRoute>
-				{/* </ProtectRoute> */}
-				<ProtectRoute>
-					<Layout mainClasses={classes.main}>
-						<h2>Página no encontrada</h2>
-					</Layout>
-				</ProtectRoute>
-				<Popus />
-			</Switch >
-		</Router >
+				<Route>	
+					<NotFound />
+				</Route>
+			</Switch>
+		</Router>
 	);
 };
 
