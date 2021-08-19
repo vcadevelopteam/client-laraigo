@@ -16,6 +16,7 @@ export interface IState {
     execute: IListStatePaginated<Dictionary>,
     mainAux: IListStatePaginated<Dictionary>,
     mainAux2: IListStatePaginated<Dictionary>,
+    mainPaginated: IListStatePaginated<Dictionary>,
 }
 
 export const initialState: IState = { 
@@ -25,6 +26,7 @@ export const initialState: IState = {
     execute: initialListPaginatedState,
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
+    mainPaginated: initialListPaginatedState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -52,4 +54,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.AUX_MULTI_MAIN_SUCCESS]: caseFunctions.auxMultiMainSuccess,
     [actionTypes.AUX_MULTI_MAIN_FAILURE]: caseFunctions.auxMultiMainFailure,
     [actionTypes.AUX_MULTI_MAIN_RESET]: caseFunctions.auxMultiMainReset,
+
+    [actionTypes.PAGINATED_MAIN]: caseFunctions.mainPaginated,
+    [actionTypes.PAGINATED_MAIN_SUCCESS]: caseFunctions.mainPaginatedSuccess,
+    [actionTypes.PAGINATED_MAIN_FAILURE]: caseFunctions.mainPaginatedFailure,
+    [actionTypes.PAGINATED_MAIN_RESET]: caseFunctions.mainPaginatedReset,
 });

@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody, ITransaction } from "@types";
+import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -61,3 +61,15 @@ export const getMultiCollectionAux = (requestBodies: IRequestBody[]): IActionCal
 });
 
 export const resetMultiMainAux = (): IActionCall => ({type: actionTypes.AUX_MULTI_MAIN_RESET});
+
+export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IActionCall => ({
+    callAPI: () => CommonService.mainPaginated(requestBody),
+    types: {
+        loading: actionTypes.PAGINATED_MAIN,
+        success: actionTypes.PAGINATED_MAIN_SUCCESS,
+        failure: actionTypes.PAGINATED_MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCollectionPaginated = (): IActionCall => ({type: actionTypes.PAGINATED_MAIN_RESET});

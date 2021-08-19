@@ -1,4 +1,4 @@
-import { Dictionary, IRequestBody } from '@types';
+import { Dictionary, IRequestBody, ParametersPaginated, IRequestBodyPaginated } from '@types';
 
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
@@ -132,7 +132,7 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
 
 export const insInappropriateWords = ({ id, description, status, type, username, operation }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id,description,status, type, username, operation }
+    parameters: { id, description, status, type, username, operation }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -143,9 +143,9 @@ export const getIntelligentModelsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insIntelligentModels = ({ id,operation,description,endpoint,modelid,provider,apikey,type,status }: Dictionary): IRequestBody => ({
+export const insIntelligentModels = ({ id, operation, description, endpoint, modelid, provider, apikey, type, status }: Dictionary): IRequestBody => ({
     method: "UFN_INTELLIGENTMODELS_INS",
-    parameters: { id,operation,description,endpoint,modelid,provider,apikey,type,status }
+    parameters: { id, operation, description, endpoint, modelid, provider, apikey, type, status }
 });
 
 export const getSLASel = (id: number): IRequestBody => ({
@@ -156,12 +156,14 @@ export const getSLASel = (id: number): IRequestBody => ({
     }
 });
 
-export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax, 
-                        usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }: Dictionary): IRequestBody => ({
-    method: "UFN_SLA_INS",
-    parameters: { id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax, 
-        usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }
-});
+export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax,
+    usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }: Dictionary): IRequestBody => ({
+        method: "UFN_SLA_INS",
+        parameters: {
+            id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax,
+            usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation
+        }
+    });
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
@@ -181,19 +183,19 @@ export const getDomainValueSel = (domainname: string): IRequestBody => ({
     }
 })
 
-export const insDomain = ({domainname ,operation }: Dictionary): IRequestBody => ({
+export const insDomain = ({ domainname, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOMAIN_INS",
     key: "UFN_DOMAIN_INS",
-    parameters: {id:0,domainname ,operation }
+    parameters: { id: 0, domainname, operation }
 });
 
-export const insDomainvalue = ({ id, domainname  ,description ,domainvalue ,domaindesc,status,type ,bydefault,operation}: Dictionary): IRequestBody => ({
+export const insDomainvalue = ({ id, domainname, description, domainvalue, domaindesc, status, type, bydefault, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOMAIN_VALUES_INS",
     key: "UFN_DOMAIN_VALUES_INS",
-    parameters: { id, domainname  ,description ,domainvalue ,domaindesc,system:false,status,type ,bydefault,operation }
+    parameters: { id, domainname, description, domainvalue, domaindesc, system: false, status, type, bydefault, operation }
 });
 
-export const getQuickrepliesSel = (id:number): IRequestBody => ({
+export const getQuickrepliesSel = (id: number): IRequestBody => ({
     method: "UFN_QUICKREPLY_SEL",
     parameters: {
         id: id,
@@ -201,13 +203,13 @@ export const getQuickrepliesSel = (id:number): IRequestBody => ({
     }
 })
 
-export const insQuickreplies = ({ id,classificationid,description,quickreply,status,type,operation}: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id,classificationid,description,quickreply,status,type,operation }
+    parameters: { id, classificationid, description, quickreply, status, type, operation }
 });
 
-export const getClassificationSel = (id:number): IRequestBody => ({
+export const getClassificationSel = (id: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_SEL",
     key: "UFN_CLASSIFICATION_SEL",
     parameters: {
@@ -215,10 +217,15 @@ export const getClassificationSel = (id:number): IRequestBody => ({
         all: true
     }
 })
-export const getPersonSel = (id:number): IRequestBody => ({
-    method: "UFN_PERSON_SEL",
+export const getPaginatedPerson = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PERSON_SEL",
+    methodCount: "UFN_PERSON_TOTALRECORDS",
     parameters: {
-        id: id,
-        all: true
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

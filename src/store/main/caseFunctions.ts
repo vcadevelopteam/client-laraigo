@@ -171,3 +171,36 @@ export const executeReset = (state: IState): IState => ({
     ...state,
     execute: initialState.execute,
 });
+
+export const mainPaginated = (state: IState): IState => ({
+    ...state,
+    mainPaginated: { ...state.mainPaginated, loading: true, error: false }
+});
+
+export const mainPaginatedSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainPaginated: {
+            data: action.payload.data || [],
+            count: action.payload.count || 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainPaginatedFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainPaginated: {
+        ...state.mainPaginated,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'loginFailure:error',
+        message: action.payload.message || 'Error al intentar loguearse',
+    }
+});
+
+export const mainPaginatedReset = (state: IState): IState => ({
+    ...state,
+    mainPaginated: initialState.mainPaginated,
+});

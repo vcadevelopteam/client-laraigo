@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, TemplateSwitch } from 'components';
-import { getDomainValueSel, getPersonSel, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
+import { getDomainValueSel, getPaginatedPerson, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux} from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getCollectionPaginated } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 
 interface RowSelected {
@@ -67,11 +67,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         if (openModal) {
             debugger
             reset({
-                domaindesc: row?.domaindesc||'',
-                domainvalue: row?.domainvalue||'',
-                bydefault: row?.bydefault||false,
+                domaindesc: row?.domaindesc || '',
+                domainvalue: row?.domainvalue || '',
+                bydefault: row?.bydefault || false,
             })
-    
+
             register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
@@ -99,23 +99,23 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                     /> :
                     <FieldView
                         label={t(langKeys.code)}
-                        value={row?.domainvalue||""}
+                        value={row?.domainvalue || ""}
                         className="col-6"
                     />}
-                    {edit ?
-                        <TemplateSwitch
-                            label={t(langKeys.bydefault)}
-                            className="col-6"
-                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                        /> :
-                        <FieldView
-                            label={t(langKeys.default_organization)}
-                            value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                            className={classes.mb2}
-                        />
-                    }
-            <div className="row-zyx"></div>
-                
+                {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.default_organization)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+                <div className="row-zyx"></div>
+
                 {edit ?
                     <FieldEdit
                         label={t(langKeys.description)}
@@ -126,7 +126,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                     /> :
                     <FieldView
                         label={t(langKeys.description)}
-                        value={row?.domaindesc|| ""}
+                        value={row?.domaindesc || ""}
                         className="col-6"
                     />}
 
@@ -259,15 +259,15 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         debugger
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 
+        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
         debugger
         dispatch(showBackdrop(true));
         dispatch(execute({
-            header: insDomain({ ...data}),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,...x})), ...orgsToDelete.map(x => insDomainvalue(x))]
+            header: insDomain({ ...data }),
+            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
         setWaitSave(true)
     });
@@ -286,7 +286,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                         />
                     </div>
                     {edit &&
-                        <div style={{ marginRight: "-15%"}}>
+                        <div style={{ marginRight: "-15%" }}>
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -419,6 +419,7 @@ const Person: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
     const executeResult = useSelector(state => state.main.execute);
 
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -471,11 +472,17 @@ const Person: FC = () => {
         ],
         []
     );
-
-    const fetchData = () => dispatch(getCollection(getPersonSel(0)));
+    console.log(mainPaginated);
+    
+    const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
+        skip,
+        take,
+        sorts: {},
+        filters: {},
+    })));
 
     useEffect(() => {
-        fetchData();
+        fetchData(0, 20);
         dispatch(getMultiCollection([
             getValuesFromDomain("TIPODOMINIO"),
         ]));
@@ -489,7 +496,7 @@ const Person: FC = () => {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
             setWaitSave(false);
-            fetchData();
+            fetchData(0, 20);
         } else if (executeResult.error) {
             dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
             dispatch(showBackdrop(false));
@@ -527,9 +534,9 @@ const Person: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.person_plural, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={mainResult.mainPaginated.data}
                 download={true}
-                loading={mainResult.mainData.loading}
+                loading={mainResult.mainPaginated.loading}
                 register={true}
                 handleRegister={handleRegister}
             />
@@ -541,7 +548,7 @@ const Person: FC = () => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
-                fetchData={fetchData}
+                // fetchData={fetchData}
             />
         )
 }
