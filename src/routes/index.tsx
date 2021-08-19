@@ -135,12 +135,6 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.PERSON}>
 					<ExtrasLayout><Person /></ExtrasLayout>
 				</ProtectRoute>
-				{/* </ProtectRoute> */}
-				<ProtectRoute>
-					<Layout mainClasses={classes.main}>
-						<h2>Página no encontrada</h2>
-					</Layout>
-				</ProtectRoute>
 				<Route>
 					<NotFound />
 				</Route>

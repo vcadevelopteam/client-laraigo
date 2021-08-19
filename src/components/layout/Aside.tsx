@@ -95,7 +95,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-
+console.log(applications);
     const ChevronIcon: FC = () => {
         if (!openDrawer) {
             return (
