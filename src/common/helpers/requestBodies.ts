@@ -217,10 +217,12 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const getPaginatedPerson = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_SEL",
     methodCount: "UFN_PERSON_TOTALRECORDS",
     parameters: {
+        startdate, 
+        enddate,
         skip,
         take,
         filters,

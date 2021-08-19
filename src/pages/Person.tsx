@@ -475,6 +475,8 @@ const Person: FC = () => {
     console.log(mainPaginated);
     
     const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
+        startdate: '2021-06-01',
+        enddate: '2021-08-30',
         skip,
         take,
         sorts: {},
