@@ -55,6 +55,7 @@ export const getPropertySel = (propertyid: number): IRequestBody => ({
     parameters: {
         id: propertyid,
         all: propertyid === 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
