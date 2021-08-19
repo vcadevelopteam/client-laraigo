@@ -2,8 +2,8 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound } from 'pages';
-import { BrowserRouter as Router, Switch, Route, RouteProps } from 'react-router-dom';
+import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror } from 'pages';
+import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
@@ -62,6 +62,8 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	console.log("ProtectRoute rendering");
 	const resValidateToken = useSelector(state => state.login.validateToken);
+	const applications = resValidateToken?.user?.menu;
+	const location = useLocation();
 
 	const dispatch = useDispatch();
 	// const location = useLocation();
@@ -84,6 +86,8 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
+	} else if (!applications?.[location.pathname].view) {
+		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
 	}
@@ -135,6 +139,12 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.PERSON}>
 					<ExtrasLayout><Person /></ExtrasLayout>
 				</ProtectRoute>
+				<Route exact path="/403">
+					<Forbidden />
+				</Route>
+				<Route exact path="/500">
+					<InternalServererror />
+				</Route>
 				<Route>
 					<NotFound />
 				</Route>

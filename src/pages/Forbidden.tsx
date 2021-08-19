@@ -21,16 +21,16 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-const NotFound: FC = () => {
+const Forbidden: FC = () => {
     const classes = useStyles();
     const history = useHistory();
 
     return (
         <div className={classes.root}>
-            <img src="/not_found.svg" style={{ height: '40%', width: 'auto' }} />
+            <img src="/forbidden.svg" style={{ height: '40%', width: 'auto' }} />
             <div style={{ width: 80 }} />
             <div className={classes.home}>
-                <label className={classes.str404text}>404</label>
+                <label className={classes.str404text}>403</label>
                 <div style={{ height: 8 }} />
                 <Button color="primary" variant="contained" onClick={() => history.push('/')}>
                     Volver al inicio
@@ -40,4 +40,4 @@ const NotFound: FC = () => {
     );
 };
 
-export default NotFound;
+export default Forbidden;
