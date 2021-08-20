@@ -493,7 +493,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
         }
     });
 
@@ -753,7 +753,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row?.status || ""}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={onChangeStatus}
                                 error={errors?.status?.message}
                                 data={dataStatusUsers}
