@@ -12,7 +12,7 @@ export const login = (usr: string, password: string): IActionCall => ({
     type: null,
 });
 
-export const resetLogin = (): IActionCall => ({type: actionTypes.VALIDATE_TOKEN_RESET});
+export const resetLogin = (): IActionCall => ({type: actionTypes.LOGIN_RESET});
 
 export const validateToken = (): IActionCall => ({
     callAPI: () => CommonService.validateToken(),
@@ -23,6 +23,10 @@ export const validateToken = (): IActionCall => ({
     },
     type: null,
 });
+
+export const resetValidateToken = (): IActionCall => ({type: actionTypes.VALIDATE_TOKEN_RESET});
+
+
 
 export const logout = (): IActionCall => ({
     callAPI: () => CommonService.logout(),

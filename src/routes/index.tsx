@@ -27,37 +27,10 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 	component?: React.ElementType;
 }
 
-// const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
-// 	const resValidateToken = useSelector(state => state.login.validateToken);
-
-// 	const dispatch = useDispatch();
-// 	// const location = useLocation();
-// 	const existToken = getAccessToken();
-
-// 	React.useEffect(() => {
-// 		if (existToken)
-// 			dispatch(validateToken());
-// 	}, [])
-
-// 	return (
-// 		<Route
-// 			{...rest}
-// 			render={props =>
-// 				!existToken ? (
-// 					<Redirect to={{ pathname: "/sign-in" }} />
-// 				) : (resValidateToken.loading ? (
-// 					<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
-// 						<CircularProgress color="inherit" />
-// 					</Backdrop>
-// 				) : (resValidateToken.error ?
-// 					<Redirect
-// 						to={{ pathname: "/" }}
-// 					/> : Component ? (<Component {...props} />) : children)
-// 				)
-// 			}
-// 		/>
-// 	)
-// }
+// view: 0
+// modify: 1
+// insert: 2
+// delete: 3
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	console.log("ProtectRoute rendering");
@@ -73,10 +46,10 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		if (existToken)
 			dispatch(validateToken());
 	}, [])
-
+	
 	if (!existToken) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
-	} else if (resValidateToken.loading) {
+	} else if (resValidateToken.loading && !applications) {
 		return (
 			<Route {...rest}>
 				<Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={true}>
@@ -86,12 +59,13 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
-	} else if (!applications?.[location.pathname].view) {
+	} else if (!applications?.[location.pathname][0]) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
+	} else if (location.pathname === "/") {
+		return <Redirect to={{ pathname: resValidateToken.user?.redirect }} />
 	}
-
 	return <Route {...rest}>{children}</Route>;
 }
 
@@ -101,7 +75,7 @@ const RouterApp: FC = () => {
 	return (
 		<Router>
 			<Switch>
-				<Route exact path="/"><Redirect to={{ pathname: paths.USERS }} /></Route>
+				<ProtectRoute exact path="/"/>
 				<Route exact path="/sign-in" component={SignIn} />
 
 				<ProtectRoute exact path="/email_inbox">

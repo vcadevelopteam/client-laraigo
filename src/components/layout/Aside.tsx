@@ -21,21 +21,16 @@ import { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { setOpenDrawer } from 'store/popus/actions';
 
-// const listbuy = ['/purchase-order/load', '/purchase-order/list', '/purchase-order/[id]'];
-// const listsend = ['/bill/load', '/bill/list', '/bill/[id]'];
-
 type IProps = {
     classes: any;
     theme: any;
     routes: RouteConfig[];
 }
 
-type IProps2 = {
-    itemName: any;
-    listRoutes: any;
-    children: any;
-    IconLink: any;
-}
+// view: 0
+// modify: 1
+// insert: 2
+// delete: 3
 
 const whiteIconTheme = createTheme({
     overrides: {
@@ -95,7 +90,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
     const openDrawer = useSelector(state =>  state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-console.log(applications);
+    
     const ChevronIcon: FC = () => {
         if (!openDrawer) {
             return (
@@ -129,7 +124,7 @@ console.log(applications);
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => (applications && applications[ele.key || 'x']?.view) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+            {routes.map((ele) => (applications && applications[ele.key || 'x'][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>

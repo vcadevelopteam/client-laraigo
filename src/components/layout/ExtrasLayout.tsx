@@ -98,7 +98,7 @@ const ExtrasLayout: FC = ({children}) => {
             <div className={classes.root}>
                 <List component="nav" className={classes.list}>
                     <label className={classes.subtitle}><Trans i18nKey={langKeys.extra} count={2} /></label>
-                    {subroutes.map((e) => (applications && applications[e.key || 'x']?.view) ? <ListLink config={e} key={e.key} /> : null)}
+                    {subroutes.map((e) => (applications && applications[e.key || 'x'][0]) ? <ListLink config={e} key={e.key} /> : null)}
                     <div style={{flexGrow: 1}} />
                 </List>
                 <div className={classes.content}>

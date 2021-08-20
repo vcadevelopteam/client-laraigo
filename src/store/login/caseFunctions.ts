@@ -4,6 +4,7 @@ import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers
 
 export const login = (state: IState): IState => ({
     ...state,
+    validateToken: initialState.validateToken,
     login: {
         ...state.login,
         loading: true,
@@ -50,14 +51,14 @@ export const validateToken = (state: IState): IState => ({
 });
 
 export const validateTokenSuccess = (state: IState, action: IAction): IState => {
-    const menuindexed = action.payload.data.menu.reduce((acc: object, item: IApplication) => ({ ...acc, [item.path]: item }), {})
+    saveAuthorizationToken(action.payload.data.token);
     return {
         ...state,
         validateToken: {
             ...state.validateToken,
             loading: false,
             error: false,
-            user: { ...action.payload.data, menu: menuindexed },
+            user: action.payload.data,
         }
     }
 };

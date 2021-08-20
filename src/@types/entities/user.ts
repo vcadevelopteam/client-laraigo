@@ -8,7 +8,7 @@ export interface IApplication {
 }
 
 interface ObjectApps {
-    [key: string]: IApplication
+    [key: string]: boolean[]
 }
 
 export interface IUser {
