@@ -1,6 +1,6 @@
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
-import { DashboardIcon, TicketIcon, ReportsIcon, EMailInbocIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ChannelIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
+import { DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ChannelIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 
@@ -27,7 +27,7 @@ export const routes: RouteConfig[] = [
         key: paths.EMAIL_INBOX,
         description: <Trans i18nKey={langKeys.eMailInbox} />,
         path: paths.EMAIL_INBOX,
-        icon: (className) => <EMailInbocIcon className={className} />,
+        icon: (className) => <EMailInboxIcon className={className} />,
     },
     {
         key: paths.MESSAGE_INBOX,

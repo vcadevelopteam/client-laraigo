@@ -1,7 +1,7 @@
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
 export { ReactComponent as ReportsIcon } from 'icons/chart-bar-bargraph.svg';
 export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
-export { ReactComponent as EMailInbocIcon } from 'icons/email-mail-letter.svg';
+export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
 export { ReactComponent as SupervisorIcon } from 'icons/single-user-setting.svg';
 export { ReactComponent as OrganizationIcon } from 'icons/high-rise-building.svg';
@@ -13,3 +13,6 @@ export { ReactComponent as DownloadIcon } from 'icons/download.svg';
 export { ReactComponent as SearchIcon } from './shearch.svg';
 export { ReactComponent as BellNotificationIcon } from './bell-notification.svg';
 export { ReactComponent as ArrowDropDownIcon } from './arrow-drop-down.svg';
+export { ReactComponent as PhoneIcon } from './phone.svg';
+export { ReactComponent as PortfolioIcon } from './portfolio.svg';
+export { ReactComponent as PinLocationIcon } from './pin_location.svg';
