@@ -63,7 +63,7 @@ const translation: LangKeys = {
     docNumber: 'Document number',
     docType: 'Document type',
     doubleAuthentication: 'Double authentication',
-
+    label:"Label",
     group: 'Group',
     group_plural: 'Groups',
     code:'Code',

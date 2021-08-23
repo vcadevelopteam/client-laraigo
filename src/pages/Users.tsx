@@ -389,42 +389,42 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Organization',
+                Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
             },
             {
-                Header: 'Role',
+                Header: t(langKeys.role),
                 accessor: 'roledesc',
                 NoFilter: true
             },
             {
-                Header: 'Supervisor',
+                Header: t(langKeys.supervisor),
                 accessor: 'supervisordesc',
                 NoFilter: true
             },
             {
-                Header: 'Group',
+                Header: t(langKeys.group),
                 accessor: 'groups',
                 NoFilter: true
             },
             {
-                Header: 'Label',
+                Header: t(langKeys.label),
                 accessor: 'labels',
                 NoFilter: true
             },
             {
-                Header: 'Channel',
+                Header: t(langKeys.channel),
                 accessor: 'channelsdesc',
                 NoFilter: true
             },
             {
-                Header: 'Type',
+                Header: t(langKeys.type),
                 accessor: 'type',
                 NoFilter: true
             },
             {
-                Header: 'Status',
+                Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },

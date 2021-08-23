@@ -14,6 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -81,11 +82,18 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
     }, [edit, register]);
 
     useEffect(() => {
-        if (!executeRes.loading && !executeRes.error && waitSave) {
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
-            fetchData();
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
         }
     }, [executeRes, waitSave])
     
@@ -167,19 +175,27 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                                 className="col-6"
                             />}
                     </div>
-                    {edit &&
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        </div>
-                    }
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.save)}
+                        </Button>
+                        }
+                    </div>
                 </div>
             </form>
         </div>
@@ -251,14 +267,18 @@ const Whitelist: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!executeResult.loading && !executeResult.error && waitSave) {
-            dispatch(showBackdrop(false));
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            fetchData();
-        } else if (executeResult.error) {
-            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message}))
-            dispatch(showBackdrop(false));
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
         }
     }, [executeResult, waitSave])
 

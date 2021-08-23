@@ -38,6 +38,7 @@ export const langKeys = {
     classification: 'classification',
     summarize:'summarize',
     detail:'detail',
+    label:"label",
 
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',

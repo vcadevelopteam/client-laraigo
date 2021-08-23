@@ -140,6 +140,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     edit: 'Editar',
     delete: 'Eliminar',
     search: 'Buscar',
+    label:"Etiqueta",
 
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
