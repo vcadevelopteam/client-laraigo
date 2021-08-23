@@ -294,7 +294,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
+                        >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
                                 variant="contained"

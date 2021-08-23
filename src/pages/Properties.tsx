@@ -225,7 +225,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
+                        >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
                                 className={classes.button}

@@ -166,6 +166,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     attention_group: 'Grupo de atención',
     register: 'Registrar',
     download: 'Descargar',
+    back: 'Regresar',
 
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',
