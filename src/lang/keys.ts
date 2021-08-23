@@ -145,6 +145,8 @@ export const langKeys = {
 
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
+    successful_register: 'successful_register',
+    successful_delete: 'successful_delete',
     
     quickreplies: 'quickreplies',
     quickreply: 'quickreply',
@@ -160,6 +162,19 @@ export const langKeys = {
     field_required: 'field_required',
     affirmative: 'affirmative',
     negative: 'negative',
+    attention_group: 'attention_group',
+    register: 'register',
+    download: 'download',
+
+    error_already_exists_record: 'error_already_exists_record',
+    error_parameter_too_long: 'error_parameter_too_long',
+    error_divison_by_zero: 'error_divison_by_zero',
+    error_unexpected_db_error: 'error_unexpected_db_error',
+    error_not_function_error: 'error_not_function_error',
+    error_variable_incompatibility_error: 'error_variable_incompatibility_error',
+    error_unexpected_error: 'error_unexpected_error',
+    error_null_not_allowed: 'error_null_not_allowed',
+    error_function_not_exists: 'error_function_not_exists',
 };
 
 export type LangKeys = typeof langKeys;

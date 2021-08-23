@@ -1,4 +1,4 @@
-import { IAction, IApplication } from "@types";
+import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
 import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers";
 

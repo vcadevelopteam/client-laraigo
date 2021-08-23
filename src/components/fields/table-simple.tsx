@@ -356,7 +356,7 @@ const TableZyx = React.memo(({
                             startIcon={<AddIcon color="secondary" />}
                             onClick={handleRegister}
                             style={{ backgroundColor: "#55BD84" }}
-                        >Register
+                        ><Trans i18nKey={langKeys.register} />
                         </Button>
                     )}
                     {download && (
@@ -367,7 +367,7 @@ const TableZyx = React.memo(({
                             disabled={loading}
                             onClick={() => exportExcel("report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
-                        >Download
+                        ><Trans i18nKey={langKeys.download} />
                         </Button>
                     )}
                 </span>
@@ -496,9 +496,9 @@ const TableZyx = React.memo(({
                             <LastPage />
                         </IconButton>
                         <Box component="span" fontSize={14}>
-                            <Trans 
+                            <Trans
                                 i18nKey={langKeys.tablePageOf}
-                                values={{currentPage, totalPages}}
+                                values={{ currentPage, totalPages }}
                                 components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
                             />
                         </Box>

@@ -150,7 +150,8 @@ const translation: LangKeys = {
 
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
-    
+    successful_register: 'Registered successfully',
+    successful_delete: 'Deleted successfully',
     quickreplies: 'Quickreplies',
     twofactorauthentication: 'Two factor authentication',
     save: 'Save',
@@ -163,6 +164,19 @@ const translation: LangKeys = {
     affirmative: 'Yes',
     negative: 'No',
     organization_by_default: 'You must select a default organization',
+    attention_group: 'Attention group',
+    register: 'Register',
+    download: 'Download',
+
+    error_already_exists_record: '23505: There is already the same {{module}} registered',
+    error_parameter_too_long: '22001: There was an error, contact the administrator ',
+    error_divison_by_zero: '22012: There was an error, contact the administrator ',
+    error_unexpected_db_error: '5003: There was an error, contact the administrator ',
+    error_not_function_error: '5002: There was an error, contact the administrator ',
+    error_variable_incompatibility_error: '5001: There was an error, contact the administrator ',
+    error_unexpected_error: '5000: There was an error, contact the administrator ',
+    error_null_not_allowed: '23502: There was an error, contact the administrator ',
+    error_function_not_exists: '42883: There was an error, contact the administrator ',
 };
 
 const enResource: ResourceLanguage = {

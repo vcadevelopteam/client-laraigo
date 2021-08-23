@@ -101,8 +101,6 @@ const SignIn = () => {
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
-            console.log(getAccessToken());
-            
         }
     }, [])
     

@@ -68,7 +68,6 @@ const callAPIMiddleware: Middleware = ({ dispatch, getState }) => {
                 }
 
                 if (responseData.error) {
-                    console.log('Respuesta 2xx con error');
                     dispatch<IAction>({ payload: combinedPayload, type: types.failure });
                     return;
                 }

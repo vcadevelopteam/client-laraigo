@@ -24,8 +24,8 @@ export const mainFailure = (state: IState, action: IAction): IState => ({
         ...state.mainData,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 
@@ -57,8 +57,8 @@ export const mainAuxFailure = (state: IState, action: IAction): IState => ({
         ...state.mainAux,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 
@@ -91,8 +91,8 @@ export const multiMainFailure = (state: IState, action: IAction): IState => ({
         ...state.multiData,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 
@@ -127,8 +127,8 @@ export const auxMultiMainFailure = (state: IState, action: IAction): IState => (
         ...state.multiDataAux,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 
@@ -162,8 +162,8 @@ export const executeFailure = (state: IState, action: IAction): IState => ({
         ...state.execute,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 
@@ -195,8 +195,8 @@ export const mainPaginatedFailure = (state: IState, action: IAction): IState => 
         ...state.mainPaginated,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
     }
 });
 

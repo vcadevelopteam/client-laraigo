@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import paths from "common/constants/paths";
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -27,7 +26,7 @@ const Forbidden: FC = () => {
 
     return (
         <div className={classes.root}>
-            <img src="/forbidden.svg" style={{ height: '40%', width: 'auto' }} />
+            <img src="/forbidden.svg" style={{ height: '40%', width: 'auto' }} alt="forbidden"/>
             <div style={{ width: 80 }} />
             <div className={classes.home}>
                 <label className={classes.str404text}>403</label>

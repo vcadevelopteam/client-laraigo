@@ -15,6 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -500,12 +501,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
             } else if (executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: executeRes.message }))
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
@@ -575,26 +578,35 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             title={row ? `${row.firstname} ${row.lastname}` : "New user"}
                         />
                     </div>
-                    {edit &&
-                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                type="button"
-                                startIcon={<LockOpenIcon color="secondary" />}
-                                onClick={() => setOpenDialogPassword(true)}
-                            >{t(row ? langKeys.changePassword : langKeys.setpassword)}</Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}</Button>
-                        </div>
-                    }
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.cancel)}</Button>
+                        {edit &&
+                            <>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="button"
+                                    startIcon={<LockOpenIcon color="secondary" />}
+                                    onClick={() => setOpenDialogPassword(true)}
+                                >{t(row ? langKeys.changePassword : langKeys.setpassword)}</Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<SaveIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                >{t(langKeys.save)}</Button>
+                            </>
+                        }
+                    </div>
                 </div>
-
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -836,8 +848,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
 const Users: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
+    const mainResult = useSelector(state => state.main.mainData);
+    const mainMultiResult = useSelector(state => state.main.multiData);
     const executeResult = useSelector(state => state.main.execute);
+    const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -846,38 +860,53 @@ const Users: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Email',
+                Header: t(langKeys.name),
+                accessor: 'firstname',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.lastname),
+                accessor: 'lastname',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.user),
+                accessor: 'usr',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.email),
                 accessor: 'email',
                 NoFilter: true
             },
             {
-                Header: 'Globalid',
-                accessor: 'globalid',
-                NoFilter: true
-            },
-            {
-                Header: 'Groups',
+                Header: t(langKeys.attention_group),
                 accessor: 'groups',
                 NoFilter: true
             },
             {
-                Header: 'Rols',
+                Header: t(langKeys.role),
                 accessor: 'roledesc',
                 NoFilter: true
             },
             {
-                Header: 'Status',
+                Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },
             {
-                Header: 'Type',
-                accessor: 'type',
+                Header: t(langKeys.company),
+                accessor: 'company',
                 NoFilter: true
             },
             {
-                Header: 'User',
-                accessor: 'usr',
+                Header: t(langKeys.billingGroup),
+                accessor: 'billinggroup',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.twofactorauthentication),
+                accessor: 'twofactorauthentication',
                 NoFilter: true
             },
             {
@@ -903,6 +932,10 @@ const Users: FC = () => {
     const fetchData = () => dispatch(getCollection(getUserSel(0)));
 
     useEffect(() => {
+        mainResult.data && setdataUsers(mainResult.data.map(x => ({ ...x, twofactorauthentication: !!x.twofactorauthentication ? t(langKeys.affirmative) : t(langKeys.negative) })));
+    }, [mainResult]);
+
+    useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
@@ -924,13 +957,15 @@ const Users: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showBackdrop(false));
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-                setWaitSave(false);
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
-            } else if (executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
             }
         }
     }, [executeResult, waitSave])
@@ -958,7 +993,7 @@ const Users: FC = () => {
 
     if (viewSelected === "view-1") {
 
-        if (mainResult.mainData.error) {
+        if (mainResult.error) {
             return <h1>ERROR</h1>;
         }
 
@@ -966,9 +1001,9 @@ const Users: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.user, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={dataUsers}
                 download={true}
-                loading={mainResult.mainData.loading}
+                loading={mainResult.loading}
                 register={true}
                 hoverShadow={true}
                 handleRegister={handleRegister}
@@ -980,7 +1015,7 @@ const Users: FC = () => {
             <DetailUsers
                 data={rowSelected}
                 setViewSelected={setViewSelected}
-                multiData={mainResult.multiData.data}
+                multiData={mainMultiResult.data}
                 fetchData={fetchData}
             />
         )

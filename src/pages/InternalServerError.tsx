@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import paths from "common/constants/paths";
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -27,7 +26,7 @@ const InternalServererror: FC = () => {
 
     return (
         <div className={classes.root}>
-            <img src="/server_error.svg" style={{ width: '50%', height: 'auto' }} />
+            <img src="/server_error.svg" style={{ width: '50%', height: 'auto' }} alt="403"/>
             <div style={{ width: 80 }} />
             <div className={classes.home}>
                 <label className={classes.str404text}>500</label>

@@ -14,6 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -52,10 +53,9 @@ const useStyles = makeStyles((theme) => ({
 const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-   
+
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
 
-   
     const onSubmit = handleSubmit((data) => {
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
@@ -67,11 +67,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     useEffect(() => {
         if (openModal) {
             reset({
-                domaindesc: row?.domaindesc||'',
-                domainvalue: row?.domainvalue||'',
-                bydefault: row?.bydefault||false,
+                domaindesc: row?.domaindesc || '',
+                domainvalue: row?.domainvalue || '',
+                bydefault: row?.bydefault || false,
             })
-    
+
             register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
@@ -99,23 +99,23 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                     /> :
                     <FieldView
                         label={t(langKeys.code)}
-                        value={row?.domainvalue||""}
+                        value={row?.domainvalue || ""}
                         className="col-6"
                     />}
-                    {edit ?
-                        <TemplateSwitch
-                            label={t(langKeys.bydefault)}
-                            className="col-6"
-                            onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                        /> :
-                        <FieldView
-                            label={t(langKeys.default_organization)}
-                            value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                            className={classes.mb2}
-                        />
-                    }
-            <div className="row-zyx"></div>
-                
+                {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.default_organization)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+                <div className="row-zyx"></div>
+
                 {edit ?
                     <FieldEdit
                         label={t(langKeys.description)}
@@ -126,7 +126,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                     /> :
                     <FieldView
                         label={t(langKeys.description)}
-                        value={row?.domaindesc|| ""}
+                        value={row?.domaindesc || ""}
                         className="col-6"
                     />}
 
@@ -238,12 +238,14 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
                 fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
             } else if (executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: executeRes.message }))
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
                 dispatch(showBackdrop(false));
             }
         }
@@ -259,15 +261,14 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
         debugger
         dispatch(resetMainAux())
-        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || "")))); 
+        dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        debugger
         dispatch(showBackdrop(true));
         dispatch(execute({
-            header: insDomain({ ...data}),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data,...x})), ...orgsToDelete.map(x => insDomainvalue(x))]
+            header: insDomain({ ...data }),
+            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
         }, true));
         setWaitSave(true)
     });
@@ -275,7 +276,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '80%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -285,8 +286,16 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             title={row ? `${row.domainname}` : "New domain"}
                         />
                     </div>
-                    {edit &&
-                        <div style={{ marginRight: "-15%"}}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.cancel)}</Button>
+                        {edit &&
                             <Button
                                 variant="contained"
                                 color="primary"
@@ -294,8 +303,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
                             >{t(langKeys.save)}</Button>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
 
                 <div className={classes.containerDetail}>
@@ -304,6 +313,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             <FieldEdit
                                 label={t(langKeys.corporation)}
                                 className="col-6"
+                                disabled={true}
                                 valueDefault={row?.corpdesc || ""}
                                 onChange={(value) => setValue('corporation', value)}
                                 error={errors?.corporation?.message}
@@ -316,6 +326,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.organization)}
+                                disabled={true}
                                 className="col-6"
                                 valueDefault={row?.orgdesc || ""}
                                 onChange={(value) => setValue('organization', value)}
@@ -485,14 +496,18 @@ const Domains: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!executeResult.loading && !executeResult.error && waitSave) {
-            dispatch(showBackdrop(false));
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            fetchData();
-        } else if (executeResult.error) {
-            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message }))
-            dispatch(showBackdrop(false));
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.domain).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
         }
     }, [executeResult, waitSave])
 

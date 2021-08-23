@@ -198,7 +198,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >Save
+                            >{t(langKeys.save)}
                             </Button>
                         </div>
                     }

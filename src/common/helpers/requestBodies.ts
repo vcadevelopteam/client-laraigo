@@ -1,4 +1,4 @@
-import { Dictionary, IRequestBody, ParametersPaginated, IRequestBodyPaginated } from '@types';
+import { Dictionary, IRequestBody, IRequestBodyPaginated } from '@types';
 
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",

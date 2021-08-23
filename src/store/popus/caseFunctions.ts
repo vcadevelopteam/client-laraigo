@@ -7,8 +7,6 @@ export const showSnackbar = (state: IState, action: IAction): IState => ({
 })
 
 export const showBackdrop = (state: IState, action: IAction): IState => {
-    console.log(action.payload);
-    
     return {
         ...state,
         showBackDrop: action.payload,

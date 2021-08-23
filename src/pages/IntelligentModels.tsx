@@ -201,7 +201,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >Save
+                            >{t(langKeys.save)}
                             </Button>
                         </div>
                     }

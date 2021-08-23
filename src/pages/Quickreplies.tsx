@@ -218,7 +218,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
-                            >Save
+                            >{t(langKeys.save)}
                             </Button>
                         </div>
                     }

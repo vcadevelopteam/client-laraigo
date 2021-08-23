@@ -1,5 +1,4 @@
 import { Button, makeStyles } from "@material-ui/core";
-import paths from "common/constants/paths";
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -27,7 +26,7 @@ const NotFound: FC = () => {
 
     return (
         <div className={classes.root}>
-            <img src="/not_found.svg" style={{ height: '40%', width: 'auto' }} />
+            <img src="/not_found.svg" style={{ height: '40%', width: 'auto' }} alt="404" />
             <div style={{ width: 80 }} />
             <div className={classes.home}>
                 <label className={classes.str404text}>404</label>
