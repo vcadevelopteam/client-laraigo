@@ -12,9 +12,14 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Range } from 'react-date-range';
+import { Skeleton } from '@material-ui/lab';
 
 interface PersonItemProps {
     person: IPerson;
+}
+
+interface PhotoProps {
+    src?: string;
 }
 
 const arrayBread = [
@@ -92,21 +97,26 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: '#55BD84',
         float: 'right',
     },
+}));
+
+const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
         height: 40,
         width: 40,
     },
 }));
 
+const Photo: FC<PhotoProps> = ({ src }) => {
+    const classes = usePhotoClasses();
+
+    if (!src || src == "") {
+        return <AccountCircle className={classes.accountPhoto} />;
+    }
+    return <Avatar alt={src} src={src} className={classes.accountPhoto} />;
+}
+
 const PersonItem: FC<PersonItemProps> = ({ person }) => {
     const classes = useStyles();
-
-    const Photo: FC = () => {
-        if (!person.imageurldef || person.imageurldef == "") {
-            return <AccountCircle className={classes.accountPhoto} />;
-        }
-        return <Avatar alt={person.name} src={person.imageurldef} className={classes.accountPhoto} />;
-    }
 
     return (
         <ListItem className={classes.personList}>
@@ -115,7 +125,7 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                     <Grid container direction="row" spacing={1}>
                         <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                             <Grid container direction="row" className={classes.gridRow}>
-                                <Photo />
+                                <Photo src={person.imageurldef} />
                                 <div style={{ width: 8 }} />
                                 <div className={classes.itemColumn}>
                                     <label className={clsx(classes.label, classes.value)}>{person.name}</label>
@@ -197,6 +207,30 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
     );
 }
 
+const PersonItemSkeleton: FC = () => {
+    const classes = useStyles();
+
+    return (
+        <ListItem className={classes.personList}>
+            <Box className={classes.personItemRoot}>
+                <Grid container direction="column">
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                    <Divider style={{ margin: '10px 0' }} />
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Box>
+        </ListItem>
+    );
+}
+
 const Person: FC = () => {
     const endDate = new Date();
     const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
@@ -204,7 +238,7 @@ const Person: FC = () => {
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [openRangeModal, setOpenRangeModal] = useState(false);
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
@@ -220,23 +254,18 @@ const Person: FC = () => {
     })));
 
     useEffect(() => {
-        console.log("sss");
         const skip = pageSize * page;
         fetchData(skip, pageSize);
 
-        // return () => {
-        //     dispatch(resetCollectionPaginated());
-        // };
+        return () => {
+            dispatch(resetCollectionPaginated());
+        };
     }, [pageSize, page, dateRange]);
 
-    useEffect(() => {
-        console.log("Effect", mainPaginated);
-    }, [mainPaginated]);
-
     const format = (date: Date) => date.toISOString().split('T')[0];
-    console.log("Person antes de renderizar", mainPaginated);
+
     return (
-        <div>
+        <div style={{ height: '100%' }}>
             <Grid container direction="row">
                 <Grid item xs={6}>
                     <TitleDetail title={t(langKeys.person, { count: 2 })} />
@@ -267,11 +296,15 @@ const Person: FC = () => {
                         </Button>
                         <div style={{ width: 9 }} />
                         <DateRangePicker
-                            open={openRangeModal}
-                            setOpen={setOpenRangeModal}
+                            open={openDateRangeModal}
+                            setOpen={setOpenDateRangeModal}
                             range={dateRange}
-                            onSelect={setDateRange}>
-                            <Button onClick={() => setOpenRangeModal(!openRangeModal)}>
+                            onSelect={setDateRange}
+                        >
+                            <Button
+                                disabled={mainPaginated.loading}
+                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                            >
                                 {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
                             </Button>
                         </DateRangePicker>
@@ -288,6 +321,7 @@ const Person: FC = () => {
                 loading={mainPaginated.loading}
                 totalItems={mainPaginated.count}
                 builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
+                skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
             />
         </div>
     );
