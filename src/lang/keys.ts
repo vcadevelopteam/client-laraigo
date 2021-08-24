@@ -165,6 +165,7 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
+    import: 'import',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',

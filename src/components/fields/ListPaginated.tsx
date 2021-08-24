@@ -80,20 +80,23 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         onPageSizeChange,
         pageSizeOptions = [10, 20, 50, 100],
     } = props;
-
+console.log("PaginatedList", data);
     const classes = useStyles();
     const pageCount = totalItems <= pageSize ? 1 : Math.ceil(totalItems / pageSize); // total pages
     const canPreviousPage = currentPage > 0;
     const canNextPage = currentPage < pageCount - 1;
 
-    if (totalItems == 0) {
+    console.assert(data.length <= pageSize, "PaginatedList: la propiedad 'data' tiene más elementos de lo especificado en 'pageSize'");
+
+    if (totalItems === 0) {
         return <NoData />;
     }
 
     return (
         <Box width={1} style={{ height: '100%' }}>
             <List>
-                {data.map((e, i) => builder(e, i))}
+                {/** ensure show n elements specified in pageSize */}
+                {data.splice(0, pageSize).map((e, i) => builder(e, i))}
             </List>
             <Box className={classes.footerTable}>
                 <Box>

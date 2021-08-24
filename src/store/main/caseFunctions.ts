@@ -172,7 +172,7 @@ export const executeReset = (state: IState): IState => ({
     execute: initialState.execute,
 });
 
-export const mainPaginated = (state: IState): IState => ({
+/*export const mainPaginated = (state: IState): IState => ({
     ...state,
     mainPaginated: { ...state.mainPaginated, loading: true, error: false }
 });
@@ -203,4 +203,46 @@ export const mainPaginatedFailure = (state: IState, action: IAction): IState => 
 export const mainPaginatedReset = (state: IState): IState => ({
     ...state,
     mainPaginated: initialState.mainPaginated,
-});
+});*/
+export const mainPaginated = (state: IState): IState => {
+    console.log("mainPaginated");
+    return {
+        ...state,
+        mainPaginated: { ...state.mainPaginated, loading: true, error: false }
+    };
+};
+
+export const mainPaginatedSuccess = (state: IState, action: IAction): IState => {
+    console.log("mainPaginatedSuccess", action);
+    return {
+        ...state,
+        mainPaginated: {
+            data: action.payload.data || [],
+            count: action.payload.count || 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainPaginatedFailure = (state: IState, action: IAction): IState => {
+    console.log("mainPaginatedFailure", action);
+    return {
+        ...state,
+        mainPaginated: {
+            ...state.mainPaginated,
+            loading: false,
+            error: true,
+            code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+            message: action.payload.message || 'error_unexpected_error',
+        }
+    };
+};
+
+export const mainPaginatedReset = (state: IState): IState => {
+    console.log("mainPaginatedReset");
+    return {
+        ...state,
+        mainPaginated: initialState.mainPaginated,
+    };
+};

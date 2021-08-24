@@ -167,6 +167,7 @@ const translation: LangKeys = {
     attention_group: 'Attention group',
     register: 'Register',
     download: 'Download',
+    import: 'Import',
 
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
