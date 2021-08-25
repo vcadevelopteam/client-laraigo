@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
+const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -90,6 +90,20 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
         >
             <div className="row-zyx">
                 {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.default_organization)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+            </div>
+            <div className="row-zyx">
+                {edit ?
                     <FieldEdit
                         label={t(langKeys.code)}
                         className="col-6"
@@ -103,20 +117,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         className="col-6"
                     />}
                 {edit ?
-                    <TemplateSwitch
-                        label={t(langKeys.bydefault)}
-                        className="col-6"
-                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.default_organization)}
-                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                        className={classes.mb2}
-                    />
-                }
-                <div className="row-zyx"></div>
-
-                {edit ?
                     <FieldEdit
                         label={t(langKeys.description)}
                         className="col-6"
@@ -128,8 +128,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         label={t(langKeys.description)}
                         value={row?.domaindesc || ""}
                         className="col-6"
-                    />}
-
+                    />
+                }
             </div>
         </DialogZyx>
     );
@@ -143,6 +143,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
@@ -259,7 +260,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
-        debugger
+
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
@@ -314,7 +315,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                                 label={t(langKeys.corporation)}
                                 className="col-6"
                                 disabled={true}
-                                valueDefault={row?.corpdesc || ""}
+                                valueDefault={row?.corpdesc || user?.corpdesc}
                                 onChange={(value) => setValue('corporation', value)}
                                 error={errors?.corporation?.message}
                             />
@@ -328,7 +329,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                                 label={t(langKeys.organization)}
                                 disabled={true}
                                 className="col-6"
-                                valueDefault={row?.orgdesc || ""}
+                                valueDefault={row?.orgdesc || user?.orgdesc}
                                 onChange={(value) => setValue('organization', value)}
                                 error={errors?.organization?.message}
                             />
@@ -415,7 +416,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                     error={errors?.description?.message}
                 />
             </DialogZyx>
-            <DetailOrgUser
+            <DetailValue
                 data={rowSelected}
                 openModal={openDialogOrganization}
                 setOpenModal={setOpenDialogOrganization}

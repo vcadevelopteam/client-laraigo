@@ -641,6 +641,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <FieldEdit
                                 label={t(langKeys.user)}
                                 className="col-6"
+                                disabled={edit}
                                 valueDefault={row?.usr || ""}
                                 onChange={(value) => setValue('usr', value)}
                                 error={errors?.usr?.message}
