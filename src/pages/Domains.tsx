@@ -90,6 +90,20 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
         >
             <div className="row-zyx">
                 {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.default_organization)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+            </div>
+            <div className="row-zyx">
+                {edit ?
                     <FieldEdit
                         label={t(langKeys.code)}
                         className="col-6"
@@ -103,20 +117,6 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
                         className="col-6"
                     />}
                 {edit ?
-                    <TemplateSwitch
-                        label={t(langKeys.bydefault)}
-                        className="col-6"
-                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.default_organization)}
-                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                        className={classes.mb2}
-                    />
-                }
-                <div className="row-zyx"></div>
-
-                {edit ?
                     <FieldEdit
                         label={t(langKeys.description)}
                         className="col-6"
@@ -128,8 +128,8 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
                         label={t(langKeys.description)}
                         value={row?.domaindesc || ""}
                         className="col-6"
-                    />}
-
+                    />
+                }
             </div>
         </DialogZyx>
     );
@@ -260,7 +260,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
-        debugger
+
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
