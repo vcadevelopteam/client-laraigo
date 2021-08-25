@@ -81,7 +81,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
     return (
         <DialogZyx
             open={openModal}
-            title="Register value"
+            title={t(langKeys.registervalue)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
@@ -284,7 +284,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.domainname}` : "New domain"}
+                            title={row ? `${row.domainname}` : t(langKeys.newdomain)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

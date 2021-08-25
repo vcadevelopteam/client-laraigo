@@ -110,7 +110,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.propertyname}` : "New property"}
+                title={row ? `${row.propertyname}` : t(langKeys.newproperty)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>

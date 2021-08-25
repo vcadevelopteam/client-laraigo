@@ -585,7 +585,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.firstname} ${row.lastname}` : "New user"}
+                            title={row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>

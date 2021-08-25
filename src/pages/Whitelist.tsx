@@ -111,7 +111,7 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.username}` : "New Whitelist"}
+                title={row ? `${row.username}` : t(langKeys.newwhitelist)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>

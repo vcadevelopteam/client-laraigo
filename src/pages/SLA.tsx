@@ -139,7 +139,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Service level agreement"}
+                title={row ? `${row.description}` : t(langKeys.newsla)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>

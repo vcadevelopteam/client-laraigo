@@ -114,7 +114,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Group Configuration"}
+                title={row ? `${row.description}` : t(langKeys.newgroupconfig)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
