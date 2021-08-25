@@ -90,6 +90,12 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     firstname: 'Nombre',
     lastname: 'Apellido',
     email: 'Correo',
+    address: 'Dirección',
+    department: 'Departamento',
+    phone: 'Teléfono',
+
+    lastConnection: 'Última Conexión',
+    ticketCreatedOn: 'Ticket Creado',
 
     company: 'Compañia',
 
@@ -177,6 +183,20 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     error_unexpected_error: '5000: Hubo un error, comuniquese con el administrador',
     error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
     error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
+
+    dateRangeFilterTitle: 'Filtrar por rango de fechas',
+
+    apply: 'Aplicar',
+    close: 'Cerrar',
+
+    today: 'Hoy',
+    yesterday: 'Ayer',
+    thisWeek: 'Esta Semana',
+    lastWeek: 'Semana pasada',
+    thisMonth: 'Este Mes',
+    lastMonth: 'Mes Pasado',
+    daysUpToToday: 'días hasta hoy',
+    daysStartingToday: 'días a partir de hoy',
 };
 
 const esResource: ResourceLanguage = {

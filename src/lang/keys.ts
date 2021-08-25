@@ -95,7 +95,13 @@ export const langKeys = {
     doubleAuthentication: 'doubleAuthentication',
     billingGroup: 'billingGroup',
     registerCode: 'registerCode',
-    
+    phone: 'phone',
+    department: 'department',
+    address: 'address',
+
+    ticketCreatedOn: 'ticketCreatedOn',
+    lastConnection: 'lastConnection',
+
     group: 'group',
     group_plural: 'group_plural',
 
@@ -176,6 +182,20 @@ export const langKeys = {
     error_unexpected_error: 'error_unexpected_error',
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
+
+    dateRangeFilterTitle: 'dateRangeFilterTitle',
+
+    apply: 'apply',
+    close: 'close',
+
+    today: 'today',
+    yesterday: 'yesterday',
+    thisWeek: 'thisWeek',
+    lastWeek: 'lastWeek',
+    thisMonth: 'thisMonth',
+    lastMonth: 'lastMonth',
+    daysUpToToday: 'daysUpToToday',
+    daysStartingToday: 'daysStartingToday',
 };
 
 export type LangKeys = typeof langKeys;

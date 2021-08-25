@@ -1,15 +1,15 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DateRangePicker, ListPaginated, TitleDetail } from 'components';
+import { DateRangePicker, ListPaginated, Title } from 'components';
 import { getPaginatedPerson } from 'common/helpers';
 import { IPerson } from "@types";
 import { getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, TextField } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
 import { DownloadIcon, DownloadReverseIcon, EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Range } from 'react-date-range';
 import { Skeleton } from '@material-ui/lab';
@@ -21,11 +21,6 @@ interface PersonItemProps {
 interface PhotoProps {
     src?: string;
 }
-
-const arrayBread = [
-    { id: "view-1", name: "Domains" },
-    { id: "view-2", name: "Domain detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -109,7 +104,7 @@ const usePhotoClasses = makeStyles(theme => ({
 const Photo: FC<PhotoProps> = ({ src }) => {
     const classes = usePhotoClasses();
 
-    if (!src || src == "") {
+    if (!src || src === "") {
         return <AccountCircle className={classes.accountPhoto} />;
     }
     return <Avatar alt={src} src={src} className={classes.accountPhoto} />;
@@ -138,7 +133,9 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                 <EMailInboxIcon className={classes.propIcon} />
                                 <div style={{ width: 8 }} />
                                 <div className={classes.itemColumn}>
-                                    <label className={classes.label}>Email</label>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.email} />
+                                    </label>
                                     <div style={{ height: 4 }} />
                                     <label className={clsx(classes.label, classes.value)}>{person.email || "-"}</label>
                                 </div>
@@ -149,7 +146,9 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                 <PhoneIcon className={classes.propIcon} />
                                 <div style={{ width: 8 }} />
                                 <div className={classes.itemColumn}>
-                                    <label className={classes.label}>Phone</label>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.phone} />
+                                    </label>
                                     <div style={{ height: 4 }} />
                                     <label className={clsx(classes.label, classes.value)}>{person.phone || "-"}</label>
                                 </div>
@@ -160,7 +159,9 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                 <PortfolioIcon className={classes.propIcon} />
                                 <div style={{ width: 8 }} />
                                 <div className={classes.itemColumn}>
-                                    <label className={classes.label}>Department</label>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.department} />
+                                    </label>
                                     <div style={{ height: 4 }} />
                                     <label className={clsx(classes.label, classes.value)}>{person.region || '-'}</label>
                                 </div>
@@ -171,7 +172,9 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                 <PinLocationIcon className={classes.propIcon} />
                                 <div style={{ width: 8 }} />
                                 <div className={classes.itemColumn}>
-                                    <label className={classes.label}>Address</label>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.address} />
+                                    </label>
                                     <div style={{ height: 4 }} />
                                     <label className={clsx(classes.label, classes.value)}>{person.province || '-'}</label>
                                 </div>
@@ -182,14 +185,14 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                     <Grid container direction="row" spacing={1}>
                         <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                             <Grid container direction="column">
-                                <label>Ticket Created On:</label>
+                                <label><Trans i18nKey={langKeys.ticketCreatedOn} />:</label>
                                 <div style={{ height: 4 }} />
                                 <label>{person.educationlevel || "-"}</label>
                             </Grid>
                         </Grid>
                         <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                             <Grid container direction="column">
-                                <label>Last Connection:</label>
+                                <label><Trans i18nKey={langKeys.lastConnection} />:</label>
                                 <div style={{ height: 4 }} />
                                 <label>{person.civilstatus || "-"}</label>
                             </Grid>
@@ -197,7 +200,9 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                         <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />
                         <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
                             <Button className={classes.btn} variant="contained" color="primary" disableElevation>
-                                <label style={{ fontSize: 10, fontWeight: 400 }}>Active</label>
+                                <label style={{ fontSize: 10, fontWeight: 400 }}>
+                                    <Trans i18nKey={langKeys.active} />
+                                </label>
                             </Button>
                         </Grid>
                     </Grid>
@@ -237,7 +242,6 @@ const Person: FC = () => {
     const initialDateRange: Range = { startDate, endDate, key: 'selection' };
 
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
@@ -268,12 +272,11 @@ const Person: FC = () => {
         <div style={{ height: '100%' }}>
             <Grid container direction="row">
                 <Grid item xs={6}>
-                    <TitleDetail title={t(langKeys.person, { count: 2 })} />
+                    <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
                 </Grid>
                 <Grid item xs={6}>
-                    <Grid container direction="row-reverse">
+                    <Grid container direction="row-reverse" spacing={1}>
                         <Button
-                            // className={classes.button}
                             variant="contained"
                             color="primary"
                             disabled={mainPaginated.loading}
@@ -284,7 +287,6 @@ const Person: FC = () => {
                         </Button>
                         <div style={{ width: 9 }} />
                         <Button
-                            // className={classes.button}
                             variant="contained"
                             color="primary"
                             disabled={mainPaginated.loading}

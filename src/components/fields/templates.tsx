@@ -24,6 +24,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import { useTheme } from '@material-ui/core';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -115,6 +116,18 @@ export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadc
 export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
     <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
+
+export const Title: React.FC = ({ children }) => {
+    const theme = useTheme();
+    const style: React.CSSProperties = {
+        fontSize: '22px',
+        lineHeight: '48px',
+        fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
+    };
+    return <label style={style}>{children}</label>;
+}
 
 export const FieldView: React.FC<{ label: string, value?: string, className?: any }> = ({ label, value, className }) => (
     <div className={className}>
