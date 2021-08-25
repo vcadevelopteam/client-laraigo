@@ -116,7 +116,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.quickreply}` : "New Quickreply"}
+                title={row ? `${row.quickreply}` : t(langKeys.newquickreply)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>

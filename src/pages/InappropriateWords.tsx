@@ -106,7 +106,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Innapropiate Word"}
+                title={row ? `${row.description}` : t(langKeys.newinnapropiateword)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>

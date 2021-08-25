@@ -112,7 +112,7 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.endpoint}` : "New Intelligent Model"}
+                title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
