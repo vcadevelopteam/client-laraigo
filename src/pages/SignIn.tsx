@@ -118,7 +118,7 @@ const SignIn = () => {
                 <div className={classes.paper}>
                     {resLogin.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">
-                            {resLogin.message}
+                            {t(resLogin.code || "error_unexpected_error")}
                         </Alert>
                     )}
                     <form

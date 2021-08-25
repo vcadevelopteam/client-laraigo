@@ -31,8 +31,7 @@ export const loginFailure = (state: IState, action: IAction): IState => ({
         ...state.login,
         loading: false,
         error: true,
-        code: action.payload.code || 'loginFailure:error',
-        message: action.payload.message || 'Error al intentar loguearse',
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
     }
 });
 
@@ -72,7 +71,6 @@ export const validateTokenFailure = (state: IState, action: IAction): IState => 
             loading: false,
             error: true,
             code: action.payload.code || 'validateTokenFailure:error',
-            message: action.payload.message || 'Error al intentar loguearse',
         }
     }
 };
@@ -118,7 +116,6 @@ export const logoutFailure = (state: IState, action: IAction): IState => {
             loading: false,
             error: true,
             code: action.payload.code || 'logoutFailure:error',
-            message: action.payload.message || 'Error al intentar loguearse',
         }
     }
 };

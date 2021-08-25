@@ -12,8 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {
+    getCollection, resetMain, getMultiCollection,
+    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+} from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -544,13 +547,20 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
             return;
         }
-        dispatch(showBackdrop(true));
-        dispatch(execute({
-            header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
-            detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
-        }, true));
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
+                detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
+            }, true));
+            setWaitSave(true)
+        }
 
-        setWaitSave(true)
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     const onSubmitPassword = () => {
@@ -987,9 +997,17 @@ const Users: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

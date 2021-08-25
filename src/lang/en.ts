@@ -168,6 +168,10 @@ const translation: LangKeys = {
     register: 'Register',
     download: 'Download',
     back: 'Back',
+    continue: 'Continue',
+    confirmation: 'Confirmation',
+    confirmation_save: 'Are you sure to save the record?',
+    confirmation_delete: 'Are you sure to delete the record?',
 
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
@@ -178,6 +182,14 @@ const translation: LangKeys = {
     error_unexpected_error: '5000: There was an error, contact the administrator ',
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
+
+    error_login_user_incorrect: "Incorrect user or password",
+    error_login_user_pending: "User pending confirmation",
+    error_login_locked_by_attempts_failed_password: "Your user was blocked for exceeding the attempts allowed to",
+    error_login_locked_by_inactived: "Your user was blocked for exceeding the allowed days without connecting",
+    error_login_locked_by_password_expired: "Your username was blocked because your password expired",
+    error_login_locked: "Your user was blocked",
+    error_login_user_inactive: "Your username is inactive",
 };
 
 const enResource: ResourceLanguage = {

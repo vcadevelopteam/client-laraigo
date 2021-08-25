@@ -168,6 +168,10 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     register: 'Registrar',
     download: 'Descargar',
     back: 'Regresar',
+    continue: 'Continuar',
+    confirmation: 'Confirmación',
+    confirmation_save: '¿Está seguro de guardar el registro?',
+    confirmation_delete: '¿Está seguro de eliminar el registro?',
 
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',
@@ -178,6 +182,14 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     error_unexpected_error: '5000: Hubo un error, comuniquese con el administrador',
     error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
     error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
+
+    error_login_user_incorrect: "Usuario o contraseña incorrecta",
+    error_login_user_pending: "Usuario pendiente de confirmación",
+    error_login_locked_by_attempts_failed_password: "Tu usuario fue bloqueado por exceder los intentos permitidos al loguearse",
+    error_login_locked_by_inactived: "Tu usuario fue bloqueado por exceder los dias permitidos sin conectarse",
+    error_login_locked_by_password_expired: "Tu usuario fue bloqueado por qué tu contraseña expiró",
+    error_login_locked: "Tu usuario fue bloqueado",
+    error_login_user_inactive: "Tu usuario está inactivo",
 };
 
 const esResource: ResourceLanguage = {

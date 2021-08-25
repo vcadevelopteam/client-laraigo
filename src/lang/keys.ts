@@ -167,6 +167,10 @@ export const langKeys = {
     register: 'register',
     download: 'download',
     back: 'back',
+    continue: 'continue',
+    confirmation: 'confirmation',
+    confirmation_save: 'confirmation_save',
+    confirmation_delete: 'confirmation_delete',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',
@@ -177,6 +181,14 @@ export const langKeys = {
     error_unexpected_error: 'error_unexpected_error',
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
+
+    error_login_user_incorrect: "error_login_user_incorrect",
+    error_login_user_pending: "error_login_user_pending",
+    error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",
+    error_login_locked_by_inactived: "error_login_locked_by_inactived",
+    error_login_locked_by_password_expired: "error_login_locked_by_password_expired",
+    error_login_locked: "error_login_locked",
+    error_login_user_inactive: "error_login_user_inactive",
 };
 
 export type LangKeys = typeof langKeys;
