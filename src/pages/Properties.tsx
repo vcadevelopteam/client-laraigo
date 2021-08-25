@@ -50,6 +50,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -117,7 +119,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             <FieldEdit
                                 label={t(langKeys.corporation)} // "Corporation"
                                 className="col-6"
-                                valueDefault={row ? (row.corpdesc || "") : ""}
+                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                 disabled={true}
                             />
                             : <FieldView
@@ -129,7 +131,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             <FieldEdit
                                 label={t(langKeys.organization)} // "Organization"
                                 className="col-6"
-                                valueDefault={row ? (row.orgdesc || "") : ""}
+                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
                                 disabled={true}
                             />
                             : <FieldView
