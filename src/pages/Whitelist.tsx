@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -97,11 +97,18 @@ const DetailWhitelist: React.FC<DetailWhitelistProps> = ({ data: { row, edit }, 
         }
     }, [executeRes, waitSave])
     
-
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insWhitelist(data)));
-        dispatch(showBackdrop(true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(execute(insWhitelist(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -298,9 +305,17 @@ const Whitelist: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insWhitelist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.whitelistid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insWhitelist({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.whitelistid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

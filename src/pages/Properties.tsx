@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -98,9 +98,17 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insProperty(data)));
-        dispatch(showBackdrop(true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(execute(insProperty(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -362,9 +370,17 @@ const Properties: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

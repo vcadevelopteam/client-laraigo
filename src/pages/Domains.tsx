@@ -12,8 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {
+    getCollection, resetMain, getMultiCollection,
+    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+} from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -266,12 +269,20 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(showBackdrop(true));
-        dispatch(execute({
-            header: insDomain({ ...data }),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
-        }, true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: insDomain({ ...data }),
+                detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
+            }, true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -526,11 +537,18 @@ const Domains: FC = () => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
-
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {
