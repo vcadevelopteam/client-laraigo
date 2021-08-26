@@ -23,6 +23,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
+import GoogleLogin from 'react-google-login';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -99,6 +100,10 @@ const SignIn = () => {
         dispatch(login(dataAuth.username, dataAuth.password));
     }
 
+    const onGoogleLogin = (googleData: any) => {
+        console.log(googleData);
+      }
+
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
@@ -128,6 +133,13 @@ const SignIn = () => {
                         buttonStyle={{ width: '100%', borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center' }}
                         icon={<FacebookIcon style={{color: 'white', marginRight: '8px'}} />}
                         // bu
+                    />
+                    <GoogleLogin
+                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                        buttonText="Log in with Google"
+                        onSuccess={onGoogleLogin}
+                        onFailure={onGoogleLogin}
+                        cookiePolicy={'single_host_origin'}
                     />
                     <form
                         className={classes.form}
