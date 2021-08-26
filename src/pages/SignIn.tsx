@@ -21,7 +21,8 @@ import { getAccessToken } from 'common/helpers';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-
+import FacebookLogin from 'react-facebook-login';
+import FacebookIcon from '@material-ui/icons/Facebook';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -121,9 +122,18 @@ const SignIn = () => {
                             {t(resLogin.code || "error_unexpected_error")}
                         </Alert>
                     )}
+                    <FacebookLogin
+                        appId="474255543421911"
+                        callback={(r) => console.log(r)}
+                        buttonStyle={{ width: '100%', borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center' }}
+                        icon={<FacebookIcon style={{color: 'white', marginRight: '8px'}} />}
+                        // bu
+                    />
                     <form
                         className={classes.form}
                         onSubmit={onSubmitLogin}
+                        
+                        
                     >
                         <TextField
                             variant="outlined"
