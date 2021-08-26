@@ -46,6 +46,7 @@ export const langKeys = {
     newproperty: "newproperty",
     newquickreply: "newquickreply",
     newsla: "newsla",
+    neworganization: "neworganization",
     newwhitelist: "newwhitelist",
     registervalue: "registervalue",
     newdomain: "newdomain",

@@ -156,6 +156,13 @@ export const getSLASel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+export const getOrgSel = (id: number): IRequestBody => ({
+    method: "UFN_ORG_SEL",
+    parameters: {
+        orgid: id,
+        all: id === 0,
+    }
+});
 
 export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax,
     usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }: Dictionary): IRequestBody => ({
@@ -203,6 +210,12 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
         all: true
     }
 })
+
+export const insOrg = ({ description, status, type, id, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_ORG_INS",
+    key: "UFN_ORG_INS",
+    parameters: { id,description,status,type,operation }
+});
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",

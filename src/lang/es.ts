@@ -151,7 +151,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     newsla: "Nuevo acuerdo de nivel de servicio",
     newwhitelist: "Nueva whitelist",
     registervalue: "Registrar valor",
-
+    neworganization: "Nueva organización",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
 

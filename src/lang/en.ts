@@ -107,6 +107,7 @@ const translation: LangKeys = {
     newsla: "New service level agreement",
     newwhitelist: "New whitelist",
     registervalue: "Register value",
+    neworganization: "New organization",
 
     action: 'Action',
     action_plural: 'Actions',
