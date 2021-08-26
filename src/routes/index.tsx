@@ -73,7 +73,7 @@ const RouterApp: FC = () => {
 	const classes = useStyles();
 
 	return (
-		<Router>
+		<Router basename={process.env.PUBLIC_URL}>
 			<Switch>
 				<ProtectRoute exact path="/"/>
 				<Route exact path="/sign-in" component={SignIn} />
