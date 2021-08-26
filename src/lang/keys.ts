@@ -106,7 +106,13 @@ export const langKeys = {
     doubleAuthentication: 'doubleAuthentication',
     billingGroup: 'billingGroup',
     registerCode: 'registerCode',
-    
+    phone: 'phone',
+    department: 'department',
+    address: 'address',
+
+    ticketCreatedOn: 'ticketCreatedOn',
+    lastConnection: 'lastConnection',
+
     group: 'group',
     group_plural: 'group_plural',
 
@@ -176,6 +182,7 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
+    import: 'import',
     back: 'back',
     continue: 'continue',
     confirmation: 'confirmation',
@@ -192,6 +199,20 @@ export const langKeys = {
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
 
+    dateRangeFilterTitle: 'dateRangeFilterTitle',
+
+    apply: 'apply',
+    close: 'close',
+
+    today: 'today',
+    yesterday: 'yesterday',
+    thisWeek: 'thisWeek',
+    lastWeek: 'lastWeek',
+    thisMonth: 'thisMonth',
+    lastMonth: 'lastMonth',
+    daysUpToToday: 'daysUpToToday',
+    daysStartingToday: 'daysStartingToday',
+    
     error_login_user_incorrect: "error_login_user_incorrect",
     error_login_user_pending: "error_login_user_pending",
     error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",

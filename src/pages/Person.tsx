@@ -1,25 +1,26 @@
 import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { ListPaginated } from 'components';
+import { DateRangePicker, ListPaginated, Title } from 'components';
 import { getPaginatedPerson } from 'common/helpers';
 import { IPerson } from "@types";
-import { makeStyles } from '@material-ui/core/styles';
-import { getCollectionPaginated } from 'store/main/actions';
-import { Box, Divider, ListItem } from '@material-ui/core';
-import { Facebook } from '@material-ui/icons';
+import { getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import { EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
+import { DownloadIcon, DownloadReverseIcon, EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
+import AccountCircle from '@material-ui/icons/AccountCircle';
+import { Trans } from 'react-i18next';
+import { langKeys } from 'lang/keys';
+import { Range } from 'react-date-range';
+import { Skeleton } from '@material-ui/lab';
 
 interface PersonItemProps {
     person: IPerson;
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Domains" },
-    { id: "view-2", name: "Domain detail" }
-];
+interface PhotoProps {
+    src?: string;
+}
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -33,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
     },
     personList: {
         display: 'flex',
+        paddingLeft: theme.spacing(0),
+        paddingRight: theme.spacing(0),
+        paddingBottom: theme.spacing(1),
     },
     personItemRoot: {
         padding: theme.spacing(2.5),
@@ -47,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexBasis: 0,
         flexShrink: 1,
+        alignItems: 'center',
+    },
+    gridRow: {
         alignItems: 'center',
     },
     itemColumn: {
@@ -83,8 +90,25 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: 56,
         padding: 0,
         backgroundColor: '#55BD84',
-    }
+        float: 'right',
+    },
 }));
+
+const usePhotoClasses = makeStyles(theme => ({
+    accountPhoto: {
+        height: 40,
+        width: 40,
+    },
+}));
+
+const Photo: FC<PhotoProps> = ({ src }) => {
+    const classes = usePhotoClasses();
+
+    if (!src || src === "") {
+        return <AccountCircle className={classes.accountPhoto} />;
+    }
+    return <Avatar alt={src} src={src} className={classes.accountPhoto} />;
+}
 
 const PersonItem: FC<PersonItemProps> = ({ person }) => {
     const classes = useStyles();
@@ -92,77 +116,141 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
     return (
         <ListItem className={classes.personList}>
             <Box className={classes.personItemRoot}>
-                <div className={clsx(classes.itemRow, classes.itemTop)}>
-                    <div className={clsx(classes.itemRow, classes.spacing)}>
-                        <Facebook />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.itemColumn}>
-                            <label className={clsx(classes.label, classes.value)}>{person.name}</label>
-                            <label className={classes.label}>{`ID# ${person.personid}`}</label>
-                        </div>
-                    </div>
-                    <div className={clsx(classes.itemRow, classes.spacing)}>
-                        <EMailInboxIcon className={classes.propIcon} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.itemColumn}>
-                            <label className={classes.label}>Email</label>
-                            <label className={clsx(classes.label, classes.value)}>{person.email || "-"}</label>
-                        </div>
-                    </div>
-                    <div className={clsx(classes.itemRow, classes.spacing)}>
-                        <PhoneIcon className={classes.propIcon} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.itemColumn}>
-                            <label className={classes.label}>Phone</label>
-                            <label className={clsx(classes.label, classes.value)}>{person.phone || "-"}</label>
-                        </div>
-                    </div>
-                    <div className={clsx(classes.itemRow, classes.spacing)}>
-                        <PortfolioIcon className={classes.propIcon} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.itemColumn}>
-                            <label className={classes.label}>Department</label>
-                            <label className={clsx(classes.label, classes.value)}>{person.region || '-'}</label>
-                        </div>
-                    </div>
-                    <div className={clsx(classes.itemRow, classes.spacing)}>
-                        <PinLocationIcon className={classes.propIcon} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.itemColumn}>
-                            <label className={classes.label}>Address</label>
-                            <label className={clsx(classes.label, classes.value)}>{person.province || '-'}</label>
-                        </div>
-                    </div>
-                </div>
-                <Divider style={{ margin: '10px 0' }} />
-                <div className={classes.itemRow}>
-                    <div className={classes.itemColumn}>
-                        <label>Ticket Created On:</label>
-                        <label>{person.educationlevel || "-"}</label>
-                    </div>
-                    <div className={classes.itemColumn}>
-                        <label>Last Connection:</label>
-                        <label>{person.civilstatus || "-"}</label>
-                    </div>
-                    <div style={{ flexGrow: 6 }} />
-                    <Button className={classes.btn} variant="contained" color="primary" disableElevation>
-                        <label style={{ fontSize: 10, fontWeight: 400 }}>Active</label>
-                    </Button>
-                </div>
+                <Grid container direction="column">
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
+                            <Grid container direction="row" className={classes.gridRow}>
+                                <Photo src={person.imageurldef} />
+                                <div style={{ width: 8 }} />
+                                <div className={classes.itemColumn}>
+                                    <label className={clsx(classes.label, classes.value)}>{person.name}</label>
+                                    <label className={classes.label}>{`ID# ${person.personid}`}</label>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
+                            <Grid container direction="row" className={classes.gridRow}>
+                                <EMailInboxIcon className={classes.propIcon} />
+                                <div style={{ width: 8 }} />
+                                <div className={classes.itemColumn}>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.email} />
+                                    </label>
+                                    <div style={{ height: 4 }} />
+                                    <label className={clsx(classes.label, classes.value)}>{person.email || "-"}</label>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
+                            <Grid container direction="row" className={classes.gridRow}>
+                                <PhoneIcon className={classes.propIcon} />
+                                <div style={{ width: 8 }} />
+                                <div className={classes.itemColumn}>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.phone} />
+                                    </label>
+                                    <div style={{ height: 4 }} />
+                                    <label className={clsx(classes.label, classes.value)}>{person.phone || "-"}</label>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
+                            <Grid container direction="row" className={classes.gridRow}>
+                                <PortfolioIcon className={classes.propIcon} />
+                                <div style={{ width: 8 }} />
+                                <div className={classes.itemColumn}>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.department} />
+                                    </label>
+                                    <div style={{ height: 4 }} />
+                                    <label className={clsx(classes.label, classes.value)}>{person.region || '-'}</label>
+                                </div>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
+                            <Grid container direction="row" className={classes.gridRow}>
+                                <PinLocationIcon className={classes.propIcon} />
+                                <div style={{ width: 8 }} />
+                                <div className={classes.itemColumn}>
+                                    <label className={classes.label}>
+                                        <Trans i18nKey={langKeys.address} />
+                                    </label>
+                                    <div style={{ height: 4 }} />
+                                    <label className={clsx(classes.label, classes.value)}>{person.province || '-'}</label>
+                                </div>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Divider style={{ margin: '10px 0' }} />
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
+                            <Grid container direction="column">
+                                <label><Trans i18nKey={langKeys.ticketCreatedOn} />:</label>
+                                <div style={{ height: 4 }} />
+                                <label>{person.educationlevel || "-"}</label>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
+                            <Grid container direction="column">
+                                <label><Trans i18nKey={langKeys.lastConnection} />:</label>
+                                <div style={{ height: 4 }} />
+                                <label>{person.civilstatus || "-"}</label>
+                            </Grid>
+                        </Grid>
+                        <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />
+                        <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
+                            <Button className={classes.btn} variant="contained" color="primary" disableElevation>
+                                <label style={{ fontSize: 10, fontWeight: 400 }}>
+                                    <Trans i18nKey={langKeys.active} />
+                                </label>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Box>
+        </ListItem>
+    );
+}
+
+const PersonItemSkeleton: FC = () => {
+    const classes = useStyles();
+
+    return (
+        <ListItem className={classes.personList}>
+            <Box className={classes.personItemRoot}>
+                <Grid container direction="column">
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                    <Divider style={{ margin: '10px 0' }} />
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                </Grid>
             </Box>
         </ListItem>
     );
 }
 
 const Person: FC = () => {
+    const endDate = new Date();
+    const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
+    const initialDateRange: Range = { startDate, endDate, key: 'selection' };
+
     const dispatch = useDispatch();
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
+    const [dateRange, setDateRange] = useState<Range>(initialDateRange);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
-    
+
     const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
-        startdate: '2021-06-01',
-        enddate: '2021-08-30',
+        startdate: format(dateRange.startDate!),
+        enddate: format(dateRange.endDate!),
         skip,
         take,
         sorts: {},
@@ -170,22 +258,74 @@ const Person: FC = () => {
     })));
 
     useEffect(() => {
-        console.log("ww");
         const skip = pageSize * page;
         fetchData(skip, pageSize);
-    }, [pageSize, page]);
+
+        return () => {
+            dispatch(resetCollectionPaginated());
+        };
+    }, [pageSize, page, dateRange]);
+
+    const format = (date: Date) => date.toISOString().split('T')[0];
 
     return (
-        <ListPaginated
-            currentPage={page}
-            data={mainPaginated.data as IPerson[]}
-            onPageChange={setPage}
-            pageSize={pageSize}
-            onPageSizeChange={setPageSize}
-            loading={mainPaginated.loading}
-            totalItems={mainPaginated.count}
-            builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
-        />
+        <div style={{ height: '100%' }}>
+            <Grid container direction="row">
+                <Grid item xs={6}>
+                    <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
+                </Grid>
+                <Grid item xs={6}>
+                    <Grid container direction="row-reverse" spacing={1}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => { }}
+                            startIcon={<DownloadIcon />}
+                        >
+                            <Trans i18nKey={langKeys.download} />
+                        </Button>
+                        <div style={{ width: 9 }} />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            startIcon={<DownloadReverseIcon color="secondary" />}
+                            onClick={() => { }}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >
+                            <Trans i18nKey={langKeys.import} />
+                        </Button>
+                        <div style={{ width: 9 }} />
+                        <DateRangePicker
+                            open={openDateRangeModal}
+                            setOpen={setOpenDateRangeModal}
+                            range={dateRange}
+                            onSelect={setDateRange}
+                        >
+                            <Button
+                                disabled={mainPaginated.loading}
+                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                            >
+                                {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <div style={{ height: 30 }} />
+            <ListPaginated
+                currentPage={page}
+                data={mainPaginated.data as IPerson[]}
+                onPageChange={setPage}
+                pageSize={pageSize}
+                onPageSizeChange={setPageSize}
+                loading={mainPaginated.loading}
+                totalItems={mainPaginated.count}
+                builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
+                skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
+            />
+        </div>
     );
 }
 

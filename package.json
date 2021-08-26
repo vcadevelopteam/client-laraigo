@@ -1,5 +1,4 @@
 {
-  "homepage": "/laraigo",
   "name": "client-laraigo",
   "version": "0.1.0",
   "private": true,
@@ -15,6 +14,7 @@
     "@types/react": "^17.0.15",
     "@types/react-dom": "^17.0.9",
     "axios": "^0.21.1",
+    "date-fns": "^2.23.0",
     "file-saver": "^2.0.5",
     "i18next": "^20.3.5",
     "install": "^0.13.0",
@@ -36,8 +36,8 @@
     "xlsx": "^0.17.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "starthttps": "export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start",
+    "start": "set HTTPS=true&&react-scripts start",
+    "starthttps": "set HTTPS=true react-scripts start",
     "starthttpss": "HTTPS=true SSL_CRT_FILE=./.cert/cert.pem SSL_KEY_FILE=./.cert/key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
