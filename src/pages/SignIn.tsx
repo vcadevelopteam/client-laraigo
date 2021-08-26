@@ -100,18 +100,26 @@ const SignIn = () => {
         dispatch(login(dataAuth.username, dataAuth.password));
     }
 
+    const onAuthWithFacebook = (r: any) => {
+        console.log(r);
+
+        if (r && r.id) {
+            dispatch(login(null, null, r.id));
+        }
+    }
+
     const onGoogleLogin = (googleData: any) => {
         console.log(googleData);
-      }
+    }
 
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
         }
     }, [])
-    
+
     useEffect(() => {
-        if(!resLogin.error && resLogin.user && getAccessToken()) {
+        if (!resLogin.error && resLogin.user && getAccessToken()) {
             //redirect to page tickets
             history.push(resLogin.user.redirect);
         }
@@ -120,7 +128,7 @@ const SignIn = () => {
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
             <div className={classes.childContainer}>
-                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo"/>
+                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
                 <div className={classes.paper}>
                     {resLogin.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">
@@ -131,8 +139,8 @@ const SignIn = () => {
                         appId="474255543421911"
                         callback={onAuthWithFacebook}
                         buttonStyle={{ width: '100%', borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center' }}
-                        icon={<FacebookIcon style={{color: 'white', marginRight: '8px'}} />}
-                        // bu
+                        icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                    // bu
                     />
                     <GoogleLogin
                         clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
@@ -144,8 +152,8 @@ const SignIn = () => {
                     <form
                         className={classes.form}
                         onSubmit={onSubmitLogin}
-                        
-                        
+
+
                     >
                         <TextField
                             variant="outlined"
