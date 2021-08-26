@@ -36,10 +36,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "starthttps": "export HTTPS=true&&SSL_CRT_FILE=cert.pem&&SSL_KEY_FILE=key.pem react-scripts start",
+    "starthttpss": "HTTPS=true SSL_CRT_FILE=./.cert/cert.pem SSL_KEY_FILE=./.cert/key.pem react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "prede  ploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
@@ -63,6 +65,7 @@
   "devDependencies": {
     "@types/file-saver": "^2.0.3",
     "@types/react-date-range": "^1.1.6",
+    "@types/react-facebook-login": "^4.1.4",
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-table": "^7.7.2",
