@@ -123,7 +123,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
               if (!range.startDate) return '∞';
               return String(differenceInCalendarDays(defineds.endOfToday, range.startDate) + 1);
             },
-            isSelected: (range) => false,
+            isSelected: (_) => false,
         },
         {
             label: t(langKeys.daysStartingToday),
@@ -139,7 +139,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
               if (!range.endDate) return '∞';
               return String(differenceInCalendarDays(range.endDate, defineds.startOfToday) + 1);
             },
-            isSelected: (range) => false,
+            isSelected: (_) => false,
         },
     ];
 
@@ -170,6 +170,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                             locale={dateRangeResourceLanguage()}
                             staticRanges={staticRanges}
                             inputRanges={inputRanges}
+                            rangeColors={[theme.palette.primary.main, theme.palette.primary.dark]}
                             {...res}
                         />
                     </div>
@@ -187,7 +188,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                     <Button
                         type="button"
                         color="secondary"
-                        style={{ marginLeft: '1rem' }}
+                        style={{ marginLeft: '1rem', color: theme.palette.text.primary }}
                         onClick={() => setOpen(false)}
                     >
                         <Trans i18nKey={langKeys.close} />
