@@ -19,7 +19,6 @@ import Fab from '@material-ui/core/Fab';
 import { TableConfig, Pagination } from '@types'
 // import ButtonExport from './buttonexport';
 
-import DateRange from './daterange';
 import clsx from 'clsx';
 
 import { 
@@ -46,6 +45,8 @@ import {
     useGlobalFilter,
     usePagination
 } from 'react-table'
+import { Range } from 'react-date-range';
+import DateRange from './daterange';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -281,7 +282,7 @@ const TableZyx = React.memo(({
         });
     }
 
-    const [dateRange, setdateRange] = useState([
+    const [dateRange, setdateRange] = useState<Range[]>([
         {
             startDate: new Date(new Date().setDate(0)),
             endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
@@ -290,12 +291,12 @@ const TableZyx = React.memo(({
     ]);
 
     useEffect(() => {
-        fetchData && fetchData({
+        /*fetchData && fetchData({
             ...pagination, pageSize, daterange: {
                 startDate: dateRange[0].startDate.toISOString().substring(0, 10),
                 endDate: dateRange[0].endDate.toISOString().substring(0, 10)
             }
-        });
+        });*/
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange])
 

@@ -16,3 +16,4 @@ export { ReactComponent as ArrowDropDownIcon } from './arrow-drop-down.svg';
 export { ReactComponent as PhoneIcon } from './phone.svg';
 export { ReactComponent as PortfolioIcon } from './portfolio.svg';
 export { ReactComponent as PinLocationIcon } from './pin_location.svg';
+export { ReactComponent as DownloadReverseIcon } from './download-arrow-reverse.svg';
