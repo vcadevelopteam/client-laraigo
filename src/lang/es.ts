@@ -199,7 +199,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     error_unexpected_error: '5000: Hubo un error, comuniquese con el administrador',
     error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
     error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
-
+    error_parameter_is_missing: "5004: Hubo un error, comuniquese con el administrador",
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
     apply: 'Aplicar',
@@ -221,6 +221,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     error_login_locked_by_password_expired: "Tu usuario fue bloqueado por qué tu contraseña expiró",
     error_login_locked: "Tu usuario fue bloqueado",
     error_login_user_inactive: "Tu usuario está inactivo",
+    error_login_no_integration: "No hay ningun usuario registrado integrado a esa cuenta",
 };
 
 const esResource: ResourceLanguage = {

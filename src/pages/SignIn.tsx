@@ -99,6 +99,14 @@ const SignIn = () => {
         dispatch(login(dataAuth.username, dataAuth.password));
     }
 
+    const onAuthWithFacebook = (r: any) => {
+        console.log(r);
+        
+        if (r && r.id) {
+            dispatch(login(null, null, r.id));
+        }
+    }
+
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
@@ -124,7 +132,7 @@ const SignIn = () => {
                     )}
                     <FacebookLogin
                         appId="474255543421911"
-                        callback={(r) => console.log(r)}
+                        callback={onAuthWithFacebook}
                         buttonStyle={{ width: '100%', borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center' }}
                         icon={<FacebookIcon style={{color: 'white', marginRight: '8px'}} />}
                         // bu

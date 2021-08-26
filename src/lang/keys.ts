@@ -220,6 +220,8 @@ export const langKeys = {
     error_login_locked_by_password_expired: "error_login_locked_by_password_expired",
     error_login_locked: "error_login_locked",
     error_login_user_inactive: "error_login_user_inactive",
+    error_parameter_is_missing: "error_parameter_is_missing",
+    error_login_no_integration: "error_login_no_integration",
 };
 
 export type LangKeys = typeof langKeys;

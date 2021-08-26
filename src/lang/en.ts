@@ -200,7 +200,7 @@ const translation: LangKeys = {
     error_unexpected_error: '5000: There was an error, contact the administrator ',
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
-
+    error_parameter_is_missing: "5004: There was an error, contact the administrator",
     dateRangeFilterTitle: 'Filter by date range',
 
     apply: 'Apply',
@@ -222,6 +222,7 @@ const translation: LangKeys = {
     error_login_locked_by_password_expired: "Your username was blocked because your password expired",
     error_login_locked: "Your user was blocked",
     error_login_user_inactive: "Your username is inactive",
+    error_login_no_integration: "There is no registered user integrated to that account",
 };
 
 const enResource: ResourceLanguage = {
