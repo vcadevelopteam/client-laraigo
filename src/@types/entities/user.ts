@@ -19,6 +19,8 @@ export interface IUser {
     token: string;
     usr: string;
     roledesc: string;
+    corpdesc: string;
+    orgdesc: string;
     redirect: string;
     menu: ObjectApps
 }

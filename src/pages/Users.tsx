@@ -12,8 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {
+    getCollection, resetMain, getMultiCollection,
+    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+} from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -389,42 +392,42 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const columns = React.useMemo(
         () => [
             {
-                Header: 'Organization',
+                Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
             },
             {
-                Header: 'Role',
+                Header: t(langKeys.role),
                 accessor: 'roledesc',
                 NoFilter: true
             },
             {
-                Header: 'Supervisor',
+                Header: t(langKeys.supervisor),
                 accessor: 'supervisordesc',
                 NoFilter: true
             },
             {
-                Header: 'Group',
+                Header: t(langKeys.group),
                 accessor: 'groups',
                 NoFilter: true
             },
             {
-                Header: 'Label',
+                Header: t(langKeys.label),
                 accessor: 'labels',
                 NoFilter: true
             },
             {
-                Header: 'Channel',
+                Header: t(langKeys.channel),
                 accessor: 'channelsdesc',
                 NoFilter: true
             },
             {
-                Header: 'Type',
+                Header: t(langKeys.type),
                 accessor: 'type',
                 NoFilter: true
             },
             {
-                Header: 'Status',
+                Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
             },
@@ -544,13 +547,20 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
             return;
         }
-        dispatch(showBackdrop(true));
-        dispatch(execute({
-            header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
-            detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
-        }, true));
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: insUser({ ...data, twofactorauthentication: data.twofactorauthentication === 'ACTIVO' }),
+                detail: [...dataOrganizations.filter(x => !!x.operation).map(x => insOrgUser(x)), ...orgsToDelete.map(x => insOrgUser(x))]
+            }, true));
+            setWaitSave(true)
+        }
 
-        setWaitSave(true)
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     const onSubmitPassword = () => {
@@ -575,7 +585,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.firstname} ${row.lastname}` : "New user"}
+                            title={row ? `${row.firstname} ${row.lastname}` : t(langKeys.newuser)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -586,7 +596,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
+                        >{t(langKeys.back)}</Button>
                         {edit &&
                             <>
                                 <Button
@@ -641,6 +651,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                             <FieldEdit
                                 label={t(langKeys.user)}
                                 className="col-6"
+                                disabled={edit}
                                 valueDefault={row?.usr || ""}
                                 onChange={(value) => setValue('usr', value)}
                                 error={errors?.usr?.message}
@@ -986,9 +997,17 @@ const Users: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

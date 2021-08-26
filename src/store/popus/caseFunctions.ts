@@ -17,3 +17,8 @@ export const openDrawer = (state: IState, action: IAction): IState => ({
     ...state,
     openDrawer: action.payload,
 })
+
+export const manageConfirmation = (state: IState, action: IAction): IState => ({
+    ...state,
+    question: action.payload,
+})

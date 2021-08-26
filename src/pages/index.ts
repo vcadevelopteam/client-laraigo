@@ -9,6 +9,7 @@ export { default as IntelligentModels } from './IntelligentModels';
 export { default as SLA } from './SLA';
 export { default as Domains } from './Domains';
 export { default as Person } from './Person';
+export { default as Supervisor } from './Supervisor';
 
 export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';

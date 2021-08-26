@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -50,6 +50,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -96,9 +98,17 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insProperty(data)));
-        dispatch(showBackdrop(true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(execute(insProperty(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -108,7 +118,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.propertyname}` : "New property"}
+                title={row ? `${row.propertyname}` : t(langKeys.newproperty)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -117,7 +127,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             <FieldEdit
                                 label={t(langKeys.corporation)} // "Corporation"
                                 className="col-6"
-                                valueDefault={row ? (row.corpdesc || "") : ""}
+                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                 disabled={true}
                             />
                             : <FieldView
@@ -129,7 +139,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             <FieldEdit
                                 label={t(langKeys.organization)} // "Organization"
                                 className="col-6"
-                                valueDefault={row ? (row.orgdesc || "") : ""}
+                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
                                 disabled={true}
                             />
                             : <FieldView
@@ -225,7 +235,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
+                        >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
                                 className={classes.button}
@@ -360,9 +370,17 @@ const Properties: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

@@ -69,7 +69,7 @@ const translation: LangKeys = {
     docNumber: 'Document number',
     docType: 'Document type',
     doubleAuthentication: 'Double authentication',
-
+    label:"Label",
     group: 'Group',
     group_plural: 'Groups',
     code:'Code',
@@ -103,6 +103,16 @@ const translation: LangKeys = {
     summarize:'Summarize',
     detail:'Detail',
     whitelist: 'Whitelist',
+    newuser: "New user",
+    newdomain: "New domain",
+    newgroupconfig: "New group configuration",
+    newinnapropiateword: "New innapropiate word",
+    newintelligentmodel: "New intelligent model",
+    newproperty: "New property",
+    newquickreply: "New quickreply",
+    newsla: "New service level agreement",
+    newwhitelist: "New whitelist",
+    registervalue: "Register value",
 
     action: 'Action',
     action_plural: 'Actions',
@@ -174,6 +184,11 @@ const translation: LangKeys = {
     register: 'Register',
     download: 'Download',
     import: 'Import',
+    back: 'Back',
+    continue: 'Continue',
+    confirmation: 'Confirmation',
+    confirmation_save: 'Are you sure to save the record?',
+    confirmation_delete: 'Are you sure to delete the record?',
 
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
@@ -198,6 +213,14 @@ const translation: LangKeys = {
     lastMonth: 'Last Month',
     daysUpToToday: 'days up to today',
     daysStartingToday: 'days starting today',
+
+    error_login_user_incorrect: "Incorrect user or password",
+    error_login_user_pending: "User pending confirmation",
+    error_login_locked_by_attempts_failed_password: "Your user was blocked for exceeding the attempts allowed to",
+    error_login_locked_by_inactived: "Your user was blocked for exceeding the allowed days without connecting",
+    error_login_locked_by_password_expired: "Your username was blocked because your password expired",
+    error_login_locked: "Your user was blocked",
+    error_login_user_inactive: "Your username is inactive",
 };
 
 const enResource: ResourceLanguage = {

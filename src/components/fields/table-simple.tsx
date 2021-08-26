@@ -435,7 +435,11 @@ const TableZyx = React.memo(({
                             {loading === true ? <LoadingSkeleton columns={headerGroups[0].headers.length} /> : page.map(row => {
                                 prepareRow(row);
                                 return (
-                                    <TableRow {...row.getRowProps()} className={hoverShadow ? classes.trdynamic : ''}>
+                                    <TableRow 
+                                        {...row.getRowProps()} 
+                                        className={hoverShadow ? classes.trdynamic : ''}
+                                        hover
+                                    >
                                         {row.cells.map((cell, i) =>
                                             <TableCell
                                                 {...cell.getCellProps()}

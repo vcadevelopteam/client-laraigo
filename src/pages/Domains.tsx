@@ -12,8 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {
+    getCollection, resetMain, getMultiCollection,
+    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+} from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -50,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: theme.spacing(4),
     },
 }));
-const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
+const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -81,13 +84,27 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
     return (
         <DialogZyx
             open={openModal}
-            title="Register value"
+            title={t(langKeys.registervalue)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+                {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.default_organization)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+            </div>
             <div className="row-zyx">
                 {edit ?
                     <FieldEdit
@@ -103,20 +120,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         className="col-6"
                     />}
                 {edit ?
-                    <TemplateSwitch
-                        label={t(langKeys.bydefault)}
-                        className="col-6"
-                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.default_organization)}
-                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                        className={classes.mb2}
-                    />
-                }
-                <div className="row-zyx"></div>
-
-                {edit ?
                     <FieldEdit
                         label={t(langKeys.description)}
                         className="col-6"
@@ -128,8 +131,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ data: { row, edit }, multiData, o
                         label={t(langKeys.description)}
                         value={row?.domaindesc || ""}
                         className="col-6"
-                    />}
-
+                    />
+                }
             </div>
         </DialogZyx>
     );
@@ -143,6 +146,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
+    const user = useSelector(state => state.login.validateToken.user);
 
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
@@ -259,18 +263,26 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
-        debugger
+
         dispatch(resetMainAux())
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(showBackdrop(true));
-        dispatch(execute({
-            header: insDomain({ ...data }),
-            detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
-        }, true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: insDomain({ ...data }),
+                detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
+            }, true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -283,7 +295,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.domainname}` : "New domain"}
+                            title={row ? `${row.domainname}` : t(langKeys.newdomain)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -294,7 +306,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
+                        >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button
                                 variant="contained"
@@ -314,7 +326,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                                 label={t(langKeys.corporation)}
                                 className="col-6"
                                 disabled={true}
-                                valueDefault={row?.corpdesc || ""}
+                                valueDefault={row?.corpdesc || user?.corpdesc}
                                 onChange={(value) => setValue('corporation', value)}
                                 error={errors?.corporation?.message}
                             />
@@ -328,7 +340,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                                 label={t(langKeys.organization)}
                                 disabled={true}
                                 className="col-6"
-                                valueDefault={row?.orgdesc || ""}
+                                valueDefault={row?.orgdesc || user?.orgdesc}
                                 onChange={(value) => setValue('organization', value)}
                                 error={errors?.organization?.message}
                             />
@@ -415,7 +427,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                     error={errors?.description?.message}
                 />
             </DialogZyx>
-            <DetailOrgUser
+            <DetailValue
                 data={rowSelected}
                 openModal={openDialogOrganization}
                 setOpenModal={setOpenDialogOrganization}
@@ -525,11 +537,18 @@ const Domains: FC = () => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
-
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

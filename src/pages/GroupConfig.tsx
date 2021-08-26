@@ -12,8 +12,12 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import {
+    getCollection, resetMain, getMultiCollection,
+    execute
+} from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import ClearIcon from '@material-ui/icons/Clear';
 // import { useHistory } from 'react-router-dom';
 
 interface RowSelected {
@@ -84,19 +88,33 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
     }, [edit, register]);
 
     useEffect(() => {
-        if (!executeRes.loading && !executeRes.error && waitSave) {
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            dispatch(showBackdrop(false));
-            fetchData();
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.groupconfig).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
         }
     }, [executeRes, waitSave])
     
-
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insGroupConfig(data)));
-        dispatch(showBackdrop(true));
-        setWaitSave(true)
+        const callback = () => {
+            dispatch(execute(insGroupConfig(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     });
 
     return (
@@ -106,7 +124,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : "New Group Configuration"}
+                title={row ? `${row.description}` : t(langKeys.newgroupconfig)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -189,19 +207,27 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                                 className="col-6"
                             />}
                     </div>
-                    {edit &&
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        </div>
-                    }
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.save)}
+                        </Button>
+                        }
+                    </div>
                 </div>
             </form>
         </div>
@@ -278,17 +304,21 @@ const GroupConfig: FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!executeResult.loading && !executeResult.error && waitSave) {
-            dispatch(showBackdrop(false));
-            dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-            setWaitSave(false);
-            fetchData();
-        } else if (executeResult.error) {
-            dispatch(showSnackbar({ show: true, success: false, message: executeResult.message}))
-            dispatch(showBackdrop(false));
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.groupconfig).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
         }
     }, [executeResult, waitSave])
-
+    
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -305,9 +335,17 @@ const GroupConfig: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
-        dispatch(execute(insGroupConfig({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.groupconfigurationid })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        const callback = () => {
+            dispatch(execute(insGroupConfig({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.groupconfigurationid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     if (viewSelected === "view-1") {

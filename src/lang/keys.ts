@@ -38,7 +38,17 @@ export const langKeys = {
     classification: 'classification',
     summarize:'summarize',
     detail:'detail',
-
+    label:"label",
+    newuser: "newuser",
+    newgroupconfig: "newgroupconfig",
+    newinnapropiateword: "newinnapropiateword",
+    newintelligentmodel: "newintelligentmodel",
+    newproperty: "newproperty",
+    newquickreply: "newquickreply",
+    newsla: "newsla",
+    newwhitelist: "newwhitelist",
+    registervalue: "registervalue",
+    newdomain: "newdomain",
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
     usergroup: 'usergroup',
@@ -172,6 +182,11 @@ export const langKeys = {
     register: 'register',
     download: 'download',
     import: 'import',
+    back: 'back',
+    continue: 'continue',
+    confirmation: 'confirmation',
+    confirmation_save: 'confirmation_save',
+    confirmation_delete: 'confirmation_delete',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',
@@ -196,6 +211,14 @@ export const langKeys = {
     lastMonth: 'lastMonth',
     daysUpToToday: 'daysUpToToday',
     daysStartingToday: 'daysStartingToday',
+    
+    error_login_user_incorrect: "error_login_user_incorrect",
+    error_login_user_pending: "error_login_user_pending",
+    error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",
+    error_login_locked_by_inactived: "error_login_locked_by_inactived",
+    error_login_locked_by_password_expired: "error_login_locked_by_password_expired",
+    error_login_locked: "error_login_locked",
+    error_login_user_inactive: "error_login_user_inactive",
 };
 
 export type LangKeys = typeof langKeys;
