@@ -135,20 +135,6 @@ const SignIn = () => {
                             {t(resLogin.code || "error_unexpected_error")}
                         </Alert>
                     )}
-                    <FacebookLogin
-                        appId="474255543421911"
-                        callback={onAuthWithFacebook}
-                        buttonStyle={{ width: '100%', borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center' }}
-                        icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                    // bu
-                    />
-                    <GoogleLogin
-                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
-                        buttonText="Log in with Google"
-                        onSuccess={onGoogleLogin}
-                        onFailure={onGoogleLogin}
-                        cookiePolicy={'single_host_origin'}
-                    />
                     <form
                         className={classes.form}
                         onSubmit={onSubmitLogin}
@@ -190,14 +176,33 @@ const SignIn = () => {
                             }}
                         />
                         {!resLogin.loading ?
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}>
-                                <Trans i18nKey={langKeys.logIn} />
-                            </Button> :
+                            <div style={{ alignItems: 'center' }}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.submit}>
+                                    <Trans i18nKey={langKeys.logIn} />
+                                </Button>
+                                <FacebookLogin
+                                    appId="474255543421911"
+                                    callback={onAuthWithFacebook}
+                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', marginLeft: 'auto', marginRight: 'auto', marginBottom: '16px' }}
+                                    
+                                    textButton={t(langKeys.login_with_facebook)}
+                                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                                />
+                                <div style={{textAlign: 'center'}}>
+                                    <GoogleLogin
+                                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                                        buttonText="Log in with Google"
+                                        onSuccess={onGoogleLogin}
+                                        onFailure={onGoogleLogin}
+                                        cookiePolicy={'single_host_origin'}
+                                    />
+                                </div>
+                            </div> :
                             <CircularProgress className={classes.progress} />
                         }
                         <Grid container>

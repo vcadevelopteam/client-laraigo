@@ -210,6 +210,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 disabled={disabled}
                 type={type}
                 value={value}
+                error={!!error}
                 helperText={error || null}
                 onChange={(e) => {
                     setvalue(e.target.value);
@@ -234,6 +235,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 fullWidth
                 disabled={disabled}
                 type={type}
+                error={!!error}
                 value={value}
                 multiline
                 rows={4}
@@ -285,6 +287,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     <TextField
                         {...params}
                         helperText={error || null}
+                        error={!!error}
                         InputProps={{
                             ...params.InputProps,
                             endAdornment: (
@@ -343,7 +346,6 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
-                // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
                 renderInput={(params) => (
@@ -358,6 +360,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                                 </React.Fragment>
                             ),
                         }}
+                        error={!!error}
                         helperText={error || null}
                         
                     />

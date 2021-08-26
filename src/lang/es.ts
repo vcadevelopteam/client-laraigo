@@ -189,6 +189,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     confirmation: 'Confirmación',
     confirmation_save: '¿Está seguro de guardar el registro?',
     confirmation_delete: '¿Está seguro de eliminar el registro?',
+    login_with_facebook: 'Iniciar sesión con Facebook',
 
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',
