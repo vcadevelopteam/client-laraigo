@@ -2,7 +2,7 @@ import { IActionCall } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
-export const login = (usr: string | null, password: string | null, facebookid?: string, googleid?: string): IActionCall => ({
+export const login = (usr: string | null, password: string | null, facebookid?: string | null, googleid?: string | null): IActionCall => ({
     callAPI: () => CommonService.login(usr || "", password || "", facebookid || "", googleid || ""),
     types: {
         loading: actionTypes.LOGIN,

@@ -108,8 +108,27 @@ const SignIn = () => {
         }
     }
 
-    const onGoogleLogin = (googleData: any) => {
-        console.log(googleData);
+    const onGoogleLoginSucess = (r: any) => {
+        console.log(r);
+
+        if (r && r.googleId) {
+            dispatch(login(null, null, null, r.googleId));
+        }
+    }
+
+    const onGoogleLoginFailure = (r: any) => {
+        console.log(r);
+
+        if (r && r.error) {
+            switch (r.error) {
+                case 'idpiframe_initialization_failed':
+                case 'popup_closed_by_user':    
+                    break;
+                default:
+                    alert(r.error);
+                    break;
+            }
+        }
     }
 
     useEffect(() => {
@@ -197,8 +216,8 @@ const SignIn = () => {
                                     <GoogleLogin
                                         clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
                                         buttonText="Log in with Google"
-                                        onSuccess={onGoogleLogin}
-                                        onFailure={onGoogleLogin}
+                                        onSuccess={onGoogleLoginSucess}
+                                        onFailure={onGoogleLoginFailure}
                                         cookiePolicy={'single_host_origin'}
                                     />
                                 </div>
