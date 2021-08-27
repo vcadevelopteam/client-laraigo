@@ -55,6 +55,12 @@ const translation: LangKeys = {
     firstname: 'Firstname',
     lastname: 'Lastname',
     email: 'Email',
+    address: 'Address',
+    department: 'Department',
+    phone: 'Phone',
+
+    lastConnection: 'Last Connection',
+    ticketCreatedOn: 'Ticket Created On',
 
     company: 'Company',
 
@@ -179,11 +185,13 @@ const translation: LangKeys = {
     attention_group: 'Attention group',
     register: 'Register',
     download: 'Download',
+    import: 'Import',
     back: 'Back',
     continue: 'Continue',
     confirmation: 'Confirmation',
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
+    login_with_facebook: 'Login with Facebook',
 
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
@@ -194,6 +202,20 @@ const translation: LangKeys = {
     error_unexpected_error: '5000: There was an error, contact the administrator ',
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
+    error_parameter_is_missing: "5004: There was an error, contact the administrator",
+    dateRangeFilterTitle: 'Filter by date range',
+
+    apply: 'Apply',
+    close: 'Close',
+
+    today: 'Today',
+    yesterday: 'Yesterday',
+    thisWeek: 'This Week',
+    lastWeek: 'Last Week',
+    thisMonth: 'This Month',
+    lastMonth: 'Last Month',
+    daysUpToToday: 'days up to today',
+    daysStartingToday: 'days starting today',
 
     error_login_user_incorrect: "Incorrect user or password",
     error_login_user_pending: "User pending confirmation",
@@ -202,6 +224,7 @@ const translation: LangKeys = {
     error_login_locked_by_password_expired: "Your username was blocked because your password expired",
     error_login_locked: "Your user was blocked",
     error_login_user_inactive: "Your username is inactive",
+    error_login_no_integration: "There is no registered user integrated to that account",
 };
 
 const enResource: ResourceLanguage = {

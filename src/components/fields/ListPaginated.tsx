@@ -9,6 +9,7 @@ interface PaginatedListProps<T> {
     builder: (item: T, index: number) => React.ReactNode;
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
+    skeleton?: (index: number) => React.ReactNode;
     data: T[];
     currentPage: number;
     pageSize: number;
@@ -38,9 +39,12 @@ const useStyles = makeStyles((theme: Theme) => ({
             },
         }
     },
+    loading: {
+
+    },
 }));
 
-const useNodataStyles = makeStyles(theme => ({
+const useNoDataStyles = makeStyles(theme => ({
     noDataRoot: {
         height: '100%',
         flexDirection: 'column',
@@ -57,7 +61,7 @@ const useNodataStyles = makeStyles(theme => ({
 }));
 
 const NoData: FC = () => {
-    const classes = useNodataStyles();
+    const classes = useNoDataStyles();
 
     return (
         <Box width={1} className={classes.noDataRoot}>
@@ -79,21 +83,27 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         onPageChange,
         onPageSizeChange,
         pageSizeOptions = [10, 20, 50, 100],
+        skeleton,
     } = props;
-
     const classes = useStyles();
     const pageCount = totalItems <= pageSize ? 1 : Math.ceil(totalItems / pageSize); // total pages
     const canPreviousPage = currentPage > 0;
     const canNextPage = currentPage < pageCount - 1;
 
-    if (totalItems == 0) {
-        return <NoData />;
-    }
+    console.assert(data.length <= pageSize, "PaginatedList: la propiedad 'data' tiene más elementos de lo especificado en 'pageSize'");
+    
+    const skeletonData = (): React.ReactNode[] => {
+        const data: React.ReactNode[] = [];
+        for (let i = 0; i < 3; i++) data.push(skeleton?.(i));
+        return data;
+    };
+
+    if (!loading && totalItems === 0) return <NoData />;
 
     return (
         <Box width={1} style={{ height: '100%' }}>
             <List>
-                {data.map((e, i) => builder(e, i))}
+                {loading && skeleton ? skeletonData() : data.map((e, i) => builder(e, i))}
             </List>
             <Box className={classes.footerTable}>
                 <Box>

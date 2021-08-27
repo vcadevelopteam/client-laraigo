@@ -3,8 +3,8 @@ import { IRequestBody, IRequestBodyPaginated, ITransaction } from '@types';
 import { APIManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
-export function login(usr: string, password: string) {
-    const data = { usr, password };
+export function login(usr: string, password: string, facebookid: string, googleid: string) {
+    const data = { usr, password, facebookid, googleid };
     return APIManager.post(apiUrls.LOGIN_URL, { data: { data } }, false);
 }
 export function logout() {

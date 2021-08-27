@@ -106,7 +106,13 @@ export const langKeys = {
     doubleAuthentication: 'doubleAuthentication',
     billingGroup: 'billingGroup',
     registerCode: 'registerCode',
-    
+    phone: 'phone',
+    department: 'department',
+    address: 'address',
+
+    ticketCreatedOn: 'ticketCreatedOn',
+    lastConnection: 'lastConnection',
+
     group: 'group',
     group_plural: 'group_plural',
 
@@ -176,11 +182,13 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
+    import: 'import',
     back: 'back',
     continue: 'continue',
     confirmation: 'confirmation',
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
+    login_with_facebook: 'login_with_facebook',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',
@@ -192,6 +200,20 @@ export const langKeys = {
     error_null_not_allowed: 'error_null_not_allowed',
     error_function_not_exists: 'error_function_not_exists',
 
+    dateRangeFilterTitle: 'dateRangeFilterTitle',
+
+    apply: 'apply',
+    close: 'close',
+
+    today: 'today',
+    yesterday: 'yesterday',
+    thisWeek: 'thisWeek',
+    lastWeek: 'lastWeek',
+    thisMonth: 'thisMonth',
+    lastMonth: 'lastMonth',
+    daysUpToToday: 'daysUpToToday',
+    daysStartingToday: 'daysStartingToday',
+    
     error_login_user_incorrect: "error_login_user_incorrect",
     error_login_user_pending: "error_login_user_pending",
     error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",
@@ -199,6 +221,8 @@ export const langKeys = {
     error_login_locked_by_password_expired: "error_login_locked_by_password_expired",
     error_login_locked: "error_login_locked",
     error_login_user_inactive: "error_login_user_inactive",
+    error_parameter_is_missing: "error_parameter_is_missing",
+    error_login_no_integration: "error_login_no_integration",
 };
 
 export type LangKeys = typeof langKeys;

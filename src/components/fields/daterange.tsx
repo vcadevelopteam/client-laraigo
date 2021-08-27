@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { DateRangePicker } from 'react-date-range';
+import { DateRangePicker, Range, RangeWithKey } from 'react-date-range';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import { FC } from 'react';
 
-const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = false }: any) => {
+interface DateRangeProps {
+    label: string;
+    dateRangeinit: Range[];
+    setDateRangeExt?: (date: Range[]) => void;
+    fullWidthInput?: boolean;
+}
+
+const DateRange: FC<DateRangeProps> = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = false }) => {
     const [rangePickerString, setrangePickerString] = useState('');
     const [openModal, setOpenModal] = useState(false);
 
@@ -21,7 +29,7 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
     }, [openModal])
     const handleClick = () => {
         setOpenModal(false);
-        setDateRangeExt(dateRange);
+        setDateRangeExt?.(dateRange);
     }
 
     const handleclose = () => {
@@ -38,8 +46,6 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
     }
 
     useEffect(() => {
-        // let mounted = true;
-
         const stringstart = dateRange[0].startDate ? dateRange[0].startDate.toISOString().substring(0, 10) : "";
         const stringend = dateRange[0].endDate ? dateRange[0].endDate.toISOString().substring(0, 10) : "";
 
@@ -47,10 +53,6 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
             setrangePickerString(`${stringstart} - ${stringend}`);
         else
             setrangePickerString('');
-
-        // return () => {
-        //     mounted = false;
-        // }
     }, [dateRange])
 
     return (
@@ -75,11 +77,12 @@ const DateRange = ({ label, dateRangeinit, setDateRangeExt, fullWidthInput = fal
                 <DialogContent>
                     <div>
                         <DateRangePicker
-                            onChange={(item: any) => setdateRange([item.selection])}
+                            onChange={(item) => setdateRange([(item as { selection: RangeWithKey }).selection])}
                             showSelectionPreview={true}
                             moveRangeOnFirstSelection={false}
                             ranges={dateRange}
-                            direction="vertical"
+                            direction="horizontal"
+                            months={2}
                         />
                     </div>
                 </DialogContent>

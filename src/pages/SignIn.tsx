@@ -21,7 +21,9 @@ import { getAccessToken } from 'common/helpers';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-
+import FacebookLogin from 'react-facebook-login';
+import FacebookIcon from '@material-ui/icons/Facebook';
+import GoogleLogin from 'react-google-login';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -98,14 +100,45 @@ const SignIn = () => {
         dispatch(login(dataAuth.username, dataAuth.password));
     }
 
+    const onAuthWithFacebook = (r: any) => {
+        console.log(r);
+
+        if (r && r.id) {
+            dispatch(login(null, null, r.id));
+        }
+    }
+
+    const onGoogleLoginSucess = (r: any) => {
+        console.log(r);
+
+        if (r && r.googleId) {
+            dispatch(login(null, null, null, r.googleId));
+        }
+    }
+
+    const onGoogleLoginFailure = (r: any) => {
+        console.log(r);
+
+        if (r && r.error) {
+            switch (r.error) {
+                case 'idpiframe_initialization_failed':
+                case 'popup_closed_by_user':    
+                    break;
+                default:
+                    alert(r.error);
+                    break;
+            }
+        }
+    }
+
     useEffect(() => {
         if (getAccessToken()) {
             history.push('/');
         }
     }, [])
-    
+
     useEffect(() => {
-        if(!resLogin.error && resLogin.user && getAccessToken()) {
+        if (!resLogin.error && resLogin.user && getAccessToken()) {
             //redirect to page tickets
             history.push(resLogin.user.redirect);
         }
@@ -114,7 +147,7 @@ const SignIn = () => {
     return (
         <Container component="main" maxWidth="xs" className={classes.containerLogin}>
             <div className={classes.childContainer}>
-                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo"/>
+                <img src="./Laraigo-vertical-logo-name.svg" style={{ height: 200 }} alt="logo" />
                 <div className={classes.paper}>
                     {resLogin.error && (
                         <Alert className={classes.alertheader} variant="filled" severity="error">
@@ -124,6 +157,8 @@ const SignIn = () => {
                     <form
                         className={classes.form}
                         onSubmit={onSubmitLogin}
+
+
                     >
                         <TextField
                             variant="outlined"
@@ -160,14 +195,33 @@ const SignIn = () => {
                             }}
                         />
                         {!resLogin.loading ?
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}>
-                                <Trans i18nKey={langKeys.logIn} />
-                            </Button> :
+                            <div style={{ alignItems: 'center' }}>
+                                <Button
+                                    type="submit"
+                                    fullWidth
+                                    variant="contained"
+                                    color="primary"
+                                    className={classes.submit}>
+                                    <Trans i18nKey={langKeys.logIn} />
+                                </Button>
+                                <FacebookLogin
+                                    appId="474255543421911"
+                                    callback={onAuthWithFacebook}
+                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', marginLeft: 'auto', marginRight: 'auto', marginBottom: '16px' }}
+                                    
+                                    textButton={t(langKeys.login_with_facebook)}
+                                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                                />
+                                <div style={{textAlign: 'center'}}>
+                                    <GoogleLogin
+                                        clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
+                                        buttonText="Log in with Google"
+                                        onSuccess={onGoogleLoginSucess}
+                                        onFailure={onGoogleLoginFailure}
+                                        cookiePolicy={'single_host_origin'}
+                                    />
+                                </div>
+                            </div> :
                             <CircularProgress className={classes.progress} />
                         }
                         <Grid container>

@@ -33,13 +33,11 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 // delete: 3
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
-	console.log("ProtectRoute rendering");
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
 	const dispatch = useDispatch();
-	// const location = useLocation();
 	const existToken = getAccessToken();
 
 	React.useEffect(() => {
@@ -73,7 +71,7 @@ const RouterApp: FC = () => {
 	const classes = useStyles();
 
 	return (
-		<Router>
+		<Router basename={process.env.PUBLIC_URL}>
 			<Switch>
 				<ProtectRoute exact path="/"/>
 				<Route exact path="/sign-in" component={SignIn} />
