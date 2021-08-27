@@ -167,6 +167,7 @@ const translation: LangKeys = {
     twofactorauthentication: 'Two factor authentication',
     save: 'Save',
     setpassword: 'Set password',
+    select: "Select",
     cancel: 'Cancel',
     default_application: 'Default application',
     default_organization: 'Default organization',

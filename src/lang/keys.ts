@@ -26,7 +26,7 @@ export const langKeys = {
 
     configuration: 'configuration',
     configuration_plural: 'configuration_plural',
-
+    select: "select",
     extra: 'extra',
     extra_plural: 'extra_plural',
     valuelist:'valuelist',

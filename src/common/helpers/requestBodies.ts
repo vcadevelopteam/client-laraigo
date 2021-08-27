@@ -245,3 +245,11 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+
+export const getValuesFromTree = (classificationid: number): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_TREE_SEL",
+    key: "UFN_CLASSIFICATION_TREE_SEL",
+    parameters: {
+        classificationid, type: 'QUICKREPLY'
+    }
+});
