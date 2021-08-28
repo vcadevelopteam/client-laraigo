@@ -33,17 +33,17 @@ export const getRolesByOrg = (): IRequestBody => ({
     parameters: {
     }
 })
-export const getSupervisors = (orgid: number, userid: number): IRequestBody => ({
+export const getSupervisors = (orgid: number, userid: number, keytmp?: any): IRequestBody => ({
     method: "UFN_USER_SUPERVISOR_LST",
-    key: "UFN_USER_SUPERVISOR_LST",
+    key: "UFN_USER_SUPERVISOR_LST" + (keytmp || ""),
     parameters: {
         orgid,
         userid
     }
 })
-export const getApplicationsByRole = (roleid: number): IRequestBody => ({
+export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_APPS_DATA_SEL",
-    key: "UFN_APPS_DATA_SEL",
+    key: "UFN_APPS_DATA_SEL" + (keytmp || ""),
     parameters: {
         roleid
     }
@@ -67,9 +67,9 @@ export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
     }
 });
 
-export const getChannelsByOrg = (orgid?: number | null): IRequestBody => ({
+export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNELBYORG_LST",
-    key: "UFN_COMMUNICATIONCHANNELBYORG_LST",
+    key: "UFN_COMMUNICATIONCHANNELBYORG_LST"  + (keytmp || ""),
     parameters: {
         orgid: orgid || undefined
     }
