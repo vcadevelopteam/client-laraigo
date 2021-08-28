@@ -3,10 +3,10 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti, DialogZyx } from 'components';
 import Typography from '@material-ui/core/Typography';
 
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getClassificationSel } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getValuesFromTree } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -59,6 +59,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
+    const [openDialog, setOpenDialog] = useState(false);
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -157,24 +158,32 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 className="col-12"
                             />}
                     </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
+                    {edit ?
+                        <div>
+                            <FieldEdit
                                 label={t(langKeys.classification)}
+                                className="col-10"
                                 valueDefault={row ? (row.classificationid || "") : ""}
-                                className="col-12"
-                                onChange={(value) => setValue('classificationid', value.classificationid)}
-                                error={errors?.status?.message}
-                                data={dataClassification}
-                                optionDesc="description"
-                                optionValue="classificationid"
+                                disabled={true}
                             />
-                            : <FieldView
+                            <div className="col-2">
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    type="button"
+                                    //startIcon={<LockOpenIcon color="secondary" />}
+                                    onClick={() => setOpenDialog(true)}
+                                >{t(langKeys.select)}</Button>
+                            </div>
+                        </div>
+                        : 
+                        <div className="row-zyx">
+                            <FieldView
                                 label={t(langKeys.classification)}
                                 value={row ? (row.classificationdesc || "") : ""}
                                 className="col-12"
-                            />}
-                    </div>
+                            />
+                        </div>}
                 </div>
                 <div className={classes.containerDetail}>
                 <Typography style={{ fontSize: 22, paddingBottom: "10px"}} color="textPrimary">{t(langKeys.quickreply)}</Typography>
@@ -250,6 +259,17 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                 </div>
             </form>
+            <DialogZyx
+                open={openDialog}
+                title={t(langKeys.setpassword)}
+                buttonText1={t(langKeys.cancel)}
+                buttonText2={t(langKeys.save)}
+                handleClickButton1={() => setOpenDialog(false)}
+                //handleClickButton2={onSubmitPassword}
+            >
+                <div className="row-zyx">
+                </div>
+            </DialogZyx>
         </div>
     );
 }
@@ -325,7 +345,7 @@ const Quickreplies: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getClassificationSel(0)
+            getValuesFromTree(0),
         ])); //mainResult.multiData.data
         return () => {
             dispatch(resetMain());
