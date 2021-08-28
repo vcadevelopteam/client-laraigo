@@ -5,7 +5,8 @@ import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti, DialogZyx } from 'components';
 import Typography from '@material-ui/core/Typography';
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getValuesFromTree } from 'common/helpers';
 
 import { Dictionary } from "@types";
@@ -19,6 +20,9 @@ import { getCollection, resetMain, getMultiCollection, execute } from 'store/mai
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 import ClearIcon from '@material-ui/icons/Clear';
+import { TreeItem, TreeView } from '@material-ui/lab';
+import { IconButton, Input, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -52,18 +56,76 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    inputlabelclass:{
+        fontSize: "14px",
+        fontWeight: 500,
+        lineHeight: "18px",
+        marginBottom: "8px",
+        color: "black"
+    },
+    treeviewroot:{
+        height: 240,
+        flexGrow: 1,
+        maxWidth: 400,
+    }
 }));
+
 
 const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const executeRes2 = useSelector(state => state.main.mainData);
     const dispatch = useDispatch();
+    const [parents, setParents] = useState(0)
     const [openDialog, setOpenDialog] = useState(false);
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataClassification = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataClass = multiData[1] && multiData[1].success ? multiData[1].data : [];
+
+    useEffect(() => {
+        dispatch(getCollection(getValuesFromTree(parents)))
+    }, [parents])
+    function callparent(id:number,haschildren:number){
+        if(haschildren)
+            setParents(id);
+    }
+    function getTreeItemsFromData(){
+        return dataClass.map(x=>{
+                let dummy= <TreeItem nodeId={String(x.classificationid) + "dummy"}/>
+                return(<TreeItem
+                key={x.classificationid}
+                nodeId={String(x.classificationid)}
+                label={x.description}
+                onLabelClick={()=>callparent(x.classificationid,x.haschildren)}
+                children={x.haschildren?dummy:null}
+                />)
+                
+        })
+        //dispatch(getCollection(getValuesFromTree(id)))
+        //return (<div></div>)
+        /*return treeItems.map(x => {
+            let children = undefined;
+            if(x.haschildren){
+                let thing = dispatch(getValuesFromTree(x.classificationid))
+                debugger
+            }
+            return (
+                <TreeItem
+                key={x.classificationid}
+                nodeId={String(x.classificationid)}
+                label={x.description}
+                children={children}
+                />)
+            return (
+                <TreeItem
+                key={x.id}
+                nodeId={x.id}
+                label={x.decription}
+                
+        });/>*/
+    };
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -160,21 +222,23 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                     {edit ?
                         <div>
-                            <FieldEdit
-                                label={t(langKeys.classification)}
-                                className="col-10"
-                                valueDefault={row ? (row.classificationid || "") : ""}
-                                disabled={true}
+                            <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
+                            <Input
+                                disabled
+                                style={{width:"100%"}}
+                                id="outlined-adornment-password"
+                                type={ 'text'}
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => setOpenDialog(true)}
+                                            >
+                                            <ZoomInIcon />
+                                        </IconButton>
+
+                                    </InputAdornment>
+                                }
                             />
-                            <div className="col-2">
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    type="button"
-                                    //startIcon={<LockOpenIcon color="secondary" />}
-                                    onClick={() => setOpenDialog(true)}
-                                >{t(langKeys.select)}</Button>
-                            </div>
                         </div>
                         : 
                         <div className="row-zyx">
@@ -261,12 +325,18 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             </form>
             <DialogZyx
                 open={openDialog}
-                title={t(langKeys.setpassword)}
+                title={t(langKeys.organizationclass)}
                 buttonText1={t(langKeys.cancel)}
                 buttonText2={t(langKeys.save)}
                 handleClickButton1={() => setOpenDialog(false)}
                 //handleClickButton2={onSubmitPassword}
-            >
+            >   <TreeView
+                    className={classes.treeviewroot}
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
+                    {getTreeItemsFromData()}     
+                </TreeView>
                 <div className="row-zyx">
                 </div>
             </DialogZyx>
