@@ -25,6 +25,9 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
+import { Divider, Grid, ListItem, Box} from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
@@ -75,7 +78,43 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    itemList: {
+        display: 'flex',
+        paddingLeft: theme.spacing(0),
+        paddingRight: theme.spacing(0),
+        paddingBottom: theme.spacing(1),
+    },
+    iItemRoot: {
+        padding: theme.spacing(2.5),
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'column',
+        flexGrow: 1,
+    },
 }));
+const ListItemSkeleton: FC = () => {
+    const classes = useStyles();
+
+    return (
+        <ListItem className={classes.itemList}>
+            <Box className={classes.iItemRoot}>
+                <Grid container direction="column">
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                    <Divider style={{ margin: '10px 0' }} />
+                    <Grid container direction="row" spacing={1}>
+                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                            <Skeleton />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Box>
+        </ListItem>
+    );
+}
 const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multiData, updateRecords, preData, triggerSave, setAllIndex }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -158,7 +197,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         register('labels');
         register('bydefault');
 
-        setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row || !preData.some(y => y?.orgid === x.orgid)) });
+        setDataOrganizations({ loading: false, data: dataOrganizationsTmp.filter(x => x.orgid === row?.orgid || !preData.some(y => y?.orgid === x.orgid)) });
 
         //forzar a que el select de aplicaciones renderice, por eso se desactivó el triggerOnChangeOnFirst en role
         if (row) {
@@ -391,8 +430,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
-    const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -421,16 +458,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
         setDataOrganizations(p => p.filter((x) => row.orgid !== x?.orgid));
-    }
-
-    const handleView = (row: Dictionary) => {
-        setOpenDialogOrganization(true)
-        setRowSelected({ row, edit: false })
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setOpenDialogOrganization(true)
-        setRowSelected({ row, edit: true })
     }
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -763,18 +790,21 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 </Button>
                             </div>
                         </div>
-                        {dataOrganizations.map((item, index) => (
-                            <DetailOrgUser
-                                key={`detail${index}`}
-                                index={index}
-                                data={{ row: item, edit }}
-                                multiData={multiData}
-                                updateRecords={setDataOrganizations}
-                                preData={dataOrganizations}
-                                triggerSave={triggerSave}
-                                setAllIndex={setAllIndex}
-                            />
-                        ))}
+                        {detailRes.loading ? 
+                            <ListItemSkeleton /> : 
+                            dataOrganizations.map((item, index) => (
+                                <DetailOrgUser
+                                    key={`detail${index}`}
+                                    index={index}
+                                    data={{ row: item, edit }}
+                                    multiData={multiData}
+                                    updateRecords={setDataOrganizations}
+                                    preData={dataOrganizations}
+                                    triggerSave={triggerSave}
+                                    setAllIndex={setAllIndex}
+                                />
+                            ))
+                        }
                     </div>
                 }
             </div>
