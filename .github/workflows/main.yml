@@ -30,12 +30,12 @@ jobs:
         
       - name: Get IAM access token
         run: |
-          ACCESS_TOKEN=$( curl -X "POST" "https://iam.cloud.ibm.com/oidc/token" \
+          echo "ACCESS_TOKEN=$( curl -X "POST" "https://iam.cloud.ibm.com/oidc/token" \
                -H 'Accept: application/json' \
                -H 'Content-Type: application/x-www-form-urlencoded' \
                --data-urlencode "apikey=${{ secrets.LARAIGO_DEV_APIKEY }}" \
                --data-urlencode "response_type=cloud_iam" \
-               --data-urlencode "grant_type=urn:ibm:params:oauth:grant-type:apikey" | jq --raw-output '.access_token' )
+               --data-urlencode "grant_type=urn:ibm:params:oauth:grant-type:apikey" | jq --raw-output '.access_token' )" >> $GITHUB_ENV
                
       - name: Show access token
         run: echo $ACCESS_TOKEN
