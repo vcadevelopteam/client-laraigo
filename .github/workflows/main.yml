@@ -36,11 +36,11 @@ jobs:
                
       - name: Set current directory path
         run: |
-          BASE_DIRECTORY=.
-          FONT_DIRECTORY=./fonts
-          STATIC_CSS_DIRECTORY=./static/css
-          STATIC_JS_DIRECTORY=./static/js
-          STATIC_MEDIA_DIRECTORY=./static/media
+          BASE_DIRECTORY=./build
+          FONT_DIRECTORY=./build/fonts
+          STATIC_CSS_DIRECTORY=./build/static/css
+          STATIC_JS_DIRECTORY=./build/static/js
+          STATIC_MEDIA_DIRECTORY=./build/static/media
         
       # The next file iteration gives the relative path
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
