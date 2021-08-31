@@ -161,6 +161,15 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
 
+    id: 'Id',
+    newmessagetemplate: 'Nueva plantilla de comunicación',
+    messagetemplate: 'Plantilla de comunicación',
+    messagetemplate_plural: 'Plantillas de comunicación',
+    hsmid: 'hsmid',
+    namespace: 'Espacio de nombres',
+    category: 'Categoría',
+    message: 'Mensaje',
+
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
