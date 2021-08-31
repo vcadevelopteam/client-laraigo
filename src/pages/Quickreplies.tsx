@@ -106,9 +106,10 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const dataClassTotal =  multiData[1] && multiData[1].success ? multiData[1].data : [];
     
     function getTreeItemsFromData(){
-        setpadres([])
-        sethijos([])
-        setnietos([])
+        const padres: any[] = []
+        const hijos: any[] = []
+        const nietos: any[] = []
+        
         dataClassTotal.map(x=>{
             if(x.padres == 0){
                 let item={
@@ -118,7 +119,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     hijos: x.haschildren
                 }
 
-                setpadres((prevState: any)=>[...prevState, item])
+                padres.push(item)// = [...padres, item])
             }else{
                 let hijo=false
                 let item={
@@ -128,20 +129,20 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     hijos: x.haschildren,
                     padre: x.parent
                 }
-                padres.forEach(y=>{
-                    if(y.key==x.parent){
+                padres.forEach((y: any) => {
+                    if(y.key === x.parent){
                         hijo=true
                     }
                 })
                 if(hijo){
-                    sethijos((prevState: any)=>[...prevState, item])
+                    hijos.push(item)
+                    // sethijos((prevState: any)=>[...prevState, item])
                 }else{
-                    setnietos((prevState: any)=>[...prevState, item])
+                    // setnietos((prevState: any)=>[...prevState, item])
                 }
             }
         })
         
-        debugger
         //dispatch(getCollection(getValuesFromTree(id)))
         return dataClassTotal.map(x=>{
                 
