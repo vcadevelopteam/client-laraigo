@@ -20,7 +20,7 @@ export const langKeys = {
 
     channel: 'channel',
     channel_plural: 'channel_plural',
-
+    return: "return",
     billingSetup: 'billingSetup',
     billingSetup_plural: 'billingSetup_plural',
     organizationclass: "organizationclass",
