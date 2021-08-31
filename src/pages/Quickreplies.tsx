@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getValuesFromTree } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getValuesFromTree,getValuesForTree } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -77,34 +77,85 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const executeRes = useSelector(state => state.main.execute);
     const executeRes2 = useSelector(state => state.main.mainData);
     const dispatch = useDispatch();
-    const [parents, setParents] = useState(0)
+
     const [openDialog, setOpenDialog] = useState(false);
+    const [padres, setpadres] = useState(
+        [{key:0,
+        nodeId:String(0),
+        label:String(0),
+        hijos:0
+    }]);
+    const [hijos, sethijos] = useState(
+        [{key:0,
+        nodeId:String(0),
+        label:String(0),
+        padre:0,
+        hijos:0
+    }]);
+    const [nietos, setnietos] = useState(
+        [{key:0,
+        nodeId:String(0),
+        label:String(0),
+        padre:0,
+        hijos:0
+    }]);
+    
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataClass = multiData[1] && multiData[1].success ? multiData[1].data : [];
-
-    useEffect(() => {
-        dispatch(getCollection(getValuesFromTree(parents)))
-    }, [parents])
-    function callparent(id:number,haschildren:number){
-        if(haschildren)
-            setParents(id);
-    }
+    const dataClassTotal =  multiData[1] && multiData[1].success ? multiData[1].data : [];
+    
     function getTreeItemsFromData(){
-        return dataClass.map(x=>{
+        setpadres([])
+        sethijos([])
+        setnietos([])
+        dataClassTotal.map(x=>{
+            if(x.padres == 0){
+                let item={
+                    key:x.classificationid,
+                    nodeId:String(x.classificationid),
+                    label:String(x.description),
+                    hijos: x.haschildren
+                }
+
+                setpadres((prevState: any)=>[...prevState, item])
+            }else{
+                let hijo=false
+                let item={
+                    key:x.classificationid,
+                    nodeId:String(x.classificationid),
+                    label:String(x.description),
+                    hijos: x.haschildren,
+                    padre: x.parent
+                }
+                padres.forEach(y=>{
+                    if(y.key==x.parent){
+                        hijo=true
+                    }
+                })
+                if(hijo){
+                    sethijos((prevState: any)=>[...prevState, item])
+                }else{
+                    setnietos((prevState: any)=>[...prevState, item])
+                }
+            }
+        })
+        
+        debugger
+        //dispatch(getCollection(getValuesFromTree(id)))
+        return dataClassTotal.map(x=>{
+                
                 let dummy= <TreeItem nodeId={String(x.classificationid) + "dummy"}/>
                 return(<TreeItem
                 key={x.classificationid}
                 nodeId={String(x.classificationid)}
                 label={x.description}
-                onLabelClick={()=>callparent(x.classificationid,x.haschildren)}
+                //onLabelClick={()=>callparent(x.classificationid,x.haschildren)}
+                //eonIconClick={()=>callparent(x.classificationid,x.haschildren)}
                 children={x.haschildren?dummy:null}
                 />)
                 
         })
-        //dispatch(getCollection(getValuesFromTree(id)))
-        //return (<div></div>)
         /*return treeItems.map(x => {
             let children = undefined;
             if(x.haschildren){
@@ -415,7 +466,7 @@ const Quickreplies: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromTree(0),
+            getValuesForTree()
         ])); //mainResult.multiData.data
         return () => {
             dispatch(resetMain());

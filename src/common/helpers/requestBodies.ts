@@ -253,3 +253,10 @@ export const getValuesFromTree = (classificationid: number): IRequestBody => ({
         classificationid, type: 'QUICKREPLY'
     }
 });
+export const getValuesForTree = (): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
+    key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
+    parameters: {
+        type: 'QUICKREPLY'
+    }
+});

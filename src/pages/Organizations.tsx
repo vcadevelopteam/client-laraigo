@@ -31,8 +31,8 @@ interface DetailOrganizationProps {
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Service level agreement" },
-    { id: "view-2", name: "Service level agreement detail" }
+    { id: "view-1", name: "Organizations" },
+    { id: "view-2", name: "Organization detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -85,7 +85,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.sla).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -275,7 +275,7 @@ const Organizations: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.sla).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
