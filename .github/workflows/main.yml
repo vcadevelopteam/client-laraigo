@@ -26,7 +26,7 @@ jobs:
         run: npm run build_no_ci
 
       - name: List files and folders
-        run: ll
+        run: ls -l
         
       - name: Get IAM access token
         run: |
@@ -44,6 +44,9 @@ jobs:
           STATIC_CSS_DIRECTORY=./build/static/css
           STATIC_JS_DIRECTORY=./build/static/js
           STATIC_MEDIA_DIRECTORY=./build/static/media
+        
+      - name: Allow read permission
+        run: chmod +r $BASE_DIRECTORY
         
       # The next file iteration gives the relative path
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
