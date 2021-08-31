@@ -46,7 +46,7 @@ jobs:
           STATIC_MEDIA_DIRECTORY=./build/static/media
         
       - name: Allow read permission
-        run: chmod +r $BASE_DIRECTORY
+        run: chmod a+r $BASE_DIRECTORY
         
       # The next file iteration gives the relative path
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
