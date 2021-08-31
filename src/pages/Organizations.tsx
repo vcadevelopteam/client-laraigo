@@ -31,8 +31,8 @@ interface DetailOrganizationProps {
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Service level agreement" },
-    { id: "view-2", name: "Service level agreement detail" }
+    { id: "view-1", name: "Organization" },
+    { id: "view-2", name: "Organization detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
