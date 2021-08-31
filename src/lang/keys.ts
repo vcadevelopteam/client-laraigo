@@ -154,6 +154,16 @@ export const langKeys = {
     delete: 'delete',
     search: 'search',
 
+    id: 'id',
+    newmessagetemplate: 'newmessagetemplate',
+    messagetemplate: 'messagetemplate',
+    messagetemplate_plural: 'messagetemplate_plural',
+    hsmid: 'hsmid',
+    namespace: 'namespace',
+    category: 'category',
+    message: 'message',
+
+
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
 

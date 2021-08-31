@@ -166,6 +166,15 @@ const translation: LangKeys = {
     recordPerPage_plural: 'Records per page',
     return: "Return",
 
+    id: 'Id',
+    newmessagetemplate: 'New Message Template',
+    messagetemplate: 'Message Template',
+    messagetemplate_plural: 'Message Templates',
+    hsmid: 'hsmid',
+    namespace: 'Namespace',
+    category: 'Category',
+    message: 'Message',
+
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
     successful_register: 'Registered successfully',
