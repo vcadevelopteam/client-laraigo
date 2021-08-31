@@ -45,7 +45,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                onClick={viewFunction}
+                onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
 
@@ -75,10 +75,10 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {
+                {/* <MenuItem onClick={(e) => {
                     setAnchorEl(null)
                     editFunction && editFunction(e)
-                    }}><Trans i18nKey={langKeys.edit} /></MenuItem>
+                    }}><Trans i18nKey={langKeys.edit} /></MenuItem> */}
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
                     deleteFunction && deleteFunction(e)

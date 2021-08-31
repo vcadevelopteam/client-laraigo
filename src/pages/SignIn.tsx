@@ -64,6 +64,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
     },
+    buttonGoogle: {
+        '& button': {
+            width: '100%',
+            justifyContent: 'center',
+        }
+    }
 }));
 
 function Copyright() {
@@ -101,28 +107,22 @@ const SignIn = () => {
     }
 
     const onAuthWithFacebook = (r: any) => {
-        console.log(r);
-
         if (r && r.id) {
             dispatch(login(null, null, r.id));
         }
     }
 
     const onGoogleLoginSucess = (r: any) => {
-        console.log(r);
-
         if (r && r.googleId) {
             dispatch(login(null, null, null, r.googleId));
         }
     }
 
     const onGoogleLoginFailure = (r: any) => {
-        console.log(r);
-
         if (r && r.error) {
             switch (r.error) {
                 case 'idpiframe_initialization_failed':
-                case 'popup_closed_by_user':    
+                case 'popup_closed_by_user':
                     break;
                 default:
                     alert(r.error);
@@ -207,15 +207,17 @@ const SignIn = () => {
                                 <FacebookLogin
                                     appId="474255543421911"
                                     callback={onAuthWithFacebook}
-                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', marginLeft: 'auto', marginRight: 'auto', marginBottom: '16px' }}
-                                    
+                                    buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
+
                                     textButton={t(langKeys.login_with_facebook)}
                                     icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                                 />
-                                <div style={{textAlign: 'center'}}>
+                                <div className={classes.buttonGoogle}>
                                     <GoogleLogin
                                         clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
                                         buttonText="Log in with Google"
+                                        
+                                        style={{ justifyContent: 'center', width: '100%' }}
                                         onSuccess={onGoogleLoginSucess}
                                         onFailure={onGoogleLoginFailure}
                                         cookiePolicy={'single_host_origin'}
