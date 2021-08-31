@@ -26,7 +26,7 @@ jobs:
         run: npm run build_no_ci
 
       - name: List files and folders
-        run: ls
+        run: ll
         
       - name: Get IAM access token
         run: |
