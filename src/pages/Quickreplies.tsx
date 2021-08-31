@@ -3,11 +3,11 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect,FieldEditMulti, DialogZyx } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, DialogZyx } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies,getValuesFromTree,getValuesForTree } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesFromTree, getValuesForTree } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -43,9 +43,8 @@ const arrayBread = [
     { id: "view-1", name: "Quickreplies" },
     { id: "view-2", name: "Quickreply detail" }
 ];
-
 const useStyles = makeStyles((theme) => ({
-    containerDetail: {  
+    containerDetail: {
         marginTop: theme.spacing(2),
         maxWidth: '80%',
         padding: theme.spacing(2),
@@ -57,14 +56,14 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
-    inputlabelclass:{
+    inputlabelclass: {
         fontSize: "14px",
         fontWeight: 500,
         lineHeight: "18px",
         marginBottom: "8px",
         color: "black"
     },
-    treeviewroot:{
+    treeviewroot: {
         height: 240,
         flexGrow: 1,
         maxWidth: 400,
@@ -72,94 +71,90 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void }> = ({ dataClassTotal, setValueTmp, setselectedlabel }) => {
+    const parents: any[] = []
+    const children: any[] = []
+
+    dataClassTotal.forEach((x: Dictionary) => {
+        if (x.parent === 0) {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren
+            }
+            parents.push(item)// = [...parents, item])
+        } else {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren,
+                father: x.parent
+            }
+            children.push(item)
+        }
+    })
+    
+    function setselect(x: Dictionary) {
+        setValueTmp(x.key)
+        setselectedlabel(x.label)
+    }
+
+    function loadchildren(id: number) {
+        return children.map(x => {
+            if (x.father === id) {
+                return (
+                    <TreeItem
+                        key={x.key}
+                        nodeId={String(x.nodeId)}
+                        label={x.label}
+                        onLabelClick={() => setselect(x)}
+                    >
+                        {x.children ? loadchildren(x.key) : null}
+                    </TreeItem>
+                )
+            }
+            return null;
+        })
+    }
+    return (
+        <>
+            {parents.map(x =>
+                <TreeItem
+                    key={x.key}
+                    nodeId={String(x.nodeId)}
+                    label={x.label}
+                    onLabelClick={() => setselect(x)}
+                >
+                    {x.children ? loadchildren(x.key) : null}
+                </TreeItem>)}
+        </>
+    )
+};
+
 const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [selectedkey, setselectedkey] = useState(row?row.classificationid:0)
-    const [selectedlabel, setselectedlabel] = useState(row?row.classificationdesc:"")
+    const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const executeRes = useSelector(state => state.main.execute);
     const executeRes2 = useSelector(state => state.main.mainData);
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(false);
-    
+
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataClassTotal =  multiData[1] && multiData[1].success ? multiData[1].data : [];
-    
-    function getTreeItemsFromData(){
-        const parents: any[] = []
-        const children: any[] = []
-        
-        dataClassTotal.map(x=>{
-            if(x.parent === 0){
-                let item={
-                    key:x.classificationid,
-                    nodeId:String(x.classificationid),
-                    label:String(x.description),
-                    children: x.haschildren
-                }
-                parents.push(item)// = [...parents, item])
-            }else{
-                let hijo=false
-                let item={
-                    key:x.classificationid,
-                    nodeId:String(x.classificationid),
-                    label:String(x.description),
-                    children: x.haschildren,
-                    father: x.parent
-                }
-                parents.forEach((y: any) => {
-                    if(y.key === x.parent){
-                        hijo=true
-                    }
-                })
-                children.push(item)
-            }
-        })
-        //dispatch(getCollection(getValuesFromTree(id)))
-        function setselect(x:any){
-            setselectedkey(x.key)
-            setselectedlabel(x.label)
-        }
-        function loadchildren(id:number){
-            return children.map(x=>{
-                if(x.father===id){
-                    return (
-                        <TreeItem
-                            key={x.key}
-                            nodeId={String(x.nodeId)}
-                            label={x.label}
-                            onLabelClick={()=>setselect(x)}
-                        >
-                            {x.children?loadchildren(x.key):null}
-                        </TreeItem>
-                    )
-                }
-            })
-        }
-        
-        return parents.map(x=>{
-                return(
-                <TreeItem
-                    key={x.key}
-                    nodeId={String(x.nodeId)}
-                    label={x.label}
-                    onLabelClick={()=>setselect(x)}
-                    >
-                    {x.children?loadchildren(x.key):null}
-                </TreeItem>
-                )
-                
-        })
-    };
+    const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
+
+
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            communicationchannelid: row?.communicationchannelid|| 0,
-            classificationid: selectedkey,
+            communicationchannelid: row?.communicationchannelid || 0,
+            classificationid: row ? row.classificationid : 0,
             id: row?.quickreplyid || 0,
             quickreply: row?.quickreply || '',
             description: row ? (row.description || '') : '',
@@ -211,7 +206,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
@@ -254,15 +249,12 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
                             <Input
                                 disabled
-                                style={{width:"100%"}}
+                                style={{ width: "100%" }}
                                 value={selectedlabel}
-                                id="outlined-adornment-password"
-                                type={ 'text'}
+                                type={'text'}
                                 endAdornment={
                                     <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setOpenDialog(true)}
-                                            >
+                                        <IconButton onClick={() => setOpenDialog(true)}>
                                             <ZoomInIcon />
                                         </IconButton>
 
@@ -270,7 +262,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 }
                             />
                         </div>
-                        : 
+                        :
                         <div className="row-zyx">
                             <FieldView
                                 label={t(langKeys.classification)}
@@ -280,8 +272,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         </div>}
                 </div>
                 <div className={classes.containerDetail}>
-                <Typography style={{ fontSize: 22, paddingBottom: "10px"}} color="textPrimary">{t(langKeys.quickreply)}</Typography>
-                    
+                    <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
+
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
@@ -293,7 +285,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             /> :
                             <FieldView
                                 label={t(langKeys.summarize)}
-                                value={row?.description||""}
+                                value={row?.description || ""}
                                 className="col-6"
                             />}
                     </div>
@@ -340,15 +332,15 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
                         {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -361,11 +353,15 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 handleClickButton1={() => setOpenDialog(false)}
                 handleClickButton2={() => setOpenDialog(false)}
             >   <TreeView
-                    className={classes.treeviewroot}
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                >
-                    {getTreeItemsFromData()}     
+                className={classes.treeviewroot}
+                defaultCollapseIcon={<ExpandMoreIcon />}
+                defaultExpandIcon={<ChevronRightIcon />}
+            >
+                    <TreeItemsFromData
+                        dataClassTotal={dataClassTotal}
+                        setValueTmp={(e) => setValue('classificationid', e)}
+                        setselectedlabel={setselectedlabel}
+                    />
                 </TreeView>
                 <div className="row-zyx">
                 </div>
