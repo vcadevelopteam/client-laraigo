@@ -23,7 +23,7 @@ jobs:
         run: npm install
         
       - name: Run build
-        run: npm run build
+        run: npm run build_no_ci
 
       - name: Get IAM access token
         run: |
