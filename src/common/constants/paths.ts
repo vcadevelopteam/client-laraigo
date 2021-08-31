@@ -19,7 +19,8 @@ const paths = {
     INTELLIGENTMODELS: '/extras/intelligentmodels',
     SLA: '/extras/sla',
     DOMAINS: '/extras/domains',
-    PERSON: '/extras/person'
+    PERSON: '/extras/person',
+    MESSAGETEMPLATE: '/extras/messagetemplate'
 };
 
 export default paths;

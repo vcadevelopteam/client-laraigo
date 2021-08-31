@@ -158,12 +158,21 @@ const translation: LangKeys = {
     edit: 'Editar',
     delete: 'Eliminar',
     search: 'Search',
-
+    organizationclass: "Organization of Classifications",
     tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
 
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
+
+    id: 'Id',
+    newmessagetemplate: 'New Message Template',
+    messagetemplate: 'Message Template',
+    messagetemplate_plural: 'Message Templates',
+    hsmid: 'hsmid',
+    namespace: 'Namespace',
+    category: 'Category',
+    message: 'Message',
 
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',

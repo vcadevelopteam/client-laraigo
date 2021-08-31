@@ -4,8 +4,8 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
-import { Dictionary } from "@types";
+import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain } from 'common/helpers';
+import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -20,19 +20,16 @@ interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
-interface DetailOrganizationProps {
+
+interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Organizations" },
-    { id: "view-2", name: "Organization detail" }
+    { id: "view-1", name: "Message Templates" },
+    { id: "view-2", name: "Message Templates detail" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -50,52 +47,70 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
-    const user = useSelector(state => state.login.validateToken.user);
+const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType= multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataType = [
+        { value: "SMS", text: "SMS" }, // Setear en diccionario los text
+        { value: "HSM", text: "HSM" }, // Setear en diccionario los text
+    ];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            description: row ? (row.orgdesc || '') : '',
+            id: row ? row.id : 0,
+            description: row ? (row.description || '') : '',
+            type: row ? row.type : 'HSM',
             status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : 'ACTIVO',
-            id: row? row.orgid:0,
+            hsmid: row ? row.hsmid : '',
+            namespace: row ? row.namespace : '',
+            message: row ? row.message : '',
+            category: row ? row.category : '',
+            header: row ? row.header : { type: '', value: '' },
+            buttons: row ? row.buttons : [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
     React.useEffect(() => {
+        register('id');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('hsmid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('message', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('category');
+        register('header');
+        register('buttons');
     }, [edit, register]);
 
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+                fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
             }
         }
     }, [executeRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insOrg(data)));
+            dispatch(execute(insMessageTemplate(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -108,64 +123,100 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.orgdesc}` : t(langKeys.neworganization)}
+                title={row ? `${row.hsmid}` : t(langKeys.newmessagetemplate)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.corporation)} // "Corporation"
+                                label={t(langKeys.hsmid)}
                                 className="col-6"
-                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
-                                disabled={true}
+                                valueDefault={row ? (row.hsmid || "") : ""}
+                                onChange={(value) => setValue('hsmid', value)}
+                                error={errors?.hsmid?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.corporation)}
-                                value={user?.corpdesc}
+                                label={t(langKeys.hsmid)}
+                                value={row ? (row.hsmid || "") : ""}
                                 className="col-6"
                             />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)} //transformar a multiselect
-                                className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.orgdesc || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.orgdesc || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.type)}
                                 className="col-6"
                                 valueDefault={row ? (row.type || "") : ""}
-                                onChange={(value) => setValue('type', value.domainvalue)}
+                                onChange={(value) => setValue('type', value.value)}
                                 error={errors?.type?.message}
                                 data={dataType}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                optionDesc="text"
+                                optionValue="value"
                             />
                             : <FieldView
                                 label={t(langKeys.type)}
                                 value={row ? (row.type || "") : ""}
                                 className="col-6"
                             />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.namespace)}
+                                className="col-12"
+                                valueDefault={row ? (row.namespace || "") : ""}
+                                onChange={(value) => setValue('namespace', value)}
+                                error={errors?.namespace?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.namespace)}
+                                value={row ? (row.namespace || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                className="col-12"
+                                valueDefault={row ? (row.description || "") : ""}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.category)}
+                                className="col-12"
+                                valueDefault={row ? (row.category || "") : ""}
+                                onChange={(value) => setValue('category', value.domainvalue)}
+                                error={errors?.category?.message}
+                                data={dataCategory}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.category)}
+                                value={row ? (row.category || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
-                                className="col-6"
+                                className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
                                 onChange={(value) => setValue('status', value.domainvalue)}
                                 error={errors?.status?.message}
@@ -176,7 +227,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             : <FieldView
                                 label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
-                                className="col-6"
+                                className="col-12"
                             />}
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
@@ -189,15 +240,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
                         {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -206,8 +257,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     );
 }
 
-const Organizations: FC = () => {
-    // const history = useHistory();
+const MessageTemplates: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -221,7 +271,7 @@ const Organizations: FC = () => {
         () => [
             {
                 Header: t(langKeys.description),
-                accessor: 'orgdesc',
+                accessor: 'description',
                 NoFilter: true
             },
             {
@@ -230,13 +280,28 @@ const Organizations: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
+                Header: t(langKeys.category),
+                accessor: 'category',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.hsmid),
+                accessor: 'hsmid',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.namespace),
+                accessor: 'namespace',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.message),
+                accessor: 'message',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.action),
-                accessor: 'orgid',
+                accessor: 'id',
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
@@ -249,18 +314,18 @@ const Organizations: FC = () => {
                         />
                     )
                 }
-            },
+            }
         ],
         []
-    );
+    )
 
-    const fetchData = () => dispatch(getCollection(getOrgSel(0)));
+    const fetchData = () => dispatch(getCollection(getMessageTemplateSel(0)));
 
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPOORG")
+            getValuesFromDomain("CATEGORIAHSM"),
+            getValuesFromDomain("ESTADOGENERICO")
         ]));
         return () => {
             dispatch(resetMain());
@@ -275,13 +340,13 @@ const Organizations: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave]);
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -300,7 +365,7 @@ const Organizations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({description:row.orgdesc, type:row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
+            dispatch(execute(insMessageTemplate({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -314,31 +379,31 @@ const Organizations: FC = () => {
 
     if (viewSelected === "view-1") {
 
+        if (mainResult.mainData.error) {
+            return <h1>ERROR</h1>;
+        }
+
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                titlemodule={t(langKeys.messagetemplate_plural, { count: 2 })}
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
             />
         )
     }
-    else if (viewSelected === "view-2") {
+    else
         return (
-            <DetailOrganization
+            <DetailMessageTemplates
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
             />
         )
-    } else
-        return null;
-
 }
 
-export default Organizations;
+export default MessageTemplates;

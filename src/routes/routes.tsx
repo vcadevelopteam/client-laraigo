@@ -134,4 +134,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.PERSON,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.MESSAGETEMPLATE,
+        description: <Trans i18nKey={langKeys.messagetemplate_plural} count={2} />,
+        path: paths.MESSAGETEMPLATE,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];

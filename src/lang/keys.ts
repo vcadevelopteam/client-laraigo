@@ -23,7 +23,7 @@ export const langKeys = {
 
     billingSetup: 'billingSetup',
     billingSetup_plural: 'billingSetup_plural',
-
+    organizationclass: "organizationclass",
     configuration: 'configuration',
     configuration_plural: 'configuration_plural',
     select: "select",
@@ -153,6 +153,16 @@ export const langKeys = {
     edit: 'edit',
     delete: 'delete',
     search: 'search',
+
+    id: 'id',
+    newmessagetemplate: 'newmessagetemplate',
+    messagetemplate: 'messagetemplate',
+    messagetemplate_plural: 'messagetemplate_plural',
+    hsmid: 'hsmid',
+    namespace: 'namespace',
+    category: 'category',
+    message: 'message',
+
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

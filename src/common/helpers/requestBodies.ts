@@ -253,3 +253,35 @@ export const getValuesFromTree = (classificationid: number): IRequestBody => ({
         classificationid, type: 'QUICKREPLY'
     }
 });
+export const getValuesForTree = (): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
+    key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
+    parameters: {
+        type: 'QUICKREPLY'
+    }
+});
+
+export const getMessageTemplateSel = (id: number): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insMessageTemplate = ({ id, description, type, status, hsmid, namespace, message, category, header, buttons, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        hsmid,
+        namespace,
+        message,
+        category,
+        header,
+        buttons,
+        operation
+    }
+});

@@ -57,6 +57,8 @@ const Popus: React.FC = () => {
             <Dialog
                 open={popus.question.visible}
                 keepMounted
+                fullWidth
+                maxWidth="sm"
                 style={{ zIndex: 99999 }}
                 aria-labelledby="alert-dialog-slide-title"
                 aria-describedby="alert-dialog-slide-description"
@@ -69,7 +71,9 @@ const Popus: React.FC = () => {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        style={{ color: "#FB5F5F" }}
+                        variant="contained"
+                        color="primary"
+                        style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => {
                             popus.question.callbackcancel && popus.question.callbackcancel()
                             manageConfirmationTmp()
@@ -77,6 +81,8 @@ const Popus: React.FC = () => {
                         {t(langKeys.cancel)}
                     </Button>
                     <Button
+                        variant="contained"
+                        style={{ backgroundColor: "#55BD84" }}
                         onClick={() => {
                             popus.question.callback && popus.question.callback()
                             manageConfirmationTmp()
