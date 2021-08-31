@@ -49,7 +49,7 @@ jobs:
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
         working-directory: ./build
         run: |
-          for build_file in ./build/*; do
+          for build_file in ./*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
@@ -59,7 +59,7 @@ jobs:
       - name: Upload fonts
         working-directory: ./build
         run: |
-          for build_file in ./build/fonts/*; do
+          for build_file in ./fonts/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
@@ -69,7 +69,7 @@ jobs:
       - name: Upload css
         working-directory: ./build
         run: |
-          for build_file in ./build/static/css/*; do
+          for build_file in ./static/css/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
@@ -79,7 +79,7 @@ jobs:
       - name: Upload js
         working-directory: ./build
         run: |
-          for build_file in ./build/static/js/*; do
+          for build_file in ./static/js/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
@@ -89,7 +89,7 @@ jobs:
       - name: Upload media
         working-directory: ./build
         run: |
-          for build_file in ./build/static/media/*; do
+          for build_file in ./static/media/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
