@@ -45,15 +45,17 @@ jobs:
           STATIC_JS_DIRECTORY=./build/static/js
           STATIC_MEDIA_DIRECTORY=./build/static/media
         
-      # The next file iteration gives the relative path
+      # The next file iteration gives the relative path and validates if path is a file
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
         working-directory: ./build
         run: |
           for build_file in ./*; do
+            if [[ -f $build_file ]]; then
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file"
+                 -d "@$build_file";
+            fi
           done;
 
       - name: Upload fonts
