@@ -6,10 +6,12 @@ html {
 }
 html, body {
     margin:0;
+    font-family: 'dm-sans';
 }
 body {
     margin:0;
     padding:0;
+    font-family: 'dm-sans';
 }
 footer {
     width: 100%;
@@ -54,6 +56,9 @@ footer a {
 .mt-0 {
     margin-top: 0!important;
 }
+.mt-1 {
+    margin-top: 8px!important;
+}
 .row-zyx {
     display: flex;
     flex-wrap: wrap;
@@ -80,7 +85,7 @@ footer a {
 }
 @media (min-width: 768px) {
     .row-zyx {
-        margin-bottom: 8px;
+        margin-bottom: 16px;
     }
     .row-zyx > .col-2, .row-zyx > .col-3, .row-zyx > .col-4, .row-zyx > .col-6, .row-zyx > .col-9, .row-zyx > .col-8 {
         width: 50%;
@@ -96,32 +101,32 @@ footer a {
 }
 @media (min-width: 992px) {
     .row-zyx {
-        margin-bottom: 8px;
+        margin-bottom: 16px;
     }
     .row-zyx > .col-9 {
         width: 75%;
         padding-right: 16px;
-        margin-bottom: 8px
+        margin-bottom: 16px
     }
     .row-zyx > .col-8 {
         width: 66.66%;
         padding-right: 16px;
-        margin-bottom: 8px
+        margin-bottom: 16px
     }
     .row-zyx > .col-3 {
         width: 25%;
         padding-right: 16px;
-        margin-bottom: 8px
+        margin-bottom: 16px
     }
     .row-zyx > .col-2 {
         width: 16.6%;
         padding-right: 16px;
-        margin-bottom: 8px
+        margin-bottom: 16px
     }
     .row-zyx > .col-4 {
         width: 33.33%;
         padding-right: 16px;
-        margin-bottom: 8px
+        margin-bottom: 16px
     }
     .row-zyx > .col-3:last-child, .row-zyx > .col-2:last-child, .row-zyx > .col-8:last-child {
         padding-right: 0px

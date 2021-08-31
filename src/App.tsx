@@ -1,27 +1,73 @@
-import React from 'react';
-// import Layout from 'components/Layout';
-import SignIn from 'components/SignIn';
-import Tickets from 'components/Tickets';
-import Properties from 'components/Properties';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-// import logo from './logo.svg';
-// import './App.css';
+import { ThemeProvider } from '@material-ui/core';
+import { createTheme } from '@material-ui/core';
+import RouterApp from 'routes';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import resources from 'lang';
+
+const theme = createTheme({
+	direction: 'ltr',
+    palette: {
+        primary: {
+            main: "#7721AD",
+            dark: "#381052",
+            light: "#7721AD",
+			contrastText: "#fff",
+        },
+        secondary: {
+            main: "#FFFFFF",
+            light: "#FFFFFF",
+            dark: "#FFFFFF",
+			contrastText: "#000",
+        },
+		text: {
+			primary: "#2E2C34",
+			secondary: "#B6B4BA",
+		},
+    },
+	typography: {
+		fontFamily: 'dm-sans',
+	},
+	overrides: {
+		MuiSvgIcon: {
+			root: { color: "#8F92A1", width: 24, height: 24, minWidth: 0 },
+		},
+		MuiListItemIcon: {
+			root: { minWidth: 38 },
+		},
+		MuiListItem: {
+			gutters: { paddingLeft: 25 }
+		},
+		MuiTypography: {
+			body1: { fontSize: 14 }
+		},
+		// MuiButtonBase: {
+		// 	root: { minHeight: 48 },
+		// },
+		MuiButton: {
+			root: { minHeight: 48, textTransform: 'initial', fontSize: '14px', padding: 12,
+			fontWeight: 500,},
+			label: { fontWeight: 600, fontSize: 14, fontStyle: 'normal' },
+		},
+	}
+});
+
+i18n.use(initReactI18next).init({
+	resources,
+	lng: navigator.language,
+	fallbackLng: 'en',
+	interpolation: {
+		escapeValue: false,
+	},
+});
 
 function App() {
 	return (
-		<div className="App">
-			{/* <Layout 
-        title="React"
-        paragraph="A JavaScript library for building user interfaces."
-      /> */}
-			<Router>
-				<Switch>
-					<Route exact path="/sign-in" component={SignIn} />
-					<Route exact path="/properties" component={Properties} />
-					<Route exact path="/tickets" component={Tickets} />
-				</Switch>
-			</Router>
-		</div>
+		<ThemeProvider theme={theme}>
+			<div className="App">
+				<RouterApp />
+			</div>
+		</ThemeProvider>
 	);
 }
 
