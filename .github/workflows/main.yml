@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
 # Controls when the workflow will run
@@ -37,17 +35,58 @@ jobs:
                --data-urlencode "grant_type=urn:ibm:params:oauth:grant-type:apikey" | jq --raw-output '.access_token' )
                
       - name: Set current directory path
-        run: DIRECTORY=.
+        run: |
+          BASE_DIRECTORY=.
+          FONT_DIRECTORY=./fonts
+          STATIC_CSS_DIRECTORY=./static/css
+          STATIC_JS_DIRECTORY=./static/js
+          STATIC_MEDIA_DIRECTORY=./static/media
         
       # The next file iteration gives the relative path
       - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
         run: |
-          for build_file in $DIRECTORY/*; do
+          for build_file in $BASE_DIRECTORY/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@build_file"
-          done
+          done;
+
+      - name: Upload fonts
+        run: |
+          for build_file in $FONT_DIRECTORY/*; do
+            curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
+                 -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
+                 -d "@build_file"
+          done;
+
+      - name: Upload css
+        run: |
+          for build_file in $STATIC_CSS_DIRECTORY/*; do
+            curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
+                 -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
+                 -d "@build_file"
+          done;
+
+      - name: Upload js
+        run: |
+          for build_file in $STATIC_JS_DIRECTORY/*; do
+            curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
+                 -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
+                 -d "@build_file"
+          done;
+
+      - name: Upload media
+        run: |
+          for build_file in $STATIC_MEDIA_DIRECTORY/*; do
+            curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
+                 -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
+                 -d "@build_file"
+          done;
           
       - name: End of workflow
         run: echo "Upload finished"
