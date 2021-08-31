@@ -138,7 +138,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     active: 'Activo',
     inactive: 'Inactivo',
-
+    organizationclass: "Organización de Clasificaciones",
     editRecord: 'Editar registro',
     deleteRecord: 'Eliminar registro',
     changeDate: 'Fecha de cambio',

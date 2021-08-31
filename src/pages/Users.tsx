@@ -25,8 +25,9 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
-import { Divider, Grid, ListItem, Box} from '@material-ui/core';
+import { Divider, Grid, ListItem, Box } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -49,6 +50,7 @@ interface ModalProps {
     triggerSave?: boolean;
     index: number;
     setAllIndex: (index: any) => void;
+    handleDelete: (row: Dictionary | null, index: number) => void;
 }
 const arrayBread = [
     { id: "view-1", name: "Users" },
@@ -115,7 +117,7 @@ const ListItemSkeleton: FC = () => {
         </ListItem>
     );
 }
-const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multiData, updateRecords, preData, triggerSave, setAllIndex }) => {
+const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multiData, updateRecords, preData, triggerSave, setAllIndex, handleDelete }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -179,13 +181,13 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             groups: row?.groups || '',
             labels: row?.labels || '',
             status: 'ACTIVO',
-            bydefault: row?.bydefault || false,
+            bydefault: row ? row.bydefault : true,
         })
 
         register('orgid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('roleid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('supervisor');
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        // register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels');
         register('redirect', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('groups');
@@ -217,7 +219,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     });
 
     const onChangeOrganization = (value: Dictionary) => {
-
         setValue('orgid', value ? value.orgid : 0);
         setValue('orgdesc', value ? value.orgdesc : '');
         if (value) {
@@ -295,7 +296,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     className={classes.mb2}
                                 />
                             }
-                            {edit ?
+                            {/* {edit ?
                                 <FieldSelect
                                     label={t(langKeys.type)}
                                     className={classes.mb2}
@@ -312,7 +313,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     value={row ? row.orgdesc : ""}
                                     className={classes.mb2}
                                 />
-                            }
+                            } */}
                             {edit ?
                                 <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
                                     label={t(langKeys.channel)}
@@ -340,7 +341,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 <TemplateSwitch
                                     label={t(langKeys.default_organization)}
                                     className={classes.mb2}
-                                    valueDefault={row?.bydefault || ""}
+                                    valueDefault={row ? row.bydefault : true}
                                     onChange={(value) => setValue('bydefault', value)}
                                 /> :
                                 <FieldView
@@ -408,8 +409,17 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     className={classes.mb2}
                                 />
                             }
-
                         </div>
+                    </div>
+                    <div style={{textAlign: 'right'}}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<DeleteIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => handleDelete(row, index)}
+                        >{t(langKeys.delete)}</Button>
                     </div>
                 </form>
             </AccordionDetails>
@@ -440,24 +450,24 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const dataBillingGroups = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const [allIndex, setAllIndex] = useState([])
-
+    const [getOrganizations, setGetOrganizations] = useState(false);
     useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
-        if (!detailRes.loading && !detailRes.error) {
+        if (!detailRes.loading && !detailRes.error && getOrganizations) {
             setDataOrganizations(detailRes.data);
-            // setDataOrganizations(x => )
         }
     }, [detailRes]);
 
     const handleRegister = () => {
         setDataOrganizations(p => [...p, null]);
-        // setOpenDialogOrganization(true)
-        // setRowSelected({ row: null, edit: true });
     }
-    const handleDelete = (row: Dictionary) => {
-        if (row.operation !== "INSERT") {
+    const handleDelete = (row: Dictionary | null, index: number) => {
+        if (row && row.operation !== "INSERT") {
             setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
-        setDataOrganizations(p => p.filter((x) => row.orgid !== x?.orgid));
+        if (row)
+            setDataOrganizations(p => p.filter((x) => row.orgid !== x?.orgid));
+        else
+            setDataOrganizations(p => p.filter((x, i) => i !== index));
     }
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
@@ -507,15 +517,17 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('doctype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('docnum', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('billinggroupid');
-        register('registercode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description');
         register('twofactorauthentication');
 
         dispatch(resetMainAux())
-        if (row)
+        if (row) {
+            setGetOrganizations(true)
             dispatch(getCollectionAux(getOrgUserSel((row?.userid || 0), 0))); //TRAE LAS ORGANIZACIONES ASIGNADAS DEL USUARIO
+        }
+        if (!row)
+            setDataOrganizations(p => [...p, null]);
     }, [register]);
 
     useEffect(() => {
@@ -644,7 +656,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.email)}
+                                label={`${t(langKeys.email)} (${t(langKeys.user)})`}
                                 className="col-6"
                                 valueDefault={row?.email || ""}
                                 onChange={(value) => setValue('email', value)}
@@ -791,8 +803,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 </Button>
                             </div>
                         </div>
-                        {detailRes.loading ? 
-                            <ListItemSkeleton /> : 
+                        {detailRes.loading ?
+                            <ListItemSkeleton /> :
                             dataOrganizations.map((item, index) => (
                                 <DetailOrgUser
                                     key={`detail${index}`}
@@ -802,6 +814,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                     updateRecords={setDataOrganizations}
                                     preData={dataOrganizations}
                                     triggerSave={triggerSave}
+                                    handleDelete={handleDelete}
                                     setAllIndex={setAllIndex}
                                 />
                             ))
@@ -865,22 +878,6 @@ const Users: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
                 Header: t(langKeys.name),
                 accessor: 'firstname',
                 NoFilter: true
@@ -916,21 +913,21 @@ const Users: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.company),
-                accessor: 'company',
-                NoFilter: true
+                Header: t(langKeys.action),
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
             },
-            {
-                Header: t(langKeys.billingGroup),
-                accessor: 'billinggroup',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.twofactorauthentication),
-                accessor: 'twofactorauthentication',
-                NoFilter: true
-            },
-
         ],
         []
     );

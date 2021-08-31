@@ -23,7 +23,7 @@ export const langKeys = {
 
     billingSetup: 'billingSetup',
     billingSetup_plural: 'billingSetup_plural',
-
+    organizationclass: "organizationclass",
     configuration: 'configuration',
     configuration_plural: 'configuration_plural',
     select: "select",
