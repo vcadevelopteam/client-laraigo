@@ -164,6 +164,7 @@ const translation: LangKeys = {
 
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
+    return: "Return",
 
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',

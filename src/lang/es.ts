@@ -135,7 +135,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     description: 'Descripción',
     description_plural: 'Descripciones',
-
+    return: "Regresar",
     active: 'Activo',
     inactive: 'Inactivo',
     organizationclass: "Organización de Clasificaciones",

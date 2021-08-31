@@ -23,6 +23,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { IconButton, Input, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import { Rowing } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -74,31 +75,14 @@ const useStyles = makeStyles((theme) => ({
 const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [selectedkey, setselectedkey] = useState(row?row.classificationid:0)
+    const [selectedlabel, setselectedlabel] = useState(row?row.classificationdesc:"")
     const executeRes = useSelector(state => state.main.execute);
     const executeRes2 = useSelector(state => state.main.mainData);
+    const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(false);
-    const [padres, setpadres] = useState(
-        [{key:0,
-        nodeId:String(0),
-        label:String(0),
-        hijos:0
-    }]);
-    const [hijos, sethijos] = useState(
-        [{key:0,
-        nodeId:String(0),
-        label:String(0),
-        padre:0,
-        hijos:0
-    }]);
-    const [nietos, setnietos] = useState(
-        [{key:0,
-        nodeId:String(0),
-        label:String(0),
-        padre:0,
-        hijos:0
-    }]);
     
     const { t } = useTranslation();
 
@@ -106,84 +90,76 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const dataClassTotal =  multiData[1] && multiData[1].success ? multiData[1].data : [];
     
     function getTreeItemsFromData(){
-        const padres: any[] = []
-        const hijos: any[] = []
-        const nietos: any[] = []
+        const parents: any[] = []
+        const children: any[] = []
         
         dataClassTotal.map(x=>{
-            if(x.padres == 0){
+            if(x.parent === 0){
                 let item={
                     key:x.classificationid,
                     nodeId:String(x.classificationid),
                     label:String(x.description),
-                    hijos: x.haschildren
+                    children: x.haschildren
                 }
-
-                padres.push(item)// = [...padres, item])
+                parents.push(item)// = [...parents, item])
             }else{
                 let hijo=false
                 let item={
                     key:x.classificationid,
                     nodeId:String(x.classificationid),
                     label:String(x.description),
-                    hijos: x.haschildren,
-                    padre: x.parent
+                    children: x.haschildren,
+                    father: x.parent
                 }
-                padres.forEach((y: any) => {
+                parents.forEach((y: any) => {
                     if(y.key === x.parent){
                         hijo=true
                     }
                 })
-                if(hijo){
-                    hijos.push(item)
-                    // sethijos((prevState: any)=>[...prevState, item])
-                }else{
-                    // setnietos((prevState: any)=>[...prevState, item])
-                }
+                children.push(item)
             }
         })
-        
         //dispatch(getCollection(getValuesFromTree(id)))
-        return dataClassTotal.map(x=>{
-                
-                let dummy= <TreeItem nodeId={String(x.classificationid) + "dummy"}/>
-                return(<TreeItem
-                key={x.classificationid}
-                nodeId={String(x.classificationid)}
-                label={x.description}
-                //onLabelClick={()=>callparent(x.classificationid,x.haschildren)}
-                //eonIconClick={()=>callparent(x.classificationid,x.haschildren)}
-                children={x.haschildren?dummy:null}
-                />)
+        function setselect(x:any){
+            setselectedkey(x.key)
+            setselectedlabel(x.label)
+        }
+        function loadchildren(id:number){
+            return children.map(x=>{
+                if(x.father===id){
+                    return (
+                        <TreeItem
+                            key={x.key}
+                            nodeId={String(x.nodeId)}
+                            label={x.label}
+                            onLabelClick={()=>setselect(x)}
+                        >
+                            {x.children?loadchildren(x.key):null}
+                        </TreeItem>
+                    )
+                }
+            })
+        }
+        
+        return parents.map(x=>{
+                return(
+                <TreeItem
+                    key={x.key}
+                    nodeId={String(x.nodeId)}
+                    label={x.label}
+                    onLabelClick={()=>setselect(x)}
+                    >
+                    {x.children?loadchildren(x.key):null}
+                </TreeItem>
+                )
                 
         })
-        /*return treeItems.map(x => {
-            let children = undefined;
-            if(x.haschildren){
-                let thing = dispatch(getValuesFromTree(x.classificationid))
-                debugger
-            }
-            return (
-                <TreeItem
-                key={x.classificationid}
-                nodeId={String(x.classificationid)}
-                label={x.description}
-                children={children}
-                />)
-            return (
-                <TreeItem
-                key={x.id}
-                nodeId={x.id}
-                label={x.decription}
-                
-        });/>*/
     };
-
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
             communicationchannelid: row?.communicationchannelid|| 0,
-            classificationid: row?.classificationid|| 0,
+            classificationid: selectedkey,
             id: row?.quickreplyid || 0,
             quickreply: row?.quickreply || '',
             description: row ? (row.description || '') : '',
@@ -196,7 +172,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('communicationchannelid');
         register('type');
         register('id');
-        register('classificationid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('classificationid');//, { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('quickreply', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -220,12 +196,13 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
 
     const onSubmit = handleSubmit((data) => {
+        //data.communicationchannelid = selected.key
+        console.log(data)
         const callback = () => {
             dispatch(execute(insQuickreplies(data))); //executeRes
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
-
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
@@ -240,7 +217,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.quickreply}` : t(langKeys.newquickreply)}
+                title={row ? `${row.description}` : t(langKeys.newquickreply)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -249,7 +226,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             <FieldEdit
                                 label={t(langKeys.corporation)} // "Corporation"
                                 className="col-12"
-                                valueDefault={row ? (row.corpdesc || "") : ""}
+                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                 disabled={true}
                             />
                             : <FieldView
@@ -263,7 +240,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             <FieldEdit
                                 label={t(langKeys.organization)} // "Organization"
                                 className="col-12"
-                                valueDefault={row ? (row.orgdesc || "") : ""}
+                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
                                 disabled={true}
                             />
                             : <FieldView
@@ -278,6 +255,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             <Input
                                 disabled
                                 style={{width:"100%"}}
+                                value={selectedlabel}
                                 id="outlined-adornment-password"
                                 type={ 'text'}
                                 endAdornment={
@@ -378,10 +356,10 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             <DialogZyx
                 open={openDialog}
                 title={t(langKeys.organizationclass)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.save)}
+                buttonText1={t(langKeys.return)}
+                //buttonText2={t(langKeys.select)}
                 handleClickButton1={() => setOpenDialog(false)}
-                //handleClickButton2={onSubmitPassword}
+                handleClickButton2={() => setOpenDialog(false)}
             >   <TreeView
                     className={classes.treeviewroot}
                     defaultCollapseIcon={<ExpandMoreIcon />}
