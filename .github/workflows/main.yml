@@ -25,6 +25,9 @@ jobs:
       - name: Run build
         run: npm run build_no_ci
 
+      - name: List files and folders
+        run: ls
+        
       - name: Get IAM access token
         run: |
           ACCESS_TOKEN=$( curl -X "POST" "https://iam.cloud.ibm.com/oidc/token" \
