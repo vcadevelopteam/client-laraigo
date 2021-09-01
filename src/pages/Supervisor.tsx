@@ -6,12 +6,13 @@ import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import LanguageIcon from '@material-ui/icons/Language';
 import { WebMessengerIcon } from 'icons'
+
+import { SearchIcon } from 'icons';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -42,10 +43,20 @@ const useStyles = makeStyles((theme) => ({
         gap: '4px',
         flexWrap: 'wrap'
     },
-    containerTicket: {
-        padding: `${theme.spacing(2)}px ${theme.spacing(3)}px`,
+    containerItemAgent: {
+        padding: `14px ${theme.spacing(3)}px`,
         borderBottom: '1px solid #EBEAED',
-
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: 'rgb(235, 234, 237, 0.18)'
+        }
+    },
+    title: {
+        fontSize: '22px',
+        lineHeight: '48px',
+        fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
     }
 }));
 const agentstt = [
@@ -110,7 +121,7 @@ const ItemAgent: FC<AgentProps> = ({ name, countActive, countPaused, countClosed
     const classes = useStyles();
 
     return (
-        <div className={classes.containerTicket}>
+        <div className={classes.containerItemAgent}>
             <div className={classes.agentUp}>
                 <Avatar>{name.split(" ").reduce((acc, item) => acc + (acc.length < 3 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                 <div>
@@ -151,33 +162,48 @@ const ItemAgent: FC<AgentProps> = ({ name, countActive, countPaused, countClosed
 
 const Supervisor: FC = () => {
     const classes = useStyles();
-
+    const [showSearch, setShowSearch] = useState(false)
     const [pageSelected, setPageSelected] = useState(1)
 
     return (
         <div className={classes.container}>
-            <div style={{ backgroundColor: 'white', paddingTop: '16px' }}>
-                <TextField
-                    color="primary"
-                    fullWidth
-                    style={{ paddingRight: '16px', paddingLeft: '16px' }}
-                    onChange={(e) => {
-                        // setvalue(e.target.value);
-                        // onChange && onChange(e.target.value);
-                    }}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    // onClick={handleClickShowPassword}
-                                    edge="end"
-                                >
-                                    <SearchIcon />
-                                </IconButton>
-                            </InputAdornment>
-                        )
-                    }}
-                />
+            <div className={classes.containerAgents} style={{ backgroundColor: 'white', paddingTop: '16px' }}>
+                <div style={{paddingRight: '16px', paddingLeft: '16px'}}>
+                    {!showSearch ?
+                        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                            <div className={classes.title}>
+                                Supervisor
+                            </div>
+                            <IconButton
+                                onClick={() => setShowSearch(true)}
+                                edge="end"
+                            >
+                                <SearchIcon />
+                            </IconButton>
+                        </div>
+                        :
+                        <TextField
+                            color="primary"
+                            fullWidth
+                            onChange={(e) => {
+                                // setvalue(e.target.value);
+                                // onChange && onChange(e.target.value);
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            // onClick={handleClickShowPassword}
+                                            edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                    }
+                </div>
                 <Tabs
                     value={pageSelected}
                     indicatorColor="primary"
@@ -190,9 +216,9 @@ const Supervisor: FC = () => {
                     <AntTab label="Active" />
                     <AntTab label="Inactive" />
                 </Tabs>
-                <div className={classes.containerAgents}>
-                    {agentstt.map((agent) => (
-                        <ItemAgent {...agent} />
+                <div>
+                    {agentstt.map((agent, index) => (
+                        <ItemAgent key={`agent${index}`} {...agent} />
                     ))}
                 </div>
             </div>

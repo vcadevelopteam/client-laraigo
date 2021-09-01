@@ -82,7 +82,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
                     deleteFunction && deleteFunction(e)
-                    }}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </>
     )
@@ -184,6 +184,7 @@ interface InputProps {
     style?: any;
     error?: string;
     type?: string;
+    rows?: number;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -194,7 +195,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -212,6 +213,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 value={value}
                 error={!!error}
                 helperText={error || null}
+                rows={rows}
                 onChange={(e) => {
                     setvalue(e.target.value);
                     onChange && onChange(e.target.value);
@@ -264,7 +266,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
         } else {
             setValue(null);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valueDefault, data]);
 
     return (
@@ -274,7 +276,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
-                value={data.length > 0 ?  value : null}
+                value={data.length > 0 ? value : null}
                 onChange={(_, newValue) => {
                     setValue(newValue);
                     onChange && onChange(newValue);
@@ -362,7 +364,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                         }}
                         error={!!error}
                         helperText={error || null}
-                        
+
                     />
                 )}
             />
@@ -382,7 +384,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     }, [valueDefault])
 
     return (
-        <div className={className} style={{paddingBottom: '3px'}}>
+        <div className={className} style={{ paddingBottom: '3px' }}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
             <IOSSwitch checked={checkedaux} onChange={(e) => {
                 setChecked(e.target.checked);
