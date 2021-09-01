@@ -224,7 +224,6 @@ export const langKeys = {
     error_function_not_exists: 'error_function_not_exists',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
-    title:'title',
     apply: 'apply',
     close: 'close',
 
