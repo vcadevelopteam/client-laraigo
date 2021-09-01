@@ -55,7 +55,7 @@ jobs:
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file";
+                 -d "@$(base64 build_file)";
             fi
           done;
 
@@ -66,7 +66,7 @@ jobs:
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file"
+                 -d "@$(base64 build_file)"
           done;
 
       - name: Upload css
@@ -76,7 +76,7 @@ jobs:
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file"
+                 -d "@$(base64 build_file)"
           done;
 
       - name: Upload js
@@ -86,7 +86,7 @@ jobs:
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file"
+                 -d "@$(base64 build_file)"
           done;
 
       - name: Upload media
@@ -96,7 +96,7 @@ jobs:
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
                  -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 -d "@$build_file"
+                 -d "@$(base64 build_file)"
           done;
           
       - name: End of workflow
