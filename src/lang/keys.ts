@@ -166,6 +166,7 @@ export const langKeys = {
     category: 'category',
     language: 'language',
     templatetype: 'templatetype',
+    headertype: 'headertype',
     header: 'header',
     body: 'body',
     footer: 'footer',

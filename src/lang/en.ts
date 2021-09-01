@@ -179,6 +179,7 @@ const translation: LangKeys = {
     language: 'Language',
     templatetype: 'Template Type',
     header: 'Header',
+    headertype: 'Header Type',
     body: 'Body',
     footer: 'Footer',
     buttons: 'Buttons',
