@@ -21,7 +21,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
+import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 interface RowSelected {

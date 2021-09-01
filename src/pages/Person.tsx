@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -248,16 +249,16 @@ const Person: FC = () => {
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
 
-    const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
-        startdate: format(dateRange.startDate!),
-        enddate: format(dateRange.endDate!),
-        skip,
-        take,
-        sorts: {},
-        filters: {},
-    })));
-
     useEffect(() => {
+        const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
+            startdate: format(dateRange.startDate!),
+            enddate: format(dateRange.endDate!),
+            skip,
+            take,
+            sorts: {},
+            filters: {},
+        })));
+
         const skip = pageSize * page;
         fetchData(skip, pageSize);
 

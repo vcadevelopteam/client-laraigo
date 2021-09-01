@@ -11,7 +11,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import LanguageIcon from '@material-ui/icons/Language';
-import { WebMessengerIcon } from 'icons'
 
 const useStyles = makeStyles((theme) => ({
     container: {

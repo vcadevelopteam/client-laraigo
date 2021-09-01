@@ -51,7 +51,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const user = useSelector(state => state.login.validateToken.user);
+    // const user = useSelector(state => state.login.validateToken.user);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
