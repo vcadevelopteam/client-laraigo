@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesFromTree, getValuesForTree } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree } from 'common/helpers';
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -23,7 +23,6 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { IconButton, Input, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
-import { Rowing } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -138,7 +137,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const executeRes = useSelector(state => state.main.execute);
-    const executeRes2 = useSelector(state => state.main.mainData);
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
 
@@ -348,7 +346,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             <DialogZyx
                 open={openDialog}
                 title={t(langKeys.organizationclass)}
-                buttonText1={t(langKeys.return)}
+                buttonText1={t(langKeys.select)}
                 //buttonText2={t(langKeys.select)}
                 handleClickButton1={() => setOpenDialog(false)}
                 handleClickButton2={() => setOpenDialog(false)}
