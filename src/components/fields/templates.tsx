@@ -24,9 +24,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useTheme } from '@material-ui/core';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
+import { FormHelperText, useTheme } from '@material-ui/core';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -187,6 +187,7 @@ interface InputProps {
     error?: string;
     type?: string;
     rows?: number;
+    maxLength?: number;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -224,7 +225,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", maxLength = 0 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -245,10 +246,13 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 rows={4}
                 helperText={error || null}
                 onChange={(e) => {
-                    setvalue(e.target.value);
-                    onChange && onChange(e.target.value);
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
                 }}
             />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
         </div>
     )
 }
