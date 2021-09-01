@@ -20,7 +20,8 @@ const paths = {
     SLA: '/extras/sla',
     DOMAINS: '/extras/domains',
     PERSON: '/extras/person',
-    MESSAGETEMPLATE: '/extras/messagetemplate'
+    MESSAGETEMPLATE: '/extras/messagetemplate',
+    TIPIFICATIONS: '/extras/tipifications'
 };
 
 export default paths;

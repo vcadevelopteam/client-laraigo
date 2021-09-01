@@ -102,6 +102,7 @@ const translation: LangKeys = {
     person_plural: 'People',
     summarize:'Summarize',
     detail:'Detail',
+    detail_plural:'Details',
     whitelist: 'Whitelist',
     newuser: "New user",
     newdomain: "New domain",
@@ -114,10 +115,11 @@ const translation: LangKeys = {
     newwhitelist: "New whitelist",
     registervalue: "Register value",
     neworganization: "New organization",
-
+    productivitybyhour:'Productivity by hour',
+    title:'Title',
     action: 'Action',
     action_plural: 'Actions',
-
+    parent:'Parent',
     quantity: 'Quantity',
     quantity_plural: 'quantities',
 
@@ -161,11 +163,14 @@ const translation: LangKeys = {
     organizationclass: "Organization of Classifications",
     tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
-
+    tipification: 'Tipification',
+    tipification_plural: 'Tipifications',
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
     return: "Return",
 
+    supplier:"Supplier",
+    id: 'Id',
     newmessagetemplate: 'New Message Template',
     messagetemplate: 'Message Template',
     messagetemplate_plural: 'Message Templates',
@@ -173,7 +178,6 @@ const translation: LangKeys = {
     messagetype: 'Message Type',
     sms: 'SMS',
     hsm: 'HSM',
-    id: 'Id',
     namespace: 'Namespace',
     category: 'Category',
     language: 'Language',
@@ -183,7 +187,6 @@ const translation: LangKeys = {
     body: 'Body',
     footer: 'Footer',
     buttons: 'Buttons',
-    title: 'Title',
     payload: 'Payload',
 
     successful_transaction: 'Successful transaction',

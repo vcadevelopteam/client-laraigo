@@ -164,12 +164,35 @@ export const getOrgSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax,
-    usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation }: Dictionary): IRequestBody => ({
+export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, usertmo, usertmomin, usertmopercentmax,
+    usertme, usertmepercentmax, productivitybyhour, operation }: Dictionary): IRequestBody => ({
         method: "UFN_SLA_INS",
         parameters: {
-            id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, totaltmopercentmin, usertmo, usertmomin, usertmopercentmax,
-            usertmopercentmin, tme, tmemin, tmepercentmax, tmepercentmin, usertme, usertmemin, usertmepercentmax, usertmepercentmin, productivitybyhour, operation
+            id, 
+            description, 
+            type, 
+            company, 
+            communicationchannelid, 
+            usergroup, 
+            status, 
+            totaltmo, 
+            totaltmomin, 
+            totaltmopercentmax: parseFloat(totaltmopercentmax), 
+            totaltmopercentmin:0.01, 
+            usertmo, 
+            usertmomin, 
+            usertmopercentmax: parseFloat(usertmopercentmax),
+            usertmopercentmin:0.01, 
+            tme:"00:00:00", 
+            tmemin:"00:00:00", 
+            tmepercentmax:0, 
+            tmepercentmin:0.01, 
+            usertme, 
+            usertmemin:"00:00:00", 
+            usertmepercentmax: parseFloat(usertmepercentmax), 
+            usertmepercentmin:0.01, 
+            productivitybyhour: parseFloat(productivitybyhour), 
+            operation
         }
     });
 
@@ -231,6 +254,13 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
+export const insClassification = ({id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule}: Dictionary): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_INS",
+    key: "UFN_CLASSIFICATION_INS",
+    parameters: {
+        id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule
+    }
+})
 export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_SEL",
     methodCount: "UFN_PERSON_TOTALRECORDS",
@@ -251,6 +281,12 @@ export const getValuesFromTree = (classificationid: number): IRequestBody => ({
     key: "UFN_CLASSIFICATION_TREE_SEL",
     parameters: {
         classificationid, type: 'QUICKREPLY'
+    }
+});
+export const getCommChannelLst = (): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_LST",
+    key: "UFN_COMMUNICATIONCHANNEL_LST",
+    parameters: {
     }
 });
 export const getValuesForTree = (): IRequestBody => ({

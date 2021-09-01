@@ -10,14 +10,15 @@ export const langKeys = {
 
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
-
+    parent:'parent',
     eMailInbox: 'eMailInbox',
-
+    productivitybyhour:'productivitybyhour',
     messageInbox: 'messageInbox',
-
+    supplier:"supplier",
     supervisor: 'supervisor',
     supervisor_plural: 'supervisor_plural',
-
+    tipification: 'tipification',
+    tipification_plural: 'tipification_plural',
     channel: 'channel',
     channel_plural: 'channel_plural',
     return: "return",
@@ -38,6 +39,7 @@ export const langKeys = {
     classification: 'classification',
     summarize:'summarize',
     detail:'detail',
+    detail_plural:'detail_plural',
     label:"label",
     newuser: "newuser",
     newgroupconfig: "newgroupconfig",
@@ -173,7 +175,7 @@ export const langKeys = {
     buttons: 'buttons',
     title: 'title',
     payload: 'payload',
-
+    message: 'Mensaje',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -222,7 +224,7 @@ export const langKeys = {
     error_function_not_exists: 'error_function_not_exists',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
-
+    title:'title',
     apply: 'apply',
     close: 'close',
 
