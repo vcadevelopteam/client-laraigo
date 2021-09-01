@@ -111,7 +111,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
-
     },
     containerButtons: {
         gridGap: theme.spacing(1),
