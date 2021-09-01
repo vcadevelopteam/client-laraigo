@@ -28,6 +28,7 @@ jobs:
       - name: List files and folders
         run: ls -l
         
+      # token usually expires in 3600 seconds?
       - name: Get IAM access token
         run: |
           echo "ACCESS_TOKEN=$( curl -X "POST" "https://iam.cloud.ibm.com/oidc/token" \
@@ -36,7 +37,7 @@ jobs:
                --data-urlencode "apikey=${{ secrets.LARAIGO_DEV_APIKEY }}" \
                --data-urlencode "response_type=cloud_iam" \
                --data-urlencode "grant_type=urn:ibm:params:oauth:grant-type:apikey" | jq --raw-output '.access_token' )" >> $GITHUB_ENV
-     
+
       - name: Set current directory path
         run: |
           BASE_DIRECTORY=./build
@@ -46,13 +47,14 @@ jobs:
           STATIC_MEDIA_DIRECTORY=./build/static/media
         
       # The next file iteration gives the relative path and validates if path is a file
-      - name: Once got the token, files must be uploaded one by one (token usually expires in 3600 seconds?)
+      - name: Once got the token, files must be uploaded one by one
         working-directory: ./build
         run: |
           for build_file in ./*; do
             if [[ -f $build_file ]]; then
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@$build_file";
             fi
           done;
@@ -63,6 +65,7 @@ jobs:
           for build_file in ./fonts/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@$build_file"
           done;
 
@@ -72,6 +75,7 @@ jobs:
           for build_file in ./static/css/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@$build_file"
           done;
 
@@ -81,6 +85,7 @@ jobs:
           for build_file in ./static/js/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@$build_file"
           done;
 
@@ -90,6 +95,7 @@ jobs:
           for build_file in ./static/media/*; do
             curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
                  -H "Authorization: bearer $ACCESS_TOKEN" \
+                 -H "Content-Type: $(file -b --mime-type $build_file)" \
                  -d "@$build_file"
           done;
           
