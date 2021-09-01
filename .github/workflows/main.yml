@@ -59,16 +59,6 @@ jobs:
             fi
           done;
 
-      - name: Upload fonts
-        working-directory: ./build
-        run: |
-          for build_file in ./fonts/*; do
-            curl -X "PUT" "https://s3.us-south.cloud-object-storage.appdomain.cloud/laraigo-dev/$build_file" \
-                 -H "Authorization: bearer $ACCESS_TOKEN" \
-                 -H "Content-Type: $(file -b --mime-type $build_file)" \
-                 --data-binary "@$build_file"
-          done;
-
       - name: Upload css
         working-directory: ./build
         run: |
