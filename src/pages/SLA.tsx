@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getSLASel, getValuesFromDomain, insSLA } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect } from 'components';
+import { getSLASel, getValuesFromDomain, insSLA,getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -48,6 +48,13 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    title: {
+        fontSize: '22px',
+        lineHeight: '48px',
+        // fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
+    },
 }));
 
 const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
@@ -56,57 +63,56 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const user = useSelector(state => state.login.validateToken.user);
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            slaid: row ? row.slaid : 0,
-            company: row ? (row.company || '') : '',
-            communicationchannelid: row ? row.communicationchannelid : 0,
-            modelid: row ? (row.modelid || '') : '',
-            apikey: row ? (row.apikey || '') : '',
-            description: row ? (row.description || '') : '',
-            provider: row ? (row.provider || '') : '',
-            organization: row ? (row.organization || '') : '',
-            totaltmo: row ? (row.totaltmo || '') : '',
-            totaltmomin: row ? (row.totaltmomin || '') : '',
-            totaltmopercentmax: row ? (row.totaltmopercentmax || '') : '',
-            group: row ? (row.group || '') : '',
-            usertmomin: row ? (row.usertmomin || '') : '',
-            usertmo: row ? (row.usertmo || '') : '',
-            usertmopercentmax: row ? (row.usertmopercentmax || '') : '',
-            usertmemin: row ? (row.usertmemin || '') : '',
-            usertme: row ? (row.usertme || '') : '',
-            usertmepercentmax: row ? (row.usertmepercentmax || '') : '',
-            status: row ? row.status : 'ACTIVO',
+            id: row?.slaid || 0,
+            description: row?.description || '',
+            company: row?.company || '',
+            communicationchannelid:  row?.communicationchannelid || '',
+            usergroup: row?.usergroup || '',
+            status: row?.status || 'ACTIVO',
+            totaltmo: row?.totaltmo || '',
+            totaltmomin: row?.totaltmomin || '',
+            totaltmopercentmax: row?.totaltmopercentmax || 0,
+            usertmo: row?.usertmo || '',
+            usertmomin: row?.usertmomin || '',
+            usertmopercentmax: row?.usertmopercentmax || 0,
+            usertme: row?.usertme || '',
+            productivitybyhour: row?.productivitybyhour || 0,
+            usertmepercentmax: row?.usertmepercentmax || 0,
+
+            organization: row?.organization || '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
     React.useEffect(() => {
         register('type');
-        register('communicationchannelid');
-        register('slaid');
-        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertmomin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertmopercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertmemin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertme', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('usertmepercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('apikey', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('modelid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('id');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('provider', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('communicationchannelid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usergroup');
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('totaltmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('totaltmomin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('totaltmopercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('group', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usertmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usertmomin', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usertmopercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usertme', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('productivitybyhour', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('usertmepercentmax', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+
+        register('communicationchannelid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('organization');
     }, [edit, register]);
 
     useEffect(() => {
@@ -156,8 +162,9 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 label={t(langKeys.organization)} 
                                 className="col-6"
                                 onChange={(value) => setValue('organization', value)}
-                                valueDefault={row ? (row.organization || "") : ""}
+                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
                                 error={errors?.organization?.message}
+                                disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.organization)}
@@ -165,19 +172,22 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 className="col-6"
                             />}
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.company)} 
+                            <FieldSelect
+                                label={t(langKeys.supplier)} 
                                 className="col-6"
-                                onChange={(value) => setValue('company', value)}
                                 valueDefault={row ? (row.company || "") : ""}
+                                onChange={(value) => setValue('company', value? value.domainvalue: '')}
                                 error={errors?.company?.message}
+                                data={dataSupplier}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
                             />
                             : <FieldView
                                 label={t(langKeys.company)}
                                 value={row ? (row.company || "") : ""}
                                 className="col-6"
                             />}
-                    </div>
+                    </div>  
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
@@ -195,12 +205,15 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
+                            <FieldMultiSelect
                                 label={t(langKeys.channel_plural)} //transformar a multiselect
                                 className="col-12"
-                                onChange={(value) => setValue('communicationchannelid', value)}
-                                valueDefault={row ? (row.communicationchannelid || "") : ""}
+                                onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
+                                valueDefault={row?.communicationchannelid || ""}
                                 error={errors?.communicationchannelid?.message}
+                                data={datachannels}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
                             />
                             : <FieldView
                                 label={t(langKeys.channel_plural)}
@@ -210,24 +223,26 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
+                            <FieldMultiSelect
                                 label={t(langKeys.group)} 
                                 className="col-6"
-                                onChange={(value) => setValue('group', value)}
-                                valueDefault={row ? (row.group || "") : ""}
-                                error={errors?.group?.message}
+                                onChange={(value) => setValue('usergroup', value.map((o: Dictionary) => o.domainvalue).join())}
+                                valueDefault={row?.usergroup || ""}
+                                error={errors?.usergroup?.message}
+                                data={dataGroups}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
                             />
                             : <FieldView
-                                label={t(langKeys.group)}
-                                value={row ? (row.group || "") : ""}
-                                className="col-6"
+                                label={t(langKeys.usergroup)}
+                                value={row ? row.usergroup : ""}
                             />}
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value.domainvalue)}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -239,130 +254,134 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 className="col-6"
                             />}
                     </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                            label={"TMO total min"} 
-                            className="col-4"
-                            onChange={(value) => setValue('totaltmomin', value)}
-                            valueDefault={row ? (row.totaltmomin || "") : ""}
-                            error={errors?.totaltmomin?.message}
-                            />
-                            : <FieldView
-                            label={"TMO total min"} 
-                            value={row ? (row.totaltmomin || "") : ""}
-                            className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={"TMO total max"} 
+                    <div style={{ marginBottom: '16px' }}>
+                        <div className={classes.title}>{t(langKeys.detail)}</div>
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldEdit
+                                label={"TMO total min"} 
                                 className="col-4"
-                                onChange={(value) => setValue('totaltmo', value)}
-                                valueDefault={row ? (row.totaltmo || "") : ""}
-                                error={errors?.totaltmo?.message}
-                            />
-                            : <FieldView
-                                label={"TMO total max"}
-                                value={row ? (row.totaltmo || "") : ""}
+                                onChange={(value) => setValue('totaltmomin', value)}
+                                valueDefault={row ? (row.totaltmomin || "") : ""}
+                                error={errors?.totaltmomin?.message}
+                                />
+                                : <FieldView
+                                label={"TMO total min"} 
+                                value={row ? (row.totaltmomin || "") : ""}
                                 className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.tmopercentobj)} 
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                    label={"TMO total max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('totaltmo', value)}
+                                    valueDefault={row ? (row.totaltmo || "") : ""}
+                                    error={errors?.totaltmo?.message}
+                                />
+                                : <FieldView
+                                    label={"TMO total max"}
+                                    value={row ? (row.totaltmo || "") : ""}
+                                    className="col-4"
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                    label={t(langKeys.tmopercentobj)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('totaltmopercentmax', value)}
+                                    valueDefault={row ? (row.totaltmopercentmax || "") : ""}
+                                    error={errors?.totaltmopercentmax?.message}
+                                />
+                                : <FieldView
+                                    label={t(langKeys.tmopercentobj)}
+                                    value={row ? (row.totaltmopercentmax || "") : ""}
+                                    className="col-4"
+                                />}
+                        </div>
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldEdit
+                                label={"TMO user min"} 
                                 className="col-4"
-                                onChange={(value) => setValue('totaltmopercentmax', value)}
-                                valueDefault={row ? (row.totaltmopercentmax || "") : ""}
-                                error={errors?.totaltmopercentmax?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.tmopercentobj)}
-                                value={row ? (row.totaltmopercentmax || "") : ""}
+                                onChange={(value) => setValue('usertmomin', value)}
+                                valueDefault={row ? (row.usertmomin || "") : ""}
+                                error={errors?.usertmomin?.message}
+                                />
+                                : <FieldView
+                                label={"TMO user min"} 
+                                value={row ? (row.usertmomin || "") : ""}
                                 className="col-4"
-                            />}
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                    label={"TMO user max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmo', value)}
+                                    valueDefault={row ? (row.usertmo || "") : ""}
+                                    error={errors?.usertmo?.message}
+                                />
+                                : <FieldView
+                                    label={"TMO total max"}
+                                    value={row ? (row.usertmo || "") : ""}
+                                    className="col-4"
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                    label={t(langKeys.usertmopercentmax)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmopercentmax', value)}
+                                    valueDefault={row ? (row.usertmopercentmax || "") : ""}
+                                    error={errors?.usertmopercentmax?.message}
+                                />
+                                : <FieldView
+                                    label={t(langKeys.usertmopercentmax)}
+                                    value={row ? (row.usertmopercentmax || "") : ""}
+                                    className="col-4"
+                                />}
+                        </div>
+                        <div className="row-zyx">
+                            
+                            {edit ?
+                                <FieldEdit
+                                    label={"TME user max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertme', value)}
+                                    valueDefault={row ? (row.usertme || "") : ""}
+                                    error={errors?.usertme?.message}
+                                />
+                                : <FieldView
+                                    label={"TME total max"}
+                                    value={row ? (row.usertme || "") : ""}
+                                    className="col-4"
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                    label={t(langKeys.usertmepercentmax)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmepercentmax', value)}
+                                    valueDefault={row ? (row.usertmepercentmax || "") : ""}
+                                    error={errors?.usertmepercentmax?.message}
+                                />
+                                : <FieldView
+                                    label={t(langKeys.usertmepercentmax)}
+                                    value={row ? (row.usertmepercentmax || "") : ""}
+                                    className="col-4"
+                                />}
+                            {edit ?
+                                <FieldEdit
+                                label={t(langKeys.productivitybyhour)} 
+                                className="col-4"
+                                onChange={(value) => setValue('productivitybyhour', value)}
+                                valueDefault={row ? (row.productivitybyhour || "") : ""}
+                                error={errors?.productivitybyhour?.message}
+                                />
+                                : <FieldView
+                                label={"TME user min"} 
+                                value={row ? (row.productivitybyhour || "") : ""}
+                                className="col-4"
+                                />}
+                        </div>
+                        
                     </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                            label={"TMO user min"} 
-                            className="col-4"
-                            onChange={(value) => setValue('usertmomin', value)}
-                            valueDefault={row ? (row.usertmomin || "") : ""}
-                            error={errors?.usertmomin?.message}
-                            />
-                            : <FieldView
-                            label={"TMO user min"} 
-                            value={row ? (row.usertmomin || "") : ""}
-                            className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={"TMO user max"} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmo', value)}
-                                valueDefault={row ? (row.usertmo || "") : ""}
-                                error={errors?.usertmo?.message}
-                            />
-                            : <FieldView
-                                label={"TMO total max"}
-                                value={row ? (row.usertmo || "") : ""}
-                                className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.usertmopercentmax)} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmopercentmax', value)}
-                                valueDefault={row ? (row.usertmopercentmax || "") : ""}
-                                error={errors?.usertmopercentmax?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.usertmopercentmax)}
-                                value={row ? (row.usertmopercentmax || "") : ""}
-                                className="col-4"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                            label={"TME user min"} 
-                            className="col-4"
-                            onChange={(value) => setValue('usertmemin', value)}
-                            valueDefault={row ? (row.usertmemin || "") : ""}
-                            error={errors?.usertmemin?.message}
-                            />
-                            : <FieldView
-                            label={"TME user min"} 
-                            value={row ? (row.usertmemin || "") : ""}
-                            className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={"TME user max"} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertme', value)}
-                                valueDefault={row ? (row.usertme || "") : ""}
-                                error={errors?.usertme?.message}
-                            />
-                            : <FieldView
-                                label={"TME total max"}
-                                value={row ? (row.usertme || "") : ""}
-                                className="col-4"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.usertmepercentmax)} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmepercentmax', value)}
-                                valueDefault={row ? (row.usertmepercentmax || "") : ""}
-                                error={errors?.usertmepercentmax?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.usertmepercentmax)}
-                                value={row ? (row.usertmepercentmax || "") : ""}
-                                className="col-4"
-                            />}
-                    </div>
-                    
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <Button
                             variant="contained"
@@ -492,7 +511,12 @@ const SLA: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([getValuesFromDomain("ESTADOGENERICO")]));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("EMPRESA"),
+            getValuesFromDomain("GRUPOS"),
+            getCommChannelLst()
+        ]));
         return () => {
             dispatch(resetMain());
         };
@@ -531,7 +555,7 @@ const SLA: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insSLA({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
+            dispatch(execute(insSLA({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.slaid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
