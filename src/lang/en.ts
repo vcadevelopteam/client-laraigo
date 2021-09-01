@@ -164,6 +164,7 @@ const translation: LangKeys = {
 
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
+    return: "Return",
 
     newmessagetemplate: 'New Message Template',
     messagetemplate: 'Message Template',

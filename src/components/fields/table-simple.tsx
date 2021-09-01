@@ -111,7 +111,6 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
-
     },
     containerButtons: {
         gridGap: theme.spacing(1),
@@ -443,7 +442,7 @@ const TableZyx = React.memo(({
                                         {row.cells.map((cell, i) =>
                                             <TableCell
                                                 {...cell.getCellProps()}
-                                                align={typeof cell.value === "number" ? "right" : "left"}
+                                                align={(!headerGroups[0].headers[i].isComponent) && typeof cell.value === "number" ? "right" : "left"}
                                                 className={clsx({
                                                     [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
                                                 })}
