@@ -25,6 +25,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { useTheme } from '@material-ui/core';
+import Tab, { TabProps } from '@material-ui/core/Tab';
+import { withStyles } from '@material-ui/core/styles';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -393,3 +395,23 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
+
+export const AntTab = withStyles((theme) => ({
+    root: {
+        textTransform: 'none',
+        minWidth: 72,
+        fontWeight: theme.typography.fontWeightRegular,
+        '&:hover': {
+            color: theme.palette.primary.main,
+            opacity: 1,
+        },
+        '&$selected': {
+            color: theme.palette.primary.main,
+            fontWeight: theme.typography.fontWeightMedium,
+        },
+        '&:focus': {
+            color: theme.palette.primary.main,
+        },
+    },
+    selected: {},
+}))((props: TabProps) => <Tab disableRipple {...props} />);
