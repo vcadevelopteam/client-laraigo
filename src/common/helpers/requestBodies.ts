@@ -305,7 +305,6 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-<<<<<<< HEAD
 export const getParentSel = (): IRequestBody => ({
     method: "UFN_CLASSIFICATION_LST_PARENT",
     parameters: {
@@ -313,8 +312,6 @@ export const getParentSel = (): IRequestBody => ({
     }
 });
 
-export const insMessageTemplate = ({ id, description, type, status, hsmid, namespace, message, category, header, buttons, operation }: Dictionary): IRequestBody => ({
-=======
 export const insMessageTemplate = (
     {
         id,
@@ -336,7 +333,6 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
->>>>>>> 8f93ffbd6e9f01e308d3ccfabbe7a5bab14c57fc
     method: "UFN_MESSAGETEMPLATE_INS",
     parameters: {
         id,
