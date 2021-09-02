@@ -21,7 +21,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel, OutlinedInput } from '@material-ui/core';
+import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 interface RowSelected {
@@ -308,7 +308,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 label={t(langKeys.status)}
                                 className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value.domainvalue)}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"

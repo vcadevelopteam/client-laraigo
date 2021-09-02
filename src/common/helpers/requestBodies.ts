@@ -254,11 +254,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule}: Dictionary): IRequestBody => ({
+export const insClassification = ({id, description, parent, communicationchannel, status, type, username, operation,tags, jobplan, usergroup, schedule}: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule
+        id, description, parent, communicationchannel, status, type, username, operation, tags, jobplan, usergroup, schedule
     }
 })
 export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
@@ -302,6 +302,13 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     parameters: {
         id: id,
         all: id === 0,
+    }
+});
+
+export const getParentSel = (): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_LST_PARENT",
+    parameters: {
+        classificationid: 0
     }
 });
 

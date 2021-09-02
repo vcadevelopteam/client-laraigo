@@ -99,16 +99,17 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     ticketCreatedOn: 'Ticket Creado',
     parent:'Padre',
     company: 'Compañia',
-
+    tag:'Tag',
     billingGroup: 'Grupo de facturación',
     registerCode: 'Código de registro',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
     doubleAuthentication: 'Doble autenticación',
-
+    completedesc: 'Descripción completa',
+    actionplan:'Plan de acción',
     group: 'Grupo',
     group_plural: 'Grupos',
-
+    hasactionplan:'Tiene Plan de Acción',
     action: 'Acción',
     action_plural: 'Acciones',
 
@@ -216,6 +217,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     confirmation_save: '¿Está seguro de guardar el registro?',
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     login_with_facebook: 'Iniciar sesión con Facebook',
+    login_with_google: 'Iniciar sesión con Google',
 
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',

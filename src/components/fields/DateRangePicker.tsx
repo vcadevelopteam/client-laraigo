@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, useTheme } f
 import { langKeys } from "lang/keys";
 import { useState } from "react";
 import { FC } from "react";
-import { DateRangePicker as $DateRangePicker, DateRangePickerProps as $DateRangePickerProps, InputRange, Range, RangeWithKey, StaticRange } from 'react-date-range';
+import { DateRangePicker as PDateRangePicker, DateRangePickerProps as PDateRangePickerProps, InputRange, Range, RangeWithKey, StaticRange } from 'react-date-range';
 import { Trans, useTranslation } from "react-i18next";
 import { dateRangeResourceLanguage } from "common/helpers";
 import {
@@ -18,7 +18,7 @@ import {
     differenceInCalendarDays,
 } from 'date-fns';
 
-interface DateRangePickerProps extends Omit<$DateRangePickerProps, 'ranges'> {
+interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
     title?: React.ReactNode;
     open: boolean;
     range: Range;
@@ -156,7 +156,7 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                 <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
                 <DialogContent>
                     <div>
-                        <$DateRangePicker
+                        <PDateRangePicker
                             onChange={(range) => {
                                 const selection = (range as { selection: RangeWithKey }).selection;
                                 setCurrentRange([selection]);

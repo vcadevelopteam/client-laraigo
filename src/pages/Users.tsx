@@ -123,7 +123,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const { t } = useTranslation();
     const resFromOrg = useSelector(state => state.main.multiDataAux);
 
-    const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
+    // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
     const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []

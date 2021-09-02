@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import {
     getCollection, resetMain, getMultiCollection,
-    execute, getCollectionAux, resetMainAux, getMultiCollectionAux
+    execute, getCollectionAux, resetMainAux,
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
