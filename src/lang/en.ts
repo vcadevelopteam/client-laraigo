@@ -189,6 +189,8 @@ const translation: LangKeys = {
     buttons: 'Buttons',
     payload: 'Payload',
     message: 'Mensaje',
+    addbutton: 'Add button',
+    removebutton: 'Remove Button',
 
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
