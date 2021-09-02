@@ -268,6 +268,21 @@ const Properties: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.name),
                 accessor: 'propertyname',
                 NoFilter: true
@@ -308,22 +323,7 @@ const Properties: FC = () => {
                 accessor: 'changedate',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         []
     );

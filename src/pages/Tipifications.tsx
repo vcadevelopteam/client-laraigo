@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getParentSel, getChannelsByOrg, getValuesFromDomain, insProperty, getClassificationSel, insClassification } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti } from 'components';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -37,7 +37,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -56,21 +55,22 @@ const useStyles = makeStyles((theme) => ({
     },
     halfplace: {
         width: "50%",
+    },
+    dataaction: {
+        width: "100%",
+        paddingBottom: "20px",
     }
 }));
+const dataTypeAction=[
+    {dat:"Simple"},
+    {dat:"Variable"},
+    {dat:"Request"}
+]
 
 const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
-    // let jobplan: any[] = [];
-    // if (row) {
-    //     if (row.jobplan) {
-    //         jobplan = JSON.parse(row.jobplan)
-    //     }
-    // }
-    // console.log(jobplan)
-
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
@@ -81,11 +81,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataTypeAction=[
-        {dat:"simple"},
-        {dat:"variable"},
-        {dat:"request"}
-    ]
+    
         
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
@@ -95,12 +91,12 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             type: 'TIPIFICACION',
             id: row?.classificationid || 0,
             description: row?.description || '',
-            parent: row?.classificationid || 0,
+            parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannelid || '',
             status: row ? row.status : 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
-            // jobplan: row?.jobplan || '',
+            tags: row?.tags ||''
         }
     });
 
@@ -112,7 +108,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('path');
-        // register('jobplan');
+        register('tags');
     }, [edit, register]);
 
     useEffect(() => {
@@ -131,30 +127,18 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         }
     }, [executeRes, waitSave])
     function addaction() {
-        setjobplan((p) => [...p, { action: "" , type: "simple"}])
+        setjobplan((p) => [...p, { action: "" , type: "Simple"}])
     }
-    function showactionplan() {
-        let keynumbr =0;
-        return jobplan.forEach((e: any) => {
-            keynumbr++;
-            return (<div key={keynumbr}>lol</div>)
-        })
-    }
-    // const ActionsPlan: FC = () => {
-    //     return jobplan.map((e: any) => <div>lol</div>)
-    // }
     function deleteitem(i:number){
-        debugger
         setjobplan(jobplan.filter((e,index)=>index!==i))
         
     }
     function setValueAction(field:string, value:string,i:number){
         setjobplan((p: Dictionary[]) => p.map((x,index) => index === i ? { ...x, [field]: value } : x))
-        debugger
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insProperty(data)));
+            dispatch(execute(insClassification({...data,jobplan:JSON.stringify(jobplan)})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -168,14 +152,39 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     return (
         <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.tipification)}
-            />
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.description}` : t(langKeys.tipification)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -197,7 +206,6 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
                                 error={errors?.description?.message}
-                                disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.description)}
@@ -210,7 +218,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.parent)}
                                 className="col-6"
-                                valueDefault={row ? (row.parent || "") : ""}
+                                valueDefault={row ? (row.parentid || "") : ""}
                                 onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
                                 error={errors?.parent?.message}
                                 data={dataParent}
@@ -229,6 +237,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 valueDefault={row ? (row.path || "") : ""}
                                 onChange={(value) => setValue('path', value)}
                                 error={errors?.path?.message}
+                                disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.completedesc)}
@@ -270,6 +279,21 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 className="col-6"
                             />}
                     </div>
+                    <div className="row-zyx">
+                            {edit ?
+                                <FieldEdit
+                                    label={t(langKeys.tag)}
+                                    className="col-6"
+                                    valueDefault={row ? (row.tags || "") : ""}
+                                    onChange={(value) => setValue('tags', value)}
+                                    error={errors?.tags?.message}
+                                />
+                                : <FieldView
+                                    label={t(langKeys.tag)}
+                                    value={row ? (row.tags || "") : ""}
+                                    className="col-6"
+                            />}
+                    </div>
                     <div style={{ marginBottom: '16px' }}>
                         <div className={classes.title}>{t(langKeys.actionplan)}</div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -301,17 +325,9 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                         </div>
                         
                             {
-                                // edit ? (
-                                //     showAddAction ? (
-                                //         () => showactionplan()
-                                //     )
-                                //         : null
-                                // )
-                                //     : null
                                 (edit && showAddAction) && jobplan.map((e: any,i:number) => (
-                                    <div className="row-zyx" key={e.action}>
+                                    <div className="row-zyx" key={i}>
                                         <FieldEdit
-                                            key={`action${e.i}`}
                                             label={t(langKeys.action)}
                                             className="col-6"
                                             valueDefault={e.action?e.action:""}
@@ -320,47 +336,53 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-5"
-                                            key={`type${e.i}`}
-                                            valueDefault={e.type?e.type:"simple"}
+                                            valueDefault={e.type?e.type:"Simple"}
                                             //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                             error={errors?.status?.message}
                                             data={dataTypeAction}
                                             optionDesc="dat"
                                             optionValue="dat"
+                                            onChange={(value) => setValueAction('type', value.dat,i)}
                                         />
                                         <div className="col-1" style={{paddingTop:"15px"}}>
-                                        <IconButton aria-label="delete" onClick={() => deleteitem(i)} >
+                                        <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
                                             <DeleteIcon />
                                         </IconButton>
                                         </div>
+                                        {e.type==="Variable"?
+                                        <FieldEdit
+                                            label={t(langKeys.variable)}
+                                            className={classes.dataaction}
+                                            valueDefault={e.variable?e.variable:""}
+                                            onChange={(value) => setValueAction('variable', value,i)}
+                                        />
+                                        
+                                        :null}
+                                        {e.type==="Request"?
+                                        <div>
+                                            <FieldEdit
+                                                label={t(langKeys.endpoint)}
+                                                className={classes.dataaction}
+                                                valueDefault={e.endpoint?e.endpoint:""}
+                                                onChange={(value) => setValueAction('endpoint', value,i)}
+                                            />
+                                            <FieldEditMulti
+                                                label={t(langKeys.data)}
+                                                className={classes.dataaction}
+                                                valueDefault={e.data?e.data:""}
+                                                onChange={(value) => setValueAction('data', value,i)}
+                                                maxLength={2048}
+                                            />
+
+                                        </div>
+                                        :null}
                                     </div>
                                 ))
                             }
-                        <div className="row-zyx">
-
-                        </div>
 
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
+                        
                     </div>
                 </div>
             </form>
@@ -381,6 +403,22 @@ const Tipifications: FC = () => {
 
     const columns = React.useMemo(
         () => [
+            
+            {
+                accessor: 'classificationid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
             {
                 Header: t(langKeys.title),
                 accessor: 'description',
@@ -411,23 +449,7 @@ const Tipifications: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'statusdesc',
                 NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
-                accessor: 'classificationid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            }
         ],
         []
     );
@@ -479,7 +501,8 @@ const Tipifications: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
+            debugger
+            dispatch(execute(insClassification({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.classificationid,parent:row.parentid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -506,7 +529,6 @@ const Tipifications: FC = () => {
                 download={true}
                 register={true}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
             />
         )
     }

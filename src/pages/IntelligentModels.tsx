@@ -248,6 +248,21 @@ const IntelligentModels: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.endpoint),
                 accessor: 'endpoint',
                 NoFilter: true
@@ -281,22 +296,6 @@ const IntelligentModels: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
             },
         ],
         []

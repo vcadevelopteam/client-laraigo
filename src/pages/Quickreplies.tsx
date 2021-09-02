@@ -382,6 +382,22 @@ const Quickreplies: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'quickreplyid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.quickreply),
                 accessor: 'quickreply',
                 NoFilter: true
@@ -412,23 +428,7 @@ const Quickreplies: FC = () => {
                 accessor: 'orgdesc',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'quickreplyid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         [t]
     );
