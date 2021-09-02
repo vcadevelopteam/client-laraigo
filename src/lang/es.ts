@@ -112,9 +112,10 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     hasactionplan:'Tiene Plan de Acción',
     action: 'Acción',
     action_plural: 'Acciones',
-
+    variable:"Variable",
     role: 'Rol',
     role_plural: 'Roles',
+    data:"Data",
 
     status: 'Estado',
     status_plural: 'Estados',

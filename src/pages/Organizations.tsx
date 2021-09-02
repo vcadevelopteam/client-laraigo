@@ -220,22 +220,6 @@ const Organizations: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.description),
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
                 accessor: 'orgid',
                 NoFilter: true,
                 isComponent: true,
@@ -249,6 +233,21 @@ const Organizations: FC = () => {
                         />
                     )
                 }
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'orgdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'type',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true
             },
         ],
         []
