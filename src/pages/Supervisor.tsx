@@ -17,6 +17,29 @@ import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { getUsersBySupervisor } from 'common/helpers';
 
+
+const filterAboutStatusName = (data: AgentProps[], page: number, searchName: string): AgentProps[] => {
+    if (page === 0 && searchName === "") {
+        return data;
+    }
+    if (page === 0 && searchName !== "") {
+        return data.filter(item => item.name.toLowerCase().includes(searchName.toLowerCase()));
+    }
+    if (page === 1 && searchName === "") {
+        return data.filter(item => item.status === "ACTIVO");
+    }
+    if (page === 1 && searchName !== "") {
+        return data.filter(item => item.status === "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    }
+    if (page === 2 && searchName === "") {
+        return data.filter(item => item.status !== "ACTIVO");
+    }
+    if (page === 2 && searchName !== "") {
+        return data.filter(item => item.status !== "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    }
+    return data;
+}
+
 const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
@@ -132,7 +155,6 @@ const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, cou
     return (
         <div className={classes.containerItemAgent}>
             <div className={classes.agentUp}>
-
                 <StyledBadge
                     overlap="circular"
                     colortmp={status === "ACTIVO" ? "#44b700" : "#b41a1a"}
@@ -178,28 +200,6 @@ const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, cou
             </div>
         </div>
     )
-}
-
-const filterAboutStatusName = (data: AgentProps[], page: number, searchName: string): AgentProps[] => {
-    if (page === 0 && searchName === "") {
-        return data;
-    }
-    if (page === 0 && searchName !== "") {
-        return data.filter(item => item.name.toLowerCase().includes(searchName.toLowerCase()));
-    }
-    if (page === 1 && searchName === "") {
-        return data.filter(item => item.status === "ACTIVO");
-    }
-    if (page === 1 && searchName !== "") {
-        return data.filter(item => item.status === "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
-    }
-    if (page === 2 && searchName === "") {
-        return data.filter(item => item.status !== "ACTIVO");
-    }
-    if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status !== "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
-    }
-    return data;
 }
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {

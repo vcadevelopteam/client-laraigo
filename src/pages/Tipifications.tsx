@@ -59,6 +59,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const dataTypeAction=[
+    {dat:"simple"},
+    {dat:"variable"},
+    {dat:"request"}
+]
+
 const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -81,11 +87,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataTypeAction=[
-        {dat:"simple"},
-        {dat:"variable"},
-        {dat:"request"}
-    ]
+   
         
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
@@ -144,13 +146,11 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     //     return jobplan.map((e: any) => <div>lol</div>)
     // }
     function deleteitem(i:number){
-        debugger
         setjobplan(jobplan.filter((e,index)=>index!==i))
         
     }
     function setValueAction(field:string, value:string,i:number){
         setjobplan((p: Dictionary[]) => p.map((x,index) => index === i ? { ...x, [field]: value } : x))
-        debugger
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
@@ -309,9 +309,9 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 // )
                                 //     : null
                                 (edit && showAddAction) && jobplan.map((e: any,i:number) => (
-                                    <div className="row-zyx" key={e.action}>
+                                    <div className="row-zyx" key={i}>
                                         <FieldEdit
-                                            key={`action${e.i}`}
+                                            // key={`action${e.i}`}
                                             label={t(langKeys.action)}
                                             className="col-6"
                                             valueDefault={e.action?e.action:""}
@@ -320,7 +320,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                         <FieldSelect
                                             label={t(langKeys.type)}
                                             className="col-5"
-                                            key={`type${e.i}`}
+                                            // key={`type${e.i}`}
                                             valueDefault={e.type?e.type:"simple"}
                                             //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                             error={errors?.status?.message}
