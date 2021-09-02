@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getParentSel, getChannelsByOrg, getValuesFromDomain, insProperty,getClassificationSel, insClassification } from 'common/helpers';
+import { getParentSel, getChannelsByOrg, getValuesFromDomain, insProperty, getClassificationSel, insClassification } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
         height: '48px',
         color: theme.palette.text.primary,
     },
-    halfplace:{
+    halfplace: {
         width: "50%",
     }
 }));
@@ -61,22 +61,25 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [hasactionplan, setHasactionplan] = useState(row?.jobplan || false);
-    let jobplan : any[] = [];
-    if(row){
-        if(row.jobplan){
-            jobplan=JSON.parse(row.jobplan)
-        }
-    }
-    console.log(jobplan)
+    // let jobplan: any[] = [];
+    // if (row) {
+    //     if (row.jobplan) {
+    //         jobplan = JSON.parse(row.jobplan)
+    //     }
+    // }
+    // console.log(jobplan)
+
+    const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
+
     const executeRes = useSelector(state => state.main.execute);
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    
+
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
 
@@ -86,23 +89,23 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             id: row?.classificationid || 0,
             description: row?.description || '',
             parent: row?.classificationid || 0,
-            communicationchannel:  row?.communicationchannelid || '',
+            communicationchannel: row?.communicationchannelid || '',
             status: row ? row.status : 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
-            jobplan: row?.jobplan || '',
+            // jobplan: row?.jobplan || '',
         }
     });
 
     React.useEffect(() => {
         register('id');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('parent', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('parent', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
         register('path');
-        register('jobplan');
+        // register('jobplan');
     }, [edit, register]);
 
     useEffect(() => {
@@ -120,14 +123,18 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
-    function addaction(){
-        jobplan.push({element:"test"})
+    function addaction() {
+        setjobplan((p) => [...p, { element: "text" }])
     }
-    function showactionplan(){
-        return jobplan.forEach((e:any) => {
+    function showactionplan() {
+        return jobplan.forEach((e: any) => {
             return (<div>lol</div>)
         })
     }
+    // const ActionsPlan: FC = () => {
+    //     return jobplan.map((e: any) => <div>lol</div>)
+    // }
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insProperty(data)));
@@ -168,7 +175,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.classification)} 
+                                label={t(langKeys.classification)}
                                 className="col-6"
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
@@ -187,7 +194,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 label={t(langKeys.parent)}
                                 className="col-6"
                                 valueDefault={row ? (row.parent || "") : ""}
-                                onChange={(value) => setValue('parent', value? value.classificationid: 0)}
+                                onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
                                 error={errors?.parent?.message}
                                 data={dataParent}
                                 optionDesc="description"
@@ -234,7 +241,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
+                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -248,10 +255,10 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                     </div>
                     <div style={{ marginBottom: '16px' }}>
                         <div className={classes.title}>{t(langKeys.actionplan)}</div>
-                        <div className="row-zyx">
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             {edit ?
                                 <TemplateSwitch
-                                    className={classes.halfplace}
+                                    // className={classes.halfplace}
                                     label={t(langKeys.hasactionplan)}
                                     valueDefault={hasactionplan}
                                     onChange={(value) => setHasactionplan(value)}
@@ -261,9 +268,8 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                     value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                 />
                             }
-                            {edit ?
-                                (hasactionplan?
-                                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }} className={classes.halfplace}>
+                            {edit && hasactionplan &&
+                                <div>
                                     <Button
                                         variant="contained"
                                         type="button"
@@ -271,27 +277,29 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                         endIcon={<AddIcon style={{ color: "#deac32" }} />}
                                         style={{ backgroundColor: "#6c757d" }}
                                         onClick={() => addaction()}
-                                    >{t(langKeys.action)}</Button>
+                                    >{t(langKeys.action)}
+                                    </Button>
                                 </div>
-                                : null) 
-                            :null
                             }
                         </div>
                         <div className="row-zyx">
                             {
-                                edit?(
-                                    hasactionplan?(
-                                        ()=>showactionplan()
-                                    )
-                                    :null
-                                )
-                                :null
+                                // edit ? (
+                                //     hasactionplan ? (
+                                //         () => showactionplan()
+                                //     )
+                                //         : null
+                                // )
+                                //     : null
+                                (edit && hasactionplan) && jobplan.map((e: any) => (
+                                    <div>lol</div>
+                                ))
                             }
                         </div>
                         <div className="row-zyx">
-                            
+
                         </div>
-                        
+
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <Button
