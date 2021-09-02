@@ -3,13 +3,9 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree } from 'common/helpers';
-
-import { Dictionary } from "@types";
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty,getClassificationSel, insClassification } from 'common/helpers';
+import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
@@ -18,30 +14,23 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-
 import ClearIcon from '@material-ui/icons/Clear';
-import { TreeItem, TreeView } from '@material-ui/lab';
-import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
-import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
-interface DetailQuickreplyProps {
+interface DetailTipificationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
 const arrayBread = [
-    { id: "view-1", name: "Quickreplies" },
-    { id: "view-2", name: "Quickreply detail" }
+    { id: "view-1", name: "Tipifications" },
+    { id: "view-2", name: "Tipification detail" }
 ];
+
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
@@ -55,106 +44,27 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
-    inputlabelclass: {
-        fontSize: "14px",
-        fontWeight: 500,
-        lineHeight: "18px",
-        marginBottom: "8px",
-        color: "black"
-    },
-    treeviewroot: {
-        height: 240,
-        flexGrow: 1,
-        maxWidth: 400,
-    }
 }));
 
-
-const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void }> = ({ dataClassTotal, setValueTmp, setselectedlabel }) => {
-    const parents: any[] = []
-    const children: any[] = []
-
-    dataClassTotal.forEach((x: Dictionary) => {
-        if (x.parent === 0) {
-            let item = {
-                key: x.classificationid,
-                nodeId: x.classificationid.toString(),
-                label: x.description.toString(),
-                children: x.haschildren
-            }
-            parents.push(item)// = [...parents, item])
-        } else {
-            let item = {
-                key: x.classificationid,
-                nodeId: x.classificationid.toString(),
-                label: x.description.toString(),
-                children: x.haschildren,
-                father: x.parent
-            }
-            children.push(item)
-        }
-    })
-    
-    function setselect(x: Dictionary) {
-        setValueTmp(x.key)
-        setselectedlabel(x.label)
-    }
-
-    function loadchildren(id: number) {
-        return children.map(x => {
-            if (x.father === id) {
-                return (
-                    <TreeItem
-                        key={x.key}
-                        nodeId={String(x.nodeId)}
-                        label={x.label}
-                        onLabelClick={() => setselect(x)}
-                    >
-                        {x.children ? loadchildren(x.key) : null}
-                    </TreeItem>
-                )
-            }
-            return null;
-        })
-    }
-    return (
-        <>
-            {parents.map(x =>
-                <TreeItem
-                    key={x.key}
-                    nodeId={String(x.nodeId)}
-                    label={x.label}
-                    onLabelClick={() => setselect(x)}
-                >
-                    {x.children ? loadchildren(x.key) : null}
-                </TreeItem>)}
-        </>
-    )
-};
-
-const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const executeRes = useSelector(state => state.main.execute);
     const user = useSelector(state => state.login.validateToken.user);
+
     const dispatch = useDispatch();
-
-    const [openDialog, setOpenDialog] = useState(false);
-
     const { t } = useTranslation();
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
-
+    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            communicationchannelid: row?.communicationchannelid || 0,
-            classificationid: row ? row.classificationid : 0,
-            id: row?.quickreplyid || 0,
-            quickreply: row?.quickreply || '',
+            communicationchannelid: row ? row.communicationchannelid : 0,
+            id: row ? row.propertyid : 0,
+            propertyname: row ? row.propertyname : '',
+            propertyvalue: row ? row.propertyvalue : '',
             description: row ? (row.description || '') : '',
             status: row ? row.status : 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
@@ -165,8 +75,8 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('communicationchannelid');
         register('type');
         register('id');
-        register('classificationid');//, { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('quickreply', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('propertyname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('propertyvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -175,27 +85,25 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
+                fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
                 dispatch(showBackdrop(false));
+                setWaitSave(false);
             }
         }
     }, [executeRes, waitSave])
 
-
     const onSubmit = handleSubmit((data) => {
-        //data.communicationchannelid = selected.key
-        console.log(data)
         const callback = () => {
-            dispatch(execute(insQuickreplies(data))); //executeRes
+            dispatch(execute(insProperty(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
+
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
@@ -210,7 +118,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.newquickreply)}
+                title={row ? `${row.Tipifications}` : t(langKeys.tipification)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -218,95 +126,77 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.corporation)} // "Corporation"
-                                className="col-12"
+                                className="col-6"
                                 valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                 disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.corporation)}
                                 value={row ? (row.corpdesc || "") : ""}
-                                className="col-12"
+                                className="col-6"
                             />}
-                    </div>
-                    <div className="row-zyx">
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.organization)} // "Organization"
-                                className="col-12"
+                                className="col-6"
                                 valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
                                 disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.organization)}
                                 value={row ? (row.orgdesc || "") : ""}
-                                className="col-12"
+                                className="col-6"
                             />}
                     </div>
-                    {edit ?
-                        <div>
-                            <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
-                            <Input
-                                disabled
-                                style={{ width: "100%" }}
-                                value={selectedlabel}
-                                type={'text'}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton onClick={() => setOpenDialog(true)}>
-                                            <ZoomInIcon />
-                                        </IconButton>
-
-                                    </InputAdornment>
-                                }
-                            />
-                        </div>
-                        :
-                        <div className="row-zyx">
-                            <FieldView
-                                label={t(langKeys.classification)}
-                                value={row ? (row.classificationdesc || "") : ""}
-                                className="col-12"
-                            />
-                        </div>}
-                </div>
-                <div className={classes.containerDetail}>
-                    <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
-
                     <div className="row-zyx">
                         {edit ?
+                            <FieldSelect
+                                label={t(langKeys.channel)}
+                                valueDefault={row ? (row.communicationchanneldesc || "") : ""}
+                                className="col-6"
+                                onChange={(value) => setValue('communicationchannelid', value ? value.communicationchannelid : 0)}
+                                error={errors?.status?.message}
+                                data={dataChannel}
+                                optionDesc="description"
+                                optionValue="communicationchannelid"
+                            />
+                            : <FieldView
+                                label={t(langKeys.channel)}
+                                value={row ? (row.communicationchanneldesc || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
                             <FieldEdit
-                                label={t(langKeys.summarize)}
-                                className="col-12"
-                                valueDefault={row?.description || ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.summarize)}
-                                value={row?.description || ""}
+                                label={t(langKeys.name)}
+                                className="col-6"
+                                valueDefault={row ? (row.propertyname || "") : ""}
+                                onChange={(value) => setValue('propertyname', value)}
+                                error={errors?.propertyname?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.name)}
+                                value={row ? (row.propertyname || "") : ""}
                                 className="col-6"
                             />}
                     </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.detail)}
-                                className="col-12"
-                                valueDefault={row ? (row.quickreply || "") : ""}
-                                onChange={(value) => setValue('quickreply', value)}
-                                error={errors?.quickreply?.message}
+                                label={t(langKeys.value)}
+                                className="col-6"
+                                valueDefault={row ? (row.propertyvalue || "") : ""}
+                                onChange={(value) => setValue('propertyvalue', value)}
+                                error={errors?.propertyvalue?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.detail)}
-                                value={row ? (row.quickreply || "") : ""}
-                                className="col-12"
+                                label={t(langKeys.value)}
+                                value={row ? (row.propertyvalue || "") : ""}
+                                className="col-6"
                             />}
-                    </div>
-                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
-                                className="col-12"
+                                className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
                                 onChange={(value) => setValue('status', value.domainvalue)}
                                 error={errors?.status?.message}
@@ -317,8 +207,25 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             : <FieldView
                                 label={t(langKeys.status)}
                                 value={row ? (row.status || "") : ""}
-                                className="col-12"
+                                className="col-6"
                             />}
+                    </div>
+
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                className="col-6"
+                                valueDefault={row ? (row.description || "") : ""}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
+                                className="col-6"
+                            />}
+
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <Button
@@ -343,32 +250,11 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                 </div>
             </form>
-            <DialogZyx
-                open={openDialog}
-                title={t(langKeys.organizationclass)}
-                buttonText1={t(langKeys.select)}
-                //buttonText2={t(langKeys.select)}
-                handleClickButton1={() => setOpenDialog(false)}
-                handleClickButton2={() => setOpenDialog(false)}
-            >   <TreeView
-                className={classes.treeviewroot}
-                defaultCollapseIcon={<ExpandMoreIcon />}
-                defaultExpandIcon={<ChevronRightIcon />}
-            >
-                    <TreeItemsFromData
-                        dataClassTotal={dataClassTotal}
-                        setValueTmp={(e) => setValue('classificationid', e)}
-                        setselectedlabel={setselectedlabel}
-                    />
-                </TreeView>
-                <div className="row-zyx">
-                </div>
-            </DialogZyx>
         </div>
     );
 }
 
-const Quickreplies: FC = () => {
+const Tipifications: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -382,13 +268,24 @@ const Quickreplies: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.quickreply),
-                accessor: 'quickreply',
+                Header: t(langKeys.title),
+                accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.review),
-                accessor: 'description',
+                Header: t(langKeys.description),
+                accessor: 'path',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.parent),
+                accessor: 'parentdesc',
+                NoFilter: true
+            },
+
+            {
+                Header: t(langKeys.channel),
+                accessor: 'communicationchanneldesc',
                 NoFilter: true
             },
             {
@@ -397,24 +294,8 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
-            },
-
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.action),
-                accessor: 'quickreplyid',
+                accessor: 'classificationid',
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
@@ -422,7 +303,6 @@ const Quickreplies: FC = () => {
                     return (
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -430,17 +310,14 @@ const Quickreplies: FC = () => {
                 }
             },
         ],
-        [t]
+        []
     );
 
-    const fetchData = () => dispatch(getCollection(getQuickrepliesSel(0))); //mainResult.mainData.data
+    const fetchData = () => dispatch(getCollection(getClassificationSel(0)));
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesForTree()
-        ])); //mainResult.multiData.data
+        dispatch(getMultiCollection([getChannelsByOrg(), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
             dispatch(resetMain());
         };
@@ -454,7 +331,7 @@ const Quickreplies: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -479,7 +356,7 @@ const Quickreplies: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insQuickreplies({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.quickreplyid })));
+            dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -493,13 +370,17 @@ const Quickreplies: FC = () => {
 
     if (viewSelected === "view-1") {
 
+        if (mainResult.mainData.error) {
+            return <h1>ERROR</h1>;
+        }
+
         return (
             <TableZyx
                 columns={columns}
-                titlemodule={t(langKeys.quickreplies, { count: 2 })}
+                titlemodule={t(langKeys.property, { count: 2 })}
                 data={mainResult.mainData.data}
-                download={true}
                 loading={mainResult.mainData.loading}
+                download={true}
                 register={true}
                 handleRegister={handleRegister}
             // fetchData={fetchData}
@@ -508,7 +389,7 @@ const Quickreplies: FC = () => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailQuickreply
+            <DetailTipification
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
@@ -520,4 +401,4 @@ const Quickreplies: FC = () => {
 
 }
 
-export default Quickreplies;
+export default Tipifications;

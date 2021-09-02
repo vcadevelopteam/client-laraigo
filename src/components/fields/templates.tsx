@@ -24,7 +24,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useTheme } from '@material-ui/core';
+import Tab, { TabProps } from '@material-ui/core/Tab';
+import { withStyles } from '@material-ui/core/styles';
+import { FormHelperText, useTheme } from '@material-ui/core';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -82,7 +84,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
                     deleteFunction && deleteFunction(e)
-                    }}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
         </>
     )
@@ -184,6 +186,8 @@ interface InputProps {
     style?: any;
     error?: string;
     type?: string;
+    rows?: number;
+    maxLength?: number;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -194,7 +198,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -212,6 +216,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 value={value}
                 error={!!error}
                 helperText={error || null}
+                rows={rows}
                 onChange={(e) => {
                     setvalue(e.target.value);
                     onChange && onChange(e.target.value);
@@ -220,7 +225,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text" }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", maxLength = 0 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -241,10 +246,13 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 rows={4}
                 helperText={error || null}
                 onChange={(e) => {
-                    setvalue(e.target.value);
-                    onChange && onChange(e.target.value);
+                    if (maxLength === 0 || e.target.value.length <= maxLength) {
+                        setvalue(e.target.value);
+                        onChange && onChange(e.target.value);
+                    }
                 }}
             />
+            {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
         </div>
     )
 }
@@ -264,7 +272,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
         } else {
             setValue(null);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [valueDefault, data]);
 
     return (
@@ -274,7 +282,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
-                value={data.length > 0 ?  value : null}
+                value={data.length > 0 ? value : null}
                 onChange={(_, newValue) => {
                     setValue(newValue);
                     onChange && onChange(newValue);
@@ -362,7 +370,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                         }}
                         error={!!error}
                         helperText={error || null}
-                        
+
                     />
                 )}
             />
@@ -382,7 +390,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     }, [valueDefault])
 
     return (
-        <div className={className} style={{paddingBottom: '3px'}}>
+        <div className={className} style={{ paddingBottom: '3px' }}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
             <IOSSwitch checked={checkedaux} onChange={(e) => {
                 setChecked(e.target.checked);
@@ -391,3 +399,23 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
         </div>
     );
 }
+
+export const AntTab = withStyles((theme) => ({
+    root: {
+        textTransform: 'none',
+        minWidth: 72,
+        fontWeight: theme.typography.fontWeightRegular,
+        '&:hover': {
+            color: theme.palette.primary.main,
+            opacity: 1,
+        },
+        '&$selected': {
+            color: theme.palette.primary.main,
+            fontWeight: theme.typography.fontWeightMedium,
+        },
+        '&:focus': {
+            color: theme.palette.primary.main,
+        },
+    },
+    selected: {},
+}))((props: TabProps) => <Tab disableRipple {...props} />);

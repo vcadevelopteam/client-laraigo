@@ -163,12 +163,15 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: `calc(100vw - ${drawerWidthCompressed}px)`,
     },
     mainContent: {
-        minHeight: 'calc(100vh - 81px)',
+        
     },
     mainContentBox: {
         flex: 1,
         display: 'flex',
-        minHeight: 'inherit',
+        height: 'calc(100vh - 84px)',
+        minHeight: 'calc(100vh - 84px)',
+        maxHeight: 'calc(100vh - 84px)',
+        // height: '100%'
     },
 }));
 

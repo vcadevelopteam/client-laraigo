@@ -789,7 +789,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 {detailRes.error ? <h1>ERROR</h1> :
                     <div>
                         <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={classes.title}>Organizaciones</div>
+                            <div className={classes.title}>{t(langKeys.organization_plural)}</div>
                             <div>
                                 <Button
                                     className={classes.button}

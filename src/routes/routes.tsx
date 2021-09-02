@@ -117,6 +117,12 @@ export const subroutes: RouteConfig[] = [
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {
+        key: paths.TIPIFICATIONS,
+        description: <Trans i18nKey={langKeys.tipification_plural} count={2} />,
+        path: paths.TIPIFICATIONS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
         key: paths.SLA,
         description: <Trans i18nKey={langKeys.sla} count={2} />,
         path: paths.SLA,
