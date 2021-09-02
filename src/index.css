@@ -170,6 +170,16 @@ footer a {
         padding-right: 16px;
         margin-bottom: 16px
     }
+    .row-zyx > .col-5 {
+        width: 41.66%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
+    .row-zyx > .col-1 {
+        width: 8.33%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
     .row-zyx > .col-3:last-child, .row-zyx > .col-2:last-child, .row-zyx > .col-8:last-child {
         padding-right: 0px
     }

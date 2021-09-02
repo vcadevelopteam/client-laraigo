@@ -356,7 +356,7 @@ export const insMessageTemplate = (
         footerenabled,
         footer,
         buttonsenabled,
-        buttons,
+        buttons: JSON.stringify(buttons),
         operation
     }
 });

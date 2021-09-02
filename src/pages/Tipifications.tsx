@@ -16,6 +16,8 @@ import { getCollection, resetMain, getMultiCollection, execute } from 'store/mai
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
+import { IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -79,7 +81,12 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
-
+    const dataTypeAction=[
+        {dat:"simple"},
+        {dat:"variable"},
+        {dat:"request"}
+    ]
+        
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
 
@@ -124,17 +131,27 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         }
     }, [executeRes, waitSave])
     function addaction() {
-        setjobplan((p) => [...p, { element: "text" }])
+        setjobplan((p) => [...p, { action: "" , type: "simple"}])
     }
     function showactionplan() {
+        let keynumbr =0;
         return jobplan.forEach((e: any) => {
-            return (<div>lol</div>)
+            keynumbr++;
+            return (<div key={keynumbr}>lol</div>)
         })
     }
     // const ActionsPlan: FC = () => {
     //     return jobplan.map((e: any) => <div>lol</div>)
     // }
-
+    function deleteitem(i:number){
+        debugger
+        setjobplan(jobplan.filter((e,index)=>index!==i))
+        
+    }
+    function setValueAction(field:string, value:string,i:number){
+        setjobplan((p: Dictionary[]) => p.map((x,index) => index === i ? { ...x, [field]: value } : x))
+        debugger
+    }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insProperty(data)));
@@ -282,7 +299,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 </div>
                             }
                         </div>
-                        <div className="row-zyx">
+                        
                             {
                                 // edit ? (
                                 //     showAddAction ? (
@@ -291,11 +308,34 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 //         : null
                                 // )
                                 //     : null
-                                (edit && showAddAction) && jobplan.map((e: any) => (
-                                    <div>lol</div>
+                                (edit && showAddAction) && jobplan.map((e: any,i:number) => (
+                                    <div className="row-zyx" key={e.action}>
+                                        <FieldEdit
+                                            key={`action${e.i}`}
+                                            label={t(langKeys.action)}
+                                            className="col-6"
+                                            valueDefault={e.action?e.action:""}
+                                            onChange={(value) => setValueAction('action', value,i)}
+                                        />
+                                        <FieldSelect
+                                            label={t(langKeys.type)}
+                                            className="col-5"
+                                            key={`type${e.i}`}
+                                            valueDefault={e.type?e.type:"simple"}
+                                            //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                                            error={errors?.status?.message}
+                                            data={dataTypeAction}
+                                            optionDesc="dat"
+                                            optionValue="dat"
+                                        />
+                                        <div className="col-1" style={{paddingTop:"15px"}}>
+                                        <IconButton aria-label="delete" onClick={() => deleteitem(i)} >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                        </div>
+                                    </div>
                                 ))
                             }
-                        </div>
                         <div className="row-zyx">
 
                         </div>

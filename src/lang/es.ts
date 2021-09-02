@@ -185,6 +185,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     payload: 'Payload',
     message: 'Mensaje',
     supplier:"Proveedor",
+    addbutton: 'Añadir botón',
+    removebutton: 'Quitar botón',
 
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
