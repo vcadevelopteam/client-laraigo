@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary,
     }
 }));
+
 const agentstt = [
     {
         "userid": 42,
@@ -893,7 +894,9 @@ const agentstt = [
         "motivetype": ""
     }
 ]
+
 interface AgentProps {
+    userid: number;
     name: string;
     countActive: number;
     countPaused: number;
@@ -904,13 +907,13 @@ interface AgentProps {
 }
 
 interface BadgePropsTmp extends BadgeProps {
-    color: any;
+    colortmp: any;
 }
 
 const StyledBadge = withStyles((theme) => ({
     badge: (props: any) => ({
-        backgroundColor: props.color,
-        color: props.color,
+        backgroundColor: props.colortmp,
+        color: props.colortmp,
         boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
         '&::after': {
             position: 'absolute',
@@ -919,7 +922,7 @@ const StyledBadge = withStyles((theme) => ({
             width: '100%',
             height: '100%',
             borderRadius: '50%',
-            animation: '$ripple 1.2s infinite ease-in-out',
+            animation: 'ripple 1.2s infinite ease-in-out',
             border: '1px solid currentColor',
             content: '""',
         },
@@ -953,13 +956,13 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
 
 const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, countClosed, coundPending, channels }) => {
     const classes = useStyles();
-
     return (
         <div className={classes.containerItemAgent}>
             <div className={classes.agentUp}>
+
                 <StyledBadge
-                    overlap="circle"
-                    color={status === "ACTIVO" ? "#44b700" : "#b41a1a"}
+                    overlap="circular"
+                    colortmp={status === "ACTIVO" ? "#44b700" : "#b41a1a"}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',
@@ -971,9 +974,9 @@ const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, cou
                 <div>
                     <div className={classes.agentName}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {channels.split(',').map((channel) => {
+                        {channels.split(',').map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
-                            return <ChannelTicket channelName={channelName} channelType={channelType} color={color} />
+                            return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
                         })}
                     </div>
                 </div>
@@ -1026,8 +1029,7 @@ const filterAboutStatusName = (data: AgentProps[], page: number, searchName: str
     return data;
 }
 
-const Supervisor: FC = () => {
-    const classes = useStyles();
+const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
     const [pageSelected, setPageSelected] = useState(0);
@@ -1042,57 +1044,61 @@ const Supervisor: FC = () => {
         setAgentsToShow(filterAboutStatusName(agentstt, pageSelected, search));
     }, [pageSelected])
 
+    return (
+        <div className={classes.containerAgents} style={{ backgroundColor: 'white' }}>
+            <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
+                {!showSearch ?
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <div className={classes.title}>
+                            Supervisor
+                        </div>
+                        <IconButton onClick={() => setShowSearch(true)} edge="end">
+                            <SearchIcon />
+                        </IconButton>
+                    </div> :
+                    <TextField
+                        color="primary"
+                        fullWidth
+                        autoFocus
+                        style={{ marginTop: '8px', marginBottom: '8px' }}
+                        onBlur={() => !search && setShowSearch(false)}
+                        onChange={onChangeSearchAgent}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton edge="end">
+                                        <SearchIcon />
+                                    </IconButton>
+                                </InputAdornment>)
+                        }}
+                    />
+                }
+            </div>
+            <Tabs
+                value={pageSelected}
+                indicatorColor="primary"
+                variant="fullWidth"
+                style={{ borderBottom: '1px solid #EBEAED' }}
+                textColor="primary"
+                onChange={(_, value) => setPageSelected(value)}
+            >
+                <AntTab label="All advisor" />
+                <AntTab label="Active" />
+                <AntTab label="Inactive" />
+            </Tabs>
+            <div style={{ overflowY: 'auto', height: '100%' }}>
+                {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} {...agent} />))}
+            </div>
+        </div>
+    )
+}
+
+const Supervisor: FC = () => {
+    const classes = useStyles();
 
     return (
         <div className={classes.container}>
-            <div className={classes.containerAgents} style={{ backgroundColor: 'white' }}>
-                <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
-                    {!showSearch ?
-                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={classes.title}>
-                                Supervisor
-                            </div>
-                            <IconButton onClick={() => setShowSearch(true)} edge="end">
-                                <SearchIcon />
-                            </IconButton>
-                        </div> :
-                        <TextField
-                            color="primary"
-                            fullWidth
-                            autoFocus
-                            style={{ marginTop: '8px', marginBottom: '8px' }}
-                            onBlur={() => !search && setShowSearch(false)}
-                            onChange={onChangeSearchAgent}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton edge="end">
-                                            <SearchIcon />
-                                        </IconButton>
-                                    </InputAdornment>
-                                )
-                            }}
-                        />
-                    }
-                </div>
-                <Tabs
-                    value={pageSelected}
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                    style={{ borderBottom: '1px solid #EBEAED' }}
-                    textColor="primary"
-                    onChange={(_, value) => setPageSelected(value)}
-                >
-                    <AntTab label="All advisor" />
-                    <AntTab label="Active" />
-                    <AntTab label="Inactive" />
-                </Tabs>
-                <div style={{ overflowY: 'auto', height: '100%' }}>
-                    {agentsToShow.map((agent, index) => (
-                        <ItemAgent key={`agent${index}`} {...agent} />
-                    ))}
-                </div>
-            </div>
+            <AgentPanel classes={classes} />
             <Chat />
         </div>
     )
