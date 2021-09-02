@@ -7,6 +7,10 @@ const paths = {
     SUPERVISOR: '/supervisor',
     ORGANIZATIONS: '/organizations',
     CHANNELS: '/channels',
+    CHANNELS_ADD: {
+        path: '/channels/:id/add',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
@@ -21,7 +25,7 @@ const paths = {
     DOMAINS: '/extras/domains',
     PERSON: '/extras/person',
     MESSAGETEMPLATE: '/extras/messagetemplate',
-    TIPIFICATIONS: '/extras/tipifications'
+    TIPIFICATIONS: '/extras/tipifications',
 };
 
 export default paths;
