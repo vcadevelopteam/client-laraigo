@@ -217,6 +217,7 @@ const translation: LangKeys = {
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
+    login_with_google: 'Login with Google',
 
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',

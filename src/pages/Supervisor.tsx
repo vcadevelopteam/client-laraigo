@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Chat from 'components/inbox/Chat'
+import ChatPanel from 'components/inbox/ChatPanel'
 import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
@@ -22,7 +22,9 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerAgents: {
-        flex: '0 0 300px'
+        flex: '0 0 300px',
+        display: 'flex',
+        flexDirection: 'column',
     },
     containerPanel: {
         flex: '1'
@@ -31,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '22px',
+        wordBreak: 'break-word'
     },
     agentUp: {
         display: 'flex',
@@ -1086,7 +1089,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
                 <AntTab label="Active" />
                 <AntTab label="Inactive" />
             </Tabs>
-            <div style={{ overflowY: 'auto', height: '100%' }}>
+            <div style={{ overflowY: 'auto' }}>
                 {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} {...agent} />))}
             </div>
         </div>
@@ -1099,7 +1102,7 @@ const Supervisor: FC = () => {
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
-            <Chat />
+            <ChatPanel />
         </div>
     )
 }

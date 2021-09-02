@@ -212,6 +212,7 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     login_with_facebook: 'login_with_facebook',
+    login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',

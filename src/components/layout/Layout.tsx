@@ -168,9 +168,9 @@ const useStyles = makeStyles((theme) => ({
     mainContentBox: {
         flex: 1,
         display: 'flex',
-        height: 'calc(100vh - 84px)',
-        minHeight: 'calc(100vh - 84px)',
-        maxHeight: 'calc(100vh - 84px)',
+        height: 'calc(100vh - 64px)',
+        minHeight: 'calc(100vh - 64px)',
+        maxHeight: 'calc(100vh - 64px)',
         // height: '100%'
     },
 }));
