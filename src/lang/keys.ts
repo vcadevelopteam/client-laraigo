@@ -156,15 +156,26 @@ export const langKeys = {
     delete: 'delete',
     search: 'search',
 
-    id: 'id',
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
     messagetemplate_plural: 'messagetemplate_plural',
-    hsmid: 'hsmid',
+    creationdate: 'creationdate',
+    messagetype: 'messagetype',
+    sms: 'sms',
+    hsm: 'hsm',
+    id: 'id',
     namespace: 'namespace',
     category: 'category',
-    message: 'message',
-
+    language: 'language',
+    templatetype: 'templatetype',
+    headertype: 'headertype',
+    header: 'header',
+    body: 'body',
+    footer: 'footer',
+    buttons: 'buttons',
+    title: 'title',
+    payload: 'payload',
+    message: 'Mensaje',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -213,7 +224,6 @@ export const langKeys = {
     error_function_not_exists: 'error_function_not_exists',
 
     dateRangeFilterTitle: 'dateRangeFilterTitle',
-    title:'title',
     apply: 'apply',
     close: 'close',
 

@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
 import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -47,215 +47,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const user = useSelector(state => state.login.validateToken.user);
+const dataMessageType = [
+    { value: "SMS", text: "SMS" }, // Setear en diccionario los text
+    { value: "HSM", text: "HSM" }, // Setear en diccionario los text
+];
 
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
+const dataTemplateType = [
+    { value: "STANDARD", text: "Standard (text only)" }, // Setear en diccionario los text
+    { value: "MULTIMEDIA", text: "Media & Interactive" }, // Setear en diccionario los text
+];
 
-    const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataType = [
-        { value: "SMS", text: "SMS" }, // Setear en diccionario los text
-        { value: "HSM", text: "HSM" }, // Setear en diccionario los text
-    ];
+const dataHeaderType = [
+    { value: 'text', text: 'Text' }, // Setear en diccionario los text
+    { value: 'image', text: 'Image' }, // Setear en diccionario los text
+    { value: 'document', text: 'Document' }, // Setear en diccionario los text
+    { value: 'video', text: 'Video' } // Setear en diccionario los text
+];
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        defaultValues: {
-            id: row ? row.id : 0,
-            description: row ? (row.description || '') : '',
-            type: row ? row.type : 'HSM',
-            status: row ? row.status : 'ACTIVO',
-            hsmid: row ? row.hsmid : '',
-            namespace: row ? row.namespace : '',
-            message: row ? row.message : '',
-            category: row ? row.category : '',
-            header: row ? row.header : { type: '', value: '' },
-            buttons: row ? row.buttons : [],
-            operation: row ? "EDIT" : "INSERT"
-        }
-    });
-
-    React.useEffect(() => {
-        register('id');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('hsmid', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('message', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('category');
-        register('header');
-        register('buttons');
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(insMessageTemplate(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.hsmid}` : t(langKeys.newmessagetemplate)}
-            />
-            <form onSubmit={onSubmit}>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.hsmid)}
-                                className="col-6"
-                                valueDefault={row ? (row.hsmid || "") : ""}
-                                onChange={(value) => setValue('hsmid', value)}
-                                error={errors?.hsmid?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.hsmid)}
-                                value={row ? (row.hsmid || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.type)}
-                                className="col-6"
-                                valueDefault={row ? (row.type || "") : ""}
-                                onChange={(value) => setValue('type', value.value)}
-                                error={errors?.type?.message}
-                                data={dataType}
-                                optionDesc="text"
-                                optionValue="value"
-                            />
-                            : <FieldView
-                                label={t(langKeys.type)}
-                                value={row ? (row.type || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.namespace)}
-                                className="col-12"
-                                valueDefault={row ? (row.namespace || "") : ""}
-                                onChange={(value) => setValue('namespace', value)}
-                                error={errors?.namespace?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.namespace)}
-                                value={row ? (row.namespace || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-12"
-                                valueDefault={row ? (row.description || "") : ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.category)}
-                                className="col-12"
-                                valueDefault={row ? (row.category || "") : ""}
-                                onChange={(value) => setValue('category', value.domainvalue)}
-                                error={errors?.category?.message}
-                                data={dataCategory}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.category)}
-                                value={row ? (row.category || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-12"
-                                valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
+const dataButtonType = [
+    { value: "url", text: "url" }, // Setear en diccionario los text
+    { value: "quick_reply", text: "quickreply" }, // Setear en diccionario los text
+];
 
 const MessageTemplates: FC = () => {
     const dispatch = useDispatch();
@@ -270,9 +82,13 @@ const MessageTemplates: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true
+                Header: t(langKeys.creationdate),
+                accessor: 'createdate',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return new Date(new Date(row.createdate).getTime() - (new Date().getTimezoneOffset() / 60)).toLocaleDateString()
+                }
             },
             {
                 Header: t(langKeys.type),
@@ -280,13 +96,8 @@ const MessageTemplates: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.category),
-                accessor: 'category',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.hsmid),
-                accessor: 'hsmid',
+                Header: t(langKeys.name),
+                accessor: 'name',
                 NoFilter: true
             },
             {
@@ -295,8 +106,8 @@ const MessageTemplates: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.message),
-                accessor: 'message',
+                Header: t(langKeys.status),
+                accessor: 'status',
                 NoFilter: true
             },
             {
@@ -325,7 +136,7 @@ const MessageTemplates: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("CATEGORIAHSM"),
-            getValuesFromDomain("ESTADOGENERICO")
+            getValuesFromDomain("LANGUAGE")
         ]));
         return () => {
             dispatch(resetMain());
@@ -405,5 +216,427 @@ const MessageTemplates: FC = () => {
             />
         )
 }
+
+const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+    const classes = useStyles();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+
+    const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row ? row.id : 0,
+            description: row ? (row.description || '') : '',
+            type: row ? row.type : 'SMS',
+            status: row ? row.status : 'ACTIVO',
+            name: row ? row.name : '',
+            namespace: row ? row.namespace : '',
+            category: row ? row.category : '',
+            language: row ? row.language : '',
+            templatetype: row ? row.templatetype : 'STANDARD',
+            headerenabled: row ? row.headerenabled : true,
+            headertype: row ? row.headertype : 'text',
+            header: row ? row.header : '',
+            body: row ? row.body : '',
+            footerenabled: row ? row.footerenabled : true,
+            footer: row ? row.footer : '',
+            buttonsenabled: row ? row.footerenabled : true,
+            buttons: row ? row.buttons : [{ title: '', type: '', payload: '' }],
+            operation: row ? "EDIT" : "INSERT"
+        }
+    });
+    
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('templatetype') === 'STANDARD');
+    
+    React.useEffect(() => {
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.messagetemplate).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(insMessageTemplate(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const onChangeMessageType = (data: Dictionary) => {
+        setValue('type', data?.value || '', { shouldValidate: true });
+        switch (data?.value || 'SMS') {
+            case 'SMS':
+                onChangeTemplateType({ value: 'STANDARD' });
+                setTemplateTypeDisabled(true);
+                onClickHeaderToogle({value: false});
+                onClickFooterToogle({value: false});
+                onClickButtonsToogle({value: false});
+                break;
+            case 'HSM':
+                setTemplateTypeDisabled(false);    
+                break;
+        }
+    }
+
+    const onChangeTemplateType = (data: Dictionary) => {
+        setValue('templatetype', data?.value || '', { shouldValidate: true });
+    }
+
+    const onClickHeaderToogle = ({ value } : { value? : Boolean | null} = {}) => {
+        if (value)
+            setValue('headerenabled', value, { shouldValidate: true })
+        else
+            setValue('headerenabled', !getValues('headerenabled'), { shouldValidate: true });
+    }
+
+    const onClickFooterToogle = ({ value } : { value? : Boolean | null} = {}) => {
+        if (value)
+            setValue('footerenabled', value, { shouldValidate: true })
+        else
+            setValue('footerenabled', !getValues('footerenabled'), { shouldValidate: true });
+    }
+
+    const onClickButtonsToogle = ({ value } : { value? : Boolean | null} = {}) => {
+        if (value)
+            setValue('buttonsenabled', value, { shouldValidate: true })
+        else
+            setValue('buttonsenabled', !getValues('buttonsenabled'), { shouldValidate: true });
+    }
+
+    const onChangeHeaderType = (data: Dictionary) => {
+        setValue('headertype', data?.value || '', { shouldValidate: true });
+    }
+
+    const onChangeButton = (index: number, param: string, value: string) => {
+        setValue(`buttons.${index}.${param}`, value, { shouldValidate: true });
+    }
+
+    const onClickAddButton = () => {
+        if (getValues('buttons') && getValues('buttons').length < 3)
+            setValue('buttons', [...getValues('buttons'), { title: '', type: '', payload: '' }], { shouldValidate: true })
+    }
+
+    return (
+        <div style={{ width: '100%' }}>
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
+            <TemplateBreadcrumbs
+                breadcrumbs={arrayBread}
+                handleClick={setViewSelected}
+            />
+            <TitleDetail
+                title={row ? `${row.hsmid}` : t(langKeys.newmessagetemplate)}
+            />
+            <form onSubmit={onSubmit}>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.messagetype)}
+                                className="col-12"
+                                valueDefault={row?.type || "SMS"}
+                                onChange={onChangeMessageType}
+                                error={errors?.type?.message}
+                                data={dataMessageType}
+                                optionDesc="text"
+                                optionValue="value"
+                            />
+                            : <FieldView
+                                label={t(langKeys.messagetype)}
+                                value={row ? (row.type || "") : ""}
+                                className="col-12"
+                        />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.name)}
+                                className="col-12"
+                                valueDefault={row?.name || ""}
+                                onChange={(value) => setValue('name', value)}
+                                error={errors?.name?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.name)}
+                                value={row ? (row.name || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.category)}
+                                className="col-6"
+                                valueDefault={row?.category || ""}
+                                onChange={(value) => setValue('category', value?.domainvalue)}
+                                error={errors?.category?.message}
+                                data={dataCategory}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.category)}
+                                value={row ? (row.category || "") : ""}
+                                className="col-6"
+                        />}
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.language)}
+                                className="col-6"
+                                valueDefault={row ? (row.language || "") : ""}
+                                onChange={(value) => setValue('language', value?.domainvalue)}
+                                error={errors?.language?.message}
+                                data={dataLanguage}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.language)}
+                                value={row ? (row.language || "") : ""}
+                                className="col-6"
+                        />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.templatetype)}
+                                className="col-6"
+                                valueDefault={row?.templatetype || 'STANDARD'}
+                                onChange={onChangeTemplateType}
+                                error={errors?.templatetype?.message}
+                                data={dataTemplateType}
+                                optionDesc="text"
+                                optionValue="value"
+                                disabled={templateTypeDisabled}
+                            />
+                            : <FieldView
+                                label={t(langKeys.templatetype)}
+                                value={row ? (row.templatetype || "") : ""}
+                                className="col-6"
+                        />}
+                    </div>
+                    { getValues('templatetype') === 'MULTIMEDIA' ?
+                    <div className="row-zyx">
+                        {edit ? 
+                            <React.Fragment>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    className="col-3"
+                                    style={{ backgroundColor: getValues('headerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    onClick={() => onClickHeaderToogle()}
+                                >{t(langKeys.header)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    className="col-3"
+                                    style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
+                                >{t(langKeys.body)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    className="col-3"
+                                    style={{ backgroundColor: getValues('footerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    onClick={() => onClickFooterToogle()}
+                                >{t(langKeys.footer)}</Button>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    className="col-3"
+                                    style={{ backgroundColor: getValues('buttonsenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    onClick={() => onClickButtonsToogle()}
+                                >{t(langKeys.buttons)}</Button>
+                            </React.Fragment>
+                        : null }
+                    </div>
+                    : null}
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                    && getValues('headerenabled')) ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <React.Fragment>
+                                <FieldSelect
+                                label={t(langKeys.headertype)}
+                                className="col-4"
+                                valueDefault={getValues('headertype')}
+                                onChange={onChangeHeaderType}
+                                error={errors?.header?.message}
+                                data={dataHeaderType}
+                                optionDesc="text"
+                                optionValue="value"
+                                />
+                                <FieldEdit
+                                label={t(langKeys.header)}
+                                className="col-8"
+                                valueDefault={row ? (row.header || "") : ""}
+                                onChange={(value) => setValue('header', value)}
+                                error={errors?.header?.message}
+                                disabled={getValues('headertype') === 'text'}
+                            />
+                            </React.Fragment>
+                            : <FieldView
+                            label={t(langKeys.header)}
+                            value={row ? (row.header || "") : ""}
+                            className="col-12"
+                            />
+                        }
+                    </div>
+                    : null}
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEditMulti
+                            label={t(langKeys.body)}
+                            className="col-12"
+                            valueDefault={row ? (row.body || "") : ""}
+                            onChange={(value) => setValue('body', value)}
+                            error={errors?.body?.message}
+                            maxLength={1024}
+                            />
+                            : <FieldView
+                                label={t(langKeys.body)}
+                                value={row ? (row.body || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                    && getValues('footerenabled')) ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEditMulti
+                                label={t(langKeys.footer)}
+                                className="col-12"
+                                valueDefault={row ? (row.footer || "") : ""}
+                                onChange={(value) => setValue('footer', value)}
+                                error={errors?.footer?.message}
+                                maxLength={1024}
+                            />
+                            : <FieldView
+                            label={t(langKeys.footer)}
+                            value={row ? (row.footer || "") : ""}
+                            className="col-12"
+                        />}
+                    </div>
+                    : null}
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                    && getValues('buttonsenabled')) ?
+                    <div className="row-zyx">
+                        <FieldView
+                        label={t(langKeys.buttons)}
+                        className="col-12"/>
+                        {edit ?
+                            <React.Fragment>
+                            {getValues('buttons').map((btn: any, i: number) => {
+                                return (
+                                    <div className="col-4">
+                                        <FieldEdit
+                                        label={t(langKeys.title)}
+                                        valueDefault={btn?.title || ""}
+                                        onChange={(value) => onChangeButton(i, 'title', value)}
+                                        // error={errors?.title?.message}
+                                        />
+                                        <FieldEdit
+                                        label={t(langKeys.type)}
+                                        valueDefault={btn?.type || ""}
+                                        onChange={(value) => onChangeButton(i, 'type', value)}
+                                        // error={errors?.type?.message}
+                                        />
+                                        <FieldEdit
+                                        label={t(langKeys.payload)}
+                                        valueDefault={btn?.payload || ""}
+                                        onChange={(value) => onChangeButton(i, 'payload', value)}
+                                        // error={errors?.payload?.message}
+                                        />
+                                    </ div>
+                                )
+                            })}
+                            {
+                                getValues('buttons').length < 3 &&
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    className="col-3"
+                                    style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
+                                    onClick={() => onClickAddButton()}
+                                >+</Button>
+                            }
+                            </React.Fragment>
+                            :
+                            getValues('buttons').forEach((btn: any, i: number) => {
+                                <div>
+                                    <FieldView
+                                        label={t(langKeys.title)}
+                                        value={btn?.title || ""}
+                                        className="col-12"
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.type)}
+                                        value={btn?.type || ""}
+                                        className="col-12"
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.payload)}
+                                        value={btn?.payload || ""}
+                                        className="col-12"
+                                    />
+                                </div>
+                            })
+                        }
+                    </div>
+                    : null}
+                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+
 
 export default MessageTemplates;

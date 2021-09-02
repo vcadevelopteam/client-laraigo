@@ -1,7 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import { Dictionary } from "@types";
+import { AntTab } from 'components';
+import Tabs from '@material-ui/core/Tabs';
+import TextField from '@material-ui/core/TextField';
+import { SearchIcon } from 'icons';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 export interface ChatProps {
 }
@@ -160,10 +166,58 @@ const ItemTicket: React.FC<{ classes: any, item: Dictionary }> = ({ classes, ite
 
 const Chat: React.FC<ChatProps> = () => {
     const classes = useStyles();
+    const [showSearch, setShowSearch] = useState(false)
+    const [pageSelected, setPageSelected] = useState(1)
+
 
     return (
         <div className={classes.containerPanel}>
             <div className={classes.containerTickets}>
+                <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
+                    {!showSearch ?
+                        <>
+                            <Tabs
+                                value={pageSelected}
+                                indicatorColor="primary"
+                                variant="fullWidth"
+                                textColor="primary"
+                                style={{flex: 1}}
+                                onChange={(_, value) => setPageSelected(value)}
+                            >
+                                <AntTab label="Asigned" />
+                                <AntTab label="Pending" />
+                                <AntTab label="Paused" />
+                            </Tabs>
+                            <IconButton style={{ width: '50px' }} size="small" onClick={() => setShowSearch(true)} edge="end">
+                                <SearchIcon />
+                            </IconButton>
+                        </>
+                        :
+                        <TextField
+                            color="primary"
+                            fullWidth
+                            autoFocus
+                            style={{ margin: '8px 10px' }}
+                            onBlur={() => setShowSearch(false)}
+                            onChange={(e) => {
+                                // setvalue(e.target.value);
+                                // onChange && onChange(e.target.value);
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            // onClick={handleClickShowPassword}
+                                            edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                    }
+                </div>
                 {dataTickets.map(item => (
                     <ItemTicket
                         key={item.conversationid}
