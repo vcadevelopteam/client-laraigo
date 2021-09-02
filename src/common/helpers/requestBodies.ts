@@ -26,6 +26,11 @@ export const getOrgsByCorp = (orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const getUsersBySupervisor = (): IRequestBody => ({
+    method: "UFN_USERBYSUPERVISOR_SEL",
+    key: "UFN_USERBYSUPERVISOR_SEL",
+    parameters: {}
+})
 
 export const getRolesByOrg = (): IRequestBody => ({
     method: "UFN_ROLE_LST",
