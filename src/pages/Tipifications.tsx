@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
-    const [hasactionplan, setHasactionplan] = useState(row?.jobplan || false);
+    const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
     // let jobplan: any[] = [];
     // if (row) {
     //     if (row.jobplan) {
@@ -260,15 +260,15 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 <TemplateSwitch
                                     // className={classes.halfplace}
                                     label={t(langKeys.hasactionplan)}
-                                    valueDefault={hasactionplan}
-                                    onChange={(value) => setHasactionplan(value)}
+                                    valueDefault={showAddAction ? "x" : ""}
+                                    onChange={(value) => setShowAddAction(value)}
                                 /> :
                                 <FieldView
                                     label={t(langKeys.default_organization)}
                                     value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                 />
                             }
-                            {edit && hasactionplan &&
+                            {(edit && showAddAction) &&
                                 <div>
                                     <Button
                                         variant="contained"
@@ -285,13 +285,13 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                         <div className="row-zyx">
                             {
                                 // edit ? (
-                                //     hasactionplan ? (
+                                //     showAddAction ? (
                                 //         () => showactionplan()
                                 //     )
                                 //         : null
                                 // )
                                 //     : null
-                                (edit && hasactionplan) && jobplan.map((e: any) => (
+                                (edit && showAddAction) && jobplan.map((e: any) => (
                                     <div>lol</div>
                                 ))
                             }
