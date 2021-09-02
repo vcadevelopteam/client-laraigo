@@ -8,6 +8,8 @@ import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain } from '
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
+import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -45,6 +47,39 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    mediabutton: {
+        margin: theme.spacing(1),
+        flexBasis: 0,
+        flexGrow: 1,
+        padding: 0,
+        minHeight: '30px',
+        opacity: 0.8,
+        '&:hover': {
+            opacity: 1
+        }
+    },
+    headerType: {
+        flexGrow: 0,
+        flexBasis: '130px',
+        marginRight: '10px',
+    },
+    headerText: {
+        flexGrow: 1,
+        flexBasis: '200px',
+    },
+    addButton: {
+        minWidth: 'max-content',
+        minHeight: '30px',
+        flexBasis: 0,
+        flexGrow: 0,
+    },
+    buttonTitle: {
+        width: 'auto',
+        marginRight: '0.25rem',
+    },
+    mb1: {
+        marginBottom: '0.25rem',
+    }
 }));
 
 const dataMessageType = [
@@ -135,7 +170,7 @@ const MessageTemplates: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("CATEGORIAHSM"),
+            getValuesFromDomain("MESSAGETEMPLATECATEGORY"),
             getValuesFromDomain("LANGUAGE")
         ]));
         return () => {
@@ -245,8 +280,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             body: row ? row.body : '',
             footerenabled: row ? row.footerenabled : true,
             footer: row ? row.footer : '',
-            buttonsenabled: row ? row.footerenabled : true,
-            buttons: row ? row.buttons : [{ title: '', type: '', payload: '' }],
+            buttonsenabled: row ? row.buttonsenabled : true,
+            buttons: row ? JSON.parse(row.buttons) : [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -256,6 +291,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     React.useEffect(() => {
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -296,9 +333,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             case 'SMS':
                 onChangeTemplateType({ value: 'STANDARD' });
                 setTemplateTypeDisabled(true);
-                onClickHeaderToogle({value: false});
-                onClickFooterToogle({value: false});
-                onClickButtonsToogle({value: false});
                 break;
             case 'HSM':
                 setTemplateTypeDisabled(false);    
@@ -344,15 +378,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             setValue('buttons', [...getValues('buttons'), { title: '', type: '', payload: '' }], { shouldValidate: true })
     }
 
+    const onClickRemoveButton = () => {
+        let btns = getValues('buttons');
+        if (btns && btns.length > 0)
+        {
+            setValue('buttons', btns.slice(0,-1) , { shouldValidate: true });
+        }
+    }
+
     return (
         <div style={{ width: '100%' }}>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.hsmid}` : t(langKeys.newmessagetemplate)}
+                title={row ? `${row.name}` : t(langKeys.newmessagetemplate)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
@@ -427,8 +468,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.templatetype)}
-                                className="col-6"
-                                valueDefault={row?.templatetype || 'STANDARD'}
+                                className="col-12"
+                                valueDefault={getValues('templatetype')}
                                 onChange={onChangeTemplateType}
                                 error={errors?.templatetype?.message}
                                 data={dataTemplateType}
@@ -439,7 +480,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             : <FieldView
                                 label={t(langKeys.templatetype)}
                                 value={row ? (row.templatetype || "") : ""}
-                                className="col-6"
+                                className="col-12"
                         />}
                     </div>
                     { getValues('templatetype') === 'MULTIMEDIA' ?
@@ -449,27 +490,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    className="col-3"
+                                    className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('headerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
                                     onClick={() => onClickHeaderToogle()}
                                 >{t(langKeys.header)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    className="col-3"
+                                    className={classes.mediabutton}
                                     style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
                                 >{t(langKeys.body)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    className="col-3"
+                                    className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('footerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
                                     onClick={() => onClickFooterToogle()}
                                 >{t(langKeys.footer)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"
-                                    className="col-3"
+                                    className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('buttonsenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
                                     onClick={() => onClickButtonsToogle()}
                                 >{t(langKeys.buttons)}</Button>
@@ -484,7 +525,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             <React.Fragment>
                                 <FieldSelect
                                 label={t(langKeys.headertype)}
-                                className="col-4"
+                                className={classes.headerType}
                                 valueDefault={getValues('headertype')}
                                 onChange={onChangeHeaderType}
                                 error={errors?.header?.message}
@@ -494,11 +535,10 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 />
                                 <FieldEdit
                                 label={t(langKeys.header)}
-                                className="col-8"
+                                className={classes.headerText}
                                 valueDefault={row ? (row.header || "") : ""}
                                 onChange={(value) => setValue('header', value)}
                                 error={errors?.header?.message}
-                                disabled={getValues('headertype') === 'text'}
                             />
                             </React.Fragment>
                             : <FieldView
@@ -535,7 +575,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 valueDefault={row ? (row.footer || "") : ""}
                                 onChange={(value) => setValue('footer', value)}
                                 error={errors?.footer?.message}
-                                maxLength={1024}
+                                rows={2}
+                                maxLength={60}
                             />
                             : <FieldView
                             label={t(langKeys.footer)}
@@ -546,29 +587,62 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     : null}
                     {(getValues('templatetype') === 'MULTIMEDIA'
                     && getValues('buttonsenabled')) ?
-                    <div className="row-zyx">
+                    <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
                         <FieldView
                         label={t(langKeys.buttons)}
-                        className="col-12"/>
+                        className={classes.buttonTitle}/>
+                        {
+                            edit && getValues('buttons').length < 3 &&
+                            <Button
+                                variant="outlined"
+                                type="button"
+                                color="primary"
+                                className={classes.addButton}
+                                startIcon={<AddIcon color="primary" />}
+                                onClick={() => onClickAddButton()}
+                            >{t(langKeys.addbutton)}</Button>
+                        }
+                        {
+                            edit && getValues('buttons').length > 0 &&
+                            <Button
+                                variant="outlined"
+                                type="button"
+                                color="primary"
+                                className={classes.addButton}
+                                startIcon={<RemoveIcon color="primary" />}
+                                onClick={() => onClickRemoveButton()}
+                            >{t(langKeys.removebutton)}</Button>
+                        }
+                    </div>
+                    : null}
+                    {(getValues('templatetype') === 'MULTIMEDIA'
+                    && getValues('buttonsenabled')) ?
+                    <div className="row-zyx">
                         {edit ?
                             <React.Fragment>
                             {getValues('buttons').map((btn: any, i: number) => {
                                 return (
-                                    <div className="col-4">
+                                    <div key={`btn${i}`} className="col-4">
                                         <FieldEdit
                                         label={t(langKeys.title)}
+                                        className={classes.mb1}
                                         valueDefault={btn?.title || ""}
                                         onChange={(value) => onChangeButton(i, 'title', value)}
                                         // error={errors?.title?.message}
                                         />
-                                        <FieldEdit
+                                        <FieldSelect
                                         label={t(langKeys.type)}
+                                        className={classes.mb1}
                                         valueDefault={btn?.type || ""}
-                                        onChange={(value) => onChangeButton(i, 'type', value)}
+                                        onChange={(value) => onChangeButton(i, 'type', value?.value)}
                                         // error={errors?.type?.message}
+                                        data={dataButtonType}
+                                        optionDesc="text"
+                                        optionValue="value"
                                         />
                                         <FieldEdit
                                         label={t(langKeys.payload)}
+                                        className={classes.mb1}
                                         valueDefault={btn?.payload || ""}
                                         onChange={(value) => onChangeButton(i, 'payload', value)}
                                         // error={errors?.payload?.message}
@@ -576,16 +650,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     </ div>
                                 )
                             })}
-                            {
-                                getValues('buttons').length < 3 &&
-                                <Button
-                                    variant="contained"
-                                    type="button"
-                                    className="col-3"
-                                    style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
-                                    onClick={() => onClickAddButton()}
-                                >+</Button>
-                            }
                             </React.Fragment>
                             :
                             getValues('buttons').forEach((btn: any, i: number) => {
@@ -609,6 +673,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             })
                         }
                     </div>
+                    
                     : null}
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <Button

@@ -176,6 +176,8 @@ export const langKeys = {
     title: 'title',
     payload: 'payload',
     message: 'Mensaje',
+    addbutton: 'addbutton',
+    removebutton: 'removebutton',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
