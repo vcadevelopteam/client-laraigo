@@ -1,13 +1,13 @@
 export const langKeys = {
     dashboard: 'dashboard',
     dashboard_plural: 'dashboard_plural',
-
+    actionplan:'actionplan',
     organization: 'organization',
     organization_plural: 'organization_plural',
-
+    completedesc: 'completedesc',
     report: 'report',
     report_plural: 'report_plural',
-
+    tag:'tag',
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
     parent:'parent',
@@ -71,7 +71,7 @@ export const langKeys = {
     usertmepercentmax:'usertmepercentmax',
     usertmo:'usertmo',
     usertmopercentmax:'usertmopercentmax',
-
+    hasactionplan:'hasactionplan',
     whitelist: 'whitelist',
 
     quantity: 'quantity',

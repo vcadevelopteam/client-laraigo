@@ -308,7 +308,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 label={t(langKeys.status)}
                                 className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value.domainvalue)}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
