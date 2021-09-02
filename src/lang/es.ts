@@ -99,16 +99,17 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     ticketCreatedOn: 'Ticket Creado',
     parent:'Padre',
     company: 'Compañia',
-
+    tag:'Tag',
     billingGroup: 'Grupo de facturación',
     registerCode: 'Código de registro',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
     doubleAuthentication: 'Doble autenticación',
-
+    completedesc: 'Descripción completa',
+    actionplan:'Plan de acción',
     group: 'Grupo',
     group_plural: 'Grupos',
-
+    hasactionplan:'Tiene Plan de Acción',
     action: 'Acción',
     action_plural: 'Acciones',
 

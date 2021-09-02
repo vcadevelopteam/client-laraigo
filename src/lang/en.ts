@@ -122,9 +122,10 @@ const translation: LangKeys = {
     parent:'Parent',
     quantity: 'Quantity',
     quantity_plural: 'quantities',
-
+    tag:'Tag',
     validationtext: 'Text Validation',
-
+    completedesc: 'Complete description',
+    actionplan:'Action plan',
     role: 'Role',
     role_plural: 'Roles',
 
@@ -219,6 +220,7 @@ const translation: LangKeys = {
     login_with_facebook: 'Login with Facebook',
     login_with_google: 'Login with Google',
 
+    hasactionplan:'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
     error_divison_by_zero: '22012: There was an error, contact the administrator ',
