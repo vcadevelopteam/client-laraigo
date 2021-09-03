@@ -3,7 +3,7 @@ import React, { FC, useState, useEffect } from 'react'; // we need this to make 
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import ChatPanel from 'components/inbox/ChatPanel'
+import InboxPanel from 'components/inbox/InboxPanel'
 import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
@@ -11,7 +11,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getCollection, resetMain } from 'store/main/actions';
+import { getCollection } from 'store/main/actions';
 import { AntTab } from 'components';
 import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
@@ -225,12 +225,13 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 
     const onChangeSearchAgent = (e: any) => {
         setSearch(e.target.value)
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, e.target.value));
+        // setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, e.target.value));
     }
 
     useEffect(() => {
         setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
-    }, [pageSelected])
+        return () => setAgentsToShow(dataAgents)
+    }, [pageSelected, search])
 
     return (
         <div className={classes.containerAgents} style={{ backgroundColor: 'white' }}>
@@ -287,7 +288,7 @@ const Supervisor: FC = () => {
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
-            <ChatPanel />
+            <InboxPanel />
         </div>
     )
 }
