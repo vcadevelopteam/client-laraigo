@@ -376,6 +376,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
                                         </div>
                                         :null}
+                                        <hr></hr>
                                     </div>
                                 ))
                             }
