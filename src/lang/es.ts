@@ -189,6 +189,14 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     addbutton: 'Añadir botón',
     removebutton: 'Quitar botón',
 
+    integrationmanager: 'Administrador de Integraciones',
+    integrationmanager_plural: 'Administrador de Integraciones',
+    newintegrationmanager: 'Nuevo Administrador de Integraciones',
+    requesttype: 'Tipo de solicitud',
+    url: 'Url',
+    authorization: 'Autorización',
+    token: 'Token',
+
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 

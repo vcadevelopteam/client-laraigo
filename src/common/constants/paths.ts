@@ -21,7 +21,8 @@ const paths = {
     DOMAINS: '/extras/domains',
     PERSON: '/extras/person',
     MESSAGETEMPLATE: '/extras/messagetemplate',
-    TIPIFICATIONS: '/extras/tipifications'
+    TIPIFICATIONS: '/extras/tipifications',
+    INTEGRATIONMANAGER: '/extras/integrationmanager',
 };
 
 export default paths;
