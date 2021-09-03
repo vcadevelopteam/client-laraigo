@@ -878,6 +878,21 @@ const Users: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.name),
                 accessor: 'firstname',
                 NoFilter: true
@@ -912,22 +927,7 @@ const Users: FC = () => {
                 accessor: 'status',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         []
     );

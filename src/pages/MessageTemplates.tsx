@@ -118,6 +118,21 @@ const MessageTemplates: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'id',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.creationdate),
                 accessor: 'createdate',
                 NoFilter: true,
@@ -146,22 +161,6 @@ const MessageTemplates: FC = () => {
                 accessor: 'status',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'id',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            }
         ],
         []
     )

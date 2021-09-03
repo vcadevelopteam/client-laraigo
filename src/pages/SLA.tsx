@@ -423,6 +423,21 @@ const SLA: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'slaid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.company),
                 accessor: 'company',
                 NoFilter: true
@@ -486,22 +501,6 @@ const SLA: FC = () => {
                 Header: t(langKeys.usertmopercentmax),
                 accessor: 'usertmopercentmax',
                 NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
-                accessor: 'slaid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
             },
         ],
         []

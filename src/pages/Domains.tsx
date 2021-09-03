@@ -179,7 +179,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                 NoFilter: true
             },
             {
-                Header: t(langKeys.action),
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
@@ -451,6 +450,21 @@ const Domains: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.domain),
                 accessor: 'domainname',
                 NoFilter: true
@@ -474,22 +488,6 @@ const Domains: FC = () => {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
             },
         ],
         []

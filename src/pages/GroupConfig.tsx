@@ -248,6 +248,22 @@ const GroupConfig: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.domain),
                 accessor: 'domaindesc',
                 NoFilter: true
@@ -272,23 +288,7 @@ const GroupConfig: FC = () => {
                 accessor: 'validationtext',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         []
     );

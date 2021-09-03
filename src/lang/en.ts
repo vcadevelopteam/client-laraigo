@@ -192,7 +192,7 @@ const translation: LangKeys = {
     message: 'Mensaje',
     addbutton: 'Add button',
     removebutton: 'Remove Button',
-
+    variable:"Variable",
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
     successful_register: 'Registered successfully',
@@ -202,6 +202,7 @@ const translation: LangKeys = {
     save: 'Save',
     setpassword: 'Set password',
     select: "Select",
+    data:"Data",
     cancel: 'Cancel',
     default_application: 'Default application',
     default_organization: 'Default organization',
