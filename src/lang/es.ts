@@ -99,7 +99,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     ticketCreatedOn: 'Ticket Creado',
     parent:'Padre',
     company: 'Compañia',
-
+    communicationchannel:'Canal de comunicación',
     billingGroup: 'Grupo de facturación',
     registerCode: 'Código de registro',
     docNumber: 'Número de documento',
