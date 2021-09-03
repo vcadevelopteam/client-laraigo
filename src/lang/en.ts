@@ -91,6 +91,7 @@ const translation: LangKeys = {
     provider: 'Supplier',
     sla: 'Service level agreement',
     communicationchanneldesc:'Channel name',
+    communicationchannel:'Communication channel',
     tme:'TME',
     tmepercentobj: 'TME% objetive',
     tmopercentobj: 'TMO% objetive',

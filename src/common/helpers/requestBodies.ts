@@ -398,3 +398,12 @@ export const insIntegrationManager = (
         operation
     }
 });
+
+export const getChannelSel = (id: number): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNEL_SEL",
+    parameters: {
+        communicationchannelid: id,
+        personcommunicationchannel: "",
+        all: id === 0,
+    }
+});
