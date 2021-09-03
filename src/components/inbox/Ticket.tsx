@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import Avatar from '@material-ui/core/Avatar';
-import { Dictionary, ITicket } from "@types";
+import { ITicket } from "@types";
 import { GetIcon } from 'components'
-import { count } from 'console';
 
 const secondsToTime = (seconds: number): string => {
     const hh = Math.floor(seconds / 3600);
@@ -35,8 +34,11 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
     )
 }
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket }> = ({ classes, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => (
-    <div className={classes.containerItemTicket}>
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => (
+    <div 
+        className={classes.containerItemTicket}
+        onClick={() => setTicketSelected(item)}
+    >
         <Avatar src={imageurldef} />
         <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
