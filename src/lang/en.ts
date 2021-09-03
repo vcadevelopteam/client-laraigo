@@ -200,6 +200,8 @@ const translation: LangKeys = {
     url: 'Url',
     authorization: 'Authorization',
     token: 'Token',
+    key: 'Key',
+    bodytype: 'Body Type',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',

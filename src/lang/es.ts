@@ -196,6 +196,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     url: 'Url',
     authorization: 'Autorización',
     token: 'Token',
+    key: 'Llave',
+    bodytype: 'Tipo de Cuerpo',
 
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',

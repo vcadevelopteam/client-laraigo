@@ -2,6 +2,7 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
+import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
 import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain } from 'common/helpers';
@@ -9,11 +10,11 @@ import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
+import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { NestedValue, useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -56,6 +57,25 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexBasis: '200px',
     },
+    labelButton1: {
+        width: 'auto',
+        marginRight: '0.25rem',
+    },
+    labelButton2: {
+        minWidth: 'max-content',
+        minHeight: '30px',
+        flexBasis: 0,
+        flexGrow: 0,
+    },
+    fieldRow: {
+        flexGrow: 1,
+        flexBasis: 0,
+        marginRight: '0.5rem'
+    },
+    fieldButton: {
+        flexGrow: 0,
+        flexBasis: 0,
+    }
 }));
 
 const dataIntegrationType = [
@@ -69,10 +89,15 @@ const dataMethodType = [
 ];
 
 const dataAuthorizationType = [
-    { value: "", text: "NO AUTH" }, // Setear en diccionario los text
+    { value: "NONE", text: "NO AUTH" }, // Setear en diccionario los text
     { value: "BASIC", text: "BASIC" }, // Setear en diccionario los text
     { value: "BEARER", text: "BEARER" }, // Setear en diccionario los text
 ];
+
+const dataBodyType = [
+    { value: "JSON", text: "JSON" }, // Setear en diccionario los text
+    { value: "URLENCODED", text: "URL encoded" }, // Setear en diccionario los text
+]
 
 const IntegrationManager: FC = () => {
     const dispatch = useDispatch();
@@ -206,6 +231,32 @@ const IntegrationManager: FC = () => {
         )
 }
 
+type AuthorizationType = {
+    type: string,
+    username?: string,
+    password?: string,
+    token?: string
+}
+
+type HeaderType = {
+    key: string;
+    value: any;
+}
+
+type FormFields = {
+    id: number,
+    description: string,
+    type: string,
+    status: string,
+    method: string,
+    url: string,
+    authorization: AuthorizationType,
+    headers: HeaderType[],
+    bodytype: string,
+    body: string,
+    operation: string
+}
+
 const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -216,41 +267,26 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const { register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm<{
-        id: number,
-        description: string,
-        type: string,
-        status: string,
-        method: string,
-        url: string,
-        authorization: NestedValue<{
-            type: string,
-            username?: string,
-            password?: string,
-            token?: string
-        }>,
-        headers: NestedValue<{
-            key: string;
-            value: any;
-        }[]>,
-        bodytype: string,
-        body: string,
-        operation: string
-    }>({
+    const { control, register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
             type: row ? row.type : 'STANDARD',
             status: row ? row.status : 'ACTIVO',
             method: row ? row.method : 'GET',
-            url: row ? row.url : 'url',
+            url: row ? row.url : '',
             authorization: row ? JSON.parse(row.authorization) : {},
-            headers: row ? JSON.parse(row.headers): [],
+            headers: row ? JSON.parse(row.headers) : [],
             bodytype: row ? row.bodytype : 'JSON',
             body: row ? row.body : '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
+
+    const { fields: headers } = useFieldArray({
+        control, // control props comes from useForm (optional: if you are using FormContext)
+        name: "headers", // unique name for your Field Array
+      });
 
     React.useEffect(() => {
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -290,10 +326,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         setValue('type', data?.value || '');
         switch (data?.value || 'STANDARD') {
             case 'STANDARD':
-                unregister([]);    
+                // unregister([]);    
                 break;
             case 'CUSTOM':
-                unregister(['method','url','authorization','headers','bodytype','body']);
+                // unregister(['method','url','authorization','headers','bodytype','body']);
                 break;
         }
     }
@@ -304,61 +340,33 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }
 
     const onChangeAuthorization = async (data: Dictionary) => {
-        setValue('method', data?.value || '');
-        await trigger('method');
+        setValue('authorization.type', data?.value || '');
+        await trigger('authorization.type');
     }
 
-    // const onClickHeaderToogle = async ({ value } : { value? : Boolean | null} = {}) => {
-    //     if (value)
-    //         setValue('headerenabled', value)
-    //     else
-    //         setValue('headerenabled', !getValues('headerenabled'));
-    //     await trigger('headerenabled');
-    // }
+    const onClickAddHeader = async () => {
+        if (getValues('headers'))
+            setValue('headers', [...getValues('headers'), { key: '', value: '' }])
+        await trigger('headers');
+    }
 
-    // const onClickFooterToogle = async ({ value } : { value? : Boolean | null} = {}) => {
-    //     if (value)
-    //         setValue('footerenabled', value)
-    //     else
-    //         setValue('footerenabled', !getValues('footerenabled'));
-    //     await trigger('footerenabled');
-    // }
+    const onClickDeleteHeader = async (index: number) => {
+        setValue('headers', getValues('headers')?.filter((x: any, i: number) => i !== index));
+        await trigger('headers');
+    }
 
-    // const onClickButtonsToogle = async ({ value } : { value? : Boolean | null} = {}) => {
-    //     if (value)
-    //         setValue('buttonsenabled', value)
-    //     else
-    //         setValue('buttonsenabled', !getValues('buttonsenabled'));
-    //     await trigger('buttonsenabled');
-    // }
+    const onChangeHeader = (index: number, param: "key" | "value", value: string) => {
+        setValue(`headers.${index}.${param}`, value);
+    }
 
-    // const onChangeHeaderType = async (data: Dictionary) => {
-    //     setValue('headertype', data?.value || '');
-    //     await trigger('headertype');
-    // }
-
-    // const onChangeButton = (index: number, param: string, value: string) => {
-    //     setValue(`buttons.${index}.${param}`, value);
-    // }
-
-    // const onClickAddButton = async () => {
-    //     if (getValues('buttons') && getValues('buttons').length < 3)
-    //         setValue('buttons', [...getValues('buttons'), { title: '', type: '', payload: '' }])
-    //     await trigger('buttons');
-    // }
-
-    // const onClickRemoveButton = async () => {
-    //     let btns = getValues('buttons');
-    //     if (btns && btns.length > 0)
-    //     {
-    //         unregister(`buttons.${btns.length - 1}`);
-    //         setValue('buttons', btns.filter((x: any, i: number) => i !== btns.length - 1));
-    //     }
-    //     await trigger('buttons');
-    // }
+    const onChangeBodyType = async (data: Dictionary) => {
+        setValue('bodytype', data?.value || '');
+        await trigger('bodytype');
+    }
 
     return (
         <div style={{ width: '100%' }}>
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
@@ -423,9 +431,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             {edit ?
                                 <FieldSelect
                                     label={t(langKeys.authorization)}
-                                    valueDefault={row?.authorization || ''}
+                                    valueDefault={row?.authorization || 'NONE'}
                                     onChange={onChangeAuthorization}
-                                    error={errors?.authorization?.message}
+                                    error={errors?.authorization?.type?.message}
                                     data={dataAuthorizationType}
                                     optionDesc="text"
                                     optionValue="value"
@@ -447,14 +455,14 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                             className="col-6"
                                             valueDefault={row?.authorization?.username || ""}
                                             onChange={(value) => setValue('authorization.username', value)}
-                                            error={errors?.authorization?.message}
+                                            error={errors?.authorization?.username?.message}
                                         />
                                         <FieldEdit
                                             label={t(langKeys.password)}
                                             className="col-6"
                                             valueDefault={row?.authorization?.password || ""}
                                             onChange={(value) => setValue('authorization.password', value)}
-                                            error={errors?.authorization?.message}
+                                            error={errors?.authorization?.password?.message}
                                         />
                                     </React.Fragment>
                                     :
@@ -480,22 +488,128 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 {edit ?
                                     <FieldEdit
                                         label={t(langKeys.token)}
-                                        className="col-6"
+                                        className="col-12"
                                         valueDefault={row?.authorization?.token || ""}
                                         onChange={(value) => setValue('authorization.token', value)}
-                                        error={errors?.authorization?.message}
+                                        error={errors?.authorization?.token?.message}
                                     />
                                     :
                                     <FieldView
                                         label={t(langKeys.token)}
                                         value={row?.authorization?.token || ""}
-                                        className="col-6"
+                                        className="col-12"
                                     />
                                 }
                             </div>
                             :
                             null
                         }
+                        <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
+                            <React.Fragment>
+                                <FieldView
+                                    label={t(langKeys.header)}
+                                    className={classes.labelButton1}
+                                />
+                                {edit ?
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        color="primary"
+                                        className={classes.labelButton2}
+                                        startIcon={<AddIcon color="primary" />}
+                                        onClick={() => onClickAddHeader()}
+                                    >{t(langKeys.addbutton)}</Button>
+                                    :
+                                    null
+                                }
+                            </React.Fragment>
+                        </div>
+                        {edit ?
+                        headers?.map((header: any, i: number) => {
+                            return (
+                                <div className="row-zyx" key={header.id}>
+                                    <FieldEdit
+                                        label={t(langKeys.key)}
+                                        className={classes.fieldRow}
+                                        valueDefault={header?.key || ""}
+                                        onChange={(value) => onChangeHeader(i, 'key', value)}
+                                        error={errors?.headers?.[i]?.key?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.value)}
+                                        className={classes.fieldRow}
+                                        valueDefault={header?.value || ""}
+                                        onChange={(value) => onChangeHeader(i, 'value', value)}
+                                        error={errors?.headers?.[i]?.value?.message}
+                                    />
+                                    <IconButton
+                                        size="small"
+                                        className={classes.fieldButton}
+                                        onClick={() => onClickDeleteHeader(i)}>
+                                        <DeleteIcon style={{ color: '#000000'}} />
+                                    </IconButton>
+                                </div>
+                            )})
+                        : headers?.map((header: any, i: number) => {
+                            return (
+                                <div className="row-zyx" key={header.id}>
+                                    <FieldView
+                                        label={t(langKeys.key)}
+                                        value={header?.key || ""}
+                                        className="col-12"
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.value)}
+                                        value={header?.value || ""}
+                                        className="col-12"
+                                    />
+                                </div>
+                            )
+                        })
+                        }
+                        {getValues('method') === 'POST' ?
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldSelect
+                                    label={t(langKeys.bodytype)}
+                                    className="col-12"
+                                    valueDefault={getValues('bodytype')}
+                                    onChange={onChangeBodyType}
+                                    error={errors?.bodytype?.message}
+                                    data={dataBodyType}
+                                    optionDesc="text"
+                                    optionValue="value"
+                                />
+                                :
+                                <FieldView
+                                    label={t(langKeys.body)}
+                                    value={row ? (row.body || "") : ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        : null}
+                        {(getValues('method') === 'POST'
+                        && getValues('bodytype') === 'JSON') ?
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldEditMulti
+                                    label={t(langKeys.body)}
+                                    className="col-12"
+                                    valueDefault={row ? (row.body || "") : ""}
+                                    onChange={(value) => setValue('body', value)}
+                                    error={errors?.body?.message}
+                                    rows={8}
+                                />
+                                :
+                                <FieldView
+                                    label={t(langKeys.body)}
+                                    value={row ? (row.body || "") : ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        : null}
                     </React.Fragment>
                     : null}
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>

@@ -188,6 +188,8 @@ export const langKeys = {
     url: 'url',
     authorization: 'authorization',
     token: 'token',
+    key: 'key',
+    bodytype: 'bodytype',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
