@@ -1,18 +1,8 @@
-import React, { FC } from "react";
-import { useTranslation } from "react-i18next";
-import { langKeys } from "lang/keys";
-import TableZyx from "components/fields/table-paginated";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
+import React, { FC, useState } from "react";
 import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
-import clsx from 'clsx';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon } from "@material-ui/icons";
-import { useState } from "react";
-
-interface StepHeaderProps {
-    step: number;
-    count: number;
-}
+import { useHistory, useRouteMatch } from "react-router";
+import paths from "common/constants/paths";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -22,7 +12,7 @@ interface ChannelOption {
 
 const useChannelAddStyles = makeStyles(theme => ({
     root: {
-        maxWidth: 815,
+        // maxWidth: 815,
         width: 'inherit',
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -33,16 +23,15 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexGrow: 1,
         backgroundColor: 'inherit',
         textAlign: 'start',
-        padding: '35px 74px',
+        padding: '0 34px',
         display: 'flex',
         flexDirection: 'column',
     },
     title: {
         fontWeight: 500,
         fontSize: 32,
+        margin: '20px 0',
         color: theme.palette.primary.main,
-        margin: '0 32px',
-        textAlign: 'center',
     },
     subtitle: {
         margin: '8px 0 8px 4px',
@@ -68,78 +57,10 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-const useStepHeaderStyles = makeStyles(theme => ({
-    root: {
-        width: 'inherit',
-        height: 99,
-        display: 'flex',
-        flexDirection: 'row',
-        backgroundColor: 'white',
-        flexWrap: 'wrap',
-    },
-    stepContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        margin: 0,
-        alignItems: 'center',
-    },
-    stepSeparatorLine: {
-        height: 1,
-        width: '100%',
-    },
-    stepCountGlobe: {
-        margin: '0 7px',
-        height: 43,
-        width: 43,
-        borderRadius: 43 / 2,
-        backgroundColor: '#E5E5E5',
-        color: '#A59F9F',
-        textAlign: 'center',
-        display: 'flex',
-        verticalAlign: 'middle',
-    },
-    currentStep: {
-        color: 'white',
-        backgroundColor: theme.palette.primary.main,
-    },
-    stepCountText: {
-       fontWeight: 700, 
-       fontSize: 24,
-       margin: 'auto',
-    },
-}));
-
-/**Step counting from 0 */
-const StepHeader: FC<StepHeaderProps> = ({ count, step: currentStep }) => {
-    const classes = useStepHeaderStyles();
-
-    const StepGlobe: FC<{ step: number }> = ({ step }) => {
-        const whiteOrGrey = (statement: boolean) => statement ? 'white' : '#D1CBCB';
-
-        return (
-            <div className={classes.stepContainer} style={{ width: `calc(100% / ${count})` }}>
-                <div style={{ flexGrow: 1 }}>
-                    <div className={classes.stepSeparatorLine} style={{ backgroundColor: whiteOrGrey(step == 0) }} />
-                </div>
-                <div className={clsx(classes.stepCountGlobe, step == currentStep && classes.currentStep, {  })}>
-                    <label className={classes.stepCountText}>{step + 1}</label>
-                </div>
-                <div style={{ flexGrow: 1 }}>
-                    <div className={classes.stepSeparatorLine} style={{ backgroundColor: whiteOrGrey(step == count - 1) }} />
-                </div>
-            </div>
-        );
-    };
-
-    return (
-        <Box className={classes.root}>
-            {Array.apply(null, Array(count)).map((_, i) => <StepGlobe key={`step_globe_${i}`} step={i} />)}
-        </Box>
-    );
-};
-
-export const ChannelAddStep1: FC = () => {
+export const ChannelAdd: FC = () => {
     const classes = useChannelAddStyles();
+    const history = useHistory();
+    const match = useRouteMatch<{ id: string }>();
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -177,8 +98,8 @@ export const ChannelAddStep1: FC = () => {
     const businessChannelOptions: ChannelOption[] = [
         {
             icon: <FacebookIcon color="inherit" />,
-            label: 'Facebook',
-            onClick: () => {},
+            label: 'Chat Web',
+            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.resolve(match.params.id)),
         },
         {
             icon: <InstagramIcon color="inherit" />,
@@ -211,7 +132,6 @@ export const ChannelAddStep1: FC = () => {
 
     return (
         <Box className={classes.root}>
-            <StepHeader count={4} step={1} />
             <div className={classes.content}>
                 <h2 className={classes.title}>We want to know how you communicate</h2>
                 <div style={{ height: 29 }} />
@@ -225,27 +145,5 @@ export const ChannelAddStep1: FC = () => {
                 </div>
             </div>
         </Box>
-    );
-};
-
-
-export const Channels: FC = () => {
-    const { t } = useTranslation();
-    const history = useHistory();
-
-    return (
-        <div>
-            <button onClick={() => history.push(paths.CHANNELS_ADD.resolve(1))}>Agregar</button>
-            <TableZyx
-                columns={[]}
-                titlemodule={t(langKeys.user, { count: 2 })}
-                data={[]}
-                download={true}
-                loading={false}
-                register={true}
-                hoverShadow={true}
-                handleRegister={() => history.push(paths.CHANNELS_ADD.path)}
-            />
-        </div>
     );
 };

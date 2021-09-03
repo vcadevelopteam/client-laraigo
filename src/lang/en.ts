@@ -91,6 +91,7 @@ const translation: LangKeys = {
     provider: 'Supplier',
     sla: 'Service level agreement',
     communicationchanneldesc:'Channel name',
+    communicationchannel:'Communication channel',
     tme:'TME',
     tmepercentobj: 'TME% objetive',
     tmopercentobj: 'TMO% objetive',
@@ -200,6 +201,8 @@ const translation: LangKeys = {
     url: 'Url',
     authorization: 'Authorization',
     token: 'Token',
+    key: 'Key',
+    bodytype: 'Body Type',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',

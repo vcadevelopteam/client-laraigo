@@ -66,6 +66,7 @@ export const langKeys = {
     provider: 'provider',
     sla: 'sla',
     communicationchanneldesc:'communicationchanneldesc',
+    communicationchannel:'communicationchannel',
     tme:'tme',
     tmepercentobj: 'tmepercentobj',
     tmopercentobj: 'tmopercentobj',
@@ -188,6 +189,8 @@ export const langKeys = {
     url: 'url',
     authorization: 'authorization',
     token: 'token',
+    key: 'key',
+    bodytype: 'bodytype',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
