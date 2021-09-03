@@ -296,7 +296,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
             dispatch(execute({
                 header: insDomain({ ...data }),
                 detail: [
-                    //...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), 
+                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), 
                     ...domainToDelete.map(x => insDomainvalue(x))]
             }, true));
             setWaitSave(true)
