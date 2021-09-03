@@ -260,7 +260,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
                 {listItems.map((item: Dictionary, index: number) => (
                     <div>
                         <div>
-                            <img src={item.mediaUrl} style={{width: '100%'}}/>
+                            <img src={item.mediaUrl} style={{width: '100%'}} alt="logocarousel"/>
                         </div>
                         {(item.actions as Dictionary[]).map((action: Dictionary, index: number) => {
                             return <div key={index} className={classes.buttonPostback}>{action.text}
