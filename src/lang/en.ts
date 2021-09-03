@@ -192,6 +192,17 @@ const translation: LangKeys = {
     message: 'Mensaje',
     addbutton: 'Add button',
     removebutton: 'Remove Button',
+
+    integrationmanager: 'Integration Manager',
+    integrationmanager_plural: 'Integration Manager',
+    newintegrationmanager: 'New Integration Manager',
+    requesttype: 'Request Type',
+    url: 'Url',
+    authorization: 'Authorization',
+    token: 'Token',
+    key: 'Key',
+    bodytype: 'Body Type',
+    
     variable:"Variable",
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',

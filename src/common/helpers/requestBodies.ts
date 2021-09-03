@@ -302,18 +302,18 @@ export const getValuesForTree = (): IRequestBody => ({
     }
 });
 
+export const getParentSel = (): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_LST_PARENT",
+    parameters: {
+        classificationid: 0
+    }
+});
+
 export const getMessageTemplateSel = (id: number): IRequestBody => ({
     method: "UFN_MESSAGETEMPLATE_SEL",
     parameters: {
         id: id,
         all: id === 0,
-    }
-});
-
-export const getParentSel = (): IRequestBody => ({
-    method: "UFN_CLASSIFICATION_LST_PARENT",
-    parameters: {
-        classificationid: 0
     }
 });
 
@@ -357,6 +357,44 @@ export const insMessageTemplate = (
         footer,
         buttonsenabled,
         buttons: JSON.stringify(buttons),
+        operation
+    }
+});
+
+export const getIntegrationManagerSel = (id: number): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insIntegrationManager = (
+    {
+        id,
+        description,
+        type,
+        status,
+        method,
+        url,
+        authorization,
+        headers,
+        bodytype,
+        body,
+        operation
+    }: Dictionary): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        method,
+        url,
+        authorization: JSON.parse(authorization),
+        headers: JSON.parse(headers),
+        bodytype,
+        body,
         operation
     }
 });

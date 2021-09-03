@@ -181,6 +181,16 @@ export const langKeys = {
     addbutton: 'addbutton',
     removebutton: 'removebutton',
 
+    integrationmanager: 'integrationmanager',
+    integrationmanager_plural: 'integrationmanager_plural',
+    newintegrationmanager: 'newintegrationmanager',
+    requesttype: 'requesttype',
+    url: 'url',
+    authorization: 'authorization',
+    token: 'token',
+    key: 'key',
+    bodytype: 'bodytype',
+
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
 

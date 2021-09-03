@@ -146,4 +146,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.MESSAGETEMPLATE,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.INTEGRATIONMANAGER,
+        description: <Trans i18nKey={langKeys.integrationmanager_plural} count={2} />,
+        path: paths.INTEGRATIONMANAGER,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];

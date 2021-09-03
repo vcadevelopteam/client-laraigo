@@ -321,7 +321,6 @@ const TableZyx = React.memo(({
             fetchData();
         }
     }, [fetchData])
-
     return (
         <Box width={1} style={{ height: '100%' }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
@@ -364,7 +363,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel("report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => exportExcel(String(titlemodule)+"Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
