@@ -30,6 +30,7 @@ const paths = {
     PERSON: '/extras/person',
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
+    INTEGRATIONMANAGER: '/extras/integrationmanager',
 };
 
 export default paths;

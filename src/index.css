@@ -145,6 +145,11 @@ footer a {
     .row-zyx {
         margin-bottom: 16px;
     }
+    .row-zyx > .col-12 {
+        width: 100%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
     .row-zyx > .col-9 {
         width: 75%;
         padding-right: 16px;
@@ -167,6 +172,16 @@ footer a {
     }
     .row-zyx > .col-4 {
         width: 33.33%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
+    .row-zyx > .col-5 {
+        width: 41.66%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
+    .row-zyx > .col-1 {
+        width: 8.33%;
         padding-right: 16px;
         margin-bottom: 16px
     }

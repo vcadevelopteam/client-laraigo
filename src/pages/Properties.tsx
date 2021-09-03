@@ -198,7 +198,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value.domainvalue)}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -268,6 +268,21 @@ const Properties: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'userid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.name),
                 accessor: 'propertyname',
                 NoFilter: true
@@ -308,22 +323,7 @@ const Properties: FC = () => {
                 accessor: 'changedate',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'userid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         []
     );

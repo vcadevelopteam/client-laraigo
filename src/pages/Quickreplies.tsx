@@ -308,7 +308,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 label={t(langKeys.status)}
                                 className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value.domainvalue)}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -382,6 +382,22 @@ const Quickreplies: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                accessor: 'quickreplyid',
+                NoFilter: true,
+                isComponent: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            viewFunction={() => handleView(row)}
+                            // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.quickreply),
                 accessor: 'quickreply',
                 NoFilter: true
@@ -412,23 +428,7 @@ const Quickreplies: FC = () => {
                 accessor: 'orgdesc',
                 NoFilter: true
             },
-            {
-                Header: t(langKeys.action),
-                accessor: 'quickreplyid',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
+            
         ],
         [t]
     );

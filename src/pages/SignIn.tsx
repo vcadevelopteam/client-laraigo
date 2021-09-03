@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 function Copyright() {
     return (
         <Typography variant="body2" color="textPrimary" align="center">
-            {'Copyright © '} Zyxme {new Date().getFullYear()}
+            {'Copyright © '} Laraigo {new Date().getFullYear()}
         </Typography>
     );
 }
@@ -157,8 +157,6 @@ const SignIn = () => {
                     <form
                         className={classes.form}
                         onSubmit={onSubmitLogin}
-
-
                     >
                         <TextField
                             variant="outlined"
@@ -215,8 +213,7 @@ const SignIn = () => {
                                 <div className={classes.buttonGoogle}>
                                     <GoogleLogin
                                         clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
-                                        buttonText="Log in with Google"
-                                        
+                                        buttonText={t(langKeys.login_with_google)}
                                         style={{ justifyContent: 'center', width: '100%' }}
                                         onSuccess={onGoogleLoginSucess}
                                         onFailure={onGoogleLoginFailure}

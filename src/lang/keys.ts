@@ -1,13 +1,15 @@
 export const langKeys = {
+    data:"data",
+    variable:"variable",
     dashboard: 'dashboard',
     dashboard_plural: 'dashboard_plural',
-
+    actionplan:'actionplan',
     organization: 'organization',
     organization_plural: 'organization_plural',
-
+    completedesc: 'completedesc',
     report: 'report',
     report_plural: 'report_plural',
-
+    tag:'tag',
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
     parent:'parent',
@@ -64,6 +66,7 @@ export const langKeys = {
     provider: 'provider',
     sla: 'sla',
     communicationchanneldesc:'communicationchanneldesc',
+    communicationchannel:'communicationchannel',
     tme:'tme',
     tmepercentobj: 'tmepercentobj',
     tmopercentobj: 'tmopercentobj',
@@ -71,7 +74,7 @@ export const langKeys = {
     usertmepercentmax:'usertmepercentmax',
     usertmo:'usertmo',
     usertmopercentmax:'usertmopercentmax',
-
+    hasactionplan:'hasactionplan',
     whitelist: 'whitelist',
 
     quantity: 'quantity',
@@ -176,6 +179,18 @@ export const langKeys = {
     title: 'title',
     payload: 'payload',
     message: 'Mensaje',
+    addbutton: 'addbutton',
+    removebutton: 'removebutton',
+
+    integrationmanager: 'integrationmanager',
+    integrationmanager_plural: 'integrationmanager_plural',
+    newintegrationmanager: 'newintegrationmanager',
+    requesttype: 'requesttype',
+    url: 'url',
+    authorization: 'authorization',
+    token: 'token',
+    key: 'key',
+    bodytype: 'bodytype',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -212,6 +227,7 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     login_with_facebook: 'login_with_facebook',
+    login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',
     error_parameter_too_long: 'error_parameter_too_long',
