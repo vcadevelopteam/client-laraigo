@@ -22,19 +22,144 @@ const useStyles = makeStyles((theme) => ({
         flex: '0 0 300px',
         backgroundColor: '#FFF',
         flexDirection: 'column',
-        display: 'flex'
+        display: 'flex',
+        borderRight: '1px solid rgba(132, 129, 138, 0.101961);'
+    },
+    headChat: {
+        backgroundColor: '#FFF',
+        padding: theme.spacing(2),
+        borderBottom: '1px solid rgba(132, 129, 138, 0.101961);'
+    },
+    containerInteractions: {
+        padding: theme.spacing(2),
+        flex: 1,
+        overflowY: 'auto',
+    },
+    containerQuickreply: {
+        whiteSpace: 'break-spaces',
+        fontFamily: 'DM Sans',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        display: 'flex',
+        gap: theme.spacing(1),
+    },
+    containerPostback: {
+        width: 200,
+        padding: 0,
+        fontFamily: 'DM Sans',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        fontSize: '14px',
+        lineHeight: 2,
+        borderRadius: 25
+    },
+    headerPostback: {
+        textAlign: 'center',
+        backgroundColor: 'rgb(132 129 138 / 0.4);',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+    },
+    buttonPostback: {
+        color: theme.palette.primary.main,
+        cursor: 'pointer',
+        textAlign: 'center',
+        borderTop: '1px solid #EBEAED',
+        '&:hover': {
+            color: theme.palette.primary.dark,
+        }
+    },
+    buttonQuickreply: {
+        padding: `0 ${theme.spacing(1)}px`,
+        backgroundColor: theme.palette.primary.main,
+        borderRadius: '6px',
+        color: '#FFF',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: theme.palette.primary.dark,
+        }
+    },
+    interactionText: {
+        whiteSpace: 'break-spaces',
+        fontFamily: 'DM Sans',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        fontSize: '14px',
+        lineHeight: 2,
+        color: '#2E2C34',
+        wordBreak: 'break-word',
+        width: 'fit-content',
+        borderRadius: 4,
+        padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+        backgroundColor: '#FFF',
+    },
+    interactionImage: {
+        padding: theme.spacing(1),
+        borderRadius: 4,
+        backgroundColor: '#FFF',
+        width: '200px'
+    },
+    timeInteraction: {
+        color: '#84818A',
+        fontSize: 13,
+        fontFamily: 'DM Sans',
+        fontStyle: 'normal',
+        fontWeight: 'normal',
+        lineHeight: 2,
+    },
+    containerResponse: {
+        padding: theme.spacing(2),
+        height: 95,
+        background: '#FFF',
     },
     containerChat: {
-        flex: '1'
+        flex: '1',
+        flexDirection: 'column',
+        display: 'flex',
     },
     containerProfile: {
         flex: '0 0 300px',
         display: 'none'
     },
+    containerButtonsChat: {
+        display: 'flex',
+        marginTop: 8,
+        gap: '8px'
+    },
+    buttonCloseticket: {
+        background: '#F9F9FA',
+        border: '1px solid #EBEAED',
+        boxSizing: 'border-box',
+        borderRadius: '4px',
+        width: '150px',
+        height: '42px',
+        fontFamily: 'Manrope',
+        fontStyle: 'normal',
+        fontWeight: 600,
+        fontSize: '14px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#ececec'
+        }
+    },
+    buttonIcon: {
+        width: 48,
+        height: 42,
+        border: '1px solid #EBEAED',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 4,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#ececec'
+        }
+    },
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        // paddingTop: theme.spacing(2),
         width: '100%'
     },
     containerItemTicket: {
@@ -65,6 +190,30 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const dataTickets = [
+    {
+        "conversationid": 29370,
+        "ticketnum": "0018197",
+        "firstconversationdate": "2021-09-03T17:49:06.542206",
+        "lastreplyuser": "2021-09-03T17:50:15.267896",
+        "lastconversationdate": null,
+        "status": "ASIGNADO",
+        "lastmessage": "la direccion es Pino Park, Puno 21001, Peru\nflag ",
+        "personcommunicationchannel": "2904648519566444_FBDM",
+        "displayname": "Carlos Farro Diaz",
+        "personid": 13514,
+        "communicationchannelid": 171,
+        "communicationchannelsite": "1616715421960277",
+        "communicationchanneltype": "FBDM",
+        "imageurldef": "https://platform-lookaside.fbsbx.com/platform/profilepic/?psid=2904648519566444&width=1024&ext=1633283352&hash=AeSgjAdRU-UKJ8kiD84",
+        "countnewmessages": 0,
+        "postexternalid": "m_aYsqyG381-YP631S6lEwCFXomIz0Aat7lS2aTq1Bu-xv9oqSv1g5S6e2SmCebOKsrFL4jihPgdKwoWB2yVIdrA",
+        "commentexternalid": null,
+        "replyexternalid": null,
+        "channelicon": "fab fa-facebook-messenger",
+        "coloricon": "#c53268",
+        "edit": false,
+        "lastseendate": "2021-09-03T17:50:13.972051"
+    },
     {
         conversationid: 29356,
         ticketnum: "0018184",
@@ -194,7 +343,6 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
 
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
-        // setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, e.target.value));
     }
 
     useEffect(() => {
@@ -256,7 +404,10 @@ const InboxPanel: React.FC<ChatProps> = () => {
 
     return (
         <div className={classes.containerPanel}>
-            <TicketsPanel setTicketSelected={setTicketSelected} classes={classes} />
+            <TicketsPanel
+                setTicketSelected={setTicketSelected}
+                classes={classes}
+            />
             {ticketSelected &&
                 <>
                     <ChatPanel ticket={ticketSelected} classes={classes} />

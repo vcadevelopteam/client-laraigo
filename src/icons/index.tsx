@@ -30,3 +30,6 @@ export { ReactComponent as SmsIcon } from './sms.svg';
 export { ReactComponent as TwitterIcon } from './twitter.svg';
 export { ReactComponent as YoutubeIcon } from './youtube.svg';
 export { ReactComponent as WhatsappIcon } from './whatsapp.svg';
+export { ReactComponent as CheckIcon } from './check.svg';
+export { ReactComponent as CallIcon } from './call.svg';
+export { ReactComponent as VideoCallIcon } from './video-call.svg';
