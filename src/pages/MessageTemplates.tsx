@@ -8,6 +8,7 @@ import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain } from '
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
+import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import SaveIcon from '@material-ui/icons/Save';
@@ -67,7 +68,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         flexBasis: '200px',
     },
-    addButton: {
+    btnButton: {
         minWidth: 'max-content',
         minHeight: '30px',
         flexBasis: 0,
@@ -263,7 +264,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
@@ -285,12 +286,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             operation: row ? "EDIT" : "INSERT"
         }
     });
-    
+
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('templatetype') === 'STANDARD');
     
     React.useEffect(() => {
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('namespace', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -328,7 +330,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     });
 
     const onChangeMessageType = (data: Dictionary) => {
-        setValue('type', data?.value || '', { shouldValidate: true });
+        setValue('type', data?.value || '');
         switch (data?.value || 'SMS') {
             case 'SMS':
                 onChangeTemplateType({ value: 'STANDARD' });
@@ -340,50 +342,58 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     }
 
-    const onChangeTemplateType = (data: Dictionary) => {
-        setValue('templatetype', data?.value || '', { shouldValidate: true });
+    const onChangeTemplateType = async (data: Dictionary) => {
+        setValue('templatetype', data?.value || '');
+        await trigger('templatetype');
     }
 
-    const onClickHeaderToogle = ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickHeaderToogle = async ({ value } : { value? : Boolean | null} = {}) => {
         if (value)
-            setValue('headerenabled', value, { shouldValidate: true })
+            setValue('headerenabled', value)
         else
-            setValue('headerenabled', !getValues('headerenabled'), { shouldValidate: true });
+            setValue('headerenabled', !getValues('headerenabled'));
+        await trigger('headerenabled');
     }
 
-    const onClickFooterToogle = ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickFooterToogle = async ({ value } : { value? : Boolean | null} = {}) => {
         if (value)
-            setValue('footerenabled', value, { shouldValidate: true })
+            setValue('footerenabled', value)
         else
-            setValue('footerenabled', !getValues('footerenabled'), { shouldValidate: true });
+            setValue('footerenabled', !getValues('footerenabled'));
+        await trigger('footerenabled');
     }
 
-    const onClickButtonsToogle = ({ value } : { value? : Boolean | null} = {}) => {
+    const onClickButtonsToogle = async ({ value } : { value? : Boolean | null} = {}) => {
         if (value)
-            setValue('buttonsenabled', value, { shouldValidate: true })
+            setValue('buttonsenabled', value)
         else
-            setValue('buttonsenabled', !getValues('buttonsenabled'), { shouldValidate: true });
+            setValue('buttonsenabled', !getValues('buttonsenabled'));
+        await trigger('buttonsenabled');
     }
 
-    const onChangeHeaderType = (data: Dictionary) => {
-        setValue('headertype', data?.value || '', { shouldValidate: true });
+    const onChangeHeaderType = async (data: Dictionary) => {
+        setValue('headertype', data?.value || '');
+        await trigger('headertype');
     }
 
     const onChangeButton = (index: number, param: string, value: string) => {
-        setValue(`buttons.${index}.${param}`, value, { shouldValidate: true });
+        setValue(`buttons.${index}.${param}`, value);
     }
 
-    const onClickAddButton = () => {
+    const onClickAddButton = async () => {
         if (getValues('buttons') && getValues('buttons').length < 3)
-            setValue('buttons', [...getValues('buttons'), { title: '', type: '', payload: '' }], { shouldValidate: true })
+            setValue('buttons', [...getValues('buttons'), { title: '', type: '', payload: '' }])
+        await trigger('buttons');
     }
 
-    const onClickRemoveButton = () => {
+    const onClickRemoveButton = async () => {
         let btns = getValues('buttons');
         if (btns && btns.length > 0)
         {
-            setValue('buttons', btns.slice(0,-1) , { shouldValidate: true });
+            unregister(`buttons.${btns.length - 1}`);
+            setValue('buttons', btns.filter((x: any, i: number) => i !== btns.length - 1));
         }
+        await trigger('buttons');
     }
 
     return (
@@ -409,60 +419,85 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 optionDesc="text"
                                 optionValue="value"
                             />
-                            : <FieldView
+                            :
+                            <FieldView
                                 label={t(langKeys.messagetype)}
                                 value={row ? (row.type || "") : ""}
                                 className="col-12"
-                        />}
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.name)}
-                                className="col-12"
-                                valueDefault={row?.name || ""}
-                                onChange={(value) => setValue('name', value)}
-                                error={errors?.name?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.name)}
-                                value={row ? (row.name || "") : ""}
-                                className="col-12"
-                            />}
+                            <React.Fragment>
+                                <FieldEdit
+                                    label={t(langKeys.name)}
+                                    className="col-6"
+                                    valueDefault={row?.name || ""}
+                                    onChange={(value) => setValue('name', value)}
+                                    error={errors?.name?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.namespace)}
+                                    className="col-6"
+                                    valueDefault={row?.namespace || ""}
+                                    onChange={(value) => setValue('namespace', value)}
+                                    error={errors?.namespace?.message}
+                                />
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <FieldView
+                                    label={t(langKeys.name)}
+                                    value={row ? (row.name || "") : ""}
+                                    className="col-6"
+                                />
+                                <FieldView
+                                    label={t(langKeys.namespace)}
+                                    value={row ? (row.namespace || "") : ""}
+                                    className="col-6"
+                                />
+                            </React.Fragment>
+                        }
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                label={t(langKeys.category)}
-                                className="col-6"
-                                valueDefault={row?.category || ""}
-                                onChange={(value) => setValue('category', value?.domainvalue)}
-                                error={errors?.category?.message}
-                                data={dataCategory}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.category)}
-                                value={row ? (row.category || "") : ""}
-                                className="col-6"
-                        />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.language)}
-                                className="col-6"
-                                valueDefault={row ? (row.language || "") : ""}
-                                onChange={(value) => setValue('language', value?.domainvalue)}
-                                error={errors?.language?.message}
-                                data={dataLanguage}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.language)}
-                                value={row ? (row.language || "") : ""}
-                                className="col-6"
-                        />}
+                            <React.Fragment>
+                                <FieldSelect
+                                    label={t(langKeys.category)}
+                                    className="col-6"
+                                    valueDefault={row?.category || ""}
+                                    onChange={(value) => setValue('category', value?.domainvalue)}
+                                    error={errors?.category?.message}
+                                    data={dataCategory}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                                <FieldSelect
+                                    label={t(langKeys.language)}
+                                    className="col-6"
+                                    valueDefault={row ? (row.language || "") : ""}
+                                    onChange={(value) => setValue('language', value?.domainvalue)}
+                                    error={errors?.language?.message}
+                                    data={dataLanguage}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                />
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <FieldView
+                                    label={t(langKeys.category)}
+                                    value={row ? (row.category || "") : ""}
+                                    className="col-6"
+                                />
+                                <FieldView
+                                    label={t(langKeys.language)}
+                                    value={row ? (row.language || "") : ""}
+                                    className="col-6"
+                                />
+                            </React.Fragment>
+                        }
                     </div>
                     <div className="row-zyx">
                         {edit ?
@@ -477,13 +512,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 optionValue="value"
                                 disabled={templateTypeDisabled}
                             />
-                            : <FieldView
+                            :
+                            <FieldView
                                 label={t(langKeys.templatetype)}
                                 value={row ? (row.templatetype || "") : ""}
                                 className="col-12"
-                        />}
+                            />
+                        }
                     </div>
-                    { getValues('templatetype') === 'MULTIMEDIA' ?
+                    {getValues('templatetype') === 'MULTIMEDIA' ?
                     <div className="row-zyx">
                         {edit ? 
                             <React.Fragment>
@@ -492,6 +529,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     type="button"
                                     className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('headerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
                                     onClick={() => onClickHeaderToogle()}
                                 >{t(langKeys.header)}</Button>
                                 <Button
@@ -499,12 +537,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     type="button"
                                     className={classes.mediabutton}
                                     style={{ backgroundColor: "#000000", color: "#FFFFFF" }}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
                                 >{t(langKeys.body)}</Button>
                                 <Button
                                     variant="contained"
                                     type="button"
                                     className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('footerenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
                                     onClick={() => onClickFooterToogle()}
                                 >{t(langKeys.footer)}</Button>
                                 <Button
@@ -512,6 +552,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     type="button"
                                     className={classes.mediabutton}
                                     style={{ backgroundColor: getValues('buttonsenabled') ? "#000000" : "#AAAAAA", color: "#FFFFFF" }}
+                                    startIcon={<CheckIcon htmlColor="#FFFFFF" />}
                                     onClick={() => onClickButtonsToogle()}
                                 >{t(langKeys.buttons)}</Button>
                             </React.Fragment>
@@ -524,27 +565,28 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         {edit ?
                             <React.Fragment>
                                 <FieldSelect
-                                label={t(langKeys.headertype)}
-                                className={classes.headerType}
-                                valueDefault={getValues('headertype')}
-                                onChange={onChangeHeaderType}
-                                error={errors?.header?.message}
-                                data={dataHeaderType}
-                                optionDesc="text"
-                                optionValue="value"
+                                    label={t(langKeys.headertype)}
+                                    className={classes.headerType}
+                                    valueDefault={getValues('headertype')}
+                                    onChange={onChangeHeaderType}
+                                    error={errors?.header?.message}
+                                    data={dataHeaderType}
+                                    optionDesc="text"
+                                    optionValue="value"
                                 />
                                 <FieldEdit
-                                label={t(langKeys.header)}
-                                className={classes.headerText}
-                                valueDefault={row ? (row.header || "") : ""}
-                                onChange={(value) => setValue('header', value)}
-                                error={errors?.header?.message}
-                            />
+                                    label={t(langKeys.header)}
+                                    className={classes.headerText}
+                                    valueDefault={row ? (row.header || "") : ""}
+                                    onChange={(value) => setValue('header', value)}
+                                    error={errors?.header?.message}
+                                />
                             </React.Fragment>
-                            : <FieldView
-                            label={t(langKeys.header)}
-                            value={row ? (row.header || "") : ""}
-                            className="col-12"
+                            :
+                            <FieldView
+                                label={t(langKeys.header)}
+                                value={row ? (row.header || "") : ""}
+                                className="col-12"
                             />
                         }
                     </div>
@@ -552,18 +594,19 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEditMulti
-                            label={t(langKeys.body)}
-                            className="col-12"
-                            valueDefault={row ? (row.body || "") : ""}
-                            onChange={(value) => setValue('body', value)}
-                            error={errors?.body?.message}
-                            maxLength={1024}
+                                label={t(langKeys.body)}
+                                className="col-12"
+                                valueDefault={row ? (row.body || "") : ""}
+                                onChange={(value) => setValue('body', value)}
+                                error={errors?.body?.message}
+                                maxLength={1024}
                             />
                             : <FieldView
                                 label={t(langKeys.body)}
                                 value={row ? (row.body || "") : ""}
                                 className="col-12"
-                            />}
+                            />
+                        }
                     </div>
                     {(getValues('templatetype') === 'MULTIMEDIA'
                     && getValues('footerenabled')) ?
@@ -578,37 +621,40 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 rows={2}
                                 maxLength={60}
                             />
-                            : <FieldView
-                            label={t(langKeys.footer)}
-                            value={row ? (row.footer || "") : ""}
-                            className="col-12"
-                        />}
+                            :
+                            <FieldView
+                                label={t(langKeys.footer)}
+                                value={row ? (row.footer || "") : ""}
+                                className="col-12"
+                            />
+                        }
                     </div>
                     : null}
                     {(getValues('templatetype') === 'MULTIMEDIA'
                     && getValues('buttonsenabled')) ?
                     <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
                         <FieldView
-                        label={t(langKeys.buttons)}
-                        className={classes.buttonTitle}/>
+                            label={t(langKeys.buttons)}
+                            className={classes.buttonTitle}
+                        />
                         {
-                            edit && getValues('buttons').length < 3 &&
+                            edit && getValues('buttons')?.length < 3 &&
                             <Button
                                 variant="outlined"
                                 type="button"
                                 color="primary"
-                                className={classes.addButton}
+                                className={classes.btnButton}
                                 startIcon={<AddIcon color="primary" />}
                                 onClick={() => onClickAddButton()}
                             >{t(langKeys.addbutton)}</Button>
                         }
                         {
-                            edit && getValues('buttons').length > 0 &&
+                            edit && getValues('buttons')?.length > 0 &&
                             <Button
                                 variant="outlined"
                                 type="button"
                                 color="primary"
-                                className={classes.addButton}
+                                className={classes.btnButton}
                                 startIcon={<RemoveIcon color="primary" />}
                                 onClick={() => onClickRemoveButton()}
                             >{t(langKeys.removebutton)}</Button>
@@ -620,56 +666,67 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <React.Fragment>
-                            {getValues('buttons').map((btn: any, i: number) => {
+                            {getValues('buttons')?.map((btn: any, i: number) => {
                                 return (
-                                    <div key={`btn${i}`} className="col-4">
+                                    <div key={`btn-${i}`} className="col-4">
                                         <FieldEdit
-                                        label={t(langKeys.title)}
-                                        className={classes.mb1}
-                                        valueDefault={btn?.title || ""}
-                                        onChange={(value) => onChangeButton(i, 'title', value)}
-                                        // error={errors?.title?.message}
+                                            fregister={{...register(`buttons.${i}.title`, {
+                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                            })}}
+                                            label={t(langKeys.title)}
+                                            className={classes.mb1}
+                                            valueDefault={btn?.title || ""}
+                                            onChange={(value) => onChangeButton(i, 'title', value)}
+                                            error={errors?.buttons?.[i]?.title?.message}
                                         />
                                         <FieldSelect
-                                        label={t(langKeys.type)}
-                                        className={classes.mb1}
-                                        valueDefault={btn?.type || ""}
-                                        onChange={(value) => onChangeButton(i, 'type', value?.value)}
-                                        // error={errors?.type?.message}
-                                        data={dataButtonType}
-                                        optionDesc="text"
-                                        optionValue="value"
+                                            fregister={{...register(`buttons.${i}.type`, {
+                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                            })}}
+                                            label={t(langKeys.type)}
+                                            className={classes.mb1}
+                                            valueDefault={btn?.type || ""}
+                                            onChange={(value) => onChangeButton(i, 'type', value?.value)}
+                                            error={errors?.buttons?.[i]?.type?.message}
+                                            data={dataButtonType}
+                                            optionDesc="text"
+                                            optionValue="value"
                                         />
                                         <FieldEdit
-                                        label={t(langKeys.payload)}
-                                        className={classes.mb1}
-                                        valueDefault={btn?.payload || ""}
-                                        onChange={(value) => onChangeButton(i, 'payload', value)}
-                                        // error={errors?.payload?.message}
+                                            fregister={{...register(`buttons.${i}.payload`, {
+                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                            })}}
+                                            label={t(langKeys.payload)}
+                                            className={classes.mb1}
+                                            valueDefault={btn?.payload || ""}
+                                            onChange={(value) => onChangeButton(i, 'payload', value)}
+                                            error={errors?.buttons?.[i]?.payload?.message}
                                         />
-                                    </ div>
+                                    </div>
                                 )
                             })}
                             </React.Fragment>
                             :
-                            getValues('buttons').forEach((btn: any, i: number) => {
-                                <div>
-                                    <FieldView
-                                        label={t(langKeys.title)}
-                                        value={btn?.title || ""}
-                                        className="col-12"
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.type)}
-                                        value={btn?.type || ""}
-                                        className="col-12"
-                                    />
-                                    <FieldView
-                                        label={t(langKeys.payload)}
-                                        value={btn?.payload || ""}
-                                        className="col-12"
-                                    />
-                                </div>
+                            getValues('buttons')?.map((btn: any, i: number) => {
+                                return (
+                                    <div key={`btn${i}`} className="col-4">
+                                        <FieldView
+                                            label={t(langKeys.title)}
+                                            value={btn?.title || ""}
+                                            className="col-12"
+                                        />
+                                        <FieldView
+                                            label={t(langKeys.type)}
+                                            value={btn?.type || ""}
+                                            className="col-12"
+                                        />
+                                        <FieldView
+                                            label={t(langKeys.payload)}
+                                            value={btn?.payload || ""}
+                                            className="col-12"
+                                        />
+                                    </div>
+                                )
                             })
                         }
                     </div>

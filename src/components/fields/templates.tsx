@@ -188,6 +188,7 @@ interface InputProps {
     type?: string;
     rows?: number;
     maxLength?: number;
+    fregister?: Dictionary;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -198,7 +199,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1 }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1, fregister = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -209,6 +210,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <TextField
+                {...fregister}
                 color="primary"
                 fullWidth
                 disabled={disabled}
@@ -257,7 +259,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
     )
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {} }) => {
 
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -293,6 +295,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 loading={loading}
                 renderInput={(params) => (
                     <TextField
+                        {...fregister}
                         {...params}
                         helperText={error || null}
                         error={!!error}
