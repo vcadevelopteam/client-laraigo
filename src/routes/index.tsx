@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications } from 'pages';
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAddStep1 } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -58,7 +58,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
-	} else if (!applications?.[location.pathname][0]) {
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -80,6 +80,16 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path="/email_inbox">
 					<Layout mainClasses={classes.main}>
 						<Properties />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS}>
+					<Layout mainClasses={classes.main}>
+						<Channels />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddStep1 />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.ORGANIZATIONS}>
