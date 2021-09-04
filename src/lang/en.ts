@@ -191,7 +191,9 @@ const translation: LangKeys = {
     payload: 'Payload',
     message: 'Mensaje',
     addbutton: 'Add button',
-    removebutton: 'Remove Button',
+    removebutton: 'Remove button',
+    addheader: 'Add header',
+    addparameter: 'Add parameter',
 
     integrationmanager: 'Integration Manager',
     integrationmanager_plural: 'Integration Manager',

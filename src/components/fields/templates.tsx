@@ -198,6 +198,7 @@ interface InputProps {
     valueDefault?: string;
     disabled?: boolean;
     onChange?: (param: any, param2?: any | null) => void;
+    onBlur?: (param: any, param2?: any | null) => void;
     style?: any;
     error?: string;
     type?: string;
@@ -214,7 +215,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1, fregister = {} }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -237,6 +238,9 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 onChange={(e) => {
                     setvalue(e.target.value);
                     onChange && onChange(e.target.value);
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
                 }}
             />
         </div>

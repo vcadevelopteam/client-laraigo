@@ -180,6 +180,8 @@ export const langKeys = {
     message: 'Mensaje',
     addbutton: 'addbutton',
     removebutton: 'removebutton',
+    addheader: 'addheader',
+    addparameter: 'addparameter',
 
     integrationmanager: 'integrationmanager',
     integrationmanager_plural: 'integrationmanager_plural',

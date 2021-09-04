@@ -188,6 +188,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     supplier:"Proveedor",
     addbutton: 'Añadir botón',
     removebutton: 'Quitar botón',
+    addheader: 'Añadir cabecera',
+    addparameter: 'Añadir parámetro',
 
     integrationmanager: 'Administrador de Integraciones',
     integrationmanager_plural: 'Administrador de Integraciones',
