@@ -219,10 +219,10 @@ export const getDomainValueSel = (domainname: string): IRequestBody => ({
     }
 })
 
-export const insDomain = ({ domainname, status, operation }: Dictionary): IRequestBody => ({
+export const insDomain = ({ domainname, description, type, status, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOMAIN_INS",
     key: "UFN_DOMAIN_INS",
-    parameters: { id: 0, domainname, status, operation }
+    parameters: { id: 0, domainname, description, type, status, operation }
 });
 
 export const insDomainvalue = ({ id, domainname, description, domainvalue, domaindesc, status, type, bydefault, operation }: Dictionary): IRequestBody => ({

@@ -193,7 +193,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                 NoFilter: true
             },
             {
-                Header: t(langKeys.action),
+                //Header: t(langKeys.action),
                 //accessor: 'userid',
                 accessor: 'domainid',
                 NoFilter: true,
@@ -279,8 +279,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     React.useEffect(() => {
         register('id');
         register('status');
-        register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        //register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        //register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
@@ -291,13 +291,19 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            console.log('boton grabar');
+            console.log('boton grabar data', data);
+            console.log('boton grabar row', row);
             dispatch(showBackdrop(true));
             dispatch(execute({
-                header: insDomain({ ...data }),
+                header: insDomain({...data}),
                 detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), 
-                    ...domainToDelete.map(x => insDomainvalue(x))]
+                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, id:0 })), 
+                    ...domainToDelete.map(x => insDomainvalue({ ...x, 
+                        //operation: "DELETE", 
+                        //status: 'ELIMINADO', 
+                        id: x.domainid,
+                        description: data.description, 
+                        type: data.type }))]
             }, true));
             setWaitSave(true)
         }
@@ -476,7 +482,8 @@ const Domains: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.action),
+                //Header: 
+                //t(langKeys.action),
                 //accessor: 'userid',
                 accessor: 'userid',
                 NoFilter: true,
