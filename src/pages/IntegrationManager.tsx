@@ -238,11 +238,6 @@ type AuthorizationType = {
     token?: string
 }
 
-type HeaderType = {
-    key: string;
-    value: any;
-}
-
 type FormFields = {
     id: number,
     description: string,
