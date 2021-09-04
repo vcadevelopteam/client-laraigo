@@ -9,6 +9,11 @@ import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Avatar from '@material-ui/core/Avatar';
 
+
+import Fab from '@material-ui/core/Fab';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
 const dataInteractions: IInteraction[] = [
     {
         "interactionid": 311015,
@@ -214,6 +219,7 @@ const useStyles = makeStyles((theme) => ({
         width: 230,
         backgroundColor: '#f0f2f5',
         borderRadius: 18,
+        position: 'relative',
     },
     imageCardCarousel: {
         width: '100%',
@@ -230,6 +236,18 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         fontWeight: 600,
         cursor: 'pointer',
+    },
+    buttonLeft: {
+        position: 'absolute',
+        top: '45%',
+        left: -20,
+        backgroundColor: 'white'
+    },
+    buttonRight: {
+        position: 'absolute',
+        top: '45%',
+        right: -20,
+        backgroundColor: 'white'
     }
 }));
 
@@ -255,6 +273,24 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     })}
                 </div>
             </div>
+            {pageSelected > 0 &&
+                <Fab
+                    className={classes.buttonLeft}
+                    size="small"
+                    onClick={() => setPageSelected(pageSelected - 1)}
+                >
+                    <NavigateBeforeIcon style={{color: '#2E2C34'}} />
+                </Fab>
+            }
+            {pageSelected < carousel.length - 1 &&
+                <Fab
+                    className={classes.buttonRight}
+                    onClick={() => setPageSelected(pageSelected + 1)}
+                    size="small"
+                >
+                    <NavigateNextIcon style={{color: '#2E2C34'}} />
+                </Fab>
+            }
         </div>
     )
 }
