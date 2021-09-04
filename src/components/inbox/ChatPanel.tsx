@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
+import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CheckIcon } from 'icons';
@@ -208,9 +209,57 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
+const useStyles = makeStyles((theme) => ({
+    containerCarousel: {
+        width: 230,
+        backgroundColor: '#f0f2f5',
+        borderRadius: 18,
+    },
+    imageCardCarousel: {
+        width: '100%',
+        objectFit: 'cover',
+        height: '100%'
+    },
+    buttonCarousel: {
+        backgroundColor: '#e4e6eb',
+        textAlign: 'center',
+        borderRadius: 6,
+        height: 36,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontWeight: 600,
+        cursor: 'pointer',
+    }
+}));
+
+
+const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
+    const classes = useStyles();
+    const [pageSelected, setPageSelected] = useState(0);
+
+    if (carousel.length === 0) return null;
+    return (
+        <div className={classes.containerCarousel}>
+            <div style={{ height: 157 }}>
+                <img src={carousel[pageSelected].mediaUrl} className={classes.imageCardCarousel} alt="logocarousel" />
+            </div>
+            <div style={{ padding: '12px', wordBreak: 'break-word' }}>
+                <div>
+                    <div style={{ fontWeight: 600 }}>{carousel[pageSelected].title}</div>
+                    <div>{carousel[pageSelected].description}</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 8 }}>
+                    {(carousel[pageSelected].actions as Dictionary[]).map((action: Dictionary, index: number) => {
+                        return <div className={classes.buttonCarousel} key={index}>{action.text}</div>
+                    })}
+                </div>
+            </div>
+        </div>
+    )
+}
+
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext }, classes }) => {
-    
-    const [cardSelected, setCardSelected] = useState(0);
 
     if (interactiontype === "text")
         return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontext}</div>;
@@ -253,23 +302,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
         return <div className={classes.interactionText} style={{ backgroundColor: '#84818A', color: 'white' }}>{interactiontext}</div>;
     } else if (interactiontype === "carousel") {
         const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
-        console.log(listItems);
-        
-        return (
-            <div style={{width: 200}}>
-                {listItems.map((item: Dictionary, index: number) => (
-                    <div>
-                        <div>
-                            <img src={item.mediaUrl} style={{width: '100%'}} alt="logocarousel"/>
-                        </div>
-                        {(item.actions as Dictionary[]).map((action: Dictionary, index: number) => {
-                            return <div key={index} className={classes.buttonPostback}>{action.text}
-                            </div>
-                        })}
-                    </div>
-                ))}
-            </div>
-        )
+        return <Carousel carousel={listItems} />
     }
 
     return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontype} {interactiontext}</div>;
