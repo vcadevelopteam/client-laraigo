@@ -49,6 +49,14 @@ const theme = createTheme({
 			fontWeight: 500,},
 			label: { fontWeight: 600, fontSize: 14, fontStyle: 'normal' },
 		},
+		MuiTabs: {
+			fixed: {
+				flexWrap: 'inherit',
+			},
+			flexContainer: {
+				flexWrap: 'inherit',
+			}
+		}
 	}
 });
 

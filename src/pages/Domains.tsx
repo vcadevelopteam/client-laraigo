@@ -56,9 +56,7 @@ const useStyles = makeStyles((theme) => ({
 const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
     const classes = useStyles();
     const { t } = useTranslation();
-
     const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
-
     const onSubmit = handleSubmit((data) => {
         if (!row)
             updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
@@ -73,11 +71,13 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
+                status: 'ACTIVO'
             })
 
             register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
+            register('status');
         }
     }, [openModal])
 
@@ -93,17 +93,19 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
         >
             <div className="row-zyx">
                 {edit ?
-                    <TemplateSwitch
-                        label={t(langKeys.bydefault)}
+                    <FieldEdit
+                        label={t(langKeys.domain)}
+                        disabled={true}
                         className="col-6"
-                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                        valueDefault={row?.domainname || ""}
+                        onChange={(value) => setValue('domainname', value)}
+                        error={errors?.domainvalue?.message}
                     /> :
                     <FieldView
-                        label={t(langKeys.default_organization)}
-                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                        className={classes.mb2}
-                    />
-                }
+                        label={t(langKeys.domain)}
+                        value={row?.domainname || ""}
+                        className="col-6"
+                    />}
             </div>
             <div className="row-zyx">
                 {edit ?
@@ -134,6 +136,20 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
                     />
                 }
             </div>
+            <div className="row-zyx">
+                {edit ?
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
+                    /> :
+                    <FieldView
+                        label={t(langKeys.bydefault)}
+                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        className={classes.mb2}
+                    />
+                }
+            </div>
         </DialogZyx>
     );
 }
@@ -142,14 +158,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
     const user = useSelector(state => state.login.validateToken.user);
-
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
-    const [orgsToDelete, setOrgsToDelete] = useState<Dictionary[]>([]);
+    const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -179,7 +193,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                 NoFilter: true
             },
             {
-                accessor: 'userid',
+                Header: t(langKeys.action),
+                //accessor: 'userid',
+                accessor: 'domainid',
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
@@ -210,10 +226,15 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
         setRowSelected({ row: null, edit: true });
     }
     const handleDelete = (row: Dictionary) => {
-        if (row.operation !== "INSERT") {
-            setOrgsToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        console.log('eliminar view 2');
+        if (row && row.operation !== "INSERT") {
+            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);            
+            console.log('entro aqui',row);
         }
-        setdataDomain(p => p.filter(x => row.orgid !== x.orgid));
+
+        console.log(domainToDelete);
+        setdataDomain(p => p.filter(x => row.domainid !== x.domainid));
+        console.log('ejecuto el filtro');
     }
 
     const handleView = (row: Dictionary) => {
@@ -227,7 +248,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     }
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            id: row ? row.userid : 0,
+            //id: row ? row.userid : 0,
+            id: row ? row.domainid : 0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
             corporation: row?.corpdesc || '',
@@ -269,10 +291,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            console.log('boton grabar');
             dispatch(showBackdrop(true));
             dispatch(execute({
                 header: insDomain({ ...data }),
-                detail: [...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), ...orgsToDelete.map(x => insDomainvalue(x))]
+                detail: [
+                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x })), 
+                    ...domainToDelete.map(x => insDomainvalue(x))]
             }, true));
             setWaitSave(true)
         }
@@ -353,6 +378,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.domain)}
+                                disabled={row ? true : false}
                                 className="col-6"
                                 valueDefault={row?.domainname || ""}
                                 onChange={(value) => setValue('domainname', value)}
@@ -450,6 +476,8 @@ const Domains: FC = () => {
     const columns = React.useMemo(
         () => [
             {
+                Header: t(langKeys.action),
+                //accessor: 'userid',
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
@@ -487,6 +515,11 @@ const Domains: FC = () => {
             {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
                 NoFilter: true
             },
         ],
