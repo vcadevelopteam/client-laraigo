@@ -6,6 +6,8 @@ import { Facebook as FacebookIcon, Instagram as InstagramIcon,WhatsApp as WhatsA
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, TemplateSwitch } from "components";
+import { useHistory, useRouteMatch } from "react-router";
+import paths from "common/constants/paths";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -26,15 +28,15 @@ const useChannelAddStyles = makeStyles(theme => ({
         flexGrow: 1,
         backgroundColor: 'inherit',
         textAlign: 'start',
-        padding: '35px 74px',
+        padding: '0 34px',
         display: 'flex',
         flexDirection: 'column',
     },
     title: {
         fontWeight: 500,
         fontSize: 32,
+        margin: '20px 0',
         color: theme.palette.primary.main,
-        margin: '0 32px',
     },
     subtitle: {
         margin: '8px 0 8px 4px',
@@ -76,6 +78,8 @@ export const ChannelAdd: FC = () => {
     const [viewSelected, setViewSelected] = useState("mainview");
     const classes = useChannelAddStyles();
     const { t } = useTranslation();
+    const history = useHistory();
+    const match = useRouteMatch<{ id: string }>();
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -103,8 +107,8 @@ export const ChannelAdd: FC = () => {
     const businessChannelOptions: ChannelOption[] = [
         {
             icon: <FacebookIcon color="inherit" />,
-            label: 'Facebook',
-            onClick: () => {},
+            label: 'Chat Web',
+            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.resolve(match.params.id)),
         },
         {
             icon: <InstagramIcon color="inherit" />,

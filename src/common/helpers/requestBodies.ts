@@ -26,6 +26,11 @@ export const getOrgsByCorp = (orgid: number): IRequestBody => ({
         all: true
     }
 })
+export const getUsersBySupervisor = (): IRequestBody => ({
+    method: "UFN_USERBYSUPERVISOR_SEL",
+    key: "UFN_USERBYSUPERVISOR_SEL",
+    parameters: {}
+})
 
 export const getRolesByOrg = (): IRequestBody => ({
     method: "UFN_ROLE_LST",
@@ -254,11 +259,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule}: Dictionary): IRequestBody => ({
+export const insClassification = ({id, description, parent, communicationchannel, status, type, operation,tags, jobplan}: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, username, operation, jobplan, usergroup, schedule
+        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup:0, schedule:""
     }
 })
 export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
@@ -294,6 +299,13 @@ export const getValuesForTree = (): IRequestBody => ({
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     parameters: {
         type: 'QUICKREPLY'
+    }
+});
+
+export const getParentSel = (): IRequestBody => ({
+    method: "UFN_CLASSIFICATION_LST_PARENT",
+    parameters: {
+        classificationid: 0
     }
 });
 
@@ -344,7 +356,45 @@ export const insMessageTemplate = (
         footerenabled,
         footer,
         buttonsenabled,
-        buttons,
+        buttons: JSON.stringify(buttons),
+        operation
+    }
+});
+
+export const getIntegrationManagerSel = (id: number): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
+
+export const insIntegrationManager = (
+    {
+        id,
+        description,
+        type,
+        status,
+        method,
+        url,
+        authorization,
+        headers,
+        bodytype,
+        body,
+        operation
+    }: Dictionary): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        method,
+        url,
+        authorization: JSON.parse(authorization),
+        headers: JSON.parse(headers),
+        bodytype,
+        body,
         operation
     }
 });

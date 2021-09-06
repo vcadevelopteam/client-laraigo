@@ -192,17 +192,6 @@ const InappropriateWords: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.action),
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
@@ -217,6 +206,17 @@ const InappropriateWords: FC = () => {
                     )
                 }
             },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true
+            },
+            
         ],
         [t]
     );

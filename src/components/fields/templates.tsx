@@ -27,6 +27,21 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 import { FormHelperText, useTheme } from '@material-ui/core';
+import {
+    WebMessengerIcon,
+    ZyxmeMessengerIcon,
+    AndroidIcon,
+    AppleIcon,
+    FacebookMessengerIcon,
+    FacebookWallIcon,
+    InstagramIcon,
+    LineIcon,
+    SmsIcon,
+    TwitterIcon,
+    YoutubeIcon,
+    WhatsappIcon,
+} from 'icons';
+
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -188,6 +203,7 @@ interface InputProps {
     type?: string;
     rows?: number;
     maxLength?: number;
+    fregister?: Dictionary;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -198,7 +214,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1 }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 1, fregister = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -209,6 +225,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <TextField
+                {...fregister}
                 color="primary"
                 fullWidth
                 disabled={disabled}
@@ -225,7 +242,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", maxLength = 0 }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 4, maxLength = 0 }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -243,7 +260,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 error={!!error}
                 value={value}
                 multiline
-                rows={4}
+                rows={rows}
                 helperText={error || null}
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
@@ -257,7 +274,35 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
     )
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false }) => {
+interface IconProps extends React.SVGProps<SVGSVGElement> {
+    channelType: string
+}
+
+export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height = 15, color = "#7721AD" }) => {
+
+    if (channelType === "WHAT") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WHAP") return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    if (channelType === "WHAC") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBMS") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TELE") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAIL") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
+
+    return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
+}
+
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {} }) => {
 
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -293,6 +338,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 loading={loading}
                 renderInput={(params) => (
                     <TextField
+                        {...fregister}
                         {...params}
                         helperText={error || null}
                         error={!!error}

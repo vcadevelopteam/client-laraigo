@@ -11,6 +11,10 @@ const paths = {
         path: '/channels/:id/add',
         resolve: (channelId: string | number) => `/channels/${channelId}/add`,
     },
+    CHANNELS_ADD_CHATWEB: {
+        path: '/channels/:id/add/chatweb',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/chatweb`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
@@ -26,6 +30,7 @@ const paths = {
     PERSON: '/extras/person',
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
+    INTEGRATIONMANAGER: '/extras/integrationmanager',
 };
 
 export default paths;

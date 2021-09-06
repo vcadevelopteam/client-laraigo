@@ -123,9 +123,10 @@ const translation: LangKeys = {
     parent:'Parent',
     quantity: 'Quantity',
     quantity_plural: 'quantities',
-
+    tag:'Tag',
     validationtext: 'Text Validation',
-
+    completedesc: 'Complete description',
+    actionplan:'Action plan',
     role: 'Role',
     role_plural: 'Roles',
 
@@ -190,7 +191,20 @@ const translation: LangKeys = {
     buttons: 'Buttons',
     payload: 'Payload',
     message: 'Mensaje',
+    addbutton: 'Add button',
+    removebutton: 'Remove Button',
 
+    integrationmanager: 'Integration Manager',
+    integrationmanager_plural: 'Integration Manager',
+    newintegrationmanager: 'New Integration Manager',
+    requesttype: 'Request Type',
+    url: 'Url',
+    authorization: 'Authorization',
+    token: 'Token',
+    key: 'Key',
+    bodytype: 'Body Type',
+    
+    variable:"Variable",
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
     successful_register: 'Registered successfully',
@@ -200,6 +214,7 @@ const translation: LangKeys = {
     save: 'Save',
     setpassword: 'Set password',
     select: "Select",
+    data:"Data",
     cancel: 'Cancel',
     default_application: 'Default application',
     default_organization: 'Default organization',
@@ -219,6 +234,9 @@ const translation: LangKeys = {
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
     next:"Next",
+    login_with_google: 'Login with Google',
+
+    hasactionplan:'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
     error_divison_by_zero: '22012: There was an error, contact the administrator ',
