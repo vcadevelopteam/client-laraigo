@@ -105,7 +105,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
     doubleAuthentication: 'Doble autenticación',
-
+    next:"Siguiente",
     group: 'Grupo',
     group_plural: 'Grupos',
 

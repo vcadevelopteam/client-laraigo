@@ -7,7 +7,7 @@ export const langKeys = {
 
     report: 'report',
     report_plural: 'report_plural',
-
+    next:"next",
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
     parent:'parent',
