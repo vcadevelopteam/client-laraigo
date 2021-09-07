@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb } from 'pages';
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, Reports } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -76,10 +76,14 @@ const RouterApp: FC = () => {
 			<Switch>
 				<ProtectRoute exact path="/"/>
 				<Route exact path="/sign-in" component={SignIn} />
-
 				<ProtectRoute exact path="/email_inbox">
 					<Layout mainClasses={classes.main}>
 						<Properties />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.REPORTS}>
+					<Layout mainClasses={classes.main}>
+						<Reports />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS}>

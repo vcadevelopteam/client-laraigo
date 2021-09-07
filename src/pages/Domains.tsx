@@ -12,31 +12,31 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import {
-    getCollection, resetMain, getMultiCollection,
-    execute, getCollectionAux, resetMainAux,
-} from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux}  from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
+    row: Dictionary | null;
+    domainname: string | "";
+    edit: boolean;
 }
 
 interface DetailProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData?: () => void
+    fetchData?: () => void;
 }
+
 interface ModalProps {
     data: RowSelected;
-    multiData: MultiData[];
+    dataDomain: Dictionary[] | null;
     openModal: boolean;
     setOpenModal: (open: boolean) => void;
     updateRecords?: (record: any) => void;
 }
+
 const arrayBread = [
     { id: "view-1", name: "Domains" },
     { id: "view-2", name: "Domain detail" }
@@ -45,23 +45,24 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        // maxWidth: '80%',
+        marginRight: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
     },
-    mb2: {
-        marginBottom: theme.spacing(4),
-    },
+    button: {        
+        marginRight: theme.spacing(2),
+    }
 }));
-const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, openModal, setOpenModal, updateRecords }) => {
-    const classes = useStyles();
+
+const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, dataDomain, openModal, setOpenModal, updateRecords }) => {
     const { t } = useTranslation();
-    const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm();
+    const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
     const onSubmit = handleSubmit((data) => {
         if (!row)
-            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
+            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }]);
         else
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainid === row.domainid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row.domainvalue ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+
         setOpenModal(false)
     });
 
@@ -72,9 +73,9 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
                 status: 'ACTIVO'
-            })
-
-            register('domainvalue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+            })      
+            
+            register('domainvalue', { validate: (value) => ((value && value.length) || t(langKeys.field_required))});
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
             register('bydefault');
             register('status');
@@ -92,61 +93,44 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
             button2Type="submit"
         >
             <div className="row-zyx">
-                {edit ?
+                {
                     <FieldEdit
                         label={t(langKeys.domain)}
                         disabled={true}
                         className="col-6"
-                        valueDefault={row?.domainname || ""}
+                        valueDefault={row?.domainname || domainname}
                         onChange={(value) => setValue('domainname', value)}
-                        error={errors?.domainvalue?.message}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.domain)}
-                        value={row?.domainname || ""}
-                        className="col-6"
-                    />}
-            </div>
-            <div className="row-zyx">
-                {edit ?
-                    <FieldEdit
-                        label={t(langKeys.code)}
-                        className="col-6"
-                        valueDefault={row?.domainvalue || ""}
-                        onChange={(value) => setValue('domainvalue', value)}
-                        error={errors?.domainvalue?.message}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.code)}
-                        value={row?.domainvalue || ""}
-                        className="col-6"
-                    />}
-                {edit ?
-                    <FieldEdit
-                        label={t(langKeys.description)}
-                        className="col-6"
-                        valueDefault={row?.domaindesc || ""}
-                        onChange={(value) => setValue('domaindesc', value)}
-                        error={errors?.domaindesc?.message}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.description)}
-                        value={row?.domaindesc || ""}
-                        className="col-6"
                     />
                 }
             </div>
             <div className="row-zyx">
-                {edit ?
+                {
+                    <FieldEdit
+                        label={t(langKeys.code)}
+                        disabled={edit ? true : false}
+                        className="col-6"
+                        valueDefault={getValues('domainvalue')}
+                        onChange={(value) => setValue('domainvalue', value)}
+                        error={errors?.domainvalue?.message}
+                    />
+                }
+                {
+                    <FieldEdit
+                        label={t(langKeys.description)}
+                        className="col-6"
+                        valueDefault={getValues('domaindesc')}
+                        onChange={(value) => setValue('domaindesc', value)}
+                        error={errors?.domaindesc?.message}
+                    />
+                }
+            </div>
+            <div className="row-zyx">
+                {
                     <TemplateSwitch
                         label={t(langKeys.bydefault)}
                         className="col-6"
-                        onChange={(value) => setValue('bydefault', !!value.bydefault)}
-                    /> :
-                    <FieldView
-                        label={t(langKeys.bydefault)}
-                        value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                        className={classes.mb2}
+                        valueDefault={getValues('bydefault')}
+                        onChange={(value) => setValue('bydefault', value)}
                     />
                 }
             </div>
@@ -154,47 +138,23 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, edit }, multiData, ope
     );
 }
 
-const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const detailRes = useSelector(state => state.main.mainAux); //RESULTADO DEL DETALLE
+    const detailRes = useSelector(state => state.main.mainAux);
     const user = useSelector(state => state.login.validateToken.user);
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
-    const [openDialogStatus, setOpenDialogStatus] = useState(false);
-    const [openDialogOrganization, setOpenDialogOrganization] = useState(false);
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-
+    const [openDialogDomain, setOpenDialogDomain] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const dataDomainType = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.code),
-                accessor: 'domainvalue',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.description),
-                accessor: 'domaindesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.bydefault),
-                accessor: 'bydefault',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
-            },
-            {
-                //Header: t(langKeys.action),
-                //accessor: 'userid',
                 accessor: 'domainid',
                 NoFilter: true,
                 isComponent: true,
@@ -211,6 +171,31 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                     )
                 }
             },
+            {
+                Header: t(langKeys.code),
+                accessor: 'domainvalue',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'domaindesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.bydefault),
+                accessor: 'bydefault',
+                NoFilter: true,
+                Cell: (prop: any) => {
+                    const row = prop.cell.row.original;
+                    const val = (row? (row.bydefault? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
+                    return val;
+                }
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true
+            }
         ],
         []
     );
@@ -222,33 +207,30 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     }, [detailRes]);
 
     const handleRegister = () => {
-        setOpenDialogOrganization(true)
-        setRowSelected({ row: null, edit: true });
+        setOpenDialogDomain(true)
+        setRowSelected({ row: null, domainname, edit: false});
     }
+
     const handleDelete = (row: Dictionary) => {
-        console.log('eliminar view 2');
         if (row && row.operation !== "INSERT") {
-            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);            
-            console.log('entro aqui',row);
+            setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
         }
 
-        console.log(domainToDelete);
-        setdataDomain(p => p.filter(x => row.domainid !== x.domainid));
-        console.log('ejecuto el filtro');
+        setdataDomain(p => p.filter(x => row.domainvalue !== x.domainvalue));
     }
 
     const handleView = (row: Dictionary) => {
-        setOpenDialogOrganization(true)
-        setRowSelected({ row, edit: false })
+        setOpenDialogDomain(true)
+        setRowSelected({ row, domainname, edit: false })
     }
 
     const handleEdit = (row: Dictionary) => {
-        setOpenDialogOrganization(true)
-        setRowSelected({ row, edit: true })
+        setOpenDialogDomain(true)
+        setRowSelected({ row, domainname, edit: true })
     }
+
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            //id: row ? row.userid : 0,
             id: row ? row.domainid : 0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
@@ -279,8 +261,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
     React.useEffect(() => {
         register('id');
         register('status');
-        //register('corporation', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        //register('organization', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
@@ -291,16 +271,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            console.log('boton grabar data', data);
-            console.log('boton grabar row', row);
             dispatch(showBackdrop(true));
             dispatch(execute({
                 header: insDomain({...data}),
                 detail: [
                     ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, id:0 })), 
-                    ...domainToDelete.map(x => insDomainvalue({ ...x, 
-                        //operation: "DELETE", 
-                        //status: 'ELIMINADO', 
+                    ...domainToDelete.map(x => insDomainvalue({ ...x,
                         id: x.domainid,
                         description: data.description, 
                         type: data.type }))]
@@ -335,16 +311,19 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
+                            onClick={() => setViewSelected("view-1")}>
+                                {t(langKeys.back)}
+                        </Button>
                         {edit &&
                             <Button
+                                className={classes.button}
                                 variant="contained"
                                 color="primary"
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}</Button>
+                                style={{ backgroundColor: "#55BD84" }}>
+                                    {t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -439,31 +418,18 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
                         download={false}
                         loading={detailRes.loading}
                         filterGeneral={false}
-                        register={edit}
+                        register={true}
                         handleRegister={handleRegister}
                     />
                 )}
             </div>
-            <DialogZyx
-                open={openDialogStatus}
-                title={t(langKeys.status)}
-                buttonText1={t(langKeys.save)}
-                handleClickButton1={() => setOpenDialogStatus(false)}
-            >
-                <FieldEdit
-                    label={t(langKeys.description)}
-                    className="col-6"
-                    valueDefault={row?.description || ""}
-                    onChange={(value) => setValue('description', value)}
-                    error={errors?.description?.message}
-                />
-            </DialogZyx>
+            
             <DetailValue
                 data={rowSelected}
-                openModal={openDialogOrganization}
-                setOpenModal={setOpenDialogOrganization}
-                multiData={multiData}
+                openModal={openDialogDomain}
+                setOpenModal={setOpenDialogDomain}
                 updateRecords={setdataDomain}
+                dataDomain={dataDomain}
             />
         </div>
     );
@@ -471,21 +437,18 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, edit }, setViewSele
 
 const Domains: FC = () => {
     const dispatch = useDispatch();
+    const classes = useStyles();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
-
     const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
 
     const columns = React.useMemo(
         () => [
             {
-                //Header: 
-                //t(langKeys.action),
-                //accessor: 'userid',
-                accessor: 'userid',
+                accessor: 'domainid',
                 NoFilter: true,
                 isComponent: true,
                 Cell: (props: any) => {
@@ -528,7 +491,7 @@ const Domains: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
-            },
+            }
         ],
         []
     );
@@ -563,18 +526,19 @@ const Domains: FC = () => {
 
     const handleRegister = () => {
         setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
+        setRowSelected({ row: null, domainname: "", edit: true });
     }
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
+        setRowSelected({ row, domainname: row.domainname, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
+        setRowSelected({ row, domainname: row.domainname, edit: true });
     }
+    
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
@@ -596,17 +560,21 @@ const Domains: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <div className={classes.containerDetail}>
+                {
+                    <TableZyx
+                        columns={columns}
+                        titlemodule={t(langKeys.domain_plural, { count: 2 })}
+                        data={mainResult.mainData.data}
+                        download={true}
+                        loading={mainResult.mainData.loading}
+                        register={true}
+                        handleRegister={handleRegister}
+                    />
+                }
+            </div>
         )
-    }
+    } 
     else
         return (
             <DetailDomains
