@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
+import { useSelector } from 'hooks';
 import { ITicket } from "@types";
 import { AntTab } from 'components';
 import Tabs from '@material-ui/core/Tabs';
@@ -9,14 +10,23 @@ import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
-
-export interface ChatProps {
-}
+import InfoPanel from 'components/inbox/InfoPanel'
+import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
+import { useDispatch } from 'react-redux';
+import { ListItemSkeleton } from 'components'
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
         flex: '1',
         display: 'flex'
+    },
+    titleTicketChat: {
+        fontWeight: 500,
+        fontSize: 20,
+        '&:hover': {
+            cursor: 'pointer',
+            borderBottom: '1px solid #2E2C34'
+        }
     },
     containerTickets: {
         flex: '0 0 300px',
@@ -58,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'rgb(132 129 138 / 0.4);',
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
+    },
+    itemSelected: {
+        backgroundColor: 'rgb(235, 234, 237, 0.50)'
     },
     buttonPostback: {
         color: theme.palette.primary.main,
@@ -108,7 +121,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerResponse: {
         padding: theme.spacing(2),
-        height: 95,
         background: '#FFF',
     },
     containerChat: {
@@ -119,6 +131,27 @@ const useStyles = makeStyles((theme) => ({
     containerProfile: {
         flex: '0 0 300px',
         display: 'none'
+    },
+    iconResponse: {
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            borderRadius: 4
+        }
+    },
+    iconSend: {
+        background: "#5542F6",
+        width: 32,
+        height: 32,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 4,
+        cursor: 'pointer',
+    },
+    iconSendDisabled: {
+        backgroundColor: "#EBEAED",
+        cursor: 'not-allowed',
     },
     containerButtonsChat: {
         display: 'flex',
@@ -189,135 +222,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const dataTickets = [
-    {
-        "conversationid": 29370,
-        "ticketnum": "0018197",
-        "firstconversationdate": "2021-09-03T17:49:06.542206",
-        "lastreplyuser": "2021-09-03T17:50:15.267896",
-        "lastconversationdate": null,
-        "status": "ASIGNADO",
-        "lastmessage": "la direccion es Pino Park, Puno 21001, Peru\nflag ",
-        "personcommunicationchannel": "2904648519566444_FBDM",
-        "displayname": "Carlos Farro Diaz",
-        "personid": 13514,
-        "communicationchannelid": 171,
-        "communicationchannelsite": "1616715421960277",
-        "communicationchanneltype": "FBDM",
-        "imageurldef": "https://platform-lookaside.fbsbx.com/platform/profilepic/?psid=2904648519566444&width=1024&ext=1633283352&hash=AeSgjAdRU-UKJ8kiD84",
-        "countnewmessages": 0,
-        "postexternalid": "m_aYsqyG381-YP631S6lEwCFXomIz0Aat7lS2aTq1Bu-xv9oqSv1g5S6e2SmCebOKsrFL4jihPgdKwoWB2yVIdrA",
-        "commentexternalid": null,
-        "replyexternalid": null,
-        "channelicon": "fab fa-facebook-messenger",
-        "coloricon": "#c53268",
-        "edit": false,
-        "lastseendate": "2021-09-03T17:50:13.972051"
-    },
-    {
-        conversationid: 29356,
-        ticketnum: "0018184",
-        firstconversationdate: "2021-09-01T14:12:19.130644",
-        lastreplyuser: "2021-09-01T14:12:49.771757",
-        lastconversationdate: "2021-09-01T14:13:01.050635",
-        status: "ASIGNADO",
-        lastmessage: "dsa",
-        personcommunicationchannel: "17c192d8-7537-4c19-8108-2ff64e8ab344_CHAZ",
-        displayname: "Carlos",
-        personid: 16213,
-        communicationchannelid: 219,
-        communicationchannelsite: "60a5809c6399e1cc8fddad1f",
-        communicationchanneltype: "CHAZ",
-        imageurldef: "https://platform-lookaside.fbsbx.com/platform/profilepic/?psid=4494757313907641&width=1024&xt1632121997&hash=AeT8zLVkLYZu_fgscME",
-        countnewmessages: 1,
-        postexternalid: null,
-        commentexternalid: null,
-        replyexternalid: null,
-        channelicon: "fas fa-comments",
-        coloricon: "",
-        edit: false,
-        lastseendate: null
-    },
-    {
-        conversationid: 29312,
-        ticketnum: "0018150",
-        firstconversationdate: "2021-08-26T14:18:45.403498",
-        lastreplyuser: "2021-08-26T14:18:45.522308",
-        lastconversationdate: null,
-        status: "SUSPENDIDO",
-        lastmessage: "Comentario de suspensión: CIERRE DE JORNADA",
-        personcommunicationchannel: "3ca7a891cde179aefbff5a53_WEBM_OTROS6555",
-        displayname: "proba1",
-        personid: 16511,
-        communicationchannelid: 135,
-        communicationchannelsite: "5e583f2a3b26b6000eb1e019",
-        communicationchanneltype: "WEBM",
-        imageurldef: "",
-        countnewmessages: 0,
-        postexternalid: null,
-        commentexternalid: null,
-        replyexternalid: null,
-        channelicon: "fa fa-globe",
-        coloricon: "",
-        edit: false,
-        lastseendate: null
-    },
-    {
-        conversationid: 29303,
-        ticketnum: "0018142",
-        firstconversationdate: "2021-08-25T21:18:47.818391",
-        lastreplyuser: "2021-08-25T21:18:47.904366",
-        lastconversationdate: null,
-        status: "SUSPENDIDO",
-        lastmessage: "Comentario de suspensión: CIERRE DE JORNADA",
-        personcommunicationchannel: "0d770ab0510086d5ac677063_WEBM_OTROS74512",
-        displayname: "gera222",
-        personid: 16509,
-        communicationchannelid: 135,
-        communicationchannelsite: "5e583f2a3b26b6000eb1e019",
-        communicationchanneltype: "WEBM",
-        imageurldef: "",
-        countnewmessages: 0,
-        postexternalid: null,
-        commentexternalid: null,
-        replyexternalid: null,
-        channelicon: "fa fa-globe",
-        coloricon: "",
-        edit: false,
-        lastseendate: null
-    },
-    {
-        conversationid: 29137,
-        ticketnum: "0018062",
-        firstconversationdate: "2021-08-20T01:54:36.833041",
-        lastreplyuser: "2021-08-20T01:56:42.918011",
-        lastconversationdate: "2021-08-20T01:56:42.884512",
-        status: "SUSPENDIDO",
-        lastmessage: "Cliente abandonó la conversación",
-        personcommunicationchannel: "c02a072772dc96873f55727f_WEBM_DNI73319291",
-        displayname: "Hernando",
-        personid: 15163,
-        communicationchannelid: 135,
-        communicationchannelsite: "5e583f2a3b26b6000eb1e019",
-        communicationchanneltype: "WEBM",
-        imageurldef: "",
-        countnewmessages: 5,
-        postexternalid: null,
-        commentexternalid: null,
-        replyexternalid: null,
-        channelicon: "fa fa-globe",
-        coloricon: "",
-        edit: false,
-        lastseendate: null
-    },
-]
-
 const filterAboutStatusName = (data: ITicket[], page: number, searchName: string): ITicket[] => {
     if (page === 0 && searchName === "") {
-        return data;
+        return data.filter(item => item.status === "ASIGNADO");
     }
     if (page === 0 && searchName !== "") {
-        return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
         return data.filter(item => item.status === "PAUSADO");
@@ -335,11 +245,31 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
 }
 
 const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected }) => {
+    const dispatch = useDispatch();
+
     const [showSearch, setShowSearch] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
-    const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>(dataTickets);
-
+    const [dataTickets, setDataTickets] = useState<ITicket[]>([])
+    const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>([]);
     const [search, setSearch] = useState("");
+
+    const ticketList = useSelector(state => state.inbox.ticketList);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+
+    useEffect(() => {
+        dispatch(getTickets(agentSelected ? agentSelected.userid : null))
+
+        return () => {
+            dispatch(resetGetTickets())
+        }
+    }, [agentSelected])
+
+    useEffect(() => {
+        if (!ticketList.loading && !ticketList.error) {
+            setDataTickets(ticketList.data as ITicket[])
+            setTicketsToShow((ticketList.data as ITicket[]).filter(item => item.status === "ASIGNADO"));
+        }
+    }, [ticketList])
 
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
@@ -392,15 +322,25 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
                 }
             </div>
             <div style={{ overflowY: 'auto' }}>
-                {ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)}
+                {ticketList.loading ? <ListItemSkeleton /> :
+                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
+                }
             </div>
         </div>
     )
 }
 
-const InboxPanel: React.FC<ChatProps> = () => {
+const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
     const classes = useStyles();
-    const [ticketSelected, setTicketSelected] = useState<ITicket | null>(null);
+    const dispatch = useDispatch();
+
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
+    const setTicketSelected = (ticket: ITicket) => {
+        dispatch(selectTicket(ticket))
+        dispatch(getDataTicket(ticket))
+    };
 
     return (
         <div className={classes.containerPanel}>
@@ -411,7 +351,9 @@ const InboxPanel: React.FC<ChatProps> = () => {
             {ticketSelected &&
                 <>
                     <ChatPanel ticket={ticketSelected} classes={classes} />
-                    <div className={classes.containerProfile}>profile</div>
+                    {showInfoPanel &&
+                        <InfoPanel />
+                    }
                 </>
             }
         </div>

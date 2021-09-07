@@ -11,14 +11,15 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getCollection } from 'store/main/actions';
+import { getAgents, selectAgent } from 'store/inbox/actions';
 import { AntTab } from 'components';
 import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
-import { getUsersBySupervisor } from 'common/helpers';
+import { IAgent } from "@types";
+import clsx from 'clsx';
+import { ListItemSkeleton } from 'components'
 
-
-const filterAboutStatusName = (data: AgentProps[], page: number, searchName: string): AgentProps[] => {
+const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
         return data;
     }
@@ -51,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
         flex: '0 0 300px',
         display: 'flex',
         flexDirection: 'column',
+        backgroundColor: 'white'
     },
     containerPanel: {
         flex: '1'
@@ -80,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'rgb(235, 234, 237, 0.18)'
         }
     },
+    itemSelected: {
+        backgroundColor: 'rgb(235, 234, 237, 0.50)'
+    },
     title: {
         fontSize: '22px',
         lineHeight: '48px',
@@ -88,17 +93,6 @@ const useStyles = makeStyles((theme) => ({
         color: theme.palette.text.primary,
     }
 }));
-
-interface AgentProps {
-    userid: number;
-    name: string;
-    countActive: number;
-    countPaused: number;
-    countClosed: number;
-    coundPending: number;
-    status: string | null;
-    channels?: string
-}
 
 interface BadgePropsTmp extends BadgeProps {
     colortmp: any;
@@ -150,10 +144,15 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, countClosed, coundPending, channels }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, status, countActive, countPaused, countClosed, coundPending, channels } }) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
+
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const handlerSelectAgent = () => dispatch(selectAgent(agent));
+
     return (
-        <div className={classes.containerItemAgent}>
+        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === agent.userid) })} onClick={handlerSelectAgent}>
             <div className={classes.agentUp}>
                 <StyledBadge
                     overlap="circular"
@@ -204,28 +203,27 @@ const ItemAgent: FC<AgentProps> = ({ name, status, countActive, countPaused, cou
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
-    const mainResult = useSelector(state => state.main.mainData);
+    const agentList = useSelector(state => state.inbox.agentList); // amarrado con getCollection
 
     useEffect(() => {
-        dispatch(getCollection(getUsersBySupervisor()))
+        dispatch(getAgents())
     }, [])
 
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
     const [pageSelected, setPageSelected] = useState(0);
-    const [agentsToShow, setAgentsToShow] = useState<AgentProps[]>([]);
-    const [dataAgents, setDataAgents] = useState<AgentProps[]>([]);
+    const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
+    const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
 
     useEffect(() => {
-        if (!mainResult.loading && !mainResult.error) {
-            setDataAgents(mainResult.data as AgentProps[])
-            setAgentsToShow(mainResult.data as AgentProps[])
+        if (!agentList.loading && !agentList.error) {
+            setDataAgents(agentList.data as IAgent[])
+            setAgentsToShow(agentList.data as IAgent[])
         }
-    }, [mainResult])
+    }, [agentList])
 
     const onChangeSearchAgent = (e: any) => {
         setSearch(e.target.value)
-        // setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, e.target.value));
     }
 
     useEffect(() => {
@@ -234,7 +232,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     }, [pageSelected, search])
 
     return (
-        <div className={classes.containerAgents} style={{ backgroundColor: 'white' }}>
+        <div className={classes.containerAgents}>
             <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
                 {!showSearch ?
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -275,20 +273,24 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
                 <AntTab label="Active" />
                 <AntTab label="Inactive" />
             </Tabs>
-            <div style={{ overflowY: 'auto' }}>
-                {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} {...agent} />))}
-            </div>
+            {agentList.loading ? <ListItemSkeleton /> :
+                <div style={{ overflowY: 'auto' }}>
+                    {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))}
+                </div>
+            }
         </div>
     )
 }
 
 const Supervisor: FC = () => {
     const classes = useStyles();
-
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
-            <InboxPanel />
+            {agentSelected &&
+                <InboxPanel userid={agentSelected.userid} />
+            }
         </div>
     )
 }

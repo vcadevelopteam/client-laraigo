@@ -6,19 +6,22 @@ import ticketReducer, { IState as ITicketState } from './ticket/reducer';
 import loginReducer, { IState as ILogin } from './login/reducer';
 import mainReducer, { IState as IMain } from './main/reducer';
 import popusReducer, { IState as IPopus } from './popus/reducer';
+import inboxReducer, { IState as IInbox } from './inbox/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
     login: ILogin,
     main: IMain;
     popus: IPopus;
+    inbox: IInbox;
 }
 
 const rootReducer = combineReducers<IRootState>({
    ticket: ticketReducer,
    login: loginReducer,
    main: mainReducer,
-   popus: popusReducer
+   popus: popusReducer,
+   inbox: inboxReducer
 });
 
 export default function configureStore(preloadedState?: IRootState) {

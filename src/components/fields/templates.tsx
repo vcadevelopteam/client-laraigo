@@ -27,6 +27,9 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { withStyles } from '@material-ui/core/styles';
 import { FormHelperText, useTheme } from '@material-ui/core';
+import { Divider, Grid, ListItem } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -465,3 +468,29 @@ export const AntTab = withStyles((theme) => ({
     },
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);
+
+export const ListItemSkeleton: React.FC = () => (
+    <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
+        <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>
+            <Grid container direction="column">
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Box>
+    </ListItem>
+)

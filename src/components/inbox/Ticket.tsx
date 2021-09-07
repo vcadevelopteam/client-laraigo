@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
+import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
 import { ITicket } from "@types";
 import { GetIcon } from 'components'
+import clsx from 'clsx';
 
 const secondsToTime = (seconds: number): string => {
     const hh = Math.floor(seconds / 3600);
@@ -34,40 +36,45 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
     )
 }
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => (
-    <div 
-        className={classes.containerItemTicket}
-        onClick={() => setTicketSelected(item)}
-    >
-        <Avatar src={imageurldef} />
-        <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                <GetIcon channelType={communicationchanneltype}/>
-                <div className={classes.name}>{displayname}</div>
-            </div>
-            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                <LabelGo
-                    label={ticketnum}
-                    color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
-                />
-                <LabelGo
-                    isTimer={true}
-                    timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
-                    color="#465a6ed9"
-                />
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    return (
+        (
+            <div
+                className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
+                onClick={() => setTicketSelected(item)}
+            >
+                <Avatar src={imageurldef} />
+                <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                        <GetIcon channelType={communicationchanneltype} />
+                        <div className={classes.name}>{displayname}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                        <LabelGo
+                            label={ticketnum}
+                            color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
+                        />
+                        <LabelGo
+                            isTimer={true}
+                            timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
+                            color="#465a6ed9"
+                        />
+                        {(countnewmessages || 0) > 0 &&
+                            <LabelGo
+                                isTimer={true}
+                                timer={getSecondsUntelNow(convertLocalDate(lastconversationdate, true))}
+                                color="#FB5F5F"
+                            />
+                        }
+                    </div>
+                </div>
                 {(countnewmessages || 0) > 0 &&
-                    <LabelGo
-                        isTimer={true}
-                        timer={getSecondsUntelNow(convertLocalDate(lastconversationdate, true))}
-                        color="#FB5F5F"
-                    />
+                    <div className={classes.containerNewMessages}>{(countnewmessages || 0)}</div>
                 }
             </div>
-        </div>
-        {(countnewmessages || 0) > 0 &&
-            <div className={classes.containerNewMessages}>{(countnewmessages || 0)}</div>
-        }
-    </div>
-)
+        )
+    )
+}
 
 export default ItemTicket;
