@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox } from 'components';
 import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -50,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     selectInput1: {
         flexGrow: 0,
-        flexBasis: '130px',
+        flexBasis: '180px',
         marginRight: '10px',
     },
     selectInput2: {
@@ -64,8 +65,14 @@ const useStyles = makeStyles((theme) => ({
     labelButton2: {
         minWidth: 'max-content',
         minHeight: '30px',
+        maxHeight: '48px',
         flexBasis: 0,
         flexGrow: 0,
+    },
+    checkboxRow: {
+        flexGrow: 0,
+        flexBasis: 0,
+        marginRight: '0.5rem',
     },
     fieldRow: {
         flexGrow: 1,
@@ -77,6 +84,15 @@ const useStyles = makeStyles((theme) => ({
         flexBasis: 0,
     }
 }));
+
+const isJson = (s: string) => {
+    try {
+        JSON.parse(s);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
 const dataIntegrationType = [
     { value: "STANDARD", text: "STANDARD" }, // Setear en diccionario los text
@@ -97,6 +113,11 @@ const dataAuthorizationType = [
 const dataBodyType = [
     { value: "JSON", text: "JSON" }, // Setear en diccionario los text
     { value: "URLENCODED", text: "URL encoded" }, // Setear en diccionario los text
+]
+
+const dataLevel = [
+    { value: "CORP", text: "CORPORATION" }, // Setear en diccionario los text
+    { value: "ORG", text: "ORGANIZATION" }, // Setear en diccionario los text
 ]
 
 const IntegrationManager: FC = () => {
@@ -127,8 +148,8 @@ const IntegrationManager: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.name),
-                accessor: 'name',
+                Header: t(langKeys.description),
+                accessor: 'description',
                 NoFilter: true
             },
             {
@@ -238,9 +259,10 @@ type AuthorizationType = {
     token?: string
 }
 
-type HeaderType = {
-    key: string;
-    value: any;
+type FieldType = {
+    name: string,
+    key: boolean,
+    order: string
 }
 
 type FormFields = {
@@ -251,9 +273,14 @@ type FormFields = {
     method: string,
     url: string,
     authorization: AuthorizationType,
-    headers: HeaderType[],
+    headers: Dictionary[],
     bodytype: string,
     body: string,
+    parameters: Dictionary[],
+    variables: string[],
+    level: string,
+    frame: string,
+    fields: FieldType[],
     operation: string
 }
 
@@ -267,29 +294,48 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const { control, register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm<FormFields>({
+    const { control, register, handleSubmit, setValue, getValues, setError, clearErrors, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
-            type: row ? row.type : 'STANDARD',
-            status: row ? row.status : 'ACTIVO',
-            method: row ? row.method : 'GET',
-            url: row ? row.url : '',
-            authorization: row ? JSON.parse(row.authorization) : {},
-            headers: row ? JSON.parse(row.headers) : [],
-            bodytype: row ? row.bodytype : 'JSON',
-            body: row ? row.body : '',
+            type: row ? (row.type || 'STANDARD') : 'STANDARD',
+            status: row ? (row.status || 'ACTIVO') : 'ACTIVO',
+            method: row ? (row.method || 'GET') : 'GET',
+            url: row ? (row.url || '') : '',
+            authorization: row ? (row.authorization || { type: 'NONE' }) : { type: 'NONE' },
+            headers: row ? (row.headers || []) : [],
+            bodytype: row ? (row.bodytype || 'JSON') : 'JSON',
+            body: row ? (row.body || '') : '',
+            parameters: row ? (row.parameters || []) : [],
+            variables: row ? (row.variables || []) : [],
+            level: row ? (row.level || 'CORP') : 'CORP',
+            frame: row ? (row.frame || '') : '',
+            fields: row ? (row.fields || []) : [],
             operation: row ? "EDIT" : "INSERT"
         }
     });
 
-    const { fields: headers } = useFieldArray({
-        control, // control props comes from useForm (optional: if you are using FormContext)
-        name: "headers", // unique name for your Field Array
-      });
+    const { fields: headers, append: headersAppend, remove: headersRemove, update: headersUpdate } = useFieldArray({
+        control,
+        name: "headers",
+    });
+
+    const { fields: parameters, append: parametersAppend, remove: parametersRemove, update: parametersUpdate } = useFieldArray({
+        control,
+        name: "parameters",
+    });
+
+    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate } = useFieldArray({
+        control,
+        name: "fields",
+    });
 
     React.useEffect(() => {
+        register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('method', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('url');
+        register('variables');
     }, [edit, register]);
 
     useEffect(() => {
@@ -322,16 +368,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         }))
     });
 
-    const onChangeType = (data: Dictionary) => {
+    const onChangeType = async (data: Dictionary) => {
         setValue('type', data?.value || '');
-        switch (data?.value || 'STANDARD') {
-            case 'STANDARD':
-                // unregister([]);    
-                break;
-            case 'CUSTOM':
-                // unregister(['method','url','authorization','headers','bodytype','body']);
-                break;
-        }
+        await trigger('type');
     }
 
     const onChangeMethod = async (data: Dictionary) => {
@@ -345,23 +384,80 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }
 
     const onClickAddHeader = async () => {
-        if (getValues('headers'))
-            setValue('headers', [...getValues('headers'), { key: '', value: '' }])
-        await trigger('headers');
+        headersAppend({ key: '', value: '' });
     }
 
     const onClickDeleteHeader = async (index: number) => {
-        setValue('headers', getValues('headers')?.filter((x: any, i: number) => i !== index));
-        await trigger('headers');
+        headersRemove(index);
     }
 
-    const onChangeHeader = (index: number, param: "key" | "value", value: string) => {
-        setValue(`headers.${index}.${param}`, value);
+    const onBlurHeader = (index: any, param: string, value: any) => {
+        headersUpdate(index, { ...headers[index], [param]: value});
+    }
+
+    const onClickAddParameter = async () => {
+        parametersAppend({ key: '', value: '' });
+    }
+
+    const onClickDeleteParameter = async (index: number) => {
+        parametersRemove(index);
+    }
+
+    const onBlurParameter = (index: any, param: string, value: any) => {
+        parametersUpdate(index, { ...parameters[index], [param]: value});
+    }
+
+    const onChangeBody = (value: string) => {
+        setValue('body', value)
+    }
+
+    const onClickBeautify = async () => {
+        let data = getValues('body');
+        if (isJson(data)) {
+            data = JSON.parse(data);
+            data = JSON.stringify(data, null, 4);
+            setValue('body', '');
+            await trigger('body');
+            setValue('body', data);
+            await trigger('body');
+        }
+    }
+
+    const onBlurBody = () => {
+        let data = getValues('body');
+        if (!isJson(data)) {
+            setError('body', {
+                type: 'manual',
+                message: t(langKeys.invalidjson),
+            });
+        }
+        else {
+            clearErrors('body');
+            let varrex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/,'g');
+            setValue('variables', Array.from(new Set(Array.from(data?.matchAll(varrex), m => m[0].replace(/\{+/,'').replace(/\}+/,'')))));
+        }
     }
 
     const onChangeBodyType = async (data: Dictionary) => {
         setValue('bodytype', data?.value || '');
         await trigger('bodytype');
+    }
+
+    const onChangeLevel = async (data: Dictionary) => {
+        setValue('level', data?.value || '');
+        await trigger('level');
+    }
+
+    const onClickAddField = async () => {
+        fieldsAppend({ name: '', key: false, order: '' });
+    }
+
+    const onClickDeleteField = async (index: number) => {
+        fieldsRemove(index);
+    }
+
+    const onBlurField = (index: any, param: string, value: any) => {
+        fieldsUpdate(index, { ...fields[index], [param]: value});
     }
 
     return (
@@ -372,16 +468,33 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.name}` : t(langKeys.newintegrationmanager)}
+                title={row ? `${row.description}` : t(langKeys.newintegrationmanager)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
+                <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                className="col-12"
+                                valueDefault={getValues('description')}
+                                onChange={(value) => setValue('description', value)}
+                                error={errors?.description?.message}
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.description)}
+                                value={row?.description || ""}
+                                className="col-12"
+                            />
+                        }
+                    </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.type)}
                                 className="col-12"
-                                valueDefault={row?.type || "STANDARD"}
+                                valueDefault={getValues('type')}
                                 onChange={onChangeType}
                                 error={errors?.type?.message}
                                 data={dataIntegrationType}
@@ -391,7 +504,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             :
                             <FieldView
                                 label={t(langKeys.type)}
-                                value={row ? (row.type || "") : ""}
+                                value={row?.type || ""}
                                 className="col-12"
                             />
                         }
@@ -402,9 +515,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             {edit ?
                                 <React.Fragment>
                                     <FieldSelect
+                                        fregister={{...register(`method`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}}
                                         label={t(langKeys.requesttype)}
                                         className={classes.selectInput1}
-                                        valueDefault={row?.method || 'GET'}
+                                        valueDefault={getValues('method')}
                                         onChange={onChangeMethod}
                                         error={errors?.method?.message}
                                         data={dataMethodType}
@@ -414,7 +530,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     <FieldEdit
                                         label={t(langKeys.url)}
                                         className={classes.selectInput2}
-                                        valueDefault={row?.url || ""}
+                                        valueDefault={getValues('url')}
                                         onChange={(value) => setValue('url', value)}
                                         error={errors?.url?.message}
                                     />
@@ -422,7 +538,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 :
                                 <FieldView
                                     label={t(langKeys.url)}
-                                    value={row ? (row.url || "") : ""}
+                                    value={row?.url || ""}
                                     className="col-12"
                                 />
                             }
@@ -430,8 +546,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         <div className="row-zyx">
                             {edit ?
                                 <FieldSelect
+                                    fregister={{...register(`authorization.type`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })}}       
                                     label={t(langKeys.authorization)}
-                                    valueDefault={row?.authorization || 'NONE'}
+                                    valueDefault={getValues('authorization.type')}
                                     onChange={onChangeAuthorization}
                                     error={errors?.authorization?.type?.message}
                                     data={dataAuthorizationType}
@@ -441,7 +560,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 :
                                 <FieldView
                                     label={t(langKeys.authorization)}
-                                    value={row ? (row.authorization || "") : ""}
+                                    value={row?.authorization?.type || ""}
                                     className="col-12"
                                 />
                             }
@@ -451,16 +570,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 {edit ?
                                     <React.Fragment>
                                         <FieldEdit
+                                            fregister={{...register(`authorization.username`)}}
                                             label={t(langKeys.username)}
                                             className="col-6"
-                                            valueDefault={row?.authorization?.username || ""}
+                                            valueDefault={getValues('authorization.username')}
                                             onChange={(value) => setValue('authorization.username', value)}
                                             error={errors?.authorization?.username?.message}
                                         />
                                         <FieldEdit
+                                            fregister={{...register(`authorization.password`)}}
                                             label={t(langKeys.password)}
                                             className="col-6"
-                                            valueDefault={row?.authorization?.password || ""}
+                                            valueDefault={getValues('authorization.password')}
                                             onChange={(value) => setValue('authorization.password', value)}
                                             error={errors?.authorization?.password?.message}
                                         />
@@ -487,9 +608,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             <div className="row-zyx">
                                 {edit ?
                                     <FieldEdit
+                                        fregister={{...register(`authorization.token`)}}
                                         label={t(langKeys.token)}
                                         className="col-12"
-                                        valueDefault={row?.authorization?.token || ""}
+                                        valueDefault={getValues('authorization.token')}
                                         onChange={(value) => setValue('authorization.token', value)}
                                         error={errors?.authorization?.token?.message}
                                     />
@@ -518,72 +640,97 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                         className={classes.labelButton2}
                                         startIcon={<AddIcon color="primary" />}
                                         onClick={() => onClickAddHeader()}
-                                    >{t(langKeys.addbutton)}</Button>
+                                    >{t(langKeys.addheader)}</Button>
                                     :
                                     null
                                 }
                             </React.Fragment>
                         </div>
                         {edit ?
-                        headers?.map((header: any, i: number) => {
+                            headers?.map((field: any, i: number) => {
+                                return (
+                                    <div className="row-zyx" key={field.id}>
+                                        <FieldEdit
+                                            label={t(langKeys.key)}
+                                            className={classes.fieldRow}
+                                            valueDefault={field?.key || ""}
+                                            onBlur={(value) => onBlurHeader(i, 'key', value)}
+                                            error={errors?.headers?.[i]?.key?.message}
+                                        />
+                                        <FieldEdit
+                                            label={t(langKeys.value)}
+                                            className={classes.fieldRow}
+                                            valueDefault={field?.value || ""}
+                                            onBlur={(value) => onBlurHeader(i, 'value', value)}
+                                            error={errors?.headers?.[i]?.value?.message}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            className={classes.fieldButton}
+                                            onClick={() => onClickDeleteHeader(i)}>
+                                            <DeleteIcon style={{ color: '#000000'}} />
+                                        </IconButton>
+                                    </div>
+                                )
+                            })
+                        :
+                        headers?.map((field: any, i: number) => {
                             return (
-                                <div className="row-zyx" key={header.id}>
-                                    <FieldEdit
-                                        label={t(langKeys.key)}
-                                        className={classes.fieldRow}
-                                        valueDefault={header?.key || ""}
-                                        onChange={(value) => onChangeHeader(i, 'key', value)}
-                                        error={errors?.headers?.[i]?.key?.message}
-                                    />
-                                    <FieldEdit
-                                        label={t(langKeys.value)}
-                                        className={classes.fieldRow}
-                                        valueDefault={header?.value || ""}
-                                        onChange={(value) => onChangeHeader(i, 'value', value)}
-                                        error={errors?.headers?.[i]?.value?.message}
-                                    />
-                                    <IconButton
-                                        size="small"
-                                        className={classes.fieldButton}
-                                        onClick={() => onClickDeleteHeader(i)}>
-                                        <DeleteIcon style={{ color: '#000000'}} />
-                                    </IconButton>
-                                </div>
-                            )})
-                        : headers?.map((header: any, i: number) => {
-                            return (
-                                <div className="row-zyx" key={header.id}>
+                                <div className="row-zyx" key={field.id}>
                                     <FieldView
                                         label={t(langKeys.key)}
-                                        value={header?.key || ""}
+                                        value={field?.key || ""}
                                         className="col-12"
                                     />
                                     <FieldView
                                         label={t(langKeys.value)}
-                                        value={header?.value || ""}
+                                        value={field?.value || ""}
                                         className="col-12"
                                     />
                                 </div>
                             )
-                        })
-                        }
+                        })}
                         {getValues('method') === 'POST' ?
                         <div className="row-zyx">
                             {edit ?
-                                <FieldSelect
-                                    label={t(langKeys.bodytype)}
-                                    className="col-12"
-                                    valueDefault={getValues('bodytype')}
-                                    onChange={onChangeBodyType}
-                                    error={errors?.bodytype?.message}
-                                    data={dataBodyType}
-                                    optionDesc="text"
-                                    optionValue="value"
-                                />
+                                <React.Fragment>
+                                    <FieldSelect
+                                        fregister={{...register(`bodytype`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}}
+                                        label={t(langKeys.bodytype)}
+                                        className={classes.selectInput1}
+                                        valueDefault={getValues('bodytype')}
+                                        onChange={onChangeBodyType}
+                                        error={errors?.bodytype?.message}
+                                        data={dataBodyType}
+                                        optionDesc="text"
+                                        optionValue="value"
+                                    />
+                                    {getValues('bodytype') === 'JSON' ?
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        color="primary"
+                                        className={classes.labelButton2}
+                                        onClick={() => onClickBeautify()}
+                                    >{t(langKeys.beautify)}</Button>
+                                    : null}
+                                    {getValues('bodytype') === 'URLENCODED' ?
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        color="primary"
+                                        className={classes.labelButton2}
+                                        startIcon={<AddIcon color="primary" />}
+                                        onClick={() => onClickAddParameter()}
+                                    >{t(langKeys.addparameter)}</Button>
+                                    : null}
+                                </React.Fragment>
                                 :
                                 <FieldView
-                                    label={t(langKeys.body)}
-                                    value={row ? (row.body || "") : ""}
+                                    label={t(langKeys.bodytype)}
+                                    value={row ? (row.bodytype || "") : ""}
                                     className="col-12"
                                 />
                             }
@@ -596,8 +743,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 <FieldEditMulti
                                     label={t(langKeys.body)}
                                     className="col-12"
-                                    valueDefault={row ? (row.body || "") : ""}
-                                    onChange={(value) => setValue('body', value)}
+                                    valueDefault={getValues('body')}
+                                    onChange={onChangeBody}
+                                    onBlur={onBlurBody}
                                     error={errors?.body?.message}
                                     rows={8}
                                 />
@@ -610,8 +758,196 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         : null}
+                        {(getValues('method') === 'POST'
+                        && getValues('bodytype') === 'URLENCODED') ?
+                            <React.Fragment>
+                                {edit ?
+                                    parameters?.map((field: any, i: number) => {
+                                        return (
+                                            <div className="row-zyx" key={field.id}>
+                                                <FieldEdit
+                                                    label={t(langKeys.key)}
+                                                    className={classes.fieldRow}
+                                                    valueDefault={field?.key || ""}
+                                                    onBlur={(value) => onBlurParameter(i, 'key', value)}
+                                                    error={errors?.parameters?.[i]?.key?.message}
+                                                />
+                                                <FieldEdit
+                                                    label={t(langKeys.value)}
+                                                    className={classes.fieldRow}
+                                                    valueDefault={field?.value || ""}
+                                                    onBlur={(value) => onBlurParameter(i, 'value', value)}
+                                                    error={errors?.parameters?.[i]?.value?.message}
+                                                />
+                                                <IconButton
+                                                    size="small"
+                                                    className={classes.fieldButton}
+                                                    onClick={() => onClickDeleteParameter(i)}>
+                                                    <DeleteIcon style={{ color: '#000000'}} />
+                                                </IconButton>
+                                            </div>
+                                        )
+                                    })
+                                : parameters?.map((field: any, i: number) => {
+                                    return (
+                                        <div className="row-zyx" key={field.id}>
+                                            <FieldView
+                                                label={t(langKeys.key)}
+                                                value={field?.key || ""}
+                                                className="col-12"
+                                            />
+                                            <FieldView
+                                                label={t(langKeys.value)}
+                                                value={field?.value || ""}
+                                                className="col-12"
+                                            />
+                                        </div>
+                                    )
+                                })
+                                }
+                            </React.Fragment>
+                        : null}
                     </React.Fragment>
                     : null}
+
+                    {getValues('type') === 'CUSTOM' ?
+                    <React.Fragment>
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <FieldSelect
+                                        fregister={{...register(`method`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}}
+                                        label={t(langKeys.requesttype)}
+                                        className={classes.selectInput1}
+                                        valueDefault={getValues('method')}
+                                        onChange={onChangeMethod}
+                                        error={errors?.method?.message}
+                                        data={dataMethodType}
+                                        optionDesc="text"
+                                        optionValue="value"
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.url)}
+                                        className={classes.selectInput2}
+                                        valueDefault={getValues('url')}
+                                        onChange={(value) => setValue('url', value)}
+                                        error={errors?.url?.message}
+                                    />
+                                </React.Fragment>
+                                :
+                                <FieldView
+                                    label={t(langKeys.url)}
+                                    value={row?.url || ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        <div className="row-zyx">
+                            {edit ?
+                                <FieldSelect
+                                    fregister={{...register(`level`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })}}    
+                                    label={t(langKeys.level)}
+                                    valueDefault={getValues('level')}
+                                    onChange={onChangeLevel}
+                                    error={errors?.level?.message}
+                                    data={dataLevel}
+                                    optionDesc="text"
+                                    optionValue="value"
+                                />
+                                :
+                                <FieldView
+                                    label={t(langKeys.level)}
+                                    value={row?.level || ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        <div className="row-zyx">
+                            {edit ?
+                                <React.Fragment>
+                                    <FieldEdit
+                                        label={t(langKeys.frame)}
+                                        className={classes.selectInput1}
+                                        valueDefault={getValues('frame')}
+                                        onChange={(value) => setValue('frame', value)}
+                                        error={errors?.frame?.message}
+                                    />
+                                    <Button
+                                        variant="outlined"
+                                        type="button"
+                                        color="primary"
+                                        className={classes.labelButton2}
+                                        startIcon={<AddIcon color="primary" />}
+                                        onClick={() => onClickAddField()}
+                                    >{t(langKeys.addfield)}</Button>
+                                </React.Fragment>
+                                :
+                                <FieldView
+                                    label={t(langKeys.frame)}
+                                    value={row?.frame || ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        {edit ?
+                            fields?.map((field: any, i: number) => {
+                                return (
+                                    <div className="row-zyx" key={field.id}>
+                                        <FieldEdit
+                                            label={t(langKeys.name)}
+                                            className={classes.fieldRow}
+                                            valueDefault={field?.name || ""}
+                                            onBlur={(value) => onBlurField(i, 'name', value)}
+                                            error={errors?.fields?.[i]?.name?.message}
+                                        />
+                                        <FieldCheckbox
+                                            label={t(langKeys.key)}
+                                            className={`${classes.checkboxRow}`}
+                                            valueDefault={field?.key}
+                                            onChange={(value) => onBlurField(i, 'key', value)}
+                                            error={errors?.fields?.[i]?.key?.message}
+                                        />
+                                        <FieldEdit
+                                            label={t(langKeys.order)}
+                                            className={classes.fieldRow}
+                                            valueDefault={field?.order || ""}
+                                            onBlur={(value) => onBlurField(i, 'order', value)}
+                                            error={errors?.fields?.[i]?.order?.message}
+                                        />
+                                        <IconButton
+                                            size="small"
+                                            className={classes.fieldButton}
+                                            onClick={() => onClickDeleteField(i)}>
+                                            <DeleteIcon style={{ color: '#000000'}} />
+                                        </IconButton>
+                                    </div>
+                                )
+                            })
+                        :
+                        fields?.map((fields: any, i: number) => {
+                            return (
+                                <div className="row-zyx" key={fields.id}>
+                                    <FieldView
+                                        label={t(langKeys.name)}
+                                        value={fields?.name || ""}
+                                        className="col-12"
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.order)}
+                                        value={fields?.order || ""}
+                                        className="col-12"
+                                    />
+                                </div>
+                            )
+                        })}
+                    </React.Fragment>
+                    : null}
+
+
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                         <Button
                             variant="contained"

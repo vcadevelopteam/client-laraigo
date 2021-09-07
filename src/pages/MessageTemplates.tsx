@@ -281,7 +281,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             footerenabled: row ? row.footerenabled : true,
             footer: row ? row.footer : '',
             buttonsenabled: row ? row.buttonsenabled : true,
-            buttons: row ? JSON.parse(row.buttons) : [],
+            buttons: row && row.buttons ? JSON.parse(row.buttons) : [],
             operation: row ? "EDIT" : "INSERT"
         }
     });

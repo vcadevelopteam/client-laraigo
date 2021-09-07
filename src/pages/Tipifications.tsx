@@ -266,7 +266,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
+                                valueDefault={row ? (row.status || "") : "ACTIVO"}
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}

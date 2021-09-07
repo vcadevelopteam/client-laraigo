@@ -250,10 +250,10 @@ export const getDomainValueSel = (domainname: string): IRequestBody => ({
     }
 })
 
-export const insDomain = ({ domainname, status, operation }: Dictionary): IRequestBody => ({
+export const insDomain = ({ domainname, description, type, status, operation }: Dictionary): IRequestBody => ({
     method: "UFN_DOMAIN_INS",
     key: "UFN_DOMAIN_INS",
-    parameters: { id: 0, domainname, status, operation }
+    parameters: { id: 0, domainname, description, type, status, operation }
 });
 
 export const insDomainvalue = ({ id, domainname, description, domainvalue, domaindesc, status, type, bydefault, operation }: Dictionary): IRequestBody => ({
@@ -412,23 +412,33 @@ export const insIntegrationManager = (
         headers,
         bodytype,
         body,
+        parameters,
+        variables,
+        level,
+        frame,
+        fields,
         operation
     }: Dictionary): IRequestBody => ({
-        method: "UFN_INTEGRATIONMANAGER_INS",
-        parameters: {
-            id,
-            description,
-            type,
-            status,
-            method,
-            url,
-            authorization: JSON.parse(authorization),
-            headers: JSON.parse(headers),
-            bodytype,
-            body,
-            operation
-        }
-    });
+    method: "UFN_INTEGRATIONMANAGER_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        method,
+        url,
+        authorization: JSON.stringify(authorization),
+        headers: JSON.stringify(headers),
+        bodytype,
+        body: body,
+        parameters: JSON.stringify(parameters),
+        variables: JSON.stringify(variables),
+        level,
+        frame,
+        fields: JSON.stringify(fields),
+        operation
+    }
+});
 
 export const getChannelSel = (id: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
