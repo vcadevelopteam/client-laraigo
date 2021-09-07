@@ -193,9 +193,7 @@ const translation: LangKeys = {
     message: 'Mensaje',
     addbutton: 'Add button',
     removebutton: 'Remove button',
-    addheader: 'Add header',
-    addparameter: 'Add parameter',
-
+    
     integrationmanager: 'Integration Manager',
     integrationmanager_plural: 'Integration Manager',
     newintegrationmanager: 'New Integration Manager',
@@ -204,7 +202,16 @@ const translation: LangKeys = {
     authorization: 'Authorization',
     token: 'Token',
     key: 'Key',
+    addheader: 'Add header',
+    addparameter: 'Add parameter',
     bodytype: 'Body Type',
+    level: 'Level',
+    frame: 'Frame',
+    fields: 'Fields',
+    addfield: 'Add field',
+    order: 'Order',
+    beautify: 'Beautify',
+    invalidjson: 'Invalid json',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',

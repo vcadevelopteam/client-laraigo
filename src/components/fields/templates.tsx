@@ -25,7 +25,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { FormHelperText, useTheme } from '@material-ui/core';
 import {
     WebMessengerIcon,
@@ -246,7 +246,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 4, maxLength = 0 }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -257,6 +257,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <TextField
+                {...fregister}
                 color="primary"
                 fullWidth
                 disabled={disabled}
@@ -271,6 +272,9 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                         setvalue(e.target.value);
                         onChange && onChange(e.target.value);
                     }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
                 }}
             />
             {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
@@ -446,6 +450,79 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
                 setChecked(e.target.checked);
                 onChange && onChange(e.target.checked)
             }} />
+        </div>
+    );
+}
+
+const useCheckboxStyles = makeStyles({
+    root: {
+      '&:hover': {
+        backgroundColor: 'transparent',
+      },
+    },
+    icon: {
+      borderRadius: 3,
+      width: 16,
+      height: 16,
+      boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+      backgroundColor: '#f5f8fa',
+      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+      '$root.Mui-focusVisible &': {
+        outline: '2px auto rgba(19,124,189,.6)',
+        outlineOffset: 2,
+      },
+      'input:hover ~ &': {
+        backgroundColor: '#ebf1f5',
+      },
+      'input:disabled ~ &': {
+        boxShadow: 'none',
+        background: 'rgba(206,217,224,.5)',
+      },
+    },
+    checkedIcon: {
+      backgroundColor: 'rgba(119, 33, 173, 0.9)',
+      backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+      '&:before': {
+        display: 'block',
+        width: 16,
+        height: 16,
+        backgroundImage:
+          "url(\"data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath" +
+          " fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 " +
+          "1.003 0 00-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0012 5z' fill='%23fff'/%3E%3C/svg%3E\")",
+        content: '""',
+      },
+      'input:hover ~ &': {
+        backgroundColor: '#7721AD',
+      },
+    },
+  });
+
+interface FieldCheckboxProps extends InputProps {
+    className?: any;
+    label: string;
+}
+
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label }) => {
+    const classes = useCheckboxStyles();
+    const [checkedaux, setChecked] = useState(false);
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
+    return (
+        <div className={className} style={{ paddingBottom: '3px' }}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
+            <Checkbox
+                checked={checkedaux}
+                checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}
+                icon={<span className={classes.icon} />}
+                onChange={(e) => {
+                    setChecked(e.target.checked);
+                    onChange && onChange(e.target.checked)
+                }}
+            />
         </div>
     );
 }

@@ -381,7 +381,11 @@ export const insIntegrationManager = (
         headers,
         bodytype,
         body,
-        bodydata,
+        parameters,
+        variables,
+        level,
+        frame,
+        fields,
         operation
     }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
@@ -395,7 +399,12 @@ export const insIntegrationManager = (
         authorization: JSON.stringify(authorization),
         headers: JSON.stringify(headers),
         bodytype,
-        body: bodytype === 'URLENCODED' ? JSON.stringify(bodydata) : body,
+        body: body,
+        parameters: JSON.stringify(parameters),
+        variables: JSON.stringify(variables),
+        level,
+        frame,
+        fields: JSON.stringify(fields),
         operation
     }
 });
