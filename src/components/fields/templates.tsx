@@ -265,7 +265,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 error={!!error}
                 value={value}
                 multiline
-                rows={rows}
+                minRows={rows}
                 helperText={error || null}
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
@@ -476,7 +476,7 @@ const useCheckboxStyles = makeStyles({
       },
       'input:disabled ~ &': {
         boxShadow: 'none',
-        background: 'rgba(206,217,224,.5)',
+        background: 'rgba(119,33,173,.5)',
       },
     },
     checkedIcon: {
@@ -503,7 +503,7 @@ interface FieldCheckboxProps extends InputProps {
     label: string;
 }
 
-export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label }) => {
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false }) => {
     const classes = useCheckboxStyles();
     const [checkedaux, setChecked] = useState(false);
 
@@ -518,6 +518,7 @@ export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChang
                 checked={checkedaux}
                 checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}
                 icon={<span className={classes.icon} />}
+                disabled={disabled}
                 onChange={(e) => {
                     setChecked(e.target.checked);
                     onChange && onChange(e.target.checked)

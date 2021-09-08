@@ -375,6 +375,7 @@ export const insIntegrationManager = (
         description,
         type,
         status,
+        name,
         method,
         url,
         authorization,
@@ -384,7 +385,6 @@ export const insIntegrationManager = (
         parameters,
         variables,
         level,
-        frame,
         fields,
         operation
     }: Dictionary): IRequestBody => ({
@@ -394,6 +394,7 @@ export const insIntegrationManager = (
         description,
         type,
         status,
+        name,
         method,
         url,
         authorization: JSON.stringify(authorization),
@@ -403,7 +404,6 @@ export const insIntegrationManager = (
         parameters: JSON.stringify(parameters),
         variables: JSON.stringify(variables),
         level,
-        frame,
         fields: JSON.stringify(fields),
         operation
     }
