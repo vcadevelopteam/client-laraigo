@@ -5,9 +5,11 @@ import clsx from 'clsx';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon,WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch } from "components";
+import { FieldEdit, FieldSelect, TemplateSwitch } from "components";
 import { useHistory, useRouteMatch } from "react-router";
 import paths from "common/constants/paths";
+import FacebookLogin from 'react-facebook-login';
+import axios from "axios";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -76,26 +78,76 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAdd: FC = () => {
     const [viewSelected, setViewSelected] = useState("mainview");
+    const [listpages,setListpages]=useState([]);
+    const [fields, setFields]=useState({
+        "method": "UFN_COMMUNICATIONCHANNEL_INS",
+        "parameters": {
+            "corpid": 1,
+            "orgid": 1,
+            "id": 0,
+            "description": "",
+            "type": "",
+            "communicationchannelsite": "id del canal",
+            "communicationchannelowner": "id del canal",
+            "communicationchannelcontact": "",
+            "communicationchanneltoken": null,
+            "customicon": null,
+            "coloricon": null,
+            "status": "ACTIVO",
+            "username": "userlaraigo",
+            "operation": "INSERT",
+            "botenabled": null,
+            "botconfigurationid": null,
+            "chatflowenabled": false,
+            "schedule": null,
+            "integrationid": "",
+            "appintegrationid": null,
+            "country": null,
+            "channelparameters": null,
+            "updintegration": null,
+            "resolvelithium": null,
+            "color": "",
+            "icons": "",
+            "other": "",
+            "form": "",
+            "apikey": "",
+            "servicecredentials": null,
+            "motive": null
+        },
+        "type": "FACEBOOK",
+        "service": {
+            "accesstoken": " r.accessToken",
+            "siteid": "id sitio",
+            "appid": "1094526090706564"
+        }
+    })
     const classes = useChannelAddStyles();
     const { t } = useTranslation();
     const history = useHistory();
+
     const match = useRouteMatch<{ id: string }>();
+    function setView(name:any){
+        let partialf=fields;
+        setViewSelected("viewfacebook");
+        partialf.type= name
+        setFields(partialf)
+    }
 
     const socialMediaOptions: ChannelOption[] = [
         {
             icon: <FacebookIcon color="inherit" />,
             label: 'Facebook',
-            onClick: () => {setViewSelected("viewfacebook")},
+            onClick: () => {setView("FACEBOOK")},
         },
         {
             icon: <InstagramIcon color="inherit" />,
             label: 'Instagram',
-            onClick: () => {setViewSelected("viewfacebook")},
+            onClick: () => {setView("INSTAGRAM")},
         },
         {
             icon: <MessageIcon color="inherit" />,
             label: 'Messenger',
-            onClick: () => {setViewSelected("viewfacebook")},
+            onClick: () => {setView("MESSENGER")},
         },
         {
             icon: <WhatsAppIcon color="inherit" />,
@@ -116,6 +168,57 @@ export const ChannelAdd: FC = () => {
             onClick: () => {},
         },
     ];
+    const processFacebookCallback = async (r: any) => {
+        
+        setListpages([])
+        try{
+            const responseGetPageList = await axios({
+                url: `https://apix.laraigo.com/api/channel/getpagelist`,
+                method: 'post',
+                data: {
+                    accessToken: r.accessToken
+                }
+            });
+            if(responseGetPageList.data.success){
+                setListpages(responseGetPageList.data.pageData.data)
+                setViewSelected("viewfacebook2")
+            }else{  
+                setListpages([])
+            }
+        }
+        catch (error) {
+            console.log("gg")
+            
+        }
+    }
+    function setValueField(value: any){
+        let partialf=fields;
+        partialf.parameters.communicationchannelsite = value.id
+        partialf.parameters.communicationchannelowner = value.name
+        partialf.service.siteid = value.id
+        partialf.service.accesstoken = value.access_token
+        
+        
+        setFields(partialf)
+    }
+    function setnameField(value: any){
+        let partialf=fields;
+        partialf.parameters.description = value
+        setFields(partialf)
+    }
+    function setvalField(value: any){
+        let partialf=fields;
+        partialf.parameters.chatflowenabled = value
+        setFields(partialf)
+    }
+    async function finishreg(){
+        console.log(JSON.stringify(fields))
+        const responseGetPageList = await axios({
+            url: `https://apix.laraigo.com/api/channel/insertchannel`,
+            method: 'post',
+            data: fields
+        });
+    }
 
     const Option: FC<{ option: ChannelOption }> = ({ option }) => {
         const [color, setColor] = useState('#989898');
@@ -152,15 +255,18 @@ export const ChannelAdd: FC = () => {
                 <div style={{textAlign: "center",fontWeight: "bold",fontSize: "1.1em",padding: "20px"}}>Install the chatbot on your Facebook page and start getting leads.</div>
                 <div style={{textAlign: "center",padding: "20px",color:"#969ea5"}}>You only need to be an administrator of your Facebook page.</div>        
 
-                <Button
-                    className={classes.centerbutton}
-                    variant="contained"
-                    color="primary"
-                    //disabled={loading}
-                    //onClick={() => exportExcel("report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    startIcon={<FacebookIcon style={{ color: "white" }} />}
-                >Link your Facebook page
-                </Button>
+
+                <FacebookLogin
+                    appId="1094526090706564"
+                    autoLoad={false}
+                    buttonStyle={{marginLeft: "calc(50% - 114px)", marginTop: "30px", marginBottom: "20px", backgroundColor:"#7721ad", textTransform:"none"}}
+                    fields="name,email,picture"
+                    scope="pages_messaging,pages_read_engagement,pages_manage_engagement,pages_read_user_content,pages_manage_metadata,pages_show_list,public_profile"
+                    callback={processFacebookCallback}
+                    //cssClass="my-facebook-button-class"
+                    textButton={"Link your Facebook page"}
+                    icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                />
                 <div style={{textAlign: "center",paddingBottom: "80px",color:"#969ea5",fontStyle: "italic"}}>*We will not publish any content</div>
                 <div style={{paddingLeft: "80%"}}>
                     <Button
@@ -188,16 +294,13 @@ export const ChannelAdd: FC = () => {
                 <div style={{textAlign: "center",fontWeight: "bold",fontSize: "2em",color:"#7721ad",padding: "20px"}}>Connect your Facebook</div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
-                    <FieldEdit
-                        label={"Select the page to link"} 
+                    <FieldSelect
+                        onChange={(value) => setValueField(value)}
+                        label={"Select the page to link"}
                         className="col-6"
-                    />
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <FieldEdit
-                        label={"Enter the page name"} 
-                        className="col-6"
+                        data={listpages}
+                        optionDesc="name"
+                        optionValue="id"
                     />
                 </div>
 
@@ -278,6 +381,7 @@ export const ChannelAdd: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
+                            onChange={(value) => setnameField(value)}
                             label={"Give your channel a name"} 
                             className="col-6"
                         />
@@ -285,6 +389,7 @@ export const ChannelAdd: FC = () => {
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <TemplateSwitch
+                            onChange={(value) => setvalField(value)}
                             label={"Enable Automated Conversational Flow"} 
                             className="col-6"
                             //onChange={(value) => setValue('bydefault', value)}
@@ -292,7 +397,7 @@ export const ChannelAdd: FC = () => {
                     </div>
                     <div style={{paddingLeft: "80%"}}>
                         <Button
-                            onClick= {() => {setViewSelected("viewfinishreg")}}
+                            onClick= {() => {finishreg()}}
                             className={classes.button}
                             variant="contained"
                             color="primary"
