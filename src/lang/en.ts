@@ -230,6 +230,8 @@ const translation: LangKeys = {
     password_required: 'Password is required',
     field_required: 'Field is required',
     field_duplicate: 'Field duplicate',
+    field_startwithchar: 'Field must start with a letter',
+    field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
     affirmative: 'Yes',
     negative: 'No',
     organization_by_default: 'You must select a default organization',

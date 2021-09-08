@@ -225,6 +225,8 @@ export const langKeys = {
     organization_by_default: 'organization_by_default',
     field_required: 'field_required',
     field_duplicate: 'field_duplicate',
+    field_startwithchar: 'field_startwithchar',
+    field_basiclatinlowercase: 'field_basiclatinlowercase',
     affirmative: 'affirmative',
     negative: 'negative',
     attention_group: 'attention_group',

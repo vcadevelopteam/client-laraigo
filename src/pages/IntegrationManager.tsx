@@ -299,7 +299,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const dataKeys = new Set([...dataLevel, ...row?.fields?.filter((r: FieldType) => r.key).map((r: FieldType) => r.id)]);
+    const dataKeys = new Set([...dataLevel, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
@@ -499,10 +499,21 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         return false;
     }
 
-    const validateFieldName = (field: FieldType, value: string): any => {
+    const validateDuplicateFieldName = (field: FieldType, value: string): any => {
         let f = fields.filter((x: FieldType) => x.id !== field.id).map((m: FieldType) => m.name);
         return !f.includes(value);
     }
+
+    const validateStartwithcharFieldName = (value: string): any => {
+        let rex = new RegExp(/[a-z]/,'g');
+        return rex.test(value[0]);
+    }
+
+    const validateBasicLatinFieldName = (value: string): any => {
+        let rex = new RegExp(/^[a-z\d]+$/,'g');
+        return rex.test(value);
+    }
+
 
     return (
         <div style={{ width: '100%' }}>
@@ -791,7 +802,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     fregister={{...register(`body`, {
                                         validate: {
                                             value: (value: any) => (value && value.length) || t(langKeys.field_required),
-                                            custom: (value: any) => validateJSON(value) || t(langKeys.invalidjson)
+                                            invalid: (value: any) => validateJSON(value) || t(langKeys.invalidjson)
                                         }
                                     })}}    
                                     label={t(langKeys.body)}
@@ -938,7 +949,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                             fregister={{...register(`fields.${i}.name`, {
                                                 validate: {
                                                     value: (value: any) => (value && value.length) || t(langKeys.field_required),
-                                                    custom: (value: any) => validateFieldName(field, value) || t(langKeys.field_duplicate)
+                                                    duplicate: (value: any) => validateDuplicateFieldName(field, value) || t(langKeys.field_duplicate),
+                                                    startwithchar: (value: any) => validateStartwithcharFieldName(value) || t(langKeys.field_startwithchar),
+                                                    basiclatin: (value: any) => validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
                                                 }
                                             })}}
                                             label={t(langKeys.name)}
