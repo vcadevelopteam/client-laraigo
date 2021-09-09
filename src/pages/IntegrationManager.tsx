@@ -523,7 +523,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
 
     useEffect(() => {
-        console.log(testRequestRes);
         if (testRequestRes?.data !== null) {
             setOpenDialogDomain(true);
         }
