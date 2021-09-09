@@ -7,6 +7,7 @@ import loginReducer, { IState as ILogin } from './login/reducer';
 import mainReducer, { IState as IMain } from './main/reducer';
 import popusReducer, { IState as IPopus } from './popus/reducer';
 import inboxReducer, { IState as IInbox } from './inbox/reducer';
+import integrationManagerReducer, { IState as IIntegrationManager } from './integrationmanager/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -14,6 +15,7 @@ export interface IRootState {
     main: IMain;
     popus: IPopus;
     inbox: IInbox;
+    integrationmanager: IIntegrationManager;
 }
 
 const rootReducer = combineReducers<IRootState>({
@@ -21,7 +23,8 @@ const rootReducer = combineReducers<IRootState>({
    login: loginReducer,
    main: mainReducer,
    popus: popusReducer,
-   inbox: inboxReducer
+   inbox: inboxReducer,
+   integrationmanager: integrationManagerReducer
 });
 
 export default function configureStore(preloadedState?: IRootState) {

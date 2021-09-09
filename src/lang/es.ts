@@ -208,6 +208,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     order: 'Orden',
     beautify: 'Embellecer',
     invalidjson: 'Json inválido',
+    test: 'Probar',
+    result: 'Resultado',
 
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',

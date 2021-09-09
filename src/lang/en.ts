@@ -212,6 +212,8 @@ const translation: LangKeys = {
     order: 'Order',
     beautify: 'Beautify',
     invalidjson: 'Invalid json',
+    test: 'Test',
+    result: 'Result',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',
