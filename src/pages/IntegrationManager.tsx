@@ -536,7 +536,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     return (
         <div style={{ width: '100%' }}>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
