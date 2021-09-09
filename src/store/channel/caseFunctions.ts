@@ -15,6 +15,7 @@ export const getChannelsSuccessInsert = (state: IState, action: IAction): IState
             loading: false,
             error: false,
         },
+        successinsert:true
     }
 }
 ;
@@ -24,13 +25,12 @@ export const getChannelsSuccess = (state: IState, action: IAction): IState => {
         channelList: {
             data: action.payload.pageData.data || [],
             count: action.payload.count,
-            loading: false,
+            loading: true,
             error: false,
         },
-        successinsert:true
+        successinsert:false
     }
-}
-;
+};
 
 export const getChannelsFailure = (state: IState, action: IAction): IState => ({
     ...state,

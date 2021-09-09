@@ -137,14 +137,15 @@ export const ChannelAdd: FC = () => {
 
     function setView(name:any){
         let partialf=fields;
-        if(name=="WHATSAPP"){
-            setViewSelected("viewwhatsapp");
-        }else{
-            setViewSelected("viewfacebook");
+        partialf.type= name
+        if(name==="INSTAGRAM" || name==="FACEBOOK" || name==="MESSENGER"){
             partialf.service.appid= name==="INSTAGRAM"?"1924971937716955":"1094526090706564"
         }
-        partialf.type= name
         setFields(partialf)
+        if(name==="WHATSAPP"){
+            setViewSelected("viewwhatsapp");
+        }else
+            setViewSelected("viewfacebook");
     }
 
 
@@ -187,11 +188,13 @@ export const ChannelAdd: FC = () => {
     const processFacebookCallback = async (r: any) => {
         
         setListpages([])
-        dispatch(getChannelsList(r.accessToken))
-        setViewSelected("viewfacebook2")
-        setPreviousView("viewfacebook2")
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
+        if(r.status !="unknown" && !r.error){
+            dispatch(getChannelsList(r.accessToken))
+            setViewSelected("viewfacebook2")
+            setPreviousView("viewfacebook2")
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
     }
     function setValueField(value: any){
         let partialf=fields;
@@ -276,7 +279,7 @@ export const ChannelAdd: FC = () => {
                         fields="name,email,picture"
                         scope="pages_show_list,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_manage_metadata,public_profile"
                         callback={processFacebookCallback}
-                        textButton={"Link your Facebook page"}
+                        textButton={"Link your Instagram page"}
                         icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                     />:
                     <FacebookLogin
@@ -297,7 +300,8 @@ export const ChannelAdd: FC = () => {
             </div>
         </div>
         )
-    }else if(viewSelected==="viewfacebook2"){
+    }
+    else if(viewSelected==="viewfacebook2"){
         return(
         <div style={{width: '100%'}}>
             <Breadcrumbs aria-label="breadcrumb">

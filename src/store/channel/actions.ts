@@ -30,4 +30,4 @@ export const deleteChannel = (requestBody: IRequestBody): IActionCall => ({
     type: null,
 });
 
-//export const resetGetTickets = (): IActionCall => ({type: actionTypes.GET_TICKETS_RESET});
+export const resetGetChannelsList = (): IActionCall => ({type: actionTypes.CHANNELS_RESET});
