@@ -134,6 +134,7 @@ const useStyles = makeStyles((theme) => ({
     },
     iconResponse: {
         cursor: 'pointer',
+        poisition: 'relative',
         '&:hover': {
             backgroundColor: '#EBEAED',
             borderRadius: 4

@@ -2,6 +2,7 @@
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
+// import {} from 'react-native'
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import Avatar from '@material-ui/core/Avatar';
@@ -12,6 +13,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent } from 'store/inbox/actions';
+import { setOpenDrawer } from 'store/popus/actions';
 import { AntTab } from 'components';
 import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
@@ -45,7 +47,8 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        // paddingTop: theme.spacing(2),
+        // paddingTop: theme.spacing(2),,
+        borderTop: '1px solid #EBEAED',
         width: '100%'
     },
     containerAgents: {
@@ -201,38 +204,19 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
     )
 }
 
-const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
-    const dispatch = useDispatch();
-    const agentList = useSelector(state => state.inbox.agentList); // amarrado con getCollection
-
-    useEffect(() => {
-        dispatch(getAgents())
-    }, [])
-
+const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, search: string) => void }> = ({ classes, onSearch }) => {
+    const [pageSelected, setPageSelected] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
-    const [pageSelected, setPageSelected] = useState(0);
-    const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
-    const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
+
+    const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
 
     useEffect(() => {
-        if (!agentList.loading && !agentList.error) {
-            setDataAgents(agentList.data as IAgent[])
-            setAgentsToShow(agentList.data as IAgent[])
-        }
-    }, [agentList])
-
-    const onChangeSearchAgent = (e: any) => {
-        setSearch(e.target.value)
-    }
-
-    useEffect(() => {
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
-        return () => setAgentsToShow(dataAgents)
+        onSearch(pageSelected, search);
     }, [pageSelected, search])
 
     return (
-        <div className={classes.containerAgents}>
+        <>
             <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
                 {!showSearch ?
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -273,6 +257,36 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
                 <AntTab label="Active" />
                 <AntTab label="Inactive" />
             </Tabs>
+        </>
+    )
+}
+
+const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
+    const dispatch = useDispatch();
+    const agentList = useSelector(state => state.inbox.agentList); // amarrado con getCollection
+
+    useEffect(() => {
+        dispatch(getAgents())
+    }, [])
+
+    const onSearch = (pageSelected: number, search: string) => {
+        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
+    }
+    
+    const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
+    const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
+
+    useEffect(() => {
+        console.log('trigger2');
+        if (!agentList.loading && !agentList.error) {
+            setDataAgents(agentList.data as IAgent[])
+            setAgentsToShow(agentList.data as IAgent[])
+        }
+    }, [agentList])
+
+    return (
+        <div className={classes.containerAgents}>
+            <HeaderAgentPanel classes={classes} onSearch={onSearch} />
             {agentList.loading ? <ListItemSkeleton /> :
                 <div style={{ overflowY: 'auto' }}>
                     {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))}
@@ -284,7 +298,13 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 
 const Supervisor: FC = () => {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+
+    useEffect(() => {
+        dispatch(setOpenDrawer(false))
+    }, [])
+
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />

@@ -15,7 +15,7 @@
     "@types/react-dom": "^17.0.9",
     "axios": "^0.21.1",
     "date-fns": "^2.23.0",
-    "emoji-picker-react": "^3.4.8",
+    "emoji-mart": "^3.0.1",
     "file-saver": "^2.0.5",
     "i18next": "^20.3.5",
     "install": "^0.13.0",
@@ -67,6 +67,7 @@
     ]
   },
   "devDependencies": {
+    "@types/emoji-mart": "^3.0.5",
     "@types/file-saver": "^2.0.3",
     "@types/react-date-range": "^1.1.6",
     "@types/react-facebook-login": "^4.1.4",

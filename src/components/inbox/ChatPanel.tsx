@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CheckIcon, AttachmentIcon, EmojiICon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
+import { CheckIcon, AttachmentIcon, BotIcon, AgentIcon, ImageIcon, QuickresponseIcon, SendIcon, DownloadIcon2, FileIcon, DocumentIcon } from 'icons';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -13,13 +14,12 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getInteractions, showInfoPanel } from 'store/inbox/actions';
+import { showInfoPanel } from 'store/inbox/actions';
+import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { ListItemSkeleton } from 'components'
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import TextField from '@material-ui/core/TextField';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import EmojiPicker from 'emoji-picker-react';
+import { EmojiPickerZyx } from 'components'
 
 const convertLocalDate = (date: string | null, validateWithToday: boolean): Date => {
     if (!date) return new Date()
@@ -222,19 +222,44 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
     } else if (interactiontype === "carousel") {
         const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
         return <Carousel carousel={listItems} />
-    }
+    } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
+        return <audio controls src={interactiontext} ></audio>
+    } else if (interactiontype === "video") {
+        return <video width="200" controls src={interactiontext} />
+    } else if (interactiontype === "file") {
+        return (
+            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
+                <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
+                    <FileIcon width="20" height="20" />
+                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1 }}>{interactiontext.split("/").pop()}</div>
+                    <DownloadIcon2 width="20" height="20" color="primary" />
 
+                </a>
+            </div>
+        )
+    }
     return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontype} {interactiontext}</div>;
 }
 
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, createdate, interactions }, clientName, imageClient }) => {
+    
+    const el = useRef<null | HTMLDivElement>(null); 
+    
+    const scrollToBottom = () => {
+        if (el?.current)
+            el.current.scrollIntoView({ behavior: "smooth" });
+    };
+    useEffect(scrollToBottom, [interactions]);
+
     const time = toTime24HR(convertLocalDate(createdate, false).toLocaleTimeString());
     return (
         <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ paddingTop: 8 }}>
-                {usertype === "agent" || usertype === "BOT" ?
-                    <AccountCircle style={{ width: 40, height: 40 }} /> :
-                    <Avatar src={imageClient || ""} />
+            <div>
+                {usertype === "agent" ?
+                    <AgentIcon /> :
+                    (usertype === "BOT" ?
+                        <BotIcon style={{ width: 40, height: 40 }} /> :
+                        <Avatar src={imageClient || ""} />)
                 }
             </div>
             <div style={{ flex: 1 }}>
@@ -244,18 +269,67 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                     {interactions.map((item: IInteraction, index: number) => (
                         <ItemInteraction interaction={item} classes={classes} key={index} />
                     ))}
+                    <div ref={el} />
                 </div>
             </div>
         </div>
     );
 }
 
+const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
+    const [valuefile, setvaluefile] = useState('')
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                // dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                // dispatch(showBackdrop(false));
+                console.log(uploadResult.url)
+                setWaitSave(false);
+                dispatch(resetUploadFile());
+            } else if (uploadResult.error) {
+                const errormessage = uploadResult.code || "error_unexpected_error"
+                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [waitSave, uploadResult, dispatch])
+
+    const onSelectImage = (files: any) => {
+        const selectedFile = files[0];
+        var fd = new FormData();
+        fd.append('file', selectedFile, selectedFile.name);
+        dispatch(uploadFile(fd));
+        setvaluefile('')
+        setWaitSave(true)
+    }
+
+    return (
+        <>
+            <input
+                name="file"
+                accept="image/*"
+                id="laraigo-upload-image-file"
+                type="file"
+                value={valuefile}
+                style={{ display: 'none' }}
+                onChange={(e) => onSelectImage(e.target.files)}
+            />
+            <label htmlFor="laraigo-upload-image-file">
+                <ImageIcon className={classes.iconResponse} />
+            </label>
+        </>
+    )
+}
+
 const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
     const [text, setText] = useState("");
-    const myCallback = (code: string) => {
-        // const emoji = String.fromCodePoint(`0x${code}`)
-        // myInput.value += ` ${emoji}`
-    }
+
     return (
         <div className={classes.containerResponse}>
             <div>
@@ -272,10 +346,10 @@ const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <QuickresponseIcon className={classes.iconResponse} />
-                    <EmojiICon className={classes.iconResponse} />
+                    <IconUploadImage classes={classes} />
+                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <AttachmentIcon className={classes.iconResponse} />
-                    <ImageIcon className={classes.iconResponse} />
-                    <EmojiPicker onEmojiClick={() => console.log("")} />
+
                 </div>
                 <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !text })}>
                     <SendIcon />

@@ -1,12 +1,16 @@
 import { IListStatePaginated } from "@types";
-import { Dictionary } from "@types";
-import { createReducer, initialListPaginatedState } from "common/helpers";
+import { Dictionary, ITemplate } from "@types";
+import { createReducer, initialListPaginatedState, initialCommon } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
 export interface itemMulti {
     data: Dictionary[];
     success: boolean;
+}
+
+export interface IUpload extends ITemplate {
+    url?: string;
 }
 
 export interface IState {
@@ -17,9 +21,11 @@ export interface IState {
     mainAux: IListStatePaginated<Dictionary>,
     mainAux2: IListStatePaginated<Dictionary>,
     mainPaginated: IListStatePaginated<Dictionary>,
+    uploadFile: IUpload,
+    exportData: IUpload,
 }
 
-export const initialState: IState = { 
+export const initialState: IState = {
     mainData: initialListPaginatedState,
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
@@ -27,6 +33,8 @@ export const initialState: IState = {
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
     mainPaginated: initialListPaginatedState,
+    uploadFile: { ...initialCommon },
+    exportData: { ...initialCommon }
 };
 
 export default createReducer<IState>(initialState, {
@@ -59,4 +67,15 @@ export default createReducer<IState>(initialState, {
     [actionTypes.PAGINATED_MAIN_SUCCESS]: caseFunctions.mainPaginatedSuccess,
     [actionTypes.PAGINATED_MAIN_FAILURE]: caseFunctions.mainPaginatedFailure,
     [actionTypes.PAGINATED_MAIN_RESET]: caseFunctions.mainPaginatedReset,
+
+
+    [actionTypes.UPLOAD_FILE]: caseFunctions.uploadFile,
+    [actionTypes.UPLOAD_FILE_SUCCESS]: caseFunctions.uploadFileSuccess,
+    [actionTypes.UPLOAD_FILE_FAILURE]: caseFunctions.uploadFileFailure,
+    [actionTypes.UPLOAD_FILE_RESET]: caseFunctions.uploadFileReset,
+
+    [actionTypes.EXPORT_DATA]: caseFunctions.exportData,
+    [actionTypes.EXPORT_DATA_SUCCESS]: caseFunctions.exportDataSuccess,
+    [actionTypes.EXPORT_DATA_FAILURE]: caseFunctions.exportDataFailure,
+    [actionTypes.EXPORT_DATA_RESET]: caseFunctions.exportDataReset,
 });

@@ -10,4 +10,7 @@ export const apiUrls = {
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
+    INTEGRATION: `${BASE_URL}/integration`,
+    UPLOAD_FILE: `${BASE_URL}/upload`,
+    EXPORT_DATA: `${BASE_URL}/main/exportexcel`,
 };

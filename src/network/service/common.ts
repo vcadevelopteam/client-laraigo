@@ -13,6 +13,14 @@ export function logout() {
     return tmp;
 }
 
+export function uploadFile(data: FormData) {
+    return APIManager.post(apiUrls.UPLOAD_FILE, { data }, true);
+}
+
+export function exportData(requestBody: IRequestBody) {
+    return APIManager.post(apiUrls.EXPORT_DATA, { data: requestBody }, true);
+}
+
 export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
 }

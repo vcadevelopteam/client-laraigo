@@ -14,6 +14,35 @@ export const getCollection = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetMain = (): IActionCall => ({type: actionTypes.MAIN_RESET});
 
+
+
+
+export const uploadFile = (data: FormData): IActionCall => ({
+    callAPI: () => CommonService.uploadFile(data),
+    types: {
+        loading: actionTypes.UPLOAD_FILE,
+        success: actionTypes.UPLOAD_FILE_SUCCESS,
+        failure: actionTypes.UPLOAD_FILE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetUploadFile = (): IActionCall => ({type: actionTypes.UPLOAD_FILE_RESET});
+
+
+export const exportData = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.exportData(requestBody),
+    types: {
+        loading: actionTypes.EXPORT_DATA,
+        success: actionTypes.EXPORT_DATA_SUCCESS,
+        failure: actionTypes.EXPORT_DATA_FAILURE,
+    },
+    type: null,
+});
+
+export const resetexportData = (): IActionCall => ({type: actionTypes.EXPORT_DATA_RESET});
+
+
 export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(requestBody),
     types: {
