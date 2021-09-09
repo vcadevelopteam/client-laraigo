@@ -201,6 +201,26 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
         }
     });
 
+export const getFunctionSel = (functionname: string, domainname: string, id: number): IRequestBody => ({
+    method: functionname,
+    key: functionname,
+    parameters: {
+        domainname: domainname,
+        id: 0,
+        all: true
+    }
+})
+
+export const getReportSel = (reportname: string): IRequestBody => ({
+    method: "UFN_REPORT_SEL",
+    key: "UFN_REPORT_SEL",
+    parameters: {
+        reportname: reportname,
+        all: true
+    }
+})
+
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
