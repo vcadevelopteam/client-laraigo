@@ -324,12 +324,7 @@ const TableZyx = React.memo(({
     return (
         <Box width={1} style={{ height: '100%' }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
-                {titlemodule ?
-                    <span className={classes.title}>
-                        {titlemodule}
-                    </span>
-                    : <span></span>
-                }
+                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (
                         <Tooltip title="Refrescar">
@@ -363,7 +358,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel(String(titlemodule)+"Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>
@@ -430,44 +425,46 @@ const TableZyx = React.memo(({
                             ))}
                         </TableHead>
                         <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
-                            {loading === true ? <LoadingSkeleton columns={headerGroups[0].headers.length} /> : page.map(row => {
-                                prepareRow(row);
-                                return (
-                                    <TableRow 
-                                        {...row.getRowProps()} 
-                                        className={hoverShadow ? classes.trdynamic : ''}
-                                        hover
-                                    >
-                                        {row.cells.map((cell, i) =>
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                align={(!headerGroups[0].headers[i].isComponent) && typeof cell.value === "number" ? "right" : "left"}
-                                                className={clsx({
-                                                    [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
-                                                })}
-                                            >
-                                                {headerGroups[0].headers[i].isComponent ?
-                                                    <Box m={0} width={1} whiteSpace="nowrap">
-                                                        {cell.render('Cell')}
-                                                    </Box>
-                                                    :
-                                                    (cell.value?.length > 100 ?
-                                                        <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
-                                                        </Tooltip>
-                                                        :
-                                                        <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                            {loading ?
+                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
+                                page.map(row => {
+                                    prepareRow(row);
+                                    return (
+                                        <TableRow
+                                            {...row.getRowProps()}
+                                            className={hoverShadow ? classes.trdynamic : ''}
+                                            hover
+                                        >
+                                            {row.cells.map((cell, i) =>
+                                                <TableCell
+                                                    {...cell.getCellProps()}
+                                                    align={(!headerGroups[0].headers[i].isComponent) && typeof cell.value === "number" ? "right" : "left"}
+                                                    className={clsx({
+                                                        [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
+                                                    })}
+                                                >
+                                                    {headerGroups[0].headers[i].isComponent ?
+                                                        <Box m={0} width={1} whiteSpace="nowrap">
                                                             {cell.render('Cell')}
                                                         </Box>
-                                                    )
-                                                }
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                )
-                            })}
+                                                        :
+                                                        (cell.value?.length > 100 ?
+                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                                                    {cell.render('Cell')}
+                                                                </Box>
+                                                            </Tooltip>
+                                                            :
+                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                                                                {cell.render('Cell')}
+                                                            </Box>
+                                                        )
+                                                    }
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    )
+                                })}
                         </TableBody>
                     </Table>
                 </Box>
@@ -500,7 +497,7 @@ const TableZyx = React.memo(({
                         <Box component="span" fontSize={14}>
                             <Trans
                                 i18nKey={langKeys.tablePageOf}
-                                values={{ currentPage, totalPages }}
+                                values={{ currentPage: currentPage.current, totalPages: totalPages.current }}
                                 components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
                             />
                         </Box>

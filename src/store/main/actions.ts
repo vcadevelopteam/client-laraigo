@@ -30,6 +30,18 @@ export const uploadFile = (data: FormData): IActionCall => ({
 export const resetUploadFile = (): IActionCall => ({type: actionTypes.UPLOAD_FILE_RESET});
 
 
+export const exportData = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.exportData(requestBody),
+    types: {
+        loading: actionTypes.EXPORT_DATA,
+        success: actionTypes.EXPORT_DATA_SUCCESS,
+        failure: actionTypes.EXPORT_DATA_FAILURE,
+    },
+    type: null,
+});
+
+export const resetexportData = (): IActionCall => ({type: actionTypes.EXPORT_DATA_RESET});
+
 
 export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => CommonService.main(requestBody),

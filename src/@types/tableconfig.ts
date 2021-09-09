@@ -33,3 +33,11 @@ export interface Pagination {
     filters: Dictionary,
     pageIndex: number
 }
+
+export interface IFetchData {
+    sorts: Dictionary;
+    filters: Dictionary;
+    pageIndex: number;
+    pageSize: number;
+    daterange: any;
+}

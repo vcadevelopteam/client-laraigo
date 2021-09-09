@@ -9,7 +9,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -17,18 +16,21 @@ import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import { TableConfig, Pagination } from '@types'
-// import ButtonExport from './buttonexport';
-
+import { Trans } from 'react-i18next';
+import Button from '@material-ui/core/Button';
 import clsx from 'clsx';
-
-import { 
-    FirstPage, 
-    LastPage, 
-    NavigateNext, 
+import { langKeys } from 'lang/keys';
+import { DownloadIcon, CalendarIcon, SearchIcon as SearchIcon2 } from 'icons';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { Skeleton } from '@material-ui/lab';
+import {
+    FirstPage,
+    LastPage,
+    NavigateNext,
     NavigateBefore,
     Search as SearchIcon,
     GetApp as GetAppIcon,
-    // Refresh as RefreshIcon,
+    Add as AddIcon,
     ArrowDownward as ArrowDownwardIcon,
     ArrowUpward as ArrowUpwardIcon,
     MoreVert as MoreVertIcon,
@@ -46,7 +48,8 @@ import {
     usePagination
 } from 'react-table'
 import { Range } from 'react-date-range';
-import DateRange from './daterange';
+import { DateRangePicker, ListPaginated, Title } from 'components';
+
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -81,6 +84,36 @@ const useStyles = makeStyles((theme) => ({
         zIndex: 9999,
         left: 0,
         visibility: 'hidden'
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
+    title: {
+        fontSize: '22px',
+        lineHeight: '48px',
+        fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
+    },
+    containerButtons: {
+        display: 'flex',
+        width: '100%',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    iconOrder: {
+        width: 20,
+        height: 20,
+        color: theme.palette.text.primary,
+    },
+    containerHeader: {
+        display: 'block',
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        },
     }
 }));
 
@@ -96,6 +129,7 @@ export const optionsMenu = [
     { key: 'empty', value: 'Vacio', type: 'onlystring' },
     { key: 'noempty', value: 'Con valor', type: 'onlystring' },
 ];
+const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) => {
     const [value, setValue] = useState('');
@@ -208,11 +242,17 @@ const TableZyx = React.memo(({
     fetchData,
     pageCount: controlledPageCount,
     titlemodule,
-    methodexport,
-    exportPersonalized
+    handleRegister,
+    exportPersonalized,
+    register,
+    loading,
+    download
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
+    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
+    const [triggerSearch, setTriggerSearch] = useState(false);
     const {
         getTableProps,
         getTableBodyProps,
@@ -236,7 +276,7 @@ const TableZyx = React.memo(({
                 return useMemo(() => ({
                     ...state,
                     pageIndex: pagination.pageIndex,
-                // eslint-disable-next-line react-hooks/exhaustive-deps
+                    // eslint-disable-next-line react-hooks/exhaustive-deps
                 }), [state, pagination.pageIndex])
             },
         },
@@ -282,152 +322,196 @@ const TableZyx = React.memo(({
         });
     }
 
-    const [dateRange, setdateRange] = useState<Range[]>([
-        {
-            startDate: new Date(new Date().setDate(0)),
-            endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            key: 'selection'
-        }
-    ]);
+    const [dateRange, setdateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(0)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: 'selection'
+    });
 
     useEffect(() => {
-        // fetchData && fetchData({
-        //     ...pagination, pageSize, daterange: {
-        //         startDate: dateRange[0].startDate.toISOString().substring(0, 10),
-        //         endDate: dateRange[0].endDate.toISOString().substring(0, 10)
-        //     }
-        // });
-    }, [pageSize, pagination, dateRange])
+        (triggerSearch && fetchData) && fetchData({
+            ...pagination, pageSize, daterange: {
+                startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
+                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            }
+        });
+    }, [pageSize, pagination, dateRange, triggerSearch])
+
+    const exportData = () => {
+        exportPersonalized && exportPersonalized({
+            ...pagination,
+            daterange: {
+                startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
+                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            }
+        })
+    }
 
     return (
-        <>
-            <Box display="grid" gridGap="10px" mb={1}>
-                <Typography variant="h6" style={{ marginRight: '1rem', gridRow: "1", gridColumn: "1" }} id="tableTitle" component="div" color="inherit">
-                    {titlemodule}
-                </Typography>
-                {filterrange && (
-                    <div style={{ gridRow: "2", gridColumn: "1" }}>
-                        <DateRange
-                            label="Filtrar Rango de Fecha"
-                            dateRangeinit={dateRange}
-                            setDateRangeExt={setdateRange}
-                        />
-                    </div>
-                )}
-                <div style={{ gridRow: "1 / 3", gridColumn: "2", textAlign: "right" }}>
-                    <Fab
-                        size="small"
-                        aria-label="add"
-                        color="primary"
-                        onClick={() => handleRefresh()}
-                    >
-                        <RefreshIcon />
-                    </Fab>
-                    {exportPersonalized &&
-                        <Fab
-                            style={{marginLeft: '1rem'}}
-                            size="small"
-                            aria-label="add"
-                            color="primary"
-                            onClick={exportPersonalized}
-                        >
-                            <GetAppIcon />
-                        </Fab>
-                    }
-                    {/* {methodexport && (
-                         <ButtonExport
-                             fileName={titlemodule}
-                             datatosend={{ method: methodexport, data: { ...pagination, origin: titlemodule.toLowerCase(), daterange: dateRange[0], offset: (new Date().getTimezoneOffset() / 60) * -1 } }}
-                         />
+        <Box width={1} style={{ height: '100%' }}>
+            {titlemodule && <div className={classes.title}>{titlemodule}</div>}
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
+                <div className={classes.containerButtons}>
+                    {filterrange && (
+                        <div>
+                            <DateRangePicker
+                                open={openDateRangeModal}
+                                setOpen={setOpenDateRangeModal}
+                                range={dateRange}
+                                onSelect={setdateRange}
+                            >
+                                <Button
+                                    disabled={loading}
+                                    style={{ border: '2px solid #EBEAED', borderRadius: 4 }}
+                                    startIcon={<CalendarIcon />}
+                                    onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                >
+                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                </Button>
+                                <Button
+                                    disabled={loading}
+                                    variant="contained"
+                                    color="primary"
+                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                    style={{ marginLeft: 8, backgroundColor: '#55BD84', width: 120 }}
+                                    onClick={() => {
+                                        // triggerFetch()
+                                        setTriggerSearch(true)
+                                    }}
+                                >
+                                    Buscar
+                                </Button>
+                            </DateRangePicker>
+                        </div>
+                    )}
+                    {/* {fetchData && (
+                        <Tooltip title="Refrescar">
+                            <Fab
+                                size="small"
+                                aria-label="add"
+                                color="primary"
+                                disabled={loading}
+                                style={{ marginLeft: '1rem' }}
+                                onClick={() => fetchData && fetchData({})}
+                            >
+                                <RefreshIcon />
+                            </Fab>
+                        </Tooltip>
                     )} */}
+                    {register && (
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={loading}
+                            startIcon={<AddIcon color="secondary" />}
+                            onClick={handleRegister}
+                            style={{ backgroundColor: "#55BD84" }}
+                        ><Trans i18nKey={langKeys.register} />
+                        </Button>
+                    )}
+                    {download && (
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={loading}
+                            onClick={exportData}
+                            // exportPersonalized
+                            startIcon={<DownloadIcon />}
+                        ><Trans i18nKey={langKeys.download} />
+                        </Button>
+                    )}
                 </div>
             </Box>
 
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto">
-                    <MaUTable width="90%" {...getTableProps()} aria-label="enhanced table" size="small" aria-labelledby="tableTitle">
+                    <MaUTable {...getTableProps()} aria-label="enhanced table" size={isBigScreen ? "medium" : "small"} aria-labelledby="tableTitle">
                         <TableHead>
-                            {headerGroups.map((headerGroup, index) => (
+                            {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
-                                            <th style={{width: "0px"}} key="header-floating"></th> :
+                                            <th style={{ width: "0px" }} key="header-floating"></th> :
                                             <TableCell
                                                 key={ii}
                                             >
                                                 {column.isComponent ?
                                                     column.render('Header')
                                                     :
-                                                    (
-                                                        <>
-                                                            <Box
-                                                                component="div"
-                                                                {...column.getHeaderProps()}
-                                                                onClick={() => handleClickSort(column.id)}
-                                                                style={{
-                                                                    whiteSpace: 'nowrap',
-                                                                    wordWrap: 'break-word',
-                                                                    cursor: 'pointer'
-                                                                }}
-                                                            >
-                                                                {column.render('Header')}
-                                                                {pagination.sorts[column.id]
-                                                                    ? pagination.sorts[column.id] === "asc"
-                                                                        ? <ArrowDownwardIcon />
-                                                                        : <ArrowUpwardIcon />
-                                                                    : ''}
-                                                            </Box>
-                                                            {!column.NoFilter &&
-                                                                <DefaultColumnFilter
-                                                                    header={column.id}
-                                                                    firstvalue={data && data.length > 0 ? data[0][column.id] : null}
-                                                                    filters={pagination.filters}
-                                                                    setFilters={setFilters}
-                                                                />
+                                                    (<>
+                                                        <Box
+                                                            component="div"
+                                                            {...column.getHeaderProps()}
+                                                            onClick={() => handleClickSort(column.id)}
+                                                            style={{
+                                                                whiteSpace: 'nowrap',
+                                                                wordWrap: 'break-word',
+                                                                cursor: 'pointer',
+                                                                alignItems: 'center',
+                                                            }}
+                                                        >
+                                                            {column.render('Header')}
+                                                            {pagination.sorts[column.id]
+                                                                && (pagination.sorts[column.id] === "asc"
+                                                                    ? <ArrowDownwardIcon className={classes.iconOrder} color="action" />
+                                                                    : <ArrowUpwardIcon className={classes.iconOrder} color="action" />)
                                                             }
-                                                        </>
-                                                    )
+                                                        </Box>
+                                                        {!column.NoFilter &&
+                                                            <DefaultColumnFilter
+                                                                header={column.id}
+                                                                firstvalue={data && data.length > 0 ? data[0][column.id] : null}
+                                                                filters={pagination.filters}
+                                                                setFilters={setFilters}
+                                                            />
+                                                        }
+                                                    </>)
                                                 }
                                             </TableCell>
                                     ))}
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()}>
-                            {page.map((row: any) => {
-                                prepareRow(row);
-                                return (
-                                    <TableRow {...row.getRowProps()} className={classes.trdynamic}>
-                                        {row.cells.map((cell: any, i: number) =>
-                                            <TableCell
-                                                {...cell.getCellProps()}
-                                                align={typeof cell.value === "number" ? "right" : "left"}
-                                                className={clsx({
-                                                    [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
-                                                })}
-                                            >
-                                                {headerGroups[0].headers[i].isComponent ?
-                                                    <Box m={0} width={1} whiteSpace="nowrap">
-                                                        {cell.render('Cell')}
-                                                    </Box>
-                                                    :
-                                                    (cell.value?.length > 100 ?
-                                                        <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={400}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
-                                                        </Tooltip>
-                                                        :
-                                                        <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={1}>
+                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
+                            {loading ?
+                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
+                                page.map((row: any) => {
+                                    prepareRow(row);
+                                    return (
+                                        <TableRow {...row.getRowProps()} className={classes.trdynamic}>
+                                            {row.cells.map((cell: any, i: number) =>
+                                                <TableCell
+                                                    {...cell.getCellProps()}
+                                                    align={typeof cell.value === "number" ? "right" : "left"}
+                                                    className={clsx({
+                                                        [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
+                                                    })}
+                                                >
+                                                    {headerGroups[0].headers[i].isComponent ?
+                                                        <Box m={0} width={1} whiteSpace="nowrap">
                                                             {cell.render('Cell')}
                                                         </Box>
-                                                    )
-                                                }
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                )
-                            })}
+                                                        :
+                                                        (cell.value?.length > 100 ?
+                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={400}>
+                                                                    {cell.render('Cell')}
+                                                                </Box>
+                                                            </Tooltip>
+                                                            :
+                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={1}>
+                                                                {cell.render('Cell')}
+                                                            </Box>
+                                                        )
+                                                    }
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    )
+                                })
+                            }
                         </TableBody>
                     </MaUTable>
 
@@ -475,8 +559,26 @@ const TableZyx = React.memo(({
                     </Box>
                 </Box>
             </TableContainer>
-        </>
+        </Box>
     )
 })
 
 export default TableZyx;
+
+const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
+    const items: React.ReactNode[] = [];
+    for (let i = 0; i < columns; i++) {
+        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
+    }
+
+    return (
+        <>
+            <TableRow key="1aux1">
+                {items}
+            </TableRow>
+            <TableRow key="2aux2">
+                {items}
+            </TableRow>
+        </>
+    );
+};
