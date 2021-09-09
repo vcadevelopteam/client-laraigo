@@ -46,7 +46,7 @@ export const getPerson = (state: IState): IState => ({
 export const getPersonSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     agentList: {
-        data: action.payload.data && action.payload.data.length > 0 ? action.payload.data[0] : null,
+        data: action.payload.data && action.payload.data.length > 0 ? { ...action.payload.data[0], variablecontext: (action.payload.data[0].variablecontext ? JSON.parse(action.payload.data[0].variablecontext) : {}) } : null,
         count: action.payload.count,
         loading: false,
         error: false,
@@ -73,13 +73,13 @@ export const getPersonReset = (state: IState): IState => ({
 
 export const getTicketsByPerson = (state: IState): IState => ({
     ...state,
-    agentList: { ...state.agentList, loading: true, error: false },
+    previewTicketList: { ...state.previewTicketList, loading: true, error: false },
 });
 
 export const getTicketsByPersonSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    agentList: {
-        data: action.payload.data && action.payload.data.length > 0 ? action.payload.data[0] : null,
+    previewTicketList: {
+        data: action.payload.data || [],
         count: action.payload.count,
         loading: false,
         error: false,
@@ -88,8 +88,8 @@ export const getTicketsByPersonSuccess = (state: IState, action: IAction): IStat
 
 export const getTicketsByPersonFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    agentList: {
-        ...state.agentList,
+    previewTicketList: {
+        ...state.previewTicketList,
         loading: false,
         error: true,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
@@ -99,7 +99,7 @@ export const getTicketsByPersonFailure = (state: IState, action: IAction): IStat
 
 export const getTicketsByPersonReset = (state: IState): IState => ({
     ...state,
-    agentList: initialState.agentList,
+    previewTicketList: initialState.previewTicketList,
 });
 
 
@@ -184,11 +184,11 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         error: false,
     },
     person: {
-        data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
+        data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? { ...action.payload.data[1].data[0], variablecontext: JSON.parse(action.payload.data[1].data[0].variablecontext || "{}") } : null,
         loading: false,
         error: false,
     },
-    
+
 });
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({

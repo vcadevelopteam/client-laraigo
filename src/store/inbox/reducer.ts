@@ -20,6 +20,7 @@ const initialPerson: IBaseState = {
 
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
+    previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IInteraction>;
     ticketSelected: ITicket | null;
     agentSelected: IAgent | null;
@@ -31,6 +32,7 @@ export interface IState {
 export const initialState: IState = {
     agentList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
+    previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
     person: initialPerson,
     ticketSelected: null,
@@ -53,6 +55,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_INTERACTIONS_SUCCESS]: caseFunctions.getInteractionsSuccess,
     [actionTypes.GET_INTERACTIONS_FAILURE]: caseFunctions.getInteractionsFailure,
     [actionTypes.GET_INTERACTIONS_RESET]: caseFunctions.getInteractionsReset,
+    
+    [actionTypes.GET_TICKETS_BY_PERSON]: caseFunctions.getTicketsByPerson,
+    [actionTypes.GET_TICKETS_BY_PERSON_SUCCESS]: caseFunctions.getTicketsByPersonSuccess,
+    [actionTypes.GET_TICKETS_BY_PERSON_FAILURE]: caseFunctions.getTicketsByPersonFailure,
+    [actionTypes.GET_TICKETS_BY_PERSON_RESET]: caseFunctions.getTicketsByPersonReset,
 
     [actionTypes.GET_PERSON]: caseFunctions.getPerson,
     [actionTypes.GET_PERSON_SUCCESS]: caseFunctions.getPersonSuccess,

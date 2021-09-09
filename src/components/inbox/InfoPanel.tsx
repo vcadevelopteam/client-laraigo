@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { ITicket } from "@types";
+import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
 import { AntTab } from 'components';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import TextField from '@material-ui/core/TextField';
-import { SearchIcon } from 'icons';
-import IconButton from '@material-ui/core/IconButton';
-import { DownloadIcon, DownloadReverseIcon, EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
+import { EMailInboxIcon, PhoneIcon } from 'icons';
+import { getTicketsPerson } from 'store/inbox/actions';
+
 export interface ChatProps {
 }
 
@@ -58,13 +58,14 @@ const useStyles = makeStyles((theme) => ({
 
 const InfoClient: React.FC = () => {
     const classes = useStyles();
+    const person = useSelector(state => state.inbox.person.data);
     return (
         <div className={classes.containerInfoClient}>
             <div className={classes.containerName}>
-                <Avatar alt="" src="" />
+                <Avatar alt="" src={person?.imageurldef} />
                 <div style={{ flex: 1 }}>
-                    <div>Carlos</div>
-                    <div className={classes.label}>{`ID# 23232`}</div>
+                    <div>{person?.firstname} {person?.lastname}</div>
+                    <div className={classes.label}>{`ID# ${person?.personid}`}</div>
                 </div>
                 <div className={classes.btn}>Active</div>
             </div>
@@ -72,16 +73,63 @@ const InfoClient: React.FC = () => {
                 <EMailInboxIcon className={classes.propIcon} />
                 <div style={{ flex: 1 }}>
                     <div className={classes.label}>Email</div>
-                    <div>{`ID# 23232`}</div>
+                    <div>{`${person?.email}`}</div>
                 </div>
             </div>
             <div className={classes.containerName}>
                 <PhoneIcon className={classes.propIcon} />
                 <div style={{ flex: 1 }}>
                     <div className={classes.label}>Phone</div>
-                    <div>{`ID# 23232`}</div>
+                    <div>{`${person?.phone}`}</div>
                 </div>
             </div>
+        </div>
+    )
+}
+
+const Variables: React.FC = () => {
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
+    const classes = useStyles();
+
+    return (
+        <div className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
+            {variablecontext && Object.entries(variablecontext).map(([key, value], index) => (
+                <div key={index} className={classes.containerName}>
+                    <div>
+                        <div className={classes.label}>{key}</div>
+                        <div >{value.Value}</div>
+                    </div>
+                </div>
+            ))}
+
+        </div>
+    )
+}
+
+const PreviewTickets = () => {
+    const dispatch = useDispatch();
+    const classes = useStyles();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const previewTicketList = useSelector(state => state.inbox.previewTicketList);
+    console.log(previewTicketList.data)
+    useEffect(() => {
+        dispatch(getTicketsPerson(ticketSelected?.personid!, ticketSelected?.conversationid!))
+    }, [])
+
+    return (
+        <div>
+            {previewTicketList.loading ? "espera" :
+                previewTicketList.data?.map((ticket, index) => (
+                    <div key={index} className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
+                        <div className={classes.containerName}>
+                            <div>
+                                <div className={classes.label}>{ticket.ticketnum}</div>
+                                <div >{ticket.personid}</div>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            }
         </div>
     )
 }
@@ -101,12 +149,14 @@ const InfoPanel: React.FC<ChatProps> = () => {
                 onChange={(_, value) => setPageSelected(value)}
             >
                 <AntTab label="Client details" />
-                <AntTab label="Tickets" />
                 <AntTab label="Variables" />
-                <AntTab label="Attachments" />
+                <AntTab label="Tickets" />
+                {/* <AntTab label="Attachments" /> */}
             </Tabs>
             {pageSelected === 0 && <InfoClient />}
-            
+            {pageSelected === 1 && <Variables />}
+            {pageSelected === 2 && <PreviewTickets />}
+
         </div>
     );
 }
