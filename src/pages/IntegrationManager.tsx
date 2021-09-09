@@ -19,6 +19,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { apiUrls } from 'common/constants';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -116,9 +117,11 @@ const dataBodyType = [
 ]
 
 const dataLevel = [
-    { value: "CORP", text: "CORPORATION" }, // Setear en diccionario los text
-    { value: "ORG", text: "ORGANIZATION" }, // Setear en diccionario los text
+    { value: "CORPORATION", text: "CORPORATION" }, // Setear en diccionario los text
+    { value: "ORGANIZATION", text: "ORGANIZATION" }, // Setear en diccionario los text
 ]
+
+const dataLevelKeys = ['corpid','orgid'];
 
 const IntegrationManager: FC = () => {
     const dispatch = useDispatch();
@@ -148,8 +151,8 @@ const IntegrationManager: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
+                Header: t(langKeys.name),
+                accessor: 'name',
                 NoFilter: true
             },
             {
@@ -260,16 +263,18 @@ type AuthorizationType = {
 }
 
 type FieldType = {
+    id?: string,
     name: string,
     key: boolean,
-    order: string
 }
 
 type FormFields = {
+    isnew: boolean,
     id: number,
     description: string,
     type: string,
     status: string,
+    name: string,
     method: string,
     url: string,
     authorization: AuthorizationType,
@@ -279,7 +284,6 @@ type FormFields = {
     parameters: Dictionary[],
     variables: string[],
     level: string,
-    frame: string,
     fields: FieldType[],
     operation: string
 }
@@ -288,18 +292,23 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const { control, register, handleSubmit, setValue, getValues, setError, clearErrors, trigger, formState: { errors } } = useForm<FormFields>({
+    const dataKeys = new Set([...dataLevel, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
+
+    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
+            isnew: row ? false : true,
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
             type: row ? (row.type || 'STANDARD') : 'STANDARD',
             status: row ? (row.status || 'ACTIVO') : 'ACTIVO',
+            name: row ? (row.name || '') : '',
             method: row ? (row.method || 'GET') : 'GET',
             url: row ? (row.url || '') : '',
             authorization: row ? (row.authorization || { type: 'NONE' }) : { type: 'NONE' },
@@ -308,9 +317,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             body: row ? (row.body || '') : '',
             parameters: row ? (row.parameters || []) : [],
             variables: row ? (row.variables || []) : [],
-            level: row ? (row.level || 'CORP') : 'CORP',
-            frame: row ? (row.frame || '') : '',
-            fields: row ? (row.fields || []) : [],
+            level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
+            fields: row ? (row.fields || [{name: 'corpid', key: true}]) : [{name: 'corpid', key: true}],
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -325,16 +333,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         name: "parameters",
     });
 
-    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate } = useFieldArray({
+    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate, insert: fieldsInsert } = useFieldArray({
         control,
         name: "fields",
     });
 
     React.useEffect(() => {
-        register('description', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('name', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('method', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('url');
         register('variables');
     }, [edit, register]);
 
@@ -355,6 +362,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.type === 'CUSTOM') {
+            data.url = `${apiUrls.MAIN_URL}/${user?.orgdesc}_${data.name}`
+        }
+        
         const callback = () => {
             dispatch(execute(insIntegrationManager(data)));
             dispatch(showBackdrop(true));
@@ -424,17 +435,21 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }
 
     const onBlurBody = () => {
-        let data = getValues('body');
+        let bodytype = getValues('bodytype');
+        if (bodytype === 'JSON') {
+            let data = getValues('body');
+            validateJSON(data);
+        }
+    }
+
+    const validateJSON = (data: any): any => {
         if (!isJson(data)) {
-            setError('body', {
-                type: 'manual',
-                message: t(langKeys.invalidjson),
-            });
+            return false;
         }
         else {
-            clearErrors('body');
             let varrex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/,'g');
-            setValue('variables', Array.from(new Set(Array.from(data?.matchAll(varrex), m => m[0].replace(/\{+/,'').replace(/\}+/,'')))));
+            setValue('variables', Array.from(new Set(Array.from(data?.matchAll(varrex), (m: any[]) => m[0].replace(/\{+/,'').replace(/\}+/,'')))));
+            return true;
         }
     }
 
@@ -446,10 +461,24 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const onChangeLevel = async (data: Dictionary) => {
         setValue('level', data?.value || '');
         await trigger('level');
+        if (data?.value === 'CORPORATION') {
+            if (fields.findIndex(x => x.name === 'corpid') === -1) {
+                fieldsInsert(0, {name: 'corpid', key: true});
+            }
+            fieldsRemove(fields.findIndex(x => x.name === 'orgid'));
+        }
+        if (data?.value === 'ORGANIZATION') {
+            if (fields.findIndex(x => x.name === 'corpid') === -1) {
+                fieldsInsert(0, {name: 'corpid', key: true});
+            }
+            if (fields.findIndex(x => x.name === 'orgid') === -1) {
+                fieldsInsert(1, {name: 'orgid', key: true});
+            }
+        }
     }
 
     const onClickAddField = async () => {
-        fieldsAppend({ name: '', key: false, order: '' });
+        fieldsAppend({ name: '', key: false });
     }
 
     const onClickDeleteField = async (index: number) => {
@@ -460,6 +489,32 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         fieldsUpdate(index, { ...fields[index], [param]: value});
     }
 
+    const disableKeys = (field: FieldType, i: number) => {
+        if (dataLevelKeys.includes(field?.name) && [0,1].includes(i)) {
+            return true;
+        }
+        else if (dataKeys.has(field?.id) && !getValues('isnew')) {
+            return true
+        }
+        return false;
+    }
+
+    const validateDuplicateFieldName = (field: FieldType, value: string): any => {
+        let f = fields.filter((x: FieldType) => x.id !== field.id).map((m: FieldType) => m.name);
+        return !f.includes(value);
+    }
+
+    const validateStartwithcharFieldName = (value: string): any => {
+        let rex = new RegExp(/[a-z]/,'g');
+        return rex.test(value[0]);
+    }
+
+    const validateBasicLatinFieldName = (value: string): any => {
+        let rex = new RegExp(/^[a-z\d]+$/,'g');
+        return rex.test(value);
+    }
+
+
     return (
         <div style={{ width: '100%' }}>
             <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
@@ -468,29 +523,29 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 handleClick={setViewSelected}
             />
             <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.newintegrationmanager)}
+                title={row ? `${row.name}` : t(langKeys.newintegrationmanager)}
             />
             <form onSubmit={onSubmit}>
                 <div className={classes.containerDetail}>
                 <div className="row-zyx">
-                        {edit ?
+                        {(edit && getValues('isnew')) ?
                             <FieldEdit
-                                label={t(langKeys.description)}
+                                label={t(langKeys.name)}
                                 className="col-12"
-                                valueDefault={getValues('description')}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
+                                valueDefault={getValues('name')}
+                                onChange={(value) => setValue('name', value)}
+                                error={errors?.name?.message}
                             />
                             :
                             <FieldView
-                                label={t(langKeys.description)}
-                                value={row?.description || ""}
+                                label={t(langKeys.name)}
+                                value={row?.name || ""}
                                 className="col-12"
                             />
                         }
                     </div>
                     <div className="row-zyx">
-                        {edit ?
+                        {(edit && getValues('isnew')) ?
                             <FieldSelect
                                 label={t(langKeys.type)}
                                 className="col-12"
@@ -528,6 +583,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                         optionValue="value"
                                     />
                                     <FieldEdit
+                                        fregister={{...register(`url`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}}
                                         label={t(langKeys.url)}
                                         className={classes.selectInput2}
                                         valueDefault={getValues('url')}
@@ -741,6 +799,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         <div className="row-zyx">
                             {edit ?
                                 <FieldEditMulti
+                                    fregister={{...register(`body`, {
+                                        validate: {
+                                            value: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                            invalid: (value: any) => validateJSON(value) || t(langKeys.invalidjson)
+                                        }
+                                    })}}    
                                     label={t(langKeys.body)}
                                     className="col-12"
                                     valueDefault={getValues('body')}
@@ -813,26 +877,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                     {getValues('type') === 'CUSTOM' ?
                     <React.Fragment>
                         <div className="row-zyx">
-                            {edit ?
+                            {(edit && getValues('isnew')) ?
                                 <React.Fragment>
-                                    <FieldSelect
-                                        fregister={{...register(`method`, {
-                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        })}}
-                                        label={t(langKeys.requesttype)}
-                                        className={classes.selectInput1}
-                                        valueDefault={getValues('method')}
-                                        onChange={onChangeMethod}
-                                        error={errors?.method?.message}
-                                        data={dataMethodType}
-                                        optionDesc="text"
-                                        optionValue="value"
-                                    />
                                     <FieldEdit
                                         label={t(langKeys.url)}
-                                        className={classes.selectInput2}
+                                        className="col-12"
                                         valueDefault={getValues('url')}
-                                        onChange={(value) => setValue('url', value)}
+                                        disabled={true}
                                         error={errors?.url?.message}
                                     />
                                 </React.Fragment>
@@ -845,12 +896,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             }
                         </div>
                         <div className="row-zyx">
-                            {edit ?
+                            {(edit && getValues('isnew')) ?
                                 <FieldSelect
                                     fregister={{...register(`level`, {
                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     })}}    
                                     label={t(langKeys.level)}
+                                    className="col-12"
                                     valueDefault={getValues('level')}
                                     onChange={onChangeLevel}
                                     error={errors?.level?.message}
@@ -866,15 +918,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 />
                             }
                         </div>
-                        <div className="row-zyx">
+                        <div className="row-zyx" style={{ alignItems: 'flex-end' }}>
                             {edit ?
                                 <React.Fragment>
-                                    <FieldEdit
-                                        label={t(langKeys.frame)}
-                                        className={classes.selectInput1}
-                                        valueDefault={getValues('frame')}
-                                        onChange={(value) => setValue('frame', value)}
-                                        error={errors?.frame?.message}
+                                    <FieldView
+                                        label={t(langKeys.tablelayout)}
+                                        className={classes.labelButton1}
                                     />
                                     <Button
                                         variant="outlined"
@@ -887,8 +936,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 </React.Fragment>
                                 :
                                 <FieldView
-                                    label={t(langKeys.frame)}
-                                    value={row?.frame || ""}
+                                    label={t(langKeys.tablelayout)}
                                     className="col-12"
                                 />
                             }
@@ -898,9 +946,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 return (
                                     <div className="row-zyx" key={field.id}>
                                         <FieldEdit
+                                            fregister={{...register(`fields.${i}.name`, {
+                                                validate: {
+                                                    value: (value: any) => (value && value.length) || t(langKeys.field_required),
+                                                    duplicate: (value: any) => validateDuplicateFieldName(field, value) || t(langKeys.field_duplicate),
+                                                    startwithchar: (value: any) => validateStartwithcharFieldName(value) || t(langKeys.field_startwithchar),
+                                                    basiclatin: (value: any) => validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
+                                                }
+                                            })}}
                                             label={t(langKeys.name)}
                                             className={classes.fieldRow}
                                             valueDefault={field?.name || ""}
+                                            disabled={disableKeys(field, i)}
                                             onBlur={(value) => onBlurField(i, 'name', value)}
                                             error={errors?.fields?.[i]?.name?.message}
                                         />
@@ -908,22 +965,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                             label={t(langKeys.key)}
                                             className={`${classes.checkboxRow}`}
                                             valueDefault={field?.key}
+                                            disabled={disableKeys(field, i)}
                                             onChange={(value) => onBlurField(i, 'key', value)}
                                             error={errors?.fields?.[i]?.key?.message}
                                         />
-                                        <FieldEdit
-                                            label={t(langKeys.order)}
-                                            className={classes.fieldRow}
-                                            valueDefault={field?.order || ""}
-                                            onBlur={(value) => onBlurField(i, 'order', value)}
-                                            error={errors?.fields?.[i]?.order?.message}
-                                        />
+                                        {!disableKeys(field, i) ?
                                         <IconButton
                                             size="small"
                                             className={classes.fieldButton}
                                             onClick={() => onClickDeleteField(i)}>
                                             <DeleteIcon style={{ color: '#000000'}} />
                                         </IconButton>
+                                        : null}
                                     </div>
                                 )
                             })
