@@ -39,3 +39,8 @@ export { ReactComponent as EmojiICon } from './emoji.svg';
 export { ReactComponent as ImageIcon } from './image.svg';
 export { ReactComponent as SendIcon } from './send.svg';
 export { ReactComponent as QuickresponseIcon } from './quickresponse.svg';
+export { ReactComponent as BotIcon } from './bot.svg';
+export { ReactComponent as AgentIcon } from './agent.svg';
+export { ReactComponent as DownloadIcon2 } from './download.svg';
+export { ReactComponent as FileIcon } from './file.svg';
+export { ReactComponent as DocumentIcon } from './document.svg';

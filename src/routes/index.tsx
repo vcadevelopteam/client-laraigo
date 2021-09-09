@@ -107,7 +107,7 @@ const RouterApp: FC = () => {
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.SUPERVISOR}>
-					<Layout mainClasses={classes.main}>
+					<Layout >
 						<Supervisor />
 					</Layout>
 				</ProtectRoute>
