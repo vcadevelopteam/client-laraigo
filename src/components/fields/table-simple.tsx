@@ -312,8 +312,8 @@ const TableZyx = React.memo(({
         usePagination
     )
 
-    const currentPage = React.useRef(pageIndex + 1);
-    const totalPages = React.useRef(pageOptions.length);
+    // const currentPage = React.useRef(pageIndex + 1);
+    // const totalPages = React.useRef(pageOptions.length);
 
     useEffect(() => {
         let next = true;
@@ -497,7 +497,7 @@ const TableZyx = React.memo(({
                         <Box component="span" fontSize={14}>
                             <Trans
                                 i18nKey={langKeys.tablePageOf}
-                                values={{ currentPage: currentPage.current, totalPages: totalPages.current }}
+                                values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
                                 components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
                             />
                         </Box>
