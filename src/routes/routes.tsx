@@ -152,4 +152,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.INTEGRATIONMANAGER,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.FLOWDESIGNER,
+        description: <Trans i18nKey={langKeys.flowdesigner} count={2} />,
+        path: paths.FLOWDESIGNER,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];

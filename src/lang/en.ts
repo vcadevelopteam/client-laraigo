@@ -214,6 +214,8 @@ const translation: LangKeys = {
     invalidjson: 'Invalid json',
     test: 'Test',
     result: 'Result',
+
+    flowdesigner: 'Flow designer',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',

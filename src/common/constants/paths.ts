@@ -31,6 +31,7 @@ const paths = {
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
+    FLOWDESIGNER: '/extras/flowdesigner',
 };
 
 export default paths;
