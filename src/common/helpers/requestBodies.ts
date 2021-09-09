@@ -297,6 +297,7 @@ export const insClassification = ({ id, description, parent, communicationchanne
         id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
+//tabla paginada
 export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_SEL",
     methodCount: "UFN_PERSON_TOTALRECORDS",
@@ -311,6 +312,19 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
+//tabla paginada
+export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+    method: "UFN_PERSON_EXPORT",
+    key: "UFN_PERSON_EXPORT",
+    parameters: {
+        origin: "person",
+        filters, 
+        startdate, 
+        enddate,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 
 export const getValuesFromTree = (classificationid: number): IRequestBody => ({
     method: "UFN_CLASSIFICATION_TREE_SEL",
@@ -419,26 +433,26 @@ export const insIntegrationManager = (
         fields,
         operation
     }: Dictionary): IRequestBody => ({
-    method: "UFN_INTEGRATIONMANAGER_INS",
-    parameters: {
-        id,
-        description,
-        type,
-        status,
-        name,
-        method,
-        url,
-        authorization: JSON.stringify(authorization),
-        headers: JSON.stringify(headers),
-        bodytype,
-        body: body,
-        parameters: JSON.stringify(parameters),
-        variables: JSON.stringify(variables),
-        level,
-        fields: JSON.stringify(fields),
-        operation
-    }
-});
+        method: "UFN_INTEGRATIONMANAGER_INS",
+        parameters: {
+            id,
+            description,
+            type,
+            status,
+            name,
+            method,
+            url,
+            authorization: JSON.stringify(authorization),
+            headers: JSON.stringify(headers),
+            bodytype,
+            body: body,
+            parameters: JSON.stringify(parameters),
+            variables: JSON.stringify(variables),
+            level,
+            fields: JSON.stringify(fields),
+            operation
+        }
+    });
 
 export const getChannelSel = (id: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",

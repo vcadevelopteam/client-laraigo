@@ -22,6 +22,7 @@ export interface IState {
     mainAux2: IListStatePaginated<Dictionary>,
     mainPaginated: IListStatePaginated<Dictionary>,
     uploadFile: IUpload,
+    exportData: IUpload,
 }
 
 export const initialState: IState = {
@@ -32,7 +33,8 @@ export const initialState: IState = {
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
     mainPaginated: initialListPaginatedState,
-    uploadFile: { ...initialCommon }
+    uploadFile: { ...initialCommon },
+    exportData: { ...initialCommon }
 };
 
 export default createReducer<IState>(initialState, {
@@ -71,4 +73,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UPLOAD_FILE_SUCCESS]: caseFunctions.uploadFileSuccess,
     [actionTypes.UPLOAD_FILE_FAILURE]: caseFunctions.uploadFileFailure,
     [actionTypes.UPLOAD_FILE_RESET]: caseFunctions.uploadFileReset,
+
+    [actionTypes.EXPORT_DATA]: caseFunctions.exportData,
+    [actionTypes.EXPORT_DATA_SUCCESS]: caseFunctions.exportDataSuccess,
+    [actionTypes.EXPORT_DATA_FAILURE]: caseFunctions.exportDataFailure,
+    [actionTypes.EXPORT_DATA_RESET]: caseFunctions.exportDataReset,
 });

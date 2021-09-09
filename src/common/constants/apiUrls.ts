@@ -12,4 +12,5 @@ export const apiUrls = {
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
+    EXPORT_DATA: `${BASE_URL}/main/exportexcel`,
 };
