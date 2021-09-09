@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
 import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -20,6 +20,7 @@ import { getCollection, resetMain, getMultiCollection, execute } from 'store/mai
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { apiUrls } from 'common/constants';
+import { request_send, resetRequest } from 'store/integrationmanager/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -514,6 +515,24 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         return rex.test(value);
     }
 
+    const testRequestRes = useSelector(state => state.integrationmanager.request);
+    const onClickTest = () => {
+        dispatch(request_send(getValues()))
+    }
+
+    const [openDialogDomain, setOpenDialogDomain] = useState(false);
+
+    useEffect(() => {
+        console.log(testRequestRes);
+        if (testRequestRes?.data !== null) {
+            setOpenDialogDomain(true);
+        }
+    }, [testRequestRes])
+
+    const cleanRequestData = () => {
+        dispatch(resetRequest());
+    }
+
 
     return (
         <div style={{ width: '100%' }}>
@@ -1002,6 +1021,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
 
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                        {getValues('type') === 'STANDARD' &&
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            style={{ backgroundColor: "#7721AD" }}
+                            onClick={() => onClickTest()}
+                        >{t(langKeys.test)}</Button>
+                        }
                         <Button
                             variant="contained"
                             type="button"
@@ -1024,10 +1052,44 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                     </div>
                 </div>
             </form>
+
+            <ModalIntegrationManager
+                data={testRequestRes.data}
+                openModal={openDialogDomain}
+                setOpenModal={setOpenDialogDomain}
+                cleanModalData={cleanRequestData}
+            />
+
         </div>
     );
 }
 
+interface ModalProps {
+    data: any;
+    openModal: boolean;
+    setOpenModal: (open: boolean) => void;
+    cleanModalData: () => void;
+}
 
+const ModalIntegrationManager: React.FC<ModalProps> = ({ data, openModal, setOpenModal, cleanModalData }) => {
+    const { t } = useTranslation();
+    
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.result)}
+            buttonText2={t(langKeys.back)}
+            handleClickButton2={() => {
+                cleanModalData();
+                setOpenModal(false);
+            }}
+            button2Type="button"
+        >
+            <div className="row-zyx">
+                {JSON.stringify(data, null, 4)}
+            </div>
+        </DialogZyx>
+    )
+}
 
 export default IntegrationManager;

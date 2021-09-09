@@ -3,6 +3,8 @@ import { getAuthorizationToken } from '../common/helpers';
 
 interface IRequestConfig {
     params?: any;
+    auth?: any;
+    headers?: any;
     data?: any;
     responseType?: ResponseType;
 }
@@ -80,6 +82,35 @@ async function getHeaders(type: RequestType, withToken = true): Promise<any> {
     if (withToken === true) {
         const token = getAuthorizationToken();
         defaults['Authorization'] = `Bearer ${token}`;
+    }
+    return defaults;
+}
+
+export const ExternalRequestManager = {
+    async get<T = any>(url: string, config: IRequestConfig = {}) {
+        const { auth, headers } = config;
+        return axios.get<T>(url, await setConfig(auth, headers) );
+    },
+
+    async post<T = any>(url: string, config: IRequestConfig = {}) {
+        const { auth, headers, data } = config;
+        return axios.post<T>(url, data, await setConfig(auth, headers));
+    },
+
+    async postForm<T = any>(url: string, config: IRequestConfig) {
+        const { auth, headers, data } = config;
+        return axios.post<T>(url, createFormData(data), await setConfig(auth, headers));
+    },
+}
+
+async function setConfig(auth: any, headers: any): Promise<any> {
+    const defaults: any = { headers: headers };
+    const { type, token, username, password } = auth;
+    if (token) {
+        defaults['headers']['Authorization'] = `Bearer ${token}`;
+    }
+    if (type === 'BASIC') {
+        defaults['auth'] = { username, password }
     }
     return defaults;
 }

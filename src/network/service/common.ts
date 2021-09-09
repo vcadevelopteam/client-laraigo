@@ -1,6 +1,6 @@
 import { apiUrls } from '../../common/constants';
 import { IRequestBody, IRequestBodyPaginated, ITransaction } from '@types';
-import { APIManager } from '../manager';
+import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
 export function login(usr: string, password: string, facebookid: string, googleid: string) {
@@ -32,4 +32,21 @@ export function mainPaginated(requestBody: IRequestBodyPaginated) {
 export function getTickets(page: number, pageSize: number) {
     const data = { page, pageSize, sort: 'DESC', query: [] };
     return APIManager.post(apiUrls.TICKET_URL, { data }, false);
+}
+
+export function request_send(request: any) {
+    const { method, url, authorization, headers, bodytype, body, parameters } = request;
+    let headersjson = headers.reduce((a: any, x:any) => ({...a, [x.key]: x.value}), {});
+    let parametersjson = parameters.reduce((a: any, x:any) => ({...a, [x.key]: x.value}), {});
+    if (method === 'POST') {
+        if (bodytype === 'URLENCODED') {
+            return ExternalRequestManager.postForm(url, { auth: authorization, headers: headersjson, data: parametersjson })
+        }
+        else {
+            return ExternalRequestManager.post(url, { auth: authorization, headers: headersjson, data: body })
+        }
+    }
+    else {
+        return ExternalRequestManager.get(url, { auth: authorization, headers: headersjson });
+    }
 }

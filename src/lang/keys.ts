@@ -200,6 +200,8 @@ export const langKeys = {
     order: 'order',
     beautify: 'beautify',
     invalidjson: 'invalidjson',
+    test: 'test',
+    result: 'result',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
