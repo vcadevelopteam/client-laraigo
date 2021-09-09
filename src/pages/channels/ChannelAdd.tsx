@@ -116,6 +116,12 @@ export const ChannelAdd: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    }, [mainResult])
+    useEffect(() => {
+        if (waitSave) {
             if (mainResult.loading && !mainResult.error && executeResult) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -127,7 +133,7 @@ export const ChannelAdd: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult])
 
     function setView(name:any){
         let partialf=fields;
@@ -184,6 +190,8 @@ export const ChannelAdd: FC = () => {
         dispatch(getChannelsList(r.accessToken))
         setViewSelected("viewfacebook2")
         setPreviousView("viewfacebook2")
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     }
     function setValueField(value: any){
         let partialf=fields;
