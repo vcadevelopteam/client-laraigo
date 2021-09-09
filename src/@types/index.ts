@@ -8,3 +8,4 @@ export * from './reducerState';
 export * from './action';
 export * from './route';
 export * from './tableconfig';
+export * from './entities/agent';

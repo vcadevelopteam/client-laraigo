@@ -33,3 +33,14 @@ export { ReactComponent as WhatsappIcon } from './whatsapp.svg';
 export { ReactComponent as CheckIcon } from './check.svg';
 export { ReactComponent as CallIcon } from './call.svg';
 export { ReactComponent as VideoCallIcon } from './video-call.svg';
+
+export { ReactComponent as AttachmentIcon } from './attachment.svg';
+export { ReactComponent as EmojiICon } from './emoji.svg';
+export { ReactComponent as ImageIcon } from './image.svg';
+export { ReactComponent as SendIcon } from './send.svg';
+export { ReactComponent as QuickresponseIcon } from './quickresponse.svg';
+export { ReactComponent as BotIcon } from './bot.svg';
+export { ReactComponent as AgentIcon } from './agent.svg';
+export { ReactComponent as DownloadIcon2 } from './download.svg';
+export { ReactComponent as FileIcon } from './file.svg';
+export { ReactComponent as DocumentIcon } from './document.svg';

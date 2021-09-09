@@ -34,6 +34,48 @@ export const mainReset = (state: IState): IState => ({
     mainData: initialState.mainData,
 });
 
+
+
+
+export const uploadFile = (state: IState): IState => ({
+    ...state,
+    uploadFile: { ...state.uploadFile, loading: true, error: false }
+});
+
+export const uploadFileSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        uploadFile: {
+            url: action.payload.url,
+            loading: false,
+            code: undefined,
+            error: false,
+            message: undefined,
+        }
+    }
+};
+
+export const uploadFileFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    uploadFile: {
+        ...state.uploadFile,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const uploadFileReset = (state: IState): IState => ({
+    ...state,
+    uploadFile: initialState.uploadFile,
+});
+
+
+
+
+
+
 export const mainAux = (state: IState): IState => ({
     ...state,
     mainAux: { ...state.mainAux, loading: true, error: false }

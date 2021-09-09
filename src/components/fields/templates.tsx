@@ -25,8 +25,14 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
-import { withStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { FormHelperText, useTheme } from '@material-ui/core';
+import { Divider, Grid, ListItem } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import { EmojiICon } from 'icons';
+import { Picker, EmojiData } from 'emoji-mart'
+
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -246,7 +252,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, error, type = "text", rows = 4, maxLength = 0 }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -257,6 +263,7 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             <TextField
+                {...fregister}
                 color="primary"
                 fullWidth
                 disabled={disabled}
@@ -264,13 +271,16 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 error={!!error}
                 value={value}
                 multiline
-                rows={rows}
+                minRows={rows}
                 helperText={error || null}
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
                         setvalue(e.target.value);
                         onChange && onChange(e.target.value);
                     }
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
                 }}
             />
             {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
@@ -450,6 +460,86 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     );
 }
 
+const useCheckboxStyles = makeStyles({
+    root: {
+        '&:hover': {
+            backgroundColor: 'transparent',
+        },
+    },
+    icon: {
+        borderRadius: 3,
+        width: 16,
+        height: 16,
+        boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+        backgroundColor: '#f5f8fa',
+        backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+        '$root.Mui-focusVisible &': {
+            outline: '2px auto rgba(19,124,189,.6)',
+            outlineOffset: 2,
+        },
+        'input:hover ~ &': {
+            backgroundColor: '#ebf1f5',
+        },
+        'input:disabled ~ &': {
+            boxShadow: 'none',
+            background: 'rgba(119,33,173,.5)',
+        },
+    },
+    checkedIcon: {
+        backgroundColor: 'rgba(119, 33, 173, 0.9)',
+        backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))',
+        '&:before': {
+            display: 'block',
+            width: 16,
+            height: 16,
+            boxShadow: 'inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)',
+            backgroundColor: '#f5f8fa',
+            backgroundImage: 'linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))',
+            '$root.Mui-focusVisible &': {
+                outline: '2px auto rgba(19,124,189,.6)',
+                outlineOffset: 2,
+            },
+            'input:hover ~ &': {
+                backgroundColor: '#ebf1f5',
+            },
+            'input:disabled ~ &': {
+                boxShadow: 'none',
+                background: 'rgba(206,217,224,.5)',
+            },
+        },
+    }
+});
+
+interface FieldCheckboxProps extends InputProps {
+    className?: any;
+    label: string;
+}
+
+export const FieldCheckbox: React.FC<FieldCheckboxProps> = ({ className, onChange, valueDefault, label, disabled = false }) => {
+    const classes = useCheckboxStyles();
+    const [checkedaux, setChecked] = useState(false);
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
+    return (
+        <div className={className} style={{ paddingBottom: '3px' }}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
+            <Checkbox
+                checked={checkedaux}
+                checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}
+                icon={<span className={classes.icon} />}
+                disabled={disabled}
+                onChange={(e) => {
+                    setChecked(e.target.checked);
+                    onChange && onChange(e.target.checked)
+                }}
+            />
+        </div>
+    );
+}
+
 export const AntTab = withStyles((theme) => ({
     root: {
         textTransform: 'none',
@@ -469,3 +559,69 @@ export const AntTab = withStyles((theme) => ({
     },
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);
+
+export const ListItemSkeleton: React.FC = () => (
+    <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
+        <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>
+            <Grid container direction="column">
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Box>
+    </ListItem>
+)
+
+const emojiPickerStyle = makeStyles({
+    root: {
+        cursor: 'pointer',
+        position: 'relative',
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            borderRadius: 4
+        }
+    },
+});
+
+
+export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void }> = ({ emojisNoShow, onSelect }) => {
+    const [open, setOpen] = React.useState(false);
+    const classes = emojiPickerStyle();
+    const handleClick = () => setOpen((prev) => !prev);
+
+    const handleClickAway = () => setOpen(false);
+
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <span>
+                <EmojiICon className={classes.root} onClick={handleClick} />
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 80
+                    }}>
+                        <Picker
+                            // showPreview={false}
+                            onSelect={onSelect}
+                            emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.indexOf(emoji.unified) === -1 : undefined}
+                        />
+                    </div>
+                )}
+            </span>
+        </ClickAwayListener>
+    )
+}

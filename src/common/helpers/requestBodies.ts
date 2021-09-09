@@ -32,6 +32,36 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     parameters: {}
 })
 
+export const getTickets = (userid: number | null): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
+    key: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
+    parameters: { ...(userid && { userid }) }
+})
+
+export const getInfoPerson = (personid: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_PERSON_SEL",
+    key: "UFN_CONVERSATION_PERSON_SEL",
+    parameters: { personid }
+})
+
+export const getTicketsByPerson = (personid: number, conversationid: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_TICKETSBYPERSON",
+    key: "UFN_CONVERSATION_SEL_TICKETSBYPERSON",
+    parameters: { personid, conversationid }
+})
+
+export const getInteractionsByConversation = (conversationid: number, lock: boolean, conversationold: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_INTERACTION",
+    key: "UFN_CONVERSATION_SEL_INTERACTION",
+    parameters: { conversationid, lock, conversationold }
+})
+
+export const getIntentByConversation = (conversationid: number): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_INTENT",
+    key: "UFN_CONVERSATION_SEL_INTENT",
+    parameters: { conversationid }
+})
+
 export const getRolesByOrg = (): IRequestBody => ({
     method: "UFN_ROLE_LST",
     key: "UFN_ROLE_LST",
@@ -46,6 +76,7 @@ export const getSupervisors = (orgid: number, userid: number, keytmp?: any): IRe
         userid
     }
 })
+
 export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_APPS_DATA_SEL",
     key: "UFN_APPS_DATA_SEL" + (keytmp || ""),
@@ -74,7 +105,7 @@ export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
 
 export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNELBYORG_LST",
-    key: "UFN_COMMUNICATIONCHANNELBYORG_LST"  + (keytmp || ""),
+    key: "UFN_COMMUNICATIONCHANNELBYORG_LST" + (keytmp || ""),
     parameters: {
         orgid: orgid || undefined
     }
@@ -173,30 +204,30 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
     usertme, usertmepercentmax, productivitybyhour, operation }: Dictionary): IRequestBody => ({
         method: "UFN_SLA_INS",
         parameters: {
-            id, 
-            description, 
-            type, 
-            company, 
-            communicationchannelid, 
-            usergroup, 
-            status, 
-            totaltmo, 
-            totaltmomin, 
-            totaltmopercentmax: parseFloat(totaltmopercentmax), 
-            totaltmopercentmin:0.01, 
-            usertmo, 
-            usertmomin, 
+            id,
+            description,
+            type,
+            company,
+            communicationchannelid,
+            usergroup,
+            status,
+            totaltmo,
+            totaltmomin,
+            totaltmopercentmax: parseFloat(totaltmopercentmax),
+            totaltmopercentmin: 0.01,
+            usertmo,
+            usertmomin,
             usertmopercentmax: parseFloat(usertmopercentmax),
-            usertmopercentmin:0.01, 
-            tme:"00:00:00", 
-            tmemin:"00:00:00", 
-            tmepercentmax:0, 
-            tmepercentmin:0.01, 
-            usertme, 
-            usertmemin:"00:00:00", 
-            usertmepercentmax: parseFloat(usertmepercentmax), 
-            usertmepercentmin:0.01, 
-            productivitybyhour: parseFloat(productivitybyhour), 
+            usertmopercentmin: 0.01,
+            tme: "00:00:00",
+            tmemin: "00:00:00",
+            tmepercentmax: 0,
+            tmepercentmin: 0.01,
+            usertme,
+            usertmemin: "00:00:00",
+            usertmepercentmax: parseFloat(usertmepercentmax),
+            usertmepercentmin: 0.01,
+            productivitybyhour: parseFloat(productivitybyhour),
             operation
         }
     });
@@ -262,7 +293,7 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
 export const insOrg = ({ description, status, type, id, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { id,description,status,type,operation }
+    parameters: { id, description, status, type, operation }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation }: Dictionary): IRequestBody => ({
@@ -279,18 +310,18 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({id, description, parent, communicationchannel, status, type, operation,tags, jobplan}: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup:0, schedule:""
+        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
 export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_SEL",
     methodCount: "UFN_PERSON_TOTALRECORDS",
     parameters: {
-        startdate, 
+        startdate,
         enddate,
         skip,
         take,
@@ -358,28 +389,28 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
-    method: "UFN_MESSAGETEMPLATE_INS",
-    parameters: {
-        id,
-        description,
-        type,
-        status,
-        name,
-        namespace,
-        category,
-        language,
-        templatetype,
-        headerenabled,
-        headertype,
-        header,
-        body,
-        footerenabled,
-        footer,
-        buttonsenabled,
-        buttons: JSON.stringify(buttons),
-        operation
-    }
-});
+        method: "UFN_MESSAGETEMPLATE_INS",
+        parameters: {
+            id,
+            description,
+            type,
+            status,
+            name,
+            namespace,
+            category,
+            language,
+            templatetype,
+            headerenabled,
+            headertype,
+            header,
+            body,
+            footerenabled,
+            footer,
+            buttonsenabled,
+            buttons: JSON.stringify(buttons),
+            operation
+        }
+    });
 
 export const getIntegrationManagerSel = (id: number): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_SEL",
@@ -395,13 +426,17 @@ export const insIntegrationManager = (
         description,
         type,
         status,
+        name,
         method,
         url,
         authorization,
         headers,
         bodytype,
         body,
-        bodydata,
+        parameters,
+        variables,
+        level,
+        fields,
         operation
     }: Dictionary): IRequestBody => ({
     method: "UFN_INTEGRATIONMANAGER_INS",
@@ -410,12 +445,17 @@ export const insIntegrationManager = (
         description,
         type,
         status,
+        name,
         method,
         url,
         authorization: JSON.stringify(authorization),
         headers: JSON.stringify(headers),
         bodytype,
-        body: bodytype === 'URLENCODED' ? JSON.stringify(bodydata) : body,
+        body: body,
+        parameters: JSON.stringify(parameters),
+        variables: JSON.stringify(variables),
+        level,
+        fields: JSON.stringify(fields),
         operation
     }
 });

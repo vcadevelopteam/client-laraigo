@@ -1,141 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CheckIcon } from 'icons';
+import { CheckIcon, AttachmentIcon, BotIcon, AgentIcon, ImageIcon, QuickresponseIcon, SendIcon, DownloadIcon2, FileIcon, DocumentIcon } from 'icons';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Avatar from '@material-ui/core/Avatar';
-
-
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-
-const dataInteractions: IInteraction[] = [
-    {
-        "interactionid": 311015,
-        "interactiontype": "carousel",
-        "interactiontext": "{\"title\":\"jaguar titulo\",\"description\":\"jaguar descripcion\",\"mediaUrl\":\"https://dev-testing-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20Org%20Per%C3%9A/450_1000_preview_rev_1.png\",\"mediaType\":\"image/jpeg\",\"actions\":[{\"type\":\"postback\",\"text\":\"holas\",\"payload\":\"holas-jaguar titulo#$CF$#66f2ad8d-9366-7e52-9fdb-a73b596efc4f_678945c1-1852-a8e0-7b79-4f68017431ed\"},{\"type\":\"postback\",\"text\":\"holas2\",\"payload\":\"holas2-jaguar titulo#$CF$#49fc92d1-ef0b-e11d-5216-07bef7f5f577_81adc7d5-1939-8c13-bbbc-100f038283a6\"}]},{\"title\":\"cliente\",\"description\":\"cliente descrpcion\",\"mediaUrl\":\"https://dev-testing-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20Org%20Per%C3%9A/unnamed_preview_rev_1.png\",\"mediaType\":\"image/jpeg\",\"actions\":[{\"type\":\"postback\",\"text\":\"cliente\",\"payload\":\"cliente-cliente#$CF$#98562a56-5824-a59f-fe81-c525dfc9945a_a2a29851-5edc-44d6-0429-99013eb777c4\"}]}",
-        "createdate": "2021-09-03T22:33:55.988475",
-        "userid": 42,
-        "personid": 13514,
-        "usertype": "BOT",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310953,
-        "interactiontype": "text",
-        "interactiontext": "ff",
-        "createdate": "2021-09-03T17:10:47.094843",
-        "userid": null,
-        "personid": 16213,
-        "usertype": null,
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310954,
-        "interactiontype": "text",
-        "interactiontext": "HOLAAAAAAAAA\n1. CREAR CITA\n2. REAGENDAR CITA\n3. UBICACION\n4. CERRAR TICKET\n5. HANDOFF\n6. UBICACION + CLOSEST\n7. INTERACCIONES",
-        "createdate": "2021-09-03T17:10:47.156334",
-        "userid": 42,
-        "personid": 16213,
-        "usertype": "BOT",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310955,
-        "interactiontype": "text",
-        "interactiontext": "7",
-        "createdate": "2021-09-03T17:10:49.481952",
-        "userid": null,
-        "personid": 16213,
-        "usertype": null,
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310956,
-        "interactiontype": "image",
-        "interactiontext": "https://dev-testing-storage-01.s3.us-east.cloud-object-storage.appdomain.cloud/VCA%20Org%20Per%C3%9A/450_1000_preview_rev_1.png",
-        "createdate": "2021-09-03T17:10:49.513703",
-        "userid": 42,
-        "personid": 16213,
-        "usertype": "BOT",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310957,
-        "interactiontype": "quickreply",
-        "interactiontext": "pregunta de respuesta rapida&&&{\"text\":\"botón 1\",\"type\":\"reply\",\"payload\":\"botón 1\"},{\"text\":\"botón 2\",\"type\":\"reply\",\"payload\":\"botón 2\"}",
-        "createdate": "2021-09-03T17:10:49.51676",
-        "userid": 42,
-        "personid": 16213,
-        "usertype": "BOT",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310958,
-        "interactiontype": "postback",
-        "interactiontext": "Texto + botones\n&&&{\"text\":\"hola\",\"type\":\"link\",\"uri\":\"tel:sssssssss\"},{\"text\":\"hola2\",\"type\":\"link\",\"uri\":\"sssssss\"}",
-        "createdate": "2021-09-03T17:10:49.519466",
-        "userid": 42,
-        "personid": 16213,
-        "usertype": "BOT",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310959,
-        "interactiontype": "LOG",
-        "interactiontext": "Carlos Farro reasignó este ticket a Carlos Farro",
-        "createdate": "2021-09-03T17:11:08.242876",
-        "userid": 64,
-        "personid": 16213,
-        "usertype": "SUPERVISOR",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310960,
-        "interactiontype": "text",
-        "interactiontext": "hola q tal",
-        "createdate": "2021-09-03T17:11:17.122576",
-        "userid": 209,
-        "personid": 16213,
-        "usertype": "ASESOR",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    },
-    {
-        "interactionid": 310961,
-        "interactiontype": "text",
-        "interactiontext": "resp del assor",
-        "createdate": "2021-09-03T17:11:22.487301",
-        "userid": 209,
-        "personid": 16213,
-        "usertype": "ASESOR",
-        "avatar": "",
-        "likewall": null,
-        "hiddenwall": null
-    }
-]
+import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
+import { showInfoPanel } from 'store/inbox/actions';
+import { uploadFile, resetUploadFile } from 'store/main/actions';
+import { ListItemSkeleton } from 'components'
+import InputBase from '@material-ui/core/InputBase';
+import clsx from 'clsx';
+import { EmojiPickerZyx } from 'components'
 
 const convertLocalDate = (date: string | null, validateWithToday: boolean): Date => {
     if (!date) return new Date()
@@ -152,14 +36,14 @@ const toTime24HR = (time: string): string => {
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
     return interactions.reduce((acc: any, item: IInteraction, index: number) => {
-        const currentUser = item.userid ? "agent" : "client";
+        const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
-        } else if (item.userid && acc.last === "agent") {
+        } else if (item.userid && (acc.last === "agent" || acc.last === "BOT")) {
             acc.data[acc.data.length - 1].interactions.push(item)
         } else if (item.userid && acc.last === "client") {
             acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
-        } else if (!item.userid && acc.last === "agent") {
+        } else if (!item.userid && (acc.last === "agent" || acc.last === "BOT")) {
             acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
         } else if (!item.userid && acc.last === "client") {
             acc.data[acc.data.length - 1].interactions.push(item)
@@ -251,7 +135,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
@@ -279,7 +162,7 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     size="small"
                     onClick={() => setPageSelected(pageSelected - 1)}
                 >
-                    <NavigateBeforeIcon style={{color: '#2E2C34'}} />
+                    <NavigateBeforeIcon style={{ color: '#2E2C34' }} />
                 </Fab>
             }
             {pageSelected < carousel.length - 1 &&
@@ -288,7 +171,7 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
                     onClick={() => setPageSelected(pageSelected + 1)}
                     size="small"
                 >
-                    <NavigateNextIcon style={{color: '#2E2C34'}} />
+                    <NavigateNextIcon style={{ color: '#2E2C34' }} />
                 </Fab>
             }
         </div>
@@ -339,54 +222,182 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
     } else if (interactiontype === "carousel") {
         const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
         return <Carousel carousel={listItems} />
-    }
+    } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
+        return <audio controls src={interactiontext} ></audio>
+    } else if (interactiontype === "video") {
+        return <video width="200" controls src={interactiontext} />
+    } else if (interactiontype === "file") {
+        return (
+            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
+                <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
+                    <FileIcon width="20" height="20" />
+                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1 }}>{interactiontext.split("/").pop()}</div>
+                    <DownloadIcon2 width="20" height="20" color="primary" />
 
+                </a>
+            </div>
+        )
+    }
     return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontype} {interactiontext}</div>;
 }
 
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, createdate, interactions }, clientName, imageClient }) => {
+    
+    const el = useRef<null | HTMLDivElement>(null); 
+    
+    const scrollToBottom = () => {
+        if (el?.current)
+            el.current.scrollIntoView({ behavior: "smooth" });
+    };
+    useEffect(scrollToBottom, [interactions]);
+
     const time = toTime24HR(convertLocalDate(createdate, false).toLocaleTimeString());
     return (
         <div style={{ display: 'flex', gap: 8 }}>
-            <div style={{ paddingTop: 8 }}>
-                <Avatar src={usertype === "agent" ? "" : (imageClient || "")} />
+            <div>
+                {usertype === "agent" ?
+                    <AgentIcon /> :
+                    (usertype === "BOT" ?
+                        <BotIcon style={{ width: 40, height: 40 }} /> :
+                        <Avatar src={imageClient || ""} />)
+                }
             </div>
             <div style={{ flex: 1 }}>
-                <div className={classes.name}>{clientName}</div>
+                <div className={classes.name}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
                 <div className={classes.timeInteraction}>{time}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
                         <ItemInteraction interaction={item} classes={classes} key={index} />
                     ))}
+                    <div ref={el} />
                 </div>
             </div>
         </div>
     );
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { displayname, imageurldef, ticketnum } }) => {
+const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
+    const [valuefile, setvaluefile] = useState('')
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                // dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                // dispatch(showBackdrop(false));
+                console.log(uploadResult.url)
+                setWaitSave(false);
+                dispatch(resetUploadFile());
+            } else if (uploadResult.error) {
+                const errormessage = uploadResult.code || "error_unexpected_error"
+                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                // dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [waitSave, uploadResult, dispatch])
+
+    const onSelectImage = (files: any) => {
+        const selectedFile = files[0];
+        var fd = new FormData();
+        fd.append('file', selectedFile, selectedFile.name);
+        dispatch(uploadFile(fd));
+        setvaluefile('')
+        setWaitSave(true)
+    }
+
+    return (
+        <>
+            <input
+                name="file"
+                accept="image/*"
+                id="laraigo-upload-image-file"
+                type="file"
+                value={valuefile}
+                style={{ display: 'none' }}
+                onChange={(e) => onSelectImage(e.target.files)}
+            />
+            <label htmlFor="laraigo-upload-image-file">
+                <ImageIcon className={classes.iconResponse} />
+            </label>
+        </>
+    )
+}
+
+const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
+    const [text, setText] = useState("");
+
+    return (
+        <div className={classes.containerResponse}>
+            <div>
+                <InputBase
+                    fullWidth
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder="Send your message..."
+                    rows={2}
+                    multiline
+                    inputProps={{ 'aria-label': 'naked' }}
+                />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <QuickresponseIcon className={classes.iconResponse} />
+                    <IconUploadImage classes={classes} />
+                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
+                    <AttachmentIcon className={classes.iconResponse} />
+
+                </div>
+                <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !text })}>
+                    <SendIcon />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
+    const dispatch = useDispatch();
+    const [dataInteractions, setDataInteractions] = useState<IInteraction[]>([]);
+    const interactionList = useSelector(state => state.inbox.interactionList);
+
+    const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+
+    useEffect(() => {
+        if (!interactionList.loading && !interactionList.error) {
+            setDataInteractions(interactionList.data)
+        }
+    }, [interactionList])
 
     return (
         <div className={classes.containerChat}>
             <div className={classes.headChat}>
-                <div style={{ fontWeight: 500, fontSize: 20 }}>Ticket #{ticketnum}</div>
+                <div>
+                    <span
+                        className={classes.titleTicketChat}
+                        onClick={showInfoPanelTrigger}
+                    >Ticket #{ticketnum}</span>
+                </div>
                 <ButtonsManageTicket classes={classes} />
             </div>
             <div className={classes.containerInteractions}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {getGroupInteractions(dataInteractions).map((groupInteraction, index) => (
-                        <ItemGroupInteraction
-                            imageClient={imageurldef}
-                            clientName={displayname}
-                            classes={classes}
-                            groupInteraction={groupInteraction}
-                            key={index} />
-                    ))}
-                </div>
+                {interactionList.loading ? <ListItemSkeleton /> :
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                        {getGroupInteractions(dataInteractions).map((groupInteraction, index) => (
+                            <ItemGroupInteraction
+                                imageClient={imageurldef}
+                                clientName={displayname}
+                                classes={classes}
+                                groupInteraction={groupInteraction}
+                                key={index} />
+                        ))}
+                    </div>
+                }
             </div>
-            <div className={classes.containerResponse}>
-                Respuesta
-            </div>
+            <PanelResponse classes={classes} />
         </div>
     )
 }

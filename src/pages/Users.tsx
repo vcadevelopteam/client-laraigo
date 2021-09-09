@@ -79,44 +79,28 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    },
-    itemList: {
-        display: 'flex',
-        paddingLeft: theme.spacing(0),
-        paddingRight: theme.spacing(0),
-        paddingBottom: theme.spacing(1),
-    },
-    iItemRoot: {
-        padding: theme.spacing(2.5),
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
+    }
 }));
-const ListItemSkeleton: FC = () => {
-    const classes = useStyles();
-
-    return (
-        <ListItem className={classes.itemList}>
-            <Box className={classes.iItemRoot}>
-                <Grid container direction="column">
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
-                    </Grid>
-                    <Divider style={{ margin: '10px 0' }} />
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
+const ListItemSkeleton: FC = () => (
+    <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
+        <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>
+            <Grid container direction="column">
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
                     </Grid>
                 </Grid>
-            </Box>
-        </ListItem>
-    );
-}
+                <Divider style={{ margin: '10px 0' }} />
+                <Grid container direction="row" spacing={1}>
+                    <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
+                        <Skeleton />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Box>
+    </ListItem>
+)
+
 const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multiData, updateRecords, preData, triggerSave, setAllIndex, handleDelete }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -237,6 +221,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const onChangeRole = (value: Dictionary) => {
         setValue('roleid', value ? value.roleid : 0);
         setValue('roledesc', value ? value.roldesc : 0);
+        setValue('type', value ? value.type : 0);
         if (value) {
             setDataApplications({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
@@ -411,7 +396,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             }
                         </div>
                     </div>
-                    <div style={{textAlign: 'right'}}>
+                    <div style={{ textAlign: 'right' }}>
                         <Button
                             variant="contained"
                             type="button"
@@ -927,7 +912,7 @@ const Users: FC = () => {
                 accessor: 'status',
                 NoFilter: true
             },
-            
+
         ],
         []
     );

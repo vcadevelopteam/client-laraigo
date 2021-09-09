@@ -291,13 +291,12 @@ const TableZyx = React.memo(({
     ]);
 
     useEffect(() => {
-        /*fetchData && fetchData({
-            ...pagination, pageSize, daterange: {
-                startDate: dateRange[0].startDate.toISOString().substring(0, 10),
-                endDate: dateRange[0].endDate.toISOString().substring(0, 10)
-            }
-        });*/
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // fetchData && fetchData({
+        //     ...pagination, pageSize, daterange: {
+        //         startDate: dateRange[0].startDate.toISOString().substring(0, 10),
+        //         endDate: dateRange[0].endDate.toISOString().substring(0, 10)
+        //     }
+        // });
     }, [pageSize, pagination, dateRange])
 
     return (
