@@ -9,7 +9,7 @@ import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Dictionary } from '@types';
@@ -211,6 +211,7 @@ interface InputProps {
     rows?: number;
     maxLength?: number;
     fregister?: Dictionary;
+    uset?: boolean;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -316,8 +317,8 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {} }) => {
-
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false }) => {
+    const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
     useEffect(() => {
@@ -347,7 +348,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     onChange && onChange(newValue);
                 }}
                 // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
-                getOptionLabel={option => option ? option[optionDesc] : ''}
+                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : option[optionDesc]) : ''}
                 options={data}
                 loading={loading}
                 renderInput={(params) => (
