@@ -3,18 +3,19 @@ export interface IInteraction {
     interactiontype: string;
     interactiontext: string;
     createdate: string;
-    userid: number | null;
-    personid: number | null;
-    usertype: string | null;
-    avatar: string | number;
-    likewall: boolean | null;
-    hiddenwall: boolean | null;
+    userid?: number | null;
+    personid?: number | null;
+    usertype?: string | null;
+    avatar?: string | null;
+    likewall?: boolean | null;
+    hiddenwall?: boolean | null;
 }
 
 export interface IGroupInteraction {
     createdate: string;
-    userid: number | null;
-    personid: number | null;
+    userid?: number | null;
+    personid?: number | null;
     usertype: string | null;
-    interactions: IInteraction[]
+    interactions: IInteraction[];
+    interactionid: number;
 }
