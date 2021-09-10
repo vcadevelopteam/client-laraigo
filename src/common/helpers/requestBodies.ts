@@ -450,6 +450,7 @@ export const insIntegrationManager = (
         variables,
         level,
         fields,
+        apikey,
         operation
     }: Dictionary): IRequestBody => ({
         method: "UFN_INTEGRATIONMANAGER_INS",
@@ -469,6 +470,7 @@ export const insIntegrationManager = (
             variables: JSON.stringify(variables),
             level,
             fields: JSON.stringify(fields),
+            apikey,
             operation
         }
     });

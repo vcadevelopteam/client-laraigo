@@ -13,4 +13,5 @@ export const apiUrls = {
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
     EXPORT_DATA: `${BASE_URL}/main/exportexcel`,
+    INTEGRATION_URL: `${BASE_URL}/load`
 };
