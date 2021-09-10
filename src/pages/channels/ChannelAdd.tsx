@@ -12,6 +12,11 @@ import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
+import TelegramIcon from '@material-ui/icons/Telegram';
+import TwitterIcon from '@material-ui/icons/Twitter';
+import EmailIcon from '@material-ui/icons/Email';
+import PhoneIcon from '@material-ui/icons/Phone';
+import SmsIcon from '@material-ui/icons/Sms';
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -108,9 +113,35 @@ export const ChannelAdd: FC = () => {
         },
         "type": "FACEBOOK",
         "service": {
-            "accesstoken": " r.accessToken",
-            "siteid": "id sitio",
+            "accesstoken": "",
+            "siteid": "",
             "appid": "1094526090706564"
+        }
+    })
+    const [fieldstwitter, setFieldsTwitter] = useState({
+        "method": "UFN_COMMUNICATIONCHANNEL_INS",
+        "parameters": {
+            "id": 0,
+            "description": "",
+            "type": "",
+            "communicationchannelsite": "id del canal",
+            "communicationchannelowner": "id del canal",
+            "chatflowenabled": false,
+            "integrationid": "",
+            "color": "",
+            "icons": "",
+            "other": "",
+            "form": "",
+            "apikey": "",
+        },
+        "type": "TWITTER",
+        "service": {
+            "consumerkey": "",
+            "consumersecret": "",
+            "accesstoken": "",
+            "accesssecret": "",
+            "devenvironment": "",
+            "siteid": "",
         }
     })
 
@@ -122,6 +153,7 @@ export const ChannelAdd: FC = () => {
     }, [mainResult])
     useEffect(() => {
         if (waitSave) {
+            debugger
             if (mainResult.loading && !mainResult.error && executeResult) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -144,7 +176,17 @@ export const ChannelAdd: FC = () => {
         setFields(partialf)
         if (name === "WHATSAPP") {
             setViewSelected("viewwhatsapp");
-        } else
+            setPreviousView("viewwhatsapp");
+        }
+        else if (name === "TELEGRAM"){
+            setViewSelected("viewtelegram");
+            setPreviousView("viewtelegram");
+        }
+        else if (name === "TWITTER"){
+            setViewSelected("viewtwitter");
+            setPreviousView("viewtwitter");
+        }
+        else
             setViewSelected("viewfacebook");
     }
 
@@ -154,12 +196,6 @@ export const ChannelAdd: FC = () => {
             icon: <FacebookIcon color="inherit" />,
             label: 'Facebook',
             onClick: () => {
-                // FB.init({
-                //     appId: '1094526090706564',
-                //     cookie: true,
-                //     xfbml: true,
-                //     version: 'v8.0'
-                // });
                 setView("FACEBOOK")
             },
         },
@@ -178,6 +214,21 @@ export const ChannelAdd: FC = () => {
             label: 'Whatsapp',
             onClick: () => { setView("WHATSAPP") },
         },
+        {
+            icon: <TelegramIcon color="inherit" />,
+            label: 'Telegram',
+            onClick: () => { setView("TELEGRAM") },
+        },
+        {
+            icon: <TwitterIcon color="inherit" />,
+            label: 'Twitter',
+            onClick: () => { setView("TWITTER") },
+        },
+        {
+            icon: <TwitterIcon color="inherit" />,
+            label: 'Twitter DM',
+            onClick: () => { },
+        },
     ];
 
 
@@ -188,8 +239,18 @@ export const ChannelAdd: FC = () => {
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.resolve(match.params.id)),
         },
         {
-            icon: <InstagramIcon color="inherit" />,
-            label: 'Instagram',
+            icon: <EmailIcon color="inherit" />,
+            label: 'Email',
+            onClick: () => { },
+        },
+        {
+            icon: <PhoneIcon color="inherit" />,
+            label: 'Phone',
+            onClick: () => { },
+        },
+        {
+            icon: <SmsIcon color="inherit" />,
+            label: 'Sms',
             onClick: () => { },
         },
     ];
@@ -214,17 +275,27 @@ export const ChannelAdd: FC = () => {
         setFields(partialf)
     }
     function setnameField(value: any) {
+        let partialt = fieldstwitter;
         let partialf = fields;
+        partialt.parameters.description = value
         partialf.parameters.description = value
         setFields(partialf)
+        setFieldsTwitter(partialt)
     }
     function setvalField(value: any) {
         let partialf = fields;
+        let partialt = fieldstwitter;
         partialf.parameters.chatflowenabled = value
+        partialt.parameters.chatflowenabled = value
         setFields(partialf)
+        setFieldsTwitter(partialt)
     }
     async function finishreg() {
-        dispatch(insertChannel(fields))
+        if(fields.type==="TWITTER"){
+            dispatch(insertChannel(fieldstwitter))
+        }
+        else{
+            dispatch(insertChannel(fields))}
         setWaitSave(true);
         setViewSelected("main")
     }
@@ -264,6 +335,18 @@ export const ChannelAdd: FC = () => {
             </Paper>
         );
     };
+    function setBotName(val:string){
+        let partialf = fields;
+        partialf.service.siteid=val
+        partialf.parameters.communicationchannelowner=val
+        partialf.parameters.communicationchannelsite=val
+        setFields(partialf)
+    }
+    function setBotKey(val:string){
+        let partialf = fields;
+        partialf.service.accesstoken=val
+        setFields(partialf)
+    }
 
     if (viewSelected === "viewfacebook") {
         return (
@@ -344,6 +427,180 @@ export const ChannelAdd: FC = () => {
                             data={mainResult.data}
                             optionDesc="name"
                             optionValue="id"
+                        />
+                    </div>
+
+                    <div style={{ paddingLeft: "80%" }}>
+                        <Button
+                            onClick={() => { setViewSelected("viewfinishreg") }}
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.next)}
+                        </Button>
+
+                    </div>
+
+                </div>
+            </div>
+        )
+    }
+    else if (viewSelected === "viewtelegram") {
+        return (
+            <div style={{ width: '100%' }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("mainview") }}>
+                        {"<< Previous"}
+                    </Link>
+                </Breadcrumbs>
+                <div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>Connect your Telegram Bot</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>To connect a Telegram Bot you need to provide us with the ApiKey and the name of the Bot. 
+                    You can obtain this information by talking with @BotFather on Telegram</div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => setBotName(value)}
+                            label={"Enter the Bot name"}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => setBotKey(value)}
+                            label={"Enter the Bot ApiKey"}
+                            className="col-6"
+                        />
+                    </div>
+
+                    <div style={{ paddingLeft: "80%" }}>
+                        <Button
+                            onClick={() => { setViewSelected("viewfinishreg") }}
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.next)}
+                        </Button>
+
+                    </div>
+
+                </div>
+            </div>
+        )
+    }
+    else if (viewSelected === "viewtwitter") {
+        return (
+            <div style={{ width: '100%' }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("mainview") }}>
+                        {"<< Previous"}
+                    </Link>
+                </Breadcrumbs>
+                <div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>Connect your Twitter page</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>In order to connect your Twitter page we need the consumer key and the Authentication Token from the 
+                    app you wish to use and some additional info about the page. This information can be found in the Twitter Developer Portal</div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.consumerkey= value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Consumer Api Key"}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.consumersecret= value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Consumer Api secret"}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.accesstoken= value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Authentication Token"}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.accesssecret= value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Authentication Secret"}
+                            className="col-6"
+                        />
+                    </div>
+
+                    <div style={{ paddingLeft: "80%" }}>
+                        <Button
+                            onClick={() => { setViewSelected("viewtwitter2") }}
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.next)}
+                        </Button>
+
+                    </div>
+
+                </div>
+            </div>
+        )
+    }
+    else if (viewSelected === "viewtwitter2") {
+        return (
+            <div style={{ width: '100%' }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setViewSelected("viewtwitter") }}>
+                        {"<< Previous"}
+                    </Link>
+                </Breadcrumbs>
+                <div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>Connect your Twitter page</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>Now we need a valid development environment and the id of the page you want to connet. This last value 
+                    can be found using external sources like TweeteerID</div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.devenvironment= value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Development Environment"}
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <FieldEdit
+                            onChange={(value) => {
+                                let partialf = fieldstwitter;
+                                partialf.service.siteid= value
+                                partialf.parameters.communicationchannelowner = value
+                                partialf.parameters.communicationchannelsite = value
+                                setFieldsTwitter(partialf)
+                            }}
+                            label={"Enter the Consumer Page id"}
+                            className="col-6"
                         />
                     </div>
 

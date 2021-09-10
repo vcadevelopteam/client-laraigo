@@ -12,7 +12,7 @@ export const getChannelsSuccessInsert = (state: IState, action: IAction): IState
         channelList: {
             data: [],
             count: 0,
-            loading: false,
+            loading: true,
             error: false,
         },
         successinsert:true
