@@ -203,6 +203,8 @@ export const langKeys = {
     test: 'test',
     result: 'result',
 
+    flowdesigner: 'flowdesigner',
+
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
 

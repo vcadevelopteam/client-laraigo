@@ -211,6 +211,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     test: 'Probar',
     result: 'Resultado',
 
+    flowdesigner: 'Diseñador de flujos',
+
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
