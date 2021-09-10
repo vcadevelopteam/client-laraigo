@@ -88,30 +88,30 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const dataIntegrationType = {
-    STANDARD: 'STANDARD',
-    CUSTOM: 'CUSTOM',
+const dataIntegrationType: Dictionary = {
+    STANDARD: 'standard',
+    CUSTOM: 'custom',
 };
 
-const dataMethodType = {
+const dataMethodType: Dictionary = {
     GET: 'GET',
     POST: 'POST',
 };
 
-const dataAuthorizationType = {
-    NONE: 'NO AUTH',
-    BASIC: 'BASIC',
-    BEARER: 'BEARER',
+const dataAuthorizationType: Dictionary = {
+    NONE: 'none',
+    BASIC: 'basic',
+    BEARER: 'bearer',
 };
 
-const dataBodyType = {
+const dataBodyType: Dictionary = {
     JSON: 'JSON',
     URLENCODED: 'URL encoded',
 }
 
-const dataLevel = {
-    CORPORATION: 'CORPORATION',
-    ORGANIZATION: 'ORGANIZATION',
+const dataLevel: Dictionary = {
+    CORPORATION: 'corporation',
+    ORGANIZATION: 'organization',
 }
 
 const dataLevelKeys = ['corpid','orgid'];
@@ -566,6 +566,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                     <div className="row-zyx">
                         {(edit && getValues('isnew')) ?
                             <FieldSelect
+                                uset={true}
                                 label={t(langKeys.type)}
                                 className="col-12"
                                 valueDefault={getValues('type')}
@@ -578,7 +579,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             :
                             <FieldView
                                 label={t(langKeys.type)}
-                                value={row?.type || ""}
+                                value={t(dataIntegrationType[row?.type]) || ""}
                                 className="col-12"
                             />
                         }
@@ -623,6 +624,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         <div className="row-zyx">
                             {edit ?
                                 <FieldSelect
+                                    uset={true}
                                     fregister={{...register(`authorization.type`, {
                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     })}}       
@@ -917,6 +919,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         <div className="row-zyx">
                             {(edit && getValues('isnew')) ?
                                 <FieldSelect
+                                    uset={true}
                                     fregister={{...register(`level`, {
                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     })}}    
@@ -932,7 +935,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 :
                                 <FieldView
                                     label={t(langKeys.level)}
-                                    value={row?.level || ""}
+                                    value={t(dataLevel[row?.level]) || ""}
                                     className="col-12"
                                 />
                             }
