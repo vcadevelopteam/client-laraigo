@@ -14,6 +14,8 @@ import InfoPanel from 'components/inbox/InfoPanel'
 import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -27,6 +29,13 @@ const useStyles = makeStyles((theme) => ({
             cursor: 'pointer',
             borderBottom: '1px solid #2E2C34'
         }
+    },
+    interactionAgent: {
+        marginLeft: 'auto'
+    },
+    groupInteractionAgent: {
+        marginLeft: 'auto',
+        display: 'flex'
     },
     containerTickets: {
         flex: '0 0 300px',
@@ -48,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     containerQuickreply: {
         whiteSpace: 'break-spaces',
         fontFamily: 'DM Sans',
+        flexWrap: 'wrap',
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
@@ -247,7 +257,7 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
 
 const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected }) => {
     const dispatch = useDispatch();
-
+    const { t } = useTranslation();
     const [showSearch, setShowSearch] = useState(false);
     const [pageSelected, setPageSelected] = useState(0);
     const [dataTickets, setDataTickets] = useState<ITicket[]>([])
@@ -259,7 +269,6 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
 
     useEffect(() => {
         dispatch(getTickets(agentSelected ? agentSelected.userid : null))
-
         return () => {
             dispatch(resetGetTickets())
         }
@@ -275,7 +284,7 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
     }
-
+    
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
@@ -294,9 +303,9 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
                             style={{ flex: 1 }}
                             onChange={(_, value) => setPageSelected(value)}
                         >
-                            <AntTab label="Asigned" />
-                            <AntTab label="Pending" />
-                            <AntTab label="Paused" />
+                            <AntTab label={t(langKeys.assigned)} />
+                            <AntTab label={t(langKeys.pending)} />
+                            <AntTab label={t(langKeys.paused)} />
                         </Tabs>
                         <IconButton style={{ width: '50px' }} size="small" onClick={() => setShowSearch(true)} edge="end">
                             <SearchIcon />
@@ -338,10 +347,16 @@ const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
 
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-    const setTicketSelected = (ticket: ITicket) => {
+
+    // const setTicketSelected = (ticket: ITicket) => {
+    //     dispatch(selectTicket(ticket))
+    //     dispatch(getDataTicket(ticket))
+    // };
+
+    const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
         dispatch(getDataTicket(ticket))
-    };
+    }, [dispatch]);
 
     return (
         <div className={classes.containerPanel}>

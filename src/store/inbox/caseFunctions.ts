@@ -10,7 +10,7 @@ export const getAgents = (state: IState): IState => ({
 export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
     ...state,
     agentList: {
-        data: action.payload.data || [],
+        data: action.payload.data ? action.payload.data.map((x: any) => ({...x, channels: x.channels?.split(",") || []})) : [],
         count: action.payload.count,
         loading: false,
         error: false,

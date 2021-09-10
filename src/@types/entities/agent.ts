@@ -6,5 +6,5 @@ export interface IAgent {
     countClosed: number;
     coundPending: number;
     status: string | null;
-    channels?: string
+    channels: string[]
 }

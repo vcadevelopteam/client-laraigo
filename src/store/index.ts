@@ -1,5 +1,5 @@
 import callAPIMiddleware from 'middlewares/apiMiddleware';
-import { applyMiddleware, createStore, combineReducers, Middleware } from 'redux';
+import { applyMiddleware, compose, createStore, combineReducers, Middleware } from 'redux';
 import thunk from 'redux-thunk';
 
 import ticketReducer, { IState as ITicketState } from './ticket/reducer';
@@ -18,18 +18,27 @@ export interface IRootState {
     integrationmanager: IIntegrationManager;
 }
 
+declare global {
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+    }
+}
+
 const rootReducer = combineReducers<IRootState>({
-   ticket: ticketReducer,
-   login: loginReducer,
-   main: mainReducer,
-   popus: popusReducer,
-   inbox: inboxReducer,
-   integrationmanager: integrationManagerReducer
+    ticket: ticketReducer,
+    login: loginReducer,
+    main: mainReducer,
+    popus: popusReducer,
+    inbox: inboxReducer,
+    integrationmanager: integrationManagerReducer
 });
 
 export default function configureStore(preloadedState?: IRootState) {
     const middleware: Middleware[] = [callAPIMiddleware];
-    const middlewareEnhancer = applyMiddleware(thunk, ...middleware);
-    
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+
+    const middlewareEnhancer = composeEnhancers(applyMiddleware(thunk, ...middleware));
+
     return createStore(rootReducer, preloadedState, middlewareEnhancer);
 }

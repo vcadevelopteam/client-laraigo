@@ -275,6 +275,18 @@ export const langKeys = {
     error_login_user_inactive: "error_login_user_inactive",
     error_parameter_is_missing: "error_parameter_is_missing",
     error_login_no_integration: "error_login_no_integration",
+
+    all_adivisers: "all_adivisers",
+    conected: "conected",
+    disconected: "disconected",
+    closed: "closed",
+    paused: "paused",
+    pending: "pending",
+    assigned: "assigned",
+    created_on: "created_on",
+    closed_on: "closed_on",
+    close_ticket: "close_ticket",
+    client_detail: "client_detail",
 };
 
 export type LangKeys = typeof langKeys;

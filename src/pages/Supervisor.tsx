@@ -13,7 +13,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent } from 'store/inbox/actions';
+import { getMultiCollection } from 'store/main/actions';
+import { getValuesFromDomain, getListUsers, getClassificationLevel1 } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
 import { AntTab } from 'components';
 import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
@@ -140,9 +144,7 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
     <div>
         <Tooltip title={channelName}>
-            <span>
-                <GetIcon channelType={channelType} color={`#${color}`} />
-            </span>
+            <span><GetIcon channelType={channelType} color={`#${color}`} /></span>
         </Tooltip>
     </div>
 )
@@ -150,7 +152,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
 const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, status, countActive, countPaused, countClosed, coundPending, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-
+    const { t } = useTranslation();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const handlerSelectAgent = () => dispatch(selectAgent(agent));
 
@@ -171,7 +173,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 <div>
                     <div className={classes.agentName}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
-                        {channels && channels.split(',').map((channel, index) => {
+                        {channels.map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
                             return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
                         })}
@@ -180,22 +182,22 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
             </div>
             <div className={classes.counterCount}>
                 <CountTicket
-                    label="Active"
+                    label={t(langKeys.active)}
                     count={countActive}
                     color="#55BD84"
                 />
                 <CountTicket
-                    label="Paused"
+                    label={t(langKeys.paused)}
                     count={countPaused}
                     color="#FF7700"
                 />
                 <CountTicket
-                    label="Closed"
+                    label={t(langKeys.closed)}
                     count={countClosed}
                     color="#FB5F5F"
                 />
                 <CountTicket
-                    label="Pending"
+                    label={t(langKeys.pending)}
                     count={coundPending}
                     color="#FB5F5F"
                 />
@@ -208,6 +210,7 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
     const [pageSelected, setPageSelected] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
+    const { t } = useTranslation();
 
     const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
 
@@ -253,9 +256,9 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="All advisor" />
-                <AntTab label="Active" />
-                <AntTab label="Inactive" />
+                <AntTab label={t(langKeys.all_adivisers)} />
+                <AntTab label={t(langKeys.conected)} />
+                <AntTab label={t(langKeys.disconected)} />
             </Tabs>
         </>
     )
@@ -263,7 +266,7 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
-    const agentList = useSelector(state => state.inbox.agentList); // amarrado con getCollection
+    const agentList = useSelector(state => state.inbox.agentList);
 
     useEffect(() => {
         dispatch(getAgents())
@@ -272,7 +275,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const onSearch = (pageSelected: number, search: string) => {
         setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
     }
-    
+
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
 
@@ -299,10 +302,17 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
+    
+    const multiData = useSelector(state => state.main.multiData);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
     useEffect(() => {
-        dispatch(setOpenDrawer(false))
+        dispatch(setOpenDrawer(false));
+        dispatch(getMultiCollection([
+            getValuesFromDomain("MOTIVOCIERRE"),
+            getListUsers(),
+            getClassificationLevel1("TIPIFICACION")
+        ]))
     }, [])
 
     return (

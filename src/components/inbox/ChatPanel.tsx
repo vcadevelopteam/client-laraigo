@@ -179,7 +179,6 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
 }
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext }, classes }) => {
-
     if (interactiontype === "text")
         return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontext}</div>;
     else if (interactiontype === "image")
@@ -242,9 +241,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
 }
 
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, createdate, interactions }, clientName, imageClient }) => {
-    
-    const el = useRef<null | HTMLDivElement>(null); 
-    
+    const el = useRef<null | HTMLDivElement>(null);
     const scrollToBottom = () => {
         if (el?.current)
             el.current.scrollIntoView({ behavior: "smooth" });
@@ -254,29 +251,31 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
     const time = toTime24HR(convertLocalDate(createdate, false).toLocaleTimeString());
     return (
         <div style={{ display: 'flex', gap: 8 }}>
-            <div>
-                {usertype === "agent" ?
-                    <AgentIcon /> :
-                    (usertype === "BOT" ?
-                        <BotIcon style={{ width: 40, height: 40 }} /> :
-                        <Avatar src={imageClient || ""} />)
-                }
-            </div>
+            {usertype === "client" && <Avatar src={imageClient || ""} />}
             <div style={{ flex: 1 }}>
-                <div className={classes.name}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
-                <div className={classes.timeInteraction}>{time}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }} className={clsx({ [classes.groupInteractionAgent]: usertype !== "client" })}>
+                    <div className={clsx(classes.name, { [classes.groupInteractionAgent]: usertype !== "client" })}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
+                    <div className={clsx(classes.timeInteraction, { [classes.groupInteractionAgent]: usertype !== "client" })}>{time}</div>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
-                        <ItemInteraction interaction={item} classes={classes} key={index} />
+                        <div key={index} className={clsx({ [classes.interactionAgent]: usertype !== "client" })}>
+                            <ItemInteraction interaction={item} classes={classes}  />
+                        </div>
                     ))}
                     <div ref={el} />
                 </div>
             </div>
+
+            {usertype === "agent" ?
+                <div><AgentIcon /></div> :
+                (usertype === "BOT" && <div><BotIcon style={{ width: 40, height: 40 }} /></div>)
+            }
         </div>
     );
 }
 
-const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
+const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }> = ({ classes }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -302,6 +301,15 @@ const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
 
     const onSelectImage = (files: any) => {
         const selectedFile = files[0];
+
+        var reader = new FileReader();
+        console.log("holaaaaa")
+        reader.onload = function (e: any) {
+            console.log(e.target.result);
+            
+        }
+        reader.readAsDataURL(selectedFile);
+
         var fd = new FormData();
         fd.append('file', selectedFile, selectedFile.name);
         dispatch(uploadFile(fd));
@@ -326,12 +334,18 @@ const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
         </>
     )
 }
-
+interface file {
+    type: string,
+    url: string,
+}
 const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
     const [text, setText] = useState("");
-
+    const [files, setFiles] = useState<file[]>([]);
     return (
         <div className={classes.containerResponse}>
+            {files.map((item: file, index: number) => (
+                <div>{item.url}</div>
+            ))}
             <div>
                 <InputBase
                     fullWidth
@@ -346,7 +360,7 @@ const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <QuickresponseIcon className={classes.iconResponse} />
-                    <IconUploadImage classes={classes} />
+                    <IconUploadImage classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <AttachmentIcon className={classes.iconResponse} />
 
@@ -359,7 +373,7 @@ const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
     const dispatch = useDispatch();
     const [dataInteractions, setDataInteractions] = useState<IInteraction[]>([]);
     const interactionList = useSelector(state => state.inbox.interactionList);
@@ -400,6 +414,6 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticke
             <PanelResponse classes={classes} />
         </div>
     )
-}
+})
 
 export default ChatPanel;
