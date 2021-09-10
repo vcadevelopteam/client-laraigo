@@ -279,6 +279,19 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     error_login_locked: "Tu usuario fue bloqueado",
     error_login_user_inactive: "Tu usuario está inactivo",
     error_login_no_integration: "No hay ningun usuario registrado integrado a esa cuenta",
+
+
+    all_adivisers: "Todos",
+    conected: "Activos",
+    disconected: "Inactivos",
+    closed: "Cerrados",
+    paused: "Pausados",
+    pending: "Pendientes",
+    assigned: "Asignados",
+    created_on: "Creado en",
+    closed_on: "Cerrado en",
+    close_ticket: "Cerrar ticket",
+    client_detail: "Detalle cliente",
 };
 
 const esResource: ResourceLanguage = {

@@ -120,7 +120,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             }}
         >
             <div className={classes.toolbar}>
-                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
+                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} height="37" width="37" alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />

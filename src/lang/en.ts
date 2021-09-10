@@ -284,6 +284,18 @@ const translation: LangKeys = {
     error_login_locked: "Your user was blocked",
     error_login_user_inactive: "Your username is inactive",
     error_login_no_integration: "There is no registered user integrated to that account",
+
+    all_adivisers: "All advisers",
+    conected: "Conected",
+    disconected: "Disconected",
+    closed: "Closed",
+    paused: "Paused",
+    pending: "Pending",
+    assigned: "Assigned",
+    created_on: "Created on",
+    closed_on: "Closed on",
+    close_ticket: "Close ticket",
+    client_detail: "Client detail",
 };
 
 const enResource: ResourceLanguage = {

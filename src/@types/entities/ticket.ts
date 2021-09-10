@@ -20,4 +20,5 @@ export interface ITicket {
     channelicon: string;
     coloricon: string;
     lastseendate?: string | null;
+    finishdate?: string | null;
 }
