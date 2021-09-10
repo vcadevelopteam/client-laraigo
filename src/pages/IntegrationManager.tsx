@@ -918,6 +918,23 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         </div>
                         <div className="row-zyx">
                             {(edit && getValues('isnew')) ?
+                                <FieldEdit
+                                    label={t(langKeys.apikey)}
+                                    className="col-12"
+                                    valueDefault={getValues('apikey')}
+                                    disabled={true}
+                                    error={errors?.apikey?.message}
+                                />
+                                :
+                                <FieldView
+                                    label={t(langKeys.apikey)}
+                                    value={row?.apikey || ""}
+                                    className="col-12"
+                                />
+                            }
+                        </div>
+                        <div className="row-zyx">
+                            {(edit && getValues('isnew')) ?
                                 <FieldSelect
                                     uset={true}
                                     fregister={{...register(`level`, {
