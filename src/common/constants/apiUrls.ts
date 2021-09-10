@@ -10,4 +10,7 @@ export const apiUrls = {
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
+    GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
+    INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
+    DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 };
