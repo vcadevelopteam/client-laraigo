@@ -1,4 +1,4 @@
-import { IListStatePaginated, ITicket, IInteraction, IPerson, IAgent } from "@types";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent } from "@types";
 import { createReducer, initialListPaginatedState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -21,7 +21,7 @@ const initialPerson: IBaseState = {
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
-    interactionList: IListStatePaginated<IInteraction>;
+    interactionList: IListStatePaginated<IGroupInteraction>;
     ticketSelected: ITicket | null;
     agentSelected: IAgent | null;
     person: IBaseState;
@@ -77,6 +77,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.RESET_SELECT_AGENT]: caseFunctions.resetSelectAgent,
     
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
+    [actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
 
     
 });

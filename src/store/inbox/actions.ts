@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, ITicket } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
@@ -86,3 +86,5 @@ export const selectAgent = (ticket: IAgent): IActionCall => ({ type: actionTypes
 export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: null });
 
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
+
+export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
