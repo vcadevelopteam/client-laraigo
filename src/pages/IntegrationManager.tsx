@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,6 +21,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { apiUrls } from 'common/constants';
 import { request_send, resetRequest } from 'store/integrationmanager/actions';
+import { dictToArrayKV, extractVariables, isJson } from 'common/helpers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -87,40 +88,31 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const isJson = (s: string) => {
-    try {
-        JSON.parse(s);
-    } catch (e) {
-        return false;
-    }
-    return true;
+const dataIntegrationType = {
+    STANDARD: 'STANDARD',
+    CUSTOM: 'CUSTOM',
+};
+
+const dataMethodType = {
+    GET: 'GET',
+    POST: 'POST',
+};
+
+const dataAuthorizationType = {
+    NONE: 'NO AUTH',
+    BASIC: 'BASIC',
+    BEARER: 'BEARER',
+};
+
+const dataBodyType = {
+    JSON: 'JSON',
+    URLENCODED: 'URL encoded',
 }
 
-const dataIntegrationType = [
-    { value: "STANDARD", text: "STANDARD" }, // Setear en diccionario los text
-    { value: "CUSTOM", text: "CUSTOM" }, // Setear en diccionario los text
-];
-
-const dataMethodType = [
-    { value: "GET", text: "GET" }, // Setear en diccionario los text
-    { value: "POST", text: "POST" }, // Setear en diccionario los text
-];
-
-const dataAuthorizationType = [
-    { value: "NONE", text: "NO AUTH" }, // Setear en diccionario los text
-    { value: "BASIC", text: "BASIC" }, // Setear en diccionario los text
-    { value: "BEARER", text: "BEARER" }, // Setear en diccionario los text
-];
-
-const dataBodyType = [
-    { value: "JSON", text: "JSON" }, // Setear en diccionario los text
-    { value: "URLENCODED", text: "URL encoded" }, // Setear en diccionario los text
-]
-
-const dataLevel = [
-    { value: "CORPORATION", text: "CORPORATION" }, // Setear en diccionario los text
-    { value: "ORGANIZATION", text: "ORGANIZATION" }, // Setear en diccionario los text
-]
+const dataLevel = {
+    CORPORATION: 'CORPORATION',
+    ORGANIZATION: 'ORGANIZATION',
+}
 
 const dataLevelKeys = ['corpid','orgid'];
 
@@ -271,6 +263,7 @@ type FieldType = {
 
 type FormFields = {
     isnew: boolean,
+    apikey: string,
     id: number,
     description: string,
     type: string,
@@ -298,13 +291,14 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
-    const dataKeys = new Set([...dataLevel, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
+    const dataKeys = new Set([...dataLevelKeys, ...(row?.fields?.filter((r: FieldType) => r.key)?.map((r: FieldType) => r.id) || [])]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
+            apikey: row && (row.apikey || '') !== '' ? row.apikey : uuidv4(),
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
             type: row ? (row.type || 'STANDARD') : 'STANDARD',
@@ -320,7 +314,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
             fields: row ? (row.fields || [{name: 'corpid', key: true}]) : [{name: 'corpid', key: true}],
-            operation: row ? "EDIT" : "INSERT"
+            operation: row ? "EDIT" : "INSERT",
         }
     });
 
@@ -343,7 +337,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         register('name', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('method', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        register('variables');
     }, [edit, register]);
 
     useEffect(() => {
@@ -363,8 +356,20 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        if (data.type === 'CUSTOM') {
-            data.url = `${apiUrls.MAIN_URL}/${user?.orgdesc}_${data.name}`
+        data.variables = data.variables || [];
+        if (data.type === 'STANDARD') {
+            let v: string[] = [];
+            v = extractVariablesFromArray(data.headers, 'value', v);
+            if (data.bodytype === 'JSON') {
+                v = extractVariables(data.body, v);
+            }
+            else if (data.bodytype === 'URLENCODED') {
+                v = extractVariablesFromArray(data.parameters, 'value', v);
+            }
+            data.variables = v;
+        }
+        else if (data.type === 'CUSTOM') {
+            data.url = `${apiUrls.INTEGRATION_URL}/integration_${user?.orgdesc?.toLowerCase()}_${data.name.toLowerCase()}`
         }
         
         const callback = () => {
@@ -381,17 +386,17 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     });
 
     const onChangeType = async (data: Dictionary) => {
-        setValue('type', data?.value || '');
+        setValue('type', data?.key || '');
         await trigger('type');
     }
 
     const onChangeMethod = async (data: Dictionary) => {
-        setValue('method', data?.value || '');
+        setValue('method', data?.key || '');
         await trigger('method');
     }
 
     const onChangeAuthorization = async (data: Dictionary) => {
-        setValue('authorization.type', data?.value || '');
+        setValue('authorization.type', data?.key || '');
         await trigger('authorization.type');
     }
 
@@ -405,6 +410,11 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const onBlurHeader = (index: any, param: string, value: any) => {
         headersUpdate(index, { ...headers[index], [param]: value});
+    }
+
+    const onChangeBodyType = async (data: Dictionary) => {
+        setValue('bodytype', data?.key || '');
+        await trigger('bodytype');
     }
 
     const onClickAddParameter = async () => {
@@ -443,32 +453,25 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         }
     }
 
-    const validateJSON = (data: any): any => {
+    const validateJSON = (data: string): any => {
         if (!isJson(data)) {
             return false;
         }
         else {
-            let varrex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/,'g');
-            setValue('variables', Array.from(new Set(Array.from(data?.matchAll(varrex), (m: any[]) => m[0].replace(/\{+/,'').replace(/\}+/,'')))));
             return true;
         }
     }
 
-    const onChangeBodyType = async (data: Dictionary) => {
-        setValue('bodytype', data?.value || '');
-        await trigger('bodytype');
-    }
-
     const onChangeLevel = async (data: Dictionary) => {
-        setValue('level', data?.value || '');
+        setValue('level', data?.key || '');
         await trigger('level');
-        if (data?.value === 'CORPORATION') {
+        if (data?.key === 'CORPORATION') {
             if (fields.findIndex(x => x.name === 'corpid') === -1) {
                 fieldsInsert(0, {name: 'corpid', key: true});
             }
             fieldsRemove(fields.findIndex(x => x.name === 'orgid'));
         }
-        if (data?.value === 'ORGANIZATION') {
+        if (data?.key === 'ORGANIZATION') {
             if (fields.findIndex(x => x.name === 'corpid') === -1) {
                 fieldsInsert(0, {name: 'corpid', key: true});
             }
@@ -532,7 +535,6 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         dispatch(resetRequest());
     }
 
-
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
@@ -569,9 +571,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                 valueDefault={getValues('type')}
                                 onChange={onChangeType}
                                 error={errors?.type?.message}
-                                data={dataIntegrationType}
-                                optionDesc="text"
-                                optionValue="value"
+                                data={dictToArrayKV(dataIntegrationType)}
+                                optionDesc="value"
+                                optionValue="key"
                             />
                             :
                             <FieldView
@@ -595,9 +597,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                         valueDefault={getValues('method')}
                                         onChange={onChangeMethod}
                                         error={errors?.method?.message}
-                                        data={dataMethodType}
-                                        optionDesc="text"
-                                        optionValue="value"
+                                        data={dictToArrayKV(dataMethodType)}
+                                        optionDesc="value"
+                                        optionValue="key"
                                     />
                                     <FieldEdit
                                         fregister={{...register(`url`, {
@@ -628,9 +630,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     valueDefault={getValues('authorization.type')}
                                     onChange={onChangeAuthorization}
                                     error={errors?.authorization?.type?.message}
-                                    data={dataAuthorizationType}
-                                    optionDesc="text"
-                                    optionValue="value"
+                                    data={dictToArrayKV(dataAuthorizationType)}
+                                    optionDesc="value"
+                                    optionValue="key"
                                 />
                                 :
                                 <FieldView
@@ -778,9 +780,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                         valueDefault={getValues('bodytype')}
                                         onChange={onChangeBodyType}
                                         error={errors?.bodytype?.message}
-                                        data={dataBodyType}
-                                        optionDesc="text"
-                                        optionValue="value"
+                                        data={dictToArrayKV(dataBodyType)}
+                                        optionDesc="value"
+                                        optionValue="key"
                                     />
                                     {getValues('bodytype') === 'JSON' ?
                                     <Button
@@ -923,9 +925,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                     valueDefault={getValues('level')}
                                     onChange={onChangeLevel}
                                     error={errors?.level?.message}
-                                    data={dataLevel}
-                                    optionDesc="text"
-                                    optionValue="value"
+                                    data={dictToArrayKV(dataLevel)}
+                                    optionDesc="value"
+                                    optionValue="key"
                                 />
                                 :
                                 <FieldView
@@ -978,6 +980,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                             onBlur={(value) => onBlurField(i, 'name', value)}
                                             error={errors?.fields?.[i]?.name?.message}
                                         />
+                                        {getValues('isnew') ?
                                         <FieldCheckbox
                                             label={t(langKeys.key)}
                                             className={`${classes.checkboxRow}`}
@@ -986,6 +989,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                                             onChange={(value) => onBlurField(i, 'key', value)}
                                             error={errors?.fields?.[i]?.key?.message}
                                         />
+                                        : null}
                                         {!disableKeys(field, i) ?
                                         <IconButton
                                             size="small"
