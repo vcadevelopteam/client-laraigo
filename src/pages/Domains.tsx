@@ -1,20 +1,24 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useEffect, useState } from 'react';
+import ClearIcon from '@material-ui/icons/Clear';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SaveIcon from '@material-ui/icons/Save';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
+import TableZyx from '../components/fields/table-simple';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import Button from '@material-ui/core/Button';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, TemplateSwitch } from 'components';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, FieldView, FieldEdit, FieldSelect, TemplateSwitch } from 'components';
 import { getDomainValueSel, getDomainSel, getValuesFromDomain, insDomain, insDomainvalue } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
-import TableZyx from '../components/fields/table-simple';
-import { makeStyles } from '@material-ui/core/styles';
-import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux}  from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
     row: Dictionary | null;
@@ -48,6 +52,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
+        width: '100%' 
     },
     button: {        
         marginRight: theme.spacing(2),
@@ -56,14 +61,15 @@ const useStyles = makeStyles((theme) => ({
 
 const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, dataDomain, openModal, setOpenModal, updateRecords }) => {
     const { t } = useTranslation();
+    const user = useSelector(state => state.login.validateToken.user);
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
-    const onSubmit = handleSubmit((data) => {
-        if (!row)
-            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }]);
+    const onSubmit = handleSubmit((data) => {        
+        if (edit)
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue||'' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
         else
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row.domainvalue ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc||'', status: row?.status||'ACTIVO', operation: "INSERT" }]);
 
-        setOpenModal(false)
+        setOpenModal(false);
     });
 
     useEffect(() => {
@@ -72,13 +78,12 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
-                status: 'ACTIVO'
+                status: row?.status||'',
+                organization: user?.orgdesc || ''
             })      
             
             register('domainvalue', { validate: (value) => ((value && value.length) || t(langKeys.field_required))});
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-            register('bydefault');
-            register('status');
         }
     }, [openModal])
 
@@ -139,18 +144,18 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
 }
 
 const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit }, setViewSelected, multiData, fetchData }) => {
-    const classes = useStyles();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const detailRes = useSelector(state => state.main.mainAux);
-    const user = useSelector(state => state.login.validateToken.user);
     const [dataDomain, setdataDomain] = useState<Dictionary[]>([]);
     const [domainToDelete, setDomainToDelete] = useState<Dictionary[]>([]);
     const [openDialogDomain, setOpenDialogDomain] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
-    const dataDomainType = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataDomainStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataDomainType = multiData[0] && multiData[1].success ? multiData[1].data : [];
 
     const columns = React.useMemo(
         () => [
@@ -192,6 +197,11 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 }
             },
             {
+                Header: t(langKeys.organization),
+                accessor: 'organization',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true
@@ -208,15 +218,17 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
     const handleRegister = () => {
         setOpenDialogDomain(true)
-        setRowSelected({ row: null, domainname, edit: false});
+        setRowSelected({ row, domainname, edit: false});
     }
 
     const handleDelete = (row: Dictionary) => {
         if (row && row.operation !== "INSERT") {
             setDomainToDelete(p => [...p, { ...row, operation: "DELETE", status: 'ELIMINADO' }]);
+        } else {
+            row.operation = 'DELETE';
         }
-
-        setdataDomain(p => p.filter(x => row.domainvalue !== x.domainvalue));
+        
+        setdataDomain(p => p.filter(x => ( row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid )));
     }
 
     const handleView = (row: Dictionary) => {
@@ -231,14 +243,14 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            id: row ? row.domainid : 0,
+            id: row?.domainid||0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
             corporation: row?.corpdesc || '',
             organization: row?.orgdesc || '',
             domainname: row?.domainname || '',
             type: row?.type || '',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status||''
         }
     });
 
@@ -260,12 +272,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
     React.useEffect(() => {
         register('id');
-        register('status');
         register('domainname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) })
+        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
 
-        dispatch(resetMainAux())
+        dispatch(resetMainAux());
         dispatch(getCollectionAux(getDomainValueSel((row?.domainname || ""))));
     }, [register]);
 
@@ -275,13 +287,12 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
             dispatch(execute({
                 header: insDomain({...data}),
                 detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, id:0 })), 
-                    ...domainToDelete.map(x => insDomainvalue({ ...x,
-                        id: x.domainid,
-                        description: data.description, 
-                        type: data.type }))]
+                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status ,id: x.domainid ? x.domainid : 0 })),
+                    ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid, description: data.description, type: data.type }))
+                ]
             }, true));
-            setWaitSave(true)
+
+            setWaitSave(true);
         }
 
         dispatch(manageConfirmation({
@@ -299,9 +310,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                             handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.domainname}` : t(langKeys.newdomain)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -327,101 +335,111 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         }
                     </div>
                 </div>
-
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.corporation)}
-                                className="col-6"
-                                disabled={true}
-                                valueDefault={row?.corpdesc || user?.corpdesc}
-                                onChange={(value) => setValue('corporation', value)}
-                                error={errors?.corporation?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.corporation)}
-                                value={row?.corpdesc || ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.organization)}
-                                disabled={true}
-                                className="col-6"
-                                valueDefault={row?.orgdesc || user?.orgdesc}
-                                onChange={(value) => setValue('organization', value)}
-                                error={errors?.organization?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row?.orgdesc || ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.domain)}
-                                disabled={row ? true : false}
-                                className="col-6"
-                                valueDefault={row?.domainname || ""}
-                                onChange={(value) => setValue('domainname', value)}
-                                error={errors?.domainname?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.domain)}
-                                value={row ? row.domainname : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                valueDefault={row?.description || ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? row.description : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.type)}
-                                className="col-6"
-                                valueDefault={row?.type || ""}
-                                onChange={(value) => setValue('type', value ? value.domainvalue : '')}
-                                error={errors?.type?.message}
-                                data={dataDomainType}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.type)}
-                                value={row ? row.type : ""}
-                                className="col-6"
-                            />}
-                    </div>
+                    <Accordion defaultExpanded = {true} expanded={!row ? true : undefined} style={{marginBottom: '8px' }}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            aria-controls="panel1a-content"
+                            id="panel1a-header"
+                        >
+                        <Typography>{row ? `${row.domainname}` : t(langKeys.newdomain)}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails style={{justifyContent: 'space-around'}}>
+                            <div className={classes.containerDetail}>
+                                <div className="row-zyx">
+                                    {edit ?
+                                        <FieldEdit
+                                            label={t(langKeys.domain)}
+                                            disabled={row ? true : false}
+                                            className="col-6"
+                                            valueDefault={row?.domainname || ""}
+                                            onChange={(value) => setValue('domainname', value)}
+                                            error={errors?.domainname?.message}
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.domain)}
+                                            value={row ? row.domainname : ""}
+                                            className="col-6"
+                                        />}
+                                    {edit ?
+                                        <FieldEdit
+                                            label={t(langKeys.description)}
+                                            className="col-6"
+                                            valueDefault={row?.description || ""}
+                                            onChange={(value) => setValue('description', value)}
+                                            error={errors?.description?.message}
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.description)}
+                                            value={row ? row.description : ""}
+                                            className="col-6"
+                                        />}
+                                </div>
+                                <div className="row-zyx">
+                                    {edit ?
+                                        <FieldSelect
+                                            label={t(langKeys.type)}
+                                            className="col-6"
+                                            valueDefault={row?.type || ""}
+                                            onChange={(value) => setValue('type', value ? value.domainvalue : '')}
+                                            error={errors?.type?.message}
+                                            data={dataDomainType}
+                                            optionDesc="domaindesc"
+                                            optionValue="domainvalue"
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.type)}
+                                            value={row ? row.type : ""}
+                                            className="col-6"
+                                        />
+                                    }
+                                    {edit ?
+                                        <FieldSelect
+                                            label={t(langKeys.status)}
+                                            className="col-6"
+                                            valueDefault={row?.status || ""}
+                                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                                            error={errors?.status?.message}
+                                            data={dataDomainStatus}
+                                            optionDesc="domaindesc"
+                                            optionValue="domainvalue"
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.status)}
+                                            value={row ? row.status : ""}
+                                            className="col-6"
+                                        />
+                                    }
+                                </div>
+                            </div>
+                        </AccordionDetails>
+                    </Accordion>
                 </div>
             </form>
 
             <div className={classes.containerDetail}>
-                {detailRes.error ? <h1>ERROR</h1> : (
-                    <TableZyx
-                        columns={columns}
-                        titlemodule={t(langKeys.valuelist)}
-                        data={dataDomain}
-                        download={false}
-                        loading={detailRes.loading}
-                        filterGeneral={false}
-                        register={true}
-                        handleRegister={handleRegister}
-                    />
-                )}
+                <Accordion expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+                    <Typography>{t(langKeys.valuelist)}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>                        
+                        {detailRes.error ? <h1>ERROR</h1> : (
+                            <TableZyx
+                                columns={columns}
+                                data={dataDomain}
+                                download={false}
+                                loading={detailRes.loading}
+                                filterGeneral={false}
+                                register={true}
+                                handleRegister={handleRegister}
+                            />
+                        )}
+                    </AccordionDetails>
+                </Accordion>
             </div>
             
             <DetailValue
@@ -436,9 +454,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 }
 
 const Domains: FC = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useStyles();
-    const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -473,18 +491,13 @@ const Domains: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.type),
+                accessor: 'type',
                 NoFilter: true
             },
             {
@@ -501,8 +514,10 @@ const Domains: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getMultiCollection([
-            getValuesFromDomain("TIPODOMINIO"),
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("TIPODOMINIO")
         ]));
+
         return () => {
             dispatch(resetMain());
         };
@@ -565,7 +580,7 @@ const Domains: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                        data={mainResult.mainData.data}
+                        data={mainResult.mainData.data.filter(x => x.type !== 'SISTEMA')}
                         download={true}
                         loading={mainResult.mainData.loading}
                         register={true}
