@@ -1,5 +1,4 @@
 import React, { FC, useEffect, useState } from 'react';
-import TableZyx from '../components/fields/table-simple';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,20 +7,22 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField } from 'components';
 import { useSelector } from 'hooks';
-import { Dictionary } from "@types";
-import { getFunctionSel, getReportSel } from 'common/helpers';
-import { getCollection, getCollectionAux, resetMain, resetMainAux }  from 'store/main/actions';
+import { Dictionary, IFetchData } from "@types";
+import { getReportSel, getInputretryExport, getPaginatedInputretry, getTipificationExport, getPaginatedTipification, getPaginatedForReports, getReportExport } from 'common/helpers';
+import { getCollection, resetMain, getCollectionPaginated, exportData } from 'store/main/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
+import { reportsImage } from '../icons/index';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
-    fetchData?: () => void;
 }
 
 const arrayBread = [
@@ -35,15 +36,15 @@ const useStyles = makeStyles((theme) => ({
     },
     containerDetails: {
         marginTop: theme.spacing(2),
-        padding: theme.spacing(2),        
-        background: '#fff',
+        padding: theme.spacing(2),     
         width: '100%'
     },
     root: {
-        maxWidth: 345
+        maxWidth: 340
     },
     media: {
-        height: 140
+        height: 140,
+        backgroundSize: "auto"
     },
     containerSearch: {
         width: '100%',
@@ -72,57 +73,240 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, fetchData}) => {
+const ReportItem: React.FC<ItemProps> = ({setViewSelected, row}) => {
     const { t } = useTranslation();
-    const classes = useStyles();
     const dispatch = useDispatch();
-    const [dataReport, setdataReport] = useState<Dictionary[]>([]);
-    const detailRes = useSelector(state => state.main.mainAux);
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const resExportData = useSelector(state => state.main.exportData);
+    const [pageCount, setPageCount] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
+    const [totalrow, settotalrow] = useState(0);
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [resExportData, waitSave])
+
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        dispatch(exportData(getReportExport(
+            row?.methodexport||'',
+            row?.origin||'',
+            {
+            filters,
+            sorts,
+            startdate: daterange.startDate!,
+            enddate: daterange.endDate!
+        })));
+    };
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
+        dispatch(getCollectionPaginated(getPaginatedForReports(
+            row?.methodcollection||'',
+            row?.methodcount||'',
+            row?.origin||'',
+            {
+            startdate: daterange.startDate!,
+            enddate: daterange.endDate!,
+            take: pageSize,
+            skip: pageIndex,
+            sorts: sorts,
+            filters: filters
+            }
+        )));
+    };
     
+/*
+    interface columna {
+        Header: string;
+        accessor: string;
+    }
+
+    let heroes: string[] = [
+        "numeroticket",
+        "cliente",
+        "canal",
+        "fecha",
+        "pregunta",
+        "respuesta",
+        "valido",
+        "intento"
+    ];
+
+    let columnas = (col: columna) => {
+
+    };
+
+    heroes.map( x => {
+        columnas(
+            {
+                Header: 'x',
+                accessor: 'x'
+            }
+        )
+        
+        
+    });
+  
+    console.log(columnas);
+
+    const columns = React.useMemo(() => [{Header: 'numeroticket', accessor: 'numeroticket'}],[]);
+*/
+    
+    
+    //Reporte de reintentos
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.domain),
-                accessor: 'domainname',
-                NoFilter: true
+                Header: 'ticketnum',
+                accessor: 'numeroticket'
             },
             {
-                Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true
+                Header: 'name',
+                accessor: 'cliente'
             },
             {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                NoFilter: true
+                Header: 'description',
+                accessor: 'canal'
             },
             {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
+                Header: 'createdate',
+                accessor: 'fecha'
             },
             {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-                NoFilter: true
+                Header: 'inputquestion',
+                accessor: 'pregunta'
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
+                Header: 'interactiontext',
+                accessor: 'respuesta'
+            },
+            {
+                Header: 'validinput',
+                accessor: 'valido'
+            },
+            {
+                Header: 'attempt',
+                accessor: 'intento'
             }
         ],
         []
     );
 
+    /*
+    //Reporte de tipificaciones
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: 'numeroticket',
+                accessor: 'numeroticket'
+            },
+            {
+                Header: 'anioticket',
+                accessor: 'anioticket'
+            },
+            {
+                Header: 'mesticket',
+                accessor: 'mesticket'
+            },
+            {
+                Header: 'fechaticket',
+                accessor: 'fechaticket'
+            },
+            {
+                Header: 'horaticket',
+                accessor: 'horaticket'
+            },
+            {
+                Header: 'cliente',
+                accessor: 'cliente'
+            },
+            {
+                Header: 'numerodocumento',
+                accessor: 'numerodocumento'
+            },
+            {
+                Header: 'asesor',
+                accessor: 'asesor'
+            },
+            {
+                Header: 'canal',
+                accessor: 'canal'
+            },
+            {
+                Header: 'tipo',
+                accessor: 'tipo'
+            },
+            {
+                Header: 'submotivo',
+                accessor: 'submotivo'
+            },
+            {
+                Header: 'valoracion',
+                accessor: 'valoracion'
+            },
+            {
+                Header: 'fechafin',
+                accessor: 'fechafin'
+            },
+            {
+                Header: 'horafin',
+                accessor: 'horafin'
+            },
+            {
+                Header: 'fechaprimerainteraccion',
+                accessor: 'fechaprimerainteraccion'
+            },
+            {
+                Header: 'horaprimerainteraccion',
+                accessor: 'horaprimerainteraccion'
+            },
+            {
+                Header: 'cerradopor',
+                accessor: 'cerradopor'
+            },
+            {
+                Header: 'tipocierre',
+                accessor: 'tipocierre'
+            },
+            {
+                Header: 'displayname',
+                accessor: 'displayname'
+            },
+            {
+                Header: 'phone',
+                accessor: 'phone'
+            },
+            {
+                Header: 'contact',
+                accessor: 'contact'
+            }
+        ],
+        []
+    );
+    */
+
     const handleSelected = () => {
         setViewSelected("view-1");
     }
-
-    useEffect(() => {
-        dispatch(resetMainAux());
-        dispatch(getCollectionAux(getFunctionSel(row?.function||'','',0)));
-    }, [row]);
 
     return  (
         <div >
@@ -130,17 +314,17 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, fetchData}) => {
                 breadcrumbs={arrayBread}
                 handleClick={handleSelected}
             />
-            
-            <TableZyx
+            <TablePaginated
                 columns={columns}
-                titlemodule={row?.description||''}
-                data={detailRes.data}
+                data={mainPaginated.data}
+                totalrow={totalrow}
+                loading={mainPaginated.loading}
+                pageCount={pageCount}
+                filterrange={true}
                 download={true}
-                //loading={detailRes.loading}
-                //filterGeneral={false}
-                //register={false}
-                //handleRegister={handleRegister}
-            />
+                fetchData={fetchData}
+                exportPersonalized={triggerExportData}
+                titlemodule={row?.description||''} />
         </div>
     ); 
 }
@@ -193,7 +377,7 @@ const Reports: FC = () => {
                     </div>
                 </Box>   
                 <div className={classes.containerDetails}>
-                    <Container>
+                    <Container className={classes.containerDetails}>
                         <Grid container spacing={3}>
                             {
                                 (reports.length > 0 ? reports : reportsResult.mainData.data).map (
@@ -202,17 +386,15 @@ const Reports: FC = () => {
                                             <Card className={classes.root}>
                                                 <CardActionArea onClick={() => handleSelected(report)}>
                                                     <CardMedia
-                                                        className={classes.media}
-                                                        image="https://www.hotelogix.com/images/Tomardecisionesbasadasendatos.png"                                                        
-                                                        title= {report.description}
+                                                        className={classes.media}                                                   
+                                                        component= {report.component}
+                                                        image = {reportsImage.find(x => x.name === report.icon)?.image||'no_data.png'}
+                                                        title={report.description}                                                        
                                                     />
                                                     <CardContent>
                                                         <Typography gutterBottom variant="h5" component="h2">
                                                             {report.description}
-                                                        </Typography>
-                                                        <Typography variant="body2" color="textSecondary" component="p">
-                                                            
-                                                        </Typography>                                                    
+                                                        </Typography>                                                   
                                                     </CardContent>
                                                 </CardActionArea>      
                                             </Card>
@@ -231,7 +413,6 @@ const Reports: FC = () => {
                 <ReportItem
                     setViewSelected={setViewSelected}
                     row={rowSelected}
-                    fetchData={fetchData}
                 />
             </div>
         )
