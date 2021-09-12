@@ -26,10 +26,22 @@ const handleError = (error: AxiosError, dispatch: Dispatch<IAction>, actionType:
     }
     // else if (await authorizationHelper.isUnauthorizedCall(dispatch, response)) return;
     else if (response.status === 400 || response.status === 404) {
-        if (response.data.message) dispatch({ type: actionType, payload: { error: response.data.message } });
-        else dispatch({ type: actionType, payload: { error: messages.GENERAL_ERROR } });
+        if (actionType?.startsWith('integrationmanager')) {
+            dispatch({ type: actionType, payload: { error: true, message: errorMessage, code: response.status } });
+        }
+        else {
+            if (response.data.message) dispatch({ type: actionType, payload: { error: response.data.message } });
+            else dispatch({ type: actionType, payload: { error: messages.GENERAL_ERROR } });
+        }
     }
-    else dispatch({ type: actionType, payload: { error: messages.GENERAL_ERROR } });
+    else {
+        if (actionType?.startsWith('integrationmanager')) {
+            dispatch({ type: actionType, payload: { error: true, message: errorMessage, code: response.status } });
+        }
+        else {
+            dispatch({ type: actionType, payload: { error: messages.GENERAL_ERROR } });
+        }
+    }
 }
 
 const callAPIMiddleware: Middleware = ({ dispatch, getState }) => {

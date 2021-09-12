@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { ITicket } from "@types";
+import { useSelector } from 'hooks';
+import { useDispatch } from 'react-redux';
 import { AntTab } from 'components';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import TextField from '@material-ui/core/TextField';
-import { SearchIcon } from 'icons';
-import IconButton from '@material-ui/core/IconButton';
-import { DownloadIcon, DownloadReverseIcon, EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
-export interface ChatProps {
-}
+import { EMailInboxIcon, PhoneIcon } from 'icons';
+import { getTicketsPerson } from 'store/inbox/actions';
+import { GetIcon } from 'components'
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -31,11 +31,27 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         gap: theme.spacing(2)
     },
+    containerPreviewTicket: {
+        padding: theme.spacing(1),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(1),
+        overflowY: 'auto',
+        flex: 1,
+        borderBottom: '1px solid #EBEAED'
+    },
     label: {
         overflowWrap: 'anywhere',
         fontWeight: 400,
         fontSize: 12,
         color: '#B6B4BA',
+    },
+    titlePreviewTicket: {
+        fontWeight: 500,
+        fontSize: 16,
+        display: 'flex',
+        alignItems: 'center',
+        gap: theme.spacing(.5),
     },
     value: {
         fontSize: 14,
@@ -58,37 +74,103 @@ const useStyles = makeStyles((theme) => ({
 
 const InfoClient: React.FC = () => {
     const classes = useStyles();
+    const { t } = useTranslation();
+    const person = useSelector(state => state.inbox.person.data);
     return (
         <div className={classes.containerInfoClient}>
             <div className={classes.containerName}>
-                <Avatar alt="" src="" />
+                <Avatar alt="" src={person?.imageurldef} />
                 <div style={{ flex: 1 }}>
-                    <div>Carlos</div>
-                    <div className={classes.label}>{`ID# 23232`}</div>
+                    <div>{person?.firstname} {person?.lastname}</div>
+                    <div className={classes.label}>{`ID# ${person?.personid}`}</div>
                 </div>
-                <div className={classes.btn}>Active</div>
+                <div className={classes.btn}>{t(langKeys.active)}</div>
             </div>
             <div className={classes.containerName}>
                 <EMailInboxIcon className={classes.propIcon} />
                 <div style={{ flex: 1 }}>
-                    <div className={classes.label}>Email</div>
-                    <div>{`ID# 23232`}</div>
+                    <div className={classes.label}>{t(langKeys.email)}</div>
+                    <div>{`${person?.email}`}</div>
                 </div>
             </div>
             <div className={classes.containerName}>
                 <PhoneIcon className={classes.propIcon} />
                 <div style={{ flex: 1 }}>
-                    <div className={classes.label}>Phone</div>
-                    <div>{`ID# 23232`}</div>
+                    <div className={classes.label}>{t(langKeys.phone)}</div>
+                    <div>{`${person?.phone}`}</div>
                 </div>
             </div>
         </div>
     )
 }
 
-const InfoPanel: React.FC<ChatProps> = () => {
+const convertLocalDate = (date: string | null | undefined, validateWithToday?: boolean): Date => {
+    if (!date) return new Date()
+    const nn = new Date(date)
+    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000 * -1));
+    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
+}
+
+const Variables: React.FC = () => {
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
+    const classes = useStyles();
+
+    return (
+        <div className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
+            {variablecontext && Object.entries(variablecontext).map(([key, value], index) => (
+                <div key={index} className={classes.containerName}>
+                    <div>
+                        <div className={classes.label}>{key}</div>
+                        <div >{value.Value}</div>
+                    </div>
+                </div>
+            ))}
+
+        </div>
+    )
+}
+
+const PreviewTickets = () => {
+    const dispatch = useDispatch();
+    const classes = useStyles();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const previewTicketList = useSelector(state => state.inbox.previewTicketList);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        dispatch(getTicketsPerson(ticketSelected?.personid!, ticketSelected?.conversationid!))
+    }, [])
+
+    return (
+        <div>
+            {previewTicketList.loading ? "Espere" :
+                previewTicketList.data?.map((ticket, index) => (
+                    <div key={index} className={classes.containerPreviewTicket}>
+                        <div className={classes.titlePreviewTicket}>
+                            <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
+                            <div>#{ticket.ticketnum}</div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div style={{ flex: 1 }}>
+                                <div className={classes.label}>{t(langKeys.created_on)}</div>
+                                <div>{convertLocalDate(ticket.firstconversationdate).toLocaleString()}</div>
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <div className={classes.label}>{t(langKeys.closed_on)}</div>
+                                <div>{convertLocalDate(ticket.finishdate).toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+    )
+}
+
+const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
+    const { t } = useTranslation();
 
     return (
         <div className={classes.containerInfo}>
@@ -100,13 +182,15 @@ const InfoPanel: React.FC<ChatProps> = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Client details" />
-                <AntTab label="Tickets" />
+                <AntTab label={t(langKeys.client_detail)} />
                 <AntTab label="Variables" />
-                <AntTab label="Attachments" />
+                <AntTab label="Tickets" />
+                {/* <AntTab label="Attachments" /> */}
             </Tabs>
             {pageSelected === 0 && <InfoClient />}
-            
+            {pageSelected === 1 && <Variables />}
+            {pageSelected === 2 && <PreviewTickets />}
+
         </div>
     );
 }

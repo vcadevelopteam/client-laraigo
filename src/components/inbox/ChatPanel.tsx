@@ -14,12 +14,17 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { showInfoPanel } from 'store/inbox/actions';
+import { showInfoPanel, replyMessage } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { ListItemSkeleton } from 'components'
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
 import { EmojiPickerZyx } from 'components'
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import DeleteIcon from '@material-ui/icons/Delete';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 const convertLocalDate = (date: string | null, validateWithToday: boolean): Date => {
     if (!date) return new Date()
@@ -32,24 +37,6 @@ const toTime24HR = (time: string): string => {
     const [h, m] = time.split(':');
     const hint = parseInt(h)
     return `${(hint > 12 ? 24 - hint : hint).toString().padStart(2, "0")}:${m}:${hint > 11 ? "PM" : "AM"}`
-}
-
-const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
-    return interactions.reduce((acc: any, item: IInteraction, index: number) => {
-        const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
-        if (acc.last === "") {
-            return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
-        } else if (item.userid && (acc.last === "agent" || acc.last === "BOT")) {
-            acc.data[acc.data.length - 1].interactions.push(item)
-        } else if (item.userid && acc.last === "client") {
-            acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
-        } else if (!item.userid && (acc.last === "agent" || acc.last === "BOT")) {
-            acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
-        } else if (!item.userid && acc.last === "client") {
-            acc.data[acc.data.length - 1].interactions.push(item)
-        }
-        return { data: acc.data, last: currentUser }
-    }, { data: [], last: "" }).data;
 }
 
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
@@ -179,7 +166,6 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
 }
 
 const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext }, classes }) => {
-
     if (interactiontype === "text")
         return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontext}</div>;
     else if (interactiontype === "image")
@@ -242,70 +228,72 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
 }
 
 const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, createdate, interactions }, clientName, imageClient }) => {
-    
-    const el = useRef<null | HTMLDivElement>(null); 
-    
-    const scrollToBottom = () => {
-        if (el?.current)
-            el.current.scrollIntoView({ behavior: "smooth" });
-    };
-    useEffect(scrollToBottom, [interactions]);
-
     const time = toTime24HR(convertLocalDate(createdate, false).toLocaleTimeString());
     return (
         <div style={{ display: 'flex', gap: 8 }}>
-            <div>
-                {usertype === "agent" ?
-                    <AgentIcon /> :
-                    (usertype === "BOT" ?
-                        <BotIcon style={{ width: 40, height: 40 }} /> :
-                        <Avatar src={imageClient || ""} />)
-                }
-            </div>
+            {usertype === "client" && <Avatar src={imageClient || ""} />}
             <div style={{ flex: 1 }}>
-                <div className={classes.name}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
-                <div className={classes.timeInteraction}>{time}</div>
+                <div style={{ display: 'flex', flexDirection: 'column' }} className={clsx({ [classes.groupInteractionAgent]: usertype !== "client" })}>
+                    <div className={clsx(classes.name, { [classes.groupInteractionAgent]: usertype !== "client" })}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
+                    <div className={clsx(classes.timeInteraction, { [classes.groupInteractionAgent]: usertype !== "client" })}>{time}</div>
+                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
-                        <ItemInteraction interaction={item} classes={classes} key={index} />
+                        <div key={index} className={clsx({ [classes.interactionAgent]: usertype !== "client" })}>
+                            <ItemInteraction interaction={item} classes={classes} />
+                        </div>
                     ))}
-                    <div ref={el} />
+                    {/* <div ref={el} /> */}
                 </div>
             </div>
+
+            {usertype === "agent" ?
+                <div><AgentIcon /></div> :
+                (usertype === "BOT" && <div><BotIcon style={{ width: 40, height: 40 }} /></div>)
+            }
         </div>
     );
 }
+interface IFile {
+    type: string;
+    url: string;
+    id: string;
+    error?: boolean;
+}
 
-const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
+const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }> = ({ classes, setFiles }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
 
     const uploadResult = useSelector(state => state.main.uploadFile);
+    const [idUpload, setIdUpload] = useState('');
 
     useEffect(() => {
         if (waitSave) {
             if (!uploadResult.loading && !uploadResult.error) {
-                // dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                // dispatch(showBackdrop(false));
-                console.log(uploadResult.url)
+                console.log("into effect", idUpload)
+                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url } : item))
                 setWaitSave(false);
                 dispatch(resetUploadFile());
             } else if (uploadResult.error) {
                 const errormessage = uploadResult.code || "error_unexpected_error"
+                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url, error: true } : item))
                 // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                // dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [waitSave, uploadResult, dispatch])
+    }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
 
     const onSelectImage = (files: any) => {
         const selectedFile = files[0];
+        const idd = new Date().toISOString()
         var fd = new FormData();
         fd.append('file', selectedFile, selectedFile.name);
-        dispatch(uploadFile(fd));
         setvaluefile('')
+        setIdUpload(idd);
+        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type: 'image' }]);
+        dispatch(uploadFile(fd));
         setWaitSave(true)
     }
 
@@ -321,17 +309,73 @@ const IconUploadImage: React.FC<{ classes: any }> = ({ classes }) => {
                 onChange={(e) => onSelectImage(e.target.files)}
             />
             <label htmlFor="laraigo-upload-image-file">
-                <ImageIcon className={classes.iconResponse} />
+                <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
             </label>
         </>
     )
 }
-
+const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => (
+    <div style={{ position: 'relative' }}>
+        <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            {item.url ?
+                (item.type === 'image' ?
+                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%' }} /> :
+                    <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
+                <CircularProgress color="inherit" />
+            }
+        </div>
+        <IconButton
+            onClick={() => setFiles((x: IFile[]) => x.filter(y => y.id !== item.id))}
+            size="small"
+            style={{ position: 'absolute', top: -16, right: -14 }}
+        >
+            <CloseIcon fontSize="small" />
+        </IconButton>
+    </div>
+)
 const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
+    const dispatch = useDispatch();
     const [text, setText] = useState("");
+    const [files, setFiles] = useState<IFile[]>([]);
+
+    const triggerReplyMessage = () => {
+        if (files.length > 0) {
+            files.forEach(x => {
+                dispatch(replyMessage({
+                    interactionid: 0,
+                    interactiontype: "image",
+                    interactiontext: x.url,
+                    createdate: new Date().toISOString(),
+                    userid: 999999,
+                    usertype: "agent",
+                }))
+            })
+            setFiles([])
+        }
+        if (text) {
+            const textCleaned = text.trim();
+            const newInteraction: IInteraction = {
+                interactionid: 0,
+                interactiontype: "text",
+                interactiontext: textCleaned,
+                createdate: new Date().toISOString(),
+                userid: 999999,
+                usertype: "agent",
+            }
+            dispatch(replyMessage(newInteraction));
+            setText("");
+        }
+    }
 
     return (
         <div className={classes.containerResponse}>
+            {files.length > 0 &&
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
+                    {files.map((item: IFile, index: number) => (
+                        <ItemFile key={index} item={item} setFiles={setFiles} />
+                    ))}
+                </div>
+            }
             <div>
                 <InputBase
                     fullWidth
@@ -346,12 +390,11 @@ const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <QuickresponseIcon className={classes.iconResponse} />
-                    <IconUploadImage classes={classes} />
+                    <IconUploadImage classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <AttachmentIcon className={classes.iconResponse} />
-
                 </div>
-                <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !text })}>
+                <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
                     <SendIcon />
                 </div>
             </div>
@@ -359,18 +402,22 @@ const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
     const dispatch = useDispatch();
-    const [dataInteractions, setDataInteractions] = useState<IInteraction[]>([]);
-    const interactionList = useSelector(state => state.inbox.interactionList);
+    const groupInteractionList = useSelector(state => state.inbox.interactionList);
 
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
-    useEffect(() => {
-        if (!interactionList.loading && !interactionList.error) {
-            setDataInteractions(interactionList.data)
-        }
-    }, [interactionList])
+    const el = useRef<null | HTMLDivElement>(null);
+    const scrollToBottom = () => {
+        console.log('goto bottom');
+        setTimeout(() => {
+            if (el?.current) {
+                el.current.scrollIntoView({ behavior: "smooth" });
+            }
+        }, 300);
+    };
+    useEffect(scrollToBottom, [groupInteractionList]);
 
     return (
         <div className={classes.containerChat}>
@@ -384,22 +431,23 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticke
                 <ButtonsManageTicket classes={classes} />
             </div>
             <div className={classes.containerInteractions}>
-                {interactionList.loading ? <ListItemSkeleton /> :
+                {groupInteractionList.loading ? <ListItemSkeleton /> :
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                        {getGroupInteractions(dataInteractions).map((groupInteraction, index) => (
+                        {groupInteractionList.data.map((groupInteraction, index) => (
                             <ItemGroupInteraction
                                 imageClient={imageurldef}
                                 clientName={displayname}
                                 classes={classes}
                                 groupInteraction={groupInteraction}
-                                key={index} />
+                                key={groupInteraction.interactionid} />
                         ))}
                     </div>
                 }
+                <div ref={el} />
             </div>
             <PanelResponse classes={classes} />
         </div>
     )
-}
+})
 
 export default ChatPanel;

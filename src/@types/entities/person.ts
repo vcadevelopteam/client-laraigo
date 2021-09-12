@@ -1,3 +1,7 @@
+interface Dictionary {
+    [key: string]: any
+}
+
 export interface IPerson {
     corpid: number;
     corpdesc: string;
@@ -39,5 +43,6 @@ export interface IPerson {
     referringpersonid: number;
     referringpersonname?: string;
     displayname: string;
+    variablecontext: Dictionary;
     locked?: boolean;
 }

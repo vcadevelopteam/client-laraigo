@@ -119,6 +119,25 @@ export const getValuesFromDomain = (domainname: string): IRequestBody => ({
     }
 });
 
+export const getListUsers = (): IRequestBody => ({
+    method: "UFN_CONVERSATION_LST_USRDELEGATE2",
+    key: "UFN_CONVERSATION_LST_USRDELEGATE2",
+    parameters: {}
+});
+
+export const getClassificationLevel1 = (type: string): IRequestBody => ({
+    method: "UFN_CONVERSATIONCLASSIFICATIONLIST_LEVEL1_SEL",
+    key: "UFN_CONVERSATIONCLASSIFICATIONLIST_LEVEL1_SEL",
+    parameters: { type }
+});
+
+export const getClassificationLevel2 = (type: string, classificationid: number): IRequestBody => ({
+    method: "UFN_CONVERSATIONCLASSIFICATIONLIST_LEVEL2_SEL",
+    key: "UFN_CONVERSATIONCLASSIFICATIONLIST_LEVEL2_SEL",
+    parameters: { type, classificationid }
+});
+
+
 export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key: "UFN_USER_INS",
@@ -450,8 +469,8 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
     key: "UFN_PERSON_EXPORT",
     parameters: {
         origin: "person",
-        filters, 
-        startdate, 
+        filters,
+        startdate,
         enddate,
         sorts,
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -563,6 +582,7 @@ export const insIntegrationManager = (
         variables,
         level,
         fields,
+        apikey,
         operation
     }: Dictionary): IRequestBody => ({
         method: "UFN_INTEGRATIONMANAGER_INS",
@@ -582,6 +602,7 @@ export const insIntegrationManager = (
             variables: JSON.stringify(variables),
             level,
             fields: JSON.stringify(fields),
+            apikey,
             operation
         }
     });

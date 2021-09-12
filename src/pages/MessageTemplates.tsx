@@ -84,25 +84,25 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const dataMessageType = [
-    { value: "SMS", text: "SMS" }, // Setear en diccionario los text
-    { value: "HSM", text: "HSM" }, // Setear en diccionario los text
+    { value: "SMS", text: "sms" },
+    { value: "HSM", text: "hsm" },
 ];
 
 const dataTemplateType = [
-    { value: "STANDARD", text: "Standard (text only)" }, // Setear en diccionario los text
-    { value: "MULTIMEDIA", text: "Media & Interactive" }, // Setear en diccionario los text
+    { value: "STANDARD", text: "templatestandard" },
+    { value: "MULTIMEDIA", text: "templatemultimedia" },
 ];
 
 const dataHeaderType = [
-    { value: 'text', text: 'Text' }, // Setear en diccionario los text
-    { value: 'image', text: 'Image' }, // Setear en diccionario los text
-    { value: 'document', text: 'Document' }, // Setear en diccionario los text
-    { value: 'video', text: 'Video' } // Setear en diccionario los text
+    { value: 'text', text: 'text' },
+    { value: 'image', text: 'image' },
+    { value: 'document', text: 'document' },
+    { value: 'video', text: 'video' }
 ];
 
 const dataButtonType = [
-    { value: "url", text: "url" }, // Setear en diccionario los text
-    { value: "quick_reply", text: "quickreply" }, // Setear en diccionario los text
+    { value: "url", text: "url" },
+    { value: "quick_reply", text: "quickreply" },
 ];
 
 const MessageTemplates: FC = () => {
@@ -409,6 +409,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}
                                 label={t(langKeys.messagetype)}
                                 className="col-12"
                                 valueDefault={row?.type || "SMS"}
@@ -501,6 +502,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}
                                 label={t(langKeys.templatetype)}
                                 className="col-12"
                                 valueDefault={getValues('templatetype')}
@@ -564,6 +566,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                         {edit ?
                             <React.Fragment>
                                 <FieldSelect
+                                    uset={true}
                                     label={t(langKeys.headertype)}
                                     className={classes.headerType}
                                     valueDefault={getValues('headertype')}
@@ -679,6 +682,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                             error={errors?.buttons?.[i]?.title?.message}
                                         />
                                         <FieldSelect
+                                            uset={true}
                                             fregister={{...register(`buttons.${i}.type`, {
                                                 validate: (value) => (value && value.length) || t(langKeys.field_required)
                                             })}}

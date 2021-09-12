@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, ITicket } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
@@ -44,14 +44,14 @@ export const resetGetPerson = (): IActionCall => ({ type: actionTypes.GET_PERSON
 export const getTicketsPerson = (personid: number, conversationid: number): IActionCall => ({
     callAPI: () => CommonService.main(getTicketsByPerson(personid, conversationid)),
     types: {
-        loading: actionTypes.GET_AGENTS,
-        success: actionTypes.GET_AGENTS_SUCCESS,
-        failure: actionTypes.GET_AGENTS_FAILURE,
+        loading: actionTypes.GET_TICKETS_BY_PERSON,
+        success: actionTypes.GET_TICKETS_BY_PERSON_SUCCESS,
+        failure: actionTypes.GET_TICKETS_BY_PERSON_FAILURE,
     },
     type: null,
 });
 
-export const resetGetTicketsPerson = (): IActionCall => ({ type: actionTypes.GET_AGENTS_RESET });
+export const resetGetTicketsPerson = (): IActionCall => ({ type: actionTypes.GET_TICKETS_BY_PERSON_RESET });
 
 export const getInteractions = (conversationid: number, lock: boolean, conversationold: number): IActionCall => ({
     callAPI: () => CommonService.main(getInteractionsByConversation(conversationid, lock, conversationold)),
@@ -86,3 +86,5 @@ export const selectAgent = (ticket: IAgent): IActionCall => ({ type: actionTypes
 export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: null });
 
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
+
+export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
