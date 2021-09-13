@@ -6,12 +6,13 @@ import { useSelector } from 'hooks';
 import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { manageConfirmation, showBackdrop } from 'store/popus/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Dictionary } from '@types';
 import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
+import { deleteChannel } from 'store/channel/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -22,7 +23,7 @@ export const Channels: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
+    const executeResult = useSelector(state => state.channel.channelList);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -42,10 +43,33 @@ export const Channels: FC = () => {
         //setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
+    
+    const fetchData = () => dispatch(getCollection(getChannelSel(0)));
+    useEffect(() => {
+        if (waitSave) {
+            if (executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                //dispatch(getCollection(getChannelSel(0)));
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            //dispatch(execute(insOrg({description:row.orgdesc, type:row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
+            dispatch(deleteChannel({
+                method: "UFN_COMMUNICATIONCHANNEL_INS",
+                parameters:{
+                    ...row,id:row.communicationchannelid, description:row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO' 
+                }
+                }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -101,7 +125,6 @@ export const Channels: FC = () => {
         ],
         []
     );
-    const fetchData = () => dispatch(getCollection(getChannelSel(0)));
 
     useEffect(() => {
         fetchData();
@@ -117,7 +140,7 @@ export const Channels: FC = () => {
     return (
         <TableZyx
             columns={columns}
-            titlemodule={t(langKeys.user, { count: 2 })}
+            titlemodule={t(langKeys.channel_plural, { count: 2 })}
             data={mainResult.mainData.data}
             download={true}
             loading={mainResult.mainData.loading}
