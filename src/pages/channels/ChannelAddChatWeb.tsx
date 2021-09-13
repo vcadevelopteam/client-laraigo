@@ -1100,7 +1100,7 @@ export const ChannelAddChatWeb: FC = () => {
     return (
         <div className={classes.root}>
             <h2 className={classes.title}>Activate Laraigo on your website</h2>
-            <Typography className={classes.subtitle}>
+            {/* <Typography className={classes.subtitle}>
                 Copy and paste this code on your site for the chatbot to start attracting customers.
             </Typography>
             <div style={{ height: 8 }} />
@@ -1116,7 +1116,7 @@ export const ChannelAddChatWeb: FC = () => {
                 <Button variant="contained" color="primary" className={classes.scriptPreviewCopyBtn}>
                     Copy
                 </Button>
-            </div>
+            </div> */}
             <div style={{ height: 20 }} />
             <AppBar position="static" elevation={0}>
                 <Tabs
@@ -1139,6 +1139,9 @@ export const ChannelAddChatWeb: FC = () => {
             <TabPanel value="3" index={tabIndex}><TabPanelBubble /></TabPanel>
             <TabPanel value="4" index={tabIndex}><TabPanelExtras /></TabPanel>
             <div style={{ height: 20 }} />
+            <Button variant="contained" color="primary">
+                <Trans i18nKey={langKeys.save} />
+            </Button>
         </div>
     );
 };
