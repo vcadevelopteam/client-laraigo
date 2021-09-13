@@ -251,16 +251,6 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
         }
     });
 
-export const getFunctionSel = (functionname: string, domainname: string, id: number): IRequestBody => ({
-    method: functionname,
-    key: functionname,
-    parameters: {
-        domainname: domainname,
-        id: 0,
-        all: true
-    }
-})
-
 export const getReportSel = (reportname: string): IRequestBody => ({
     method: "UFN_REPORT_SEL",
     key: "UFN_REPORT_SEL",
@@ -270,81 +260,15 @@ export const getReportSel = (reportname: string): IRequestBody => ({
     }
 });
 
-
-
-
-
-//tabla paginada
-export const getPaginatedInputretry = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
-    methodCollection: "UFN_REPORT_INPUTRETRY_SEL",
-    methodCount: "UFN_REPORT_INPUTRETRY_TOTALRECORDS",
+export const getReportColumnSel = (functionname: string): IRequestBody => ({
+    method: "UFN_REPORT_COLUMN_SEL",
+    key: "UFN_REPORT_COLUMN_SEL",
     parameters: {
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        origin: "inputretry",
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getInputretryExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_REPORT_INPUTRETRY_EXPORT",
-    key: "UFN_REPORT_INPUTRETRY_EXPORT",
-    parameters: {
-        origin: "inputretry",
-        filters, 
-        startdate, 
-        enddate,
-        sorts,
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getPaginatedTipification = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
-    methodCollection: "UFN_REPORT_TIPIFICATION_SEL",
-    methodCount: "UFN_REPORT_TIPIFICATION_TOTALRECORDS",
-    parameters: {
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        origin: "tipification",
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getTipificationExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_REPORT_TIPIFICATION_EXPORT",
-    key: "UFN_REPORT_TIPIFICATION_EXPORT",
-    parameters: {
-        origin: "tipification",
-        filters, 
-        startdate, 
-        enddate,
-        sorts,
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        function: functionname,
+        all: false
     }
 });
 
-
-
-
-
-
-
-
-
-
-//tabla paginada
 export const getPaginatedForReports = (methodCollection: string, methodCount: string, origin: string, { skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: methodCollection,
     methodCount: methodCount,
@@ -360,6 +284,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
     method: methodExport,
     key: methodExport,
@@ -373,15 +298,6 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-
-
-
-
-
-
-
-
-
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",

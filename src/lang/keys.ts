@@ -300,6 +300,22 @@ export const langKeys = {
     closed_on: "closed_on",
     close_ticket: "close_ticket",
     client_detail: "client_detail",
+
+    report_loginhistory_createdate: 'report_loginhistory_createdate',
+    report_loginhistory_createhour: 'report_loginhistory_createhour',
+    report_loginhistory_nombre_usuario: 'report_loginhistory_nombre_usuario',
+    report_loginhistory_usuario: 'report_loginhistory_usuario',
+    report_loginhistory_status: 'report_loginhistory_status',
+    report_loginhistory_type: 'report_loginhistory_type',
+
+    report_inputretry_numeroticket: 'report_inputretry_numeroticket',
+    report_inputretry_cliente: 'report_inputretry_cliente',
+    report_inputretry_canal: 'report_inputretry_canal',
+    report_inputretry_fecha: 'report_inputretry_fecha',
+    report_inputretry_pregunta: 'report_inputretry_pregunta',
+    report_inputretry_respuesta: 'report_inputretry_respuesta',
+    report_inputretry_intento: 'report_inputretry_intento',
+    report_inputretry_valido: 'report_inputretry_valido',
 };
 
 export type LangKeys = typeof langKeys;
