@@ -3,7 +3,8 @@ import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb } from 'pages';
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
+	ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -95,6 +96,41 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddChatWeb />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddFacebook />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_MESSENGER.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddMessenger />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddInstagram />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddWhatsapp />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddTelegram />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTER.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddTwitter />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddTwitterDM />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.ORGANIZATIONS}>
