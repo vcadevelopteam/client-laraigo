@@ -260,6 +260,7 @@ const translation: LangKeys = {
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
+    next:"Next",
     login_with_google: 'Login with Google',
 
     hasactionplan:'Has action plan',

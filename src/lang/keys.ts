@@ -9,6 +9,7 @@ export const langKeys = {
     completedesc: 'completedesc',
     report: 'report',
     report_plural: 'report_plural',
+    next:"next",
     tag:'tag',
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
