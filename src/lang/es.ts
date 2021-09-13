@@ -198,7 +198,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     
     integrationmanager: 'Administrador de Integraciones',
     integrationmanager_plural: 'Administrador de Integraciones',
-    newintegrationmanager: 'Nuevo Administrador de Integraciones',
+    newintegrationmanager: 'Nueva integración',
     standard: 'Estándar',
     custom: 'Personalizado',
     requesttype: 'Tipo de solicitud',
