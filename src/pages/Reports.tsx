@@ -7,15 +7,16 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import { CircularProgress } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField } from 'components';
 import { useSelector } from 'hooks';
-import { Dictionary, IFetchData } from "@types";
-import { getReportSel, getInputretryExport, getPaginatedInputretry, getTipificationExport, getPaginatedTipification, getPaginatedForReports, getReportExport } from 'common/helpers';
-import { getCollection, resetMain, getCollectionPaginated, exportData } from 'store/main/actions';
+import { Dictionary, IFetchData, MultiData } from "@types";
+import { getReportSel, getReportColumnSel, getPaginatedForReports, getReportExport } from 'common/helpers';
+import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
@@ -23,6 +24,7 @@ import { reportsImage } from '../icons/index';
 interface ItemProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
+    multiData: MultiData[];
 }
 
 const arrayBread = [
@@ -73,23 +75,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReportItem: React.FC<ItemProps> = ({setViewSelected, row}) => {
-    const { t } = useTranslation();
+const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
+    const { t } = useTranslation();      
+    const classes = useStyles();
     const dispatch = useDispatch();
+    const reportColumns = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    const columns2 = React.useMemo(() => [{Header: 'numeroticket', accessor: 'numeroticket'}],[]);
+
+    if ( multiData.length > 0 ) {
+        reportColumns.map(x => (        
+            columns2.push({Header: t('report_'+row?.origin+'_'+x.proargnames||''), accessor: x.proargnames})
+            )
+        );
+
+        columns2.shift();
+    }
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
             setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
             settotalrow(mainPaginated.count);
         }
-    }, [mainPaginated])
-
+    }, [mainPaginated]);
+    
     useEffect(() => {
         if (waitSave) {
             if (!resExportData.loading && !resExportData.error) {
@@ -103,7 +117,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row}) => {
                 setWaitSave(false);
             }
         }
-    }, [resExportData, waitSave])
+    }, [resExportData, waitSave]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
         dispatch(exportData(getReportExport(
@@ -115,9 +129,12 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row}) => {
             startdate: daterange.startDate!,
             enddate: daterange.endDate!
         })));
+        dispatch(showBackdrop(true));
+        setWaitSave(true);
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        dispatch(resetCollectionPaginated());
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
         dispatch(getCollectionPaginated(getPaginatedForReports(
             row?.methodcollection||'',
@@ -133,198 +150,34 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row}) => {
             }
         )));
     };
-    
-/*
-    interface columna {
-        Header: string;
-        accessor: string;
-    }
-
-    let heroes: string[] = [
-        "numeroticket",
-        "cliente",
-        "canal",
-        "fecha",
-        "pregunta",
-        "respuesta",
-        "valido",
-        "intento"
-    ];
-
-    let columnas = (col: columna) => {
-
-    };
-
-    heroes.map( x => {
-        columnas(
-            {
-                Header: 'x',
-                accessor: 'x'
-            }
-        )
-        
-        
-    });
-  
-    console.log(columnas);
-
-    const columns = React.useMemo(() => [{Header: 'numeroticket', accessor: 'numeroticket'}],[]);
-*/
-    
-    
-    //Reporte de reintentos
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'ticketnum',
-                accessor: 'numeroticket'
-            },
-            {
-                Header: 'name',
-                accessor: 'cliente'
-            },
-            {
-                Header: 'description',
-                accessor: 'canal'
-            },
-            {
-                Header: 'createdate',
-                accessor: 'fecha'
-            },
-            {
-                Header: 'inputquestion',
-                accessor: 'pregunta'
-            },
-            {
-                Header: 'interactiontext',
-                accessor: 'respuesta'
-            },
-            {
-                Header: 'validinput',
-                accessor: 'valido'
-            },
-            {
-                Header: 'attempt',
-                accessor: 'intento'
-            }
-        ],
-        []
-    );
-
-    /*
-    //Reporte de tipificaciones
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'numeroticket',
-                accessor: 'numeroticket'
-            },
-            {
-                Header: 'anioticket',
-                accessor: 'anioticket'
-            },
-            {
-                Header: 'mesticket',
-                accessor: 'mesticket'
-            },
-            {
-                Header: 'fechaticket',
-                accessor: 'fechaticket'
-            },
-            {
-                Header: 'horaticket',
-                accessor: 'horaticket'
-            },
-            {
-                Header: 'cliente',
-                accessor: 'cliente'
-            },
-            {
-                Header: 'numerodocumento',
-                accessor: 'numerodocumento'
-            },
-            {
-                Header: 'asesor',
-                accessor: 'asesor'
-            },
-            {
-                Header: 'canal',
-                accessor: 'canal'
-            },
-            {
-                Header: 'tipo',
-                accessor: 'tipo'
-            },
-            {
-                Header: 'submotivo',
-                accessor: 'submotivo'
-            },
-            {
-                Header: 'valoracion',
-                accessor: 'valoracion'
-            },
-            {
-                Header: 'fechafin',
-                accessor: 'fechafin'
-            },
-            {
-                Header: 'horafin',
-                accessor: 'horafin'
-            },
-            {
-                Header: 'fechaprimerainteraccion',
-                accessor: 'fechaprimerainteraccion'
-            },
-            {
-                Header: 'horaprimerainteraccion',
-                accessor: 'horaprimerainteraccion'
-            },
-            {
-                Header: 'cerradopor',
-                accessor: 'cerradopor'
-            },
-            {
-                Header: 'tipocierre',
-                accessor: 'tipocierre'
-            },
-            {
-                Header: 'displayname',
-                accessor: 'displayname'
-            },
-            {
-                Header: 'phone',
-                accessor: 'phone'
-            },
-            {
-                Header: 'contact',
-                accessor: 'contact'
-            }
-        ],
-        []
-    );
-    */
-
-    const handleSelected = () => {
-        setViewSelected("view-1");
-    }
 
     return  (
-        <div >
-             <TemplateBreadcrumbs
+        <div>
+            <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
-                handleClick={handleSelected}
+                handleClick={setViewSelected}
             />
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                totalrow={totalrow}
-                loading={mainPaginated.loading}
-                pageCount={pageCount}
-                filterrange={true}
-                download={true}
-                fetchData={fetchData}
-                exportPersonalized={triggerExportData}
-                titlemodule={row?.description||''} />
+            {multiData.length > 0 ?
+                <div className={classes.container}>
+                    <TablePaginated
+                        columns={columns2}
+                        data={mainPaginated.data}
+                        totalrow={totalrow}
+                        loading={mainPaginated.loading}
+                        pageCount={pageCount}
+                        filterrange={true}
+                        download={true}
+                        fetchData={fetchData}
+                        exportPersonalized={triggerExportData}
+                        titlemodule={row?.description||''} 
+                    />
+                </div> :
+                <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <h2>Cargando...</h2>
+                    <CircularProgress />
+                    <CircularProgress color="secondary"/>
+                </div>
+            }
         </div>
     ); 
 }
@@ -333,13 +186,14 @@ const Reports: FC = () => {
     const { t } = useTranslation();    
     const classes = useStyles();
     const dispatch = useDispatch();     
-    const fetchData = () => dispatch(getCollection(getReportSel('')));
     const reportsResult = useSelector(state => state.main);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [reports, setReports] = useState<Dictionary[]>([]);
     const [rowSelected, setRowSelected] = useState<Dictionary>([]);
+    const fetchData = () => dispatch(getCollection(getReportSel('')));
 
     useEffect(() => {
+        dispatch(resetMultiMain());
         fetchData();
         
         return () => {
@@ -354,8 +208,10 @@ const Reports: FC = () => {
     }
 
     const handleSelected = (row: Dictionary) => {
-        setViewSelected("view-2");
+        dispatch(resetMultiMain());
+        dispatch(getMultiCollection([getReportColumnSel(row?.methodcollection || "")]));
         setRowSelected(row);
+        setViewSelected("view-2");
     }
 
     if (viewSelected === "view-1") {
@@ -413,6 +269,7 @@ const Reports: FC = () => {
                 <ReportItem
                     setViewSelected={setViewSelected}
                     row={rowSelected}
+                    multiData={reportsResult.multiData.data}
                 />
             </div>
         )

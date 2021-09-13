@@ -260,6 +260,7 @@ const translation: LangKeys = {
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
+    next:"Next",
     login_with_google: 'Login with Google',
 
     hasactionplan:'Has action plan',
@@ -307,6 +308,22 @@ const translation: LangKeys = {
     closed_on: "Closed on",
     close_ticket: "Close ticket",
     client_detail: "Client detail",
+
+    report_loginhistory_createdate: 'Date',
+    report_loginhistory_createhour: 'Hour',
+    report_loginhistory_nombre_usuario: 'Username',
+    report_loginhistory_usuario: 'User',
+    report_loginhistory_status: 'Status ',
+    report_loginhistory_type: 'Type',
+
+    report_inputretry_numeroticket: 'Ticket',
+    report_inputretry_cliente: 'User',
+    report_inputretry_canal: 'Channel',
+    report_inputretry_fecha: 'Date',
+    report_inputretry_pregunta: 'Question',
+    report_inputretry_respuesta: 'Answer',
+    report_inputretry_intento: 'Attempt',
+    report_inputretry_valido: 'Valid?',
 };
 
 const enResource: ResourceLanguage = {

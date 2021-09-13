@@ -13,5 +13,8 @@ export const apiUrls = {
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
     EXPORT_DATA: `${BASE_URL}/main/exportexcel`,
-    INTEGRATION_URL: `${BASE_URL}/load`
+    INTEGRATION_URL: `${BASE_URL}/load`,
+    GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
+    INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
+    DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 };

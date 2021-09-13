@@ -3,6 +3,7 @@ import { applyMiddleware, compose, createStore, combineReducers, Middleware } fr
 import thunk from 'redux-thunk';
 
 import ticketReducer, { IState as ITicketState } from './ticket/reducer';
+import channelReducer, { IState as IChannelState } from './channel/reducer';
 import loginReducer, { IState as ILogin } from './login/reducer';
 import mainReducer, { IState as IMain } from './main/reducer';
 import popusReducer, { IState as IPopus } from './popus/reducer';
@@ -15,6 +16,7 @@ export interface IRootState {
     main: IMain;
     popus: IPopus;
     inbox: IInbox;
+    channel: IChannelState;
     integrationmanager: IIntegrationManager;
 }
 
@@ -30,7 +32,8 @@ const rootReducer = combineReducers<IRootState>({
     main: mainReducer,
     popus: popusReducer,
     inbox: inboxReducer,
-    integrationmanager: integrationManagerReducer
+    integrationmanager: integrationManagerReducer,
+    channel: channelReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {
