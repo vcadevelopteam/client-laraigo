@@ -15,8 +15,8 @@ export interface IRootState {
     login: ILogin,
     main: IMain;
     popus: IPopus;
-<<<<<<< HEAD
     inbox: IInbox;
+    channel: IChannelState;
     integrationmanager: IIntegrationManager;
 }
 
@@ -32,18 +32,8 @@ const rootReducer = combineReducers<IRootState>({
     main: mainReducer,
     popus: popusReducer,
     inbox: inboxReducer,
-    integrationmanager: integrationManagerReducer
-=======
-    channel: IChannelState;
-}
-
-const rootReducer = combineReducers<IRootState>({
-   ticket: ticketReducer,
-   login: loginReducer,
-   main: mainReducer,
-   popus: popusReducer,
-   channel: channelReducer,
->>>>>>> f079a7b62e9cca5e105812fa6d3bfd34133c9229
+    integrationmanager: integrationManagerReducer,
+    channel: channelReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {
