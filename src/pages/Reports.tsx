@@ -86,7 +86,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns2 = React.useMemo(() => [{Header: 'numeroticket', accessor: 'numeroticket'}],[]);
+    const columns2 = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);
 
     if ( multiData.length > 0 ) {
         reportColumns.map(x => (        
