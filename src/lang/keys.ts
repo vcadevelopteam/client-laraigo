@@ -221,6 +221,9 @@ export const langKeys = {
 
     flowdesigner: 'flowdesigner',
 
+    variableconfiguration: 'variableconfiguration',
+    variableconfiguration_plural: 'variableconfiguration_plural',
+
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
 

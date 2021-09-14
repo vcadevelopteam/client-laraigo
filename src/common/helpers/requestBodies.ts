@@ -422,7 +422,7 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insMessageTemplate = (
+export const insMessageTemplate = (    
     {
         id,
         description,
@@ -443,6 +443,7 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
+        
         method: "UFN_MESSAGETEMPLATE_INS",
         parameters: {
             id,
@@ -461,7 +462,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
+            buttons: buttons?JSON.stringify(buttons):"",
             operation
         }
     });
@@ -524,3 +525,40 @@ export const getChannelSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+
+export const getVariableConfigurationLst = (): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_LST",
+    parameters: { }
+});
+
+export const getVariableConfigurationSel = (id: string): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_SEL",
+    parameters: { 
+        chatblockid: id
+    }
+});
+
+export const insVariableConfiguration = ({
+        corpid,
+        orgid,
+        chatblockid,
+        variable,
+        description,
+        fontcolor,
+        fontbold,
+        priority,
+        visible
+    }: Dictionary): IRequestBody => ({
+        method: "UFN_VARIABLECONFIGURATION_INS",
+        parameters: {
+            corpid,
+            orgid,
+            chatblockid,
+            variable,
+            description,
+            fontcolor,
+            fontbold,
+            priority,
+            visible
+        }
+    });

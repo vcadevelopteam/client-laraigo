@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree } from 'common/helpers';
+import { EmojiPickerZyx } from 'components'
 
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -45,7 +46,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -136,8 +136,10 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
+    const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
     const user = useSelector(state => state.login.validateToken.user);
+    
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(false);
@@ -161,6 +163,9 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         }
     });
 
+    React.useEffect(() => {
+        setValue('quickreply', quickreply)
+    }, [quickreply]);
     React.useEffect(() => {
         register('communicationchannelid');
         register('type');
@@ -205,14 +210,39 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     return (
         <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.newquickreply)}
-            />
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                            />
+                        <TitleDetail
+                            title={row ? `${row.description}` : t(langKeys.newquickreply)}
+                            />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                startIcon={<ClearIcon color="secondary" />}
+                                style={{ backgroundColor: "#FB5F5F" }}
+                                onClick={() => setViewSelected("view-1")}
+                            >{t(langKeys.back)}</Button>
+                            {edit &&
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    color="primary"
+                                    type="submit"
+                                    startIcon={<SaveIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                >{t(langKeys.save)}
+                                </Button>
+                            }
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -289,13 +319,20 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.detail)}
-                                className="col-12"
-                                valueDefault={row ? (row.quickreply || "") : ""}
-                                onChange={(value) => setValue('quickreply', value)}
-                                error={errors?.quickreply?.message}
-                            />
+                            <Fragment>
+                                <FieldEditMulti
+                                    label={t(langKeys.detail)}
+                                    className="col-12"
+                                    valueDefault={quickreply}
+                                    onChange={(value) => setQuickreply(value)}
+                                    error={errors?.quickreply?.message}
+                                    maxLength={1024}
+                                />
+                                <div style={{position:"relative",bottom: "80px", left: "94%"}}>
+                                    <EmojiPickerZyx  onSelect={e => setQuickreply(quickreply + e.native)} />
+                                </div>
+
+                            </Fragment>
                             : <FieldView
                                 label={t(langKeys.detail)}
                                 value={row ? (row.quickreply || "") : ""}
@@ -320,27 +357,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 className="col-12"
                             />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
+                    
                 </div>
             </form>
             <DialogZyx

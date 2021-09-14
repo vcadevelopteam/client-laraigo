@@ -866,6 +866,8 @@ const Users: FC = () => {
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width:60,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (

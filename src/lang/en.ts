@@ -227,6 +227,9 @@ const translation: LangKeys = {
     result: 'Result',
 
     flowdesigner: 'Flow designer',
+
+    variableconfiguration: 'Variable Configuration',
+    variableconfiguration_plural: 'Variable Configuration',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',

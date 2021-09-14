@@ -227,6 +227,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     flowdesigner: 'Diseñador de flujos',
 
+    variableconfiguration: 'Configuración de variables',
+    variableconfiguration_plural: 'Configuración de variables',
+
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
