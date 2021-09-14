@@ -59,14 +59,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType= multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             description: row ? (row.orgdesc || '') : '',
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : 'ACTIVO',
-            id: row? row.orgid:0,
+            id: row ? row.orgid : 0,
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -92,7 +92,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             }
         }
     }, [executeRes, waitSave])
-    
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insOrg(data)));
@@ -108,7 +108,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     });
 
     return (
-        <div style={{width: '100%'}}>
+        <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
@@ -167,7 +167,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 label={t(langKeys.status)}
                                 className="col-6"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
+                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -189,15 +189,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
                         {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
                         }
                     </div>
                 </div>
@@ -223,6 +223,8 @@ const Organizations: FC = () => {
                 accessor: 'orgid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: 60,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -299,7 +301,7 @@ const Organizations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({description:row.orgdesc, type:row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
+            dispatch(execute(insOrg({ description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
