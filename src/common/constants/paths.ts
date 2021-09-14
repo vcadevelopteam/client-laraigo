@@ -15,6 +15,10 @@ const paths = {
         path: '/channels/:id/add/chatweb',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/chatweb`,
     },
+    CHANNELS_ADD_END: {
+        path: '/channels/:id/add/confirm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/confirm`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',

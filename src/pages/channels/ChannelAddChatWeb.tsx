@@ -6,6 +6,8 @@ import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
 import { ArrowDropDown, Close, CloudUpload } from '@material-ui/icons';
+import { useHistory, useRouteMatch } from 'react-router';
+import paths from 'common/constants/paths';
 
 interface TabPanelProps {
     value: string;
@@ -13,7 +15,7 @@ interface TabPanelProps {
 }
 
 interface FieldTemplate {
-    text: string;
+    text: React.ReactNode;
     node: (onClose: (key: string) => void) => React.ReactNode;
 }
 
@@ -72,6 +74,7 @@ const useTabInterfacetyles = makeStyles(theme => ({
 
 const TabPanelInterface: FC = () => {
     const classes = useTabInterfacetyles();
+    const { t } = useTranslation();
     const [chatBtn, setChatBtn] = useState<File | null>(null);
     const [headerBtn, setHeaderBtn] = useState<File | null>(null);
     const [botBtn, setBotBtn] = useState<File | null>(null);
@@ -133,13 +136,15 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Título</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.title} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder="Título de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderTitle)} // "Título de la cabecera del chat"
                                 name="titulo"
                                 size="small"
                             />
@@ -151,13 +156,15 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Subtitulo</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.subtitle} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder="Subtitulo de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderSubtitle)} // "Subtitulo de la cabecera del chat"
                                 name="subtitulo"
                                 size="small"
                             />
@@ -169,7 +176,9 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Botón del chat</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.chatButton} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -200,7 +209,9 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Cabecera</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.header} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -231,7 +242,9 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Botón del Bot</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.botButton} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -360,7 +373,9 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Cabecera de chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatHeader} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={color} onChange={e => setColor(e.hex)} />
@@ -370,7 +385,9 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Fondo de chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatBackground} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={color} onChange={e => setColor(e.hex)} />
@@ -380,7 +397,9 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Borde de chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatBorder} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={color} onChange={e => setColor(e.hex)} />
@@ -394,7 +413,9 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Mensajes de cliente</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.clientMessage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={color} onChange={e => setColor(e.hex)} />
@@ -404,7 +425,9 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Mensaje de bot</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.botMessage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
                                 <ColorInput hex={color} onChange={e => setColor(e.hex)} />
@@ -452,12 +475,15 @@ const useTemplateStyles = makeStyles(theme => ({
 
 const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
     const classes = useTemplateStyles();
+    const { t } = useTranslation();
     const [required, setRequired] = useState(true);
 
     return (
         <div className={classes.root}>
             <div className={classes.headertitle}>
-                <label className={clsx(classes.title, classes.fieldContainer)}>Name</label>
+                <label className={clsx(classes.title, classes.fieldContainer)}>
+                    <Trans i18nKey={langKeys.name} />
+                </label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
                 </IconButton>
@@ -472,7 +498,9 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row" style={{ minHeight: 40 }}>
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Required</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.required} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <IOSSwitch checked={required} onChange={(_, v) => setRequired(v)} />
@@ -484,10 +512,17 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row">
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Label</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.label} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.name)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -503,7 +538,12 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                                 <label className={classes.text}>Placeholder</label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Enter your name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.enterYourName)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -512,10 +552,17 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row">
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Error text</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.errorText} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Please enter your name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.pleaseEnterYourName)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -529,10 +576,17 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                     <Box m={1}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>Input validation</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.inputValidation} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField placeholder="regex" variant="outlined" size="small" fullWidth />
+                                <TextField
+                                    placeholder="regex"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                />
                             </Grid>
                         </Grid>
                     </Box>
@@ -541,10 +595,17 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                     <Box m={1}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>Validation on keychange</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.validationOnKeychange} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField placeholder="regex" variant="outlined" size="small" fullWidth />
+                                <TextField
+                                    placeholder="regex"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                />
                             </Grid>
                         </Grid>
                     </Box>
@@ -567,18 +628,18 @@ const LASTNAME_FIELD = "LASTNAME_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
     [NAME_FIELD]: {
-        text: 'Name',
+        text: <Trans i18nKey={langKeys.name} />,
         node: (onClose) => <NameTemplate onClose={() => onClose(NAME_FIELD)} key={NAME_FIELD} />,
     },
     [LASTNAME_FIELD]: {
-        text: 'Lastname',
+        text: <Trans i18nKey={langKeys.lastname} />,
         node: (onClose) => <NameTemplate onClose={() => onClose(LASTNAME_FIELD)} key={LASTNAME_FIELD} />,
     },
 };
 
 const TabPanelForm: FC = () => {
     const classes = useTabFormStyles();
-    const [enabled, setEnabled] = useState(true);
+    const [enable, setEnable] = useState(true);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>([]);
 
@@ -609,17 +670,21 @@ const TabPanelForm: FC = () => {
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>Do you want to add the form to you site?</Typography>
+                            <Typography className={classes.text}>
+                                <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
+                            </Typography>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enabled} onChange={(_, v) => setEnabled(v)} />
+                            <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enable ? 'block' : 'none' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>Select a field</Typography>
+                            <Typography className={classes.text}>
+                                <Trans i18nKey={langKeys.selectField} />
+                            </Typography>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <FormControl style={{ width: 160, marginRight: 20 }}>
@@ -631,19 +696,19 @@ const TabPanelForm: FC = () => {
                                     style={{ height: 40 }}
                                 >
                                     <MenuItem value={""}>
-                                        <em>Select -</em>
+                                        <em><Trans i18nKey={langKeys.select} /> -</em>
                                     </MenuItem>
                                     {getMenuTemplates()}
                                 </Select>
                             </FormControl>
                             <Button
-                                disabled={fieldTemplate === undefined}
+                                disabled={fieldTemplate === ""}
                                 variant="contained"
                                 color="primary"
                                 style={{ height: 40, minHeight: 40 }}
                                 onClick={handleAddTemplate}
                             >
-                                Add +
+                                <Trans i18nKey={langKeys.add} /> +
                             </Button>
                         </Grid>
                     </Grid>
@@ -683,7 +748,8 @@ const useTabBubbleStyles = makeStyles(theme => ({
 
 const TabPanelBubble: FC = () => {
     const classes = useTabBubbleStyles();
-    const [enabled, setEnabled] = useState(true);
+    const { t } = useTranslation();
+    const [enable, setEnable] = useState(true);
     const [waitingImg, setWaitingImg] = useState<File | null>(null);
 
     const handleWaitingBtnClick = () => {
@@ -709,7 +775,41 @@ const TabPanelBubble: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Estilo de mensaje de espera</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.enableWaitingMessage} />
+                            </label>
+                        </Grid>
+                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                            <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <label className={classes.text}>Texto</label>
+                        </Grid>
+                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                placeholder={t(langKeys.textOfTheMessage)}
+                                name="text"
+                                size="small"
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.waitingMessageStyle} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -736,36 +836,6 @@ const TabPanelBubble: FC = () => {
                     </Grid>
                 </Box>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Habilitar mensaje de espera</label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enabled} onChange={(_, v) => setEnabled(v)} />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1} style={{ display: enabled ? 'block' : 'none' }}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Texto</label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                placeholder="Texto del mensaje"
-                                name="texto"
-                                size="small"
-                            />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
         </Grid>
     );
 }
@@ -780,6 +850,7 @@ const useTabExtrasStyles = makeStyles(theme => ({
 
 const TabPanelExtras: FC = () => {
     const classes = useTabExtrasStyles();
+    const { t } = useTranslation();
     const [enableBotname, setEnableBotName] = useState(false);
 
     return (
@@ -789,7 +860,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir archivos</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadFile} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -799,7 +872,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir video</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadVideo} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -809,7 +884,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Enviar ubicación</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.sendLocation} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -823,7 +900,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir imagenes</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadImage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -833,7 +912,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir audio</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadAudio} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -843,7 +924,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Recargar chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.refreshChat} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -872,7 +955,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Input siempre activo</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.inputAlwaysEnabled} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -882,7 +967,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Evento de abandono</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.abandonmentEvent} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -892,7 +979,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Sonido de mensaje nuevo</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.newMessageRing} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -906,7 +995,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Historial en base a formulario</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.formBaseHistory} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -916,7 +1007,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Enviar metadata</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.sendMetaData} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={true} onChange={(_, v) => {}} />
@@ -952,7 +1045,9 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={10} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Activar nombre del bot</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.enableBotName} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={2} md={3} lg={3} xl={3}>
                                 <IOSSwitch checked={enableBotname} onChange={(_, v) => setEnableBotName(v)} />
@@ -964,7 +1059,7 @@ const TabPanelExtras: FC = () => {
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enableBotname ? 'block' : 'none' }}>
                 <TextField
                     variant="outlined"
-                    placeholder="Nombre del bot"
+                    placeholder={t(langKeys.botName)}
                     fullWidth
                 />
             </Grid>
@@ -1069,37 +1164,22 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const script = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Laraigo c-commerce you need"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" /> -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
-    <title>Laraigo</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
-</html>`;
-
 export const ChannelAddChatWeb: FC = () => {
     const classes = useStyles();
+    const history = useHistory();
+    const match = useRouteMatch<{ channelId: string }>();
     const [tabIndex, setTabIndes] = useState('0');
+
+    const handleSave = () => {
+        const channelId = match.params.channelId;
+        history.push(paths.CHANNELS_ADD_END.resolve(channelId), { prop: 1 });
+    }
 
     return (
         <div className={classes.root}>
-            <h2 className={classes.title}>Activate Laraigo on your website</h2>
+            <h2 className={classes.title}>
+                <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
+            </h2>
             {/* <Typography className={classes.subtitle}>
                 Copy and paste this code on your site for the chatbot to start attracting customers.
             </Typography>
@@ -1122,15 +1202,14 @@ export const ChannelAddChatWeb: FC = () => {
                 <Tabs
                     value={tabIndex}
                     onChange={(_, i: string) => setTabIndes(i)}
-                    aria-label="simple tabs example"
                     className={classes.tabs}
                     TabIndicatorProps={{ style: { display: 'none' } }}
                 >
-                    <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label="Interfaz" value="0" />
-                    <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label="Colores" value="1" />
-                    <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label="Formulario" value="2" />
-                    <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label="Bubble" value="3" />
-                    <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label="Extras" value="4" />
+                    <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
+                    <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.color} count={2} />} value="1" />
+                    <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
+                    <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label={<Trans i18nKey={langKeys.bubble} />} value="3" />
+                    <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2} />} value="4" />
                 </Tabs>
             </AppBar>
             <TabPanel value="0" index={tabIndex}><TabPanelInterface /></TabPanel>
@@ -1139,7 +1218,7 @@ export const ChannelAddChatWeb: FC = () => {
             <TabPanel value="3" index={tabIndex}><TabPanelBubble /></TabPanel>
             <TabPanel value="4" index={tabIndex}><TabPanelExtras /></TabPanel>
             <div style={{ height: 20 }} />
-            <Button variant="contained" color="primary">
+            <Button variant="contained" color="primary" onClick={handleSave}>
                 <Trans i18nKey={langKeys.save} />
             </Button>
         </div>
