@@ -438,16 +438,6 @@ const SLA: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.company),
-                accessor: 'company',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
@@ -458,50 +448,31 @@ const SLA: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.communicationchanneldesc),
+                Header: t(langKeys.channel),
                 accessor: 'communicationchanneldesc',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.tme),
-                accessor: 'tme',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.tmepercentobj),
-                accessor: 'tmepercentmin',
-                NoFilter: true
-            },
-            {
-                Header: "TMO total",
-                accessor: 'totaltmo',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.tmopercentobj),
+                Header: t(langKeys.tmototalobj),
                 accessor: 'totaltmopercentmax',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.usertme),
-                accessor: 'usertme',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmepercentmax),
-                accessor: 'usertmepercentmax',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmo),
-                accessor: 'usertmo',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmopercentmax),
+                Header: t(langKeys.tmoasesorobj),
                 accessor: 'usertmopercentmax',
                 NoFilter: true
             },
+            {
+                Header: t(langKeys.tmeasesorobj),
+                accessor: 'usertmepercentmax',
+                NoFilter: true
+            },            
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true
+            },
+            
         ],
         []
     );

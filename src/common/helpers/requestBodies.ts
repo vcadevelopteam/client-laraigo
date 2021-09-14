@@ -357,11 +357,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title,description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id,title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
 //tabla paginada
@@ -393,13 +393,6 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
     }
 });
 
-export const getValuesFromTree = (classificationid: number): IRequestBody => ({
-    method: "UFN_CLASSIFICATION_TREE_SEL",
-    key: "UFN_CLASSIFICATION_TREE_SEL",
-    parameters: {
-        classificationid, type: 'QUICKREPLY'
-    }
-});
 export const getCommChannelLst = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_LST",
     key: "UFN_COMMUNICATIONCHANNEL_LST",

@@ -121,7 +121,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     status: 'Estado',
     status_plural: 'Estados',
-
+    tmototalobj: "Objetivo Total TMO",
+    tmoasesorobj:"Objetivo Asesor TMO",
+    tmeasesorobj:"Objetivo Asesor TME",
     type: 'Tipo',
     type_plural: 'Tipos',
 
@@ -137,7 +139,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     value: 'Valor',
     value_plural: 'Valores',
-
+    path: "Path",
     description: 'Descripción',
     description_plural: 'Descripciones',
     return: "Regresar",

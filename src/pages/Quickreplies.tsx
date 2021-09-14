@@ -398,34 +398,23 @@ const Quickreplies: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.quickreply),
-                accessor: 'quickreply',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.review),
                 accessor: 'description',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'statusdesc',
+                Header: t(langKeys.quickreply),
+                accessor: 'quickreply',
+                NoFilter: true
+            },            
+            {
+                Header: t(langKeys.classification),
+                accessor: 'classificationdesc',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true
-            },
-
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
                 NoFilter: true
             },
             
