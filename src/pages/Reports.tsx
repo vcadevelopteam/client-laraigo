@@ -103,7 +103,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
             settotalrow(mainPaginated.count);
         }
     }, [mainPaginated]);
-    
+
     useEffect(() => {
         if (waitSave) {
             if (!resExportData.loading && !resExportData.error) {
@@ -134,7 +134,6 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        dispatch(resetCollectionPaginated());
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
         dispatch(getCollectionPaginated(getPaginatedForReports(
             row?.methodcollection||'',
@@ -151,11 +150,17 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
         )));
     };
 
+    const handleSelected = () => {
+        dispatch(resetCollectionPaginated());
+        dispatch(resetMultiMain());
+        setViewSelected("view-1");
+    }
+
     return  (
         <div>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
+                handleClick={handleSelected}
             />
             {multiData.length > 0 ?
                 <div className={classes.container}>
@@ -192,11 +197,14 @@ const Reports: FC = () => {
     const [rowSelected, setRowSelected] = useState<Dictionary>([]);
     const fetchData = () => dispatch(getCollection(getReportSel('')));
 
-    useEffect(() => {
+    useEffect(() => {        
+        dispatch(resetCollectionPaginated()); 
         dispatch(resetMultiMain());
         fetchData();
         
         return () => {
+            dispatch(resetCollectionPaginated());            
+            dispatch(resetMultiMain());
             dispatch(resetMain());
         };
         
@@ -208,9 +216,10 @@ const Reports: FC = () => {
     }
 
     const handleSelected = (row: Dictionary) => {
-        dispatch(resetMultiMain());
-        dispatch(getMultiCollection([getReportColumnSel(row?.methodcollection || "")]));
+        dispatch(resetCollectionPaginated());
+        dispatch(resetMultiMain());       
         setRowSelected(row);
+        dispatch(getMultiCollection([getReportColumnSel(row?.methodcollection || "")]));
         setViewSelected("view-2");
     }
 
@@ -244,7 +253,7 @@ const Reports: FC = () => {
                                                     <CardMedia
                                                         className={classes.media}                                                   
                                                         component= {report.component}
-                                                        image = {reportsImage.find(x => x.name === report.icon)?.image||'no_data.png'}
+                                                        image = {reportsImage.find(x => x.name === report.image)?.image||'no_data.png'}
                                                         title={report.description}                                                        
                                                     />
                                                     <CardContent>
