@@ -62,7 +62,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     };
 
     return (
-        <>
+        <div style={{ whiteSpace: 'nowrap' }}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
@@ -106,7 +106,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                     deleteFunction && deleteFunction(e)
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
-        </>
+        </div>
     )
 }
 

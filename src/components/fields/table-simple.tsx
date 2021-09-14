@@ -432,7 +432,6 @@ const TableZyx = React.memo(({
                                     return (
                                         <TableRow
                                             {...row.getRowProps()}
-                                            className={hoverShadow ? classes.trdynamic : ''}
                                             hover
                                         >
                                             {row.cells.map((cell, i) =>
