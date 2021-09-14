@@ -34,3 +34,54 @@ export function dictToArrayKV(dict: Dictionary, key: string = 'key', value: stri
         return a;
     }, []);
 }
+
+export function downloadCSV(filename: string, data: Dictionary[]) {
+    let columns = Object.keys(data[0]);
+    let headers = columns.join(';');
+    let csv = headers;
+    data.forEach(dt => {
+        csv += '\r\n';
+        csv += Object.values(dt).join(';');
+    });
+    let BOM = "\uFEFF";
+    var blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
+    if (link.download !== undefined) {
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+export function uploadCSV(file: any, owner: any) {
+    var reader = new FileReader();
+    reader.readAsText(file);
+    return new Promise((res, rej) => {
+        reader.onload = (event: any) => {
+            let csv = event.target.result.toString();
+            if (csv !== null) {
+                let allTextLines = csv.split(/\r\n|\n/);
+                let headers = allTextLines[0].split(';');
+                let lines = [];
+                for (let i = 1; i < allTextLines.length; i++) {
+                    if (allTextLines[i].split(';').length === headers.length) {
+                        let data: any = {};
+                        Object.keys(owner).forEach(o => {
+                            data[o] = owner[o];
+                        });
+                        let line = allTextLines[i].split(';')
+                        headers.forEach((h: string, hi: string) => {
+                            data[h] = line[hi];
+                        })
+                        lines.push(data);
+                    }
+                }
+                res(lines);
+            }
+            res(null);
+        };
+    });
+}

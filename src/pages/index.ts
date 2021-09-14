@@ -14,6 +14,7 @@ export { default as Supervisor } from './Supervisor';
 export { default as MessageTemplates } from './MessageTemplates';
 export { default as Tipifications } from './Tipifications';
 export { default as IntegrationManager } from './IntegrationManager';
+export { default as VariableConfiguration } from './VariableConfiguration';
 
 export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';

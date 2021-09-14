@@ -531,3 +531,40 @@ export const getChannelSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+
+export const getVariableConfigurationLst = (): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_LST",
+    parameters: { }
+});
+
+export const getVariableConfigurationSel = (id: string): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_SEL",
+    parameters: { 
+        chatblockid: id
+    }
+});
+
+export const insVariableConfiguration = ({
+        corpid,
+        orgid,
+        chatblockid,
+        variable,
+        description,
+        fontcolor,
+        fontbold,
+        priority,
+        visible
+    }: Dictionary): IRequestBody => ({
+        method: "UFN_VARIABLECONFIGURATION_INS",
+        parameters: {
+            corpid,
+            orgid,
+            chatblockid,
+            variable,
+            description,
+            fontcolor,
+            fontbold,
+            priority,
+            visible
+        }
+    });
