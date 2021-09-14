@@ -2,7 +2,9 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox } from 'components';
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -10,12 +12,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import EditIcon from '@material-ui/icons/Edit';
-import IconButton from '@material-ui/core/IconButton';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
+import SaveIcon from '@material-ui/icons/Save';
+import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -24,6 +27,7 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
+    detailData: any[];
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
@@ -58,9 +62,11 @@ const VariableConfiguration: FC = () => {
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [detailData, setDetailData] = useState<Dictionary[]>([]);
+    const [waitView, setWaitView] = useState(false);
+    const [waitDownload, setWaitDownload] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
-    const [dataTable, setDataTable] = useState([]);
     const [valuefile, setvaluefile] = useState('');
 
     const columns = React.useMemo(
@@ -77,14 +83,14 @@ const VariableConfiguration: FC = () => {
                             aria-controls="long-menu"
                             aria-haspopup="true"
                             size="small"
-                            onClick={handleEdit}>
+                            onClick={() => handleEdit(row)}>
                             <EditIcon style={{ color: '#B6B4BA' }} />
                         </IconButton>
                     )
                 }
             },
             {
-                Header: t(langKeys.title),
+                Header: t(langKeys.flow),
                 accessor: 'title',
                 NoFilter: true
             },
@@ -107,7 +113,9 @@ const VariableConfiguration: FC = () => {
                                 aria-haspopup="true"
                                 size="small"
                                 onClick={() => handleDownload(row)}>
-                                <GetAppIcon style={{ color: '#B6B4BA' }} />
+                                <GetAppIcon
+                                    titleAccess={t(langKeys.download)}
+                                    style={{ color: '#B6B4BA' }} />
                             </IconButton>
                             <input
                                 id="upload-file"
@@ -122,7 +130,9 @@ const VariableConfiguration: FC = () => {
                                 <IconButton
                                     size="small"
                                     component="span">
-                                    <PublishIcon style={{ color: '#B6B4BA' }}/>
+                                    <PublishIcon
+                                        titleAccess={t(langKeys.import)}
+                                        style={{ color: '#B6B4BA' }}/>
                                 </IconButton>
                             </label> 
                         </React.Fragment>
@@ -134,6 +144,7 @@ const VariableConfiguration: FC = () => {
     )
 
     const fetchData = () => dispatch(getCollection(getVariableConfigurationLst()));
+    const fetchDetailData = (id: string) => dispatch(getCollectionAux(getVariableConfigurationSel(id)));
 
     useEffect(() => {
         fetchData();
@@ -172,19 +183,32 @@ const VariableConfiguration: FC = () => {
     }
 
     const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
+        // setViewSelected("view-2");
         setRowSelected({ row, edit: true });
+        setWaitView(true);
+        dispatch(showBackdrop(true));
+        fetchDetailData(row.chatblockid);
     }
 
     const handleDownload = (row: Dictionary) => {
-        setRowSelected({ row, edit: false });
-        dispatch(resetMainAux());
-        dispatch(getCollectionAux(getVariableConfigurationSel(row?.chatblockid || '')));
+        setWaitDownload(true);
+        dispatch(showBackdrop(true));
+        fetchDetailData(row.chatblockid);
     }
 
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
-            downloadData(detailResult.data);
+            setDetailData(detailResult.data);
+            if (waitDownload) {
+                downloadData(detailResult.data);
+                dispatch(showBackdrop(false));
+                setWaitDownload(false);
+            }
+            if (waitView) {
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+                setViewSelected("view-2");
+            }
         }
     }, [detailResult]);
 
@@ -203,7 +227,9 @@ const VariableConfiguration: FC = () => {
         const owner = (({ corpid, orgid, chatblockid }) => ({ corpid, orgid, chatblockid }))(row);
         const data = await uploadCSV(file, owner);
         setvaluefile('')
-        uploadData(data);
+        if (data) {
+            uploadData(data);
+        }
     }
 
     const uploadData = (data: any) => {
@@ -237,14 +263,151 @@ const VariableConfiguration: FC = () => {
     }
     else
         return (
-            <div></div>
-            // <DetailIntegrationManager
-            //     data={rowSelected}
-            //     setViewSelected={setViewSelected}
-            //     multiData={mainResult.multiData.data}
-            //     fetchData={fetchData}
-            // />
+            <DetailVariableConfiguration
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                multiData={mainResult.multiData.data}
+                detailData={detailData}
+                fetchData={fetchData}
+            />
         )
+}
+
+type FormFields = {
+    chatblockid: string,
+    variable: string,
+    description: string,
+    fontcolor: string,
+    fontbold: boolean,
+    priority: number,
+    visible: boolean
+}
+
+const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, detailData, setViewSelected, multiData, fetchData }) => {
+    const classes = useStyles();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+
+    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<{vars: FormFields[]}>({ 
+        defaultValues: {
+            vars: detailData
+        }
+    });
+    const { fields, update, append, prepend, remove, swap, move, insert } = useFieldArray({
+        control,
+        name: "vars"
+    });
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.variableconfiguration).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(insVariableConfiguration(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.variable),
+                accessor: 'variable',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'description',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'fontcolor',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'fontbold',
+                NoFilter: false
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'priority',
+                NoFilter: false,
+                type: 'number'
+            },
+            {
+                Header: t(langKeys.description),
+                accessor: 'visible',
+                NoFilter: false
+            }
+        ],
+        []
+    )
+
+    return (
+        <div style={{ width: '100%' }}>
+            <TemplateBreadcrumbs
+                breadcrumbs={arrayBread}
+                handleClick={setViewSelected}
+            />
+            <form onSubmit={onSubmit}>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
+                    data={detailData}
+                    download={false}
+                    register={false}
+                    filterGeneral={false}
+                />
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}
+                    >{t(langKeys.back)}</Button>
+                    {edit &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="button"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => onSubmit()}
+                        >{t(langKeys.save)}
+                        </Button>
+                    }
+                </div>
+            </form>
+        </div>
+    )
 }
 
 export default VariableConfiguration;
