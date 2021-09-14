@@ -346,7 +346,7 @@ const translation: LangKeys = {
     sendMetaData: 'Enviar metadata',
     enableBotName: 'Habilitar nombre del bot',
     botName: 'Nombre del bot',
-    activeLaraigoOnYourWebsite: 'Activa laraigo en tu sitio web',
+    activeLaraigoOnYourWebsite: 'Activa Laraigo en tu sitio web',
     interface: 'Interfaz',
     color: 'Color',
     color_plural: 'Colores',
