@@ -81,6 +81,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    console.log(dataParent)
     
         
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -91,6 +92,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             type: 'TIPIFICACION',
             id: row?.classificationid || 0,
             description: row?.description || '',
+            title: row?.title || '',
             parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannelid || '',
             status: row ? row.status : 'ACTIVO',
@@ -102,6 +104,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     React.useEffect(() => {
         register('id');
+        register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('parent', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -160,7 +163,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.tipification)}
+                            title={row ? `${row.title}` : t(langKeys.tipification)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -189,19 +192,20 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.organization)}
+                                label={t(langKeys.classification)}
                                 className="col-6"
-                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
-                                disabled={true}
+                                onChange={(value) => setValue('title', value)}
+                                valueDefault={row ? (row.title || "") : ""}
+                                error={errors?.title?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row ? (row.orgdesc || "") : ""}
+                                label={t(langKeys.title)}
+                                value={row ? (row.title || "") : ""}
                                 className="col-6"
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.classification)}
+                                label={t(langKeys.description)}
                                 className="col-6"
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
@@ -222,7 +226,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 onChange={(value) => setValue('parent', value ? value.classificationid : 0)}
                                 error={errors?.parent?.message}
                                 data={dataParent}
-                                optionDesc="description"
+                                optionDesc="title"
                                 optionValue="classificationid"
                             />
                             : <FieldView
@@ -232,7 +236,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.completedesc)}
+                                label={t(langKeys.path)}
                                 className="col-6"
                                 valueDefault={row ? (row.path || "") : ""}
                                 onChange={(value) => setValue('path', value)}
@@ -240,10 +244,11 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 disabled={true}
                             />
                             : <FieldView
-                                label={t(langKeys.completedesc)}
+                                label={t(langKeys.path)}
                                 value={row ? (row.path || "") : ""}
                                 className="col-6"
                             />}
+                        
                     </div>
                     <div className="row-zyx">
                         {edit ?
@@ -409,6 +414,8 @@ const Tipifications: FC = () => {
                 accessor: 'classificationid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width:60,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -422,12 +429,12 @@ const Tipifications: FC = () => {
             },
             {
                 Header: t(langKeys.title),
-                accessor: 'description',
+                accessor: 'title',
                 NoFilter: true
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'path',
+                accessor: 'description',
                 NoFilter: true
             },
             {

@@ -38,7 +38,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -121,6 +120,8 @@ const MessageTemplates: FC = () => {
                 accessor: 'id',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width:60,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -266,21 +267,21 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const { register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.id : 0,
-            description: row ? (row.description || '') : '',
-            type: row ? row.type : 'HSM',
-            status: row ? row.status : 'ACTIVO',
-            name: row ? row.name : '',
-            namespace: row ? row.namespace : '',
-            category: row ? row.category : '',
-            language: row ? row.language : '',
-            templatetype: row ? row.templatetype : 'STANDARD',
-            headerenabled: row ? row.headerenabled : true,
-            headertype: row ? row.headertype : 'text',
-            header: row ? row.header : '',
-            body: row ? row.body : '',
-            footerenabled: row ? row.footerenabled : true,
-            footer: row ? row.footer : '',
-            buttonsenabled: row ? row.buttonsenabled : true,
+            description: row ?.description || '',
+            type: row ?.type || 'HSM',
+            status: row ?.status || 'ACTIVO',
+            name: row ?.name || '',
+            namespace: row ?.namespace || '',
+            category: row ?.category || '',
+            language: row ?.language || '',
+            templatetype: row ?.templatetype || 'STANDARD',
+            headerenabled: row ?.headerenabled || true,
+            headertype: row ?.headertype || 'text',
+            header: row ?.header || '',
+            body: row ?.body || '',
+            footerenabled: row ?.footerenabled || true,
+            footer: row ?.footer || '',
+            buttonsenabled: row ?.buttonsenabled || true,
             buttons: row && row.buttons ? JSON.parse(row.buttons) : [],
             operation: row ? "EDIT" : "INSERT"
         }
@@ -397,14 +398,40 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     return (
         <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.name}` : t(langKeys.newmessagetemplate)}
-            />
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.name}` : t(langKeys.newmessagetemplate)}
+                        />
+                    </div> 
+            
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -735,27 +762,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     </div>
                     
                     : null}
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
                 </div>
             </form>
         </div>
