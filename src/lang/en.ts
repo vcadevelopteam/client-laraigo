@@ -202,7 +202,7 @@ const translation: LangKeys = {
     
     integrationmanager: 'Integration Manager',
     integrationmanager_plural: 'Integration Manager',
-    newintegrationmanager: 'New Integration Manager',
+    newintegrationmanager: 'New Integration',
     standard: 'Standard',
     custom: 'Custom',
     requesttype: 'Request Type',

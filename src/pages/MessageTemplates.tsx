@@ -267,7 +267,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         defaultValues: {
             id: row ? row.id : 0,
             description: row ? (row.description || '') : '',
-            type: row ? row.type : 'SMS',
+            type: row ? row.type : 'HSM',
             status: row ? row.status : 'ACTIVO',
             name: row ? row.name : '',
             namespace: row ? row.namespace : '',
@@ -286,7 +286,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     });
 
-    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('templatetype') === 'STANDARD');
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('type') === 'SMS');
     
     React.useEffect(() => {
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -412,7 +412,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 uset={true}
                                 label={t(langKeys.messagetype)}
                                 className="col-12"
-                                valueDefault={row?.type || "SMS"}
+                                valueDefault={getValues('type')}
                                 onChange={onChangeMessageType}
                                 error={errors?.type?.message}
                                 data={dataMessageType}
@@ -433,14 +433,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 <FieldEdit
                                     label={t(langKeys.name)}
                                     className="col-6"
-                                    valueDefault={row?.name || ""}
+                                    valueDefault={getValues('name')}
                                     onChange={(value) => setValue('name', value)}
                                     error={errors?.name?.message}
                                 />
                                 <FieldEdit
                                     label={t(langKeys.namespace)}
                                     className="col-6"
-                                    valueDefault={row?.namespace || ""}
+                                    valueDefault={getValues('namespace')}
                                     onChange={(value) => setValue('namespace', value)}
                                     error={errors?.namespace?.message}
                                 />
@@ -466,7 +466,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 <FieldSelect
                                     label={t(langKeys.category)}
                                     className="col-6"
-                                    valueDefault={row?.category || ""}
+                                    valueDefault={getValues('category')}
                                     onChange={(value) => setValue('category', value?.domainvalue)}
                                     error={errors?.category?.message}
                                     data={dataCategory}
@@ -476,7 +476,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 <FieldSelect
                                     label={t(langKeys.language)}
                                     className="col-6"
-                                    valueDefault={row ? (row.language || "") : ""}
+                                    valueDefault={getValues('language')}
                                     onChange={(value) => setValue('language', value?.domainvalue)}
                                     error={errors?.language?.message}
                                     data={dataLanguage}
@@ -579,7 +579,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 <FieldEdit
                                     label={t(langKeys.header)}
                                     className={classes.headerText}
-                                    valueDefault={row ? (row.header || "") : ""}
+                                    valueDefault={getValues('header')}
                                     onChange={(value) => setValue('header', value)}
                                     error={errors?.header?.message}
                                 />
@@ -598,7 +598,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             <FieldEditMulti
                                 label={t(langKeys.body)}
                                 className="col-12"
-                                valueDefault={row ? (row.body || "") : ""}
+                                valueDefault={getValues('body')}
                                 onChange={(value) => setValue('body', value)}
                                 error={errors?.body?.message}
                                 maxLength={1024}
@@ -617,7 +617,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             <FieldEditMulti
                                 label={t(langKeys.footer)}
                                 className="col-12"
-                                valueDefault={row ? (row.footer || "") : ""}
+                                valueDefault={getValues('footer')}
                                 onChange={(value) => setValue('footer', value)}
                                 error={errors?.footer?.message}
                                 rows={2}
