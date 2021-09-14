@@ -188,11 +188,11 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                 onKeyDown={keyPress}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-                startAdornment={
-                    <InputAdornment position="start">
-                        <SearchIcon color="action" fontSize="small" />
-                    </InputAdornment>
-                }
+                // startAdornment={
+                //     <InputAdornment position="start">
+                //         <SearchIcon color="action" fontSize="small" />
+                //     </InputAdornment>
+                // }
             />
             <MoreVertIcon
                 style={{ cursor: 'pointer' }}

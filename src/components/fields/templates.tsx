@@ -71,7 +71,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
-
             </IconButton>
             <IconButton
                 aria-label="more"

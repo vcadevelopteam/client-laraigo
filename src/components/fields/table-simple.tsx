@@ -437,16 +437,12 @@ const TableZyx = React.memo(({
                                         >
                                             {row.cells.map((cell, i) =>
                                                 <TableCell
-                                                    {...cell.getCellProps()}
-                                                    align={(!headerGroups[0].headers[i].isComponent) && typeof cell.value === "number" ? "right" : "left"}
-                                                    className={clsx({
-                                                        [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
+                                                    {...cell.getCellProps({
+                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
                                                     })}
                                                 >
                                                     {headerGroups[0].headers[i].isComponent ?
-                                                        <Box m={0} width={1} whiteSpace="nowrap">
-                                                            {cell.render('Cell')}
-                                                        </Box>
+                                                        cell.render('Cell')
                                                         :
                                                         (cell.value?.length > 100 ?
                                                             <Tooltip TransitionComponent={Zoom} title={cell.value}>
