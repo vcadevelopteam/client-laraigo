@@ -81,6 +81,7 @@ export const langKeys = {
     usertmopercentmax:'usertmopercentmax',
     hasactionplan:'hasactionplan',
     whitelist: 'whitelist',
+    import: 'import',
 
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
@@ -256,7 +257,6 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
-    import: 'import',
     back: 'back',
     continue: 'continue',
     confirmation: 'confirmation',

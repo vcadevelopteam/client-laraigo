@@ -199,7 +199,7 @@ const translation: LangKeys = {
     message: 'Mensaje',
     addbutton: 'Add button',
     removebutton: 'Remove button',
-    
+    import: 'Import',
     integrationmanager: 'Integration Manager',
     integrationmanager_plural: 'Integration Manager',
     newintegrationmanager: 'New Integration',
@@ -260,7 +260,6 @@ const translation: LangKeys = {
     tmoasesorobj:"Objective Asesor TMO",
     tmeasesorobj:"Objective Asesor TME",
     download: 'Download',
-    import: 'Import',
     back: 'Back',
     continue: 'Continue',
     confirmation: 'Confirmation',

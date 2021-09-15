@@ -32,7 +32,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-
+import BackupIcon from '@material-ui/icons/Backup';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
@@ -135,7 +135,7 @@ const TableZyx = React.memo(({
     handleRegister,
     HeadComponent,
     pageSizeDefault = 20,
-    hoverShadow = false,
+    importCSV,
     filterGeneral = true,
     loading = false
 }: TableConfig) => {
@@ -339,6 +339,30 @@ const TableZyx = React.memo(({
                                 <RefreshIcon />
                             </Fab>
                         </Tooltip>
+                    )}
+                    {importCSV && (
+                        <>
+                            <input
+                                name="file"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                id="laraigo-upload-csv-file"
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={(e) => importCSV(e.target.files)}
+                            />
+                            <label htmlFor="laraigo-upload-csv-file">
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    disabled={loading}
+                                    startIcon={<BackupIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                ><Trans i18nKey={langKeys.import} />
+                                </Button>
+                            </label>
+                        </>
                     )}
                     {register && (
                         <Button

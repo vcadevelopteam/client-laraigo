@@ -188,11 +188,11 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                 onKeyDown={keyPress}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-                // startAdornment={
-                //     <InputAdornment position="start">
-                //         <SearchIcon color="action" fontSize="small" />
-                //     </InputAdornment>
-                // }
+            // startAdornment={
+            //     <InputAdornment position="start">
+            //         <SearchIcon color="action" fontSize="small" />
+            //     </InputAdornment>
+            // }
             />
             <MoreVertIcon
                 style={{ cursor: 'pointer' }}
@@ -480,28 +480,24 @@ const TableZyx = React.memo(({
                                 page.map((row: any) => {
                                     prepareRow(row);
                                     return (
-                                        <TableRow {...row.getRowProps()} className={classes.trdynamic}>
+                                        <TableRow {...row.getRowProps()} hover>
                                             {row.cells.map((cell: any, i: number) =>
                                                 <TableCell
-                                                    {...cell.getCellProps()}
-                                                    align={typeof cell.value === "number" ? "right" : "left"}
-                                                    className={clsx({
-                                                        [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
+                                                    {...cell.getCellProps({
+                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
                                                     })}
                                                 >
                                                     {headerGroups[0].headers[i].isComponent ?
-                                                        <Box m={0} width={1} whiteSpace="nowrap">
-                                                            {cell.render('Cell')}
-                                                        </Box>
+                                                        cell.render('Cell')
                                                         :
                                                         (cell.value?.length > 100 ?
                                                             <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={400}>
+                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
                                                                     {cell.render('Cell')}
                                                                 </Box>
                                                             </Tooltip>
                                                             :
-                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={1}>
+                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
                                                                 {cell.render('Cell')}
                                                             </Box>
                                                         )

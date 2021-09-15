@@ -357,7 +357,7 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, title,description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title,description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
