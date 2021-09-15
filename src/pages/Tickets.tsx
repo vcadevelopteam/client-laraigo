@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import { getPaginatedPerson, getPersonExport } from 'common/helpers';
 import { getCollectionPaginated, exportData } from 'store/main/actions';

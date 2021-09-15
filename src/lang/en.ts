@@ -226,6 +226,11 @@ const translation: LangKeys = {
     test: 'Test',
     result: 'Result',
     closing_reason: 'Closing Reason',
+    reassign: 'Reassign',
+    reassign_ticket: 'Reassign ticket',
+    typify: 'Typify',
+    typify_ticket: 'Typify ticket',
+    observation: 'Observation',
     flowdesigner: 'Flow designer',
 
     variableconfiguration: 'Variable Configuration',
