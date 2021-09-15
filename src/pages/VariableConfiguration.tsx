@@ -19,6 +19,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
+import Checkbox from '@material-ui/core/Checkbox';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -292,7 +293,9 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     const { t } = useTranslation();
 
     const [dataTable, setDataTable] = useState<any[]>(detailData);
-    const [skipPageReset, setSkipPageReset] = React.useState(false)
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [allFontBold, setAllFontBold] = useState(false);
+    const [allVisible, setVisible] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -334,7 +337,11 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             {
                 Header: t(langKeys.variable),
                 accessor: 'variable',
-                NoFilter: false
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.variable
+                }
             },
             {
                 Header: t(langKeys.description),
@@ -342,25 +349,41 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 NoFilter: false
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.color),
                 accessor: 'fontcolor',
                 NoFilter: false
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.bold),
                 accessor: 'fontbold',
-                NoFilter: false
+                NoFilter: false,
+                type: 'boolean',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <Checkbox
+                        checked={row.fontbold}
+                        onChange={(e) => updateMyData(props.cell.row.index, props.cell.column.id, e.target.checked)}
+                    />
+                }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.order),
                 accessor: 'priority',
                 NoFilter: false,
                 type: 'number'
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.show),
                 accessor: 'visible',
-                NoFilter: false
+                NoFilter: false,
+                type: 'boolean',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <Checkbox
+                        checked={row.visible}
+                        onChange={(e) => updateMyData(props.cell.row.index, props.cell.column.id, e.target.checked)}
+                    />
+                }
             }
         ],
         []
@@ -368,7 +391,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const updateMyData = (rowIndex: number, columnId: any, value: any) => {
         // We also turn on the flag to not reset the page
-        setSkipPageReset(true);
+        setSkipAutoReset(true);
         setDataTable((old: any) =>
         old.map((row: any, index: number) => {
             if (index === rowIndex) {
@@ -383,7 +406,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     }
 
     useEffect(() => {
-        setSkipPageReset(false)
+        setSkipAutoReset(false)
     }, [dataTable])
 
     return (
@@ -392,40 +415,38 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
             />
-            <form onSubmit={onSubmit}>
-                <TableZyxEditable
-                    columns={columns}
-                    titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
-                    data={dataTable}
-                    download={false}
-                    register={false}
-                    filterGeneral={false}
-                    updateMyData={updateMyData}
-                    skipPageReset={skipPageReset}
-                />
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <TableZyxEditable
+                columns={columns}
+                titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
+                data={dataTable}
+                download={false}
+                register={false}
+                filterGeneral={false}
+                updateMyData={updateMyData}
+                skipAutoReset={skipAutoReset}
+            />
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => setViewSelected("view-1")}
+                >{t(langKeys.back)}</Button>
+                {edit &&
                     <Button
+                        className={classes.button}
                         variant="contained"
-                        type="button"
                         color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
-                    >{t(langKeys.back)}</Button>
-                    {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => onSubmit()}
-                        >{t(langKeys.save)}
-                        </Button>
-                    }
-                </div>
-            </form>
+                        type="button"
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                        onClick={() => onSubmit()}
+                    >{t(langKeys.save)}
+                    </Button>
+                }
+            </div>
         </div>
     )
 }

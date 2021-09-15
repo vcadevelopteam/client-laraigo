@@ -28,8 +28,8 @@ export interface TableConfig {
     filterGeneral?: boolean,
     hoverShadow?: boolean,
     loading?: boolean,
-    updateMyData?: (index: number, id: any, value: any) => void
-    skipPageReset?: boolean
+    updateMyData?(index: number, id: any, value: any): void
+    skipAutoReset?: boolean
 }
 
 export interface Pagination {
