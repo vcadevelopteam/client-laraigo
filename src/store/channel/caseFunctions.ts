@@ -15,7 +15,7 @@ export const getChannelsSuccessInsert = (state: IState, action: IAction): IState
             loading: true,
             error: false,
         },
-        successinsert:true
+        successinsert:false
     }
 }
 ;
@@ -28,7 +28,7 @@ export const getChannelsSuccess = (state: IState, action: IAction): IState => {
             loading: true,
             error: false,
         },
-        successinsert:false
+        successinsert:true
     }
 };
 
