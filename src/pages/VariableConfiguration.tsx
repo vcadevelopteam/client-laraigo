@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox, OnlyCheckbox } from 'components';
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -19,7 +19,8 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
-import Checkbox from '@material-ui/core/Checkbox';
+import { HuePicker } from 'react-color'
+import { TextField } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -31,7 +32,7 @@ interface DetailProps {
     detailData: any[];
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
 }
 
 const arrayBread = [
@@ -338,6 +339,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 Header: t(langKeys.variable),
                 accessor: 'variable',
                 NoFilter: false,
+                sortType: 'string',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.variable
@@ -346,23 +348,38 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false
+                NoFilter: false,
+                sortType: 'string',
             },
             {
                 Header: t(langKeys.color),
                 accessor: 'fontcolor',
-                NoFilter: false
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <HuePicker
+                            width="auto"
+                            color={row.fontcolor}
+                            onChangeComplete={(value) => {
+                                updateMyData(props.cell.row.index, props.cell.column.id, value.hex)
+                            }}
+                        />
+                    )
+                }
             },
             {
                 Header: t(langKeys.bold),
                 accessor: 'fontbold',
                 NoFilter: false,
                 type: 'boolean',
+                sortType: 'basic',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <Checkbox
-                        checked={row.fontbold}
-                        onChange={(e) => updateMyData(props.cell.row.index, props.cell.column.id, e.target.checked)}
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={row.fontbold}
+                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
                     />
                 }
             },
@@ -370,18 +387,21 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 Header: t(langKeys.order),
                 accessor: 'priority',
                 NoFilter: false,
-                type: 'number'
+                type: 'number',
+                sortType: 'number'
             },
             {
                 Header: t(langKeys.show),
                 accessor: 'visible',
                 NoFilter: false,
                 type: 'boolean',
+                sortType: 'basic',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return <Checkbox
-                        checked={row.visible}
-                        onChange={(e) => updateMyData(props.cell.row.index, props.cell.column.id, e.target.checked)}
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={row.visible}
+                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
                     />
                 }
             }
@@ -417,7 +437,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             />
             <TableZyxEditable
                 columns={columns}
-                titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
+                titlemodule={`${t(langKeys.variableconfiguration_plural, { count: 2 })}${row ? ` (${row.title})` : ''}`}
                 data={dataTable}
                 download={false}
                 register={false}
