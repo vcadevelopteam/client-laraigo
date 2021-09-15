@@ -397,6 +397,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     report_userproductivityhours_qtytickets: 'Cantidad de tickets',
     report_userproductivityhours_qtyconnection: 'Cantidad de conexiones realizadas',
     report_userproductivityhours_qtydisconnection: 'Cantidad de desconexiones realizadas',
+
+    report_userproductivityhours_filter_adviser: 'Asesor',
+    report_userproductivityhours_filter_channels: 'Canal',
 };
 
 const esResource: ResourceLanguage = {

@@ -401,6 +401,9 @@ const translation: LangKeys = {
     report_userproductivityhours_qtytickets: 'Ticket quantity',
     report_userproductivityhours_qtyconnection: 'Number of connections made',
     report_userproductivityhours_qtydisconnection: 'Number of disconnections made',
+
+    report_userproductivityhours_filter_adviser: 'Adviser',
+    report_userproductivityhours_filter_channels: 'Channels',
 };
 
 const enResource: ResourceLanguage = {

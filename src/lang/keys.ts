@@ -394,6 +394,9 @@ export const langKeys = {
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
     report_userproductivityhours_qtydisconnection: 'report_userproductivityhours_qtydisconnection',
+
+    report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
+    report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
 };
 
 export type LangKeys = typeof langKeys;
