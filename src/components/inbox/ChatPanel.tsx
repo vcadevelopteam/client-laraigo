@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { ITicket } from "@types";
 import Menu from '@material-ui/core/Menu';
@@ -13,37 +13,57 @@ import { showInfoPanel } from 'store/inbox/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
 
-const DialogCloseticket: React.FC<{ classes: any }> = ({ classes }) => {
+const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
-    const [openModalCloseticket, setopenModalCloseticket] = useState(false);
+
     const multiData = useSelector(state => state.main.multiData);
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                motive: '',
+                observation: ''
+            })
+            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('observation');
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {     
+        console.log(data)
+    });
+
 
     return (
         <DialogZyx
-            open={openModalCloseticket}
+            open={openModal}
             title={t(langKeys.close_ticket)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
-            handleClickButton1={() => setopenModalCloseticket(false)}
-            // handleClickButton2={onSubmit}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.closing_reason)}
                     className="col-12"
-                    // onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                    // error={errors?.status?.message}
+                    valueDefault={getValues('motive')}
+                    onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
+                    error={errors?.motive?.message}
                     data={multiData.data[0] && multiData.data[0].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
                 <FieldEditMulti
                     label={t(langKeys.detail)}
+                    valueDefault={getValues('observation')}
                     className="col-12"
-                    // onChange={(value) => setQuickreply(value)}
-                    // error={errors?.quickreply?.message}
+                    onChange={(value) => setValue('observation', value)}
                     maxLength={1024}
                 />
             </div>
@@ -56,7 +76,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const { t } = useTranslation();
     const [openModalCloseticket, setopenModalCloseticket] = useState(false);
 
-    const multiData = useSelector(state => state.main.multiData);
 
     const closeTicket = () => {
         setopenModalCloseticket(true);
@@ -102,34 +121,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                     setAnchorEl(null)
                 }}>Clasificar</MenuItem>
             </Menu>
-            <DialogZyx
-                open={openModalCloseticket}
-                title={t(langKeys.close_ticket)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.continue)}
-                handleClickButton1={() => setopenModalCloseticket(false)}
-                // handleClickButton2={onSubmit}
-                button2Type="submit"
-            >
-                <div className="row-zyx">
-                    <FieldSelect
-                        label={t(langKeys.closing_reason)}
-                        className="col-12"
-                        // onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                        // error={errors?.status?.message}
-                        data={multiData.data[0] && multiData.data[0].data}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                    />
-                    <FieldEditMulti
-                        label={t(langKeys.detail)}
-                        className="col-12"
-                        // onChange={(value) => setQuickreply(value)}
-                        // error={errors?.quickreply?.message}
-                        maxLength={1024}
-                    />
-                </div>
-            </DialogZyx>
+            <DialogCloseticket openModal={openModalCloseticket} setOpenModal={setopenModalCloseticket} />
         </>
     )
 }

@@ -1,6 +1,6 @@
 // const BASE_URL = 'http://52.116.128.51:5065/api';
-//const BASE_URL = 'https://apix.laraigo.com/api';
-const BASE_URL = 'http://localhost:6065/api';
+const BASE_URL = 'https://apix.laraigo.com/api';
+//const BASE_URL = 'http://localhost:6065/api';
 
 export const apiUrls = {
     TICKET_URL: `${BASE_URL}/main`,
@@ -13,6 +13,12 @@ export const apiUrls = {
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
     EXPORT_DATA: `${BASE_URL}/main/exportexcel`,
+    
+    CLOSE_TICKET: `${BASE_URL}/ticket/close`,
+    REPLY_TICKET: `${BASE_URL}/ticket/reply`,
+    REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,
+
+
     INTEGRATION_URL: `${BASE_URL}/load`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,

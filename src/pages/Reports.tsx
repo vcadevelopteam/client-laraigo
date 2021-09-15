@@ -12,11 +12,10 @@ import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect } from 'components';
-import { useForm } from 'react-hook-form';
+import { TemplateBreadcrumbs, SearchField } from 'components';
 import { useSelector } from 'hooks';
-import { Dictionary, IFetchData, MultiData,IRequestBody } from "@types";
-import { getReportSel, getReportColumnSel, getReportFilterSel, getValuesFromDomain, getPaginatedForReports, getReportExport } from 'common/helpers';
+import { Dictionary, IFetchData, MultiData } from "@types";
+import { getReportSel, getReportColumnSel, getPaginatedForReports, getReportExport } from 'common/helpers';
 import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -26,12 +25,6 @@ interface ItemProps {
     setViewSelected: (view: string) => void;
     row: Dictionary | null;
     multiData: MultiData[];
-    allFilters: Dictionary[];
-}
-
-interface parameter{
-    key: string;
-    value: any;
 }
 
 const arrayBread = [
@@ -82,9 +75,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
-
-const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFilters}) => {
+const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData}) => {
     const { t } = useTranslation();      
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -95,18 +86,15 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);
-
-    let allParameters = {};
-    let allParameters2: parameter[] =[];
+    const columns2 = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);
 
     if ( multiData.length > 0 ) {
         reportColumns.map(x => (        
-            columns.push({Header: t('report_'+row?.origin+'_'+x.proargnames||''), accessor: x.proargnames})
+            columns2.push({Header: t('report_'+row?.origin+'_'+x.proargnames||''), accessor: x.proargnames})
             )
         );
 
-        columns.shift();
+        columns2.shift();
     }
 
     useEffect(() => {
@@ -146,11 +134,6 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-
-        console.log('allParameters',allParameters);
-        console.log('...allParameters',{...allParameters});       
-        console.log('...allParameters2',{...allParameters2});
-
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
         dispatch(getCollectionPaginated(getPaginatedForReports(
             row?.methodcollection||'',
@@ -162,8 +145,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
             take: pageSize,
             skip: pageIndex,
             sorts: sorts,
-            filters: filters,
-            ...allParameters2
+            filters: filters
             }
         )));
     };
@@ -174,11 +156,6 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
         setViewSelected("view-1");
     }
 
-    const setValue = (optionValue: any, parameterName: any, value: any) => {
-        Object.defineProperty(allParameters, parameterName, {value: value[optionValue], writable: true});
-        allParameters2.push({key: parameterName, value: value[optionValue]});
-    }
-
     return  (
         <div>
             <TemplateBreadcrumbs
@@ -186,30 +163,9 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
                 handleClick={handleSelected}
             />
             {multiData.length > 0 ?
-                <div className={classes.container}>                    
-					 {allFilters?
-                        <div>
-                            {
-                                allFilters.map( filtro => (
-                                        <FieldSelect
-                                            label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
-                                            className="col-6"
-                                            key={filtro.values[0].filter}
-                                            valueDefault=""
-                                            //onChange={(value) => setValue('communicationchanneldesc', value ? value.domainvalue : '')}
-                                            onChange={(value) => setValue(filtro.values[0].optionValue, filtro.values[0].parameterName, value ? value : '')}
-                                            error=""
-                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                            optionDesc= {filtro.values[0].optionDesc}
-                                            optionValue= {filtro.values[0].optionValue}
-                                        />
-                                    )
-                                )
-                            }
-                        </div> :``
-                    }                   
+                <div className={classes.container}>
                     <TablePaginated
-                        columns={columns}
+                        columns={columns2}
                         data={mainPaginated.data}
                         totalrow={totalrow}
                         loading={mainPaginated.loading}
@@ -259,20 +215,11 @@ const Reports: FC = () => {
         setReports(filteredReports);
     }
 
-    const handleSelected = (row: Dictionary, allFilters: Dictionary[]) => {
+    const handleSelected = (row: Dictionary) => {
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());       
         setRowSelected(row);
-
-        let allRequestBody: IRequestBody[] = [];
-        allRequestBody.push(getReportColumnSel(row?.methodcollection || ""));
-
-        if (allFilters) {
-            allFilters.sort((a, b) => a.order - b.order);
-            allFilters.map(x => { allRequestBody.push(getReportFilterSel(String(x.values[0].filter))) });
-        }
-
-        dispatch(getMultiCollection(allRequestBody));
+        dispatch(getMultiCollection([getReportColumnSel(row?.methodcollection || "")]));
         setViewSelected("view-2");
     }
 
@@ -302,7 +249,7 @@ const Reports: FC = () => {
                                     report => (
                                         <Grid item key={report.reportid} xs={12} md={6} lg={4}>
                                             <Card className={classes.root}>
-                                                <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                                <CardActionArea onClick={() => handleSelected(report)}>
                                                     <CardMedia
                                                         className={classes.media}                                                   
                                                         component= {report.component}
@@ -332,7 +279,6 @@ const Reports: FC = () => {
                     setViewSelected={setViewSelected}
                     row={rowSelected}
                     multiData={reportsResult.multiData.data}
-                    allFilters={rowSelected.filters}
                 />
             </div>
         )
