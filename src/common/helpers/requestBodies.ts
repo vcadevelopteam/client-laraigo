@@ -290,15 +290,15 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         origin: origin,
         supervisorid:1,
-        allParameters,
-        userid: allParameters["userid"],
-        channel: allParameters["channel"],
-        hours: "",
+        ...allParameters,
+        channel: allParameters['channel']?allParameters['channel']:"",
+        hours: allParameters['hours']?allParameters['hours']:"",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+    
 });
 
-export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
     key: methodExport,
     parameters: {
@@ -308,8 +308,9 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
         enddate,
         sorts,
         supervisorid:1,
-        channel: "",
-        hours: "",
+        ...allParameters,
+        channel: allParameters['channel']?allParameters['channel']:"",
+        hours: allParameters['hours']?allParameters['hours']:"",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

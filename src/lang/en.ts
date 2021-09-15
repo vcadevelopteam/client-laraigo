@@ -410,7 +410,8 @@ const translation: LangKeys = {
     report_userproductivityhours_qtydisconnection: 'Number of disconnections made',
 
     report_userproductivityhours_filter_adviser: 'Adviser',
-    report_userproductivityhours_filter_channels: 'Channels',
+    report_userproductivityhours_filter_channels: 'Channels',  
+    report_userproductivityhours_filter_hours: 'Hour',
 };
 
 const enResource: ResourceLanguage = {

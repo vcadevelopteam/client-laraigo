@@ -404,7 +404,8 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     report_userproductivityhours_qtydisconnection: 'Cantidad de desconexiones realizadas',
 
     report_userproductivityhours_filter_adviser: 'Asesor',
-    report_userproductivityhours_filter_channels: 'Canal',
+    report_userproductivityhours_filter_channels: 'Canal',    
+    report_userproductivityhours_filter_hours: 'Hora',
 };
 
 const esResource: ResourceLanguage = {

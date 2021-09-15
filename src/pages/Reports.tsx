@@ -7,20 +7,21 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import { CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress } from '@material-ui/core';
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect } from 'components';
-import { useForm } from 'react-hook-form';
+import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, DateRangePicker } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData,IRequestBody } from "@types";
 import { getReportSel, getReportColumnSel, getReportFilterSel, getValuesFromDomain, getPaginatedForReports, getReportExport } from 'common/helpers';
 import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
-import { reportsImage } from '../icons/index';
+import { CalendarIcon, reportsImage, SearchIcon } from '../icons/index';
+import { Range } from 'react-date-range';
+import { Style } from '@material-ui/icons';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -61,6 +62,14 @@ const useStyles = makeStyles((theme) => ({
             width: '50%',
         },
     },
+    containerFilter: {
+        width: '100%',
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),  
+    },
+    filterComponent: {
+        width: '20%'
+    },
     containerFilterGeneral: {
         display: 'flex',
         justifyContent: 'space-between',
@@ -79,10 +88,11 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
+    },
+    mb2: {
+        marginBottom: theme.spacing(4),
     }
 }));
-
-
 
 const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFilters}) => {
     const { t } = useTranslation();      
@@ -95,10 +105,14 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);
-
-    let allParameters = {};
-    let allParameters2: parameter[] =[];
+    const columns = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);    
+    const [allParameters, setAllParameters] = useState({});
+    const endDate = new Date();
+    const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
+    const initialDateRange: Range = { startDate, endDate, key: 'selection' };
+    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
+    const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+    const format = (date: Date) => date.toISOString().split('T')[0];
 
     if ( multiData.length > 0 ) {
         reportColumns.map(x => (        
@@ -132,6 +146,10 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     }, [resExportData, waitSave]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        
+
+        console.log('allParameters',allParameters);
+        console.log('daterange',daterange);
         dispatch(exportData(getReportExport(
             row?.methodexport||'',
             row?.origin||'',
@@ -139,7 +157,8 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
             filters,
             sorts,
             startdate: daterange.startDate!,
-            enddate: daterange.endDate!
+            enddate: daterange.endDate!,
+            ...allParameters
         })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
@@ -148,8 +167,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
 
         console.log('allParameters',allParameters);
-        console.log('...allParameters',{...allParameters});       
-        console.log('...allParameters2',{...allParameters2});
+        console.log('daterange',daterange);
 
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
         dispatch(getCollectionPaginated(getPaginatedForReports(
@@ -163,7 +181,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
             skip: pageIndex,
             sorts: sorts,
             filters: filters,
-            ...allParameters2
+            ...allParameters
             }
         )));
     };
@@ -174,9 +192,8 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
         setViewSelected("view-1");
     }
 
-    const setValue = (optionValue: any, parameterName: any, value: any) => {
-        Object.defineProperty(allParameters, parameterName, {value: value[optionValue], writable: true});
-        allParameters2.push({key: parameterName, value: value[optionValue]});
+    const setValue = (parameterName: any, value: any) => {
+        setAllParameters({...allParameters, [parameterName]: value});
     }
 
     return  (
@@ -186,40 +203,62 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
                 handleClick={handleSelected}
             />
             {multiData.length > 0 ?
-                <div className={classes.container}>                    
-					 {allFilters?
-                        <div>
-                            {
-                                allFilters.map( filtro => (
-                                        <FieldSelect
-                                            label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
-                                            className="col-6"
-                                            key={filtro.values[0].filter}
-                                            valueDefault=""
-                                            //onChange={(value) => setValue('communicationchanneldesc', value ? value.domainvalue : '')}
-                                            onChange={(value) => setValue(filtro.values[0].optionValue, filtro.values[0].parameterName, value ? value : '')}
-                                            error=""
-                                            data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                            optionDesc= {filtro.values[0].optionDesc}
-                                            optionValue= {filtro.values[0].optionValue}
-                                        />
+                <div>
+					 {allFilters &&
+                        <div>  
+                            <div>    
+                                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
+                                    <span className={classes.title}>
+                                        {row?.description||''}
+                                    </span>
+                                </Box>
+                            </div>
+                            <div className={classes.containerFilter} style={{ display: 'flex', gap: '30px', alignItems: 'flex-end' }}>                                
+                                {
+                                    allFilters.map( filtro => (
+                                            (filtro.values[0].multiselect ?                                         
+                                                <FieldMultiSelect                                            
+                                                    label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                    error=""
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc= {filtro.values[0].optionDesc}
+                                                    optionValue= {filtro.values[0].optionValue}
+                                                /> 
+                                                :
+                                                <FieldSelect
+                                                    label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                    error=""
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc= {filtro.values[0].optionDesc}
+                                                    optionValue= {filtro.values[0].optionValue}
+                                                />                                            
+                                            )                                     
+                                        )
                                     )
-                                )
-                            }
-                        </div> :``
-                    }                   
-                    <TablePaginated
-                        columns={columns}
-                        data={mainPaginated.data}
-                        totalrow={totalrow}
-                        loading={mainPaginated.loading}
-                        pageCount={pageCount}
-                        filterrange={true}
-                        download={true}
-                        fetchData={fetchData}
-                        exportPersonalized={triggerExportData}
-                        titlemodule={row?.description||''} 
-                    />
+                                }
+                            </div>
+                        </div>
+                    }   
+                    <div className={classes.container}>
+                        <TablePaginated
+                            columns={columns}
+                            data={mainPaginated.data}
+                            totalrow={totalrow}
+                            loading={mainPaginated.loading}
+                            pageCount={pageCount}
+                            filterrange={true}
+                            download={true}
+                            fetchData={fetchData}
+                            exportPersonalized={triggerExportData}
+                            titlemodule={!allFilters? row?.description||'' : ''} 
+                        />
+                    </div> 
                 </div> :
                 <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <h2>Cargando...</h2>
