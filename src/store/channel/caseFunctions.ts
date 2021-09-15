@@ -49,3 +49,38 @@ export const getChannelsReset = (state: IState): IState => ({
     channelList: initialState.channelList,
     successinsert: false
 });
+
+export const resetChannelInsert = (state: IState): IState => ({
+    ...state,
+    successinsert: initialState.successinsert,
+});
+
+export const insertChannel = (state: IState): IState => ({
+    ...state,
+    insertChannel: { ...state.insertChannel, loading: true, error: false },
+});
+
+export const insertChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    insertChannel: {
+        ...state.insertChannel,
+        value: action.payload,
+        loading: false,
+        error: false,
+    },
+});
+
+export const insertChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    insertChannel: {
+        value: undefined,
+        loading: false,
+        error: true,
+        message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+    },
+});
+
+export const insertChannelReset = (state: IState): IState => ({
+    ...state,
+    insertChannel: initialState.insertChannel,
+});

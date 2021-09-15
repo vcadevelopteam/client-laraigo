@@ -122,7 +122,7 @@ export const ChannelAddTelegram: FC = () => {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD.path)}}>
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD)}}>
                         {"<< Previous"}
                     </Link>
                 </Breadcrumbs>

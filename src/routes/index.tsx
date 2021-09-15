@@ -92,12 +92,12 @@ const RouterApp: FC = () => {
 						<Channels />
 					</Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD.path}>
+				<ProtectRoute exact path={paths.CHANNELS_ADD}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAdd />
 					</Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB.path}>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddChatWeb />
 					</Layout>

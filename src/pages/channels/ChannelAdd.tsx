@@ -132,7 +132,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: <FacebookIcon color="inherit" />,
             label: 'Chat Web',
-            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB.resolve(match.params.id)),
+            onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
         },
         {
             icon: <EmailIcon color="inherit" />,

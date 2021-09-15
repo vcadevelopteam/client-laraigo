@@ -148,7 +148,7 @@ export const Channels: FC = () => {
             loading={mainResult.mainData.loading}
             register={true}
             hoverShadow={true}
-            handleRegister={() => history.push(paths.CHANNELS_ADD.path)}
+            handleRegister={() => history.push(paths.CHANNELS_ADD)}
         />
     );
 };
