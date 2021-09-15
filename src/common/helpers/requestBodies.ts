@@ -186,9 +186,9 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insInappropriateWords = ({ id, description, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const insInappropriateWords = ({ id, description, status, type, username, operation,classification,defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id, description, status, type, username, operation }
+    parameters: { id, description, status, type, username, operation,classification,defaultanswer }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({

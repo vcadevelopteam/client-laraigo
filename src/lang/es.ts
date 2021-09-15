@@ -157,7 +157,10 @@ const translation: LangKeys = {
     opendrilldown: "Abrir árbol",
     corporation: 'Corporación',
     corporation_plural: 'Corporaciones',
-
+    insults: "Lisuras",
+    entities: "Entidades",
+    links: "Links",
+    emotions: "Emociones",
     name: 'Nombre',
     name_plural: 'Nombres',
 
@@ -169,6 +172,7 @@ const translation: LangKeys = {
     value_plural: 'Valores',
     path: "Path",
     description: 'Descripción',
+    defaultanswer: "Respuesta predeterminada",
     description_plural: 'Descripciones',
     return: "Regresar",
     active: 'Activo',

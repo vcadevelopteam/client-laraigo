@@ -276,8 +276,12 @@ const translation: LangKeys = {
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
     next:"Next",
+    defaultanswer: "Default answer",
     login_with_google: 'Login with Google',
-
+    insults: "Insults",
+    entities: "Entities",
+    links: "Links",
+    emotions: "Emotions",
     path: "Path",
     connectface: "Connect your Facebook",
     connectface2: "Install the chatbot on your Facebook page and start getting leads.",
