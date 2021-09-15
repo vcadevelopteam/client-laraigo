@@ -261,6 +261,7 @@ const translation: LangKeys = {
     field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
     affirmative: 'Yes',
     negative: 'No',
+    opendrilldown: "Open Drilldown",
     organization_by_default: 'You must select a default organization',
     attention_group: 'Attention group',
     register: 'Register',

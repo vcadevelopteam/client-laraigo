@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 
 import { Dictionary } from "@types";
@@ -69,6 +69,60 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+const TreeItemsFromData2: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
+    const parents: any[] = []
+    const children: any[] = []
+
+    dataClassTotal.forEach((x: Dictionary) => {
+        if (x.parent === 0) {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren
+            }
+            parents.push(item)// = [...parents, item])
+        } else {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren,
+                father: x.parent
+            }
+            children.push(item)
+        }
+    })
+
+    function loadchildren(id: number) {
+        return children.map(x => {
+            if (x.father === id) {
+                return (
+                    <TreeItem
+                        key={x.key}
+                        nodeId={String(x.nodeId)}
+                        label={x.label}
+                    >
+                        {x.children ? loadchildren(x.key) : null}
+                    </TreeItem>
+                )
+            }
+            return null;
+        })
+    }
+    return (
+        <>
+            {parents.map(x =>
+                <TreeItem
+                    key={x.key}
+                    nodeId={String(x.nodeId)}
+                    label={x.label}
+                >
+                    {x.children ? loadchildren(x.key) : null}
+                </TreeItem>)}
+        </>
+    )
+};
 
 const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1: number) => void, setselectedlabel: (param: any) => void }> = ({ dataClassTotal, setValueTmp, setselectedlabel }) => {
     const parents: any[] = []
@@ -244,34 +298,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.corporation)} // "Corporation"
-                                className="col-12"
-                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.corporation)}
-                                value={row ? (row.corpdesc || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.organization)} // "Organization"
-                                className="col-12"
-                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row ? (row.orgdesc || "") : ""}
-                                className="col-12"
-                            />}
-                    </div>
                     {edit ?
                         <div>
                             <InputLabel htmlFor="outlined-adornment-password" className={classes.inputlabelclass}>{t(langKeys.classification)}</InputLabel>
@@ -392,9 +418,12 @@ const Quickreplies: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
 
+    const [openDialog, setOpenDialog] = useState(false);
+    const classes = useStyles();
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [insertexcel, setinsertexcel] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -457,8 +486,9 @@ const Quickreplies: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
                 fetchData();
+                setinsertexcel(false)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
@@ -498,20 +528,74 @@ const Quickreplies: FC = () => {
             callback
         }))
     }
+    const importCSV = async (files: any[]) => {
+        setinsertexcel(true)
+        const file = files[0];
+        if (file) {
+            const data: any = await uploadExcel(file, undefined);
+
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: null,
+                detail: data.map((x: any) => insQuickreplies({
+                    ...x,
+                    quickreply:x.detail,
+                    classificationid:0,
+                    operation:"INSERT",
+                    type: 'NINGUNO',
+                    id:0,
+                }))
+            }, true));
+            setWaitSave(true)
+        }
+    }
 
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.quickreplies, { count: 2 })}
-                data={mainResult.mainData.data}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            // fetchData={fetchData}
-            />
+            <Fragment>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.quickreplies, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    importCSV={importCSV}
+                    handleRegister={handleRegister}
+                // fetchData={fetchData}
+                    ButtonsElement={()=>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            style={{ backgroundColor: "#7721ad" }}
+                            onClick={() => setOpenDialog(true)}
+                        >{t(langKeys.opendrilldown)}
+                        </Button>
+                    }
+                />
+                <DialogZyx
+                    open={openDialog}
+                    title={t(langKeys.organizationclass)}
+                    buttonText1={t(langKeys.close)}
+                    //buttonText2={t(langKeys.select)}
+                    handleClickButton1={() => setOpenDialog(false)}
+                    handleClickButton2={() => setOpenDialog(false)}
+                >   
+                <TreeView
+                    className={classes.treeviewroot}
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
+                        <TreeItemsFromData2
+                            dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
+                        />
+                    </TreeView>
+                    <div className="row-zyx">
+                    </div>
+                </DialogZyx>
+            </Fragment>
         )
     }
     else if (viewSelected === "view-2") {

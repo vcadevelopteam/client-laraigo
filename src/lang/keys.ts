@@ -39,6 +39,7 @@ export const langKeys = {
     bydefault: 'bydefault',
     review: 'review',
     person: 'person',
+    opendrilldown: "opendrilldown",
     person_plural: 'person_plural',
     classification: 'classification',
     summarize:'summarize',
