@@ -4,7 +4,7 @@ import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CheckIcon, AttachmentIcon, BotIcon, AgentIcon, ImageIcon, QuickresponseIcon, SendIcon, DownloadIcon2, FileIcon, DocumentIcon } from 'icons';
+import { CheckIcon, BotIcon, AgentIcon, DownloadIcon2, FileIcon } from 'icons';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -14,30 +14,10 @@ import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { showInfoPanel, replyMessage } from 'store/inbox/actions';
-import { uploadFile, resetUploadFile } from 'store/main/actions';
-import { ListItemSkeleton } from 'components'
-import InputBase from '@material-ui/core/InputBase';
+import { showInfoPanel } from 'store/inbox/actions';
 import clsx from 'clsx';
-import { EmojiPickerZyx } from 'components'
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-
-const convertLocalDate = (date: string | null, validateWithToday: boolean): Date => {
-    if (!date) return new Date()
-    const nn = new Date(date)
-    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000 * -1));
-    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
-}
-
-const toTime24HR = (time: string): string => {
-    const [h, m] = time.split(':');
-    const hint = parseInt(h)
-    return `${(hint > 12 ? 24 - hint : hint).toString().padStart(2, "0")}:${m}:${hint > 11 ? "PM" : "AM"}`
-}
+import { ReplyPanel, ListItemSkeleton } from 'components'
+import { convertLocalDate, toTime24HR } from 'common/helpers';
 
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -254,154 +234,6 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
         </div>
     );
 }
-interface IFile {
-    type: string;
-    url: string;
-    id: string;
-    error?: boolean;
-}
-
-const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }> = ({ classes, setFiles }) => {
-    const [valuefile, setvaluefile] = useState('')
-    const dispatch = useDispatch();
-    const [waitSave, setWaitSave] = useState(false);
-
-    const uploadResult = useSelector(state => state.main.uploadFile);
-    const [idUpload, setIdUpload] = useState('');
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!uploadResult.loading && !uploadResult.error) {
-                console.log("into effect", idUpload)
-                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url } : item))
-                setWaitSave(false);
-                dispatch(resetUploadFile());
-            } else if (uploadResult.error) {
-                const errormessage = uploadResult.code || "error_unexpected_error"
-                setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url, error: true } : item))
-                // dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-            }
-        }
-    }, [waitSave, uploadResult, dispatch, setFiles, idUpload])
-
-    const onSelectImage = (files: any) => {
-        const selectedFile = files[0];
-        const idd = new Date().toISOString()
-        var fd = new FormData();
-        fd.append('file', selectedFile, selectedFile.name);
-        setvaluefile('')
-        setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type: 'image' }]);
-        dispatch(uploadFile(fd));
-        setWaitSave(true)
-    }
-
-    return (
-        <>
-            <input
-                name="file"
-                accept="image/*"
-                id="laraigo-upload-image-file"
-                type="file"
-                value={valuefile}
-                style={{ display: 'none' }}
-                onChange={(e) => onSelectImage(e.target.files)}
-            />
-            <label htmlFor="laraigo-upload-image-file">
-                <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-            </label>
-        </>
-    )
-}
-const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => (
-    <div style={{ position: 'relative' }}>
-        <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            {item.url ?
-                (item.type === 'image' ?
-                    <img alt="loaded" src={item.url} style={{ objectFit: 'cover', width: '100%' }} /> :
-                    <img width="30" height="30" alt="loaded" src="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1631292621392file-trans.png" />) :
-                <CircularProgress color="inherit" />
-            }
-        </div>
-        <IconButton
-            onClick={() => setFiles((x: IFile[]) => x.filter(y => y.id !== item.id))}
-            size="small"
-            style={{ position: 'absolute', top: -16, right: -14 }}
-        >
-            <CloseIcon fontSize="small" />
-        </IconButton>
-    </div>
-)
-const PanelResponse: React.FC<{ classes: any }> = ({ classes }) => {
-    const dispatch = useDispatch();
-    const [text, setText] = useState("");
-    const [files, setFiles] = useState<IFile[]>([]);
-
-    const triggerReplyMessage = () => {
-        if (files.length > 0) {
-            files.forEach(x => {
-                dispatch(replyMessage({
-                    interactionid: 0,
-                    interactiontype: "image",
-                    interactiontext: x.url,
-                    createdate: new Date().toISOString(),
-                    userid: 999999,
-                    usertype: "agent",
-                }))
-            })
-            setFiles([])
-        }
-        if (text) {
-            const textCleaned = text.trim();
-            const newInteraction: IInteraction = {
-                interactionid: 0,
-                interactiontype: "text",
-                interactiontext: textCleaned,
-                createdate: new Date().toISOString(),
-                userid: 999999,
-                usertype: "agent",
-            }
-            dispatch(replyMessage(newInteraction));
-            setText("");
-        }
-    }
-
-    return (
-        <div className={classes.containerResponse}>
-            {files.length > 0 &&
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
-                    {files.map((item: IFile, index: number) => (
-                        <ItemFile key={index} item={item} setFiles={setFiles} />
-                    ))}
-                </div>
-            }
-            <div>
-                <InputBase
-                    fullWidth
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Send your message..."
-                    rows={2}
-                    multiline
-                    inputProps={{ 'aria-label': 'naked' }}
-                />
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 16 }}>
-                    <QuickresponseIcon className={classes.iconResponse} />
-                    <IconUploadImage classes={classes} setFiles={setFiles} />
-                    <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
-                    <AttachmentIcon className={classes.iconResponse} />
-                </div>
-                <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
-                    <SendIcon />
-                </div>
-            </div>
-        </div>
-    )
-}
-
 const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { displayname, imageurldef, ticketnum, conversationid } }) => {
     const dispatch = useDispatch();
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
@@ -445,7 +277,7 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ cla
                 }
                 <div ref={el} />
             </div>
-            <PanelResponse classes={classes} />
+            <ReplyPanel classes={classes} />
         </div>
     )
 })

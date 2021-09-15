@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
@@ -272,7 +273,7 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
         return () => {
             dispatch(resetGetTickets())
         }
-    }, [agentSelected])
+    }, [agentSelected, dispatch])
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
@@ -343,15 +344,8 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
 const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
-
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-
-    // const setTicketSelected = (ticket: ITicket) => {
-    //     dispatch(selectTicket(ticket))
-    //     dispatch(getDataTicket(ticket))
-    // };
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))

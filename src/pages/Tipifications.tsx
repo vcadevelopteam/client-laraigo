@@ -74,7 +74,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
-    const user = useSelector(state => state.login.validateToken.user);
+    // const user = useSelector(state => state.login.validateToken.user);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();

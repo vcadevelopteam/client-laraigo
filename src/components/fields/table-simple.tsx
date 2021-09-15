@@ -8,7 +8,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
 import { exportExcel } from 'common/helpers';
-import clsx from 'clsx';
 import {
     FirstPage,
     LastPage,

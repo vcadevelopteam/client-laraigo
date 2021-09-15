@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
@@ -10,6 +11,7 @@ import { getTicketsPerson } from 'store/inbox/actions';
 import { GetIcon } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import { convertLocalDate } from 'common/helpers';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -102,13 +104,6 @@ const InfoClient: React.FC = () => {
             </div>
         </div>
     )
-}
-
-const convertLocalDate = (date: string | null | undefined, validateWithToday?: boolean): Date => {
-    if (!date) return new Date()
-    const nn = new Date(date)
-    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000 * -1));
-    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
 }
 
 const Variables: React.FC = () => {

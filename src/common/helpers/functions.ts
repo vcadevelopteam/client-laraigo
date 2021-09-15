@@ -110,3 +110,25 @@ export function uploadExcel(file: any, owner: any = {}) {
         };
     });
 }
+
+export const convertLocalDate = (date: string | null | undefined, validateWithToday?: boolean): Date => {
+    if (!date) return new Date()
+    const nn = new Date(date)
+    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000 * -1));
+    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
+}
+
+export const toTime24HR = (time: string): string => {
+    const [h, m] = time.split(':');
+    const hint = parseInt(h)
+    return `${(hint > 12 ? 24 - hint : hint).toString().padStart(2, "0")}:${m}:${hint > 11 ? "PM" : "AM"}`
+}
+
+export const secondsToTime = (seconds: number): string => {
+    const hh = Math.floor(seconds / 3600);
+    const mm = Math.floor((seconds / 60) % 60);
+    const ss = Math.floor(seconds % 60);
+    return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
+}
+
+export const getSecondsUntelNow = (date: Date): number => Math.floor((new Date().getTime() - date.getTime()) / 1000);
