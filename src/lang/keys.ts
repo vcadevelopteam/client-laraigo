@@ -224,6 +224,10 @@ export const langKeys = {
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',
     flow: 'flow',
+    color: 'color',
+    bold: 'bold',
+    show: 'show',
+
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
