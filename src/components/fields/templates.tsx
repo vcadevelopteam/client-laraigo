@@ -62,7 +62,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     };
 
     return (
-        <>
+        <div style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
@@ -71,7 +71,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
-
             </IconButton>
             <IconButton
                 aria-label="more"
@@ -107,7 +106,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                     deleteFunction && deleteFunction(e)
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
-        </>
+        </div>
     )
 }
 
@@ -593,7 +592,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void }> = ({ emojisNoShow, onSelect }) => {
+export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void, style?: any }> = ({ emojisNoShow, onSelect, style }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -602,12 +601,12 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <span>
+            <span style={style}>
                 <EmojiICon className={classes.root} onClick={handleClick} />
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 80
+                        bottom: 50
                     }}>
                         <Picker
                             // showPreview={false}

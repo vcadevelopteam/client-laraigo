@@ -150,6 +150,11 @@ footer a {
         padding-right: 16px;
         margin-bottom: 16px
     }
+    .row-zyx > .col-11 {
+        width: 91.67%;
+        padding-right: 16px;
+        margin-bottom: 16px
+    }
     .row-zyx > .col-9 {
         width: 75%;
         padding-right: 16px;

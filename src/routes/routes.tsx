@@ -158,4 +158,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.FLOWDESIGNER,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.VARIABLECONFIGURATION,
+        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
+        path: paths.VARIABLECONFIGURATION,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
 ];

@@ -18,6 +18,7 @@ export interface TableConfig {
     titlemodule?: string,
     methodexport?: string,
     exportPersonalized?(param?: any): void,
+    importCSV?: (param?: any) => void
     download?: boolean,
     register?: boolean,
     handleRegister?(param: any): void,
@@ -25,7 +26,9 @@ export interface TableConfig {
     pageSizeDefault?: number,
     filterGeneral?: boolean,
     hoverShadow?: boolean,
-    loading?: boolean
+    loading?: boolean,
+    updateMyData?: (index: number, id: any, value: any) => void
+    skipPageReset?: boolean
 }
 
 export interface Pagination {

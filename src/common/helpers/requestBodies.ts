@@ -372,11 +372,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title,description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id,title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
 //tabla paginada
@@ -408,13 +408,6 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
     }
 });
 
-export const getValuesFromTree = (classificationid: number): IRequestBody => ({
-    method: "UFN_CLASSIFICATION_TREE_SEL",
-    key: "UFN_CLASSIFICATION_TREE_SEL",
-    parameters: {
-        classificationid, type: 'QUICKREPLY'
-    }
-});
 export const getCommChannelLst = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_LST",
     key: "UFN_COMMUNICATIONCHANNEL_LST",
@@ -444,7 +437,7 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insMessageTemplate = (
+export const insMessageTemplate = (    
     {
         id,
         description,
@@ -465,6 +458,7 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
+        
         method: "UFN_MESSAGETEMPLATE_INS",
         parameters: {
             id,
@@ -483,7 +477,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
+            buttons: buttons?JSON.stringify(buttons):"",
             operation
         }
     });
@@ -546,3 +540,40 @@ export const getChannelSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+
+export const getVariableConfigurationLst = (): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_LST",
+    parameters: { }
+});
+
+export const getVariableConfigurationSel = (id: string): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_SEL",
+    parameters: { 
+        chatblockid: id
+    }
+});
+
+export const insVariableConfiguration = ({
+        corpid,
+        orgid,
+        chatblockid,
+        variable,
+        description,
+        fontcolor,
+        fontbold,
+        priority,
+        visible
+    }: Dictionary): IRequestBody => ({
+        method: "UFN_VARIABLECONFIGURATION_INS",
+        parameters: {
+            corpid,
+            orgid,
+            chatblockid,
+            variable,
+            description,
+            fontcolor,
+            fontbold,
+            priority,
+            visible
+        }
+    });

@@ -34,6 +34,7 @@ export const langKeys = {
     extra: 'extra',
     extra_plural: 'extra_plural',
     valuelist:'valuelist',
+    path: "path",
     code:'code',
     bydefault: 'bydefault',
     review: 'review',
@@ -71,12 +72,16 @@ export const langKeys = {
     tme:'tme',
     tmepercentobj: 'tmepercentobj',
     tmopercentobj: 'tmopercentobj',
+    tmototalobj: 'tmototalobj',
+    tmoasesorobj:"tmoasesorobj",
+    tmeasesorobj:"tmeasesorobj",
     usertme:'usertme',
     usertmepercentmax:'usertmepercentmax',
     usertmo:'usertmo',
     usertmopercentmax:'usertmopercentmax',
     hasactionplan:'hasactionplan',
     whitelist: 'whitelist',
+    import: 'import',
 
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
@@ -217,6 +222,10 @@ export const langKeys = {
 
     flowdesigner: 'flowdesigner',
 
+    variableconfiguration: 'variableconfiguration',
+    variableconfiguration_plural: 'variableconfiguration_plural',
+    flow: 'flow',
+
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
 
@@ -248,7 +257,6 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
-    import: 'import',
     back: 'back',
     continue: 'continue',
     confirmation: 'confirmation',

@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
 import { exportExcel } from 'common/helpers';
+import clsx from 'clsx';
 import {
     FirstPage,
     LastPage,
@@ -31,7 +32,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import BackupIcon from '@material-ui/icons/Backup';
+
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
@@ -47,6 +48,7 @@ import {
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -124,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const TableZyx = React.memo(({
+const TableZyxEditable = React.memo(({
     columns,
     titlemodule,
     fetchData,
@@ -134,9 +136,11 @@ const TableZyx = React.memo(({
     handleRegister,
     HeadComponent,
     pageSizeDefault = 20,
-    importCSV,
+    hoverShadow = false,
     filterGeneral = true,
-    loading = false
+    loading = false,
+    updateMyData,
+    skipPageReset = false,
 }: TableConfig) => {
     const classes = useStyles();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
@@ -229,6 +233,47 @@ const TableZyx = React.memo(({
         );
     }
 
+    // Create an editable cell renderer
+    const EditableCell = ({
+        value: initialValue,
+        row: { index },
+        column: { id },
+        updateMyData, // This is a custom function that we supplied to our table instance
+    }: {
+        value: any,
+        row: any,
+        column: any,
+        updateMyData: (index: number, id: any, value: any) => void
+    }) => {
+        // We need to keep and update the state of the cell normally
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [value, setValue] = React.useState(initialValue)
+        
+        const onChange = (e: any) => {
+            setValue(e.target.value)
+        }
+        
+        // We'll only update the external data when the input is blurred
+        const onBlur = () => {
+            updateMyData(index, id, value)
+        }
+        
+        // If the initialValue is changed external, sync it up with our state
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        React.useEffect(() => {
+            setValue(initialValue)
+        }, [initialValue])
+        
+        return (
+            <TextField
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+            >
+            </TextField>
+        )
+    }
+
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
 
@@ -277,6 +322,7 @@ const TableZyx = React.memo(({
             // Let's set up our default Filter UI
             Filter: (props: any) => SelectColumnFilter({ ...props, data }),
             filter: filterCellValue,
+            Cell: EditableCell
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
@@ -303,7 +349,9 @@ const TableZyx = React.memo(({
         columns,
         data,
         initialState: { pageIndex: 0, pageSize: pageSizeDefault },
-        defaultColumn
+        defaultColumn,
+        autoResetPage: !skipPageReset,
+        updateMyData
     },
         useFilters,
         useGlobalFilter,
@@ -322,7 +370,7 @@ const TableZyx = React.memo(({
     }, [fetchData])
     return (
         <Box width={1} style={{ height: '100%' }}>
-            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
                 {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (
@@ -338,30 +386,6 @@ const TableZyx = React.memo(({
                                 <RefreshIcon />
                             </Fab>
                         </Tooltip>
-                    )}
-                    {importCSV && (
-                        <>
-                            <input
-                                name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                id="laraigo-upload-csv-file"
-                                type="file"
-                                style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
-                            />
-                            <label htmlFor="laraigo-upload-csv-file">
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={loading}
-                                    startIcon={<BackupIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.import} />
-                                </Button>
-                            </label>
-                        </>
                     )}
                     {register && (
                         <Button
@@ -552,7 +576,7 @@ const TableZyx = React.memo(({
     )
 });
 
-export default TableZyx;
+export default TableZyxEditable;
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];

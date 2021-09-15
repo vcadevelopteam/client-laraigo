@@ -303,7 +303,7 @@ const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     
-    const multiData = useSelector(state => state.main.multiData);
+    // const multiData = useSelector(state => state.main.multiData);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
     useEffect(() => {

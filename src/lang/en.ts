@@ -199,7 +199,7 @@ const translation: LangKeys = {
     message: 'Mensaje',
     addbutton: 'Add button',
     removebutton: 'Remove button',
-    
+    import: 'Import',
     integrationmanager: 'Integration Manager',
     integrationmanager_plural: 'Integration Manager',
     newintegrationmanager: 'New Integration',
@@ -227,6 +227,10 @@ const translation: LangKeys = {
     result: 'Result',
 
     flowdesigner: 'Flow designer',
+
+    variableconfiguration: 'Variable Configuration',
+    variableconfiguration_plural: 'Variable Configuration',
+    flow: 'Flow',
     
     variable:"Variable",
     successful_transaction: 'Successful transaction',
@@ -252,8 +256,10 @@ const translation: LangKeys = {
     organization_by_default: 'You must select a default organization',
     attention_group: 'Attention group',
     register: 'Register',
+    tmototalobj: "Objective Total TMO",
+    tmoasesorobj:"Objective Asesor TMO",
+    tmeasesorobj:"Objective Asesor TME",
     download: 'Download',
-    import: 'Import',
     back: 'Back',
     continue: 'Continue',
     confirmation: 'Confirmation',
@@ -263,6 +269,7 @@ const translation: LangKeys = {
     next:"Next",
     login_with_google: 'Login with Google',
 
+    path: "Path",
     hasactionplan:'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
     error_parameter_too_long: '22001: There was an error, contact the administrator ',

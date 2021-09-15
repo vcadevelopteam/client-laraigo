@@ -121,7 +121,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     status: 'Estado',
     status_plural: 'Estados',
-
+    tmototalobj: "Objetivo Total TMO",
+    tmoasesorobj:"Objetivo Asesor TMO",
+    tmeasesorobj:"Objetivo Asesor TME",
     type: 'Tipo',
     type_plural: 'Tipos',
 
@@ -137,7 +139,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     value: 'Valor',
     value_plural: 'Valores',
-
+    path: "Path",
     description: 'Descripción',
     description_plural: 'Descripciones',
     return: "Regresar",
@@ -196,7 +198,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     supplier:"Proveedor",
     addbutton: 'Añadir botón',
     removebutton: 'Quitar botón',
-    
+    import: 'Importar',
     integrationmanager: 'Administrador de Integraciones',
     integrationmanager_plural: 'Administrador de Integraciones',
     newintegrationmanager: 'Nueva integración',
@@ -225,6 +227,10 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
 
     flowdesigner: 'Diseñador de flujos',
 
+    variableconfiguration: 'Configuración de variables',
+    variableconfiguration_plural: 'Configuración de variables',
+    flow: 'Flujo',
+
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
@@ -250,7 +256,6 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     attention_group: 'Grupo de atención',
     register: 'Registrar',
     download: 'Descargar',
-    import: 'Importar',
     back: 'Regresar',
     continue: 'Continuar',
     confirmation: 'Confirmación',

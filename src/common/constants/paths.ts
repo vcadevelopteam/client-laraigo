@@ -32,6 +32,7 @@ const paths = {
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
     FLOWDESIGNER: '/extras/flowdesigner',
+    VARIABLECONFIGURATION: '/extras/variableconfiguration',
 };
 
 export default paths;
