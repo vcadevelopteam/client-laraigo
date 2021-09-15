@@ -323,7 +323,7 @@ const TableZyx = React.memo(({
     }, [fetchData])
     return (
         <Box width={1} style={{ height: '100%' }}>
-            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (

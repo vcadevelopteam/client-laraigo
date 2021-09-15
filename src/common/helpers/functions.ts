@@ -1,7 +1,7 @@
 import { Dictionary } from "@types";
 
 export function uuidv4(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c === 'x' ? r : ((r & 0x3) | 0x8);
         return v.toString(16);
     });
@@ -17,8 +17,8 @@ export function isJson(s: string): boolean {
 }
 
 export function extractVariables(text: string, array: string[] = []): string[] {
-    let rex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/,'g');
-    return Array.from(new Set([...array, ...Array.from(text.matchAll(rex), (m: any[]) => m[0].replace(/[{]{2}/,'').replace(/[}]{2}/,''))]));
+    let rex = new RegExp(/{{[\w\s\u00C0-\u00FF]+?}}/, 'g');
+    return Array.from(new Set([...array, ...Array.from(text.matchAll(rex), (m: any[]) => m[0].replace(/[{]{2}/, '').replace(/[}]{2}/, ''))]));
 }
 
 export function extractVariablesFromArray(data: any[], key: string, array: string[] = []): string[] {
@@ -68,15 +68,21 @@ export function uploadCSV(file: any, owner: any) {
                 let lines = [];
                 for (let i = 1; i < allTextLines.length; i++) {
                     if (allTextLines[i].split(';').length === headers.length) {
-                        let data: any = {};
-                        Object.keys(owner).forEach(o => {
-                            data[o] = owner[o];
-                        });
-                        let line = allTextLines[i].split(';')
-                        headers.forEach((h: string, hi: string) => {
-                            data[h] = line[hi];
-                        })
-                        lines.push(data);
+                        // let data = { };
+                        // Object.keys(owner).forEach(o => {
+                        //     data[o] = owner[o];
+                        // });
+                        // let line = allTextLines[i].split(';')
+                        // headers.forEach((h: string, hi: string) => {
+                        //     data[h] = line[hi];
+                        // })
+                        // lines.push(data);
+                        const line = allTextLines[i].split(';')
+                        const data = headers.map((key: any, j: number) => ({
+                            ...owner,
+                            [key]: line[j]
+                        }))
+                        lines.push(data)
                     }
                 }
                 res(lines);
