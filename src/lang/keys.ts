@@ -219,6 +219,7 @@ export const langKeys = {
     invalidjson: 'invalidjson',
     test: 'test',
     result: 'result',
+    closing_reason: 'closing_reason',
 
     flowdesigner: 'flowdesigner',
 

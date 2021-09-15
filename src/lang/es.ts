@@ -224,7 +224,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     invalidjson: 'Json inválido',
     test: 'Probar',
     result: 'Resultado',
-
+    closing_reason: 'Motivo de cierre',
     flowdesigner: 'Diseñador de flujos',
 
     variableconfiguration: 'Configuración de variables',

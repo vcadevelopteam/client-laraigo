@@ -2,6 +2,7 @@ export { default as SearchField } from './fields/SearchField';
 export { default as IOSSwitch } from './fields/IOSSwitch';
 export { default as Chat } from './inbox/InboxPanel';
 export { default as ReplyPanel } from './inbox/ReplyPanel';
+export { default as InteractionsPanel } from './inbox/InteractionsPanel';
 export * from './fields/templates';
 export { default as StatusConnection } from './session/Status';
 export { default as NotificationMenu } from './session/NotificationMenu';

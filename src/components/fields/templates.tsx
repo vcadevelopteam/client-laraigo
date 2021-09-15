@@ -184,7 +184,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
             </DialogContent>
             <DialogActions>
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} color="primary"
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} 
                     >
                         {buttonText1}
                     </Button>}

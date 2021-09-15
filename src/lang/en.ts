@@ -225,7 +225,7 @@ const translation: LangKeys = {
     invalidjson: 'Invalid json',
     test: 'Test',
     result: 'Result',
-
+    closing_reason: 'Closing Reason',
     flowdesigner: 'Flow designer',
 
     variableconfiguration: 'Variable Configuration',
