@@ -194,6 +194,20 @@ export const getTicketsReset = (state: IState): IState => ({
     ticketList: initialState.ticketList,
 });
 
+export const addMessage = (state: IState, action: IAction): IState => {
+    const newInteraction: IInteraction = action.payload;
+    newInteraction.interactionid = state.interactionList.data.length * -1; 
+    return {
+        ...state,
+        interactionList: {
+            data: AddNewInteraction(state.interactionList.data, newInteraction),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
 export const getDataTicket = (state: IState): IState => ({
     ...state,
     interactionList: { ...state.interactionList, loading: true, error: false },
@@ -208,6 +222,12 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         loading: false,
         error: false,
     },
+    configurationVariables: {
+        data: action.payload.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
     person: {
         data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
         loading: false,
@@ -215,19 +235,6 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
     },
 });
 
-export const addMessage = (state: IState, action: IAction): IState => {
-    const newInteraction: IInteraction = action.payload;
-    newInteraction.interactionid = state.interactionList.data.length * -1; 
-    return {
-        ...state,
-        interactionList: {
-            data: AddNewInteraction(state.interactionList.data, newInteraction),
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-    };
-}
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
