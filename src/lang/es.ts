@@ -126,7 +126,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     tmeasesorobj:"Objetivo Asesor TME",
     type: 'Tipo',
     type_plural: 'Tipos',
-
+    opendrilldown: "Abrir árbol",
     corporation: 'Corporación',
     corporation_plural: 'Corporaciones',
 

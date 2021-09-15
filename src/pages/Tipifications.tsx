@@ -1,16 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
@@ -18,6 +20,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
 import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { TreeItem, TreeView } from '@material-ui/lab';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -59,6 +62,11 @@ const useStyles = makeStyles((theme) => ({
     dataaction: {
         width: "100%",
         paddingBottom: "20px",
+    },
+    treeviewroot: {
+        height: 240,
+        flexGrow: 1,
+        maxWidth: 400,
     }
 }));
 const dataTypeAction = [
@@ -66,6 +74,60 @@ const dataTypeAction = [
     { dat: "Variable" },
     { dat: "Request" }
 ]
+const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassTotal }) => {
+    const parents: any[] = []
+    const children: any[] = []
+
+    dataClassTotal.forEach((x: Dictionary) => {
+        if (x.parent === 0) {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren
+            }
+            parents.push(item)// = [...parents, item])
+        } else {
+            let item = {
+                key: x.classificationid,
+                nodeId: x.classificationid.toString(),
+                label: x.description.toString(),
+                children: x.haschildren,
+                father: x.parent
+            }
+            children.push(item)
+        }
+    })
+
+    function loadchildren(id: number) {
+        return children.map(x => {
+            if (x.father === id) {
+                return (
+                    <TreeItem
+                        key={x.key}
+                        nodeId={String(x.nodeId)}
+                        label={x.label}
+                    >
+                        {x.children ? loadchildren(x.key) : null}
+                    </TreeItem>
+                )
+            }
+            return null;
+        })
+    }
+    return (
+        <>
+            {parents.map(x =>
+                <TreeItem
+                    key={x.key}
+                    nodeId={String(x.nodeId)}
+                    label={x.label}
+                >
+                    {x.children ? loadchildren(x.key) : null}
+                </TreeItem>)}
+        </>
+    )
+};
 
 const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
@@ -81,7 +143,6 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    console.log(dataParent)
 
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -402,7 +463,9 @@ const Tipifications: FC = () => {
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
-
+    const classes = useStyles();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [insertexcel, setinsertexcel] = useState(false);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
@@ -461,7 +524,6 @@ const Tipifications: FC = () => {
         ],
         []
     );
-
     const fetchData = () => dispatch(getCollection(getClassificationSel(0)));
 
     useEffect(() => {
@@ -470,6 +532,7 @@ const Tipifications: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getParentSel(),
             getValuesFromDomain("TIPOCANAL"),
+            getValuesForTree()
         ]));
         return () => {
             dispatch(resetMain());
@@ -479,7 +542,8 @@ const Tipifications: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(insertexcel?langKeys.successful_edit: langKeys.successful_delete) }))
+                setinsertexcel(false)
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -524,15 +588,24 @@ const Tipifications: FC = () => {
 
 
     const importCSV = async (files: any[]) => {
+        setinsertexcel(true)
         const file = files[0];
         if (file) {
             const data: any = await uploadExcel(file, undefined);
-            console.log(data)
 
             dispatch(showBackdrop(true));
             dispatch(execute({
                 header: null,
-                detail: data.map((x: any) => insClassification(x))
+                detail: data.map((x: any) => insClassification({
+                    ...x,
+                    title:x.classification,
+                    communicationchannel:x.channels,
+                    tags:x.tag,
+                    parent:0,
+                    operation:"INSERT",
+                    type: 'TIPIFICACION',
+                    id:0,
+                }))
             }, true));
             setWaitSave(true)
         }
@@ -545,16 +618,48 @@ const Tipifications: FC = () => {
         }
 
         return (
-            <TableZyx
-                columns={columns}
-                titlemodule={t(langKeys.tipification, { count: 2 })}
-                data={mainResult.mainData.data}
-                loading={mainResult.mainData.loading}
-                download={true}
-                register={true}
-                importCSV={importCSV}
-                handleRegister={handleRegister}
-            />
+            <Fragment>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.tipification, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    loading={mainResult.mainData.loading}
+                    download={true}
+                    register={true}
+                    importCSV={importCSV}
+                    handleRegister={handleRegister}
+                    ButtonsElement={()=>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            style={{ backgroundColor: "#7721ad" }}
+                            onClick={() => setOpenDialog(true)}
+                        >{t(langKeys.opendrilldown)}
+                        </Button>
+                    }
+                />
+                <DialogZyx
+                    open={openDialog}
+                    title={t(langKeys.organizationclass)}
+                    buttonText1={t(langKeys.close)}
+                    //buttonText2={t(langKeys.select)}
+                    handleClickButton1={() => setOpenDialog(false)}
+                    handleClickButton2={() => setOpenDialog(false)}
+                >   
+                <TreeView
+                    className={classes.treeviewroot}
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
+                        <TreeItemsFromData
+                            dataClassTotal={mainResult.multiData.data[3] && mainResult.multiData.data[3].success ? mainResult.multiData.data[3].data : []}
+                        />
+                    </TreeView>
+                    <div className="row-zyx">
+                    </div>
+                </DialogZyx>
+            </Fragment>
         )
     }
     else if (viewSelected === "view-2") {
