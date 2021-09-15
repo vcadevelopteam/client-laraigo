@@ -198,7 +198,7 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     supplier:"Proveedor",
     addbutton: 'Añadir botón',
     removebutton: 'Quitar botón',
-    
+    import: 'Importar',
     integrationmanager: 'Administrador de Integraciones',
     integrationmanager_plural: 'Administrador de Integraciones',
     newintegrationmanager: 'Nueva integración',
@@ -259,7 +259,6 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     attention_group: 'Grupo de atención',
     register: 'Registrar',
     download: 'Descargar',
-    import: 'Importar',
     back: 'Regresar',
     continue: 'Continuar',
     confirmation: 'Confirmación',
@@ -406,6 +405,9 @@ newRegisterMessage: '¿No tienes una cuenta? Registrate',
     report_userproductivityhours_qtytickets: 'Cantidad de tickets',
     report_userproductivityhours_qtyconnection: 'Cantidad de conexiones realizadas',
     report_userproductivityhours_qtydisconnection: 'Cantidad de desconexiones realizadas',
+
+    report_userproductivityhours_filter_adviser: 'Asesor',
+    report_userproductivityhours_filter_channels: 'Canal',
 };
 
 const esResource: ResourceLanguage = {

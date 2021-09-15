@@ -266,7 +266,7 @@ const useColorInputStyles = makeStyles(theme => ({
     colorInputContainer: {
         display: 'flex',
         flexDirection: 'row',
-        width: 60,
+        width: '1%',
         height: 30,
         cursor: 'pointer',
         borderRadius: 2,

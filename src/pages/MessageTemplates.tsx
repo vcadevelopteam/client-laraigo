@@ -121,7 +121,7 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
-                width:60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (

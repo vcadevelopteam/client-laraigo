@@ -18,6 +18,7 @@ export interface TableConfig {
     titlemodule?: string,
     methodexport?: string,
     exportPersonalized?(param?: any): void,
+    importCSV?: (param?: any) => void
     download?: boolean,
     register?: boolean,
     handleRegister?(param: any): void,

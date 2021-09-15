@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -61,10 +61,10 @@ const useStyles = makeStyles((theme) => ({
         paddingBottom: "20px",
     }
 }));
-const dataTypeAction=[
-    {dat:"Simple"},
-    {dat:"Variable"},
-    {dat:"Request"}
+const dataTypeAction = [
+    { dat: "Simple" },
+    { dat: "Variable" },
+    { dat: "Request" }
 ]
 
 const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
@@ -74,7 +74,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     const [jobplan, setjobplan] = useState<Dictionary[]>(row && row.jobplan ? JSON.parse(row.jobplan) : [])
 
     const executeRes = useSelector(state => state.main.execute);
-    const user = useSelector(state => state.login.validateToken.user);
+    // const user = useSelector(state => state.login.validateToken.user);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -82,8 +82,8 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
     console.log(dataParent)
-    
-        
+
+
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
 
@@ -98,7 +98,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             status: row ? row.status : 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
-            tags: row?.tags ||''
+            tags: row?.tags || ''
         }
     });
 
@@ -130,18 +130,18 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         }
     }, [executeRes, waitSave])
     function addaction() {
-        setjobplan((p) => [...p, { action: "" , type: "Simple"}])
+        setjobplan((p) => [...p, { action: "", type: "Simple" }])
     }
-    function deleteitem(i:number){
-        setjobplan(jobplan.filter((e,index)=>index!==i))
-        
+    function deleteitem(i: number) {
+        setjobplan(jobplan.filter((e, index) => index !== i))
+
     }
-    function setValueAction(field:string, value:string,i:number){
-        setjobplan((p: Dictionary[]) => p.map((x,index) => index === i ? { ...x, [field]: value } : x))
+    function setValueAction(field: string, value: string, i: number) {
+        setjobplan((p: Dictionary[]) => p.map((x, index) => index === i ? { ...x, [field]: value } : x))
     }
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
-            dispatch(execute(insClassification({...data,jobplan:JSON.stringify(jobplan)})));
+            dispatch(execute(insClassification({ ...data, jobplan: JSON.stringify(jobplan) })));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -248,7 +248,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 value={row ? (row.path || "") : ""}
                                 className="col-6"
                             />}
-                        
+
                     </div>
                     <div className="row-zyx">
                         {edit ?
@@ -285,18 +285,18 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             />}
                     </div>
                     <div className="row-zyx">
-                            {edit ?
-                                <FieldEdit
-                                    label={t(langKeys.tag)}
-                                    className="col-6"
-                                    valueDefault={row ? (row.tags || "") : ""}
-                                    onChange={(value) => setValue('tags', value)}
-                                    error={errors?.tags?.message}
-                                />
-                                : <FieldView
-                                    label={t(langKeys.tag)}
-                                    value={row ? (row.tags || "") : ""}
-                                    className="col-6"
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.tag)}
+                                className="col-6"
+                                valueDefault={row ? (row.tags || "") : ""}
+                                onChange={(value) => setValue('tags', value)}
+                                error={errors?.tags?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.tag)}
+                                value={row ? (row.tags || "") : ""}
+                                className="col-6"
                             />}
                     </div>
                     <div style={{ marginBottom: '16px' }}>
@@ -328,67 +328,67 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                                 </div>
                             }
                         </div>
-                        
-                            {
-                                (edit && showAddAction) && jobplan.map((e: any,i:number) => (
-                                    <div className="row-zyx" key={i}>
-                                        <FieldEdit
-                                            label={t(langKeys.action)}
-                                            className="col-6"
-                                            valueDefault={e.action?e.action:""}
-                                            onChange={(value) => setValueAction('action', value,i)}
-                                        />
-                                        <FieldSelect
-                                            label={t(langKeys.type)}
-                                            className="col-5"
-                                            valueDefault={e.type?e.type:"Simple"}
-                                            //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                            error={errors?.status?.message}
-                                            data={dataTypeAction}
-                                            optionDesc="dat"
-                                            optionValue="dat"
-                                            onChange={(value) => setValueAction('type', value.dat,i)}
-                                        />
-                                        <div className="col-1" style={{paddingTop:"15px"}}>
+
+                        {
+                            (edit && showAddAction) && jobplan.map((e: any, i: number) => (
+                                <div className="row-zyx" key={i}>
+                                    <FieldEdit
+                                        label={t(langKeys.action)}
+                                        className="col-6"
+                                        valueDefault={e.action ? e.action : ""}
+                                        onChange={(value) => setValueAction('action', value, i)}
+                                    />
+                                    <FieldSelect
+                                        label={t(langKeys.type)}
+                                        className="col-5"
+                                        valueDefault={e.type ? e.type : "Simple"}
+                                        //onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                                        error={errors?.status?.message}
+                                        data={dataTypeAction}
+                                        optionDesc="dat"
+                                        optionValue="dat"
+                                        onChange={(value) => setValueAction('type', value.dat, i)}
+                                    />
+                                    <div className="col-1" style={{ paddingTop: "15px" }}>
                                         <IconButton aria-label="delete" onClick={() => deleteitem(i)}>
                                             <DeleteIcon />
                                         </IconButton>
-                                        </div>
-                                        {e.type==="Variable"?
+                                    </div>
+                                    {e.type === "Variable" ?
                                         <FieldEdit
                                             label={t(langKeys.variable)}
                                             className={classes.dataaction}
-                                            valueDefault={e.variable?e.variable:""}
-                                            onChange={(value) => setValueAction('variable', value,i)}
+                                            valueDefault={e.variable ? e.variable : ""}
+                                            onChange={(value) => setValueAction('variable', value, i)}
                                         />
-                                        
-                                        :null}
-                                        {e.type==="Request"?
+
+                                        : null}
+                                    {e.type === "Request" ?
                                         <div>
                                             <FieldEdit
                                                 label={t(langKeys.endpoint)}
                                                 className={classes.dataaction}
-                                                valueDefault={e.endpoint?e.endpoint:""}
-                                                onChange={(value) => setValueAction('endpoint', value,i)}
+                                                valueDefault={e.endpoint ? e.endpoint : ""}
+                                                onChange={(value) => setValueAction('endpoint', value, i)}
                                             />
                                             <FieldEditMulti
                                                 label={t(langKeys.data)}
                                                 className={classes.dataaction}
-                                                valueDefault={e.data?e.data:""}
-                                                onChange={(value) => setValueAction('data', value,i)}
+                                                valueDefault={e.data ? e.data : ""}
+                                                onChange={(value) => setValueAction('data', value, i)}
                                                 maxLength={2048}
                                             />
 
                                         </div>
-                                        :null}
-                                        <hr></hr>
-                                    </div>
-                                ))
-                            }
+                                        : null}
+                                    <hr></hr>
+                                </div>
+                            ))
+                        }
 
                     </div>
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        
+
                     </div>
                 </div>
             </form>
@@ -409,13 +409,13 @@ const Tipifications: FC = () => {
 
     const columns = React.useMemo(
         () => [
-            
+
             {
                 accessor: 'classificationid',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
-                width:60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -510,7 +510,7 @@ const Tipifications: FC = () => {
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             debugger
-            dispatch(execute(insClassification({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.classificationid,parent:row.parentid })));
+            dispatch(execute(insClassification({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.classificationid, parent: row.parentid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -520,6 +520,22 @@ const Tipifications: FC = () => {
             question: t(langKeys.confirmation_delete),
             callback
         }))
+    }
+
+
+    const importCSV = async (files: any[]) => {
+        const file = files[0];
+        if (file) {
+            const data: any = await uploadExcel(file, undefined);
+            console.log(data)
+
+            dispatch(showBackdrop(true));
+            dispatch(execute({
+                header: null,
+                detail: data.map((x: any) => insClassification(x))
+            }, true));
+            setWaitSave(true)
+        }
     }
 
     if (viewSelected === "view-1") {
@@ -536,6 +552,7 @@ const Tipifications: FC = () => {
                 loading={mainResult.mainData.loading}
                 download={true}
                 register={true}
+                importCSV={importCSV}
                 handleRegister={handleRegister}
             />
         )

@@ -94,7 +94,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
             children.push(item)
         }
     })
-    
+
     function setselect(x: Dictionary) {
         setValueTmp(x.key)
         setselectedlabel(x.label)
@@ -139,7 +139,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
     const user = useSelector(state => state.login.validateToken.user);
-    
+
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(false);
@@ -216,31 +216,31 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
                             handleClick={setViewSelected}
-                            />
+                        />
                         <TitleDetail
                             title={row ? `${row.description}` : t(langKeys.newquickreply)}
-                            />
+                        />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
                             <Button
+                                className={classes.button}
                                 variant="contained"
-                                type="button"
                                 color="primary"
-                                startIcon={<ClearIcon color="secondary" />}
-                                style={{ backgroundColor: "#FB5F5F" }}
-                                onClick={() => setViewSelected("view-1")}
-                            >{t(langKeys.back)}</Button>
-                            {edit &&
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    color="primary"
-                                    type="submit"
-                                    startIcon={<SaveIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                >{t(langKeys.save)}
-                                </Button>
-                            }
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -317,9 +317,9 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 className="col-6"
                             />}
                     </div>
-                    <div className="row-zyx">
+                    <div className="row-zyx" style={{ position: 'relative' }}>
                         {edit ?
-                            <Fragment>
+                            <>
                                 <FieldEditMulti
                                     label={t(langKeys.detail)}
                                     className="col-12"
@@ -328,11 +328,11 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                     error={errors?.quickreply?.message}
                                     maxLength={1024}
                                 />
-                                <div style={{position:"relative",bottom: "80px", left: "94%"}}>
-                                    <EmojiPickerZyx  onSelect={e => setQuickreply(quickreply + e.native)} />
-                                </div>
+                                <EmojiPickerZyx
+                                    style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                    onSelect={e => setQuickreply(quickreply + e.native)} />
 
-                            </Fragment>
+                            </>
                             : <FieldView
                                 label={t(langKeys.detail)}
                                 value={row ? (row.quickreply || "") : ""}
@@ -345,7 +345,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 label={t(langKeys.status)}
                                 className="col-12"
                                 valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
+                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
                                 optionDesc="domaindesc"
@@ -357,7 +357,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                                 className="col-12"
                             />}
                     </div>
-                    
+
                 </div>
             </form>
             <DialogZyx
@@ -402,6 +402,8 @@ const Quickreplies: FC = () => {
                 accessor: 'quickreplyid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -423,7 +425,7 @@ const Quickreplies: FC = () => {
                 Header: t(langKeys.quickreply),
                 accessor: 'quickreply',
                 NoFilter: true
-            },            
+            },
             {
                 Header: t(langKeys.classification),
                 accessor: 'classificationdesc',
@@ -434,7 +436,7 @@ const Quickreplies: FC = () => {
                 accessor: 'status',
                 NoFilter: true
             },
-            
+
         ],
         [t]
     );

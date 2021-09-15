@@ -4,22 +4,7 @@ import Avatar from '@material-ui/core/Avatar';
 import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
-
-const secondsToTime = (seconds: number): string => {
-    const hh = Math.floor(seconds / 3600);
-    const mm = Math.floor((seconds / 60) % 60);
-    const ss = Math.floor(seconds % 60);
-    return `${hh.toString().padStart(2, "0")}:${mm.toString().padStart(2, "0")}:${ss.toString().padStart(2, "0")}`;
-}
-
-const getSecondsUntelNow = (date: Date): number => Math.floor((new Date().getTime() - date.getTime()) / 1000);
-
-const convertLocalDate = (date: string | null, validateWithToday: boolean): Date => {
-    if (!date) return new Date()
-    const nn = new Date(date)
-    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000 * -1));
-    return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
-}
+import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
 
 const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; timer?: number }> = ({ label, color, timer, isTimer }) => {
     const [time, settime] = useState(isTimer ? timer : -1);

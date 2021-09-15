@@ -81,6 +81,7 @@ export const langKeys = {
     usertmopercentmax:'usertmopercentmax',
     hasactionplan:'hasactionplan',
     whitelist: 'whitelist',
+    import: 'import',
 
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
@@ -260,7 +261,6 @@ export const langKeys = {
     attention_group: 'attention_group',
     register: 'register',
     download: 'download',
-    import: 'import',
     back: 'back',
     continue: 'continue',
     confirmation: 'confirmation',
@@ -406,6 +406,9 @@ export const langKeys = {
     report_userproductivityhours_qtytickets: 'report_userproductivityhours_qtytickets',
     report_userproductivityhours_qtyconnection: 'report_userproductivityhours_qtyconnection',
     report_userproductivityhours_qtydisconnection: 'report_userproductivityhours_qtydisconnection',
+
+    report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
+    report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
 };
 
 export type LangKeys = typeof langKeys;
