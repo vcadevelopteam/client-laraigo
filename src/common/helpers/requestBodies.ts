@@ -1,4 +1,4 @@
-import { Dictionary, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
 
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
@@ -614,4 +614,24 @@ export const getChannelSel = (id: number): IRequestBody => ({
         personcommunicationchannel: "",
         all: id === 0,
     }
+});
+
+export const getInsertChatwebChannel = (name: string, auto: boolean, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        id: 0,
+        description: name,
+        type: "",
+        communicationchannelsite: "id del canal",
+        communicationchannelowner: "id del canal",
+        chatflowenabled: auto,
+        integrationid: "",
+        color: "",
+        icons: "",
+        other: "",
+        form: "",
+        apikey: "",
+    },
+    type: "CHATWEB",
+    service,
 });

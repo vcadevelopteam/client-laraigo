@@ -9,3 +9,4 @@ export * from './action';
 export * from './route';
 export * from './tableconfig';
 export * from './entities/agent';
+export * from './entities/chatweb';

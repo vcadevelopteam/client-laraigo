@@ -9,10 +9,12 @@ export interface ParametersPaginated extends Dictionary {
     offset?: number;
 }
 
-export interface IRequestBody {
+export interface IRequestBody<TService = object> {
     method: string,
     key?: string,
-    parameters: Dictionary
+    parameters: Dictionary,
+    type?: string;
+    service?: TService;
 }
 
 export interface IRequestBodyPaginated {

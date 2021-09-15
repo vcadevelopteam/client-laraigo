@@ -7,18 +7,8 @@ const paths = {
     SUPERVISOR: '/supervisor',
     ORGANIZATIONS: '/organizations',
     CHANNELS: '/channels',
-    CHANNELS_ADD: {
-        path: '/channels/:id/add',
-        resolve: (channelId: string | number) => `/channels/${channelId}/add`,
-    },
-    CHANNELS_ADD_CHATWEB: {
-        path: '/channels/:id/add/chatweb',
-        resolve: (channelId: string | number) => `/channels/${channelId}/add/chatweb`,
-    },
-    CHANNELS_ADD_END: {
-        path: '/channels/:id/add/confirm',
-        resolve: (channelId: string | number) => `/channels/${channelId}/add/confirm`,
-    },
+    CHANNELS_ADD: '/channels/add',
+    CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
