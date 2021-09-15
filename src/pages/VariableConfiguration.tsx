@@ -8,10 +8,10 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckb
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
+import TableZyxEditable from 'components/fields/table-editable';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import EditIcon from '@material-ui/icons/Edit';
@@ -291,15 +291,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<{vars: FormFields[]}>({ 
-        defaultValues: {
-            vars: detailData
-        }
-    });
-    const { fields, update, append, prepend, remove, swap, move, insert } = useFieldArray({
-        control,
-        name: "vars"
-    });
+    const [dataTable, setDataTable] = useState<any[]>(detailData);
+    const [skipPageReset, setSkipPageReset] = React.useState(false)
 
     useEffect(() => {
         if (waitSave) {
@@ -317,9 +310,14 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
         }
     }, [executeRes, waitSave])
 
-    const onSubmit = handleSubmit((data) => {
+    const onSubmit = () => {
         const callback = () => {
-            dispatch(execute(insVariableConfiguration(data)));
+            dispatch(execute({
+                header: null,
+                detail: [
+                    ...dataTable.map((x: any) => insVariableConfiguration(x))
+                ]
+            }, true));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -329,7 +327,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             question: t(langKeys.confirmation_save),
             callback
         }))
-    });
+    };
 
     const columns = React.useMemo(
         () => [
@@ -368,6 +366,26 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
         []
     )
 
+    const updateMyData = (rowIndex: number, columnId: any, value: any) => {
+        // We also turn on the flag to not reset the page
+        setSkipPageReset(true);
+        setDataTable((old: any) =>
+        old.map((row: any, index: number) => {
+            if (index === rowIndex) {
+                return {
+                    ...old[rowIndex],
+                    [columnId]: value,
+                }
+            }
+            return row
+        })
+        )
+    }
+
+    useEffect(() => {
+        setSkipPageReset(false)
+    }, [dataTable])
+
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
@@ -375,13 +393,15 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 handleClick={setViewSelected}
             />
             <form onSubmit={onSubmit}>
-                <TableZyx
+                <TableZyxEditable
                     columns={columns}
                     titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
-                    data={detailData}
+                    data={dataTable}
                     download={false}
                     register={false}
                     filterGeneral={false}
+                    updateMyData={updateMyData}
+                    skipPageReset={skipPageReset}
                 />
                 <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                     <Button
