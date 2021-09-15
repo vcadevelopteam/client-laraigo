@@ -271,8 +271,12 @@ const translation: LangKeys = {
     confirmation_delete: 'Are you sure to delete the record?',
     login_with_facebook: 'Login with Facebook',
     next:"Next",
+    defaultanswer: "Default answer",
     login_with_google: 'Login with Google',
-
+    insults: "Insults",
+    entities: "Entities",
+    links: "Links",
+    emotions: "Emotions",
     path: "Path",
     hasactionplan:'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',

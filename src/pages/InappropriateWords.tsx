@@ -64,9 +64,11 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.inappropriatewordsid : 0,
-            description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
+            id: row?.inappropriatewordsid|| 0,
+            classification: row?.classification||"",
+            description: row?.description || '',
+            defaultanswer: row?.defaultanswer || '',
+            status: row ?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -74,7 +76,9 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     React.useEffect(() => {
         register('type');
         register('id');
+        register('defaultanswer');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('classification', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -146,9 +150,32 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
+                            <FieldSelect
+                                label={t(langKeys.classification)}
+                                className="col-12"
+                                valueDefault={row ? (row.classification || "") : ""}
+                                onChange={(value) => setValue('classification', (value?.domainvalue||""))}
+                                error={errors?.classification?.message}
+                                data={[
+                                    {domaindesc:t(langKeys.insults), domainvalue: "Insults"},
+                                    {domaindesc:t(langKeys.entities), domainvalue: "Entities"},
+                                    {domaindesc:t(langKeys.links), domainvalue: "Links"},
+                                    {domaindesc:t(langKeys.emotions), domainvalue: "Emotions"},
+                                ]}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.classification)}
+                                value={row?.classification || ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
                             <FieldEdit
                                 label={t(langKeys.description)} 
-                                className="col-6"
+                                className="col-12"
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={row ? (row.description || "") : ""}
                                 error={errors?.description?.message}
@@ -156,24 +183,41 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                             : <FieldView
                                 label={t(langKeys.description)}
                                 value={row ? (row.description || "") : ""}
-                                className="col-6"
+                                className="col-12"
                             />}
-                            {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.defaultanswer)} 
+                                className="col-12"
+                                onChange={(value) => setValue('defaultanswer', value)}
+                                valueDefault={row ? (row.defaultanswer || "") : ""}
+                                error={errors?.defaultanswer?.message}
                             />
                             : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
+                                label={t(langKeys.defaultanswer)}
+                                value={row ? (row.defaultanswer || "") : ""}
+                                className="col-12"
                             />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-12"
+                            valueDefault={row ? (row.status || "") : ""}
+                            onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        : <FieldView
+                            label={t(langKeys.status)}
+                            value={row ? (row.status || "") : ""}
+                            className="col-12"
+                        />}
                     </div>
                 </div>
             </form>
@@ -212,8 +256,18 @@ const InappropriateWords: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.classification),
+                accessor: 'classification',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.defaultanswer),
+                accessor: 'defaultanswer',
                 NoFilter: true
             },
             {
