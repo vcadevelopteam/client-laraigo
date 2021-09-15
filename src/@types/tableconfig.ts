@@ -25,7 +25,9 @@ export interface TableConfig {
     pageSizeDefault?: number,
     filterGeneral?: boolean,
     hoverShadow?: boolean,
-    loading?: boolean
+    loading?: boolean,
+    updateMyData?: (index: number, id: any, value: any) => void
+    skipPageReset?: boolean
 }
 
 export interface Pagination {
