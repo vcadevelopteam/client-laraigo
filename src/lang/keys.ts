@@ -220,6 +220,11 @@ export const langKeys = {
     test: 'test',
     result: 'result',
     closing_reason: 'closing_reason',
+    reassign: 'reassign',
+    reassign_ticket: 'reassign_ticket',
+    typify: 'typify',
+    typify_ticket: 'typify_ticket',
+    observation: 'observation',
 
     flowdesigner: 'flowdesigner',
 

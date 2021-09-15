@@ -8,10 +8,13 @@ export interface IBaseState {
     code?: string;
     error: boolean;
     message?: string;
+}
+
+export interface IPesonState extends IBaseState {
     data?: IPerson | null;
 }
 
-const initialPerson: IBaseState = {
+const initialTransaction: IBaseState = {
     loading: false,
     code: undefined,
     error: false,
@@ -24,8 +27,9 @@ export interface IState {
     interactionList: IListStatePaginated<IGroupInteraction>;
     ticketSelected: ITicket | null;
     agentSelected: IAgent | null;
-    person: IBaseState;
+    person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
+    triggerCloseTicket: IBaseState;
     showInfoPanel: boolean;
 }
 
@@ -34,7 +38,8 @@ export const initialState: IState = {
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
-    person: initialPerson,
+    person: initialTransaction,
+    triggerCloseTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
     showInfoPanel: false
@@ -79,5 +84,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
     [actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
 
-    
+    [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
+    [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
+    [actionTypes.CLOSE_TICKET_FAILURE]: caseFunctions.closeTicketFailure,
+    [actionTypes.CLOSE_TICKET_RESET]: caseFunctions.closeTicketReset,    
 });
