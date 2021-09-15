@@ -186,9 +186,9 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insInappropriateWords = ({ id, description, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const insInappropriateWords = ({ id, description, status, type, username, operation,classification,defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id, description, status, type, username, operation }
+    parameters: { id, description, status, type, username, operation,classification,defaultanswer }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -273,7 +273,7 @@ export const getReportFilterSel = (filter: string): IRequestBody => ({
     method: filter,
     key: filter,
     parameters: {
-        supervisorid:1,
+        supervisorid: 1,
         all: false
     }
 });
@@ -289,7 +289,7 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         filters,
         sorts,
         origin: origin,
-        supervisorid:1,
+        supervisorid: 1,
         allParameters,
         userid: allParameters["userid"],
         channel: allParameters["channel"],
@@ -303,11 +303,11 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
     key: methodExport,
     parameters: {
         origin: origin,
-        filters, 
-        startdate, 
+        filters,
+        startdate,
         enddate,
         sorts,
-        supervisorid:1,
+        supervisorid: 1,
         channel: "",
         hours: "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -372,11 +372,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, title,description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id,title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
 //tabla paginada
@@ -408,12 +408,19 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
     }
 });
 
+export const getConfigurationVariables = (communicationchannelid: number): IRequestBody => ({
+    method: "UFN_TABLEVARIABLECONFIGURATIONBYCHANNEL_SEL",
+    key: "UFN_TABLEVARIABLECONFIGURATIONBYCHANNEL_SEL",
+    parameters: { communicationchannelid }
+});
+
 export const getCommChannelLst = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_LST",
     key: "UFN_COMMUNICATIONCHANNEL_LST",
     parameters: {
     }
 });
+
 export const getValuesForTree = (): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
@@ -437,7 +444,7 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insMessageTemplate = (    
+export const insMessageTemplate = (
     {
         id,
         description,
@@ -458,7 +465,7 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
-        
+
         method: "UFN_MESSAGETEMPLATE_INS",
         parameters: {
             id,
@@ -477,7 +484,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: buttons?JSON.stringify(buttons):"",
+            buttons: buttons ? JSON.stringify(buttons) : "",
             operation
         }
     });
@@ -543,17 +550,29 @@ export const getChannelSel = (id: number): IRequestBody => ({
 
 export const getVariableConfigurationLst = (): IRequestBody => ({
     method: "UFN_VARIABLECONFIGURATION_LST",
-    parameters: { }
+    parameters: {}
 });
 
 export const getVariableConfigurationSel = (id: string): IRequestBody => ({
     method: "UFN_VARIABLECONFIGURATION_SEL",
-    parameters: { 
+    parameters: {
         chatblockid: id
     }
 });
 
 export const insVariableConfiguration = ({
+    corpid,
+    orgid,
+    chatblockid,
+    variable,
+    description,
+    fontcolor,
+    fontbold,
+    priority,
+    visible
+}: Dictionary): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_INS",
+    parameters: {
         corpid,
         orgid,
         chatblockid,
@@ -563,17 +582,5 @@ export const insVariableConfiguration = ({
         fontbold,
         priority,
         visible
-    }: Dictionary): IRequestBody => ({
-        method: "UFN_VARIABLECONFIGURATION_INS",
-        parameters: {
-            corpid,
-            orgid,
-            chatblockid,
-            variable,
-            description,
-            fontcolor,
-            fontbold,
-            priority,
-            visible
-        }
-    });
+    }
+});

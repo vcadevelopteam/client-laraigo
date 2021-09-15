@@ -1,5 +1,5 @@
-import { IActionCall, IAgent, IInteraction, ITicket } from "@types";
-import { CommonService } from "network";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams } from "@types";
+import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
 
@@ -88,3 +88,15 @@ export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_A
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
+
+export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
+    callAPI: () => InboxService.closeTicket(params),
+    types: {
+        loading: actionTypes.CLOSE_TICKET,
+        success: actionTypes.CLOSE_TICKET_SUCCESS,
+        failure: actionTypes.CLOSE_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });

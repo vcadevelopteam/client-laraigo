@@ -1,4 +1,5 @@
 export * from './entities/ticket';
+export * from './entities/inbox';
 export * from './entities/interaction';
 export * from './entities/user';
 export * from './entities/requestBody';

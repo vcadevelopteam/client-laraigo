@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket } from "@types";
+import { ITicket, ICloseTicketsParams } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CheckIcon } from 'icons';
@@ -9,7 +10,7 @@ import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { showInfoPanel } from 'store/inbox/actions';
+import { showInfoPanel, closeTicket } from 'store/inbox/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -17,8 +18,11 @@ import { useForm } from 'react-hook-form';
 
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
 
     const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
@@ -30,13 +34,22 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
             register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
             register('observation');
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openModal])
 
-    const onSubmit = handleSubmit((data) => {     
-        console.log(data)
+    const onSubmit = handleSubmit((data) => {
+        const dd: ICloseTicketsParams = {
+            conversationid: ticketSelected?.conversationid!!,
+            motive: data.motive,
+            observation: data.observation,
+            ticketnum: ticketSelected?.ticketnum!!,
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            status: 'CERRADO',
+            isAnswered: false,
+        }
+        dispatch(closeTicket(dd));
     });
-
 
     return (
         <DialogZyx
@@ -60,7 +73,74 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                     optionValue="domainvalue"
                 />
                 <FieldEditMulti
-                    label={t(langKeys.detail)}
+                    label={t(langKeys.observation)}
+                    valueDefault={getValues('observation')}
+                    className="col-12"
+                    onChange={(value) => setValue('observation', value)}
+                    maxLength={1024}
+                />
+            </div>
+        </DialogZyx>)
+}
+
+const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                motive: '',
+                observation: ''
+            })
+            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('observation');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        const dd: ICloseTicketsParams = {
+            conversationid: ticketSelected?.conversationid!!,
+            motive: data.motive,
+            observation: data.observation,
+            ticketnum: ticketSelected?.ticketnum!!,
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            status: 'CERRADO',
+            isAnswered: false,
+        }
+        dispatch(closeTicket(dd));
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.reassign_ticket)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.user_plural)}
+                    className="col-12"
+                    valueDefault={getValues('motive')}
+                    onChange={(value) => setValue('motive', value ? value.userid : '')}
+                    error={errors?.motive?.message}
+                    data={multiData.data[1] && multiData.data[1].data}
+                    optionDesc="displayname"
+                    optionValue="userid"
+                />
+                <FieldEditMulti
+                    label={t(langKeys.observation)}
                     valueDefault={getValues('observation')}
                     className="col-12"
                     onChange={(value) => setValue('observation', value)}
@@ -72,15 +152,11 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
 
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
     const { t } = useTranslation();
+    const handleClose = () => setAnchorEl(null);
     const [openModalCloseticket, setopenModalCloseticket] = useState(false);
-
-
-    const closeTicket = () => {
-        setopenModalCloseticket(true);
-        // handleClose();
-    }
+    const [openModalReassignticket, setopenModalReassignticket] = useState(false);
+    const closeTicket = () => setopenModalCloseticket(true);
 
     return (
         <>
@@ -115,13 +191,15 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 onClose={handleClose}
             >
                 <MenuItem onClick={(e) => {
+                    setopenModalReassignticket(true)
                     setAnchorEl(null)
-                }}>Reasignar</MenuItem>
+                }}>{t(langKeys.reassign)}</MenuItem>
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
-                }}>Clasificar</MenuItem>
+                }}>{t(langKeys.typify)}</MenuItem>
             </Menu>
             <DialogCloseticket openModal={openModalCloseticket} setOpenModal={setopenModalCloseticket} />
+            <DialogReassignticket openModal={openModalReassignticket} setOpenModal={setopenModalReassignticket} />
         </>
     )
 }
