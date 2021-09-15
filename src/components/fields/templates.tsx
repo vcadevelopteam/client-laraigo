@@ -504,6 +504,28 @@ const useCheckboxStyles = makeStyles({
     }
 });
 
+export const OnlyCheckbox: React.FC<InputProps> = ({ className, onChange, valueDefault, label, disabled = false }) => {
+    const classes = useCheckboxStyles();
+    const [checkedaux, setChecked] = useState(false);
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
+    return (
+        <Checkbox
+            checked={checkedaux}
+            checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}
+            icon={<span className={classes.icon} />}
+            disabled={disabled}
+            onChange={(e) => {
+                setChecked(e.target.checked);
+                onChange && onChange(e.target.checked)
+            }}
+        />
+    );
+}
+
 interface FieldCheckboxProps extends InputProps {
     className?: any;
     label: string;
