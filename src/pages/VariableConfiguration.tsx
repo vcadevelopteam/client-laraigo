@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox, OnlyCheckbox } from 'components';
+import { TemplateBreadcrumbs } from 'components';
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -19,8 +19,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
-import { HuePicker } from 'react-color'
-import { TextField } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -174,16 +172,6 @@ const VariableConfiguration: FC = () => {
         }
     }, [executeResult, waitSave]);
 
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    }
-
     const handleEdit = (row: Dictionary) => {
         // setViewSelected("view-2");
         setRowSelected({ row, edit: true });
@@ -259,7 +247,6 @@ const VariableConfiguration: FC = () => {
                 download={false}
                 loading={mainResult.mainData.loading}
                 register={false}
-                handleRegister={handleRegister}
             />
         )
     }
@@ -275,16 +262,6 @@ const VariableConfiguration: FC = () => {
         )
 }
 
-type FormFields = {
-    chatblockid: string,
-    variable: string,
-    description: string,
-    fontcolor: string,
-    fontbold: boolean,
-    priority: number,
-    visible: boolean
-}
-
 const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, detailData, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -295,8 +272,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const [dataTable, setDataTable] = useState<any[]>(detailData);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
-    const [allFontBold, setAllFontBold] = useState(false);
-    const [allVisible, setVisible] = useState(false);
+    // const [allFontBold, setAllFontBold] = useState(false);
+    // const [allVisible, setVisible] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -339,34 +316,21 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 Header: t(langKeys.variable),
                 accessor: 'variable',
                 NoFilter: false,
-                sortType: 'string',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.variable
-                }
+                sortType: 'string'
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.label),
                 accessor: 'description',
                 NoFilter: false,
                 sortType: 'string',
+                editable: true,
             },
             {
                 Header: t(langKeys.color),
                 accessor: 'fontcolor',
                 NoFilter: false,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <HuePicker
-                            width="auto"
-                            color={row.fontcolor}
-                            onChangeComplete={(value) => {
-                                updateMyData(props.cell.row.index, props.cell.column.id, value.hex)
-                            }}
-                        />
-                    )
-                }
+                type: 'color',
+                editable: true,
             },
             {
                 Header: t(langKeys.bold),
@@ -374,21 +338,15 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 NoFilter: false,
                 type: 'boolean',
                 sortType: 'basic',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <OnlyCheckbox
-                        label=""
-                        valueDefault={row.fontbold}
-                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
-                    />
-                }
+                editable: true,
             },
             {
                 Header: t(langKeys.order),
                 accessor: 'priority',
                 NoFilter: false,
                 type: 'number',
-                sortType: 'number'
+                sortType: 'number',
+                editable: true,
             },
             {
                 Header: t(langKeys.show),
@@ -396,14 +354,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 NoFilter: false,
                 type: 'boolean',
                 sortType: 'basic',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <OnlyCheckbox
-                        label=""
-                        valueDefault={row.visible}
-                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
-                    />
-                }
+                editable: true,
             }
         ],
         []
