@@ -133,6 +133,7 @@ const TableZyx = React.memo(({
     register,
     handleRegister,
     HeadComponent,
+    ButtonsElement,
     pageSizeDefault = 20,
     importCSV,
     filterGeneral = true,
@@ -339,6 +340,7 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
+                    {ButtonsElement && <ButtonsElement />}
                     {importCSV && (
                         <>
                             <input

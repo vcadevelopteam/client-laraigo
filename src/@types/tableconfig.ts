@@ -22,13 +22,14 @@ export interface TableConfig {
     download?: boolean,
     register?: boolean,
     handleRegister?(param: any): void,
-    HeadComponent?: () => JSX.Element |null ,
+    HeadComponent?: () => JSX.Element |null,
+    ButtonsElement?: () => JSX.Element |null,
     pageSizeDefault?: number,
     filterGeneral?: boolean,
     hoverShadow?: boolean,
     loading?: boolean,
-    updateMyData?: (index: number, id: any, value: any) => void
-    skipPageReset?: boolean
+    updateMyData?(index: number, id: any, value: any): void
+    skipAutoReset?: boolean
 }
 
 export interface Pagination {

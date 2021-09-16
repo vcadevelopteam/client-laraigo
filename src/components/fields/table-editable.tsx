@@ -126,6 +126,47 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+export const stringOptionsMenu = [
+    { key: 'equals', value: 'Igual' },
+    { key: 'notequals', value: 'No Igual' },
+    { key: 'contains', value: 'Contiene' },
+    { key: 'notcontains', value: 'No Contiene' },
+    { key: 'isempty', value: 'Es vacío' },
+    { key: 'isnotempty', value: 'No es vacío' },
+    { key: 'isnull', value: 'Es nulo' },
+    { key: 'isnotnull', value: 'No es nulo' },
+];
+
+export const numberOptionsMenu = [
+    { key: 'equals', value: 'Igual' },
+    { key: 'notequals', value: 'No Igual' },
+    { key: 'greater', value: 'Mayor que' },
+    { key: 'greaterequal', value: 'Mayor igual' },
+    { key: 'smaller', value: 'Menor que' },
+    { key: 'smallerequal', value: 'Menor igual' },
+    { key: 'isnull', value: 'Es nulo' },
+    { key: 'isnotnull', value: 'No es nulo' },
+];
+
+export const dateOptionsMenu = [
+    { key: 'equals', value: 'Igual' },
+    { key: 'notequals', value: 'No Igual' },
+    { key: 'after', value: 'Después del' },
+    { key: 'afterequal', value: 'Después o igual del' },
+    { key: 'before', value: 'Antes del' },
+    { key: 'beforeequal', value: 'Antes o igual del' },
+    { key: 'isnull', value: 'Es nulo' },
+    { key: 'isnotnull', value: 'No es nulo' },
+];
+
+export const booleanOptionsMenu = [
+    { key: 'all', value: 'Todos' },
+    { key: 'istrue', value: 'Es Verdadero' },
+    { key: 'isfalse', value: 'Es Falso' },
+    { key: 'isnull', value: 'Es nulo' },
+    { key: 'isnotnull', value: 'No es nulo' },
+];
+
 const TableZyxEditable = React.memo(({
     columns,
     titlemodule,
@@ -140,95 +181,128 @@ const TableZyxEditable = React.memo(({
     filterGeneral = true,
     loading = false,
     updateMyData,
-    skipPageReset = false,
+    skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
-    const SelectColumnFilter = ({
-        column: { setFilter, type },
+    const DefaultColumnFilter = ({
+        column: { canFilter, setFilter, type = "string" },
     }: any) => {
-        const [value, setValue] = useState('');
+        const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
-        const [operator, setoperator] = useState("contains");
+        const [operator, setoperator] = useState<string>('contains');
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
-        const handleClickItemMenu = (op: any) => {
+        const handleClickItemMenu = (operator: any) => {
             setAnchorEl(null);
-            setoperator(op)
+            setoperator(operator)
+            if (type === 'boolean') {
+                setValue(operator);
+            }
+            setFilter({ value, operator, type });
         };
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
         };
-
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
-
         useEffect(() => {
-            if (type === "number")
-                setoperator("equals");
+            switch (type) {
+                case "number": case "date":
+                    setoperator("equals");
+                    break;
+                case "boolean":
+                    setoperator("all");
+                    break;
+                case "string":
+                    setoperator("contains");
+                    break;
+                default:
+                    setoperator("equals");
+                    break;
+            }
         }, [type]);
 
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Input
-                    startAdornment={
-                        <InputAdornment position="start">
-                            <SearchIcon color="action" fontSize="small" />
-                        </InputAdornment>
-                    }
-                    disabled={loading}
-                    type={type === "number" ? "number" : "text"}
-                    style={{ fontSize: '15px', minWidth: '100px' }}
-                    fullWidth
-                    value={value}
-                    onKeyDown={keyPress}
-                    onChange={e => {
-                        setValue(e.target.value || '');
-                    }}
-                />
-                <div style={{ width: '12px' }} />
-                <MoreVertIcon
-                    style={{ cursor: 'pointer' }}
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    onClick={handleClickMenu}
-                    color="action"
-                    fontSize="small"
-                />
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                        },
-                    }}
-                >
-                    {type === "number" ?
-                        optionsMenu.filter(x => x.type !== 'onlystring').map((option) => (
+                {type === 'boolean' ?
+                <Select
+                    value={value || 'all'}
+                    onChange={(e) => handleClickItemMenu(e.target.value)}
+                    >
+                    {booleanOptionsMenu.map((option) => (
+                        <MenuItem key={option.key} value={option.key}>{option.value}</MenuItem>
+                    ))}
+                </Select>
+                :
+                <React.Fragment>
+                    <Input
+                        startAdornment={
+                            <InputAdornment position="start">
+                                <SearchIcon color="action" fontSize="small" />
+                            </InputAdornment>
+                        }
+                        disabled={loading}
+                        type="text"
+                        style={{ fontSize: '15px', minWidth: '100px' }}
+                        fullWidth
+                        value={value}
+                        onKeyDown={keyPress}
+                        onChange={e => {
+                            setValue(e.target.value || '');
+                        }}
+                    />
+                    <div style={{ width: '12px' }} />
+                    <MoreVertIcon
+                        style={{ cursor: 'pointer' }}
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClickMenu}
+                        color="action"
+                        fontSize="small"
+                    />
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: '20ch',
+                            },
+                        }}
+                    >
+                        {type === "string" ?
+                        stringOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
                                 {option.value}
                             </MenuItem>
-                        ))
-                        :
-                        optionsMenu.filter(x => x.type !== 'onlynumber').map((option) => (
+                        )) : null}
+                        {type === "number" ?
+                        numberOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
                                 {option.value}
                             </MenuItem>
-                        ))}
-                </Menu>
+                        )) : null}
+                        {type === "date" ?
+                        dateOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {option.value}
+                            </MenuItem>
+                        )) : null}
+                    </Menu>
+                </React.Fragment>
+                }
             </div>
         );
     }
@@ -276,43 +350,90 @@ const TableZyxEditable = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
-
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
-            if (!cellvalue)
+            if (cellvalue === null) {
                 return false;
-            if (type === "number") {
-                switch (operator) {
-                    case 'greater':
-                        return cellvalue > value;
-                    case 'greaterequal':
-                        return cellvalue >= value;
-                    case 'smaller':
-                        return cellvalue < value;
-                    case 'smallerequal':
-                        return cellvalue <= value;
-                    case 'noequals':
-                        return cellvalue !== value;
-                    case 'equals':
-                    default:
-                        return cellvalue === value;
-                }
-            } else {
-                switch (operator) {
-                    case 'equals':
-                        return cellvalue === value;
-                    case 'noequals':
-                        return cellvalue !== value;
-                    case 'nocontains':
-                        return !cellvalue.toLowerCase().includes(value.toLowerCase());
-                    case 'empty':
-                        return cellvalue === '' || cellvalue == null;
-                    case 'noempty':
-                        return cellvalue !== '' && cellvalue != null;
-                    case 'contains':
-                    default:
-                        return cellvalue.toLowerCase().includes(value.toLowerCase());
-                }
+            }
+            if (!(['isempty','isnotempty','isnull','isnotnull'].includes(operator) || type === 'boolean')
+                && (value || '') === '')
+                return true;
+            switch (type) {
+                case "number":
+                    switch (operator) {
+                        case 'greater':
+                            return cellvalue > Number(value);
+                        case 'greaterequal':
+                            return cellvalue >= Number(value);
+                        case 'smaller':
+                            return cellvalue < Number(value);
+                        case 'smallerequal':
+                            return cellvalue <= Number(value);
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== Number(value);
+                        case 'equals':
+                        default:
+                            return cellvalue === Number(value);
+                    }
+                case "date":
+                    switch (operator) {
+                        case 'after':
+                            return cellvalue > value;
+                        case 'afterequal':
+                            return cellvalue >= value;
+                        case 'before':
+                            return cellvalue < value;
+                        case 'beforeequal':
+                            return cellvalue <= value;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'equals':
+                        default:
+                            return cellvalue === value;
+                    }
+                case "boolean":
+                    switch (operator) {
+                        case 'istrue':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'true' : cellvalue === true;
+                        case 'isfalse':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'all':
+                        default:
+                            return true;
+                    }
+                case "string":
+                default:
+                    switch (operator) {
+                        case 'equals':
+                            return cellvalue === value;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'isempty':
+                            return cellvalue === '';
+                        case 'isnotempty':
+                            return cellvalue !== '';
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notcontains':
+                            return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                        case 'contains':
+                        default:
+                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                    }
             }
         });
     }, []);
@@ -320,7 +441,7 @@ const TableZyxEditable = React.memo(({
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => SelectColumnFilter({ ...props, data }),
+            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
             Cell: EditableCell
         }),
@@ -350,7 +471,10 @@ const TableZyxEditable = React.memo(({
         data,
         initialState: { pageIndex: 0, pageSize: pageSizeDefault },
         defaultColumn,
-        autoResetPage: !skipPageReset,
+        autoResetFilters: !skipAutoReset,
+        autoResetGlobalFilter: !skipAutoReset,
+        autoResetSortBy: !skipAutoReset,
+        autoResetPage: !skipAutoReset,
         updateMyData
     },
         useFilters,
@@ -429,8 +553,8 @@ const TableZyxEditable = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" >
-                    <Table size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)'}}>
+                    <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>

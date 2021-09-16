@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldCheckbox, OnlyCheckbox } from 'components';
 import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -19,6 +19,8 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
+import { HuePicker } from 'react-color'
+import { TextField } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -30,7 +32,7 @@ interface DetailProps {
     detailData: any[];
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
 }
 
 const arrayBread = [
@@ -292,7 +294,9 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     const { t } = useTranslation();
 
     const [dataTable, setDataTable] = useState<any[]>(detailData);
-    const [skipPageReset, setSkipPageReset] = React.useState(false)
+    const [skipAutoReset, setSkipAutoReset] = useState(false)
+    const [allFontBold, setAllFontBold] = useState(false);
+    const [allVisible, setVisible] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -334,33 +338,72 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             {
                 Header: t(langKeys.variable),
                 accessor: 'variable',
-                NoFilter: false
+                NoFilter: false,
+                sortType: 'string',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.variable
+                }
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false
+                NoFilter: false,
+                sortType: 'string',
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.color),
                 accessor: 'fontcolor',
-                NoFilter: false
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <HuePicker
+                            width="auto"
+                            color={row.fontcolor}
+                            onChangeComplete={(value) => {
+                                updateMyData(props.cell.row.index, props.cell.column.id, value.hex)
+                            }}
+                        />
+                    )
+                }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.bold),
                 accessor: 'fontbold',
-                NoFilter: false
+                NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={row.fontbold}
+                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
+                    />
+                }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.order),
                 accessor: 'priority',
                 NoFilter: false,
-                type: 'number'
+                type: 'number',
+                sortType: 'number'
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.show),
                 accessor: 'visible',
-                NoFilter: false
+                NoFilter: false,
+                type: 'boolean',
+                sortType: 'basic',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={row.visible}
+                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
+                    />
+                }
             }
         ],
         []
@@ -368,7 +411,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const updateMyData = (rowIndex: number, columnId: any, value: any) => {
         // We also turn on the flag to not reset the page
-        setSkipPageReset(true);
+        setSkipAutoReset(true);
         setDataTable((old: any) =>
         old.map((row: any, index: number) => {
             if (index === rowIndex) {
@@ -383,7 +426,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
     }
 
     useEffect(() => {
-        setSkipPageReset(false)
+        setSkipAutoReset(false)
     }, [dataTable])
 
     return (
@@ -392,40 +435,38 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 breadcrumbs={arrayBread}
                 handleClick={setViewSelected}
             />
-            <form onSubmit={onSubmit}>
-                <TableZyxEditable
-                    columns={columns}
-                    titlemodule={t(langKeys.variableconfiguration_plural, { count: 2 })}
-                    data={dataTable}
-                    download={false}
-                    register={false}
-                    filterGeneral={false}
-                    updateMyData={updateMyData}
-                    skipPageReset={skipPageReset}
-                />
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            <TableZyxEditable
+                columns={columns}
+                titlemodule={`${t(langKeys.variableconfiguration_plural, { count: 2 })}${row ? ` (${row.title})` : ''}`}
+                data={dataTable}
+                download={false}
+                register={false}
+                filterGeneral={false}
+                updateMyData={updateMyData}
+                skipAutoReset={skipAutoReset}
+            />
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => setViewSelected("view-1")}
+                >{t(langKeys.back)}</Button>
+                {edit &&
                     <Button
+                        className={classes.button}
                         variant="contained"
-                        type="button"
                         color="primary"
-                        startIcon={<ClearIcon color="secondary" />}
-                        style={{ backgroundColor: "#FB5F5F" }}
-                        onClick={() => setViewSelected("view-1")}
-                    >{t(langKeys.back)}</Button>
-                    {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="button"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => onSubmit()}
-                        >{t(langKeys.save)}
-                        </Button>
-                    }
-                </div>
-            </form>
+                        type="button"
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                        onClick={() => onSubmit()}
+                    >{t(langKeys.save)}
+                    </Button>
+                }
+            </div>
         </div>
     )
 }

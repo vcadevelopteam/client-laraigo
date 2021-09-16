@@ -283,3 +283,39 @@ export const getInteractionsReset = (state: IState): IState => ({
     ...state,
     interactionList: initialState.interactionList,
 });
+
+
+
+
+
+
+
+
+export const closeTicket = (state: IState): IState => ({
+    ...state,
+    triggerCloseTicket: { ...state.triggerCloseTicket, loading: true, error: false },
+});
+
+export const closeTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerCloseTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const closeTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerCloseTicket: {
+        ...state.triggerCloseTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const closeTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerCloseTicket: initialState.triggerCloseTicket,
+});
