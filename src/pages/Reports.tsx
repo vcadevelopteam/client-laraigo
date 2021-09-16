@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, DateRangePicker } from 'components';
 import { useSelector } from 'hooks';
-import { Dictionary, IFetchData, MultiData,IRequestBody } from "@types";
+import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
 import { getReportSel, getReportColumnSel, getReportFilterSel, getValuesFromDomain, getPaginatedForReports, getReportExport } from 'common/helpers';
 import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
@@ -30,7 +30,7 @@ interface ItemProps {
     allFilters: Dictionary[];
 }
 
-interface parameter{
+interface parameter {
     key: string;
     value: any;
 }
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerDetails: {
         marginTop: theme.spacing(2),
-        padding: theme.spacing(2),     
+        padding: theme.spacing(2),
         width: '100%'
     },
     root: {
@@ -65,7 +65,7 @@ const useStyles = makeStyles((theme) => ({
     containerFilter: {
         width: '100%',
         marginTop: theme.spacing(2),
-        padding: theme.spacing(2),  
+        padding: theme.spacing(2),
     },
     filterComponent: {
         width: '20%'
@@ -94,8 +94,8 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFilters}) => {
-    const { t } = useTranslation();      
+const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allFilters }) => {
+    const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const reportColumns = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -105,7 +105,7 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{Header: 'null', accessor: 'null'}],[]);    
+    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null' }], []);
     const [allParameters, setAllParameters] = useState({});
     const endDate = new Date();
     const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
@@ -114,10 +114,10 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
     const format = (date: Date) => date.toISOString().split('T')[0];
 
-    if ( multiData.length > 0 ) {
-        reportColumns.map(x => (        
-            columns.push({Header: t('report_'+row?.origin+'_'+x.proargnames||''), accessor: x.proargnames})
-            )
+    if (multiData.length > 0) {
+        reportColumns.map(x => (
+            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames })
+        )
         );
 
         columns.shift();
@@ -146,42 +146,42 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     }, [resExportData, waitSave]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        
 
-        console.log('allParameters',allParameters);
-        console.log('daterange',daterange);
+
+        console.log('allParameters', allParameters);
+        console.log('daterange', daterange);
         dispatch(exportData(getReportExport(
-            row?.methodexport||'',
-            row?.origin||'',
+            row?.methodexport || '',
+            row?.origin || '',
             {
-            filters,
-            sorts,
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
-            ...allParameters
-        })));
+                filters,
+                sorts,
+                startdate: daterange.startDate!,
+                enddate: daterange.endDate!,
+                ...allParameters
+            })));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
 
-        console.log('allParameters',allParameters);
-        console.log('daterange',daterange);
+        console.log('allParameters', allParameters);
+        console.log('daterange', daterange);
 
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange });
         dispatch(getCollectionPaginated(getPaginatedForReports(
-            row?.methodcollection||'',
-            row?.methodcount||'',
-            row?.origin||'',
+            row?.methodcollection || '',
+            row?.methodcount || '',
+            row?.origin || '',
             {
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
-            take: pageSize,
-            skip: pageIndex,
-            sorts: sorts,
-            filters: filters,
-            ...allParameters
+                startdate: daterange.startDate!,
+                enddate: daterange.endDate!,
+                take: pageSize,
+                skip: pageIndex,
+                sorts: sorts,
+                filters: filters,
+                ...allParameters
             }
         )));
     };
@@ -193,58 +193,58 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
     }
 
     const setValue = (parameterName: any, value: any) => {
-        setAllParameters({...allParameters, [parameterName]: value});
+        setAllParameters({ ...allParameters, [parameterName]: value });
     }
 
-    return  (
-        <div>
+    return (
+        <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
                 breadcrumbs={arrayBread}
                 handleClick={handleSelected}
             />
             {multiData.length > 0 ?
-                <div>
-					 {allFilters &&
-                        <div>  
-                            <div>    
+                <>
+                    {allFilters &&
+                        <div>
+                            <div>
                                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
                                     <span className={classes.title}>
-                                        {row?.description||''}
+                                        {row?.description || ''}
                                     </span>
                                 </Box>
                             </div>
-                            <div className={classes.containerFilter} style={{ display: 'flex', gap: '30px', alignItems: 'flex-end' }}>                                
+                            <div className={classes.containerFilter} style={{ display: 'flex', gap: '30px', alignItems: 'flex-end' }}>
                                 {
-                                    allFilters.map( filtro => (
-                                            (filtro.values[0].multiselect ?                                         
-                                                <FieldMultiSelect                                            
-                                                    label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                    error=""
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc= {filtro.values[0].optionDesc}
-                                                    optionValue= {filtro.values[0].optionValue}
-                                                /> 
-                                                :
-                                                <FieldSelect
-                                                    label={t('report_'+row?.origin+'_filter_'+filtro.values[0].label||'')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                    error=""
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc= {filtro.values[0].optionDesc}
-                                                    optionValue= {filtro.values[0].optionValue}
-                                                />                                            
-                                            )                                     
+                                    allFilters.map(filtro => (
+                                        (filtro.values[0].multiselect ?
+                                            <FieldMultiSelect
+                                                label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                className={classes.filterComponent}
+                                                key={filtro.values[0].filter}
+                                                onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                error=""
+                                                data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                optionDesc={filtro.values[0].optionDesc}
+                                                optionValue={filtro.values[0].optionValue}
+                                            />
+                                            :
+                                            <FieldSelect
+                                                label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                className={classes.filterComponent}
+                                                key={filtro.values[0].filter}
+                                                onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                error=""
+                                                data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                optionDesc={filtro.values[0].optionDesc}
+                                                optionValue={filtro.values[0].optionValue}
+                                            />
                                         )
+                                    )
                                     )
                                 }
                             </div>
                         </div>
-                    }   
+                    }
                     <div className={classes.container}>
                         <TablePaginated
                             columns={columns}
@@ -256,51 +256,51 @@ const ReportItem: React.FC<ItemProps> = ({setViewSelected, row, multiData, allFi
                             download={true}
                             fetchData={fetchData}
                             exportPersonalized={triggerExportData}
-                            titlemodule={!allFilters? row?.description||'' : ''} 
+                            titlemodule={!allFilters ? row?.description || '' : ''}
                         />
-                    </div> 
-                </div> :
+                    </div>
+                </> :
                 <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <h2>Cargando...</h2>
                     <CircularProgress />
-                    <CircularProgress color="secondary"/>
+                    <CircularProgress color="secondary" />
                 </div>
             }
         </div>
-    ); 
+    );
 }
 
 const Reports: FC = () => {
-    const { t } = useTranslation();    
+    const { t } = useTranslation();
     const classes = useStyles();
-    const dispatch = useDispatch();     
+    const dispatch = useDispatch();
     const reportsResult = useSelector(state => state.main);
     const [viewSelected, setViewSelected] = useState("view-1");
     const [reports, setReports] = useState<Dictionary[]>([]);
     const [rowSelected, setRowSelected] = useState<Dictionary>([]);
     const fetchData = () => dispatch(getCollection(getReportSel('')));
 
-    useEffect(() => {        
-        dispatch(resetCollectionPaginated()); 
+    useEffect(() => {
+        dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         fetchData();
-        
+
         return () => {
-            dispatch(resetCollectionPaginated());            
+            dispatch(resetCollectionPaginated());
             dispatch(resetMultiMain());
             dispatch(resetMain());
         };
-        
+
     }, []);
 
-    const handleFiend = (valor: string) => {        
+    const handleFiend = (valor: string) => {
         const filteredReports = reportsResult.mainData.data.filter(report => (`${report.description}`.toLowerCase().includes(valor.toLowerCase())))
         setReports(filteredReports);
     }
 
     const handleSelected = (row: Dictionary, allFilters: Dictionary[]) => {
         dispatch(resetCollectionPaginated());
-        dispatch(resetMultiMain());       
+        dispatch(resetMultiMain());
         setRowSelected(row);
 
         let allRequestBody: IRequestBody[] = [];
@@ -316,14 +316,14 @@ const Reports: FC = () => {
     }
 
     if (viewSelected === "view-1") {
-        return  (
+        return (
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
                     <span className={classes.title}>
                         {t(langKeys.report_plural)}
                     </span>
                 </Box>
-                <Box className={classes.containerFilterGeneral}>                    
+                <Box className={classes.containerFilterGeneral}>
                     <span></span>
                     <div className={classes.containerSearch}>
                         <SearchField
@@ -332,28 +332,28 @@ const Reports: FC = () => {
                             lazy
                         />
                     </div>
-                </Box>   
+                </Box>
                 <div className={classes.containerDetails}>
                     <Container className={classes.containerDetails}>
                         <Grid container spacing={3}>
                             {
-                                (reports.length > 0 ? reports : reportsResult.mainData.data).map (
+                                (reports.length > 0 ? reports : reportsResult.mainData.data).map(
                                     report => (
                                         <Grid item key={report.reportid} xs={12} md={6} lg={4}>
                                             <Card className={classes.root}>
                                                 <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                                     <CardMedia
-                                                        className={classes.media}                                                   
-                                                        component= {report.component}
-                                                        image = {reportsImage.find(x => x.name === report.image)?.image||'no_data.png'}
-                                                        title={report.description}                                                        
+                                                        className={classes.media}
+                                                        component={report.component}
+                                                        image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                                        title={report.description}
                                                     />
                                                     <CardContent>
                                                         <Typography gutterBottom variant="h5" component="h2">
                                                             {report.description}
-                                                        </Typography>                                                   
+                                                        </Typography>
                                                     </CardContent>
-                                                </CardActionArea>      
+                                                </CardActionArea>
                                             </Card>
                                         </Grid>
                                     )
@@ -361,19 +361,17 @@ const Reports: FC = () => {
                             }
                         </Grid>
                     </Container>
-                </div>  
+                </div>
             </div>
         );
     } else {
         return (
-            <div>
-                <ReportItem
-                    setViewSelected={setViewSelected}
-                    row={rowSelected}
-                    multiData={reportsResult.multiData.data}
-                    allFilters={rowSelected.filters}
-                />
-            </div>
+            <ReportItem
+                setViewSelected={setViewSelected}
+                row={rowSelected}
+                multiData={reportsResult.multiData.data}
+                allFilters={rowSelected.filters}
+            />
         )
     }
 }
