@@ -133,7 +133,7 @@ export const ChannelAdd: FC = () => {
             onClick: () => { },
         },
         {
-            icon: c => <Phone className={c} />,
+            icon: c => <CallIcon className={c} />,
             label: 'Phone',
             onClick: () => { },
         },
