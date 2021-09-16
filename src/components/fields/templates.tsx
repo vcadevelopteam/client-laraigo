@@ -347,7 +347,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     onChange && onChange(newValue);
                 }}
                 // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
-                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : option[optionDesc]) : ''}
+                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
                 renderInput={(params) => (

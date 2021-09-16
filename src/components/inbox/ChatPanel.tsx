@@ -150,13 +150,75 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         </DialogZyx>)
 }
 
+const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                motive: '',
+                observation: ''
+            })
+            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('observation');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        const dd: ICloseTicketsParams = {
+            conversationid: ticketSelected?.conversationid!!,
+            motive: data.motive,
+            observation: data.observation,
+            ticketnum: ticketSelected?.ticketnum!!,
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            status: 'CERRADO',
+            isAnswered: false,
+        }
+        dispatch(closeTicket(dd));
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title="Tipificar ticket"
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
+                    className="col-12"
+                    valueDefault={getValues('motive')}
+                    onChange={(value) => setValue('motive', value ? value.classificationid : '')}
+                    error={errors?.motive?.message}
+                    data={multiData.data[2] && multiData.data[2].data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+            </div>
+        </DialogZyx>)
+}
+
+
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
     const handleClose = () => setAnchorEl(null);
-    const [openModalCloseticket, setopenModalCloseticket] = useState(false);
-    const [openModalReassignticket, setopenModalReassignticket] = useState(false);
-    const closeTicket = () => setopenModalCloseticket(true);
+    const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
+    const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
+    const [openModalTipification, setOpenModalTipification] = useState(false);
+    const closeTicket = () => setOpenModalCloseticket(true);
 
     return (
         <>
@@ -191,15 +253,17 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 onClose={handleClose}
             >
                 <MenuItem onClick={(e) => {
-                    setopenModalReassignticket(true)
+                    setOpenModalReassignticket(true)
                     setAnchorEl(null)
                 }}>{t(langKeys.reassign)}</MenuItem>
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
+                    setOpenModalTipification(true)
                 }}>{t(langKeys.typify)}</MenuItem>
             </Menu>
-            <DialogCloseticket openModal={openModalCloseticket} setOpenModal={setopenModalCloseticket} />
-            <DialogReassignticket openModal={openModalReassignticket} setOpenModal={setopenModalReassignticket} />
+            <DialogCloseticket openModal={openModalCloseticket} setOpenModal={setOpenModalCloseticket} />
+            <DialogReassignticket openModal={openModalReassignticket} setOpenModal={setOpenModalReassignticket} />
+            <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
         </>
     )
 }
