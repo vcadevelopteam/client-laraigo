@@ -93,7 +93,7 @@ const useTabInterfacetyles = makeStyles(theme => ({
 }));
 
 const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
-    const { setValue, getValues } = form;
+    const { setValue, getValues, formState } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
     const [chatBtn, setChatBtn] = useState<File | null>(getValues('interface.iconbutton') as File);
@@ -180,6 +180,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chattitle')}
                                 onChange={(e) => setValue('interface.chattitle', e.target.value)}
+                                error={formState.errors?.interface?.chattitle?.message != null}
+                                helperText={formState.errors?.interface?.chattitle?.message || ""}
                             />
                         </Grid>
                     </Grid>
@@ -202,6 +204,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}
                                 onChange={(e) => setValue('interface.chatsubtitle', e.target.value)}
+                                error={formState.errors?.interface?.chatsubtitle?.message != null}
+                                helperText={formState.errors?.interface?.chatsubtitle?.message || ""}
                             />
                         </Grid>
                     </Grid>
@@ -1425,6 +1429,7 @@ const useStyles = makeStyles(theme => ({
 export const ChannelAddChatWeb: FC = () => {
     const classes = useStyles();
     const history = useHistory();
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
@@ -1501,8 +1506,13 @@ export const ChannelAddChatWeb: FC = () => {
         }
     });
 
+    useEffect(() => {
+        form.register('interface.chattitle', { required: true });
+        form.register('interface.chatsubtitle', { required: true });
+    }, [form.register]);
+
     const handleNext = () => {
-        setShowFinalStep(true);
+        form.handleSubmit((_) => setShowFinalStep(true));
     }
 
     const handleSubmit = (name: string, auto: boolean) => {
