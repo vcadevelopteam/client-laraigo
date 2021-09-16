@@ -126,9 +126,9 @@ export const ChannelAddInstagram: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>
-                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectinsta2)}</div>
+                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectinsta3)}</div>
     
                         <FacebookLogin
                             appId="1924971937716955"
@@ -137,7 +137,7 @@ export const ChannelAddInstagram: FC = () => {
                             fields="name,email,picture"
                             scope="pages_show_list,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_manage_metadata,public_profile"
                             callback={processFacebookCallback}
-                            textButton={t(langKeys.linkfacebookpage)}
+                            textButton={t(langKeys.linkinstagrampage)}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
                                     appId: '1924971937716955',
@@ -149,7 +149,7 @@ export const ChannelAddInstagram: FC = () => {
                             icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                         />
     
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
     
                 </div>
             </div>
@@ -163,7 +163,7 @@ export const ChannelAddInstagram: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldSelect

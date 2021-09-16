@@ -40,7 +40,12 @@ export const langKeys = {
     connectface2: "connectface2",
     connectface3: "connectface3",
     connectface4: "connectface4",
+    connectinsta: "connectinsta",
+    connectinsta2: "connectinsta2",
+    connectinsta3: "connectinsta3",
+    connectinsta4: "connectinsta4",
     linkfacebookpage: "linkfacebookpage",
+    linkinstagrampage: "linkinstagrampage",
     selectpagelink: "selectpagelink",
     billingSetup: 'billingSetup',
     billingSetup_plural: 'billingSetup_plural',
@@ -450,6 +455,8 @@ export const langKeys = {
 
     report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
     report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
+    report_userproductivityhours_filter_hours: 'report_userproductivityhours_filter_hours',
+    
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
     chatHeaderSubtitle: 'chatHeaderSubtitle',

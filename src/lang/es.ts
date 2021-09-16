@@ -122,7 +122,12 @@ const translation: LangKeys = {
     connectface2: "Instala el chatbot en tu página de Facebook y empieza a conseguir clientes potenciales.",
     connectface3: "Solo necesitas ser administrador de tu página de Facebook.",
     connectface4: "*No publicaremos ningún contenido",
+    connectinsta: "Conecta tu Instagram",
+    connectinsta2: "Instala el chatbot en tu página de Instagram y empieza a conseguir clientes potenciales.",
+    connectinsta3: "Solo necesitas ser administrador de la página de Facebook asociada a tu cuenta Business de Instagram.",
+    connectinsta4: "*No publicaremos ningún contenido",
     linkfacebookpage: "Vincula tu página de Facebook",
+    linkinstagrampage: "Vincula tu página de Instagram",
     selectpagelink: "Seleccione la página para vincular",
     commchannelfinishreg: "Estás a un clic de conectar tu canal de comunicación",
     givechannelname: "Dale un nombre a tu canal",
@@ -444,7 +449,9 @@ const translation: LangKeys = {
     report_userproductivityhours_qtydisconnection: 'Cantidad de desconexiones realizadas',
 
     report_userproductivityhours_filter_adviser: 'Asesor',
-    report_userproductivityhours_filter_channels: 'Canal',
+    report_userproductivityhours_filter_channels: 'Canal',    
+    report_userproductivityhours_filter_hours: 'Hora',
+    
     chatHeaderTitle: 'Título de la cabecera del chat',
     subtitle: 'Subtítulo',
     chatHeaderSubtitle: 'Subtítulo de la cabecera del chat',

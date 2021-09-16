@@ -287,7 +287,12 @@ const translation: LangKeys = {
     connectface2: "Install the chatbot on your Facebook page and start getting leads.",
     connectface3: "You only need to be an administrator of your Facebook page.",
     connectface4: "*We will not publish any content",
+    connectinsta: "Connect your Instagram",
+    connectinsta2: "Install the chatbot on your Instagram page and start getting leads.",
+    connectinsta3: "You only need to be an administrator of the Facebook page associated to the Instagram Business.",
+    connectinsta4: "*We will not publish any content",
     linkfacebookpage: "Link your Facebook page",
+    linkinstagrampage: "Link your Instagram page",
     selectpagelink: "Select the page to link",
     commchannelfinishreg: "You are one click away from connecting your communication channel",
     givechannelname: "Give your channel a name",
@@ -452,7 +457,9 @@ const translation: LangKeys = {
     report_userproductivityhours_qtydisconnection: 'Number of disconnections made',
 
     report_userproductivityhours_filter_adviser: 'Adviser',
-    report_userproductivityhours_filter_channels: 'Channels',
+    report_userproductivityhours_filter_channels: 'Channels',  
+    report_userproductivityhours_filter_hours: 'Hour',
+
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
     chatHeaderSubtitle: 'Chat header subtitle',
