@@ -20,6 +20,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
 import { IconButton } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { TreeItem, TreeView } from '@material-ui/lab';
 
 interface RowSelected {
@@ -635,6 +636,7 @@ const Tipifications: FC = () => {
                             color="primary"
                             style={{ backgroundColor: "#7721ad" }}
                             onClick={() => setOpenDialog(true)}
+                            startIcon={<AccountTreeIcon color="secondary" />}
                         >{t(langKeys.opendrilldown)}
                         </Button>
                     }

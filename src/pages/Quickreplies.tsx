@@ -571,6 +571,7 @@ const Quickreplies: FC = () => {
                             color="primary"
                             style={{ backgroundColor: "#7721ad" }}
                             onClick={() => setOpenDialog(true)}
+                            startIcon={<AccountTreeIcon color="secondary" />}
                         >{t(langKeys.opendrilldown)}
                         </Button>
                     }
