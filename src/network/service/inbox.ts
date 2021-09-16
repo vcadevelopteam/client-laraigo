@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams } from '@types';
+import { ICloseTicketsParams, IReplyTicketParams } from '@types';
 import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
@@ -17,4 +17,23 @@ export function closeTicket({ conversationid, motive, observation, ticketnum, pe
         isanswered: isAnswered,
     }
     return APIManager.post(apiUrls.CLOSE_TICKET, { data: { data } }, true);
+}
+
+export function replyTicket({ conversationid, personid, communicationchannelid, ticketnum, personcommunicationchannel, interactiontext, interactiontype, communicationchannelsite, communicationchanneltype, postexternalid, commentexternalid, replyexternalid, isAnswered }: IReplyTicketParams) {
+    const data = {
+        p_conversationid: conversationid,
+        p_personid: personid,
+        p_communicationchannelid: communicationchannelid,
+        p_messagesourcekey1: personcommunicationchannel,
+        p_messagetext: interactiontext,
+        p_type: interactiontype,
+        communicationchannelsite: communicationchannelsite,
+        communicationchanneltype: communicationchanneltype,
+        postexternalid,
+        commentexternalid,
+        replyexternalid,
+        ticketnum: ticketnum,
+        newanswered: isAnswered,
+    }
+    return APIManager.post(apiUrls.REPLY_TICKET, { data: { data } }, true);
 }

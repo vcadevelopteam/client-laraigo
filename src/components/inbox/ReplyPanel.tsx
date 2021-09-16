@@ -5,7 +5,7 @@ import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { replyMessage } from 'store/inbox/actions';
+import { replyMessage, replyTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
@@ -95,6 +95,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
 
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
 
@@ -123,6 +124,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 usertype: "agent",
             }
             dispatch(replyMessage(newInteraction));
+            dispatch(replyTicket({
+                ...ticketSelected!!,
+                interactiontype: "text",
+                interactiontext: textCleaned,
+                isAnswered: true
+            }))
             setText("");
         }
     }
