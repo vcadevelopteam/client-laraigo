@@ -266,7 +266,7 @@ export const langKeys = {
     typify_ticket: 'typify_ticket',
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
-
+    successful_close_ticket: 'successful_close_ticket',
     flowdesigner: 'flowdesigner',
 
     variableconfiguration: 'variableconfiguration',

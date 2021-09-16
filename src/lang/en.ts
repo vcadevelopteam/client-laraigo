@@ -330,6 +330,7 @@ const translation: LangKeys = {
     error_parameter_is_missing: "5004: There was an error, contact the administrator",
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
+    successful_close_ticket: 'Ticket closed successfully',
     apply: 'Apply',
     close: 'Close',
 

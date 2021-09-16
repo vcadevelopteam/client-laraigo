@@ -11,6 +11,9 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket } from 'store/inbox/actions';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { insertClassificationConversation } from 'common/helpers';
+import { execute } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +22,26 @@ import { useForm } from 'react-hook-form';
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
+    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!closingRes.loading && !closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [closingRes, waitClose])
 
     useEffect(() => {
         if (openModal) {
@@ -49,6 +67,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
             isAnswered: false,
         }
         dispatch(closeTicket(dd));
+        setWaitClose(true)
     });
 
     return (
@@ -153,9 +172,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
-    const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const multiData = useSelector(state => state.main.multiData);
     const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
     const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
 
@@ -214,18 +232,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     }
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
-        }
-        dispatch(closeTicket(dd));
+        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '')))
     });
 
     return (

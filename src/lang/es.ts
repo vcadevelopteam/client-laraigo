@@ -275,7 +275,7 @@ const translation: LangKeys = {
     color: 'Color',
     bold: 'Negrita',
     show: 'Mostrar',
-
+    successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 

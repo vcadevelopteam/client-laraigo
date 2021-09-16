@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     },
     label: {
         overflowWrap: 'anywhere',
-        fontWeight: 400,
+        // fontWeight: 400,
         fontSize: 12,
         color: '#B6B4BA',
     },
@@ -108,19 +108,35 @@ const InfoClient: React.FC = () => {
 
 const Variables: React.FC = () => {
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
+    const configurationVariables = useSelector(state => state.inbox.configurationVariables.data);
+    console.log(configurationVariables)
     const classes = useStyles();
 
     return (
         <div className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
-            {variablecontext && Object.entries(variablecontext).map(([key, value], index) => (
-                <div key={index} className={classes.containerName}>
-                    <div>
-                        <div className={classes.label}>{key}</div>
-                        <div >{value.Value}</div>
-                    </div>
-                </div>
-            ))}
 
+            {variablecontext && (variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
+                const variabletmp = variablecontext.find(x => x.Name === variable);
+                return (
+                    <div key={index} className={classes.containerName}>
+                        <div style={{ fontWeight: fontbold ? 'bold' : 'normal', color: fontcolor }}>
+                            <div className={classes.label}>{description}</div>
+                            <div >{variabletmp?.Value || '-'}</div>
+                        </div>
+                    </div>
+                )
+            })}
+            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
+                const variabletmp = variablecontext[variable];
+                return (
+                    <div key={index} className={classes.containerName}>
+                        <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
+                            <div className={classes.label}>{description}</div>
+                            <div >{variabletmp?.Value || '-'}</div>
+                        </div>
+                    </div>
+                )
+            })}
         </div>
     )
 }
