@@ -444,7 +444,9 @@ const translation: LangKeys = {
     report_userproductivityhours_qtydisconnection: 'Cantidad de desconexiones realizadas',
 
     report_userproductivityhours_filter_adviser: 'Asesor',
-    report_userproductivityhours_filter_channels: 'Canal',
+    report_userproductivityhours_filter_channels: 'Canal',    
+    report_userproductivityhours_filter_hours: 'Hora',
+    
     chatHeaderTitle: 'Título de la cabecera del chat',
     subtitle: 'Subtítulo',
     chatHeaderSubtitle: 'Subtítulo de la cabecera del chat',
