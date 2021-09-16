@@ -90,8 +90,8 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
         } else {
             let item = {
                 key: x.classificationid,
-                nodeId: x.classificationid.toString(),
-                label: x.description.toString(),
+                nodeId: x.classificationid?.toString(),
+                label: x.description?.toString(),
                 children: x.haschildren,
                 father: x.parent
             }
