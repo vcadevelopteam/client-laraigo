@@ -45,15 +45,20 @@ export const Channels: FC = () => {
     }
     
     const fetchData = () => dispatch(getCollection(getChannelSel(0)));
+
     useEffect(() => {
         if (waitSave) {
-            if (executeResult.loading && !executeResult.error) {
+            console.log("dddaaaww", executeResult)
+            if (!executeResult.loading && !executeResult.error) {
+                console.log("ddaaa111")
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
+                
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 //dispatch(getCollection(getChannelSel(0)));
             } else if (executeResult.error) {
+                console.log("ddaaa")
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
@@ -86,6 +91,8 @@ export const Channels: FC = () => {
                 accessor: 'communicationchannelid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (

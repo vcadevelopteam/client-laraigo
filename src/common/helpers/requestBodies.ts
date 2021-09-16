@@ -32,6 +32,12 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     parameters: {}
 })
 
+export const insertClassificationConversation = (conversationid: number, classificationid: number, jobplan: string): IRequestBody => ({
+    method: "UFN_CONVERSATIONCLASSIFICATION_INS",
+    key: "UFN_CONVERSATIONCLASSIFICATION_INS",
+    parameters: {conversationid, classificationid, jobplan}
+})
+
 export const getTickets = (userid: number | null): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
     key: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
@@ -186,9 +192,9 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insInappropriateWords = ({ id, description, status, type, username, operation }: Dictionary): IRequestBody => ({
+export const insInappropriateWords = ({ id, description, status, type, username, operation,classification,defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id, description, status, type, username, operation }
+    parameters: { id, description, status, type, username, operation,classification,defaultanswer }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -251,16 +257,6 @@ export const insSLA = ({ id, description, type, company, communicationchannelid,
         }
     });
 
-export const getFunctionSel = (functionname: string, domainname: string, id: number): IRequestBody => ({
-    method: functionname,
-    key: functionname,
-    parameters: {
-        domainname: domainname,
-        id: 0,
-        all: true
-    }
-})
-
 export const getReportSel = (reportname: string): IRequestBody => ({
     method: "UFN_REPORT_SEL",
     key: "UFN_REPORT_SEL",
@@ -270,82 +266,25 @@ export const getReportSel = (reportname: string): IRequestBody => ({
     }
 });
 
-
-
-
-
-//tabla paginada
-export const getPaginatedInputretry = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
-    methodCollection: "UFN_REPORT_INPUTRETRY_SEL",
-    methodCount: "UFN_REPORT_INPUTRETRY_TOTALRECORDS",
+export const getReportColumnSel = (functionname: string): IRequestBody => ({
+    method: "UFN_REPORT_COLUMN_SEL",
+    key: "UFN_REPORT_COLUMN_SEL",
     parameters: {
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        origin: "inputretry",
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getInputretryExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_REPORT_INPUTRETRY_EXPORT",
-    key: "UFN_REPORT_INPUTRETRY_EXPORT",
-    parameters: {
-        origin: "inputretry",
-        filters, 
-        startdate, 
-        enddate,
-        sorts,
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getPaginatedTipification = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
-    methodCollection: "UFN_REPORT_TIPIFICATION_SEL",
-    methodCount: "UFN_REPORT_TIPIFICATION_TOTALRECORDS",
-    parameters: {
-        startdate,
-        enddate,
-        skip,
-        take,
-        filters,
-        sorts,
-        origin: "tipification",
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
-    }
-});
-//tabla paginada
-export const getTipificationExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
-    method: "UFN_REPORT_TIPIFICATION_EXPORT",
-    key: "UFN_REPORT_TIPIFICATION_EXPORT",
-    parameters: {
-        origin: "tipification",
-        filters, 
-        startdate, 
-        enddate,
-        sorts,
-        supervisorid:1,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        function: functionname,
+        all: false
     }
 });
 
+export const getReportFilterSel = (filter: string): IRequestBody => ({
+    method: filter,
+    key: filter,
+    parameters: {
+        supervisorid: 1,
+        all: false
+    }
+});
 
-
-
-
-
-
-
-
-
-//tabla paginada
-export const getPaginatedForReports = (methodCollection: string, methodCount: string, origin: string, { skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedForReports = (methodCollection: string, methodCount: string, origin: string, { skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: methodCollection,
     methodCount: methodCount,
     parameters: {
@@ -357,31 +296,30 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         sorts,
         origin: origin,
         supervisorid:1,
+        ...allParameters,
+        channel: allParameters['channel']?allParameters['channel']:"",
+        hours: allParameters['hours']?allParameters['hours']:"",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+    
 });
-export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+
+export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: methodExport,
     key: methodExport,
     parameters: {
         origin: origin,
-        filters, 
-        startdate, 
+        filters,
+        startdate,
         enddate,
         sorts,
         supervisorid:1,
+        ...allParameters,
+        channel: allParameters['channel']?allParameters['channel']:"",
+        hours: allParameters['hours']?allParameters['hours']:"",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-
-
-
-
-
-
-
-
-
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
@@ -441,11 +379,11 @@ export const getClassificationSel = (id: number): IRequestBody => ({
         all: true
     }
 })
-export const insClassification = ({ id, description, parent, communicationchannel, status, type, operation, tags, jobplan }: Dictionary): IRequestBody => ({
+export const insClassification = ({ id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan = null }: Dictionary): IRequestBody => ({
     method: "UFN_CLASSIFICATION_INS",
     key: "UFN_CLASSIFICATION_INS",
     parameters: {
-        id, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
+        id, title, description, parent, communicationchannel, status, type, operation, tags, jobplan, usergroup: 0, schedule: ""
     }
 })
 //tabla paginada
@@ -477,19 +415,19 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
     }
 });
 
-export const getValuesFromTree = (classificationid: number): IRequestBody => ({
-    method: "UFN_CLASSIFICATION_TREE_SEL",
-    key: "UFN_CLASSIFICATION_TREE_SEL",
-    parameters: {
-        classificationid, type: 'QUICKREPLY'
-    }
+export const getConfigurationVariables = (communicationchannelid: number): IRequestBody => ({
+    method: "UFN_TABLEVARIABLECONFIGURATIONBYCHANNEL_SEL",
+    key: "UFN_TABLEVARIABLECONFIGURATIONBYCHANNEL_SEL",
+    parameters: { communicationchannelid }
 });
+
 export const getCommChannelLst = (): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_LST",
     key: "UFN_COMMUNICATIONCHANNEL_LST",
     parameters: {
     }
 });
+
 export const getValuesForTree = (): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
@@ -534,6 +472,7 @@ export const insMessageTemplate = (
         buttons,
         operation
     }: Dictionary): IRequestBody => ({
+
         method: "UFN_MESSAGETEMPLATE_INS",
         parameters: {
             id,
@@ -552,7 +491,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: JSON.stringify(buttons),
+            buttons: buttons ? JSON.stringify(buttons) : "",
             operation
         }
     });
@@ -616,6 +555,42 @@ export const getChannelSel = (id: number): IRequestBody => ({
     }
 });
 
+export const getVariableConfigurationLst = (): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_LST",
+    parameters: {}
+});
+
+export const getVariableConfigurationSel = (id: string): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_SEL",
+    parameters: {
+        chatblockid: id
+    }
+});
+
+export const insVariableConfiguration = ({
+    corpid,
+    orgid,
+    chatblockid,
+    variable,
+    description,
+    fontcolor,
+    fontbold,
+    priority,
+    visible
+}: Dictionary): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_INS",
+    parameters: {
+        corpid,
+        orgid,
+        chatblockid,
+        variable,
+        description,
+        fontcolor,
+        fontbold,
+        priority,
+        visible
+    }
+});
 export const getInsertChatwebChannel = (name: string, auto: boolean, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {

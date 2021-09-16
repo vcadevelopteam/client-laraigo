@@ -38,7 +38,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -147,14 +146,40 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
 
     return (
         <div style={{width: '100%'}}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.newsla)}
-            />
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.description}` : t(langKeys.newsla)}
+                        />
+                    </div>
+            
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.save)}
+                        </Button>
+                        }
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -382,27 +407,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         </div>
                         
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
-                        }
-                    </div>
                 </div>
             </form>
         </div>
@@ -426,6 +430,8 @@ const SLA: FC = () => {
                 accessor: 'slaid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -438,16 +444,6 @@ const SLA: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.company),
-                accessor: 'company',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
                 Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
@@ -458,50 +454,31 @@ const SLA: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.communicationchanneldesc),
+                Header: t(langKeys.channel),
                 accessor: 'communicationchanneldesc',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.tme),
-                accessor: 'tme',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.tmepercentobj),
-                accessor: 'tmepercentmin',
-                NoFilter: true
-            },
-            {
-                Header: "TMO total",
-                accessor: 'totaltmo',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.tmopercentobj),
+                Header: t(langKeys.tmototalobj),
                 accessor: 'totaltmopercentmax',
                 NoFilter: true
             },
             {
-                Header: t(langKeys.usertme),
-                accessor: 'usertme',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmepercentmax),
-                accessor: 'usertmepercentmax',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmo),
-                accessor: 'usertmo',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.usertmopercentmax),
+                Header: t(langKeys.tmoasesorobj),
                 accessor: 'usertmopercentmax',
                 NoFilter: true
             },
+            {
+                Header: t(langKeys.tmeasesorobj),
+                accessor: 'usertmepercentmax',
+                NoFilter: true
+            },            
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+                NoFilter: true
+            },
+            
         ],
         []
     );

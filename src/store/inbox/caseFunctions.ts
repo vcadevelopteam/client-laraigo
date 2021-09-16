@@ -40,7 +40,12 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
 
 export const getAgents = (state: IState): IState => ({
     ...state,
+    interactionList: initialState.interactionList,
+    ticketSelected: initialState.ticketSelected,
+    agentSelected: initialState.agentSelected,
+    triggerCloseTicket: initialState.triggerCloseTicket,
     agentList: { ...state.agentList, loading: true, error: false },
+
 });
 
 export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
@@ -194,6 +199,20 @@ export const getTicketsReset = (state: IState): IState => ({
     ticketList: initialState.ticketList,
 });
 
+export const addMessage = (state: IState, action: IAction): IState => {
+    const newInteraction: IInteraction = action.payload;
+    newInteraction.interactionid = state.interactionList.data.length * -1; 
+    return {
+        ...state,
+        interactionList: {
+            data: AddNewInteraction(state.interactionList.data, newInteraction),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
 export const getDataTicket = (state: IState): IState => ({
     ...state,
     interactionList: { ...state.interactionList, loading: true, error: false },
@@ -208,6 +227,12 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         loading: false,
         error: false,
     },
+    configurationVariables: {
+        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority > b.priority) ? 1 : ((b.priority > a.priority) ? -1 : 0)) || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
     person: {
         data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
         loading: false,
@@ -215,19 +240,6 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
     },
 });
 
-export const addMessage = (state: IState, action: IAction): IState => {
-    const newInteraction: IInteraction = action.payload;
-    newInteraction.interactionid = state.interactionList.data.length * -1; 
-    return {
-        ...state,
-        interactionList: {
-            data: AddNewInteraction(state.interactionList.data, newInteraction),
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-    };
-}
 
 export const getDataTicketFailure = (state: IState, action: IAction): IState => ({
     ...state,
@@ -282,4 +294,138 @@ export const getInteractionsFailure = (state: IState, action: IAction): IState =
 export const getInteractionsReset = (state: IState): IState => ({
     ...state,
     interactionList: initialState.interactionList,
+});
+
+
+
+
+
+
+
+
+export const closeTicket = (state: IState): IState => ({
+    ...state,
+    triggerCloseTicket: { ...state.triggerCloseTicket, loading: true, error: false },
+});
+
+export const closeTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerCloseTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const closeTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerCloseTicket: {
+        ...state.triggerCloseTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const closeTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerCloseTicket: initialState.triggerCloseTicket,
+});
+
+
+
+export const replyTicket = (state: IState): IState => ({
+    ...state,
+    triggerReplyTicket: { ...state.triggerReplyTicket, loading: true, error: false },
+});
+
+export const replyTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerReplyTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const replyTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerReplyTicket: {
+        ...state.triggerReplyTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const replyTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerReplyTicket: initialState.triggerReplyTicket,
+});
+
+
+
+
+export const getTipificationLevel2 = (state: IState): IState => ({
+    ...state,
+    tipificationsLevel2: { ...state.tipificationsLevel2, loading: true, error: false },
+    tipificationsLevel3: initialState.tipificationsLevel3
+});
+
+export const getTipificationLevel2Success = (state: IState, action: IAction): IState => ({
+    ...state,
+    tipificationsLevel2: {
+        data: action.payload.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const getTipificationLevel2Failure = (state: IState, action: IAction): IState => ({
+    ...state,
+    tipificationsLevel2: {
+        ...state.tipificationsLevel2,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getTipificationLevel2Reset = (state: IState): IState => ({
+    ...state,
+    tipificationsLevel2: initialState.tipificationsLevel2,
+    tipificationsLevel3: initialState.tipificationsLevel3
+});
+
+export const getTipificationLevel3 = (state: IState): IState => ({
+    ...state,
+    tipificationsLevel3: { ...state.tipificationsLevel3, loading: true, error: false },
+});
+
+export const getTipificationLevel3Success = (state: IState, action: IAction): IState => ({
+    ...state,
+    tipificationsLevel3: {
+        data: action.payload.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const getTipificationLevel3Failure = (state: IState, action: IAction): IState => ({
+    ...state,
+    tipificationsLevel3: {
+        ...state.tipificationsLevel3,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getTipificationLevel3Reset = (state: IState): IState => ({
+    ...state,
+    tipificationsLevel3: initialState.tipificationsLevel3,
 });

@@ -8,9 +8,11 @@ const FlowDesigner: FC = () => {
     }
     
     const [frame, setFrame] = useState(false)
+    const [url, setUrl] = useState('')
     
     useEffect(() => {
         postCrossDomainMessage(localStorage.getItem('accessToken'));
+        setUrl('https://zyxmedev.com/chatweb/chatflow')
     },[frame])
 
     return (
@@ -18,7 +20,7 @@ const FlowDesigner: FC = () => {
             <iframe
                 id="ifr"
                 title='flowdesigner'    
-                src="https://zyxmedev.com/chatweb/chatflow/#/block"
+                src={url}
                 style={{height: '100%', width: '100%', border: 'none'}}
                 onLoad={() => setFrame(true)}
             >

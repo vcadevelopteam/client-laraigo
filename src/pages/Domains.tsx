@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import ClearIcon from '@material-ui/icons/Clear';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -163,6 +164,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 accessor: 'domainid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     if (!edit)
                         return null;
@@ -469,6 +472,8 @@ const Domains: FC = () => {
                 accessor: 'domainid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (

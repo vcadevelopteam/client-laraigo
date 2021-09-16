@@ -25,6 +25,6 @@ export interface IRequestBodyPaginated {
 
 
 export interface ITransaction {
-    header: IRequestBody,
+    header: IRequestBody | null,
     detail: (IRequestBody | null)[]
 }

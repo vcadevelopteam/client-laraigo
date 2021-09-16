@@ -38,7 +38,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -114,14 +113,39 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
 
     return (
         <div style={{width: '100%'}}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
-            />
             <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.endpoint}` : t(langKeys.newintelligentmodel)}
+                        />
+                    </div>            
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            startIcon={<SaveIcon color="secondary" />}
+                            style={{ backgroundColor: "#55BD84" }}
+                        >{t(langKeys.save)}
+                        </Button>
+                        }
+                    </div>
+                </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
@@ -207,27 +231,6 @@ const DetailIntelligentModels: React.FC<DetailIntelligentModelsProps> = ({ data:
                                 className="col-6"
                             />}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            type="submit"
-                            startIcon={<SaveIcon color="secondary" />}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >{t(langKeys.save)}
-                        </Button>
-                        }
-                    </div>
                 </div>
             </form>
         </div>
@@ -251,6 +254,8 @@ const IntelligentModels: FC = () => {
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (

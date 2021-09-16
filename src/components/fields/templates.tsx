@@ -46,6 +46,8 @@ import {
     TwitterIcon,
     YoutubeIcon,
     WhatsappIcon,
+    EmailIcon,
+    TelegramIcon
 } from 'icons';
 
 
@@ -62,7 +64,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     };
 
     return (
-        <>
+        <div style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
@@ -71,7 +73,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 onClick={editFunction}
             >
                 <VisibilityIcon style={{ color: '#B6B4BA' }} />
-
             </IconButton>
             <IconButton
                 aria-label="more"
@@ -107,7 +108,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                     deleteFunction && deleteFunction(e)
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
             </Menu>
-        </>
+        </div>
     )
 }
 
@@ -185,7 +186,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
             </DialogContent>
             <DialogActions>
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} color="primary"
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} 
                     >
                         {buttonText1}
                     </Button>}
@@ -302,19 +303,19 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TELE") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "MAIL") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
 
-    return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false }) => {
@@ -348,7 +349,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     onChange && onChange(newValue);
                 }}
                 // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
-                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : option[optionDesc]) : ''}
+                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
                 renderInput={(params) => (
@@ -505,6 +506,28 @@ const useCheckboxStyles = makeStyles({
     }
 });
 
+export const OnlyCheckbox: React.FC<InputProps> = ({ className, onChange, valueDefault, label, disabled = false }) => {
+    const classes = useCheckboxStyles();
+    const [checkedaux, setChecked] = useState(false);
+
+    useEffect(() => {
+        setChecked(!!valueDefault)
+    }, [valueDefault])
+
+    return (
+        <Checkbox
+            checked={checkedaux}
+            checkedIcon={<span className={`${classes.icon} ${classes.checkedIcon}`} />}
+            icon={<span className={classes.icon} />}
+            disabled={disabled}
+            onChange={(e) => {
+                setChecked(e.target.checked);
+                onChange && onChange(e.target.checked)
+            }}
+        />
+    );
+}
+
 interface FieldCheckboxProps extends InputProps {
     className?: any;
     label: string;
@@ -593,7 +616,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void }> = ({ emojisNoShow, onSelect }) => {
+export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void, style?: any }> = ({ emojisNoShow, onSelect, style }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -602,12 +625,12 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <span>
+            <span style={style}>
                 <EmojiICon className={classes.root} onClick={handleClick} />
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 80
+                        bottom: 50
                     }}>
                         <Picker
                             // showPreview={false}

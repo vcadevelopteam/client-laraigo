@@ -9,18 +9,15 @@ import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
-import Fab from '@material-ui/core/Fab';
 import { TableConfig, Pagination } from '@types'
 import { Trans } from 'react-i18next';
 import Button from '@material-ui/core/Button';
-import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
-import { DownloadIcon, CalendarIcon, SearchIcon as SearchIcon2 } from 'icons';
+import { DownloadIcon, CalendarIcon } from 'icons';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -29,16 +26,12 @@ import {
     NavigateNext,
     NavigateBefore,
     Search as SearchIcon,
-    GetApp as GetAppIcon,
     Add as AddIcon,
     ArrowDownward as ArrowDownwardIcon,
     ArrowUpward as ArrowUpwardIcon,
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-
-import RefreshIcon from "@material-ui/icons/Refresh";
-
-
+// import RefreshIcon from "@material-ui/icons/Refresh";
 import Menu from '@material-ui/core/Menu';
 
 import {
@@ -48,7 +41,7 @@ import {
     usePagination
 } from 'react-table'
 import { Range } from 'react-date-range';
-import { DateRangePicker, ListPaginated, Title } from 'components';
+import { DateRangePicker } from 'components';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -188,11 +181,11 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                 onKeyDown={keyPress}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-                startAdornment={
-                    <InputAdornment position="start">
-                        <SearchIcon color="action" fontSize="small" />
-                    </InputAdornment>
-                }
+            // startAdornment={
+            //     <InputAdornment position="start">
+            //         <SearchIcon color="action" fontSize="small" />
+            //     </InputAdornment>
+            // }
             />
             <MoreVertIcon
                 style={{ cursor: 'pointer' }}
@@ -314,13 +307,13 @@ const TableZyx = React.memo(({
         setPagination(prev => ({ ...prev, sorts: newsorts }))
     }
 
-    const handleRefresh = () => {
-        setPagination({
-            ...pagination,
-            sorts: {},
-            filters: {}
-        });
-    }
+    // const handleRefresh = () => {
+    //     setPagination({
+    //         ...pagination,
+    //         sorts: {},
+    //         filters: {}
+    //     });
+    // }
 
     const [dateRange, setdateRange] = useState<Range>({
         startDate: new Date(new Date().setDate(0)),
@@ -335,6 +328,7 @@ const TableZyx = React.memo(({
                 endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
             }
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
 
     const exportData = () => {
@@ -480,28 +474,24 @@ const TableZyx = React.memo(({
                                 page.map((row: any) => {
                                     prepareRow(row);
                                     return (
-                                        <TableRow {...row.getRowProps()} className={classes.trdynamic}>
+                                        <TableRow {...row.getRowProps()} hover>
                                             {row.cells.map((cell: any, i: number) =>
                                                 <TableCell
-                                                    {...cell.getCellProps()}
-                                                    align={typeof cell.value === "number" ? "right" : "left"}
-                                                    className={clsx({
-                                                        [classes.containerfloat]: headerGroups[0].headers[i].activeOnHover
+                                                    {...cell.getCellProps({
+                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
                                                     })}
                                                 >
                                                     {headerGroups[0].headers[i].isComponent ?
-                                                        <Box m={0} width={1} whiteSpace="nowrap">
-                                                            {cell.render('Cell')}
-                                                        </Box>
+                                                        cell.render('Cell')
                                                         :
                                                         (cell.value?.length > 100 ?
                                                             <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={400}>
+                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
                                                                     {cell.render('Cell')}
                                                                 </Box>
                                                             </Tooltip>
                                                             :
-                                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={1}>
+                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
                                                                 {cell.render('Cell')}
                                                             </Box>
                                                         )

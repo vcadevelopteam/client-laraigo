@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
@@ -255,7 +256,7 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
     return data;
 }
 
-const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected }) => {
+const TicketsPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showSearch, setShowSearch] = useState(false);
@@ -267,12 +268,17 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
     const ticketList = useSelector(state => state.inbox.ticketList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
+    const setTicketSelected = React.useCallback((ticket: ITicket) => {
+        dispatch(selectTicket(ticket))
+        dispatch(getDataTicket(ticket))
+    }, [dispatch]);
+
     useEffect(() => {
         dispatch(getTickets(agentSelected ? agentSelected.userid : null))
         return () => {
             dispatch(resetGetTickets())
         }
-    }, [agentSelected])
+    }, [agentSelected, dispatch])
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
@@ -342,26 +348,12 @@ const TicketsPanel: React.FC<{ classes: any, setTicketSelected: (param: ITicket)
 
 const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
-
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
-
-    // const setTicketSelected = (ticket: ITicket) => {
-    //     dispatch(selectTicket(ticket))
-    //     dispatch(getDataTicket(ticket))
-    // };
-
-    const setTicketSelected = React.useCallback((ticket: ITicket) => {
-        dispatch(selectTicket(ticket))
-        dispatch(getDataTicket(ticket))
-    }, [dispatch]);
 
     return (
         <div className={classes.containerPanel}>
             <TicketsPanel
-                setTicketSelected={setTicketSelected}
                 classes={classes}
             />
             {ticketSelected &&

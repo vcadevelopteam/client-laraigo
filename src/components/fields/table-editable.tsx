@@ -31,11 +31,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import BackupIcon from '@material-ui/icons/Backup';
+
 import { TableConfig } from '@types'
-import { SearchField } from 'components';
+import { OnlyCheckbox, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
-import { optionsMenu } from './table-paginated';
 
 import {
     useTable,
@@ -44,9 +43,11 @@ import {
     useSortBy,
     usePagination
 } from 'react-table'
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
+import { TextField } from '@material-ui/core';
+
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -124,7 +125,48 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const TableZyx = React.memo(({
+export const stringOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'contains', value: 'contains' },
+    { key: 'notcontains', value: 'notcontains' },
+    { key: 'isempty', value: 'isempty' },
+    { key: 'isnotempty', value: 'isnotempty' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const numberOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'greater', value: 'greater' },
+    { key: 'greaterorequals', value: 'greaterorequals' },
+    { key: 'less', value: 'less' },
+    { key: 'lessorequals', value: 'lessorequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const dateOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'after', value: 'after' },
+    { key: 'afterequals', value: 'afterequals' },
+    { key: 'before', value: 'before' },
+    { key: 'beforeequals', value: 'beforeequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const booleanOptionsMenu = [
+    { key: 'all', value: 'all' },
+    { key: 'istrue', value: 'istrue' },
+    { key: 'isfalse', value: 'isfalse' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+const TableZyxEditable = React.memo(({
     columns,
     titlemodule,
     fetchData,
@@ -133,142 +175,338 @@ const TableZyx = React.memo(({
     register,
     handleRegister,
     HeadComponent,
-    ButtonsElement,
     pageSizeDefault = 20,
-    importCSV,
+    hoverShadow = false,
     filterGeneral = true,
-    loading = false
+    loading = false,
+    updateMyData,
+    skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
-    const SelectColumnFilter = ({
-        column: { setFilter, type },
+    const DefaultColumnFilter = ({
+        column: { canFilter, setFilter, type = "string" },
     }: any) => {
-        const [value, setValue] = useState('');
+        const { t } = useTranslation();
+        const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
-        const [operator, setoperator] = useState("contains");
+        const [operator, setoperator] = useState<string>('contains');
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
-        const handleClickItemMenu = (op: any) => {
+        const handleClickItemMenu = (operator: any) => {
             setAnchorEl(null);
-            setoperator(op)
+            setoperator(operator)
+            if (type === 'boolean') {
+                setValue(operator);
+            }
+            setFilter({ value, operator, type });
         };
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
         };
-
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
-
         useEffect(() => {
-            if (type === "number")
-                setoperator("equals");
+            switch (type) {
+                case "number": case "date":
+                    setoperator("equals");
+                    break;
+                case "boolean":
+                    setoperator("all");
+                    break;
+                case "string": case "color":
+                    setoperator("contains");
+                    break;
+                default:
+                    setoperator("equals");
+                    break;
+            }
         }, [type]);
 
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Input
-                    startAdornment={
-                        <InputAdornment position="start">
-                            <SearchIcon color="action" fontSize="small" />
-                        </InputAdornment>
-                    }
-                    disabled={loading}
-                    type={type === "number" ? "number" : "text"}
-                    style={{ fontSize: '15px', minWidth: '100px' }}
-                    fullWidth
-                    value={value}
-                    onKeyDown={keyPress}
-                    onChange={e => {
-                        setValue(e.target.value || '');
-                    }}
-                />
-                <div style={{ width: '12px' }} />
-                <MoreVertIcon
-                    style={{ cursor: 'pointer' }}
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
-                    onClick={handleClickMenu}
-                    color="action"
-                    fontSize="small"
-                />
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                        },
-                    }}
-                >
-                    {type === "number" ?
-                        optionsMenu.filter(x => x.type !== 'onlystring').map((option) => (
+                {type === 'boolean' ?
+                <Select
+                    value={value || 'all'}
+                    onChange={(e) => handleClickItemMenu(e.target.value)}
+                    >
+                    {booleanOptionsMenu.map((option) => (
+                        <MenuItem key={option.key} value={option.key}>
+                            {t(option.value)}
+                        </MenuItem>
+                    ))}
+                </Select>
+                :
+                <React.Fragment>
+                    <Input
+                        startAdornment={
+                            <InputAdornment position="start">
+                                <SearchIcon color="action" fontSize="small" />
+                            </InputAdornment>
+                        }
+                        disabled={loading}
+                        type="text"
+                        style={{ fontSize: '15px', minWidth: '100px' }}
+                        fullWidth
+                        value={value}
+                        onKeyDown={keyPress}
+                        onChange={e => {
+                            setValue(e.target.value || '');
+                        }}
+                    />
+                    <div style={{ width: '12px' }} />
+                    <MoreVertIcon
+                        style={{ cursor: 'pointer' }}
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        onClick={handleClickMenu}
+                        color="action"
+                        fontSize="small"
+                    />
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: '20ch',
+                            },
+                        }}
+                    >
+                        {(type === "string" || type === "color") ?
+                        stringOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
+                                {t(option.value)}
                             </MenuItem>
-                        ))
-                        :
-                        optionsMenu.filter(x => x.type !== 'onlynumber').map((option) => (
+                        )) : null}
+                        {type === "number" ?
+                        numberOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
+                                {t(option.value)}
                             </MenuItem>
-                        ))}
-                </Menu>
+                        )) : null}
+                        {type === "date" ?
+                        dateOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        )) : null}
+                    </Menu>
+                </React.Fragment>
+                }
             </div>
         );
     }
 
+    // Create an editable cell renderer
+    const EditableCell = ({
+        value: initialValue,
+        row,
+        column,
+        updateMyData, // This is a custom function that we supplied to our table instance
+    }: {
+        value: any,
+        row: any,
+        column: any,
+        updateMyData: (index: number, id: any, value: any) => void
+    }) => {
+        // We need to keep and update the state of the cell normally
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        const [value, setValue] = React.useState(initialValue)
+        
+        const onChange = (e: any) => {
+            setValue(e.target.value)
+        }
+        
+        // We'll only update the external data when the input is blurred
+        const onBlur = () => {
+            updateMyData(row.index, column.id, value)
+        }
+
+        const onChecked = (value: any) => {
+            updateMyData(row.index, column.id, value)
+        }
+
+        const onBlurColor = () => {
+            const rex = new RegExp(/#[0-9A-Fa-f]{6}/, 'g');
+            if (rex.test(value)) {
+                setColorValue(value)
+                updateMyData(row.index, column.id, value)
+            }
+            else {
+                setColorValue('#000000')
+                updateMyData(row.index, column.id, '#000000')
+            }
+        }
+
+        const [colorValue, setColorValue] = React.useState<any>(initialValue)
+
+        // If the initialValue is changed external, sync it up with our state
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        React.useEffect(() => {
+            setValue(initialValue)
+        }, [initialValue])
+
+        if (column.editable) {
+            switch (column.type) {
+                case 'color':
+                    return (
+                        <div style={{display: 'flex'}}>
+                            <TextField
+                                style={{flex: 1}}
+                                value={value}
+                                onChange={onChange}
+                                onBlur={onBlurColor}
+                            >
+                            </TextField>
+                            <div
+                                style={{flexGrow: 0}}
+                                onBlur={() => {onChecked(colorValue)}}
+                            >
+                                <input
+                                    type="color"
+                                    value={colorValue}
+                                    style={{border: 'none', background: 'transparent'}}
+                                    onChange={(e) => setColorValue(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    )
+                case 'number':
+                    return <TextField
+                        type="number"
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        inputProps={{ min: 0, step: 1 }}
+                    />
+                case 'boolean':
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={value}
+                        onChange={(value) => onChecked(value)}
+                    />
+                default:
+                    return <TextField
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                    >
+                    </TextField>
+            }
+        }
+        else {
+            return (value?.length > 100 ?
+                <Tooltip TransitionComponent={Zoom} title={value}>
+                    <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                        {value}
+                    </Box>
+                </Tooltip>
+                :
+                <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                    {value}
+                </Box>
+            )
+        }
+    }
+
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
-
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
-            if (!cellvalue)
+            if (cellvalue === null) {
                 return false;
-            if (type === "number") {
-                switch (operator) {
-                    case 'greater':
-                        return cellvalue > value;
-                    case 'greaterequal':
-                        return cellvalue >= value;
-                    case 'smaller':
-                        return cellvalue < value;
-                    case 'smallerequal':
-                        return cellvalue <= value;
-                    case 'noequals':
-                        return cellvalue !== value;
-                    case 'equals':
-                    default:
-                        return cellvalue === value;
-                }
-            } else {
-                switch (operator) {
-                    case 'equals':
-                        return cellvalue === value;
-                    case 'noequals':
-                        return cellvalue !== value;
-                    case 'nocontains':
-                        return !cellvalue.toLowerCase().includes(value.toLowerCase());
-                    case 'empty':
-                        return cellvalue === '' || cellvalue == null;
-                    case 'noempty':
-                        return cellvalue !== '' && cellvalue != null;
-                    case 'contains':
-                    default:
-                        return cellvalue.toLowerCase().includes(value.toLowerCase());
-                }
+            }
+            if (!(['isempty','isnotempty','isnull','isnotnull'].includes(operator) || type === 'boolean')
+                && (value || '') === '')
+                return true;
+            switch (type) {
+                case "number":
+                    switch (operator) {
+                        case 'greater':
+                            return cellvalue > Number(value);
+                        case 'greaterorequals':
+                            return cellvalue >= Number(value);
+                        case 'less':
+                            return cellvalue < Number(value);
+                        case 'lessorequals':
+                            return cellvalue <= Number(value);
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== Number(value);
+                        case 'equals':
+                        default:
+                            return cellvalue === Number(value);
+                    }
+                case "date":
+                    switch (operator) {
+                        case 'after':
+                            return cellvalue > value;
+                        case 'afterequals':
+                            return cellvalue >= value;
+                        case 'before':
+                            return cellvalue < value;
+                        case 'beforeequals':
+                            return cellvalue <= value;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'equals':
+                        default:
+                            return cellvalue === value;
+                    }
+                case "boolean":
+                    switch (operator) {
+                        case 'istrue':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'true' : cellvalue === true;
+                        case 'isfalse':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'all':
+                        default:
+                            return true;
+                    }
+                case "string":
+                default:
+                    switch (operator) {
+                        case 'equals':
+                            return cellvalue === value;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'isempty':
+                            return cellvalue === '';
+                        case 'isnotempty':
+                            return cellvalue !== '';
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notcontains':
+                            return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                        case 'contains':
+                        default:
+                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                    }
             }
         });
     }, []);
@@ -276,8 +514,9 @@ const TableZyx = React.memo(({
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => SelectColumnFilter({ ...props, data }),
+            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
+            Cell: EditableCell
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps
         []
@@ -304,7 +543,12 @@ const TableZyx = React.memo(({
         columns,
         data,
         initialState: { pageIndex: 0, pageSize: pageSizeDefault },
-        defaultColumn
+        defaultColumn,
+        autoResetFilters: !skipAutoReset,
+        autoResetGlobalFilter: !skipAutoReset,
+        autoResetSortBy: !skipAutoReset,
+        autoResetPage: !skipAutoReset,
+        updateMyData
     },
         useFilters,
         useGlobalFilter,
@@ -323,7 +567,7 @@ const TableZyx = React.memo(({
     }, [fetchData])
     return (
         <Box width={1} style={{ height: '100%' }}>
-            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
                 {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (
@@ -339,31 +583,6 @@ const TableZyx = React.memo(({
                                 <RefreshIcon />
                             </Fab>
                         </Tooltip>
-                    )}
-                    {ButtonsElement && <ButtonsElement />}
-                    {importCSV && (
-                        <>
-                            <input
-                                name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                id="laraigo-upload-csv-file"
-                                type="file"
-                                style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
-                            />
-                            <label htmlFor="laraigo-upload-csv-file">
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={loading}
-                                    startIcon={<BackupIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.import} />
-                                </Button>
-                            </label>
-                        </>
                     )}
                     {register && (
                         <Button
@@ -407,8 +626,8 @@ const TableZyx = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" >
-                    <Table size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)'}}>
+                    <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -554,7 +773,7 @@ const TableZyx = React.memo(({
     )
 });
 
-export default TableZyx;
+export default TableZyxEditable;
 
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];

@@ -1,7 +1,7 @@
-import { IActionCall, IAgent, IInteraction, ITicket } from "@types";
-import { CommonService } from "network";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams } from "@types";
+import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
+import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -66,7 +66,11 @@ export const getInteractions = (conversationid: number, lock: boolean, conversat
 export const resetGetInteractions = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_RESET });
 
 export const getDataTicket = (ticket: ITicket): IActionCall => ({
-    callAPI: () => CommonService.multiMain([getInteractionsByConversation(ticket.conversationid, false, 0), getInfoPerson(ticket.personid)]),
+    callAPI: () => CommonService.multiMain([
+        getInteractionsByConversation(ticket.conversationid, false, 0),
+        getInfoPerson(ticket.personid),
+        getConfigurationVariables(ticket.communicationchannelid)
+    ]),
     types: {
         loading: actionTypes.GET_DATA_TICKET,
         success: actionTypes.GET_DATA_TICKET_SUCCESS,
@@ -88,3 +92,53 @@ export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_A
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
+
+export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
+    callAPI: () => InboxService.closeTicket(params),
+    types: {
+        loading: actionTypes.CLOSE_TICKET,
+        success: actionTypes.CLOSE_TICKET_SUCCESS,
+        failure: actionTypes.CLOSE_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });
+
+
+export const replyTicket = (params: IReplyTicketParams): IActionCall => ({
+    callAPI: () => InboxService.replyTicket(params),
+    types: {
+        loading: actionTypes.REPLY_TICKET,
+        success: actionTypes.REPLY_TICKET_SUCCESS,
+        failure: actionTypes.REPLY_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetreplyTicket = (): IActionCall => ({ type: actionTypes.REPLY_TICKET_RESET });
+
+
+export const getTipificationLevel2 = (classificationid: number): IActionCall => ({
+    callAPI: () => CommonService.main(getClassificationLevel2("TIPIFICACION", classificationid)),
+    types: {
+        loading: actionTypes.GET_TIPIFICATION_LEVEL_2,
+        success: actionTypes.GET_TIPIFICATION_LEVEL_2_SUCCESS,
+        failure: actionTypes.GET_TIPIFICATION_LEVEL_2_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTipificationLevel2 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_2_RESET });
+
+export const getTipificationLevel3 = (classificationid: number): IActionCall => ({
+    callAPI: () => CommonService.main(getClassificationLevel2("TIPIFICACION", classificationid)),
+    types: {
+        loading: actionTypes.GET_TIPIFICATION_LEVEL_3,
+        success: actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS,
+        failure: actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTipificationLevel3 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_3_RESET });

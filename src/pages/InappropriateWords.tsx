@@ -41,7 +41,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -65,9 +64,11 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row ? row.inappropriatewordsid : 0,
-            description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
+            id: row?.inappropriatewordsid|| 0,
+            classification: row?.classification||"",
+            description: row?.description || '',
+            defaultanswer: row?.defaultanswer || '',
+            status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -75,7 +76,9 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
     React.useEffect(() => {
         register('type');
         register('id');
+        register('defaultanswer');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('classification', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
@@ -111,47 +114,18 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
 
     return (
         <div style={{width: '100%'}}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TitleDetail
-                title={row ? `${row.description}` : t(langKeys.newinnapropiateword)}
-            />
             <form onSubmit={onSubmit}>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)} 
-                                className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-6"
-                            />}
-                            {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', (value?value.domainvalue:""))}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row ? `${row.description}` : t(langKeys.newinnapropiateword)}
+                        />
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center'}}>
                         <Button
                             variant="contained"
                             type="button"
@@ -171,6 +145,79 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                         >{t(langKeys.save)}
                         </Button>
                         }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.classification)}
+                                className="col-12"
+                                valueDefault={row ? (row.classification || "") : ""}
+                                onChange={(value) => setValue('classification', (value?.domainvalue||""))}
+                                error={errors?.classification?.message}
+                                data={[
+                                    {domaindesc:t(langKeys.insults), domainvalue: "Insults"},
+                                    {domaindesc:t(langKeys.entities), domainvalue: "Entities"},
+                                    {domaindesc:t(langKeys.links), domainvalue: "Links"},
+                                    {domaindesc:t(langKeys.emotions), domainvalue: "Emotions"},
+                                ]}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            : <FieldView
+                                label={t(langKeys.classification)}
+                                value={row?.classification || ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)} 
+                                className="col-12"
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={row ? (row.description || "") : ""}
+                                error={errors?.description?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.description)}
+                                value={row ? (row.description || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.defaultanswer)} 
+                                className="col-12"
+                                onChange={(value) => setValue('defaultanswer', value)}
+                                valueDefault={row ? (row.defaultanswer || "") : ""}
+                                error={errors?.defaultanswer?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.defaultanswer)}
+                                value={row ? (row.defaultanswer || "") : ""}
+                                className="col-12"
+                            />}
+                    </div>
+                    <div className="row-zyx">
+                        {edit ?
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-12"
+                            valueDefault={row ? (row.status || "") : ""}
+                            onChange={(value) => setValue('status', (value?value.domainvalue:""))}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        : <FieldView
+                            label={t(langKeys.status)}
+                            value={row ? (row.status || "") : ""}
+                            className="col-12"
+                        />}
                     </div>
                 </div>
             </form>
@@ -195,6 +242,8 @@ const InappropriateWords: FC = () => {
                 accessor: 'userid',
                 NoFilter: true,
                 isComponent: true,
+                minWidth: 60,
+                width: '1%',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -207,8 +256,18 @@ const InappropriateWords: FC = () => {
                 }
             },
             {
+                Header: t(langKeys.classification),
+                accessor: 'classification',
+                NoFilter: true
+            },
+            {
                 Header: t(langKeys.description),
                 accessor: 'description',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.defaultanswer),
+                accessor: 'defaultanswer',
                 NoFilter: true
             },
             {
