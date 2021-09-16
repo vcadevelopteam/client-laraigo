@@ -1,11 +1,20 @@
-import React, { FC, useState } from 'react';
-import { AppBar, Box, Button, Input, makeStyles, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider } from '@material-ui/core';
-import { IOSSwitch } from 'components';
+import React, { FC, useEffect, useState } from 'react';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider, Fade, Paper, Breadcrumbs } from '@material-ui/core';
+import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ChromePicker, ColorChangeHandler } from 'react-color';
 import { ArrowDropDown, Close, CloudUpload } from '@material-ui/icons';
+import { useHistory } from 'react-router';
+import { useForm, UseFormReturn } from 'react-hook-form';
+import { IChatWebAdd, IChatWebAddFormField } from '@types';
+import { useDispatch } from 'react-redux';
+import { insertChannel2, reserInsertChannel } from 'store/channel/actions';
+import { useSelector } from 'hooks';
+import { showSnackbar } from 'store/popus/actions';
+import { getInsertChatwebChannel } from 'common/helpers';
+import paths from 'common/constants/paths';
 
 interface TabPanelProps {
     value: string;
@@ -13,8 +22,21 @@ interface TabPanelProps {
 }
 
 interface FieldTemplate {
-    text: string;
-    node: (onClose: (key: string) => void) => React.ReactNode;
+    text: React.ReactNode;
+    node: (onClose: (key: string) => void, data: IChatWebAddFormField) => React.ReactNode;
+    data: IChatWebAddFormField;
+}
+
+const getImgUrl = (file: File | null): string | null => {
+    if (!file) return null;
+
+    try {
+        const url = URL.createObjectURL(file);
+        return url;
+    } catch (ex) {
+        console.error(ex);
+        return null;
+    }
 }
 
 const useTabPanelStyles = makeStyles(theme => ({
@@ -70,11 +92,13 @@ const useTabInterfacetyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelInterface: FC = () => {
+const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+    const { setValue, getValues } = form;
     const classes = useTabInterfacetyles();
-    const [chatBtn, setChatBtn] = useState<File | null>(null);
-    const [headerBtn, setHeaderBtn] = useState<File | null>(null);
-    const [botBtn, setBotBtn] = useState<File | null>(null);
+    const { t } = useTranslation();
+    const [chatBtn, setChatBtn] = useState<File | null>(getValues('interface.iconbutton') as File);
+    const [headerBtn, setHeaderBtn] = useState<File | null>(getValues('interface.iconheader') as File);
+    const [botBtn, setBotBtn] = useState<File | null>(getValues('interface.iconbot') as File);
 
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
@@ -94,16 +118,19 @@ const TabPanelInterface: FC = () => {
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
+        setValue("interface.iconbutton", e.target.files[0]);
     }
 
     const onChangeHeaderInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setHeaderBtn(e.target.files[0]);
+        setValue('interface.iconheader', e.target.files[0]);
     }
 
     const onChangeBotInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setBotBtn(e.target.files[0]);
+        setValue('interface.iconbot', e.target.files[0]);
     }
 
     const handleCleanChatInput = () => {
@@ -111,6 +138,7 @@ const TabPanelInterface: FC = () => {
         const input = document.getElementById('chatBtnInput') as HTMLInputElement;
         input.value = "";
         setChatBtn(null);
+        setValue('interface.iconbutton', null);
     }
 
     const handleCleanHeaderInput = () => {
@@ -118,6 +146,7 @@ const TabPanelInterface: FC = () => {
         const input = document.getElementById('headerBtnInput') as HTMLInputElement;
         input.value = "";
         setHeaderBtn(null);
+        setValue('interface.iconheader', null);
     }
 
     const handleCleanBotInput = () => {
@@ -125,7 +154,12 @@ const TabPanelInterface: FC = () => {
         const input = document.getElementById('botBtnInput') as HTMLInputElement;
         input.value = "";
         setBotBtn(null);
+        setValue('interface.iconbot', null);
     }
+
+    const chatImgUrl = getImgUrl(chatBtn);
+    const headerImgUrl = getImgUrl(headerBtn);
+    const botImgUrl = getImgUrl(botBtn);
 
     return (
         <Grid container direction="column">
@@ -133,15 +167,19 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Título</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.title} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder="Título de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderTitle)} // "Título de la cabecera del chat"
                                 name="titulo"
                                 size="small"
+                                defaultValue={getValues('interface.chattitle')}
+                                onChange={(e) => setValue('interface.chattitle', e.target.value)}
                             />
                         </Grid>
                     </Grid>
@@ -151,15 +189,19 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Subtitulo</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.subtitle} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder="Subtitulo de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderSubtitle)} // "Subtitulo de la cabecera del chat"
                                 name="subtitulo"
                                 size="small"
+                                defaultValue={getValues('interface.chatsubtitle')}
+                                onChange={(e) => setValue('interface.chatsubtitle', e.target.value)}
                             />
                         </Grid>
                     </Grid>
@@ -169,12 +211,14 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Botón del chat</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.chatButton} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {chatBtn && <img src={URL.createObjectURL(chatBtn)} className={classes.img} />}
+                                    {chatImgUrl && <img src={chatImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -200,12 +244,14 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Cabecera</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.header} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {headerBtn && <img src={URL.createObjectURL(headerBtn)} className={classes.img} />}
+                                    {headerImgUrl && <img src={headerImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -231,12 +277,14 @@ const TabPanelInterface: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                            <label className={classes.text}>Botón del Bot</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.botButton} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {botBtn && <img src={URL.createObjectURL(botBtn)} className={classes.img} />}
+                                    {botImgUrl && <img src={botImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -349,9 +397,39 @@ const useTabColorStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelColors: FC = () => {
+const TabPanelColors: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+    const { setValue, getValues } = form;
     const classes = useTabColorStyles();
-    const [color, setColor] = useState('#fff');
+    const [headerColor, setHeaderColor] = useState(getValues('color.header'));
+    const [backgroundColor, setBackgroundColor] = useState(getValues('color.background'));
+    const [borderColor, setBorderColor] = useState(getValues('color.border'));
+    const [clientMessageColor, setClientMessageColor] = useState(getValues('color.client'));
+    const [botMessageColor, setBotMessageColor] = useState(getValues('color.bot'));
+
+    const handleHeaderColorChange: ColorChangeHandler = (e) => {
+        setHeaderColor(e.hex);
+        setValue('color.header', e.hex);
+    }
+
+    const handleBackgroundColorChange: ColorChangeHandler = (e) => {
+        setBackgroundColor(e.hex);
+        setValue('color.background', e.hex);
+    }
+
+    const handleBorderColorChange: ColorChangeHandler = (e) => {
+        setBorderColor(e.hex);
+        setValue('color.border', e.hex);
+    }
+
+    const handleClientMessageColorChange: ColorChangeHandler = (e) => {
+        setClientMessageColor(e.hex);
+        setValue('color.client', e.hex);
+    }
+
+    const handleBotMessageColorChange: ColorChangeHandler = (e) => {
+        setBotMessageColor(e.hex);
+        setValue('color.bot', e.hex);
+    }
 
     return (
         <Grid container direction="row">
@@ -360,30 +438,36 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Cabecera de chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatHeader} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={color} onChange={e => setColor(e.hex)} />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Grid container direction="row">
-                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Fondo de chat</label>
-                            </Grid>
-                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={color} onChange={e => setColor(e.hex)} />
+                                <ColorInput hex={headerColor} onChange={handleHeaderColorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Borde de chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatBackground} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={color} onChange={e => setColor(e.hex)} />
+                                <ColorInput hex={backgroundColor} onChange={handleBackgroundColorChange} />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="row">
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.chatBorder} />
+                                </label>
+                            </Grid>
+                            <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
+                                <ColorInput hex={borderColor} onChange={handleBorderColorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -394,20 +478,24 @@ const TabPanelColors: FC = () => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Mensajes de cliente</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.clientMessage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={color} onChange={e => setColor(e.hex)} />
+                                <ColorInput hex={clientMessageColor} onChange={handleClientMessageColorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid container direction="row">
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <label className={classes.text}>Mensaje de bot</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.botMessage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-                                <ColorInput hex={color} onChange={e => setColor(e.hex)} />
+                                <ColorInput hex={botMessageColor} onChange={handleBotMessageColorChange} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -450,14 +538,22 @@ const useTemplateStyles = makeStyles(theme => ({
     },
 }));
 
-const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
+const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: IChatWebAddFormField }> = ({ data, onClose, title }) => {
     const classes = useTemplateStyles();
+    const { t } = useTranslation();
     const [required, setRequired] = useState(true);
+
+    const handleRequired = (checked: boolean) =>{
+        setRequired(checked);
+        data.required = checked;
+    }
 
     return (
         <div className={classes.root}>
             <div className={classes.headertitle}>
-                <label className={clsx(classes.title, classes.fieldContainer)}>Name</label>
+                <label className={clsx(classes.title, classes.fieldContainer)}>
+                    {title}
+                </label>
                 <IconButton color="primary" onClick={onClose} className={classes.closeBtn}>
                     <Close color="primary" className="fa fa-plus-circle" />
                 </IconButton>
@@ -472,10 +568,12 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row" style={{ minHeight: 40 }}>
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Required</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.required} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <IOSSwitch checked={required} onChange={(_, v) => setRequired(v)} />
+                                                <IOSSwitch checked={required} onChange={(_, v) => handleRequired(v)} />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -484,10 +582,18 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row">
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Label</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.label} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.name)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                    onChange={e => data.label = e.target.value}
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -503,7 +609,13 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                                 <label className={classes.text}>Placeholder</label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Enter your name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.enterYourName)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                    onChange={e => data.placeholder = e.target.value}
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -512,10 +624,18 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                                     <Box m={1}>
                                         <Grid container direction="row">
                                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                                <label className={classes.text}>Error text</label>
+                                                <label className={classes.text}>
+                                                    <Trans i18nKey={langKeys.errorText} />
+                                                </label>
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                                <TextField placeholder="Please enter your name" variant="outlined" size="small" fullWidth />
+                                                <TextField
+                                                    placeholder={t(langKeys.pleaseEnterYourName)}
+                                                    variant="outlined"
+                                                    size="small"
+                                                    fullWidth
+                                                    onChange={e => data.validationtext = e.target.value}
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>
@@ -529,10 +649,18 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                     <Box m={1}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>Input validation</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.inputValidation} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField placeholder="regex" variant="outlined" size="small" fullWidth />
+                                <TextField
+                                    placeholder="regex"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    onChange={e => data.inputvalidation = e.target.value}
+                                />
                             </Grid>
                         </Grid>
                     </Box>
@@ -541,10 +669,18 @@ const NameTemplate: FC<{ onClose: () => void }> = ({ onClose }) => {
                     <Box m={1}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={2}>
-                                <label className={classes.text}>Validation on keychange</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.validationOnKeychange} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
-                                <TextField placeholder="regex" variant="outlined" size="small" fullWidth />
+                                <TextField
+                                    placeholder="regex"
+                                    variant="outlined"
+                                    size="small"
+                                    fullWidth
+                                    onChange={e => data.keyvalidation = e.target.value}
+                                />
                             </Grid>
                         </Grid>
                     </Box>
@@ -564,23 +700,107 @@ const useTabFormStyles = makeStyles(theme => ({
 
 const NAME_FIELD = "NAME_FIELD";
 const LASTNAME_FIELD = "LASTNAME_FIELD";
+const PHONE_FIELD = "PHONE_FIELD";
+const EMAIL_FIELD = "EMAIL_FIELD";
+const DOCUMENT_FIELD = "DOCUMENT_FIELD";
+const SUPPLUNUMBER_FIELD = "SUPPLUNUMBER_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
     [NAME_FIELD]: {
-        text: 'Name',
-        node: (onClose) => <NameTemplate onClose={() => onClose(NAME_FIELD)} key={NAME_FIELD} />,
+        text: <Trans i18nKey={langKeys.name} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(NAME_FIELD)} key={NAME_FIELD} title={<Trans i18nKey={langKeys.name} />} />,
+        data: {
+            field: "FIRSTNAME",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
     },
     [LASTNAME_FIELD]: {
-        text: 'Lastname',
-        node: (onClose) => <NameTemplate onClose={() => onClose(LASTNAME_FIELD)} key={LASTNAME_FIELD} />,
+        text: <Trans i18nKey={langKeys.lastname} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(LASTNAME_FIELD)} key={LASTNAME_FIELD} title={<Trans i18nKey={langKeys.lastname} />} />,
+        data: {
+            field: "LASTNAME",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [PHONE_FIELD]: {
+        text: <Trans i18nKey={langKeys.phone} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(PHONE_FIELD)} key={PHONE_FIELD} title={<Trans i18nKey={langKeys.phone} />} />,
+        data: {
+            field: "PHONE",
+            type: "phone",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [EMAIL_FIELD]: {
+        text: <Trans i18nKey={langKeys.email} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(EMAIL_FIELD)} key={EMAIL_FIELD} title={<Trans i18nKey={langKeys.email} />} />,
+        data: {
+            field: "EMAIL",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [DOCUMENT_FIELD]: {
+        text: <Trans i18nKey={langKeys.document} />,
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(DOCUMENT_FIELD)} key={DOCUMENT_FIELD} title={<Trans i18nKey={langKeys.document} />} />,
+        data: {
+            field: "DOCUMENT",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [SUPPLUNUMBER_FIELD]: {
+        text: "Supply Number",
+        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={"Supply Number"} />,
+        data: {
+            field: "SUPPLYNUMBER",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
     },
 };
 
-const TabPanelForm: FC = () => {
+const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
-    const [enabled, setEnabled] = useState(true);
+    const [enable, setEnable] = useState(true);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
     const [fields, setFields] = useState<FieldTemplate[]>([]);
+
+    useEffect(() => {
+        form.setValue('form', fields.map(x => x.data));
+    }, [fields]);
 
     const handleCloseTemplate = (key: string) => {
         const newFields = fields.filter(e => e != templates[key]);
@@ -609,17 +829,21 @@ const TabPanelForm: FC = () => {
                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>Do you want to add the form to you site?</Typography>
+                            <Typography className={classes.text}>
+                                <Trans i18nKey={langKeys.wantAddFormToSiteQuestion} />
+                            </Typography>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enabled} onChange={(_, v) => setEnabled(v)} />
+                            <IOSSwitch checked={enable} onChange={(_, v) => setEnable(v)} />
                         </Grid>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enable ? 'block' : 'none' }}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <Typography className={classes.text}>Select a field</Typography>
+                            <Typography className={classes.text}>
+                                <Trans i18nKey={langKeys.selectField} />
+                            </Typography>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <FormControl style={{ width: 160, marginRight: 20 }}>
@@ -631,25 +855,25 @@ const TabPanelForm: FC = () => {
                                     style={{ height: 40 }}
                                 >
                                     <MenuItem value={""}>
-                                        <em>Select -</em>
+                                        <em><Trans i18nKey={langKeys.select} /> -</em>
                                     </MenuItem>
                                     {getMenuTemplates()}
                                 </Select>
                             </FormControl>
                             <Button
-                                disabled={fieldTemplate === undefined}
+                                disabled={fieldTemplate === ""}
                                 variant="contained"
                                 color="primary"
                                 style={{ height: 40, minHeight: 40 }}
                                 onClick={handleAddTemplate}
                             >
-                                Add +
+                                <Trans i18nKey={langKeys.add} /> +
                             </Button>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-            {fields.map(e => e.node(handleCloseTemplate))}
+            {fields.map(e => e.node(handleCloseTemplate, e.data))}
         </div>
     );
 }
@@ -681,10 +905,12 @@ const useTabBubbleStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelBubble: FC = () => {
+const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+    const { setValue, getValues } = form;
     const classes = useTabBubbleStyles();
-    const [enabled, setEnabled] = useState(true);
-    const [waitingImg, setWaitingImg] = useState<File | null>(null);
+    const { t } = useTranslation();
+    const [enable, setEnable] = useState(getValues('bubble.active'));
+    const [waitingImg, setWaitingImg] = useState<File | null>(getValues('bubble.iconbubble') as File);
 
     const handleWaitingBtnClick = () => {
         const input = document.getElementById('waitingBtnInput');
@@ -694,6 +920,7 @@ const TabPanelBubble: FC = () => {
     const onChangeWaitingInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setWaitingImg(e.target.files[0]);
+        setValue('bubble.iconbubble', e.target.files[0]);
     }
 
     const handleCleanWaitingInput = () => {
@@ -701,7 +928,15 @@ const TabPanelBubble: FC = () => {
         const input = document.getElementById('waitingBtnInput') as HTMLInputElement;
         input.value = "";
         setWaitingImg(null);
+        setValue('bubble.iconbubble', null);
     }
+
+    const handleEnableChange = (checked: boolean) => {
+        setEnable(checked);
+        setValue('bubble.active', checked);
+    }
+
+    const waitingImgUrl = getImgUrl(waitingImg);
 
     return (
         <Grid container direction="column">
@@ -709,12 +944,48 @@ const TabPanelBubble: FC = () => {
                 <Box m={1}>
                     <Grid container direction="row">
                         <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Estilo de mensaje de espera</label>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.enableWaitingMessage} />
+                            </label>
+                        </Grid>
+                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                            <IOSSwitch checked={enable} onChange={(_, v) => handleEnableChange(v)} />
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <label className={classes.text}>Texto</label>
+                        </Grid>
+                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
+                            <TextField
+                                variant="outlined"
+                                fullWidth
+                                placeholder={t(langKeys.textOfTheMessage)}
+                                name="text"
+                                size="small"
+                                defaultValue={getValues('bubble.messagebubble')}
+                                onChange={e => setValue('bubble.messagebubble', e.target.value)}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1} style={{ display: enable ? 'block' : 'none' }}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+                            <label className={classes.text}>
+                                <Trans i18nKey={langKeys.waitingMessageStyle} />
+                            </label>
                         </Grid>
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {waitingImg && <img src={URL.createObjectURL(waitingImg)} className={classes.img} />}
+                                    {waitingImgUrl && <img src={waitingImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -736,36 +1007,6 @@ const TabPanelBubble: FC = () => {
                     </Grid>
                 </Box>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Habilitar mensaje de espera</label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <IOSSwitch checked={enabled} onChange={(_, v) => setEnabled(v)} />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                <Box m={1} style={{ display: enabled ? 'block' : 'none' }}>
-                    <Grid container direction="row">
-                        <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                            <label className={classes.text}>Texto</label>
-                        </Grid>
-                        <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
-                            <TextField
-                                variant="outlined"
-                                fullWidth
-                                placeholder="Texto del mensaje"
-                                name="texto"
-                                size="small"
-                            />
-                        </Grid>
-                    </Grid>
-                </Box>
-            </Grid>
         </Grid>
     );
 }
@@ -778,9 +1019,91 @@ const useTabExtrasStyles = makeStyles(theme => ({
     },
 }));
 
-const TabPanelExtras: FC = () => {
+const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
+    const { setValue, getValues } = form;
     const classes = useTabExtrasStyles();
-    const [enableBotname, setEnableBotName] = useState(false);
+    const { t } = useTranslation();
+
+    const [uploadFile, setUploadFile] = useState(getValues('extra.uploadfile'));
+    const [uploadVideo, setUploadVideo] = useState(getValues('extra.uploadvideo'));
+    const [uploadImage, setUploadImage] = useState(getValues('extra.uploadimage'));
+    const [uploadAudio, setUploadAudio] = useState(getValues('extra.uploadaudio'));
+    const [uploadLocation, setUploadLocation] = useState(getValues('extra.uploadlocation'));
+    const [reloadChat, setReloadChat] = useState(getValues('extra.reloadchat'));
+    const [poweredBy, setPoweredBy] = useState(getValues('extra.poweredby'));
+
+    const [persistentInput, setPersistentInput] = useState(getValues('extra.persistentinput'));
+    const [abandonEvent, setAbandonEvent] = useState(getValues('extra.abandonevent'));
+    const [alertSound, setAlertSound] = useState(getValues('extra.alertsound'));
+    const [formHistory, setFormHistory] = useState(getValues('extra.formhistory'));
+    const [enableMetadata, setEnableMetadata] = useState(getValues('extra.enablemetadata'));
+
+    const [enableBotName, setEnableBotName] = useState(getValues('extra.botnameenabled'));
+
+    const handleUploadFileChange = (checked: boolean) => {
+        setUploadFile(checked);
+        setValue('extra.uploadfile', checked);
+    }
+
+    const handleUploadVideoChange = (checked: boolean) => {
+        setUploadVideo(checked);
+        setValue('extra.uploadvideo', checked);
+    }
+
+    const handleUploadImageChange = (checked: boolean) => {
+        setUploadImage(checked);
+        setValue('extra.uploadimage', checked);
+    }
+
+    const handleUploadAudioChange = (checked: boolean) => {
+        setUploadAudio(checked);
+        setValue('extra.uploadaudio', checked);
+    }
+
+    const handleUploadLocationChange = (checked: boolean) => {
+        setUploadLocation(checked);
+        setValue('extra.uploadlocation', checked);
+    }
+
+    const handleReloadChatChange = (checked: boolean) => {
+        setReloadChat(checked);
+        setValue('extra.reloadchat', checked);
+    }
+
+    const handlePoweredByChange = (checked: boolean) => {
+        setPoweredBy(checked);
+        setValue('extra.poweredby', checked);
+    }
+
+    const handlePersistentInputChange = (checked: boolean) => {
+        setPersistentInput(checked);
+        setValue('extra.persistentinput', checked);
+    }
+
+    const handleAbandonEventChange = (checked: boolean) => {
+        setAbandonEvent(checked);
+        setValue('extra.abandonevent', checked);
+    }
+
+    const handleAlertSoundChange = (checked: boolean) => {
+        setAlertSound(checked);
+        setValue('extra.alertsound', checked);
+    }
+
+    const handleFormHistoryChange = (checked: boolean) => {
+        setFormHistory(checked);
+        setValue('extra.formhistory', checked);
+    }
+
+    const handleEnableMetadataChange = (checked: boolean) => {
+        setEnableMetadata(checked);
+        setValue('extra.enablemetadata', checked);
+    }
+
+    const handleEnableBotNameChange = (checked: boolean) => {
+        setEnableBotName(checked);
+        setValue('extra.botnameenabled', checked);
+    }
 
     return (
         <Grid container direction="column">
@@ -789,30 +1112,36 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir archivos</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadFile} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={uploadFile} onChange={(_, v) => handleUploadFileChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir video</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadVideo} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={uploadVideo} onChange={(_, v) => handleUploadVideoChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Enviar ubicación</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.sendLocation} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={uploadLocation} onChange={(_, v) => handleUploadLocationChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -823,30 +1152,36 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir imagenes</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadImage} count={2} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={uploadImage} onChange={(_, v) => handleUploadImageChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Subir audio</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.uploadAudio} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={uploadAudio} onChange={(_, v) => handleUploadAudioChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Recargar chat</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.refreshChat} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={reloadChat} onChange={(_, v) => handleReloadChatChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -860,7 +1195,7 @@ const TabPanelExtras: FC = () => {
                                 <label className={classes.text}>Powered by</label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={poweredBy} onChange={(_, v) => handlePoweredByChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -872,30 +1207,36 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Input siempre activo</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.inputAlwaysEnabled} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={persistentInput} onChange={(_, v) => handlePersistentInputChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Evento de abandono</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.abandonmentEvent} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={abandonEvent} onChange={(_, v) => handleAbandonEventChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Sonido de mensaje nuevo</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.newMessageRing} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={alertSound} onChange={(_, v) => handleAlertSoundChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -906,20 +1247,24 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Historial en base a formulario</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.formBaseHistory} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={formHistory} onChange={(_, v) => handleFormHistoryChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Enviar metadata</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.sendMetaData} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={true} onChange={(_, v) => {}} />
+                                <IOSSwitch checked={enableMetadata} onChange={(_, v) => handleEnableMetadataChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
@@ -933,6 +1278,8 @@ const TabPanelExtras: FC = () => {
                     minRows={5}
                     maxRows={10}
                     fullWidth
+                    defaultValue={getValues('extra.customcss')}
+                    onChange={e => setValue('extra.customcss', e.target.value)}
                 />
             </Grid>
             <div style={{ height: 20 }} />
@@ -944,6 +1291,8 @@ const TabPanelExtras: FC = () => {
                     minRows={5}
                     maxRows={10}
                     fullWidth
+                    defaultValue={getValues('extra.customjs')}
+                    onChange={e => setValue('extra.customjs', e.target.value)}
                 />
             </Grid>
             <Divider style={{ margin: '22px 0 38px 0' }} />
@@ -952,20 +1301,24 @@ const TabPanelExtras: FC = () => {
                     <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
                         <Grid container direction="row">
                             <Grid item xs={12} sm={10} md={9} lg={9} xl={9}>
-                                <label className={classes.text}>Activar nombre del bot</label>
+                                <label className={classes.text}>
+                                    <Trans i18nKey={langKeys.enableBotName} />
+                                </label>
                             </Grid>
                             <Grid item xs={12} sm={2} md={3} lg={3} xl={3}>
-                                <IOSSwitch checked={enableBotname} onChange={(_, v) => setEnableBotName(v)} />
+                                <IOSSwitch checked={enableBotName} onChange={(_, v) => handleEnableBotNameChange(v)} />
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enableBotname ? 'block' : 'none' }}>
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} style={{ display: enableBotName ? 'block' : 'none' }}>
                 <TextField
                     variant="outlined"
-                    placeholder="Nombre del bot"
+                    placeholder={t(langKeys.botName)}
                     fullWidth
+                    defaultValue={getValues('extra.botnametext')}
+                    onChange={e => setValue('extra.botnametext', e.target.value)}
                 />
             </Grid>
         </Grid>
@@ -1069,76 +1422,241 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const script = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Laraigo c-commerce you need"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" /> -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-
-    <title>Laraigo</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
-</html>`;
-
 export const ChannelAddChatWeb: FC = () => {
     const classes = useStyles();
+    const history = useHistory();
+    const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
+    const [showFinalStep, setShowFinalStep] = useState(false);
+
+    const insertChannel = useSelector(state => state.channel.insertChannel);
+
+    useEffect(() => {
+        return () => {
+            dispatch(reserInsertChannel());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (insertChannel.loading) return;
+        if (insertChannel.error === true) {
+            dispatch(showSnackbar({
+                message: insertChannel.message!,
+                show: true,
+                success: false,
+            }));
+        } else if (insertChannel.value) {
+            console.log(insertChannel.value);
+            dispatch(showSnackbar({
+                message: "El canal se inserto con éxito",
+                show: true,
+                success: true,
+            }));
+        }
+    }, [insertChannel]);
+
+    const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
+        defaultValues: {
+            interface: {
+                chattitle: "",
+                chatsubtitle: "",
+                iconbutton: null,
+                iconheader: null,
+                iconbot: null,
+            },
+            color: {
+                header: "#fff",
+                background: "#7721AD",
+                border: "#fff",
+                client: "#fff",
+                bot: "#fff",
+            },
+            form: [],
+            bubble: {
+                active: true,
+                messagebubble: "",
+                iconbubble: null,
+            },
+            extra: {
+                uploadfile: true,
+                uploadaudio: true,
+                uploadimage: true,
+                uploadlocation: true,
+                uploadvideo: true,
+                reloadchat: true,
+                poweredby: true,
+
+                persistentinput: true,
+                abandonevent: true,
+                alertsound: true,
+                formhistory: true,
+                enablemetadata: true,
+
+                customcss: "",
+                customjs: "",
+
+                botnameenabled: true,
+                botnametext: "",
+            },
+        }
+    });
+
+    const handleNext = () => {
+        setShowFinalStep(true);
+    }
+
+    const handleSubmit = (name: string, auto: boolean) => {
+        // return console.log(form.getValues());
+        const body = getInsertChatwebChannel(name, auto, form.getValues());
+        dispatch(insertChannel2(body));
+    }
+
+    const handleGoBack: React.MouseEventHandler = (e) => {
+        e.preventDefault();
+        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
+    }
 
     return (
         <div className={classes.root}>
-            <h2 className={classes.title}>Activate Laraigo on your website</h2>
-            <Typography className={classes.subtitle}>
-                Copy and paste this code on your site for the chatbot to start attracting customers.
-            </Typography>
-            <div style={{ height: 8 }} />
-            <Typography className={classes.text}>
-                Paste it into the {'<body />'} tag in your web page code or send it to your developer.
-            </Typography>
-            <div className={classes.scriptPreview}>
-                <code lang="html">{script}</code>
-                <div className={classes.scriptPreviewGradient} />
-                <h5 className={classes.scriptPreviewFullViewTxt} onClick={() => console.log('ss')}>
-                    Ver completo
-                </h5>
-                <Button variant="contained" color="primary" className={classes.scriptPreviewCopyBtn}>
-                    Copy
+            <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
+                        {"<< Previous"}
+                    </Link>
+                </Breadcrumbs>
+                <h2 className={classes.title}>
+                    <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
+                </h2>
+                <div style={{ height: 20 }} />
+                <AppBar position="static" elevation={0}>
+                    <Tabs
+                        value={tabIndex}
+                        onChange={(_, i: string) => setTabIndes(i)}
+                        className={classes.tabs}
+                        TabIndicatorProps={{ style: { display: 'none' } }}
+                    >
+                        <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label={<Trans i18nKey={langKeys.interface} />} value="0" />
+                        <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label={<Trans i18nKey={langKeys.color} count={2} />} value="1" />
+                        <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label={<Trans i18nKey={langKeys.form} />} value="2" />
+                        <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label={<Trans i18nKey={langKeys.bubble} />} value="3" />
+                        <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label={<Trans i18nKey={langKeys.extra} count={2} />} value="4" />
+                    </Tabs>
+                </AppBar>
+                <TabPanel value="0" index={tabIndex}><TabPanelInterface form={form} /></TabPanel>
+                <TabPanel value="1" index={tabIndex}><TabPanelColors form={form} /></TabPanel>
+                <TabPanel value="2" index={tabIndex}><TabPanelForm form={form} /></TabPanel>
+                <TabPanel value="3" index={tabIndex}><TabPanelBubble form={form} /></TabPanel>
+                <TabPanel value="4" index={tabIndex}><TabPanelExtras form={form} /></TabPanel>
+                <div style={{ height: 20 }} />
+                <Button variant="contained" color="primary" onClick={handleNext}>
+                    <Trans i18nKey={langKeys.next} />
                 </Button>
             </div>
-            <div style={{ height: 20 }} />
-            <AppBar position="static" elevation={0}>
-                <Tabs
-                    value={tabIndex}
-                    onChange={(_, i: string) => setTabIndes(i)}
-                    aria-label="simple tabs example"
-                    className={classes.tabs}
-                    TabIndicatorProps={{ style: { display: 'none' } }}
-                >
-                    <Tab className={clsx(classes.tab, tabIndex === "0" && classes.activetab)} label="Interfaz" value="0" />
-                    <Tab className={clsx(classes.tab, tabIndex === "1" && classes.activetab)} label="Colores" value="1" />
-                    <Tab className={clsx(classes.tab, tabIndex === "2" && classes.activetab)} label="Formulario" value="2" />
-                    <Tab className={clsx(classes.tab, tabIndex === "3" && classes.activetab)} label="Bubble" value="3" />
-                    <Tab className={clsx(classes.tab, tabIndex === "4" && classes.activetab)} label="Extras" value="4" />
-                </Tabs>
-            </AppBar>
-            <TabPanel value="0" index={tabIndex}><TabPanelInterface /></TabPanel>
-            <TabPanel value="1" index={tabIndex}><TabPanelColors /></TabPanel>
-            <TabPanel value="2" index={tabIndex}><TabPanelForm /></TabPanel>
-            <TabPanel value="3" index={tabIndex}><TabPanelBubble /></TabPanel>
-            <TabPanel value="4" index={tabIndex}><TabPanelExtras /></TabPanel>
-            <div style={{ height: 20 }} />
+            <div style={{ display: showFinalStep ? 'block' : 'none' }}>
+                <ChannelAddEnd
+                    loading={insertChannel.loading}
+                    integrationId={insertChannel.value?.integrationid}
+                    onSubmit={handleSubmit}
+                    onClose={() => setShowFinalStep(false)}
+                />
+            </div>
         </div>
     );
 };
+
+const useFinalStepStyles = makeStyles(theme => ({
+    title: {
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: "2em",
+        color: "#7721ad",
+        padding: "20px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        maxWidth: "800px",
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial',
+        width: "180px"
+    },
+}));
+
+interface ChannelAddEndProps {
+    loading: boolean;
+    integrationId?: string;
+    onSubmit: (name: string, auto: boolean) => void;
+    onClose: () => void;
+}
+
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId }) => {
+    const classes = useFinalStepStyles();
+    const history = useHistory();
+    const [name, setName] = useState("");
+    const [auto, setAuto] = useState(false);
+
+    console.log(loading, integrationId);
+
+    const handleGoBack = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (!integrationId) onClose();
+    }
+
+    const handleSave = () => {
+        onSubmit(name, auto);
+    }
+
+    return (
+        <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
+                    {"<< Previous"}
+                </Link>
+            </Breadcrumbs>
+            <div>
+                <div className={classes.title}>
+                    You are one click away from connecting your communication channel
+                </div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
+                    <FieldEdit
+                        onChange={(value) => setName(value)}
+                        label="Give your channel a name"
+                        className="col-6"
+                        disabled={loading || integrationId != null}
+                    />
+                </div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
+                    <TemplateSwitch
+                        onChange={(value) => setAuto(value)}
+                        label="Enable Automated Conversational Flow"
+                        className="col-6"
+                        disabled={loading || integrationId != null}
+                    />
+                </div>
+                <div style={{ paddingLeft: "80%" }}>
+                    <Button
+                        onClick={handleSave}
+                        className={classes.button}
+                        variant="contained"
+                        color="primary"
+                        disabled={loading || integrationId != null}
+                    >
+                        FINISH REGISTRATION
+                    </Button>
+                </div>
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}>
+                {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
+                <div style={{ height: 20 }} />
+                <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
+                    Terminar
+                </Button>
+            </div>
+        </div>
+    );
+}

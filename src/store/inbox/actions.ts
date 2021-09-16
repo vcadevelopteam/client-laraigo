@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
+import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -66,7 +66,11 @@ export const getInteractions = (conversationid: number, lock: boolean, conversat
 export const resetGetInteractions = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_RESET });
 
 export const getDataTicket = (ticket: ITicket): IActionCall => ({
-    callAPI: () => CommonService.multiMain([getInteractionsByConversation(ticket.conversationid, false, 0), getInfoPerson(ticket.personid)]),
+    callAPI: () => CommonService.multiMain([
+        getInteractionsByConversation(ticket.conversationid, false, 0),
+        getInfoPerson(ticket.personid),
+        getConfigurationVariables(ticket.communicationchannelid)
+    ]),
     types: {
         loading: actionTypes.GET_DATA_TICKET,
         success: actionTypes.GET_DATA_TICKET_SUCCESS,
