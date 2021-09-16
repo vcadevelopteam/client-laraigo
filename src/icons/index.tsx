@@ -76,6 +76,8 @@ export { ReactComponent as YoutubeIcon } from './youtube.svg';
 export { ReactComponent as WhatsappIcon } from './whatsapp.svg';
 export { ReactComponent as CheckIcon } from './check.svg';
 export { ReactComponent as CallIcon } from './call.svg';
+export { ReactComponent as TelegramIcon } from './telegram.svg';
+export { ReactComponent as EmailIcon } from './email.svg';
 export { ReactComponent as VideoCallIcon } from './video-call.svg';
 
 export { ReactComponent as AttachmentIcon } from './attachment.svg';

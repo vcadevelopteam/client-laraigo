@@ -46,6 +46,8 @@ import {
     TwitterIcon,
     YoutubeIcon,
     WhatsappIcon,
+    EmailIcon,
+    TelegramIcon
 } from 'icons';
 
 
@@ -301,19 +303,19 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "FBDM") return <FacebookMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "FBWA") return <FacebookWallIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "TELE") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHATZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "CHAZ") return <ZyxmeMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    if (channelType === "MAIL") return <WhatsappIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "MAIL") return <EmailIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "YOUT") return <YoutubeIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
 
-    return <WhatsappIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false }) => {
