@@ -8,7 +8,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
 import { exportExcel } from 'common/helpers';
-import clsx from 'clsx';
 import {
     FirstPage,
     LastPage,
@@ -36,7 +35,6 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { TableConfig } from '@types'
 import { OnlyCheckbox, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
-import { optionsMenu } from './table-paginated';
 
 import {
     useTable,
@@ -45,11 +43,11 @@ import {
     useSortBy,
     usePagination
 } from 'react-table'
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
-import { HuePicker } from 'react-color'
+
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -128,44 +126,44 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const stringOptionsMenu = [
-    { key: 'equals', value: 'Igual' },
-    { key: 'notequals', value: 'No Igual' },
-    { key: 'contains', value: 'Contiene' },
-    { key: 'notcontains', value: 'No Contiene' },
-    { key: 'isempty', value: 'Es vacío' },
-    { key: 'isnotempty', value: 'No es vacío' },
-    { key: 'isnull', value: 'Es nulo' },
-    { key: 'isnotnull', value: 'No es nulo' },
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'contains', value: 'contains' },
+    { key: 'notcontains', value: 'notcontains' },
+    { key: 'isempty', value: 'isempty' },
+    { key: 'isnotempty', value: 'isnotempty' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const numberOptionsMenu = [
-    { key: 'equals', value: 'Igual' },
-    { key: 'notequals', value: 'No Igual' },
-    { key: 'greater', value: 'Mayor que' },
-    { key: 'greaterequal', value: 'Mayor igual' },
-    { key: 'smaller', value: 'Menor que' },
-    { key: 'smallerequal', value: 'Menor igual' },
-    { key: 'isnull', value: 'Es nulo' },
-    { key: 'isnotnull', value: 'No es nulo' },
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'greater', value: 'greater' },
+    { key: 'greaterorequals', value: 'greaterorequals' },
+    { key: 'less', value: 'less' },
+    { key: 'lessorequals', value: 'lessorequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const dateOptionsMenu = [
-    { key: 'equals', value: 'Igual' },
-    { key: 'notequals', value: 'No Igual' },
-    { key: 'after', value: 'Después del' },
-    { key: 'afterequal', value: 'Después o igual del' },
-    { key: 'before', value: 'Antes del' },
-    { key: 'beforeequal', value: 'Antes o igual del' },
-    { key: 'isnull', value: 'Es nulo' },
-    { key: 'isnotnull', value: 'No es nulo' },
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'after', value: 'after' },
+    { key: 'afterequals', value: 'afterequals' },
+    { key: 'before', value: 'before' },
+    { key: 'beforeequals', value: 'beforeequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 export const booleanOptionsMenu = [
-    { key: 'all', value: 'Todos' },
-    { key: 'istrue', value: 'Es Verdadero' },
-    { key: 'isfalse', value: 'Es Falso' },
-    { key: 'isnull', value: 'Es nulo' },
-    { key: 'isnotnull', value: 'No es nulo' },
+    { key: 'all', value: 'all' },
+    { key: 'istrue', value: 'istrue' },
+    { key: 'isfalse', value: 'isfalse' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
 ];
 
 const TableZyxEditable = React.memo(({
@@ -190,6 +188,7 @@ const TableZyxEditable = React.memo(({
     const DefaultColumnFilter = ({
         column: { canFilter, setFilter, type = "string" },
     }: any) => {
+        const { t } = useTranslation();
         const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -239,7 +238,9 @@ const TableZyxEditable = React.memo(({
                     onChange={(e) => handleClickItemMenu(e.target.value)}
                     >
                     {booleanOptionsMenu.map((option) => (
-                        <MenuItem key={option.key} value={option.key}>{option.value}</MenuItem>
+                        <MenuItem key={option.key} value={option.key}>
+                            {t(option.value)}
+                        </MenuItem>
                     ))}
                 </Select>
                 :
@@ -286,19 +287,19 @@ const TableZyxEditable = React.memo(({
                         {(type === "string" || type === "color") ?
                         stringOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
+                                {t(option.value)}
                             </MenuItem>
                         )) : null}
                         {type === "number" ?
                         numberOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
+                                {t(option.value)}
                             </MenuItem>
                         )) : null}
                         {type === "date" ?
                         dateOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
+                                {t(option.value)}
                             </MenuItem>
                         )) : null}
                     </Menu>
@@ -332,9 +333,24 @@ const TableZyxEditable = React.memo(({
         const onBlur = () => {
             updateMyData(row.index, column.id, value)
         }
+
         const onChecked = (value: any) => {
             updateMyData(row.index, column.id, value)
         }
+
+        const onBlurColor = () => {
+            const rex = new RegExp(/#[0-9A-Fa-f]{6}/, 'g');
+            if (rex.test(value)) {
+                setColorValue(value)
+                updateMyData(row.index, column.id, value)
+            }
+            else {
+                setColorValue('#000000')
+                updateMyData(row.index, column.id, '#000000')
+            }
+        }
+
+        const [colorValue, setColorValue] = React.useState<any>(initialValue)
 
         // If the initialValue is changed external, sync it up with our state
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -342,28 +358,66 @@ const TableZyxEditable = React.memo(({
             setValue(initialValue)
         }, [initialValue])
 
-        switch (column.type) {
-            case 'color':
-                return <HuePicker
-                    width="auto"
-                    color={value}
-                    onChangeComplete={(value) => {
-                        onChecked(value.hex)
-                    }}
-                />
-            case 'boolean':
-                return <OnlyCheckbox
-                    label=""
-                    valueDefault={value}
-                    onChange={(value) => onChecked(value)}
-                />
-            default:
-                return <TextField
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                >
-                </TextField>
+        if (column.editable) {
+            switch (column.type) {
+                case 'color':
+                    return (
+                        <div style={{display: 'flex'}}>
+                            <TextField
+                                style={{flex: 1}}
+                                value={value}
+                                onChange={onChange}
+                                onBlur={onBlurColor}
+                            >
+                            </TextField>
+                            <div
+                                style={{flexGrow: 0}}
+                                onBlur={() => {onChecked(colorValue)}}
+                            >
+                                <input
+                                    type="color"
+                                    value={colorValue}
+                                    style={{border: 'none', background: 'transparent'}}
+                                    onChange={(e) => setColorValue(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    )
+                case 'number':
+                    return <TextField
+                        type="number"
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                        inputProps={{ min: 0, step: 1 }}
+                    />
+                case 'boolean':
+                    return <OnlyCheckbox
+                        label=""
+                        valueDefault={value}
+                        onChange={(value) => onChecked(value)}
+                    />
+                default:
+                    return <TextField
+                        value={value}
+                        onChange={onChange}
+                        onBlur={onBlur}
+                    >
+                    </TextField>
+            }
+        }
+        else {
+            return (value?.length > 100 ?
+                <Tooltip TransitionComponent={Zoom} title={value}>
+                    <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                        {value}
+                    </Box>
+                </Tooltip>
+                :
+                <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                    {value}
+                </Box>
+            )
         }
     }
 
@@ -382,11 +436,11 @@ const TableZyxEditable = React.memo(({
                     switch (operator) {
                         case 'greater':
                             return cellvalue > Number(value);
-                        case 'greaterequal':
+                        case 'greaterorequals':
                             return cellvalue >= Number(value);
-                        case 'smaller':
+                        case 'less':
                             return cellvalue < Number(value);
-                        case 'smallerequal':
+                        case 'lessorequals':
                             return cellvalue <= Number(value);
                         case 'isnull':
                             return cellvalue == null;
@@ -402,11 +456,11 @@ const TableZyxEditable = React.memo(({
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
-                        case 'afterequal':
+                        case 'afterequals':
                             return cellvalue >= value;
                         case 'before':
                             return cellvalue < value;
-                        case 'beforeequal':
+                        case 'beforeequals':
                             return cellvalue <= value;
                         case 'isnull':
                             return cellvalue == null;
