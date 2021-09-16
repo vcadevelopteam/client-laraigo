@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider, Fade, Paper, Breadcrumbs } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider, Fade, Paper, Breadcrumbs, FormHelperText } from '@material-ui/core';
 import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -37,6 +37,10 @@ const getImgUrl = (file: File | null): string | null => {
         console.error(ex);
         return null;
     }
+}
+
+const isEmpty = (str?: string) => {
+    return !str || str.length === 0;
 }
 
 const useTabPanelStyles = makeStyles(theme => ({
@@ -93,7 +97,7 @@ const useTabInterfacetyles = makeStyles(theme => ({
 }));
 
 const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
-    const { setValue, getValues, formState } = form;
+    const { setValue, getValues, formState: { errors } } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
     const [chatBtn, setChatBtn] = useState<File | null>(getValues('interface.iconbutton') as File);
@@ -180,8 +184,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chattitle')}
                                 onChange={(e) => setValue('interface.chattitle', e.target.value)}
-                                error={formState.errors?.interface?.chattitle?.message != null}
-                                helperText={formState.errors?.interface?.chattitle?.message || ""}
+                                error={!isEmpty(errors?.interface?.chattitle?.message)}
+                                helperText={errors?.interface?.chattitle?.message}
                             />
                         </Grid>
                     </Grid>
@@ -204,8 +208,8 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}
                                 onChange={(e) => setValue('interface.chatsubtitle', e.target.value)}
-                                error={formState.errors?.interface?.chatsubtitle?.message != null}
-                                helperText={formState.errors?.interface?.chatsubtitle?.message || ""}
+                                error={!isEmpty(errors?.interface?.chatsubtitle?.message)}
+                                helperText={errors?.interface?.chatsubtitle?.message}
                             />
                         </Grid>
                     </Grid>
@@ -240,6 +244,9 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconbutton?.message)}>
+                                {errors?.interface?.iconbutton?.message}
+                            </FormHelperText>
                         </Grid>
                     </Grid>
                 </Box>
@@ -273,6 +280,9 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconheader?.message)}>
+                                {errors?.interface?.iconheader?.message}
+                            </FormHelperText>
                         </Grid>
                     </Grid>
                 </Box>
@@ -306,6 +316,9 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconbot?.message)}>
+                                {errors?.interface?.iconbot?.message}
+                            </FormHelperText>
                         </Grid>
                     </Grid>
                 </Box>
@@ -1507,20 +1520,26 @@ export const ChannelAddChatWeb: FC = () => {
     });
 
     useEffect(() => {
-        const mandatoryField = (value: string) => {
-            return value.length === 0 ? t(langKeys.field_required) : "";
+        const mandatoryStrField = (value: string) => {
+            return value.length === 0 ? t(langKeys.field_required) : undefined;
         }
 
-        form.register('interface.chattitle', { validate: mandatoryField });
-        form.register('interface.chatsubtitle', { validate: mandatoryField });
+        const mandatoryFileField = (value: string | File | null) => {
+            return !value ? t(langKeys.field_required) : undefined;
+        }
+
+        form.register('interface.chattitle', { validate: mandatoryStrField });
+        form.register('interface.chatsubtitle', { validate: mandatoryStrField });
+        form.register('interface.iconbutton', { validate: mandatoryFileField });
+        form.register('interface.iconheader', { validate: mandatoryFileField });
+        form.register('interface.iconbot', { validate: mandatoryFileField });
     }, [form.register]);
 
     const handleNext = () => {
-        form.handleSubmit((_) => setShowFinalStep(true), (v) => console.log(v));
+        form.handleSubmit((_) => setShowFinalStep(true), e => console.log(e))();
     }
 
     const handleSubmit = (name: string, auto: boolean) => {
-        // return console.log(form.getValues());
         const body = getInsertChatwebChannel(name, auto, form.getValues());
         dispatch(insertChannel2(body));
     }
@@ -1610,8 +1629,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
-
-    console.log(loading, integrationId);
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
