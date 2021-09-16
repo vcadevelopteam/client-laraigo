@@ -1507,12 +1507,16 @@ export const ChannelAddChatWeb: FC = () => {
     });
 
     useEffect(() => {
-        form.register('interface.chattitle', { required: true });
-        form.register('interface.chatsubtitle', { required: true });
+        const mandatoryField = (value: string) => {
+            return value.length === 0 ? t(langKeys.field_required) : "";
+        }
+
+        form.register('interface.chattitle', { validate: mandatoryField });
+        form.register('interface.chatsubtitle', { validate: mandatoryField });
     }, [form.register]);
 
     const handleNext = () => {
-        form.handleSubmit((_) => setShowFinalStep(true));
+        form.handleSubmit((_) => setShowFinalStep(true), (v) => console.log(v));
     }
 
     const handleSubmit = (name: string, auto: boolean) => {
