@@ -314,7 +314,7 @@ const useColorInputStyles = makeStyles(theme => ({
     colorInputContainer: {
         display: 'flex',
         flexDirection: 'row',
-        width: '1%',
+        width: 60,
         height: 30,
         cursor: 'pointer',
         borderRadius: 2,
@@ -1650,9 +1650,9 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 </div>
             </div>
             <div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
-                <div style={{ height: 20 }} />
+                </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>
                     Terminar
                 </Button>
