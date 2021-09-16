@@ -272,8 +272,6 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const [dataTable, setDataTable] = useState<any[]>(detailData);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
-    // const [allFontBold, setAllFontBold] = useState(false);
-    // const [allVisible, setVisible] = useState(false);
 
     useEffect(() => {
         if (waitSave) {

@@ -32,7 +32,7 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import { TableConfig } from '@types'
+import { Dictionary, TableConfig } from '@types'
 import { OnlyCheckbox, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 
@@ -185,14 +185,18 @@ const TableZyxEditable = React.memo(({
     const classes = useStyles();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
-    const DefaultColumnFilter = ({
-        column: { canFilter, setFilter, type = "string" },
-    }: any) => {
+    const DefaultColumnFilter = (
+    {
+        column: { id: columnid, setFilter, type = "string" },
+        page,
+    }: any
+    ) => {
         const { t } = useTranslation();
         const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState<string>('contains');
+        
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
@@ -222,27 +226,76 @@ const TableZyxEditable = React.memo(({
                     setoperator("all");
                     break;
                 case "string": case "color":
-                    setoperator("contains");
-                    break;
                 default:
-                    setoperator("equals");
+                    setoperator("contains");
                     break;
             }
         }, [type]);
 
+        const [allBoolean, setAllBoolean] = useState<any>(false);
+        const hasFalse = page.map((p: Dictionary) => p.values[columnid]).includes(false);
+        const effectBoolean = hasFalse && type === 'boolean';
+        
+        useEffect(() => {
+            setAllBoolean(!effectBoolean);
+        }, [effectBoolean]);
+
+        const setColumnBoolean = (value: boolean, columnid: string) => {
+            page.map((p: Dictionary) => updateMyData && updateMyData(p.index, columnid, value));
+        };
+
+        const optionsMenu = (type: string) => {
+            switch (type) {
+                case "number":
+                    return (
+                        numberOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "date":
+                    return (
+                        dateOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "string": case "color":
+                default:
+                    return (
+                        stringOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+            }
+        }
+
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {type === 'boolean' ?
-                <Select
-                    value={value || 'all'}
-                    onChange={(e) => handleClickItemMenu(e.target.value)}
-                    >
-                    {booleanOptionsMenu.map((option) => (
-                        <MenuItem key={option.key} value={option.key}>
-                            {t(option.value)}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <React.Fragment>
+                    <OnlyCheckbox
+                        label=""
+                        valueDefault={allBoolean}
+                        onChange={(value) => {
+                            setColumnBoolean(value, columnid);
+                        }}
+                    />
+                    <Select
+                        value={value || 'all'}
+                        onChange={(e) => handleClickItemMenu(e.target.value)}
+                        >
+                        {booleanOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} value={option.key}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </React.Fragment>
                 :
                 <React.Fragment>
                     <Input
@@ -284,24 +337,7 @@ const TableZyxEditable = React.memo(({
                             },
                         }}
                     >
-                        {(type === "string" || type === "color") ?
-                        stringOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
-                        {type === "number" ?
-                        numberOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
-                        {type === "date" ?
-                        dateOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
+                        {optionsMenu(type)}
                     </Menu>
                 </React.Fragment>
                 }
