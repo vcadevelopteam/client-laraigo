@@ -244,7 +244,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconbutton?.message)}>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconbutton?.message)} style={{ marginLeft: 14 }}>
                                 {errors?.interface?.iconbutton?.message}
                             </FormHelperText>
                         </Grid>
@@ -280,7 +280,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconheader?.message)}>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconheader?.message)} style={{ marginLeft: 14 }}>
                                 {errors?.interface?.iconheader?.message}
                             </FormHelperText>
                         </Grid>
@@ -316,7 +316,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                                     </IconButton>
                                 </div>
                             </div>
-                            <FormHelperText error={!isEmpty(errors?.interface?.iconbot?.message)}>
+                            <FormHelperText error={!isEmpty(errors?.interface?.iconbot?.message)} style={{ marginLeft: 14 }}>
                                 {errors?.interface?.iconbot?.message}
                             </FormHelperText>
                         </Grid>

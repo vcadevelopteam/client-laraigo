@@ -4,6 +4,7 @@ import { IconButton, Box, Select, MenuItem, Theme, List } from '@material-ui/cor
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@material-ui/icons';
+import NoDataImg from 'images/no_data.png';
 
 interface PaginatedListProps<T> {
     builder: (item: T, index: number) => React.ReactNode;
@@ -65,7 +66,7 @@ const NoData: FC = () => {
 
     return (
         <Box width={1} className={classes.noDataRoot}>
-            <img src="/no_data.png" alt="No Data" />
+            <img src={NoDataImg} alt="No Data" />
             <div style={{ height: 18 }} />
             <label className={classes.label}>No data</label>
         </Box>
