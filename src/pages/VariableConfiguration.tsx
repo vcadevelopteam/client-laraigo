@@ -349,39 +349,20 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 Header: t(langKeys.description),
                 accessor: 'description',
                 NoFilter: false,
-                sortType: 'string',
+                sortType: 'string'
             },
             {
                 Header: t(langKeys.color),
                 accessor: 'fontcolor',
                 NoFilter: false,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <HuePicker
-                            width="auto"
-                            color={row.fontcolor}
-                            onChangeComplete={(value) => {
-                                updateMyData(props.cell.row.index, props.cell.column.id, value.hex)
-                            }}
-                        />
-                    )
-                }
+                type: 'color'
             },
             {
                 Header: t(langKeys.bold),
                 accessor: 'fontbold',
                 NoFilter: false,
                 type: 'boolean',
-                sortType: 'basic',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <OnlyCheckbox
-                        label=""
-                        valueDefault={row.fontbold}
-                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
-                    />
-                }
+                sortType: 'basic'
             },
             {
                 Header: t(langKeys.order),
@@ -395,15 +376,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 accessor: 'visible',
                 NoFilter: false,
                 type: 'boolean',
-                sortType: 'basic',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return <OnlyCheckbox
-                        label=""
-                        valueDefault={row.visible}
-                        onChange={(value) => updateMyData(props.cell.row.index, props.cell.column.id, value)}
-                    />
-                }
+                sortType: 'basic'
             }
         ],
         []

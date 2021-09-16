@@ -34,7 +34,7 @@ import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import { TableConfig } from '@types'
-import { SearchField } from 'components';
+import { OnlyCheckbox, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import { optionsMenu } from './table-paginated';
 
@@ -49,6 +49,7 @@ import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
+import { HuePicker } from 'react-color'
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -221,7 +222,7 @@ const TableZyxEditable = React.memo(({
                 case "boolean":
                     setoperator("all");
                     break;
-                case "string":
+                case "string": case "color":
                     setoperator("contains");
                     break;
                 default:
@@ -282,7 +283,7 @@ const TableZyxEditable = React.memo(({
                             },
                         }}
                     >
-                        {type === "string" ?
+                        {(type === "string" || type === "color") ?
                         stringOptionsMenu.map((option) => (
                             <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
                                 {option.value}
@@ -310,8 +311,8 @@ const TableZyxEditable = React.memo(({
     // Create an editable cell renderer
     const EditableCell = ({
         value: initialValue,
-        row: { index },
-        column: { id },
+        row,
+        column,
         updateMyData, // This is a custom function that we supplied to our table instance
     }: {
         value: any,
@@ -329,23 +330,41 @@ const TableZyxEditable = React.memo(({
         
         // We'll only update the external data when the input is blurred
         const onBlur = () => {
-            updateMyData(index, id, value)
+            updateMyData(row.index, column.id, value)
         }
-        
+        const onChecked = (value: any) => {
+            updateMyData(row.index, column.id, value)
+        }
+
         // If the initialValue is changed external, sync it up with our state
         // eslint-disable-next-line react-hooks/rules-of-hooks
         React.useEffect(() => {
             setValue(initialValue)
         }, [initialValue])
-        
-        return (
-            <TextField
-                value={value}
-                onChange={onChange}
-                onBlur={onBlur}
-            >
-            </TextField>
-        )
+
+        switch (column.type) {
+            case 'color':
+                return <HuePicker
+                    width="auto"
+                    color={value}
+                    onChangeComplete={(value) => {
+                        onChecked(value.hex)
+                    }}
+                />
+            case 'boolean':
+                return <OnlyCheckbox
+                    label=""
+                    valueDefault={value}
+                    onChange={(value) => onChecked(value)}
+                />
+            default:
+                return <TextField
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                >
+                </TextField>
+        }
     }
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
