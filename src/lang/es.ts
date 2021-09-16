@@ -323,7 +323,7 @@ const translation: LangKeys = {
 
     apply: 'Aplicar',
     close: 'Cerrar',
-
+    tipify_ticket: 'Tipificar ticket',
     today: 'Hoy',
     yesterday: 'Ayer',
     thisWeek: 'Esta Semana',

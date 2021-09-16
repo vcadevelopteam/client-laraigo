@@ -1,3 +1,5 @@
+import { ITicket } from './ticket'
+
 export interface ICloseTicketsParams {
     conversationid: number;
     motive: string;
@@ -7,5 +9,11 @@ export interface ICloseTicketsParams {
     communicationchannelsite: string;
     communicationchanneltype: string;
     status: string;
+    isAnswered: boolean;
+}
+
+export interface IReplyTicketParams extends ITicket {
+    interactiontype: string;
+    interactiontext: string;
     isAnswered: boolean;
 }

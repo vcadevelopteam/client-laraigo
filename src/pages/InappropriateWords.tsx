@@ -68,7 +68,7 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
             classification: row?.classification||"",
             description: row?.description || '',
             defaultanswer: row?.defaultanswer || '',
-            status: row ?.status || 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
         }
     });

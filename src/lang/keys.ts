@@ -265,6 +265,7 @@ export const langKeys = {
     typify: 'typify',
     typify_ticket: 'typify_ticket',
     observation: 'observation',
+    tipify_ticket: 'tipify_ticket',
 
     flowdesigner: 'flowdesigner',
 
