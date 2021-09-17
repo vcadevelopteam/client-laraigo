@@ -234,6 +234,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
 
     return (
         <Accordion expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
+            
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"

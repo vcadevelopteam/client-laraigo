@@ -31,7 +31,7 @@ import { Divider, Grid, ListItem } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon } from 'icons';
-import { Picker, EmojiData } from 'emoji-mart'
+import { Picker } from 'emoji-mart'
 
 import {
     WebMessengerIcon,
@@ -186,7 +186,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
             </DialogContent>
             <DialogActions>
                 {!!buttonText1 &&
-                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })} 
+                    <Button type={button1Type} onClick={(button1Type !== "submit" ? handleClickButton1 : () => { })}
                     >
                         {buttonText1}
                     </Button>}
@@ -213,6 +213,7 @@ interface InputProps {
     maxLength?: number;
     fregister?: Dictionary;
     uset?: boolean;
+    variant?: "standard" | "outlined" | "filled" | undefined;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -318,7 +319,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -338,8 +339,11 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 
     return (
         <div className={className}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
             <Autocomplete
+
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
@@ -348,14 +352,16 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                // onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
                 getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
+                size="small"
                 renderInput={(params) => (
                     <TextField
                         {...fregister}
                         {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
                         helperText={error || null}
                         error={!!error}
                         InputProps={{
@@ -377,7 +383,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -393,7 +399,9 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
 
     return (
         <div className={className}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
             <Autocomplete
                 multiple
                 filterSelectedOptions
@@ -416,11 +424,14 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
+                size="small"
                 getOptionLabel={option => option ? option[optionDesc] : ''}
                 options={data}
                 renderInput={(params) => (
                     <TextField
                         {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
                         InputProps={{
                             ...params.InputProps,
                             endAdornment: (

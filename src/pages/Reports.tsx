@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Container from '@material-ui/core/Container';
+// import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -40,16 +41,16 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerDetails: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        width: '100%'
+        marginTop: theme.spacing(4),
+        // padding: theme.spacing(2),
+        // width: '100%'
     },
     root: {
-        maxWidth: 340
+        // maxWidth: 340
     },
     media: {
-        height: 140,
-        backgroundSize: "auto"
+        // backgroundSize: "auto"
+        objectFit: "none"
     },
     containerSearch: {
         width: '100%',
@@ -59,11 +60,14 @@ const useStyles = makeStyles((theme) => ({
     },
     containerFilter: {
         width: '100%',
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        display: 'flex', 
+        gap: 16,
+        flexWrap: 'wrap',
+        //padding: theme.spacing(2),
     },
     filterComponent: {
-        width: '20%'
+        width: '220px'
     },
     containerFilterGeneral: {
         display: 'flex',
@@ -186,31 +190,27 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 <>
                     {customReport ?
                         <div>
-                            <div>
-                                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
-                                    <span className={classes.title}>
-                                        {row?.description || ''}
-                                    </span>
-                                </Box>
-                                <AssessorProductivity
-                                    row={row}
-                                    multiData={multiData}
-                                    allFilters={allFilters}
-                                />
-                            </div>
+                            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                                <span className={classes.title}>
+                                    {row?.description || ''}
+                                </span>
+                            </Box>
+                            <AssessorProductivity
+                                row={row}
+                                multiData={multiData}
+                                allFilters={allFilters}
+                            />
                         </div>
                         :
                         <div>
                             {allFilters &&
                                 <div>
-                                    <div>
-                                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
-                                            <span className={classes.title}>
-                                                {row?.description || ''}
-                                            </span>
-                                        </Box>
-                                    </div>
-                                    <div className={classes.containerFilter} style={{ display: 'flex', gap: '30px', alignItems: 'flex-end' }}>
+                                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                                        <span className={classes.title}>
+                                            {row?.description || ''}
+                                        </span>
+                                    </Box>
+                                    <div className={classes.containerFilter} >
                                         {
                                             allFilters.map(filtro => (
                                                 (filtro.values[0].multiselect ?
@@ -219,7 +219,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                                                         className={classes.filterComponent}
                                                         key={filtro.values[0].filter}
                                                         onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                        error=""
+                                                        // error=""
+                                                        variant="outlined"
                                                         data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
                                                         optionDesc={filtro.values[0].optionDesc}
                                                         optionValue={filtro.values[0].optionValue}
@@ -229,8 +230,9 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                                                         label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                                         className={classes.filterComponent}
                                                         key={filtro.values[0].filter}
+                                                        variant="outlined"
                                                         onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                        error=""
+                                                        // error=""
                                                         data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
                                                         optionDesc={filtro.values[0].optionDesc}
                                                         optionValue={filtro.values[0].optionValue}
@@ -263,7 +265,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <h2>Cargando...</h2>
                     <CircularProgress />
-                    <CircularProgress color="secondary" />
+                    {/* <CircularProgress color="secondary" /> */}
                 </div>
             }
         </div>
@@ -309,7 +311,7 @@ const Reports: FC = () => {
 
         if (allFilters) {
             allFilters.sort((a, b) => a.order - b.order);
-            allFilters.map(x => {
+            allFilters.forEach(x => {
                 allRequestBody.push(getReportFilterSel(
                     String(x.values[0].filter),
                     x.values[0].isListDomains ? String(x.values[0].filter) + "_" + x.values[0].domainname : String(x.values[0].filter),
@@ -326,7 +328,7 @@ const Reports: FC = () => {
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
-                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                     <span className={classes.title}>
                         {t(langKeys.report_plural)}
                     </span>
@@ -342,33 +344,34 @@ const Reports: FC = () => {
                     </div>
                 </Box>
                 <div className={classes.containerDetails}>
-                    <Container className={classes.containerDetails}>
-                        <Grid container spacing={3}>
-                            {
-                                (reports.length > 0 ? reports : reportsResult.mainData.data).map(
-                                    report => (
-                                        <Grid item key={report.reportid} xs={12} md={6} lg={4}>
-                                            <Card className={classes.root}>
-                                                <CardActionArea onClick={() => handleSelected(report, report.filters)}>
-                                                    <CardMedia
-                                                        className={classes.media}
-                                                        component={report.component}
-                                                        image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                                        title={report.description}
-                                                    />
-                                                    <CardContent>
-                                                        <Typography gutterBottom variant="h5" component="h2">
-                                                            {report.description}
-                                                        </Typography>
-                                                    </CardContent>
-                                                </CardActionArea>
-                                            </Card>
-                                        </Grid>
-                                    )
-                                )
-                            }
-                        </Grid>
-                    </Container>
+                    {/* <Container className={classes.containerDetails}> */}
+                    <Grid container spacing={4}>
+                        {
+                            (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
+                                <Grid item key={report.reportid + " " + index} xs={12} md={6} lg={4}>
+                                    <Card className={classes.root}>
+                                        <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                            <CardMedia
+                                                component="img"// modificado
+                                                height="140"
+                                                className={classes.media}
+                                                //component={report.component}// siempre devuelve undefined
+                                                image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                                title={report.description}
+                                            />
+                                            <CardContent>
+                                                {/* Modificado para ajustar el texto en una sola linea */}
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    {report.description}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                            ))
+                        }
+                    </Grid>
+                    {/* </Container> */}
                 </div>
             </div>
         );

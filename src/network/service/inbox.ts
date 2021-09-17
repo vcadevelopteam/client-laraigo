@@ -1,7 +1,7 @@
 import { apiUrls } from '../../common/constants';
 import { ICloseTicketsParams, IReplyTicketParams } from '@types';
-import { APIManager, ExternalRequestManager } from '../manager';
-import { removeAuthorizationToken } from "common/helpers";
+import { APIManager } from '../manager';
+// import {  } from "common/helpers";
 
 
 export function closeTicket({ conversationid, motive, observation, ticketnum, personcommunicationchannel, communicationchannelsite, communicationchanneltype, status, isAnswered }: ICloseTicketsParams) {

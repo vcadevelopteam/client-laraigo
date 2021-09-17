@@ -22,5 +22,7 @@ export interface IUser {
     corpdesc: string;
     orgdesc: string;
     redirect: string;
+    userid: number;
+    orgid: number;
     menu: ObjectApps
 }
