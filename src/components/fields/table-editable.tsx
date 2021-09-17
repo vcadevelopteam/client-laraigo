@@ -713,7 +713,7 @@ const TableZyxEditable = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflow: 'hidden'}}>
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflowY: 'hidden'}}>
                     <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
