@@ -619,11 +619,13 @@ const TableZyxEditable = React.memo(({
                 prepareRow(row);
                 return (
                     <TableRow
+                        component="div"
                         {...row.getRowProps({ style })}
                         hover
                     >
                         {row.cells.map((cell, i) =>
                             <TableCell
+                                component="div"
                                 {...cell.getCellProps({
                                     style: { minWidth: cell.column.minWidth, width: cell.column.width },
                                 })}
@@ -712,16 +714,16 @@ const TableZyxEditable = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
+            <TableContainer component="div" style={{ position: "relative" }}>
                 <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflowY: 'hidden'}}>
-                    <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead>
+                    <Table component="div" stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                        <TableHead component="div">
                             {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`}}>
+                                            <TableCell component="div" key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -755,7 +757,11 @@ const TableZyxEditable = React.memo(({
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
+                        <TableBody
+                            component="div"
+                            {...getTableBodyProps()}
+                            style={{ backgroundColor: 'white' }}
+                        >
                             <FixedSizeList
                                 style={{overflowX: 'hidden'}}
                                 direction="vertical"
