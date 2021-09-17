@@ -162,6 +162,7 @@ const translation: LangKeys = {
     edit: 'Editar',
     delete: 'Eliminar',
     search: 'Search',
+    duplicate: 'Duplicate',
     organizationclass: "Organization of Classifications",
     tablePageOf: 'Page <0>{{currentPage}}</0> of <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',

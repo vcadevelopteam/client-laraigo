@@ -204,6 +204,7 @@ export const langKeys = {
     edit: 'edit',
     delete: 'delete',
     search: 'search',
+    duplicate: 'duplicate',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',

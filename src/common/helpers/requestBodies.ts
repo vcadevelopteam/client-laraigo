@@ -1,4 +1,5 @@
 import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
+import { uuidv4 } from '.';
 
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
@@ -572,6 +573,81 @@ export const getChannelSel = (id: number): IRequestBody => ({
         communicationchannelid: id,
         personcommunicationchannel: "",
         all: id === 0,
+    }
+});
+
+export const getChatflowBlockLst = (): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_LST",
+    parameters: {}
+});
+
+export const getChatflowBlockSel = (id: string): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_SEL",
+    parameters: {
+        chatblockid: id
+    }
+});
+
+export const insChatflowBlock = ({
+    communicationchannelid,
+    chatblockid,
+    title,
+    description,
+    defaultgroupid,
+    defaultblockid,
+    firstblockid,
+    aiblockid,
+    blockgroup,
+    variablecustom,
+    color,
+    icontype,
+    tag,
+    status,
+    chatblockversionid,
+    surveyid,
+    queryprocess,
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_INS",
+    parameters: {
+        communicationchannelid,
+        chatblockid,
+        title,
+        description,
+        defaultgroupid,
+        defaultblockid,
+        firstblockid,
+        aiblockid,
+        blockgroup: JSON.stringify(blockgroup),
+        variablecustom: JSON.stringify(variablecustom),
+        color,
+        icontype,
+        tag,
+        status,
+        chatblockversionid,
+        surveyid,
+        queryprocess,
+    }
+});
+
+export const dupChatflowBlock = ({
+    corpid,
+    orgid,
+    chatblockid,
+    defaultgroupid,
+    defaultblockid,
+    firstblockid,
+    blockgroup
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CHATFLOW_BLOCK_DUP",
+    parameters: {
+        corpid,
+        orgid,
+        chatblockidold: chatblockid,
+        chatblockidnew: uuidv4(),
+        defaultgroupid,
+        defaultblockid,
+        firstblockid,
+        blockgroup: JSON.stringify(blockgroup),
     }
 });
 
