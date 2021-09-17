@@ -519,6 +519,11 @@ const translation: LangKeys = {
     form: 'Formulario',
     bubble: 'Burbuja',
     bubble_plural: 'Burbujas',
+    
+    closure: 'Cierre',
+    indicators: 'Indicadores',
+    quiz: 'Encuesta',
+    labels: 'Etiquetas',
 };
 
 const esResource: ResourceLanguage = {

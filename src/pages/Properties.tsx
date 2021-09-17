@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty } from 'common/helpers';
+import { getPropertySel, getChannelsByOrg, getValuesFromDomain, insProperty, getDistinctPropertySel } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -15,17 +15,21 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { IconButton } from '@material-ui/core';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
+
 interface DetailPropertyProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
+
 const arrayBread = [
     { id: "view-1", name: "Properties" },
     { id: "view-2", name: "Property detail" }
@@ -34,7 +38,6 @@ const arrayBread = [
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
         marginTop: theme.spacing(2),
-        // maxWidth: '80%',
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -259,15 +262,57 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
 }
 
 const Properties: FC = () => {
-    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
+    const classes = useStyles();
+
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [levelFilter, setLevelFilter] = useState('');
+
+    const HeaderFilter = () => {
+        return <div className={classes.containerDetail}>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.level)}
+                    className="col-6"
+                    valueDefault={levelFilter}
+                    onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
+                    data={[
+                        {leveldesc:t(langKeys.corporation), levelvalue: "CORPORATION"},
+                        {leveldesc:t(langKeys.organization), levelvalue: "ORGANIZATION"},
+                        {leveldesc:t(langKeys.channel), levelvalue: "CHANNEL"},
+                        {leveldesc:t(langKeys.group), levelvalue: "GROUP"}
+                    ]}
+                    optionDesc="leveldesc"
+                    optionValue="levelvalue"
+                />
+                <FieldSelect
+                    label={t(langKeys.category)}
+                    className="col-6"
+                    valueDefault={categoryFilter}
+                    onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
+                    data={[
+                        {categorydesc:t(langKeys.closure), categoryvalue: "CLOSURE"},
+                        {categorydesc:t(langKeys.message), categoryvalue: "MESSAGE"},
+                        {categorydesc:t(langKeys.system), categoryvalue: "SYSTEM"},
+                        {categorydesc:t(langKeys.indicators), categoryvalue: "INDICATORS"},
+                        {categorydesc:t(langKeys.quiz), categoryvalue: "QUIZ"},
+                        {categorydesc:t(langKeys.labels), categoryvalue: "LABELS"}
+                    ]}
+                    optionDesc="categorydesc"
+                    optionValue="categoryvalue"
+                />
+            </div>
+        </div>
+    }
 
     const columns = React.useMemo(
         () => [
@@ -280,61 +325,50 @@ const Properties: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <TemplateIcons
-                            viewFunction={() => handleView(row)}
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                        />
+                        <IconButton
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            aria-label="more"
+                            onClick={() => handleEdit(row)}
+                            size="small">
+                                <VisibilityIcon style={{ color: '#B6B4BA' }} />
+                        </IconButton>
                     )
                 }
             },
             {
                 Header: t(langKeys.name),
-                accessor: 'propertyname',
-                NoFilter: true
+                accessor: 'propertyname'
             },
             {
                 Header: t(langKeys.description),
-                accessor: 'description',
-                NoFilter: true
+                accessor: 'description'
             },
             {
-                Header: t(langKeys.value),
-                accessor: 'propertyvalue',
-                NoFilter: true
+                Header: t(langKeys.category),
+                accessor: 'category'
+            },
+            {
+                Header: t(langKeys.level),
+                accessor: 'level'
             },
             {
                 Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true
+                accessor: 'status'
             },
-
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.channel),
-                accessor: 'communicationchanneldesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.changeDate),
-                accessor: 'changedate',
-                NoFilter: true
-            },
-
         ],
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getPropertySel(0)));
+    var fetchData = () => dispatch(getCollection(getDistinctPropertySel(categoryFilter, levelFilter)));
+
+    useEffect(() => {
+        console.log(categoryFilter);
+        console.log(levelFilter);
+
+        fetchData = () => dispatch(getCollection(getDistinctPropertySel(categoryFilter, levelFilter)));
+        fetchData();
+    }, [categoryFilter, levelFilter]);
 
     useEffect(() => {
         fetchData();
@@ -365,46 +399,25 @@ const Properties: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
-    }
-
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
 
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(insProperty({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.propertyid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
-
     if (viewSelected === "view-1") {
-
         if (mainResult.mainData.error) {
             return <h1>ERROR</h1>;
         }
 
         return (
             <TableZyx
+                ButtonsElement={HeaderFilter}
                 columns={columns}
-                titlemodule={t(langKeys.property, { count: 2 })}
                 data={mainResult.mainData.data}
                 loading={mainResult.mainData.loading}
                 download={true}
-                register={true}
+                register={false}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
             />
         )
     }

@@ -91,15 +91,30 @@ export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequest
     }
 })
 
-export const getPropertySel = (propertyid: number): IRequestBody => ({
+export const getPropertySel = (corpid: number, propertyname: string, description: string, category: string, level: string, propertyid: number): IRequestBody => ({
     method: "UFN_PROPERTY_SEL",
     key: "UFN_PROPERTY_SEL",
     parameters: {
+        corpid,
+        propertyname,
+        description,
+        category,
+        level,
         id: propertyid,
         all: propertyid === 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getDistinctPropertySel = (category: string, level: string): IRequestBody => ({
+    method: "UFN_DISTINCT_PROPERTY_SEL",
+    key: "UFN_DISTINCT_PROPERTY_SEL",
+    parameters: {
+        category,
+        level
+    }
+});
+
 export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
     method: "UFN_GROUPCONFIGURATION_SEL",
     key: "UFN_GROUPCONFIGURATION_SEL",
@@ -156,10 +171,10 @@ export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels,
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 
-export const insProperty = ({ communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const insProperty = ({ communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }
+    parameters: { communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }
 });
 
 
