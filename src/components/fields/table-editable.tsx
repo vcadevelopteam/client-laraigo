@@ -179,7 +179,8 @@ const TableZyxEditable = React.memo(({
     hoverShadow = false,
     filterGeneral = true,
     loading = false,
-    updateMyData,
+    updateCell,
+    updateColumn,
     skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
@@ -241,7 +242,7 @@ const TableZyxEditable = React.memo(({
         }, [effectBoolean]);
 
         const setColumnBoolean = (value: boolean, columnid: string) => {
-            page.map((p: Dictionary) => updateMyData && updateMyData(p.index, columnid, value));
+            updateColumn && updateColumn(page.map((p: Dictionary) => p.index), columnid, value);
         };
 
         const optionsMenu = (type: string) => {
@@ -350,12 +351,12 @@ const TableZyxEditable = React.memo(({
         value: initialValue,
         row,
         column,
-        updateMyData, // This is a custom function that we supplied to our table instance
+        updateCell, // This is a custom function that we supplied to our table instance
     }: {
         value: any,
         row: any,
         column: any,
-        updateMyData: (index: number, id: any, value: any) => void
+        updateCell: (index: number, id: any, value: any) => void
     }) => {
         // We need to keep and update the state of the cell normally
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -367,22 +368,22 @@ const TableZyxEditable = React.memo(({
         
         // We'll only update the external data when the input is blurred
         const onBlur = () => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onChecked = (value: any) => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onBlurColor = () => {
             const rex = new RegExp(/#[0-9A-Fa-f]{6}/, 'g');
             if (rex.test(value)) {
                 setColorValue(value)
-                updateMyData(row.index, column.id, value)
+                updateCell(row.index, column.id, value)
             }
             else {
                 setColorValue('#000000')
-                updateMyData(row.index, column.id, '#000000')
+                updateCell(row.index, column.id, '#000000')
             }
         }
 
@@ -584,7 +585,9 @@ const TableZyxEditable = React.memo(({
         autoResetGlobalFilter: !skipAutoReset,
         autoResetSortBy: !skipAutoReset,
         autoResetPage: !skipAutoReset,
-        updateMyData
+        autoResetRowState: !skipAutoReset,
+        updateCell,
+        updateColumn
     },
         useFilters,
         useGlobalFilter,
