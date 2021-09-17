@@ -9,6 +9,8 @@ export interface IInteraction {
     avatar?: string | null;
     likewall?: boolean | null;
     hiddenwall?: boolean | null;
+    indexImage?: number | undefined;
+    listImage?: string[] | undefined;
 }
 
 export interface IGroupInteraction {

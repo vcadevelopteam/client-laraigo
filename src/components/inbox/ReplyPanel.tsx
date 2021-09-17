@@ -7,12 +7,15 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { replyMessage, replyTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
+import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
 import { EmojiPickerZyx } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
 
 interface IFile {
     type: string;
@@ -95,42 +98,62 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
 
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
 
     const triggerReplyMessage = () => {
-        if (files.length > 0) {
-            files.forEach(x => {
-                dispatch(replyMessage({
+        const callback = () => {
+            if (files.length > 0) {
+                files.forEach(x => {
+                    dispatch(replyMessage({
+                        interactionid: 0,
+                        interactiontype: "image",
+                        interactiontext: x.url,
+                        createdate: new Date().toISOString(),
+                        userid: 999999,
+                        usertype: "agent",
+                    }))
+                })
+                setFiles([])
+            }
+            if (text) {
+                const textCleaned = text.trim();
+                const newInteraction: IInteraction = {
                     interactionid: 0,
-                    interactiontype: "image",
-                    interactiontext: x.url,
+                    interactiontype: "text",
+                    interactiontext: textCleaned,
                     createdate: new Date().toISOString(),
                     userid: 999999,
                     usertype: "agent",
+                }
+                dispatch(replyMessage(newInteraction));
+                dispatch(replyTicket({
+                    ...ticketSelected!!,
+                    interactiontype: "text",
+                    interactiontext: textCleaned,
+                    isAnswered: true
                 }))
-            })
-            setFiles([])
-        }
-        if (text) {
-            const textCleaned = text.trim();
-            const newInteraction: IInteraction = {
-                interactionid: 0,
-                interactiontype: "text",
-                interactiontext: textCleaned,
-                createdate: new Date().toISOString(),
-                userid: 999999,
-                usertype: "agent",
+                setText("");
             }
-            dispatch(replyMessage(newInteraction));
-            dispatch(replyTicket({
-                ...ticketSelected!!,
-                interactiontype: "text",
-                interactiontext: textCleaned,
-                isAnswered: true
+        }
+
+        if (userType === "SUPERVISOR") {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reasign_with_reply),
+                callback
             }))
-            setText("");
+        } else {
+            callback();
+        }
+    }
+
+    const handleKeyPress = (event: any) => {
+        if (event.ctrlKey && event.charCode === 13) {
+            triggerReplyMessage()
         }
     }
 
@@ -138,9 +161,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         <div className={classes.containerResponse}>
             {files.length > 0 &&
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', borderBottom: '1px solid #EBEAED', paddingBottom: 8 }}>
-                    {files.map((item: IFile, index: number) => (
-                        <ItemFile key={index} item={item} setFiles={setFiles} />
-                    ))}
+                    {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
                 </div>
             }
             <div>
@@ -149,6 +170,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Send your message..."
+                    onKeyPress={handleKeyPress}
                     rows={2}
                     multiline
                     inputProps={{ 'aria-label': 'naked' }}

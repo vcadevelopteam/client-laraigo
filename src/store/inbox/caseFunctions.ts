@@ -3,7 +3,13 @@ import { initialState, IState } from "./reducer";
 
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
-    return interactions.reduce((acc: any, item: IInteraction, index: number) => {
+    
+    const listImages = interactions.filter(x => x.interactiontype === "image").map(x => x.interactiontext)
+    let indexImage = 0;
+
+    return interactions.reduce((acc: any, item: IInteraction) => {
+        item.indexImage = indexImage;
+        item.listImage = listImages;
         const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
@@ -16,6 +22,8 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
         } else if (!item.userid && acc.last === "client") {
             acc.data[acc.data.length - 1].interactions.push(item)
         }
+        if (item.interactiontype === "image")
+            indexImage++;
         return { data: acc.data, last: currentUser }
     }, { data: [], last: "" }).data;
 }
@@ -40,6 +48,7 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
 
 export const getAgents = (state: IState): IState => ({
     ...state,
+    userType: "SUPERVISOR",
     interactionList: initialState.interactionList,
     ticketSelected: initialState.ticketSelected,
     agentSelected: initialState.agentSelected,
@@ -72,6 +81,11 @@ export const getAgentsFailure = (state: IState, action: IAction): IState => ({
 export const getAgentsReset = (state: IState): IState => ({
     ...state,
     agentList: initialState.agentList,
+    ticketList: initialState.ticketList,
+    interactionList: initialState.interactionList,
+    ticketSelected: initialState.ticketSelected,
+    agentSelected: initialState.agentSelected,
+    triggerCloseTicket: initialState.triggerCloseTicket,
 });
 
 export const getPerson = (state: IState): IState => ({
@@ -138,7 +152,10 @@ export const getTicketsByPersonReset = (state: IState): IState => ({
     previewTicketList: initialState.previewTicketList,
 });
 
-
+export const setUserType = (state: IState, action: IAction): IState => ({
+    ...state,
+    userType: action.payload
+})
 
 export const selectTicket = (state: IState, action: IAction): IState => ({
     ...state,
@@ -332,6 +349,35 @@ export const closeTicketReset = (state: IState): IState => ({
     triggerCloseTicket: initialState.triggerCloseTicket,
 });
 
+
+export const reassignTicket = (state: IState): IState => ({
+    ...state,
+    triggerReassignTicket: { ...state.triggerReassignTicket, loading: true, error: false },
+});
+
+export const reassignTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerReassignTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const reassignTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerReassignTicket: {
+        ...state.triggerReassignTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const reassignTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerReassignTicket: initialState.triggerReassignTicket,
+});
 
 
 export const replyTicket = (state: IState): IState => ({

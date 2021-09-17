@@ -14,11 +14,18 @@ export interface IQuestion {
     callbackcancel?: (() => void) | null;
 }
 
+export interface ILightBox {
+    visible: boolean;
+    index: number;
+    images: string[]
+}
+
 export interface IState {
     snackbar: ISnackBar;
     question: IQuestion;
     showBackDrop: boolean;
     openDrawer: boolean;
+    lightbox: ILightBox;
 }
 
 export const initialState: IState = {
@@ -33,6 +40,11 @@ export const initialState: IState = {
         callback: null,
         callbackcancel: null
     },
+    lightbox: {
+        visible: false,
+        index: 0,
+        images: []
+    },
     showBackDrop: false,
     openDrawer: true,
 }
@@ -42,4 +54,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MANAGE_QUESTION]: caseFUnctions.manageConfirmation,
     [actionTypes.SHOWSNACKBAR]: caseFUnctions.showSnackbar,
     [actionTypes.OPEN_DRAWER]: caseFUnctions.openDrawer,
+    [actionTypes.OPEN_LIGHTBOX]: caseFUnctions.manageLightBox,
 });
