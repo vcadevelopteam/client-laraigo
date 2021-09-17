@@ -721,7 +721,7 @@ const TableZyxEditable = React.memo(({
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii} style={{flex: 1}}>
+                                            <TableCell key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -757,6 +757,7 @@ const TableZyxEditable = React.memo(({
                         </TableHead>
                         <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
                             <FixedSizeList
+                                style={{overflowX: 'hidden'}}
                                 direction="vertical"
                                 width="auto"
                                 height={window.innerHeight - 470}
