@@ -168,8 +168,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     useEffect(() => {
         setAllParameters({
             ...allParameters,
-            ['startDate']: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-            ['endDate']: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            ['startdate']: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
+            ['enddate']: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
         });
     }, [dateRange]);
 
