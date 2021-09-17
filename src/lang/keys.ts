@@ -456,6 +456,10 @@ export const langKeys = {
     report_userproductivityhours_filter_adviser: 'report_userproductivityhours_filter_adviser',
     report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
     report_userproductivityhours_filter_hours: 'report_userproductivityhours_filter_hours',
+
+    report_userproductivity_filter_channels: 'report_userproductivity_filter_channels',
+    report_userproductivity_filter_group: 'report_userproductivity_filter_group',
+    report_userproductivity_filter_status: 'report_userproductivity_filter_status',
     
     chatHeaderTitle: 'chatHeaderTitle',
     subtitle: 'subtitle',
