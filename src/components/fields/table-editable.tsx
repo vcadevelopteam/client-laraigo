@@ -38,11 +38,13 @@ import { DownloadIcon } from 'icons';
 
 import {
     useTable,
+    useFlexLayout,
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination
 } from 'react-table'
+import { FixedSizeList } from 'react-window';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
@@ -430,6 +432,7 @@ const TableZyxEditable = React.memo(({
                     />
                 case 'boolean':
                     return <OnlyCheckbox
+                        style={{ width: '100%', textAlign: 'center' }}    
                         label=""
                         valueDefault={value}
                         onChange={(value) => onChecked(value)}
@@ -589,6 +592,7 @@ const TableZyxEditable = React.memo(({
         updateCell,
         updateColumn
     },
+        useFlexLayout,    
         useFilters,
         useGlobalFilter,
         useSortBy,
@@ -604,6 +608,50 @@ const TableZyxEditable = React.memo(({
             fetchData();
         }
     }, [fetchData])
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            if (loading) {
+                return <LoadingSkeleton columns={headerGroups[0].headers.length} />
+            }
+            else {
+                const row = page[index]
+                prepareRow(row);
+                return (
+                    <TableRow
+                        {...row.getRowProps({ style })}
+                        hover
+                    >
+                        {row.cells.map((cell, i) =>
+                            <TableCell
+                                {...cell.getCellProps({
+                                    style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                                })}
+                            >
+                                {headerGroups[0].headers[i].isComponent ?
+                                    cell.render('Cell')
+                                    :
+                                    (cell.value?.length > 100 ?
+                                        <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                                {cell.render('Cell')}
+                                            </Box>
+                                        </Tooltip>
+                                        :
+                                        <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                                            {cell.render('Cell')}
+                                        </Box>
+                                    )
+                                }
+                            </TableCell>
+                        )}
+                    </TableRow>
+                )
+            }
+        },
+        [headerGroups, prepareRow, page]
+    )
+
     return (
         <Box width={1} style={{ height: '100%' }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
@@ -665,7 +713,7 @@ const TableZyxEditable = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" style={{height: 'calc(100vh - 365px)'}}>
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflow: 'hidden'}}>
                     <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
@@ -673,7 +721,7 @@ const TableZyxEditable = React.memo(({
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <TableCell key={ii} style={{flex: 1}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -708,41 +756,15 @@ const TableZyxEditable = React.memo(({
                             ))}
                         </TableHead>
                         <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
-                            {loading ?
-                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
-                                page.map(row => {
-                                    prepareRow(row);
-                                    return (
-                                        <TableRow
-                                            {...row.getRowProps()}
-                                            hover
-                                        >
-                                            {row.cells.map((cell, i) =>
-                                                <TableCell
-                                                    {...cell.getCellProps({
-                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
-                                                    })}
-                                                >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 100 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
-                                                                    {cell.render('Cell')}
-                                                                </Box>
-                                                            </Tooltip>
-                                                            :
-                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
-                                                        )
-                                                    }
-                                                </TableCell>
-                                            )}
-                                        </TableRow>
-                                    )
-                                })}
+                            <FixedSizeList
+                                direction="vertical"
+                                width="auto"
+                                height={window.innerHeight - 470}
+                                itemCount={page.length}
+                                itemSize={63.2}
+                                >
+                                {RenderRow}
+                            </FixedSizeList>
                         </TableBody>
                     </Table>
                 </Box>
