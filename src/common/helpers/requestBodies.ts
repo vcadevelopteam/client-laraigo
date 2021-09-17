@@ -192,9 +192,9 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insInappropriateWords = ({ id, description, status, type, username, operation,classification,defaultanswer }: Dictionary): IRequestBody => ({
+export const insInappropriateWords = ({ id, description, status, type, username, operation, classification, defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
-    parameters: { id, description, status, type, username, operation,classification,defaultanswer }
+    parameters: { id, description, status, type, username, operation, classification, defaultanswer }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -275,11 +275,12 @@ export const getReportColumnSel = (functionname: string): IRequestBody => ({
     }
 });
 
-export const getReportFilterSel = (filter: string): IRequestBody => ({
+export const getReportFilterSel = (filter: string, key: string, domainname: string): IRequestBody => ({
     method: filter,
-    key: filter,
+    key: key,
     parameters: {
         supervisorid: 1,
+        domainname,
         all: false
     }
 });
@@ -295,13 +296,13 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         filters,
         sorts,
         origin: origin,
-        supervisorid:1,
+        supervisorid: 1,
         ...allParameters,
-        channel: allParameters['channel']?allParameters['channel']:"",
-        hours: allParameters['hours']?allParameters['hours']:"",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        hours: allParameters['hours'] ? allParameters['hours'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
-    
+
 });
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
@@ -313,13 +314,32 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
         startdate,
         enddate,
         sorts,
-        supervisorid:1,
+        supervisorid: 1,
         ...allParameters,
-        channel: allParameters['channel']?allParameters['channel']:"",
-        hours: allParameters['hours']?allParameters['hours']:"",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        hours: allParameters['hours'] ? allParameters['hours'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IRequestBody => {
+    console.log("getUserProductivitySel", allParameters);
+
+    return (
+        {
+            method: "UFN_REPORT_USERPRODUCTIVITY_SEL",
+            key: "UFN_REPORT_USERPRODUCTIVITY_SEL",
+            parameters: {
+                ...allParameters,
+                channel: allParameters['channel'] ? allParameters['channel'] : "",
+                userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
+                usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+                bot: allParameters['bot'] ? allParameters['bot'] : false,
+                supervisorid: 1
+            }
+
+        })
+}
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",

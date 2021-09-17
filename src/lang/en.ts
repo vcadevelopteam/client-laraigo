@@ -481,6 +481,10 @@ const translation: LangKeys = {
     report_userproductivityhours_filter_channels: 'Channels',  
     report_userproductivityhours_filter_hours: 'Hour',
 
+    report_userproductivity_filter_channels: 'Channels',
+    report_userproductivity_filter_group: 'Group',
+    report_userproductivity_filter_status: 'User Status',
+
     chatHeaderTitle: 'Chat header title',
     subtitle: 'Subtitle',
     chatHeaderSubtitle: 'Chat header subtitle',

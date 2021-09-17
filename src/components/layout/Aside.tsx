@@ -39,7 +39,7 @@ const whiteIconTheme = createTheme({
                 color: "#FFF",
                 width: 24,
                 height: 24,
-                minWidth: 0 
+                minWidth: 0
             },
         },
     },
@@ -59,7 +59,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
     } else {
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
-    
+
     const onClick = () => {
         if (!config.subroute) {
             history.push(config.path!)
@@ -88,14 +88,14 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 
 const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
-    const openDrawer = useSelector(state =>  state.popus.openDrawer);
+    const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-    
+
     const ChevronIcon: FC = () => {
         if (!openDrawer) {
             return (
                 <ThemeProvider theme={whiteIconTheme}>
-                    {theme.direction === 'rtl' ?  <ChevronLeft /> : <ChevronRight />}
+                    {theme.direction === 'rtl' ? <ChevronLeft /> : <ChevronRight />}
                 </ThemeProvider>
             );
         } else {
@@ -114,13 +114,13 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             open={openDrawer}
             classes={{
                 paper: clsx({
-                  [classes.drawerOpen]: openDrawer,
-                  [classes.drawerClose]: !openDrawer,
+                    [classes.drawerOpen]: openDrawer,
+                    [classes.drawerClose]: !openDrawer,
                 }),
             }}
         >
             <div className={classes.toolbar}>
-                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} height="37" width="37" alt="logo" />
+                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
