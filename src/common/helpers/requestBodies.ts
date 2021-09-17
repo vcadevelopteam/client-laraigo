@@ -32,6 +32,12 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     parameters: {}
 })
 
+export const insertClassificationConversation = (conversationid: number, classificationid: number, jobplan: string): IRequestBody => ({
+    method: "UFN_CONVERSATIONCLASSIFICATION_INS",
+    key: "UFN_CONVERSATIONCLASSIFICATION_INS",
+    parameters: {conversationid, classificationid, jobplan}
+})
+
 export const getTickets = (userid: number | null): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER",
     key: "UFN_CONVERSATION_SEL_TICKETSBYUSER",

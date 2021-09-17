@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams } from "@types";
+import { ITicket, ICloseTicketsParams, Dictionary } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CheckIcon } from 'icons';
@@ -10,7 +10,10 @@ import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { showInfoPanel, closeTicket } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket } from 'store/inbox/actions';
+import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { insertClassificationConversation } from 'common/helpers';
+import { execute } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -19,11 +22,26 @@ import { useForm } from 'react-hook-form';
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
+    const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
+    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!closingRes.loading && !closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            } else if (closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [closingRes, waitClose])
 
     useEffect(() => {
         if (openModal) {
@@ -49,6 +67,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
             isAnswered: false,
         }
         dispatch(closeTicket(dd));
+        setWaitClose(true)
     });
 
     return (
@@ -153,42 +172,73 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-
-    const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const multiData = useSelector(state => state.main.multiData);
+    const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
+    const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
         if (openModal) {
+            dispatch(resetGetTipificationLevel2())
+            dispatch(resetGetTipificationLevel3())
             reset({
-                motive: '',
-                observation: ''
+                classificationid1: 0,
+                path1: '',
+                classificationid2: 0,
+                path2: '',
+                classificationid3: 0,
+                path3: '',
             })
-            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
-            register('observation');
+            register('path1');
+            register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('path2');
+            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('path3');
+            register('classificationid3');
+
         }
     }, [openModal])
 
+    const onChangeTipificationLevel1 = (value: Dictionary) => {
+        setValue('classificationid1', value ? value.classificationid : '');
+        setValue('path1', value ? value.path : '');
+        setValue('classificationid2', 0);
+        setValue('path2', '');
+        setValue('classificationid3', 0);
+        setValue('path3', '');
+
+        if (value)
+            dispatch(getTipificationLevel2(value.classificationid))
+        else
+            dispatch(resetGetTipificationLevel2())
+    }
+
+    const onChangeTipificationLevel2 = (value: Dictionary) => {
+        setValue('classificationid2', value ? value.classificationid : '');
+        setValue('path2', value ? value.path : '');
+        setValue('classificationid3', 0);
+        setValue('path3', '');
+        if (value)
+            dispatch(getTipificationLevel3(value.classificationid))
+        else
+            dispatch(resetGetTipificationLevel3())
+    }
+
+    const onChangeTipificationLevel3 = (value: Dictionary) => {
+        setValue('classificationid2', value ? value.classificationid : '')
+        setValue('path2', value ? value.path : '')
+    }
+
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
-        }
-        dispatch(closeTicket(dd));
+        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '')))
     });
 
     return (
         <DialogZyx
             open={openModal}
-            title="Tipificar ticket"
+            title={t(langKeys.tipify_ticket)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setOpenModal(false)}
@@ -199,17 +249,38 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
                 <FieldSelect
                     label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
                     className="col-12"
-                    valueDefault={getValues('motive')}
-                    onChange={(value) => setValue('motive', value ? value.classificationid : '')}
-                    error={errors?.motive?.message}
+                    valueDefault={getValues('classificationid1')}
+                    onChange={onChangeTipificationLevel1}
+                    error={errors?.classificationid1?.message}
                     data={multiData.data[2] && multiData.data[2].data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 2`}
+                    className="col-12"
+                    valueDefault={getValues('classificationid2')}
+                    onChange={onChangeTipificationLevel2}
+                    loading={tipificationLevel2.loading}
+                    error={errors?.classificationid2?.message}
+                    data={tipificationLevel2.data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 3`}
+                    className="col-12"
+                    valueDefault={getValues('classificationid3')}
+                    onChange={onChangeTipificationLevel3}
+                    loading={tipificationLevel3.loading}
+                    error={errors?.classificationid3?.message}
+                    data={tipificationLevel3.data}
                     optionDesc="path"
                     optionValue="classificationid"
                 />
             </div>
         </DialogZyx>)
 }
-
 
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

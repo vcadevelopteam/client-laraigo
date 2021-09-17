@@ -1,7 +1,7 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson } from 'common/helpers';
+import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -104,3 +104,41 @@ export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
 });
 
 export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });
+
+
+export const replyTicket = (params: IReplyTicketParams): IActionCall => ({
+    callAPI: () => InboxService.replyTicket(params),
+    types: {
+        loading: actionTypes.REPLY_TICKET,
+        success: actionTypes.REPLY_TICKET_SUCCESS,
+        failure: actionTypes.REPLY_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetreplyTicket = (): IActionCall => ({ type: actionTypes.REPLY_TICKET_RESET });
+
+
+export const getTipificationLevel2 = (classificationid: number): IActionCall => ({
+    callAPI: () => CommonService.main(getClassificationLevel2("TIPIFICACION", classificationid)),
+    types: {
+        loading: actionTypes.GET_TIPIFICATION_LEVEL_2,
+        success: actionTypes.GET_TIPIFICATION_LEVEL_2_SUCCESS,
+        failure: actionTypes.GET_TIPIFICATION_LEVEL_2_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTipificationLevel2 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_2_RESET });
+
+export const getTipificationLevel3 = (classificationid: number): IActionCall => ({
+    callAPI: () => CommonService.main(getClassificationLevel2("TIPIFICACION", classificationid)),
+    types: {
+        loading: actionTypes.GET_TIPIFICATION_LEVEL_3,
+        success: actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS,
+        failure: actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetTipificationLevel3 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_3_RESET });

@@ -26,11 +26,14 @@ export interface IState {
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
+    tipificationsLevel2: IListStatePaginated<Dictionary>;
+    tipificationsLevel3: IListStatePaginated<Dictionary>;
     ticketSelected: ITicket | null;
     agentSelected: IAgent | null;
     person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
     triggerCloseTicket: IBaseState;
+    triggerReplyTicket: IBaseState;
     showInfoPanel: boolean;
 }
 
@@ -40,8 +43,11 @@ export const initialState: IState = {
     previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
     configurationVariables: initialListPaginatedState,
+    tipificationsLevel2: initialListPaginatedState,
+    tipificationsLevel3: initialListPaginatedState,
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
+    triggerReplyTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
     showInfoPanel: false
@@ -90,4 +96,20 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
     [actionTypes.CLOSE_TICKET_FAILURE]: caseFunctions.closeTicketFailure,
     [actionTypes.CLOSE_TICKET_RESET]: caseFunctions.closeTicketReset,    
+
+    [actionTypes.REPLY_TICKET]: caseFunctions.replyTicket,
+    [actionTypes.REPLY_TICKET_SUCCESS]: caseFunctions.replyTicketSuccess,
+    [actionTypes.REPLY_TICKET_FAILURE]: caseFunctions.replyTicketFailure,
+    [actionTypes.REPLY_TICKET_RESET]: caseFunctions.replyTicketReset,    
+
+
+    [actionTypes.GET_TIPIFICATION_LEVEL_2]: caseFunctions.getTipificationLevel2,
+    [actionTypes.GET_TIPIFICATION_LEVEL_2_SUCCESS]: caseFunctions.getTipificationLevel2Success,
+    [actionTypes.GET_TIPIFICATION_LEVEL_2_FAILURE]: caseFunctions.getTipificationLevel2Failure,
+    [actionTypes.GET_TIPIFICATION_LEVEL_2_RESET]: caseFunctions.getTipificationLevel2Reset,
+
+    [actionTypes.GET_TIPIFICATION_LEVEL_3]: caseFunctions.getTipificationLevel3,
+    [actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS]: caseFunctions.getTipificationLevel3Success,
+    [actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE]: caseFunctions.getTipificationLevel3Failure,
+    [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
 });
