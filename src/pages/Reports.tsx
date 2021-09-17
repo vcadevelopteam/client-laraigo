@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerDetails: {
-        marginTop: theme.spacing(4),
+        marginTop: theme.spacing(3),
         // padding: theme.spacing(2),
         // width: '100%'
     },
