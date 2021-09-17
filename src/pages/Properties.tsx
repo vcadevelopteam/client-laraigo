@@ -411,6 +411,7 @@ const Properties: FC = () => {
 
         return (
             <TableZyx
+                titlemodule={t(langKeys.property_plural, { count: 2 })}
                 ButtonsElement={HeaderFilter}
                 columns={columns}
                 data={mainResult.mainData.data}
