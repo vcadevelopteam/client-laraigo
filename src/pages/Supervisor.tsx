@@ -24,6 +24,7 @@ import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
+import { io } from 'socket.io-client';
 
 const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
@@ -302,11 +303,36 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    
+    const [socket, setSocket] = useState<any>(null);
+
     // const multiData = useSelector(state => state.main.multiData);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    socket?.on("connect", () => {
+        console.log("connect", socket.id);
+        socket.emit('chat message', socket.id);
+    });
+
+    socket?.on('chat message', (data: any) => {
+        console.log("chat message", data)
+        // socket.emit('chat message', data);
+    });
+
+    socket?.on("disconnect", () => {
+        console.log(socket.connected); // false
+    });
 
     useEffect(() => {
+
+        const newsocket = io('https://socket.laraigo.com', {
+            autoConnect: false
+        });
+        const ff = { data: { userid: user?.userid, orgid: user?.orgid, usertype: 'SUPERVISOR' } };
+        newsocket.auth = ff;
+        newsocket.connect();
+        setSocket(newsocket);
+
         dispatch(setOpenDrawer(false));
         dispatch(getMultiCollection([
             getValuesFromDomain("MOTIVOCIERRE"),

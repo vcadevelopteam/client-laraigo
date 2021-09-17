@@ -32,17 +32,19 @@ import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 
-import { TableConfig } from '@types'
+import { Dictionary, TableConfig } from '@types'
 import { OnlyCheckbox, SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 
 import {
     useTable,
+    useFlexLayout,
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination
 } from 'react-table'
+import { FixedSizeList } from 'react-window';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
@@ -179,20 +181,25 @@ const TableZyxEditable = React.memo(({
     hoverShadow = false,
     filterGeneral = true,
     loading = false,
-    updateMyData,
+    updateCell,
+    updateColumn,
     skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
-    const DefaultColumnFilter = ({
-        column: { canFilter, setFilter, type = "string" },
-    }: any) => {
+    const DefaultColumnFilter = (
+    {
+        column: { id: columnid, setFilter, type = "string" },
+        page,
+    }: any
+    ) => {
         const { t } = useTranslation();
         const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState<string>('contains');
+        
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
@@ -222,27 +229,76 @@ const TableZyxEditable = React.memo(({
                     setoperator("all");
                     break;
                 case "string": case "color":
-                    setoperator("contains");
-                    break;
                 default:
-                    setoperator("equals");
+                    setoperator("contains");
                     break;
             }
         }, [type]);
 
+        const [allBoolean, setAllBoolean] = useState<any>(false);
+        const hasFalse = page.map((p: Dictionary) => p.values[columnid]).includes(false);
+        const effectBoolean = hasFalse && type === 'boolean';
+        
+        useEffect(() => {
+            setAllBoolean(!effectBoolean);
+        }, [effectBoolean]);
+
+        const setColumnBoolean = (value: boolean, columnid: string) => {
+            updateColumn && updateColumn(page.map((p: Dictionary) => p.index), columnid, value);
+        };
+
+        const optionsMenu = (type: string) => {
+            switch (type) {
+                case "number":
+                    return (
+                        numberOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "date":
+                    return (
+                        dateOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "string": case "color":
+                default:
+                    return (
+                        stringOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+            }
+        }
+
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {type === 'boolean' ?
-                <Select
-                    value={value || 'all'}
-                    onChange={(e) => handleClickItemMenu(e.target.value)}
-                    >
-                    {booleanOptionsMenu.map((option) => (
-                        <MenuItem key={option.key} value={option.key}>
-                            {t(option.value)}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <React.Fragment>
+                    <OnlyCheckbox
+                        label=""
+                        valueDefault={allBoolean}
+                        onChange={(value) => {
+                            setColumnBoolean(value, columnid);
+                        }}
+                    />
+                    <Select
+                        value={value || 'all'}
+                        onChange={(e) => handleClickItemMenu(e.target.value)}
+                        >
+                        {booleanOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} value={option.key}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </React.Fragment>
                 :
                 <React.Fragment>
                     <Input
@@ -284,24 +340,7 @@ const TableZyxEditable = React.memo(({
                             },
                         }}
                     >
-                        {(type === "string" || type === "color") ?
-                        stringOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
-                        {type === "number" ?
-                        numberOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
-                        {type === "date" ?
-                        dateOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        )) : null}
+                        {optionsMenu(type)}
                     </Menu>
                 </React.Fragment>
                 }
@@ -314,12 +353,12 @@ const TableZyxEditable = React.memo(({
         value: initialValue,
         row,
         column,
-        updateMyData, // This is a custom function that we supplied to our table instance
+        updateCell, // This is a custom function that we supplied to our table instance
     }: {
         value: any,
         row: any,
         column: any,
-        updateMyData: (index: number, id: any, value: any) => void
+        updateCell: (index: number, id: any, value: any) => void
     }) => {
         // We need to keep and update the state of the cell normally
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -331,22 +370,22 @@ const TableZyxEditable = React.memo(({
         
         // We'll only update the external data when the input is blurred
         const onBlur = () => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onChecked = (value: any) => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onBlurColor = () => {
             const rex = new RegExp(/#[0-9A-Fa-f]{6}/, 'g');
             if (rex.test(value)) {
                 setColorValue(value)
-                updateMyData(row.index, column.id, value)
+                updateCell(row.index, column.id, value)
             }
             else {
                 setColorValue('#000000')
-                updateMyData(row.index, column.id, '#000000')
+                updateCell(row.index, column.id, '#000000')
             }
         }
 
@@ -393,6 +432,7 @@ const TableZyxEditable = React.memo(({
                     />
                 case 'boolean':
                     return <OnlyCheckbox
+                        style={{ width: '100%', textAlign: 'center' }}    
                         label=""
                         valueDefault={value}
                         onChange={(value) => onChecked(value)}
@@ -548,8 +588,11 @@ const TableZyxEditable = React.memo(({
         autoResetGlobalFilter: !skipAutoReset,
         autoResetSortBy: !skipAutoReset,
         autoResetPage: !skipAutoReset,
-        updateMyData
+        autoResetRowState: !skipAutoReset,
+        updateCell,
+        updateColumn
     },
+        useFlexLayout,    
         useFilters,
         useGlobalFilter,
         useSortBy,
@@ -565,6 +608,50 @@ const TableZyxEditable = React.memo(({
             fetchData();
         }
     }, [fetchData])
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            if (loading) {
+                return <LoadingSkeleton columns={headerGroups[0].headers.length} />
+            }
+            else {
+                const row = page[index]
+                prepareRow(row);
+                return (
+                    <TableRow
+                        {...row.getRowProps({ style })}
+                        hover
+                    >
+                        {row.cells.map((cell, i) =>
+                            <TableCell
+                                {...cell.getCellProps({
+                                    style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                                })}
+                            >
+                                {headerGroups[0].headers[i].isComponent ?
+                                    cell.render('Cell')
+                                    :
+                                    (cell.value?.length > 100 ?
+                                        <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                                {cell.render('Cell')}
+                                            </Box>
+                                        </Tooltip>
+                                        :
+                                        <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                                            {cell.render('Cell')}
+                                        </Box>
+                                    )
+                                }
+                            </TableCell>
+                        )}
+                    </TableRow>
+                )
+            }
+        },
+        [headerGroups, prepareRow, page]
+    )
+
     return (
         <Box width={1} style={{ height: '100%' }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
@@ -626,7 +713,7 @@ const TableZyxEditable = React.memo(({
             {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" style={{height: 'calc(100vh - 365px)'}}>
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflow: 'hidden'}}>
                     <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
@@ -634,7 +721,7 @@ const TableZyxEditable = React.memo(({
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <TableCell key={ii} style={{flex: 1}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -669,41 +756,15 @@ const TableZyxEditable = React.memo(({
                             ))}
                         </TableHead>
                         <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
-                            {loading ?
-                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
-                                page.map(row => {
-                                    prepareRow(row);
-                                    return (
-                                        <TableRow
-                                            {...row.getRowProps()}
-                                            hover
-                                        >
-                                            {row.cells.map((cell, i) =>
-                                                <TableCell
-                                                    {...cell.getCellProps({
-                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
-                                                    })}
-                                                >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 100 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
-                                                                    {cell.render('Cell')}
-                                                                </Box>
-                                                            </Tooltip>
-                                                            :
-                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
-                                                        )
-                                                    }
-                                                </TableCell>
-                                            )}
-                                        </TableRow>
-                                    )
-                                })}
+                            <FixedSizeList
+                                direction="vertical"
+                                width="auto"
+                                height={window.innerHeight - 470}
+                                itemCount={page.length}
+                                itemSize={63.2}
+                                >
+                                {RenderRow}
+                            </FixedSizeList>
                         </TableBody>
                     </Table>
                 </Box>

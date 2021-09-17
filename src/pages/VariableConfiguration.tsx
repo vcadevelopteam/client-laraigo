@@ -272,8 +272,6 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const [dataTable, setDataTable] = useState<any[]>(detailData);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
-    // const [allFontBold, setAllFontBold] = useState(false);
-    // const [allVisible, setVisible] = useState(false);
 
     useEffect(() => {
         if (waitSave) {
@@ -360,7 +358,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
         []
     )
 
-    const updateMyData = (rowIndex: number, columnId: any, value: any) => {
+    const [updatingDataTable, setUpdatingDataTable] = useState(false);
+    const updateCell = (rowIndex: number, columnId: any, value: any) => {
         // We also turn on the flag to not reset the page
         setSkipAutoReset(true);
         setDataTable((old: any) =>
@@ -374,11 +373,29 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
             return row
         })
         )
+        setUpdatingDataTable(!updatingDataTable);
+    }
+
+    const updateColumn = (rowIndexs: number[], columnId: any, value: any) => {
+        // We also turn on the flag to not reset the page
+        setSkipAutoReset(true);
+        setDataTable((old: any) =>
+        old.map((row: any, index: number) => {
+            if (rowIndexs.includes(index)) {
+                return {
+                    ...old[index],
+                    [columnId]: value,
+                }
+            }
+            return row
+        })
+        )
+        setUpdatingDataTable(!updatingDataTable);
     }
 
     useEffect(() => {
         setSkipAutoReset(false)
-    }, [dataTable])
+    }, [updatingDataTable])
 
     return (
         <div style={{ width: '100%' }}>
@@ -393,7 +410,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 download={false}
                 register={false}
                 filterGeneral={false}
-                updateMyData={updateMyData}
+                updateCell={updateCell}
+                updateColumn={updateColumn}
                 skipAutoReset={skipAutoReset}
             />
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>

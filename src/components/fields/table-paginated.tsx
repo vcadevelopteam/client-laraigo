@@ -96,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
         width: '100%',
         justifyContent: 'space-between',
         alignItems: 'center',
+        flexWrap: 'wrap',
     },
     iconOrder: {
         width: 20,
@@ -307,27 +308,22 @@ const TableZyx = React.memo(({
         setPagination(prev => ({ ...prev, sorts: newsorts }))
     }
 
-    // const handleRefresh = () => {
-    //     setPagination({
-    //         ...pagination,
-    //         sorts: {},
-    //         filters: {}
-    //     });
-    // }
-
     const [dateRange, setdateRange] = useState<Range>({
         startDate: new Date(new Date().setDate(0)),
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     });
-
-    useEffect(() => {
-        (triggerSearch && fetchData) && fetchData({
+    const triggertmp = () => {
+        fetchData && fetchData({
             ...pagination, pageSize, daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
                 endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
             }
         });
+    }
+
+    useEffect(() => {
+        triggerSearch && triggertmp();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
 
@@ -347,7 +343,7 @@ const TableZyx = React.memo(({
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={classes.containerButtons}>
                     {filterrange && (
-                        <div>
+                        <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
                             <DateRangePicker
                                 open={openDateRangeModal}
                                 setOpen={setOpenDateRangeModal}
@@ -356,7 +352,7 @@ const TableZyx = React.memo(({
                             >
                                 <Button
                                     disabled={loading}
-                                    style={{ border: '2px solid #EBEAED', borderRadius: 4 }}
+                                    style={{ border: '1px solid #bfbfc0', borderRadius: 4 }}
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
@@ -367,13 +363,14 @@ const TableZyx = React.memo(({
                                     variant="contained"
                                     color="primary"
                                     startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ marginLeft: 8, backgroundColor: '#55BD84', width: 120 }}
+                                    style={{backgroundColor: '#55BD84', width: 120 }}
                                     onClick={() => {
-                                        // triggerFetch()
+                                        if (triggerSearch)
+                                            triggertmp()
                                         setTriggerSearch(true)
                                     }}
                                 >
-                                    Buscar
+                                    <Trans i18nKey={langKeys.search} />
                                 </Button>
                             </DateRangePicker>
                         </div>
