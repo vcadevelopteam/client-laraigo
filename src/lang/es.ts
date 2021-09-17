@@ -190,6 +190,7 @@ const translation: LangKeys = {
     edit: 'Editar',
     delete: 'Eliminar',
     search: 'Buscar',
+    duplicate: 'Duplicar',
     label:"Etiqueta",
     newuser: "Nuevo usuario",
     newdomain: "Nuevo dominio",

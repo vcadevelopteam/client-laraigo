@@ -28,7 +28,8 @@ export interface TableConfig {
     filterGeneral?: boolean,
     hoverShadow?: boolean,
     loading?: boolean,
-    updateMyData?(index: number, id: any, value: any): void
+    updateCell?(index: number, id: any, value: any): void
+    updateColumn?(index: number[], id: any, value: any): void
     skipAutoReset?: boolean
 }
 
