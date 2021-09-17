@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary } from "@types";
+import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CheckIcon } from 'icons';
@@ -10,7 +10,7 @@ import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -66,6 +66,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
             status: 'CERRADO',
             isAnswered: false,
         }
+        dispatch(showBackdrop(true));
         dispatch(closeTicket(dd));
         setWaitClose(true)
     });
@@ -105,36 +106,62 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
 const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const [waitReassign, setWaitReassign] = useState(false);
 
+    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
 
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        newUserId: number;
+        newUserGroup: string;
+        observation: string;
+    }>();
+
+    useEffect(() => {
+        if (waitReassign) {
+            if (!reassigningRes.loading && !reassigningRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitReassign(false);
+            } else if (reassigningRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitReassign(false);
+            }
+        }
+    }, [reassigningRes, waitReassign])
+
+    useEffect(() => {
+        if (multiData.data[1])
+            setAgentsConnected(multiData.data[1].data.filter(x => x.status === 'ACTIVO'))
+    }, [multiData])
 
     useEffect(() => {
         if (openModal) {
             reset({
-                motive: '',
+                newUserId: 0,
+                newUserGroup: '',
                 observation: ''
             })
-            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('newUserId');
+            register('newUserGroup');
             register('observation');
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
+        const dd: IReassignicketParams = {
+            ...ticketSelected!!,
+            ...data,
+            newConversation: true,
+            wasanswered: true
         }
-        dispatch(closeTicket(dd));
+        dispatch(reassignTicket(dd));
+        setWaitReassign(true)
+
     });
 
     return (
@@ -151,12 +178,22 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 <FieldSelect
                     label={t(langKeys.user_plural)}
                     className="col-12"
-                    valueDefault={getValues('motive')}
-                    onChange={(value) => setValue('motive', value ? value.userid : '')}
-                    error={errors?.motive?.message}
-                    data={multiData.data[1] && multiData.data[1].data}
+                    valueDefault={"" + getValues('newUserId')}
+                    onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
+                    error={errors?.newUserId?.message}
+                    data={agentsConnected}
                     optionDesc="displayname"
                     optionValue="userid"
+                />
+                <FieldSelect
+                    label={t(langKeys.group_plural)}
+                    className="col-12"
+                    valueDefault={getValues('newUserGroup')}
+                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    error={errors?.newUserGroup?.message}
+                    data={multiData.data[1] && multiData.data[3].data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -172,12 +209,32 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const [waitTipify, setWaitTipify] = useState(false);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const multiData = useSelector(state => state.main.multiData);
     const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
     const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
 
+    const tipifyRes = useSelector(state => state.main.execute);
+
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitTipify) {
+            if (!tipifyRes.loading && !tipifyRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitTipify(false);
+            } else if (tipifyRes.error) {
+                const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitTipify(false);
+            }
+        }
+    }, [tipifyRes, waitTipify])
 
     useEffect(() => {
         if (openModal) {
@@ -232,7 +289,9 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
     }
 
     const onSubmit = handleSubmit((data) => {
-        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '')))
+        dispatch(showBackdrop(true));
+        dispatch(execute(insertClassificationConversation(ticketSelected?.conversationid!!, data.classificationid3 || data.classificationid2, '', 'INSERT')))
+        setWaitTipify(true)
     });
 
     return (

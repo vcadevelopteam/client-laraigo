@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'store';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
+import 'react-image-lightbox/style.css'; // theme css file
 
 const store = configureStore();
 

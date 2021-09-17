@@ -331,6 +331,9 @@ const translation: LangKeys = {
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
     successful_close_ticket: 'Ticket closed successfully',
+    successful_tipify_ticket: 'Ticket tipified successfully',
+    successful_reasign_ticket: 'Ticket reasigned successfully',
+    confirmation_reasign_with_reply: 'If you confirm sending the message the ticket will be assigned to your tray.',
     apply: 'Apply',
     close: 'Close',
 

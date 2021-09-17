@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, IReplyTicketParams } from '@types';
+import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
@@ -36,4 +36,17 @@ export function replyTicket({ conversationid, personid, communicationchannelid, 
         newanswered: isAnswered,
     }
     return APIManager.post(apiUrls.REPLY_TICKET, { data: { data } }, true);
+}
+
+export function reassignTicket(paramtmp: IReassignicketParams) {
+    const { newUserId, newUserGroup, observation } = paramtmp
+    const data = {
+        ...paramtmp,
+        comment: observation,
+        newuserid: newUserId,
+        usergroup: newUserGroup,
+        newConversation: true,
+        isanswered: true,
+    }
+    return APIManager.post(apiUrls.REASSIGN_TICKET, { data: { data } }, true);
 }

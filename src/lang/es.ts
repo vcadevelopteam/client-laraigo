@@ -276,6 +276,9 @@ const translation: LangKeys = {
     bold: 'Negrita',
     show: 'Mostrar',
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
+    successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
+    successful_reasign_ticket: 'El ticket se reasignó satisfactoriamente',
+    confirmation_reasign_with_reply: 'Si confirma enviar el mensaje el ticket se asignará a su bandeja.',
     recordPerPage: 'Registro por página',
     recordPerPage_plural: 'Registros por página',
 
