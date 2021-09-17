@@ -284,6 +284,7 @@ const TableZyxEditable = React.memo(({
                     <OnlyCheckbox
                         label=""
                         valueDefault={allBoolean}
+                        disabled={loading}
                         onChange={(value) => {
                             setColumnBoolean(value, columnid);
                         }}
@@ -611,45 +612,40 @@ const TableZyxEditable = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            if (loading) {
-                return <LoadingSkeleton columns={headerGroups[0].headers.length} />
-            }
-            else {
-                const row = page[index]
-                prepareRow(row);
-                return (
-                    <TableRow
-                        component="div"
-                        {...row.getRowProps({ style })}
-                        hover
-                    >
-                        {row.cells.map((cell, i) =>
-                            <TableCell
-                                component="div"
-                                {...cell.getCellProps({
-                                    style: { minWidth: cell.column.minWidth, width: cell.column.width },
-                                })}
-                            >
-                                {headerGroups[0].headers[i].isComponent ?
-                                    cell.render('Cell')
-                                    :
-                                    (cell.value?.length > 100 ?
-                                        <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                            <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
-                                                {cell.render('Cell')}
-                                            </Box>
-                                        </Tooltip>
-                                        :
-                                        <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+            const row = page[index]
+            prepareRow(row);
+            return (
+                <TableRow
+                    component="div"
+                    {...row.getRowProps({ style })}
+                    hover
+                >
+                    {row.cells.map((cell, i) =>
+                        <TableCell
+                            component="div"
+                            {...cell.getCellProps({
+                                style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                            })}
+                        >
+                            {headerGroups[0].headers[i].isComponent ?
+                                cell.render('Cell')
+                                :
+                                (cell.value?.length > 100 ?
+                                    <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                        <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
                                             {cell.render('Cell')}
                                         </Box>
-                                    )
-                                }
-                            </TableCell>
-                        )}
-                    </TableRow>
-                )
-            }
+                                    </Tooltip>
+                                    :
+                                    <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                                        {cell.render('Cell')}
+                                    </Box>
+                                )
+                            }
+                        </TableCell>
+                    )}
+                </TableRow>
+            )
         },
         [headerGroups, prepareRow, page]
     )
@@ -762,6 +758,9 @@ const TableZyxEditable = React.memo(({
                             {...getTableBodyProps()}
                             style={{ backgroundColor: 'white' }}
                         >
+                            {loading ?
+                            <LoadingSkeleton columns={headerGroups[0].headers.length} />
+                            :    
                             <FixedSizeList
                                 style={{overflowX: 'hidden'}}
                                 direction="vertical"
@@ -772,6 +771,7 @@ const TableZyxEditable = React.memo(({
                                 >
                                 {RenderRow}
                             </FixedSizeList>
+                            }
                         </TableBody>
                     </Table>
                 </Box>
@@ -855,6 +855,15 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
                 {items}
             </TableRow>
             <TableRow key="2aux2">
+                {items}
+            </TableRow>
+            <TableRow key="3aux3">
+                {items}
+            </TableRow>
+            <TableRow key="4aux4">
+                {items}
+            </TableRow>
+            <TableRow key="5aux5">
                 {items}
             </TableRow>
         </>
