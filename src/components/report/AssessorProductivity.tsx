@@ -204,14 +204,12 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}
                                 onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
                                 variant="outlined"
-                                // loading={detailCustomReport.loading}
                                 data={multiData[multiData.findIndex(x => x.key === (filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter))].data}
                                 optionDesc={filtro.values[0].optionDesc}
                                 optionValue={filtro.values[0].optionValue}
                             />
                             :
                             <FieldSelect
-                                // loading={detailCustomReport.loading}
                                 label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
                                 className={classes.filterComponent}
                                 key={filtro.values[0].isListDomains ? filtro.values[0].filter + "_" + filtro.values[0].domainname : filtro.values[0].filter}

@@ -18,7 +18,7 @@ import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux}  from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 interface RowSelected {
@@ -53,9 +53,9 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(2),
         padding: theme.spacing(2),
         background: '#fff',
-        width: '100%' 
+        width: '100%'
     },
-    button: {        
+    button: {
         marginRight: theme.spacing(2),
     }
 }));
@@ -64,11 +64,11 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
-    const onSubmit = handleSubmit((data) => {        
+    const onSubmit = handleSubmit((data) => {
         if (edit)
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue||'' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
         else
-            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc||'', status: row?.status||'ACTIVO', operation: "INSERT" }]);
+            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
 
         setOpenModal(false);
     });
@@ -79,11 +79,11 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
-                status: row?.status||'',
+                status: row?.status || '',
                 organization: user?.orgdesc || ''
-            })      
-            
-            register('domainvalue', { validate: (value) => ((value && value.length) || t(langKeys.field_required))});
+            })
+
+            register('domainvalue', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
             register('domaindesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         }
     }, [openModal])
@@ -195,7 +195,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                 NoFilter: true,
                 Cell: (prop: any) => {
                     const row = prop.cell.row.original;
-                    const val = (row? (row.bydefault? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
+                    const val = (row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative))
                     return val;
                 }
             },
@@ -221,7 +221,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
     const handleRegister = () => {
         setOpenDialogDomain(true)
-        setRowSelected({ row, domainname, edit: false});
+        setRowSelected({ row, domainname, edit: false });
     }
 
     const handleDelete = (row: Dictionary) => {
@@ -230,8 +230,8 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
         } else {
             row.operation = 'DELETE';
         }
-        
-        setdataDomain(p => p.filter(x => ( row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid )));
+
+        setdataDomain(p => p.filter(x => (row.operation === "DELETE" ? x.operation !== "DELETE" : row.domainid !== x.domainid)));
     }
 
     const handleView = (row: Dictionary) => {
@@ -246,14 +246,14 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            id: row?.domainid||0,
+            id: row?.domainid || 0,
             operation: row ? "EDIT" : "INSERT",
             description: row?.description || '',
             corporation: row?.corpdesc || '',
             organization: row?.orgdesc || '',
             domainname: row?.domainname || '',
             type: row?.type || '',
-            status: row?.status||''
+            status: row?.status || ''
         }
     });
 
@@ -288,9 +288,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute({
-                header: insDomain({...data}),
+                header: insDomain({ ...data }),
                 detail: [
-                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status ,id: x.domainid ? x.domainid : 0 })),
+                    ...dataDomain.filter(x => !!x.operation).map(x => insDomainvalue({ ...data, ...x, status: data?.status, id: x.domainid ? x.domainid : 0 })),
                     ...domainToDelete.map(x => insDomainvalue({ ...x, id: x.domainid, description: data.description, type: data.type }))
                 ]
             }, true));
@@ -323,7 +323,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}>
-                                {t(langKeys.back)}
+                            {t(langKeys.back)}
                         </Button>
                         {edit &&
                             <Button
@@ -333,21 +333,21 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}>
-                                    {t(langKeys.save)}
+                                {t(langKeys.save)}
                             </Button>
                         }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
-                    <Accordion defaultExpanded = {true} expanded={!row ? true : undefined} style={{marginBottom: '8px' }}>
+                    <Accordion defaultExpanded={true} expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls="panel1a-content"
                             id="panel1a-header"
                         >
-                        <Typography>{row ? `${row.domainname}` : t(langKeys.newdomain)}</Typography>
+                            <Typography>{row ? `${row.domainname}` : t(langKeys.newdomain)}</Typography>
                         </AccordionSummary>
-                        <AccordionDetails style={{justifyContent: 'space-around'}}>
+                        <AccordionDetails style={{ justifyContent: 'space-around' }}>
                             <div className={classes.containerDetail}>
                                 <div className="row-zyx">
                                     {edit ?
@@ -427,9 +427,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                     >
-                    <Typography>{t(langKeys.valuelist)}</Typography>
+                        <Typography>{t(langKeys.valuelist)}</Typography>
                     </AccordionSummary>
-                    <AccordionDetails>                        
+                    <AccordionDetails>
                         {detailRes.error ? <h1>ERROR</h1> : (
                             <TableZyx
                                 columns={columns}
@@ -444,7 +444,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                     </AccordionDetails>
                 </Accordion>
             </div>
-            
+
             <DetailValue
                 data={rowSelected}
                 openModal={openDialogDomain}
@@ -558,7 +558,7 @@ const Domains: FC = () => {
         setViewSelected("view-2");
         setRowSelected({ row, domainname: row.domainname, edit: true });
     }
-    
+
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
             dispatch(execute(insDomain({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
@@ -594,7 +594,7 @@ const Domains: FC = () => {
                 }
             </div>
         )
-    } 
+    }
     else
         return (
             <DetailDomains
