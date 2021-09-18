@@ -88,7 +88,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                     valueDefault={getValues('motive')}
                     onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
                     error={errors?.motive?.message}
-                    data={multiData.data[0] && multiData.data[0].data}
+                    data={multiData?.data[0] && multiData?.data[0].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -135,8 +135,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData.data[1])
-            setAgentsConnected(multiData.data[1].data.filter(x => x.status === 'ACTIVO'))
+        if (multiData?.data[1])
+            setAgentsConnected(multiData?.data[1].data.filter(x => x.status === 'ACTIVO'))
     }, [multiData])
 
     useEffect(() => {
@@ -191,7 +191,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData.data[1] && multiData.data[3].data}
+                    data={multiData?.data[1] && multiData?.data[3].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -311,7 +311,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
                     valueDefault={getValues('classificationid1')}
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
-                    data={multiData.data[2] && multiData.data[2].data}
+                    data={multiData?.data[2] && multiData?.data[2].data}
                     optionDesc="path"
                     optionValue="classificationid"
                 />
