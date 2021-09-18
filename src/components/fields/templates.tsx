@@ -597,7 +597,7 @@ export const ListItemSkeleton: React.FC = () => (
             <Grid container direction="column">
                 <Grid container direction="row" spacing={1}>
                     <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                        <Skeleton />
+                        <Skeleton animation="wave" />
                     </Grid>
                 </Grid>
                 <Divider style={{ margin: '10px 0' }} />
