@@ -280,7 +280,6 @@ export const getReportFilterSel = (filter: string, key: string, domainname: stri
     method: filter,
     key: key,
     parameters: {
-        supervisorid: 1,
         domainname,
         all: false
     }
@@ -297,13 +296,12 @@ export const getPaginatedForReports = (methodCollection: string, methodCount: st
         filters,
         sorts,
         origin: origin,
-        supervisorid: 1,
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
+        asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
-
 });
 
 export const getReportExport = (methodExport: string, origin: string, { filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
@@ -315,10 +313,10 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
         startdate,
         enddate,
         sorts,
-        supervisorid: 1,
         ...allParameters,
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         hours: allParameters['hours'] ? allParameters['hours'] : "",
+        asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
@@ -331,8 +329,7 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
-        bot: allParameters['bot'] ? allParameters['bot'] : false,
-        supervisorid: 1
+        bot: allParameters['bot'] ? allParameters['bot'] : false
     }
 });
 

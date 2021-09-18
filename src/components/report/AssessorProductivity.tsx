@@ -268,7 +268,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             variant="contained"
                             color="primary"
                             disabled={detailCustomReport.loading}
-                            onClick={() => exportExcel("Report", detailCustomReport.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         >{t(langKeys.download)}
                         </Button>
