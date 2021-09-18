@@ -96,6 +96,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
     [actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
     [actionTypes.SET_USER_TYPE]: caseFunctions.setUserType,
+    [actionTypes.ADD_TICKET]: caseFunctions.addTicket,
+    [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,

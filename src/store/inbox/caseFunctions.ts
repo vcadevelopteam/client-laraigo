@@ -1,9 +1,9 @@
-import { IAction, IInteraction, IGroupInteraction } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket } from "@types";
 import { initialState, IState } from "./reducer";
 
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
-    
+
     const listImages = interactions.filter(x => x.interactiontype === "image").map(x => x.interactiontext)
     let indexImage = 0;
 
@@ -29,7 +29,7 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 }
 
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
-    
+
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
 
@@ -184,6 +184,18 @@ export const resetSelectAgent = (state: IState, action: IAction): IState => ({
 })
 
 
+export const addTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: { ...state.ticketList, data: [...state.ticketList.data, action.payload] },
+})
+
+
+export const modifyTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketList: { ...state.ticketList, data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? action.payload : x) },
+})
+
+
 export const getTickets = (state: IState): IState => ({
     ...state,
     ticketList: { ...state.ticketList, loading: true, error: false },
@@ -218,7 +230,7 @@ export const getTicketsReset = (state: IState): IState => ({
 
 export const addMessage = (state: IState, action: IAction): IState => {
     const newInteraction: IInteraction = action.payload;
-    newInteraction.interactionid = state.interactionList.data.length * -1; 
+    newInteraction.interactionid = state.interactionList.data.length * -1;
     return {
         ...state,
         interactionList: {

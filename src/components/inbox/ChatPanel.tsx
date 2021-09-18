@@ -398,7 +398,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum } }) => {
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket, sendMessage: (param: any) => void }> = React.memo(({ classes, sendMessage, ticket, ticket: { ticketnum } }) => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
@@ -417,6 +417,7 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ cla
                 classes={classes}
                 ticket={ticket} />
             <ReplyPanel
+                sendMessage={sendMessage}
                 classes={classes} />
         </div>
     )

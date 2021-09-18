@@ -260,14 +260,14 @@ const TableZyx = React.memo(({
                     case 'noequals':
                         return cellvalue !== value;
                     case 'nocontains':
-                        return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                        return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     case 'empty':
                         return cellvalue === '' || cellvalue == null;
                     case 'noempty':
                         return cellvalue !== '' && cellvalue != null;
                     case 'contains':
                     default:
-                        return cellvalue.toLowerCase().includes(value.toLowerCase());
+                        return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                 }
             }
         });

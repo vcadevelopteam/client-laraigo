@@ -21,7 +21,7 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
     )
 }
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     return (
         (
@@ -34,6 +34,9 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                         <GetIcon channelType={communicationchanneltype} />
                         <div className={classes.name}>{displayname}</div>
+                    </div>
+                    <div>
+                        {lastmessage}
                     </div>
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                         <LabelGo

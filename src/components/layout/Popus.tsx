@@ -33,8 +33,6 @@ const Popus: React.FC = () => {
     const popus = useSelector(state => state.popus);
     const lightbox = useSelector(state => state.popus.lightbox);
 
-    console.log(lightbox)
-
     const handleCloseSnackbar = () => dispatch(showSnackbar({ ...popus.snackbar, show: false }));
 
     const manageConfirmationTmp = () => dispatch(manageConfirmation({ ...popus.question, visible: false }));

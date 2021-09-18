@@ -347,7 +347,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
-                value={data.length > 0 ? value : null}
+                value={data?.length > 0 ? value : null}
                 onChange={(_, newValue) => {
                     setValue(newValue);
                     onChange && onChange(newValue);

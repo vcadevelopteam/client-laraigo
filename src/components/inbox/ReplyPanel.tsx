@@ -34,7 +34,6 @@ const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }
     useEffect(() => {
         if (waitSave) {
             if (!uploadResult.loading && !uploadResult.error) {
-                console.log("into effect", idUpload)
                 setFiles((x: IFile[]) => x.map(item => item.id === idUpload ? { ...item, url: uploadResult.url } : item))
                 setWaitSave(false);
                 dispatch(resetUploadFile());
@@ -96,7 +95,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
     </div>
 )
 
-const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
+const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> = ({ classes, sendMessage }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -130,6 +129,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     usertype: "agent",
                 }
                 dispatch(replyMessage(newInteraction));
+                
+                sendMessage(newInteraction);
+                
                 dispatch(replyTicket({
                     ...ticketSelected!!,
                     interactiontype: "text",

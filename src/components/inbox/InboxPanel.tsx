@@ -268,15 +268,12 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const ticketList = useSelector(state => state.inbox.ticketList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     
-    const userTypeConnected = useSelector(state => state.inbox.userType);
-
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
         dispatch(getDataTicket(ticket))
     }, [dispatch]);
 
     useEffect(() => {
-        console.log("userTypeConnected ", userTypeConnected)
         dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
         return () => {
             dispatch(resetGetTickets())
@@ -349,7 +346,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     )
 }
 
-const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }) => {
+const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", sendMessage: (param: any) => void }> = ({ userType, sendMessage }) => {
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
@@ -362,7 +359,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} classes={classes} />
+                    <ChatPanel ticket={ticketSelected} sendMessage={sendMessage} classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

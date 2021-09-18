@@ -109,7 +109,6 @@ const InfoClient: React.FC = () => {
 const Variables: React.FC = () => {
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const configurationVariables = useSelector(state => state.inbox.configurationVariables.data);
-    console.log(configurationVariables)
     const classes = useStyles();
 
     return (

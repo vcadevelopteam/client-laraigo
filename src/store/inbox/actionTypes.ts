@@ -63,6 +63,8 @@ const actionType = {
 
     SELECT_AGENT: 'ticket/SELECT_AGENT',
     REPLY_MESSAGE: 'ticket/REPLY_MESSAGE',
+    ADD_TICKET: 'ticket/ADD_TICKET',
+    MODIFY_TICKET: 'ticket/MODIFY_TICKET',
     RESET_SELECT_AGENT: 'ticket/RESET_SELECT_AGENT'
 };
 

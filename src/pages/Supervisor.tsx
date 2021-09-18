@@ -2,9 +2,9 @@
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
-// import {} from 'react-native'
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
+import useSocket from 'components/inbox/useSocket'
 import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
@@ -24,7 +24,6 @@ import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
-import { io } from 'socket.io-client';
 
 const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
@@ -136,7 +135,7 @@ const StyledBadge = withStyles((theme) => ({
 
 const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
-        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{fontWeight: 'bold'}}>{count}</span></div>
+        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
         <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
     </div>
 )
@@ -301,35 +300,16 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [socket, setSocket] = useState<any>(null);
-
-    // const multiData = useSelector(state => state.main.multiData);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
 
-    socket?.on("connect", () => {
-        console.log("connect", socket.id);
-        // socket.emit('chat message', socket.id);
-    });
+    const [sendMessage] = useSocket({ userType: 'SUPERVISOR', userId: user?.userid!!, orgId: user?.orgid!! });
 
-    socket?.on('chat message', (data: any) => {
-        console.log("chat message", data)
-        // socket.emit('chat message', data);
-    });
-
-    socket?.on("disconnect", () => {
-        console.log(socket.connected); // false
-    });
+    // useEffect(() => {
+    //     console.log("was connected: ", isConnected);
+    // }, [isConnected])
 
     useEffect(() => {
-        const newsocket = io('https://socket.laraigo.com', {
-            autoConnect: false
-        });
-        const ff = { data: { userid: user?.userid, orgid: user?.orgid, usertype: 'SUPERVISOR' } };
-        newsocket.auth = ff;
-        newsocket.connect();
-        setSocket(newsocket);
-
         dispatch(setOpenDrawer(false));
         dispatch(getMultiCollection([
             getValuesFromDomain("MOTIVOCIERRE"),
@@ -343,7 +323,7 @@ const Supervisor: FC = () => {
         <div className={classes.container}>
             <AgentPanel classes={classes} />
             {agentSelected &&
-                <InboxPanel userType="SUPERVISOR" />
+                <InboxPanel userType="SUPERVISOR" sendMessage={sendMessage} />
             }
         </div>
     )

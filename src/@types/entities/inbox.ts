@@ -25,3 +25,11 @@ export interface IReassignicketParams extends ITicket {
     newConversation: boolean;
     wasanswered: boolean;
 }
+
+
+export interface INewMessageParams extends ITicket {
+    typemessage: string;
+    interactionid: number;
+    newConversation: boolean;
+    userid: number;
+}
