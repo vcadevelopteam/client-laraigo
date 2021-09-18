@@ -36,21 +36,24 @@ const useStyles = makeStyles((theme) => ({
     filterComponent: {
         width: '220px'
     },
+    containerHeader: {
+        paddingBottom: theme.spacing(2),
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 16,
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        }
+    },
     containerDetails: {
-        marginBottom: theme.spacing(2),
-        marginTop: theme.spacing(2)
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2)
     },
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
-    },
-    containerHeader: {
-        display: 'block',
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
-        },
     }
 }));
 
@@ -230,9 +233,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         label={t(langKeys.report_userproductivity_filter_includebot)}
                     />
                 </div>
-                <Box width={1} style={{ height: '100%' }}>
+                <Box width={1}>
                     <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                        <div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                             <DateRangePicker
                                 open={openDateRangeModal}
                                 setOpen={setOpenDateRangeModal}
@@ -273,16 +276,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Box>
             </div>
 
-            <div>
-                <Grid container spacing={3} style={{ paddingTop: 12, }}>
-                    <Grid item xs={12} md={4} lg={4}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardtme)}
-                                    value=''
-                                />
-                            </Grid>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={4} lg={4}>
+                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
+                        <label>{t(langKeys.report_userproductivity_cardtme)}</label>
+                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax)}
@@ -308,15 +306,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 />
                             </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={4}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardtmo)}
-                                    value=""
-                                />
-                            </Grid>
+                    </div>
+                </Grid>
+                <Grid item xs={12} md={4} lg={4}>
+                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
+                        <label>{t(langKeys.report_userproductivity_cardtmo)}</label>
+                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax)}
@@ -342,15 +338,12 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 />
                             </Grid>
                         </Grid>
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={4}>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardtmoadviser)}
-                                    value=""
-                                />
-                            </Grid>
+                    </div>
+                </Grid>
+                <Grid item xs={12} md={4} lg={4}>
+                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
+                        <label>{t(langKeys.report_userproductivity_cardtmo)}</label>
+                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardavgmax)}
@@ -376,51 +369,47 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 />
                             </Grid>
                         </Grid>
-                    </Grid>
+                    </div>
                 </Grid>
-            </div>
+            </Grid>
 
-            <div className={classes.containerDetails}>
-                <Grid container spacing={2}>
-                    <Grid item xs={12} md={4} lg={3}>
-                        <IndicatorPanel
-                            title={t(langKeys.report_userproductivity_totalclosedtickets)}
-                            value={detailCustomReport.data[0]?.totalclosedtickets}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={3}>
-                        <IndicatorPanel
-                            title={t(langKeys.report_userproductivity_holdingtickets)}
-                            value={detailCustomReport.data[0]?.holdingtickets}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={3}>
-                        <IndicatorPanel
-                            title={t(langKeys.report_userproductivity_asesortickets)}
-                            value={detailCustomReport.data[0]?.asesortickets}
-                        />
-                    </Grid>
-                    <Grid item xs={12} md={4} lg={3}>
-                        <IndicatorPanel
-                            title={t(langKeys.report_userproductivity_usersconnected)}
-                            value={detailCustomReport.data[0]?.usersconnected}
-                        />
-                    </Grid>
+            <Grid container spacing={2} className={classes.containerDetails}>
+                <Grid item xs={12} md={4} lg={3}>
+                    <IndicatorPanel
+                        title={t(langKeys.report_userproductivity_totalclosedtickets)}
+                        value={detailCustomReport.data[0]?.totalclosedtickets}
+                    />
                 </Grid>
-            </div>
+                <Grid item xs={12} md={4} lg={3}>
+                    <IndicatorPanel
+                        title={t(langKeys.report_userproductivity_holdingtickets)}
+                        value={detailCustomReport.data[0]?.holdingtickets}
+                    />
+                </Grid>
+                <Grid item xs={12} md={4} lg={3}>
+                    <IndicatorPanel
+                        title={t(langKeys.report_userproductivity_asesortickets)}
+                        value={detailCustomReport.data[0]?.asesortickets}
+                    />
+                </Grid>
+                <Grid item xs={12} md={4} lg={3}>
+                    <IndicatorPanel
+                        title={t(langKeys.report_userproductivity_usersconnected)}
+                        value={detailCustomReport.data[0]?.usersconnected}
+                    />
+                </Grid>
+            </Grid>
 
-            <div style={{ width: '100%' }}>
-                <TableZyx
-                    columns={columns}
-                    data={detailCustomReport.data}
-                    download={false}
-                    loading={detailCustomReport.loading}
-                    filterGeneral={false}
-                    register={false}
-                />
-            </div>
+            <TableZyx
+                columns={columns}
+                data={detailCustomReport.data}
+                download={false}
+                loading={detailCustomReport.loading}
+                filterGeneral={false}
+                register={false}
+            />
         </>
-    );
+    )
 };
 
 export default AssessorProductivity;

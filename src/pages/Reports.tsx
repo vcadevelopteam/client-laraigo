@@ -181,60 +181,49 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
             />
             {multiData.length > 0 ?
                 <>
+                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                        <span className={classes.title}>
+                            {row?.description || ''}
+                        </span>
+                    </Box>
                     {customReport ?
-                        <div>
-                            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                                <span className={classes.title}>
-                                    {row?.description || ''}
-                                </span>
-                            </Box>
-                            <AssessorProductivity
-                                row={row}
-                                multiData={multiData}
-                                allFilters={allFilters}
-                            />
-                        </div>
+                        <AssessorProductivity
+                            row={row}
+                            multiData={multiData}
+                            allFilters={allFilters}
+                        />
                         :
-                        <div>
+                        <>
                             {allFilters &&
-                                <div>
-                                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                                        <span className={classes.title}>
-                                            {row?.description || ''}
-                                        </span>
-                                    </Box>
-                                    <div className={classes.containerFilter} >
-                                        {
-                                            allFilters.map(filtro => (
-                                                (filtro.values[0].multiselect ?
-                                                    <FieldMultiSelect
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                        // error=""
-                                                        variant="outlined"
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                    :
-                                                    <FieldSelect
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        variant="outlined"
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                        // error=""
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                )
+                                <div className={classes.containerFilter} >
+                                    {
+                                        allFilters.map(filtro => (
+                                            (filtro.values[0].multiselect ?
+                                                <FieldMultiSelect
+                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                    variant="outlined"
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc={filtro.values[0].optionDesc}
+                                                    optionValue={filtro.values[0].optionValue}
+                                                />
+                                                :
+                                                <FieldSelect
+                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    variant="outlined"
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc={filtro.values[0].optionDesc}
+                                                    optionValue={filtro.values[0].optionValue}
+                                                />
                                             )
-                                            )
-                                        }
-                                    </div>
+                                        )
+                                        )
+                                    }
                                 </div>
                             }
                             <div className={classes.container}>
@@ -248,17 +237,15 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
-                                    titlemodule={!allFilters ? row?.description || '' : ''}
                                 />
                             </div>
-                        </div>
+                        </>
                     }
                 </>
                 :
                 <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <h2>Cargando...</h2>
                     <CircularProgress />
-                    {/* <CircularProgress color="secondary" /> */}
                 </div>
             }
         </div>
@@ -340,7 +327,6 @@ const Reports: FC = () => {
                     </div>
                 </Box>
                 <div className={classes.containerDetails}>
-                    {/* <Container className={classes.containerDetails}> */}
                     <Grid container spacing={3}>
                         {
                             (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
@@ -348,15 +334,13 @@ const Reports: FC = () => {
                                     <Card>
                                         <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                             <CardMedia
-                                                component="img"// modificado
+                                                component="img"
                                                 height="140"
                                                 className={classes.media}
-                                                //component={report.component}// siempre devuelve undefined
                                                 image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
                                                 title={report.description}
                                             />
                                             <CardContent>
-                                                {/* Modificado para ajustar el texto en una sola linea */}
                                                 <Typography gutterBottom variant="h6" component="div">
                                                     {report.description}
                                                 </Typography>
@@ -367,7 +351,6 @@ const Reports: FC = () => {
                             ))
                         }
                     </Grid>
-                    {/* </Container> */}
                 </div>
             </div>
         );
