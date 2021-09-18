@@ -99,6 +99,8 @@ const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> 
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    
+    const user = useSelector(state => state.login.validateToken.user);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
@@ -112,7 +114,7 @@ const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> 
                         interactiontype: "image",
                         interactiontext: x.url,
                         createdate: new Date().toISOString(),
-                        userid: 999999,
+                        userid: user?.userid,
                         usertype: "agent",
                     }))
                 })
@@ -120,16 +122,16 @@ const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> 
             }
             if (text) {
                 const textCleaned = text.trim();
-                const newInteraction: IInteraction = {
+                const newInteraction = {
+                    ...ticketSelected!!,
                     interactionid: 0,
-                    interactiontype: "text",
-                    interactiontext: textCleaned,
+                    typemessage: "text",
+                    typeinteraction: null,
+                    lastmessage: textCleaned,
                     createdate: new Date().toISOString(),
-                    userid: 999999,
+                    userid: user?.userid,
                     usertype: "agent",
                 }
-                dispatch(replyMessage(newInteraction));
-                
                 sendMessage(newInteraction);
                 
                 dispatch(replyTicket({

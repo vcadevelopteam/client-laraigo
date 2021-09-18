@@ -32,4 +32,5 @@ export interface INewMessageParams extends ITicket {
     interactionid: number;
     newConversation: boolean;
     userid: number;
+    usertype: string;
 }

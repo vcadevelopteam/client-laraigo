@@ -152,7 +152,7 @@ const PreviewTickets = () => {
     }, [])
 
     return (
-        <div>
+        <div style={{ overflowY: 'auto', flex: 1 }}>
             {previewTicketList.loading ? "Espere" :
                 previewTicketList.data?.map((ticket, index) => (
                     <div key={index} className={classes.containerPreviewTicket}>

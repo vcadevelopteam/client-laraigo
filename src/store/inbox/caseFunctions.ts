@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams } from "@types";
 import { initialState, IState } from "./reducer";
 
 
@@ -13,9 +13,13 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
         const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
-        } else if (item.userid && (acc.last === "agent" || acc.last === "BOT")) {
+        } else if (currentUser === "BOT" && (acc.last === "BOT")) {
             acc.data[acc.data.length - 1].interactions.push(item)
-        } else if (item.userid && acc.last === "client") {
+        } else if (currentUser === "agent" && (acc.last === "agent")) {
+            acc.data[acc.data.length - 1].interactions.push(item)
+        } else if (currentUser === "BOT" && acc.last !== "BOT") {
+            acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
+        } else if (currentUser === "agent" && acc.last !== "agent") {
             acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
         } else if (!item.userid && (acc.last === "agent" || acc.last === "BOT")) {
             acc.data.push({ ...item, usertype: currentUser, interactions: [item] });
@@ -33,13 +37,16 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
 
-    const currentUser = interaction.userid ? "agent" : "client";
-    if (interaction.userid && (lastType === "agent" || lastType === "BOT")) {
+    if (interaction.usertype === "BOT" && (lastType === "BOT")) {
         groupsInteraction[groupsInteraction.length - 1].interactions.push(interaction)
-    } else if (interaction.userid && lastType === "client") {
-        groupsInteraction.push({ ...interaction, usertype: currentUser, interactions: [interaction] });
+    } else if (interaction.usertype === "agent" && (lastType === "agent")) {
+        groupsInteraction[groupsInteraction.length - 1].interactions.push(interaction)
+    } else if (interaction.usertype === "BOT" && lastType !== "BOT") {
+        groupsInteraction.push({ ...interaction, usertype: interaction.usertype!!, interactions: [interaction] });
+    } else if (interaction.usertype === "agent" && lastType !== "agent") {
+        groupsInteraction.push({ ...interaction, usertype: interaction.usertype!!, interactions: [interaction] });
     } else if (!interaction.userid && (lastType === "agent" || lastType === "BOT")) {
-        groupsInteraction.push({ ...interaction, usertype: currentUser, interactions: [interaction] });
+        groupsInteraction.push({ ...interaction, usertype: interaction.usertype!!, interactions: [interaction] });
     } else if (!interaction.userid && lastType === "client") {
         groupsInteraction[groupsInteraction.length - 1].interactions.push(interaction)
     }
@@ -235,6 +242,52 @@ export const addMessage = (state: IState, action: IAction): IState => {
         ...state,
         interactionList: {
             data: AddNewInteraction(state.interactionList.data, newInteraction),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
+export const newMessageFromClient = (state: IState, action: IAction): IState => {
+    const data: INewMessageParams = action.payload;
+
+    let newticketList = [...state.ticketList.data];
+    let newInteractionList = [...state.interactionList.data]
+
+    const { agentSelected, ticketSelected, userType } = state;
+
+    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
+        if (data.newConversation) {
+            newticketList = [...newticketList, ...(data.newConversation ? [data] : [])]
+        } else {
+            newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
+                ...data,
+                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1
+            }) : x)
+        }
+        if (ticketSelected?.conversationid === data.conversationid) {
+            console.log(data.userid)
+            const newInteraction: IInteraction = {
+                interactionid: data.interactionid,
+                interactiontype: "text",
+                interactiontext: data.lastmessage,
+                createdate: new Date().toISOString(),
+                userid: data.usertype === "agent" ? data.userid : 0,
+                usertype: data.usertype === "agent" && data.userid === 2 ? "BOT" : data.usertype,
+            }
+            newInteractionList = AddNewInteraction(state.interactionList.data, newInteraction)
+        }
+    }
+
+    return {
+        ...state,
+        ticketList: {
+            ...state.ticketList,
+            data: newticketList
+        },
+        interactionList: {
+            data: newInteractionList,
             count: action.payload.count,
             loading: false,
             error: false,

@@ -65,7 +65,8 @@ const actionType = {
     REPLY_MESSAGE: 'ticket/REPLY_MESSAGE',
     ADD_TICKET: 'ticket/ADD_TICKET',
     MODIFY_TICKET: 'ticket/MODIFY_TICKET',
-    RESET_SELECT_AGENT: 'ticket/RESET_SELECT_AGENT'
+    RESET_SELECT_AGENT: 'ticket/RESET_SELECT_AGENT',
+    NEW_MESSAGE_FROM_CLIENT: 'ticket/NEW_MESSAGE_FROM_CLIENT',
 };
 
 export default actionType;
