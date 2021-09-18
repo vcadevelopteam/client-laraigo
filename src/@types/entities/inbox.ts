@@ -17,3 +17,11 @@ export interface IReplyTicketParams extends ITicket {
     interactiontext: string;
     isAnswered: boolean;
 }
+
+export interface IReassignicketParams extends ITicket {
+    newUserId: number;
+    newUserGroup: string;
+    observation: string;
+    newConversation: boolean;
+    wasanswered: boolean;
+}

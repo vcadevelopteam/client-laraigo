@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        // paddingTop: theme.spacing(2),,
         borderTop: '1px solid #EBEAED',
         width: '100%'
     },
@@ -137,8 +136,8 @@ const StyledBadge = withStyles((theme) => ({
 
 const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
-        <div style={{ color: color, padding: '4px 6px', whiteSpace: 'nowrap', fontSize: '14px' }}>{label}: {count}</div>
-        <div style={{ backgroundColor: color, width: '100%', height: '28px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{fontWeight: 'bold'}}>{count}</span></div>
+        <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
     </div>
 )
 
@@ -173,7 +172,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 </StyledBadge>
                 <div>
                     <div className={classes.agentName}>{name}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                         {channels.map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
                             return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
@@ -281,7 +280,6 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
 
     useEffect(() => {
-        console.log('trigger2');
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
             setAgentsToShow(agentList.data as IAgent[])
@@ -311,7 +309,7 @@ const Supervisor: FC = () => {
 
     socket?.on("connect", () => {
         console.log("connect", socket.id);
-        socket.emit('chat message', socket.id);
+        // socket.emit('chat message', socket.id);
     });
 
     socket?.on('chat message', (data: any) => {
@@ -324,7 +322,6 @@ const Supervisor: FC = () => {
     });
 
     useEffect(() => {
-
         const newsocket = io('https://socket.laraigo.com', {
             autoConnect: false
         });
@@ -337,7 +334,8 @@ const Supervisor: FC = () => {
         dispatch(getMultiCollection([
             getValuesFromDomain("MOTIVOCIERRE"),
             getListUsers(),
-            getClassificationLevel1("TIPIFICACION")
+            getClassificationLevel1("TIPIFICACION"),
+            getValuesFromDomain("GRUPOS"),
         ]))
     }, [])
 
@@ -345,7 +343,7 @@ const Supervisor: FC = () => {
         <div className={classes.container}>
             <AgentPanel classes={classes} />
             {agentSelected &&
-                <InboxPanel userid={agentSelected.userid} />
+                <InboxPanel userType="SUPERVISOR" />
             }
         </div>
     )

@@ -22,3 +22,8 @@ export const manageConfirmation = (state: IState, action: IAction): IState => ({
     ...state,
     question: action.payload,
 })
+
+export const manageLightBox = (state: IState, action: IAction): IState => ({
+    ...state,
+    lightbox: action.payload,
+})

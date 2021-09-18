@@ -8,12 +8,11 @@ import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
 import { convertLocalDate, toTime24HR } from 'common/helpers';
-
-
+import { manageLightBox } from 'store/popus/actions';
+import { useDispatch } from 'react-redux';
 const useStylesCarousel = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
@@ -95,13 +94,21 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
 }
 
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext }, classes }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage }, classes }) => {
+    const dispatch = useDispatch();
+
     if (interactiontype === "text")
         return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontext}</div>;
     else if (interactiontype === "image")
         return (
             <div className={classes.interactionImage}>
-                <img style={{ width: '100%' }} src={interactiontext} alt="" />
+                <img
+                    style={{ width: '100%', cursor: 'pointer' }}
+                    src={interactiontext} alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!!}))
+                    }}
+                />
             </div>);
     else if (interactiontype === "quickreply") {
         const [text, json] = interactiontext.split("&&&");
@@ -175,9 +182,8 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                     ))}
                 </div>
             </div>
-
             {usertype === "agent" ?
-                <div><AgentIcon /></div> :
+                <div><AgentIcon style={{ width: 40, height: 40 }} /></div> :
                 (usertype === "BOT" && <div><BotIcon style={{ width: 40, height: 40 }} /></div>)
             }
         </div>

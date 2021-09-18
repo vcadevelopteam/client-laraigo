@@ -9,10 +9,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-
+import Lightbox from 'react-image-lightbox';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { showSnackbar, manageConfirmation } from 'store/popus/actions';
+import { showSnackbar, manageConfirmation, manageLightBox } from 'store/popus/actions';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import Button from '@material-ui/core/Button';
@@ -31,10 +31,15 @@ const Popus: React.FC = () => {
     const { t } = useTranslation();
 
     const popus = useSelector(state => state.popus);
+    const lightbox = useSelector(state => state.popus.lightbox);
+
+    console.log(lightbox)
 
     const handleCloseSnackbar = () => dispatch(showSnackbar({ ...popus.snackbar, show: false }));
 
     const manageConfirmationTmp = () => dispatch(manageConfirmation({ ...popus.question, visible: false }));
+
+    const manageLightBoxTmp = (lightboxtmp: any) => dispatch(manageLightBox(lightboxtmp));
 
     return (
         <>
@@ -92,6 +97,18 @@ const Popus: React.FC = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {lightbox.visible && (
+                <Lightbox
+                    reactModalStyle={{ overlay: { zIndex: 2000 } }}
+                    mainSrc={lightbox.images[lightbox.index]}
+                    nextSrc={lightbox.images[(lightbox.index + 1) % lightbox.images.length]}
+                    prevSrc={lightbox.images[(lightbox.index + lightbox.images.length - 1) % lightbox.images.length]}
+                    onCloseRequest={() => manageLightBoxTmp({ open: false, index: 0 })}
+                    onMovePrevRequest={() => manageLightBoxTmp({ ...lightbox, index: (lightbox.index + lightbox.images.length - 1) % lightbox.images.length })}
+                    onMoveNextRequest={() => manageLightBoxTmp({ ...lightbox, index: (lightbox.index + 1) % lightbox.images.length })}
+                />
+            )}
 
         </>
     );

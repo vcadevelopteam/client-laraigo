@@ -38,11 +38,13 @@ import { DownloadIcon } from 'icons';
 
 import {
     useTable,
+    useFlexLayout,
     useFilters,
     useGlobalFilter,
     useSortBy,
     usePagination
 } from 'react-table'
+import { FixedSizeList } from 'react-window';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
@@ -179,7 +181,8 @@ const TableZyxEditable = React.memo(({
     hoverShadow = false,
     filterGeneral = true,
     loading = false,
-    updateMyData,
+    updateCell,
+    updateColumn,
     skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
@@ -241,7 +244,7 @@ const TableZyxEditable = React.memo(({
         }, [effectBoolean]);
 
         const setColumnBoolean = (value: boolean, columnid: string) => {
-            page.map((p: Dictionary) => updateMyData && updateMyData(p.index, columnid, value));
+            updateColumn && updateColumn(page.map((p: Dictionary) => p.index), columnid, value);
         };
 
         const optionsMenu = (type: string) => {
@@ -281,6 +284,7 @@ const TableZyxEditable = React.memo(({
                     <OnlyCheckbox
                         label=""
                         valueDefault={allBoolean}
+                        disabled={loading}
                         onChange={(value) => {
                             setColumnBoolean(value, columnid);
                         }}
@@ -350,12 +354,12 @@ const TableZyxEditable = React.memo(({
         value: initialValue,
         row,
         column,
-        updateMyData, // This is a custom function that we supplied to our table instance
+        updateCell, // This is a custom function that we supplied to our table instance
     }: {
         value: any,
         row: any,
         column: any,
-        updateMyData: (index: number, id: any, value: any) => void
+        updateCell: (index: number, id: any, value: any) => void
     }) => {
         // We need to keep and update the state of the cell normally
         // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -367,22 +371,22 @@ const TableZyxEditable = React.memo(({
         
         // We'll only update the external data when the input is blurred
         const onBlur = () => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onChecked = (value: any) => {
-            updateMyData(row.index, column.id, value)
+            updateCell(row.index, column.id, value)
         }
 
         const onBlurColor = () => {
             const rex = new RegExp(/#[0-9A-Fa-f]{6}/, 'g');
             if (rex.test(value)) {
                 setColorValue(value)
-                updateMyData(row.index, column.id, value)
+                updateCell(row.index, column.id, value)
             }
             else {
                 setColorValue('#000000')
-                updateMyData(row.index, column.id, '#000000')
+                updateCell(row.index, column.id, '#000000')
             }
         }
 
@@ -429,6 +433,7 @@ const TableZyxEditable = React.memo(({
                     />
                 case 'boolean':
                     return <OnlyCheckbox
+                        style={{ width: '100%', textAlign: 'center' }}    
                         label=""
                         valueDefault={value}
                         onChange={(value) => onChecked(value)}
@@ -584,8 +589,11 @@ const TableZyxEditable = React.memo(({
         autoResetGlobalFilter: !skipAutoReset,
         autoResetSortBy: !skipAutoReset,
         autoResetPage: !skipAutoReset,
-        updateMyData
+        autoResetRowState: !skipAutoReset,
+        updateCell,
+        updateColumn
     },
+        useFlexLayout,    
         useFilters,
         useGlobalFilter,
         useSortBy,
@@ -601,6 +609,47 @@ const TableZyxEditable = React.memo(({
             fetchData();
         }
     }, [fetchData])
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const row = page[index]
+            prepareRow(row);
+            return (
+                <TableRow
+                    component="div"
+                    {...row.getRowProps({ style })}
+                    hover
+                >
+                    {row.cells.map((cell, i) =>
+                        <TableCell
+                            component="div"
+                            {...cell.getCellProps({
+                                style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                            })}
+                        >
+                            {headerGroups[0].headers[i].isComponent ?
+                                cell.render('Cell')
+                                :
+                                (cell.value?.length > 100 ?
+                                    <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                        <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                            {cell.render('Cell')}
+                                        </Box>
+                                    </Tooltip>
+                                    :
+                                    <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
+                                        {cell.render('Cell')}
+                                    </Box>
+                                )
+                            }
+                        </TableCell>
+                    )}
+                </TableRow>
+            )
+        },
+        [headerGroups, prepareRow, page]
+    )
+
     return (
         <Box width={1} style={{ height: '100%' }}>
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb="30px">
@@ -661,16 +710,16 @@ const TableZyxEditable = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
-                <Box overflow="auto" style={{height: 'calc(100vh - 365px)'}}>
-                    <Table stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead>
+            <TableContainer component="div" style={{ position: "relative" }}>
+                <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflowY: 'hidden'}}>
+                    <Table component="div" stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                        <TableHead component="div">
                             {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <TableCell component="div" key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -704,42 +753,25 @@ const TableZyxEditable = React.memo(({
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
+                        <TableBody
+                            component="div"
+                            {...getTableBodyProps()}
+                            style={{ backgroundColor: 'white' }}
+                        >
                             {loading ?
-                                <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
-                                page.map(row => {
-                                    prepareRow(row);
-                                    return (
-                                        <TableRow
-                                            {...row.getRowProps()}
-                                            hover
-                                        >
-                                            {row.cells.map((cell, i) =>
-                                                <TableCell
-                                                    {...cell.getCellProps({
-                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
-                                                    })}
-                                                >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 100 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
-                                                                    {cell.render('Cell')}
-                                                                </Box>
-                                                            </Tooltip>
-                                                            :
-                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
-                                                        )
-                                                    }
-                                                </TableCell>
-                                            )}
-                                        </TableRow>
-                                    )
-                                })}
+                            <LoadingSkeleton columns={headerGroups[0].headers.length} />
+                            :    
+                            <FixedSizeList
+                                style={{overflowX: 'hidden'}}
+                                direction="vertical"
+                                width="auto"
+                                height={window.innerHeight - 470}
+                                itemCount={page.length}
+                                itemSize={63.2}
+                                >
+                                {RenderRow}
+                            </FixedSizeList>
+                            }
                         </TableBody>
                     </Table>
                 </Box>
@@ -823,6 +855,15 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
                 {items}
             </TableRow>
             <TableRow key="2aux2">
+                {items}
+            </TableRow>
+            <TableRow key="3aux3">
+                {items}
+            </TableRow>
+            <TableRow key="4aux4">
+                {items}
+            </TableRow>
+            <TableRow key="5aux5">
                 {items}
             </TableRow>
         </>
