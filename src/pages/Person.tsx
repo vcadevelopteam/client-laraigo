@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -6,7 +5,7 @@ import { DateRangePicker, ListPaginated, Title } from 'components';
 import { getPaginatedPerson } from 'common/helpers';
 import { IPerson } from "@types";
 import { getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab } from '@material-ui/core';
 import clsx from 'clsx';
 import { DownloadIcon, DownloadReverseIcon, EMailInboxIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -21,6 +20,11 @@ interface PersonItemProps {
 
 interface PhotoProps {
     src?: string;
+}
+
+interface TabPanelProps {
+    value: string;
+    index: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -250,22 +254,21 @@ const Person: FC = () => {
     const mainPaginated = useSelector(state => state.main.mainPaginated);
 
     useEffect(() => {
-        const fetchData = (skip: number, take: number) => dispatch(getCollectionPaginated(getPaginatedPerson({
-            startdate: format(dateRange.startDate!),
-            enddate: format(dateRange.endDate!),
-            skip,
-            take,
-            sorts: {},
-            filters: {},
-        })));
-
-        const skip = pageSize * page;
-        fetchData(skip, pageSize);
-
         return () => {
             dispatch(resetCollectionPaginated());
         };
-    }, [pageSize, page, dateRange]);
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getCollectionPaginated(getPaginatedPerson({
+            startdate: format(dateRange.startDate!),
+            enddate: format(dateRange.endDate!),
+            skip: pageSize * page,
+            take: pageSize,
+            sorts: {},
+            filters: {},
+        })));
+    }, [dispatch, pageSize, page, dateRange]);
 
     const format = (date: Date) => date.toISOString().split('T')[0];
 
@@ -327,6 +330,52 @@ const Person: FC = () => {
                 skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
             />
         </div>
+    );
+}
+
+const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            // className={classes.root}
+            id={`wrapped-tabpanel-${index}`}
+            aria-labelledby={`wrapped-tab-${index}`}
+            style={{ display: value === index ? 'block' : 'none' }}
+        >
+            <Box p={3}>
+                {children}
+            </Box>
+        </div>
+    );
+}
+
+export const PersonDetail: FC = () => {
+    const [tabIndex, setTabIndex] = useState('0');
+
+    return (
+        <div />
+        // <Box component="div">
+        //     <AppBar position="static" elevation={0}>
+        //         <Tabs
+        //             value={tabIndex}
+        //             onChange={(_, i: string) => setTabIndex(i)}
+        //             className={classes.tabs}
+        //             TabIndicatorProps={{ style: { display: 'none' } }}
+        //         >
+        //             <Tab label={<Trans i18nKey={langKeys.interface} />} value="0" />
+        //             <Tab label={<Trans i18nKey={langKeys.color} count={2} />} value="1" />
+        //             <Tab label={<Trans i18nKey={langKeys.form} />} value="2" />
+        //             <Tab label={<Trans i18nKey={langKeys.bubble} />} value="3" />
+        //             <Tab label={<Trans i18nKey={langKeys.extra} count={2} />} value="4" />
+        //         </Tabs>
+        //     </AppBar>
+        //     <TabPanel value="0" index={tabIndex}>qqq</TabPanel>
+        //     <TabPanel value="1" index={tabIndex}>qqq</TabPanel>
+        //     <TabPanel value="2" index={tabIndex}>qqq</TabPanel>
+        //     <TabPanel value="3" index={tabIndex}>qqq</TabPanel>
+        //     <TabPanel value="4" index={tabIndex}>qqq</TabPanel>
+        // </Box>
     );
 }
 

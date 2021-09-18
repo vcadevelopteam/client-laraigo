@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider, Fade, Paper, Breadcrumbs, FormHelperText } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
 import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -56,7 +56,7 @@ const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
     return (
         <div
             role="tabpanel"
-            hidden={value != index}
+            hidden={value !== index}
             className={classes.root}
             id={`wrapped-tabpanel-${index}`}
             aria-labelledby={`wrapped-tab-${index}`}
@@ -226,7 +226,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={chatImgUrl} className={classes.img} />}
+                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -262,7 +262,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {headerImgUrl && <img src={headerImgUrl} className={classes.img} />}
+                                    {headerImgUrl && <img src={headerImgUrl} alt="header button" className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -298,7 +298,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {botImgUrl && <img src={botImgUrl} className={classes.img} />}
+                                    {botImgUrl && <img src={botImgUrl} alt="bot button" className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -817,10 +817,10 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
     useEffect(() => {
         form.setValue('form', fields.map(x => x.data));
-    }, [fields]);
+    }, [fields, form]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e != templates[key]);
+        const newFields = fields.filter(e => e !== templates[key]);
         setFields(newFields);
     };
 
@@ -1002,7 +1002,7 @@ const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {waitingImgUrl && <img src={waitingImgUrl} className={classes.img} />}
+                                    {waitingImgUrl && <img src={waitingImgUrl} alt="bubble button" className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -1453,7 +1453,7 @@ export const ChannelAddChatWeb: FC = () => {
         return () => {
             dispatch(reserInsertChannel());
         };
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         if (insertChannel.loading) return;
@@ -1471,7 +1471,7 @@ export const ChannelAddChatWeb: FC = () => {
                 success: true,
             }));
         }
-    }, [insertChannel]);
+    }, [dispatch, insertChannel]);
 
     const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
         defaultValues: {
@@ -1533,7 +1533,7 @@ export const ChannelAddChatWeb: FC = () => {
         form.register('interface.iconbutton', { validate: mandatoryFileField });
         form.register('interface.iconheader', { validate: mandatoryFileField });
         form.register('interface.iconbot', { validate: mandatoryFileField });
-    }, [form.register]);
+    }, [form, t]);
 
     const handleNext = () => {
         form.handleSubmit((_) => setShowFinalStep(true), e => console.log(e))();

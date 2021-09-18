@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import TableZyx from 'components/fields/table-simple';
 import { useHistory } from 'react-router-dom';
 import paths from 'common/constants/paths';
@@ -25,22 +26,15 @@ export const Channels: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.channel.channelList);
 
-    const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
-    const handleRegister = () => {
-        //setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
-    }
 
     const handleView = (row: Dictionary) => {
-        //setViewSelected("view-2");
         setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
-        //setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
     
@@ -135,10 +129,6 @@ export const Channels: FC = () => {
 
     useEffect(() => {
         fetchData();
-        //dispatch(getMultiCollection([
-        //    getValuesFromDomain("ESTADOGENERICO"),
-        //    getValuesFromDomain("TIPOORG")
-        //]));
         return () => {
             dispatch(resetMain());
         };

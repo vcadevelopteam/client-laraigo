@@ -4,8 +4,8 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WebMessengerIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
-import { Phone } from '@material-ui/icons';
+import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
+
 interface ChannelOption {
     icon: (className: string) => React.ReactNode;
     label: React.ReactNode;
