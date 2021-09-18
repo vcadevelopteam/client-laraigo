@@ -4,7 +4,6 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-// import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -17,7 +16,7 @@ import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect } from 
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
 import { getReportSel, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport } from 'common/helpers';
-import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain } from 'store/main/actions';
+import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
@@ -41,15 +40,9 @@ const useStyles = makeStyles((theme) => ({
         width: '100%'
     },
     containerDetails: {
-        marginTop: theme.spacing(3),
-        // padding: theme.spacing(2),
-        // width: '100%'
-    },
-    root: {
-        // maxWidth: 340
+        marginTop: theme.spacing(3)
     },
     media: {
-        // backgroundSize: "auto"
         objectFit: "none"
     },
     containerSearch: {
@@ -61,10 +54,9 @@ const useStyles = makeStyles((theme) => ({
     containerFilter: {
         width: '100%',
         marginBottom: theme.spacing(2),
-        display: 'flex', 
+        display: 'flex',
         gap: 16,
-        flexWrap: 'wrap',
-        //padding: theme.spacing(2),
+        flexWrap: 'wrap'
     },
     filterComponent: {
         width: '220px'
@@ -171,6 +163,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
     };
 
     const handleSelected = () => {
+        dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setViewSelected("view-1");
@@ -188,60 +181,49 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
             />
             {multiData.length > 0 ?
                 <>
+                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                        <span className={classes.title}>
+                            {row?.description || ''}
+                        </span>
+                    </Box>
                     {customReport ?
-                        <div>
-                            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                                <span className={classes.title}>
-                                    {row?.description || ''}
-                                </span>
-                            </Box>
-                            <AssessorProductivity
-                                row={row}
-                                multiData={multiData}
-                                allFilters={allFilters}
-                            />
-                        </div>
+                        <AssessorProductivity
+                            row={row}
+                            multiData={multiData}
+                            allFilters={allFilters}
+                        />
                         :
-                        <div>
+                        <>
                             {allFilters &&
-                                <div>
-                                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                                        <span className={classes.title}>
-                                            {row?.description || ''}
-                                        </span>
-                                    </Box>
-                                    <div className={classes.containerFilter} >
-                                        {
-                                            allFilters.map(filtro => (
-                                                (filtro.values[0].multiselect ?
-                                                    <FieldMultiSelect
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                        // error=""
-                                                        variant="outlined"
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                    :
-                                                    <FieldSelect
-                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                        className={classes.filterComponent}
-                                                        key={filtro.values[0].filter}
-                                                        variant="outlined"
-                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                        // error=""
-                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                        optionDesc={filtro.values[0].optionDesc}
-                                                        optionValue={filtro.values[0].optionValue}
-                                                    />
-                                                )
+                                <div className={classes.containerFilter} >
+                                    {
+                                        allFilters.map(filtro => (
+                                            (filtro.values[0].multiselect ?
+                                                <FieldMultiSelect
+                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                    variant="outlined"
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc={filtro.values[0].optionDesc}
+                                                    optionValue={filtro.values[0].optionValue}
+                                                />
+                                                :
+                                                <FieldSelect
+                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                    className={classes.filterComponent}
+                                                    key={filtro.values[0].filter}
+                                                    variant="outlined"
+                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                    optionDesc={filtro.values[0].optionDesc}
+                                                    optionValue={filtro.values[0].optionValue}
+                                                />
                                             )
-                                            )
-                                        }
-                                    </div>
+                                        )
+                                        )
+                                    }
                                 </div>
                             }
                             <div className={classes.container}>
@@ -255,17 +237,15 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
-                                    titlemodule={!allFilters ? row?.description || '' : ''}
                                 />
                             </div>
-                        </div>
+                        </>
                     }
                 </>
                 :
                 <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                     <h2>Cargando...</h2>
                     <CircularProgress />
-                    {/* <CircularProgress color="secondary" /> */}
                 </div>
             }
         </div>
@@ -284,11 +264,13 @@ const Reports: FC = () => {
     const fetchData = () => dispatch(getCollection(getReportSel('')));
 
     useEffect(() => {
+        dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         fetchData();
 
         return () => {
+            dispatch(resetMainAux());
             dispatch(resetCollectionPaginated());
             dispatch(resetMultiMain());
             dispatch(resetMain());
@@ -302,6 +284,7 @@ const Reports: FC = () => {
     }
 
     const handleSelected = (row: Dictionary, allFilters: Dictionary[]) => {
+        dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setRowSelected(row);
@@ -344,23 +327,20 @@ const Reports: FC = () => {
                     </div>
                 </Box>
                 <div className={classes.containerDetails}>
-                    {/* <Container className={classes.containerDetails}> */}
-                    <Grid container spacing={4}>
+                    <Grid container spacing={3}>
                         {
                             (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
-                                <Grid item key={report.reportid + " " + index} xs={12} md={6} lg={4}>
-                                    <Card className={classes.root}>
+                                <Grid item key={report.reportid + " " + index} xs={12} md={4} lg={3}>
+                                    <Card>
                                         <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                             <CardMedia
-                                                component="img"// modificado
+                                                component="img"
                                                 height="140"
                                                 className={classes.media}
-                                                //component={report.component}// siempre devuelve undefined
                                                 image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
                                                 title={report.description}
                                             />
                                             <CardContent>
-                                                {/* Modificado para ajustar el texto en una sola linea */}
                                                 <Typography gutterBottom variant="h6" component="div">
                                                     {report.description}
                                                 </Typography>
@@ -371,7 +351,6 @@ const Reports: FC = () => {
                             ))
                         }
                     </Grid>
-                    {/* </Container> */}
                 </div>
             </div>
         );

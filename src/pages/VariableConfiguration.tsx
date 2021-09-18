@@ -12,13 +12,14 @@ import TableZyxEditable from 'components/fields/table-editable';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import EditIcon from '@material-ui/icons/Edit';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
+import { chatblock_reset } from 'store/flowdesigner/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -27,7 +28,6 @@ interface RowSelected {
 
 interface DetailProps {
     data: RowSelected;
-    detailData: any[];
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void;
@@ -59,11 +59,10 @@ const VariableConfiguration: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const detailResult = useSelector(state => state.main.mainAux);
+    const flowdesignerResult = useSelector(state => state.flowdesigner.chatblock);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [detailData, setDetailData] = useState<Dictionary[]>([]);
-    const [waitView, setWaitView] = useState(false);
     const [waitDownload, setWaitDownload] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
@@ -173,12 +172,16 @@ const VariableConfiguration: FC = () => {
     }, [executeResult, waitSave]);
 
     const handleEdit = (row: Dictionary) => {
-        // setViewSelected("view-2");
+        setViewSelected("view-2");
         setRowSelected({ row, edit: true });
-        setWaitView(true);
-        dispatch(showBackdrop(true));
-        fetchDetailData(row.chatblockid);
     }
+
+    useEffect(() => {
+        if (flowdesignerResult) {
+            handleEdit(flowdesignerResult);
+            dispatch(chatblock_reset());
+        }
+    }, [flowdesignerResult])
 
     const handleDownload = (row: Dictionary) => {
         setWaitDownload(true);
@@ -188,16 +191,11 @@ const VariableConfiguration: FC = () => {
 
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
-            setDetailData(detailResult.data);
             if (waitDownload) {
                 downloadData(detailResult.data);
                 dispatch(showBackdrop(false));
                 setWaitDownload(false);
-            }
-            if (waitView) {
-                dispatch(showBackdrop(false));
-                setWaitView(false);
-                setViewSelected("view-2");
+                dispatch(resetMainAux());
             }
         }
     }, [detailResult]);
@@ -256,22 +254,37 @@ const VariableConfiguration: FC = () => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
-                detailData={detailData}
                 fetchData={fetchData}
             />
         )
 }
 
-const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, detailData, setViewSelected, multiData, fetchData }) => {
+const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
-    const [dataTable, setDataTable] = useState<any[]>(detailData);
+    const detailResult = useSelector(state => state.main.mainAux);
+    const executeRes = useSelector(state => state.main.execute);
+    
+    const [waitSave, setWaitSave] = useState(false);
+    
+    const [dataTable, setDataTable] = useState<any[]>([]);
     const [skipAutoReset, setSkipAutoReset] = useState(false)
+
+    const fetchDetailData = (id: string) => dispatch(getCollectionAux(getVariableConfigurationSel(id)));
+
+    useEffect(() => {
+        fetchDetailData(row?.chatblockid);
+        return () => {
+            dispatch(resetMainAux());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!detailResult.loading && !detailResult.error) {
+            setDataTable(detailResult.data);
+        }
+    }, [detailResult]);
 
     useEffect(() => {
         if (waitSave) {
@@ -408,6 +421,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 titlemodule={`${t(langKeys.variableconfiguration_plural, { count: 2 })}${row ? ` (${row.title})` : ''}`}
                 data={dataTable}
                 download={false}
+                loading={detailResult.loading}
                 register={false}
                 filterGeneral={false}
                 updateCell={updateCell}

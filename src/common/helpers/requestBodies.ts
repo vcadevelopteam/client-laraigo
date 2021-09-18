@@ -323,24 +323,18 @@ export const getReportExport = (methodExport: string, origin: string, { filters,
     }
 });
 
-export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IRequestBody => {
-    console.log("getUserProductivitySel", allParameters);
-
-    return (
-        {
-            method: "UFN_REPORT_USERPRODUCTIVITY_SEL",
-            key: "UFN_REPORT_USERPRODUCTIVITY_SEL",
-            parameters: {
-                ...allParameters,
-                channel: allParameters['channel'] ? allParameters['channel'] : "",
-                userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
-                usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
-                bot: allParameters['bot'] ? allParameters['bot'] : false,
-                supervisorid: 1
-            }
-
-        })
-}
+export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_REPORT_USERPRODUCTIVITY_SEL",
+    key: "UFN_REPORT_USERPRODUCTIVITY_SEL",
+    parameters: {
+        ...allParameters,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        bot: allParameters['bot'] ? allParameters['bot'] : false,
+        supervisorid: 1
+    }
+});
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
