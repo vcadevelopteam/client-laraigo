@@ -192,7 +192,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
-    const user = useSelector(state => state.login.validateToken.user);
 
     const dispatch = useDispatch();
 

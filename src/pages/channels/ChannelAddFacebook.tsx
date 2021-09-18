@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
@@ -89,7 +90,7 @@ export const ChannelAddFacebook: FC = () => {
     }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
-        if (r.status != "unknown" && !r.error) {
+        if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
@@ -107,7 +108,7 @@ export const ChannelAddFacebook: FC = () => {
         setFields(partialf)
     }
     function setnameField(value: any) {
-        setChannelreg(value=="")
+        setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)

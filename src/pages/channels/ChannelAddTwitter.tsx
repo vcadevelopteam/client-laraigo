@@ -1,17 +1,16 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, TemplateSwitch } from "components";
+import { FieldEdit, TemplateSwitch } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
+import { insertChannel } from "store/channel/actions";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -85,14 +84,16 @@ export const ChannelAddTwitter: FC = () => {
             }
         }
     }, [executeResult,waitSave])
+
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
     }, [mainResult])
+
     function setnameField(value: any) {
-        setChannelreg(value=="")
+        setChannelreg(value === "")
         let partialf = fields;
         partialf.parameters.description = value
         setFields(partialf)

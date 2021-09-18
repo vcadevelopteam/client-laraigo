@@ -1,9 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'hooks';
-import { newMessageFromClient } from 'store/inbox/actions';
-import { ITicket, IInteraction, INewMessageParams, IReplyTicketParams } from "@types";
+import { newMessageFromClient, deleteTicket } from 'store/inbox/actions';
+import { IDeleteTicketParams, INewMessageParams, IReplyTicketParams } from "@types";
 
 interface ISocketProps {
     userType: string;
@@ -12,8 +11,8 @@ interface ISocketProps {
 }
 let socket: any;
 const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
-    // const [socket, setSocket] = useState<any>(null);
-    const [isConnected, setIsConnected] = useState(false);
+
+    // const [isConnected, setIsConnected] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -27,10 +26,14 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
 
             socket?.on("connect", () => {
                 console.log("connect", socket.id);
-                setIsConnected(true)
+                // setIsConnected(true)
                 // socket.emit('newMessageFromAgent', socket.id);
             });
 
+            socket?.on('deleteTicket', (data: IDeleteTicketParams) => {
+                dispatch(deleteTicket(data))
+            });
+            
             socket?.on('newMessageFromClientOnAgent', (data: INewMessageParams) => {
                 dispatch(newMessageFromClient(data))
             });
@@ -40,10 +43,8 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
             });
 
             socket?.on('newMessageFromBotOnSupervisor', (data: INewMessageParams) => {
-                console.log("newMessageFromBotOnSupervisor", data)
                 dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
             });
-
 
             socket?.on('newMessageFromClientOnSupervisor', (data: INewMessageParams) => {
                 dispatch(newMessageFromClient({ ...data, usertype: 'client' }))
@@ -53,6 +54,7 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
                 console.log(socket.connected); // false
             });
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const sendMessage = (data: IReplyTicketParams) => {

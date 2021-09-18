@@ -34,3 +34,12 @@ export interface INewMessageParams extends ITicket {
     userid: number;
     usertype: string;
 }
+
+export interface IDeleteTicketParams {
+    conversationid: number;
+    ticketnum: string;
+    status: number;
+    orgid: number;
+    isanswered: boolean;
+    userid: number;
+}

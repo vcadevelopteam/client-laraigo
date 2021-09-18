@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams } from "@types";
 import { initialState, IState } from "./reducer";
 
 
@@ -267,7 +267,6 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             }) : x)
         }
         if (ticketSelected?.conversationid === data.conversationid) {
-            console.log(data.userid)
             const newInteraction: IInteraction = {
                 interactionid: data.interactionid,
                 interactiontype: "text",
@@ -294,6 +293,32 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         },
     };
 }
+
+export const deleteTicket = (state: IState, action: IAction): IState => {
+    const data: IDeleteTicketParams = action.payload;
+
+    let newticketList = [...state.ticketList.data];
+    let newTicketSelected: any = { ...state.ticketSelected };
+
+    const { agentSelected, userType } = state;
+
+    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
+        if (newTicketSelected?.conversationid === data.conversationid) {
+            newTicketSelected = null;
+        }
+        newticketList = newticketList.filter((x: ITicket) => x.conversationid !== data.conversationid)
+    }
+
+    return {
+        ...state,
+        ticketSelected: newTicketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: newticketList
+        },
+    };
+}
+
 
 export const getDataTicket = (state: IState): IState => ({
     ...state,

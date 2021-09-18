@@ -99,6 +99,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.ADD_TICKET]: caseFunctions.addTicket,
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
+    [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,

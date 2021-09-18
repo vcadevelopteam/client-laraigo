@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { IInteraction } from "@types";
 import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
 
 import { useSelector } from 'hooks';

@@ -4,13 +4,12 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
-import { resetGetAgents } from 'store/inbox/actions';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
