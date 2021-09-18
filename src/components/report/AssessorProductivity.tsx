@@ -342,7 +342,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Grid>
                 <Grid item xs={12} md={4} lg={4}>
                     <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <label>{t(langKeys.report_userproductivity_cardtmo)}</label>
+                        <label>{t(langKeys.report_userproductivity_cardtmoadviser)}</label>
                         <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
