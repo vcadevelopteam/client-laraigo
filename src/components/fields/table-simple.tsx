@@ -235,7 +235,7 @@ const TableZyx = React.memo(({
 
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
-            if (!cellvalue)
+            if (cellvalue === null || cellvalue === undefined)
                 return false;
             if (type === "number") {
                 switch (operator) {
@@ -256,9 +256,9 @@ const TableZyx = React.memo(({
             } else {
                 switch (operator) {
                     case 'equals':
-                        return cellvalue === value;
+                        return (cellvalue + "") === value;
                     case 'noequals':
-                        return cellvalue !== value;
+                        return (cellvalue + "") !== value;
                     case 'nocontains':
                         return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     case 'empty':
