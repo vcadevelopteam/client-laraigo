@@ -21,6 +21,7 @@ import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
 import AssessorProductivity from 'components/report/AssessorProductivity';
+import { Skeleton } from '@material-ui/lab';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -180,73 +181,110 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 handleClick={handleSelected}
             />
             {multiData.length > 0 ?
-                <>
-                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                        <span className={classes.title}>
-                            {row?.description || ''}
-                        </span>
-                    </Box>
-                    {customReport ?
-                        <AssessorProductivity
-                            row={row}
-                            multiData={multiData}
-                            allFilters={allFilters}
-                        />
-                        :
-                        <>
-                            {allFilters &&
-                                <div className={classes.containerFilter} >
-                                    {
-                                        allFilters.map(filtro => (
-                                            (filtro.values[0].multiselect ?
-                                                <FieldMultiSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                    variant="outlined"
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
-                                                :
-                                                <FieldSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    variant="outlined"
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
+                    <>
+                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                            <span className={classes.title}>
+                                {row?.description || ''}
+                            </span>
+                        </Box>
+                        {customReport ?
+                            <AssessorProductivity
+                                row={row}
+                                multiData={multiData}
+                                allFilters={allFilters}
+                            />
+                            :
+                            <>
+                                {allFilters &&
+                                    <div className={classes.containerFilter} >
+                                        {
+                                            allFilters.map(filtro => (
+                                                (filtro.values[0].multiselect ?
+                                                    <FieldMultiSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                        variant="outlined"
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                    :
+                                                    <FieldSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        variant="outlined"
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                )
                                             )
-                                        )
-                                        )
-                                    }
+                                            )
+                                        }
+                                    </div>
+                                }
+                                <div className={classes.container}>
+                                    <TablePaginated
+                                        columns={columns}
+                                        data={mainPaginated.data}
+                                        totalrow={totalrow}
+                                        loading={mainPaginated.loading}
+                                        pageCount={pageCount}
+                                        filterrange={true}
+                                        download={true}
+                                        fetchData={fetchData}
+                                        exportPersonalized={triggerExportData}
+                                    />
                                 </div>
-                            }
-                            <div className={classes.container}>
-                                <TablePaginated
-                                    columns={columns}
-                                    data={mainPaginated.data}
-                                    totalrow={totalrow}
-                                    loading={mainPaginated.loading}
-                                    pageCount={pageCount}
-                                    filterrange={true}
-                                    download={true}
-                                    fetchData={fetchData}
-                                    exportPersonalized={triggerExportData}
+                            </>
+                        }
+                    </>
+                    :
+                    <Grid container >
+                        <Grid item xs>
+                            <Typography component="div" variant="h5">
+                                <Skeleton
+                                    width={300}
+                                    animation="wave"
+                                    style={{ marginBottom: 6 }}
+                                />
+                            </Typography>
+                            <Typography component="div" variant="h5">
+                                <Skeleton
+                                    animation="wave"
+                                    style={{ marginBottom: 6 }}
+                                />
+                            </Typography>
+                            <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
+                                <div style={{ width: '85%', gap: 8, display: 'inline-flex' }}>
+                                    <Skeleton
+                                        animation="wave"
+                                        width="15%"
+                                        height={40}
+                                        style={{ marginBottom: 6 }}
+                                    />
+                                    <Skeleton
+                                        animation="wave"
+                                        height={40}
+                                        width="15%"
+                                        style={{ marginBottom: 6 }}
+                                    />
+                                </div>
+                                <Skeleton
+                                    animation="wave"
+                                    height={40}
+                                    width="15%"
+                                    style={{ marginBottom: 6 }}
                                 />
                             </div>
-                        </>
-                    }
-                </>
-                :
-                <div className={classes.container} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                    <h2>Cargando...</h2>
-                    <CircularProgress />
-                </div>
+                            <Skeleton variant="rect" height={400} />
+
+                        </Grid>
+                    </Grid>
             }
         </div>
     );
