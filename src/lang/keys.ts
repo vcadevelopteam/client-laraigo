@@ -196,6 +196,14 @@ export const langKeys = {
 
     active: 'active',
     inactive: 'inactive',
+    
+    status_activo: 'status_activo',
+    status_inactivo: 'status_inactivo',
+    status_bloqueado: 'status_bloqueado',
+    
+    type_domain_bot: 'type_domain_bot',
+    type_domain_cliente: 'type_domain_client',
+    type_domain_sistema: 'type_domain_sistema',
 
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',

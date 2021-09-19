@@ -182,6 +182,15 @@ const translation: LangKeys = {
     return: "Regresar",
     active: 'Activo',
     inactive: 'Inactivo',
+    
+    status_activo: 'activo',
+    status_inactivo: 'inactivo',
+    status_bloqueado: 'bloqueado',
+
+    type_domain_bot: 'Dominio de bot',
+    type_domain_cliente: 'Dominio de cliente',
+    type_domain_sistema: 'Dominio de sistema',
+
     organizationclass: "Organización de Clasificaciones",
     editRecord: 'Editar registro',
     deleteRecord: 'Eliminar registro',

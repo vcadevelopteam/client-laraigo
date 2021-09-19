@@ -503,12 +503,20 @@ const Domains: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             }
         ],
         []

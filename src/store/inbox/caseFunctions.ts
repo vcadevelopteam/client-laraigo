@@ -161,7 +161,9 @@ export const getTicketsByPersonReset = (state: IState): IState => ({
 
 export const setUserType = (state: IState, action: IAction): IState => ({
     ...state,
-    userType: action.payload
+    userType: action.payload,
+    agentSelected: initialState.agentSelected
+    
 })
 
 export const selectTicket = (state: IState, action: IAction): IState => ({

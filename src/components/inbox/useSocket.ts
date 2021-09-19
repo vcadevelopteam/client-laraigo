@@ -31,19 +31,10 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
             socket?.on('deleteTicket', (data: IDeleteTicketParams) => {
                 dispatch(deleteTicket(data))
             });
-            
-            // socket?.on('newMessageFromClientOnAgent', (data: INewMessageParams) => {
-            //     dispatch(newMessageFromClient(data))
-            // });
 
             socket?.on('newMessageFromBot', (data: INewMessageParams) => {
                 dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
             });
-
-            // socket?.on('newMessageFromBotOnSupervisor', (data: INewMessageParams) => {
-            //     console.log(data)
-            //     dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
-            // });
 
             socket?.on('newMessageFromClient', (data: INewMessageParams) => {
                 console.log("newMessageFromClient", data)

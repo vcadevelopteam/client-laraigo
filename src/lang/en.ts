@@ -155,6 +155,14 @@ const translation: LangKeys = {
     active: 'Active',
     inactive: 'Inactive',
 
+    status_activo: 'active',
+    status_inactivo: 'inactive',
+    status_bloqueado: 'locked',
+
+    type_domain_bot: 'Bot domain',
+    type_domain_cliente: 'Client domain',
+    type_domain_sistema: 'System domain',
+
     editRecord: 'Edit record',
     deleteRecord: 'Delete record',
     changeDate: 'Change date',

@@ -367,8 +367,8 @@ const Reports: FC = () => {
                     <Grid container spacing={3}>
                         {
                             (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
-                                <Grid item key={report.reportid + " " + index} xs={12} md={4} lg={3}>
-                                    <Card>
+                                <Grid item key={report.reportid + " " + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card >
                                         <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                             <CardMedia
                                                 component="img"
