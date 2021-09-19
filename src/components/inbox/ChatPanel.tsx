@@ -19,12 +19,14 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 
-const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, socketEmitEvent: (event: string, param: any) => void }> = ({ setOpenModal, openModal, socketEmitEvent }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
@@ -34,6 +36,13 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
+                socketEmitEvent('deleteTicket', {
+                    conversationid: ticketSelected?.conversationid,
+                    ticketnum: ticketSelected?.ticketnum,
+                    status: ticketSelected?.status,
+                    isanswered: true,
+                    userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                });
                 setWaitClose(false);
             } else if (closingRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
@@ -103,7 +112,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
         </DialogZyx>)
 }
 
-const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, socketEmitEvent: (event: string, param: any) => void }> = ({ setOpenModal, openModal, socketEmitEvent }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
@@ -111,6 +120,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
@@ -126,6 +137,11 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
+                socketEmitEvent("reassignTicket", {
+                    ...ticketSelected,
+                    userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    newuserid: getValues('newUserId') || 3,
+                })
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -136,7 +152,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (multiData?.data[1])
-            setAgentsConnected(multiData?.data[1].data.filter(x => x.status === 'ACTIVO'))
+            // setAgentsConnected(multiData?.data[1].data.filter(x => x.status === 'ACTIVO'))
+            setAgentsConnected(multiData?.data[1].data)
     }, [multiData])
 
     useEffect(() => {
@@ -160,6 +177,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             wasanswered: true
         }
         dispatch(reassignTicket(dd));
+        dispatch(showBackdrop(true));
         setWaitReassign(true)
 
     });
@@ -341,7 +359,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         </DialogZyx>)
 }
 
-const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
+const ButtonsManageTicket: React.FC<{ classes: any, socketEmitEvent: (event: string, param: any) => void }> = ({ classes, socketEmitEvent }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
     const handleClose = () => setAnchorEl(null);
@@ -391,14 +409,22 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                     setOpenModalTipification(true)
                 }}>{t(langKeys.typify)}</MenuItem>
             </Menu>
-            <DialogCloseticket openModal={openModalCloseticket} setOpenModal={setOpenModalCloseticket} />
-            <DialogReassignticket openModal={openModalReassignticket} setOpenModal={setOpenModalReassignticket} />
+            <DialogCloseticket
+                socketEmitEvent={socketEmitEvent}
+                openModal={openModalCloseticket}
+                setOpenModal={setOpenModalCloseticket}
+            />
+            <DialogReassignticket
+                socketEmitEvent={socketEmitEvent}
+                openModal={openModalReassignticket}
+                setOpenModal={setOpenModalReassignticket}
+            />
             <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
         </>
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket, sendMessage: (param: any) => void }> = React.memo(({ classes, sendMessage, ticket, ticket: { ticketnum } }) => {
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket, socketEmitEvent: (event: string, param: any) => void }> = React.memo(({ classes, socketEmitEvent, ticket, ticket: { ticketnum } }) => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
@@ -411,13 +437,13 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket, sendMessage: (param: 
                         onClick={showInfoPanelTrigger}
                     >Ticket #{ticketnum}</span>
                 </div>
-                <ButtonsManageTicket classes={classes} />
+                <ButtonsManageTicket classes={classes} socketEmitEvent={socketEmitEvent} />
             </div>
             <InteractionsPanel
                 classes={classes}
                 ticket={ticket} />
             <ReplyPanel
-                sendMessage={sendMessage}
+                socketEmitEvent={socketEmitEvent}
                 classes={classes} />
         </div>
     )

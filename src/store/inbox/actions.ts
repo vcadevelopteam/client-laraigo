@@ -116,8 +116,8 @@ export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
 
 export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });
 
-export const replyTicket = (params: IReplyTicketParams): IActionCall => ({
-    callAPI: () => InboxService.replyTicket(params),
+export const replyTicket = (params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false): IActionCall => ({
+    callAPI: () => InboxService.replyTicket(params, isList),
     types: {
         loading: actionTypes.REPLY_TICKET,
         success: actionTypes.REPLY_TICKET_SUCCESS,

@@ -263,13 +263,14 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         } else {
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
                 ...data,
-                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1
+                countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
+                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase()
             }) : x)
         }
         if (ticketSelected?.conversationid === data.conversationid) {
             const newInteraction: IInteraction = {
                 interactionid: data.interactionid,
-                interactiontype: "text",
+                interactiontype: data.typemessage,
                 interactiontext: data.lastmessage,
                 createdate: new Date().toISOString(),
                 userid: data.usertype === "agent" ? data.userid : 0,
@@ -296,7 +297,6 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
-
     let newticketList = [...state.ticketList.data];
     let newTicketSelected: any = { ...state.ticketSelected };
 

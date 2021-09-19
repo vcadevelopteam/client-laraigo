@@ -94,12 +94,11 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
     </div>
 )
 
-const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> = ({ classes, sendMessage }) => {
+const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, param: any) => void }> = ({ classes, socketEmitEvent }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    
-    const user = useSelector(state => state.login.validateToken.user);
+
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
@@ -107,20 +106,32 @@ const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> 
     const triggerReplyMessage = () => {
         const callback = () => {
             if (files.length > 0) {
+                const listMessages = files.map(x => ({
+                    ...ticketSelected!!,
+                    interactiontype: "image",
+                    interactiontext: x.url,
+                    isAnswered: true
+                }))
+                dispatch(replyTicket(listMessages, true))
+
                 files.forEach(x => {
-                    dispatch(replyMessage({
+                    const newInteraction = {
+                        ...ticketSelected!!,
                         interactionid: 0,
-                        interactiontype: "image",
-                        interactiontext: x.url,
+                        typemessage: "image",
+                        typeinteraction: null,
+                        lastmessage: x.url,
                         createdate: new Date().toISOString(),
-                        userid: user?.userid,
+                        userid: 0,
                         usertype: "agent",
-                    }))
+                    }
+                    socketEmitEvent('newMessageFromAgent', newInteraction);
                 })
                 setFiles([])
             }
             if (text) {
                 const textCleaned = text.trim();
+
                 const newInteraction = {
                     ...ticketSelected!!,
                     interactionid: 0,
@@ -128,17 +139,19 @@ const ReplyPanel: React.FC<{ classes: any, sendMessage: (param: any) => void }> 
                     typeinteraction: null,
                     lastmessage: textCleaned,
                     createdate: new Date().toISOString(),
-                    userid: user?.userid,
+                    userid: 0,
                     usertype: "agent",
                 }
-                sendMessage(newInteraction);
-                
+                //websocket
+                socketEmitEvent('newMessageFromAgent', newInteraction);
+
+                //send to answer with integration
                 dispatch(replyTicket({
                     ...ticketSelected!!,
                     interactiontype: "text",
                     interactiontext: textCleaned,
                     isAnswered: true
-                }))
+                }));
                 setText("");
             }
         }

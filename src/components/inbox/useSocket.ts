@@ -26,27 +26,27 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
 
             socket?.on("connect", () => {
                 console.log("connect", socket.id);
-                // setIsConnected(true)
-                // socket.emit('newMessageFromAgent', socket.id);
             });
 
             socket?.on('deleteTicket', (data: IDeleteTicketParams) => {
                 dispatch(deleteTicket(data))
             });
             
-            socket?.on('newMessageFromClientOnAgent', (data: INewMessageParams) => {
-                dispatch(newMessageFromClient(data))
-            });
+            // socket?.on('newMessageFromClientOnAgent', (data: INewMessageParams) => {
+            //     dispatch(newMessageFromClient(data))
+            // });
 
-            socket?.on('newMessageFromBotOnAgent', (data: INewMessageParams) => {
+            socket?.on('newMessageFromBot', (data: INewMessageParams) => {
                 dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
             });
 
-            socket?.on('newMessageFromBotOnSupervisor', (data: INewMessageParams) => {
-                dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
-            });
+            // socket?.on('newMessageFromBotOnSupervisor', (data: INewMessageParams) => {
+            //     console.log(data)
+            //     dispatch(newMessageFromClient({ ...data, newConversation: false, usertype: 'agent' }))
+            // });
 
-            socket?.on('newMessageFromClientOnSupervisor', (data: INewMessageParams) => {
+            socket?.on('newMessageFromClient', (data: INewMessageParams) => {
+                console.log("newMessageFromClient", data)
                 dispatch(newMessageFromClient({ ...data, usertype: 'client' }))
             });
 
@@ -57,11 +57,11 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const sendMessage = (data: IReplyTicketParams) => {
-        socket?.emit('newMessageFromAgent', data);
+    const socketEmitEvent = (event: string, data: any) => {
+        socket?.emit(event, data);
     }
 
-    return [sendMessage];
+    return [socketEmitEvent];
 }
 
 export default useSocket;

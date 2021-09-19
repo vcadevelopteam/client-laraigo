@@ -303,7 +303,7 @@ const Supervisor: FC = () => {
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
 
-    const [sendMessage] = useSocket({ userType: 'SUPERVISOR', userId: user?.userid!!, orgId: user?.orgid!! });
+    const [socketEmitEvent] = useSocket({ userType: 'SUPERVISOR', userId: user?.userid!!, orgId: user?.orgid!! });
 
     // useEffect(() => {
     //     console.log("was connected: ", isConnected);
@@ -323,7 +323,7 @@ const Supervisor: FC = () => {
         <div className={classes.container}>
             <AgentPanel classes={classes} />
             {agentSelected &&
-                <InboxPanel userType="SUPERVISOR" sendMessage={sendMessage} />
+                <InboxPanel userType="SUPERVISOR" socketEmitEvent={socketEmitEvent} />
             }
         </div>
     )

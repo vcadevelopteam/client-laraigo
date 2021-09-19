@@ -346,7 +346,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     )
 }
 
-const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", sendMessage: (param: any) => void }> = ({ userType, sendMessage }) => {
+const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", socketEmitEvent: (event: string, param: any) => void }> = ({ userType, socketEmitEvent }) => {
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
@@ -359,7 +359,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", sendMessage: (par
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} sendMessage={sendMessage} classes={classes} />
+                    <ChatPanel ticket={ticketSelected} socketEmitEvent={socketEmitEvent} classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

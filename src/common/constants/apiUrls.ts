@@ -16,6 +16,7 @@ export const apiUrls = {
     
     CLOSE_TICKET: `${BASE_URL}/ticket/close`,
     REPLY_TICKET: `${BASE_URL}/ticket/reply`,
+    REPLY_LIST_TICKET: `${BASE_URL}/ticket/reply/list`,
     REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,
 
 
