@@ -15,7 +15,7 @@ export interface ICloseTicketsParams {
 export interface IReplyTicketParams extends ITicket {
     interactiontype: string;
     interactiontext: string;
-    isAnswered: boolean;
+    ticketWasAnswered?: boolean
 }
 
 export interface IReassignicketParams extends ITicket {
@@ -33,12 +33,13 @@ export interface INewMessageParams extends ITicket {
     newConversation: boolean;
     userid: number;
     usertype: string;
+    ticketWasAnswered: boolean
 }
 
 export interface IDeleteTicketParams {
     conversationid: number;
     ticketnum: string;
-    status: number;
+    status: string;
     orgid: number;
     isanswered: boolean;
     userid: number;

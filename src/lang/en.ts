@@ -159,6 +159,8 @@ const translation: LangKeys = {
     status_inactivo: 'inactive',
     status_bloqueado: 'locked',
 
+    attending: 'Attending',
+
     type_domain_bot: 'Bot domain',
     type_domain_cliente: 'Client domain',
     type_domain_sistema: 'System domain',

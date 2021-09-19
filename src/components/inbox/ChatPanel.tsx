@@ -40,7 +40,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                     conversationid: ticketSelected?.conversationid,
                     ticketnum: ticketSelected?.ticketnum,
                     status: ticketSelected?.status,
-                    isanswered: true,
+                    isanswered: ticketSelected?.isAnswered,
                     userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                 });
                 setWaitClose(false);

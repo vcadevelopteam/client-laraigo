@@ -197,6 +197,8 @@ export const langKeys = {
     active: 'active',
     inactive: 'inactive',
     
+    attending: 'attending',
+    
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',

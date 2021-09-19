@@ -132,7 +132,7 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
             if (text) {
                 const textCleaned = text.trim();
 
-                const newInteraction = {
+                const newInteractionSocket = {
                     ...ticketSelected!!,
                     interactionid: 0,
                     typemessage: "text",
@@ -141,16 +141,16 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
                     createdate: new Date().toISOString(),
                     userid: 0,
                     usertype: "agent",
+                    ticketWasAnswered: ticketSelected!!.isAnswered ? false : true,
                 }
                 //websocket
-                socketEmitEvent('newMessageFromAgent', newInteraction);
+                socketEmitEvent('newMessageFromAgent', newInteractionSocket);
 
                 //send to answer with integration
                 dispatch(replyTicket({
                     ...ticketSelected!!,
                     interactiontype: "text",
                     interactiontext: textCleaned,
-                    isAnswered: true
                 }));
                 setText("");
             }
