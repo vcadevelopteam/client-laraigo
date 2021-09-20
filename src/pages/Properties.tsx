@@ -66,6 +66,27 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+interface ModalProps {
+    data: RowSelected;
+    multiData: MultiData[];
+    preData: (Dictionary | null)[]; //ORGANIZATIONS
+    openModal?: boolean;
+    setOpenModal?: (open: boolean) => void;
+    updateRecords?: (record: any) => void; //SETDATAORGANIZATION
+    triggerSave?: boolean;
+    index: number;
+    setAllIndex?: (index: any) => void;
+}
+
+const DetailNivelProperty: React.FC<ModalProps> = ({ index, data: { row, edit }, multiData, updateRecords, preData, triggerSave, setAllIndex }) => {
+    return (
+        <div>
+            todo el formulario
+        </div>
+    )
+}
+
+
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const detailResult = useSelector(state => state.main.mainAux);
@@ -95,7 +116,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
             setPropertyDetailTable(detailResult.data);
-            console.log("Detail Data: " + JSON.stringify(detailResult.data));
+            console.log("Detail Data: " + JSON.stringify(detailResult.data[0]));
         }
     }, [detailResult]);
 
@@ -241,7 +262,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             />}
                     </div>
                     <div className="row-zyx">
-                    {edit ?
+                        {edit ?
                             <FieldEdit
                                 label={t(langKeys.level)}
                                 className="col-6"
@@ -254,6 +275,21 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                                 className="col-6"
                             />}
                     </div>
+                </div>
+
+                <div>
+                    {propertyDetailTable.map((item, index) => (
+                        <DetailNivelProperty
+                            key={`detail${index}`}
+                            index={index}
+                            data={{ row: item, edit }}
+                            multiData={multiData}
+                            updateRecords={setPropertyDetailTable}
+                            preData={propertyDetailTable}
+                            // triggerSave={triggerSave}
+                            // setAllIndex={setAllIndex}
+                        />
+                    ))}
                 </div>
             </form>
         </div>
@@ -293,7 +329,7 @@ const Properties: FC = () => {
                             aria-label="more"
                             onClick={() => handleEdit(row)}
                             size="small">
-                                <VisibilityIcon style={{ color: '#B6B4BA' }} />
+                            <VisibilityIcon style={{ color: '#B6B4BA' }} />
                         </IconButton>
                     )
                 }
@@ -381,10 +417,10 @@ const Properties: FC = () => {
                             valueDefault={levelFilter}
                             onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
                             data={[
-                                {leveldesc:t(langKeys.corporation), levelvalue: "CORPORATION"},
-                                {leveldesc:t(langKeys.organization), levelvalue: "ORGANIZATION"},
-                                {leveldesc:t(langKeys.channel), levelvalue: "CHANNEL"},
-                                {leveldesc:t(langKeys.group), levelvalue: "GROUP"}
+                                { leveldesc: t(langKeys.corporation), levelvalue: "CORPORATION" },
+                                { leveldesc: t(langKeys.organization), levelvalue: "ORGANIZATION" },
+                                { leveldesc: t(langKeys.channel), levelvalue: "CHANNEL" },
+                                { leveldesc: t(langKeys.group), levelvalue: "GROUP" }
                             ]}
                             optionDesc="leveldesc"
                             optionValue="levelvalue"
@@ -395,12 +431,12 @@ const Properties: FC = () => {
                             valueDefault={categoryFilter}
                             onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
                             data={[
-                                {categorydesc:t(langKeys.closure), categoryvalue: "CLOSURE"},
-                                {categorydesc:t(langKeys.message), categoryvalue: "MESSAGE"},
-                                {categorydesc:t(langKeys.system), categoryvalue: "SYSTEM"},
-                                {categorydesc:t(langKeys.indicators), categoryvalue: "INDICATORS"},
-                                {categorydesc:t(langKeys.quiz), categoryvalue: "QUIZ"},
-                                {categorydesc:t(langKeys.labels), categoryvalue: "LABELS"}
+                                { categorydesc: t(langKeys.closure), categoryvalue: "CLOSURE" },
+                                { categorydesc: t(langKeys.message), categoryvalue: "MESSAGE" },
+                                { categorydesc: t(langKeys.system), categoryvalue: "SYSTEM" },
+                                { categorydesc: t(langKeys.indicators), categoryvalue: "INDICATORS" },
+                                { categorydesc: t(langKeys.quiz), categoryvalue: "QUIZ" },
+                                { categorydesc: t(langKeys.labels), categoryvalue: "LABELS" }
                             ]}
                             optionDesc="categorydesc"
                             optionValue="categoryvalue"
@@ -416,7 +452,7 @@ const Properties: FC = () => {
                     download={true}
                     register={false}
                     filterGeneral={false}
-                    //handleRegister={handleRegister}
+                //handleRegister={handleRegister}
                 />
             </Fragment>
         )
