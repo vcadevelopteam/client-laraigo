@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, resetMainAux, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Box, IconButton } from '@material-ui/core';
@@ -67,16 +67,37 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
     const user = useSelector(state => state.login.validateToken.user);
+    const detailResult = useSelector(state => state.main.mainAux);
+    const executeRes = useSelector(state => state.main.execute);
+    const classes = useStyles();
+
+    const [waitSave, setWaitSave] = useState(false);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataChannel = multiData[0] && multiData[0].success ? multiData[0].data : [];
+    const dataStatus = multiData[1] && multiData[1].success ? multiData[1].data : [];
+
+    const [propertyDetailTable, setPropertyDetailTable] = useState<any[]>([]);
+
+    const fetchDetailData = (corpid: number, propertyname: string, description: string, category: string, level: string) => dispatch(getCollectionAux(getPropertySel(corpid, propertyname, description, category, level, 0)))
+
+    useEffect(() => {
+        console.log("Row: " + JSON.stringify(row))
+        fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
+        return () => {
+            dispatch(resetMainAux());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!detailResult.loading && !detailResult.error) {
+            setPropertyDetailTable(detailResult.data);
+            console.log("Detail Data: " + JSON.stringify(detailResult.data));
+        }
+    }, [detailResult]);
 
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
@@ -170,7 +191,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.corporation)} // "Corporation"
+                                label={t(langKeys.corporation)}
                                 className="col-6"
                                 valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                 disabled={true}
@@ -182,41 +203,10 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.organization)} // "Organization"
-                                className="col-6"
-                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
-                                disabled={true}
-                            />
-                            : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row ? (row.orgdesc || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.channel)}
-                                valueDefault={row ? (row.communicationchanneldesc || "") : ""}
-                                className="col-6"
-                                onChange={(value) => setValue('communicationchannelid', value ? value.communicationchannelid : 0)}
-                                error={errors?.status?.message}
-                                data={dataChannel}
-                                optionDesc="description"
-                                optionValue="communicationchannelid"
-                            />
-                            : <FieldView
-                                label={t(langKeys.channel)}
-                                value={row ? (row.communicationchanneldesc || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldEdit
                                 label={t(langKeys.name)}
                                 className="col-6"
                                 valueDefault={row ? (row.propertyname || "") : ""}
-                                onChange={(value) => setValue('propertyname', value)}
-                                error={errors?.propertyname?.message}
+                                disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.name)}
@@ -227,51 +217,43 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, se
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.value)}
-                                className="col-6"
-                                valueDefault={row ? (row.propertyvalue || "") : ""}
-                                onChange={(value) => setValue('propertyvalue', value)}
-                                error={errors?.propertyvalue?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.value)}
-                                value={row ? (row.propertyvalue || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
                                 label={t(langKeys.description)}
                                 className="col-6"
                                 valueDefault={row ? (row.description || "") : ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
+                                disabled={true}
                             />
                             : <FieldView
                                 label={t(langKeys.description)}
                                 value={row ? (row.description || "") : ""}
                                 className="col-6"
                             />}
-
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.category)}
+                                className="col-6"
+                                valueDefault={row ? (row.category || "") : ""}
+                                disabled={true}
+                            />
+                            : <FieldView
+                                label={t(langKeys.category)}
+                                value={row ? (row.category || "") : ""}
+                                className="col-6"
+                            />}
                     </div>
-
+                    <div className="row-zyx">
+                    {edit ?
+                            <FieldEdit
+                                label={t(langKeys.level)}
+                                className="col-6"
+                                valueDefault={row ? (row.level || "") : ""}
+                                disabled={true}
+                            />
+                            : <FieldView
+                                label={t(langKeys.level)}
+                                value={row ? (row.level || "") : ""}
+                                className="col-6"
+                            />}
+                    </div>
                 </div>
             </form>
         </div>
@@ -293,43 +275,6 @@ const Properties: FC = () => {
 
     const [categoryFilter, setCategoryFilter] = useState('');
     const [levelFilter, setLevelFilter] = useState('');
-
-    const HeaderFilter = () => {
-        return <div className={classes.containerDetail}>
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.level)}
-                    className="col-6"
-                    valueDefault={levelFilter}
-                    onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
-                    data={[
-                        {leveldesc:t(langKeys.corporation), levelvalue: "CORPORATION"},
-                        {leveldesc:t(langKeys.organization), levelvalue: "ORGANIZATION"},
-                        {leveldesc:t(langKeys.channel), levelvalue: "CHANNEL"},
-                        {leveldesc:t(langKeys.group), levelvalue: "GROUP"}
-                    ]}
-                    optionDesc="leveldesc"
-                    optionValue="levelvalue"
-                />
-                <FieldSelect
-                    label={t(langKeys.category)}
-                    className="col-6"
-                    valueDefault={categoryFilter}
-                    onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
-                    data={[
-                        {categorydesc:t(langKeys.closure), categoryvalue: "CLOSURE"},
-                        {categorydesc:t(langKeys.message), categoryvalue: "MESSAGE"},
-                        {categorydesc:t(langKeys.system), categoryvalue: "SYSTEM"},
-                        {categorydesc:t(langKeys.indicators), categoryvalue: "INDICATORS"},
-                        {categorydesc:t(langKeys.quiz), categoryvalue: "QUIZ"},
-                        {categorydesc:t(langKeys.labels), categoryvalue: "LABELS"}
-                    ]}
-                    optionDesc="categorydesc"
-                    optionValue="categoryvalue"
-                />
-            </div>
-        </div>
-    }
 
     const columns = React.useMemo(
         () => [
@@ -380,9 +325,6 @@ const Properties: FC = () => {
     var fetchData = () => dispatch(getCollection(getDistinctPropertySel(categoryFilter, levelFilter)));
 
     useEffect(() => {
-        console.log(categoryFilter);
-        console.log(levelFilter);
-
         fetchData = () => dispatch(getCollection(getDistinctPropertySel(categoryFilter, levelFilter)));
         fetchData();
     }, [categoryFilter, levelFilter]);
