@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IConnectAgenttParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -103,6 +103,8 @@ export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_P
 export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType});
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
+
+export const connectAgent = (payload: IConnectAgenttParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
 
 export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
     callAPI: () => InboxService.closeTicket(params),

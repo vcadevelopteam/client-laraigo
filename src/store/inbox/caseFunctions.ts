@@ -1,5 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams } from "@types";
-import { de } from "date-fns/locale";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IAgentConnectParams } from "@types";
 import { initialState, IState } from "./reducer";
 
 
