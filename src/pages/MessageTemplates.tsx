@@ -160,7 +160,11 @@ const MessageTemplates: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             },
         ],
         []

@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -87,9 +87,20 @@ export const resetSelectTicket = (): IActionCall => ({ type: actionTypes.SELECT_
 
 export const selectAgent = (ticket: IAgent): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: ticket });
 
+
+export const addTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.ADD_TICKET, payload: ticket });
+
+export const modifyTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.MODIFY_TICKET, payload: ticket });
+
+export const newMessageFromClient = (ticket: INewMessageParams): IActionCall => ({ type: actionTypes.NEW_MESSAGE_FROM_CLIENT, payload: ticket });
+
+export const deleteTicket = (ticket: IDeleteTicketParams): IActionCall => ({ type: actionTypes.DELETE_TICKET, payload: ticket });
+
 export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: null });
 
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
+
+export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType});
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
 
@@ -105,9 +116,8 @@ export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
 
 export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });
 
-
-export const replyTicket = (params: IReplyTicketParams): IActionCall => ({
-    callAPI: () => InboxService.replyTicket(params),
+export const replyTicket = (params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false): IActionCall => ({
+    callAPI: () => InboxService.replyTicket(params, isList),
     types: {
         loading: actionTypes.REPLY_TICKET,
         success: actionTypes.REPLY_TICKET_SUCCESS,
@@ -117,6 +127,18 @@ export const replyTicket = (params: IReplyTicketParams): IActionCall => ({
 });
 
 export const resetreplyTicket = (): IActionCall => ({ type: actionTypes.REPLY_TICKET_RESET });
+
+export const reassignTicket = (params: IReassignicketParams): IActionCall => ({
+    callAPI: () => InboxService.reassignTicket(params),
+    types: {
+        loading: actionTypes.REASSIGN_TICKET,
+        success: actionTypes.REASSIGN_TICKET_SUCCESS,
+        failure: actionTypes.REASSIGN_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetReassignTicket = (): IActionCall => ({ type: actionTypes.REASSIGN_TICKET_RESET });
 
 
 export const getTipificationLevel2 = (classificationid: number): IActionCall => ({

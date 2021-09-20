@@ -34,7 +34,9 @@ export interface IState {
     agentList: IListStatePaginated<IAgent>;
     triggerCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
+    triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
+    userType: "SUPERVISOR" | "AGENT" | null;
 }
 
 export const initialState: IState = {
@@ -48,9 +50,11 @@ export const initialState: IState = {
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
+    triggerReassignTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
-    showInfoPanel: false
+    showInfoPanel: false,
+    userType: null
 };
 
 export default createReducer<IState>(initialState, {
@@ -91,6 +95,11 @@ export default createReducer<IState>(initialState, {
     
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
     [actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
+    [actionTypes.SET_USER_TYPE]: caseFunctions.setUserType,
+    [actionTypes.ADD_TICKET]: caseFunctions.addTicket,
+    [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
+    [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
+    [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
@@ -100,7 +109,12 @@ export default createReducer<IState>(initialState, {
     [actionTypes.REPLY_TICKET]: caseFunctions.replyTicket,
     [actionTypes.REPLY_TICKET_SUCCESS]: caseFunctions.replyTicketSuccess,
     [actionTypes.REPLY_TICKET_FAILURE]: caseFunctions.replyTicketFailure,
-    [actionTypes.REPLY_TICKET_RESET]: caseFunctions.replyTicketReset,    
+    [actionTypes.REPLY_TICKET_RESET]: caseFunctions.replyTicketReset,
+
+    [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,
+    [actionTypes.REASSIGN_TICKET_SUCCESS]: caseFunctions.reassignTicketSuccess,
+    [actionTypes.REASSIGN_TICKET_FAILURE]: caseFunctions.reassignTicketFailure,
+    [actionTypes.REASSIGN_TICKET_RESET]: caseFunctions.reassignTicketReset,
 
 
     [actionTypes.GET_TIPIFICATION_LEVEL_2]: caseFunctions.getTipificationLevel2,

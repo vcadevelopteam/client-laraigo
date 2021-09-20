@@ -15,13 +15,13 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
     }
     return (
         <div style={{ position: 'relative' }}>
-            <div style={{ color: color, padding: '4px 6px', whiteSpace: 'nowrap', fontSize: '14px' }}>{isTimer ? secondsToTime(time || 0) : label}</div>
-            <div style={{ backgroundColor: color, width: '100%', height: '28px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+            <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{isTimer ? secondsToTime(time || 0) : label}</div>
+            <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
         </div>
     )
 }
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     return (
         (
@@ -34,6 +34,9 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                         <GetIcon channelType={communicationchanneltype} />
                         <div className={classes.name}>{displayname}</div>
+                    </div>
+                    <div>
+                        {lastmessage}
                     </div>
                     <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                         <LabelGo

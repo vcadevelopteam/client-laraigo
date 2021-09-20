@@ -256,7 +256,7 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
     return data;
 }
 
-const TicketsPanel: React.FC<{ classes: any }> = ({ classes }) => {
+const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, userType }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [showSearch, setShowSearch] = useState(false);
@@ -267,14 +267,14 @@ const TicketsPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     const ticketList = useSelector(state => state.inbox.ticketList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-
+    
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
         dispatch(getDataTicket(ticket))
     }, [dispatch]);
 
     useEffect(() => {
-        dispatch(getTickets(agentSelected ? agentSelected.userid : null))
+        dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
         return () => {
             dispatch(resetGetTickets())
         }
@@ -346,7 +346,7 @@ const TicketsPanel: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
+const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", socketEmitEvent: (event: string, param: any) => void }> = ({ userType, socketEmitEvent }) => {
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
@@ -355,10 +355,11 @@ const InboxPanel: React.FC<{ userid?: number }> = ({ userid }) => {
         <div className={classes.containerPanel}>
             <TicketsPanel
                 classes={classes}
+                userType={userType}
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} classes={classes} />
+                    <ChatPanel ticket={ticketSelected} socketEmitEvent={socketEmitEvent} classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

@@ -2,9 +2,9 @@
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
-// import {} from 'react-native'
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
+import useSocket from 'components/inbox/useSocket'
 import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
@@ -24,7 +24,6 @@ import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
-import { io } from 'socket.io-client';
 
 const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
@@ -52,7 +51,6 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        // paddingTop: theme.spacing(2),,
         borderTop: '1px solid #EBEAED',
         width: '100%'
     },
@@ -137,8 +135,8 @@ const StyledBadge = withStyles((theme) => ({
 
 const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
-        <div style={{ color: color, padding: '4px 6px', whiteSpace: 'nowrap', fontSize: '14px' }}>{label}: {count}</div>
-        <div style={{ backgroundColor: color, width: '100%', height: '28px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
+        <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
     </div>
 )
 
@@ -150,7 +148,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, status, countActive, countPaused, countClosed, coundPending, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, status, countActive, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -173,7 +171,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 </StyledBadge>
                 <div>
                     <div className={classes.agentName}>{name}</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px' }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                         {channels.map((channel, index) => {
                             const [channelType, color, channelName] = channel.split('#');
                             return <ChannelTicket key={index} channelName={channelName} channelType={channelType} color={color} />
@@ -183,9 +181,14 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
             </div>
             <div className={classes.counterCount}>
                 <CountTicket
-                    label={t(langKeys.active)}
-                    count={countActive}
+                    label={t(langKeys.attending)}
+                    count={countAnwsered}
                     color="#55BD84"
+                />
+                <CountTicket
+                    label={t(langKeys.pending)}
+                    count={countNotAnwsered || 0}
+                    color="#FB5F5F"
                 />
                 <CountTicket
                     label={t(langKeys.paused)}
@@ -195,11 +198,6 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 <CountTicket
                     label={t(langKeys.closed)}
                     count={countClosed}
-                    color="#FB5F5F"
-                />
-                <CountTicket
-                    label={t(langKeys.pending)}
-                    count={coundPending}
                     color="#FB5F5F"
                 />
             </div>
@@ -281,7 +279,6 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const [dataAgents, setDataAgents] = useState<IAgent[]>([]);
 
     useEffect(() => {
-        console.log('trigger2');
         if (!agentList.loading && !agentList.error) {
             setDataAgents(agentList.data as IAgent[])
             setAgentsToShow(agentList.data as IAgent[])
@@ -303,41 +300,22 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
 const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
-    const [socket, setSocket] = useState<any>(null);
-
-    // const multiData = useSelector(state => state.main.multiData);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
 
-    socket?.on("connect", () => {
-        console.log("connect", socket.id);
-        socket.emit('chat message', socket.id);
-    });
+    const [socketEmitEvent] = useSocket({ userType: 'SUPERVISOR', userId: user?.userid!!, orgId: user?.orgid!! });
 
-    socket?.on('chat message', (data: any) => {
-        console.log("chat message", data)
-        // socket.emit('chat message', data);
-    });
-
-    socket?.on("disconnect", () => {
-        console.log(socket.connected); // false
-    });
+    // useEffect(() => {
+    //     console.log("was connected: ", isConnected);
+    // }, [isConnected])
 
     useEffect(() => {
-
-        const newsocket = io('https://socket.laraigo.com', {
-            autoConnect: false
-        });
-        const ff = { data: { userid: user?.userid, orgid: user?.orgid, usertype: 'SUPERVISOR' } };
-        newsocket.auth = ff;
-        newsocket.connect();
-        setSocket(newsocket);
-
         dispatch(setOpenDrawer(false));
         dispatch(getMultiCollection([
             getValuesFromDomain("MOTIVOCIERRE"),
             getListUsers(),
-            getClassificationLevel1("TIPIFICACION")
+            getClassificationLevel1("TIPIFICACION"),
+            getValuesFromDomain("GRUPOS"),
         ]))
     }, [])
 
@@ -345,7 +323,7 @@ const Supervisor: FC = () => {
         <div className={classes.container}>
             <AgentPanel classes={classes} />
             {agentSelected &&
-                <InboxPanel userid={agentSelected.userid} />
+                <InboxPanel userType="SUPERVISOR" socketEmitEvent={socketEmitEvent} />
             }
         </div>
     )

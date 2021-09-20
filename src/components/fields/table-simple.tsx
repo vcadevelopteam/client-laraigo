@@ -22,8 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Box from '@material-ui/core/Box';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -175,11 +173,6 @@ const TableZyx = React.memo(({
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <Input
-                    startAdornment={
-                        <InputAdornment position="start">
-                            <SearchIcon color="action" fontSize="small" />
-                        </InputAdornment>
-                    }
                     disabled={loading}
                     type={type === "number" ? "number" : "text"}
                     style={{ fontSize: '15px', minWidth: '100px' }}
@@ -235,7 +228,7 @@ const TableZyx = React.memo(({
 
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
-            if (!cellvalue)
+            if (cellvalue === null || cellvalue === undefined)
                 return false;
             if (type === "number") {
                 switch (operator) {
@@ -256,18 +249,18 @@ const TableZyx = React.memo(({
             } else {
                 switch (operator) {
                     case 'equals':
-                        return cellvalue === value;
+                        return (cellvalue + "") === value;
                     case 'noequals':
-                        return cellvalue !== value;
+                        return (cellvalue + "") !== value;
                     case 'nocontains':
-                        return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                        return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     case 'empty':
                         return cellvalue === '' || cellvalue == null;
                     case 'noempty':
                         return cellvalue !== '' && cellvalue != null;
                     case 'contains':
                     default:
-                        return cellvalue.toLowerCase().includes(value.toLowerCase());
+                        return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                 }
             }
         });
@@ -322,7 +315,7 @@ const TableZyx = React.memo(({
         }
     }, [fetchData])
     return (
-        <Box width={1} style={{ height: '100%' }}>
+        <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
@@ -561,7 +554,6 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     for (let i = 0; i < columns; i++) {
         items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
-
     return (
         <>
             <TableRow key="1aux1">

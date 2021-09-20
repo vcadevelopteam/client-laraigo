@@ -27,9 +27,9 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                     <div className={classes.title} style={{ width: '400px' }}>
-                        <SearchField
+                        {/* <SearchField
                             colorPlaceHolder='#F9F9FA'
-                        />
+                        /> */}
                     </div>
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         <StatusConnection />

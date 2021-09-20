@@ -1,16 +1,10 @@
-import React, { FC, useEffect, useState } from "react";
-import { Box, makeStyles, Typography, Paper, Breadcrumbs, Button } from '@material-ui/core';
-import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import React, { FC, useState } from "react";
+import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, TemplateSwitch } from "components";
-import { useHistory, useRouteMatch } from "react-router";
+import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
-import { insertChannel } from "store/channel/actions";
 import TelegramIcon from '@material-ui/icons/Telegram';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import EmailIcon from '@material-ui/icons/Email';
@@ -86,8 +80,6 @@ export const ChannelAdd: FC = () => {
     const classes = useChannelAddStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const match = useRouteMatch<{ id: string }>();
-
 
     const socialMediaOptions: ChannelOption[] = [
         {

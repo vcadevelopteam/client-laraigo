@@ -21,4 +21,5 @@ export interface ITicket {
     coloricon: string;
     lastseendate?: string | null;
     finishdate?: string | null;
+    isAnswered?: boolean;
 }

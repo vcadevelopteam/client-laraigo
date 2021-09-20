@@ -520,7 +520,11 @@ const Tipifications: FC = () => {
             {
                 Header: t(langKeys.status),
                 accessor: 'statusdesc',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }
             }
         ],
         []

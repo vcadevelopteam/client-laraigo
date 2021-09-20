@@ -4,13 +4,12 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, Tickets, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
-
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -43,7 +42,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	const existToken = getAccessToken();
 
 	React.useEffect(() => {
-		if (existToken)
+		if (existToken) {}
 			dispatch(validateToken());
 	}, [])
 	
@@ -77,11 +76,7 @@ const RouterApp: FC = () => {
 			<Switch>
 				<ProtectRoute exact path="/"/>
 				<Route exact path="/sign-in" component={SignIn} />
-				<ProtectRoute exact path="/email_inbox">
-					<Layout mainClasses={classes.main}>
-						<Tickets />
-					</Layout>
-				</ProtectRoute>
+				
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
@@ -145,6 +140,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.SUPERVISOR}>
 					<Layout >
 						<Supervisor />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.MESSAGE_INBOX}>
+					<Layout>
+						<MessageInbox />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PROPERTIES}>

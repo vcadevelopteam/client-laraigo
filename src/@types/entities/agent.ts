@@ -4,7 +4,9 @@ export interface IAgent {
     countActive: number;
     countPaused: number;
     countClosed: number;
-    coundPending: number;
+    countAnwsered: number;
+    countNotAnwsered?: number;
+    countPending: number;
     status: string | null;
     channels: string[]
 }

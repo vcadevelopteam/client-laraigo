@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, InputLabel, MenuItem, Divider, Fade, Paper, Breadcrumbs } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs } from '@material-ui/core';
 import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -52,7 +53,7 @@ const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
     return (
         <div
             role="tabpanel"
-            hidden={value != index}
+            hidden={value !== index}
             className={classes.root}
             id={`wrapped-tabpanel-${index}`}
             aria-labelledby={`wrapped-tab-${index}`}
@@ -218,7 +219,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {chatImgUrl && <img src={chatImgUrl} className={classes.img} />}
+                                    {chatImgUrl && <img alt="chatweb" src={chatImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -251,7 +252,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {headerImgUrl && <img src={headerImgUrl} className={classes.img} />}
+                                    {headerImgUrl && <img alt="chatweb" src={headerImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -284,7 +285,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                         <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {botImgUrl && <img src={botImgUrl} className={classes.img} />}
+                                    {botImgUrl && <img alt="chatweb" src={botImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input
@@ -803,7 +804,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     }, [fields]);
 
     const handleCloseTemplate = (key: string) => {
-        const newFields = fields.filter(e => e != templates[key]);
+        const newFields = fields.filter(e => e !== templates[key]);
         setFields(newFields);
     };
 
@@ -985,7 +986,7 @@ const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
                         <Grid item xs={12} sm={8} md={8} lg={8} xl={8}>
                             <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                 <div className={classes.imgContainer}>
-                                    {waitingImgUrl && <img src={waitingImgUrl} className={classes.img} />}
+                                    {waitingImgUrl && <img alt="chatweb" src={waitingImgUrl} className={classes.img} />}
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
                                     <input

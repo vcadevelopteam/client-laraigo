@@ -8,11 +8,12 @@ import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
 import { convertLocalDate, toTime24HR } from 'common/helpers';
-
+import { manageLightBox } from 'store/popus/actions';
+import Tooltip from '@material-ui/core/Tooltip';
+import { useDispatch } from 'react-redux';
 
 const useStylesCarousel = makeStyles((theme) => ({
     containerCarousel: {
@@ -95,55 +96,87 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
 }
 
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext }, classes }) => {
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate }, classes }) => {
+    const dispatch = useDispatch();
+
     if (interactiontype === "text")
-        return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontext}</div>;
+        return (
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>
+                    {interactiontext}
+                </div>
+            </Tooltip>
+        );
     else if (interactiontype === "image")
         return (
-            <div className={classes.interactionImage}>
-                <img style={{ width: '100%' }} src={interactiontext} alt="" />
-            </div>);
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <div className={classes.interactionImage}>
+                    <img
+                        style={{ width: '100%', cursor: 'pointer' }}
+                        src={interactiontext} alt=""
+                        onClick={() => {
+                            dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                        }}
+                    />
+                </div>
+            </Tooltip>
+        );
     else if (interactiontype === "quickreply") {
         const [text, json] = interactiontext.split("&&&");
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
-            <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>
-                {text}
-                <div className={classes.containerQuickreply}>
-                    {listButtons.map((item: Dictionary, index: number) => {
-                        return <div key={index} className={classes.buttonQuickreply}>{item.text}
-                        </div>
-                    })}
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>
+                    {text}
+                    <div className={classes.containerQuickreply}>
+                        {listButtons.map((item: Dictionary, index: number) => {
+                            return <div key={index} className={classes.buttonQuickreply}>{item.text}
+                            </div>
+                        })}
+                    </div>
                 </div>
-            </div>
+            </Tooltip>
         )
     } else if (interactiontype === "postback") {
         const [text, json] = interactiontext.split("&&&");
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
-            <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
-                <div className={classes.headerPostback}>
-                    {text}
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
+                    <div className={classes.headerPostback}>
+                        {text}
+                    </div>
+                    <div >
+                        {listButtons.map((item: Dictionary, index: number) => {
+                            return <div key={index} className={classes.buttonPostback}>{item.text}
+                            </div>
+                        })}
+                    </div>
                 </div>
-                <div >
-                    {listButtons.map((item: Dictionary, index: number) => {
-                        return <div key={index} className={classes.buttonPostback}>{item.text}
-                        </div>
-                    })}
-                </div>
-            </div>
+            </Tooltip>
         )
     } else if (interactiontype === "LOG") {
-        return <div className={classes.interactionText} style={{ backgroundColor: '#84818A', color: 'white' }}>{interactiontext}</div>;
+        return (
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <div className={classes.interactionText} style={{ backgroundColor: '#84818A', color: 'white' }}>
+                    {interactiontext}
+                </div>
+            </Tooltip>
+        );
     } else if (interactiontype === "carousel") {
         const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
-        return <Carousel carousel={listItems} />
+        return (
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
+                <Carousel carousel={listItems} />
+            </Tooltip>
+        )
     } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
-        return <audio controls src={interactiontext} ></audio>
+        return <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top"><audio controls src={interactiontext} ></audio></Tooltip>
     } else if (interactiontype === "video") {
-        return <video width="200" controls src={interactiontext} />
+        return <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top"><video width="200" controls src={interactiontext} /></Tooltip>
     } else if (interactiontype === "file") {
         return (
+            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
             <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
                     <FileIcon width="20" height="20" />
@@ -152,6 +185,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
 
                 </a>
             </div>
+            </Tooltip>
         )
     }
     return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontype} {interactiontext}</div>;
@@ -175,9 +209,8 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                     ))}
                 </div>
             </div>
-
             {usertype === "agent" ?
-                <div><AgentIcon /></div> :
+                <div><AgentIcon style={{ width: 40, height: 40 }} /></div> :
                 (usertype === "BOT" && <div><BotIcon style={{ width: 40, height: 40 }} /></div>)
             }
         </div>

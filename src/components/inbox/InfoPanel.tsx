@@ -109,7 +109,6 @@ const InfoClient: React.FC = () => {
 const Variables: React.FC = () => {
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const configurationVariables = useSelector(state => state.inbox.configurationVariables.data);
-    console.log(configurationVariables)
     const classes = useStyles();
 
     return (
@@ -153,7 +152,7 @@ const PreviewTickets = () => {
     }, [])
 
     return (
-        <div>
+        <div style={{ overflowY: 'auto', flex: 1 }}>
             {previewTicketList.loading ? "Espere" :
                 previewTicketList.data?.map((ticket, index) => (
                     <div key={index} className={classes.containerPreviewTicket}>
