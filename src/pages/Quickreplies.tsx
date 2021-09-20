@@ -439,7 +439,7 @@ const Quickreplies: FC = () => {
                         <TemplateIcons
                             viewFunction={() => handleView(row)}
                             // viewFunction={() => history.push(`/Quickreplies/${row.Quickreplyid}`)}
-                            deleteFunction={() => handleDelete(row)}
+                            //deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
                     )
