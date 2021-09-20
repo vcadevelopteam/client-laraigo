@@ -14,7 +14,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent } from 'store/inbox/actions';
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1 } from 'common/helpers';
+import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -167,7 +167,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                     }}
                     variant="dot"
                 >
-                    <Avatar>{name.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Avatar>{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                 </StyledBadge>
                 <div>
                     <div className={classes.agentName}>{name}</div>
@@ -316,6 +316,7 @@ const Supervisor: FC = () => {
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
+            getListQuickReply()
         ]))
     }, [])
 

@@ -33,6 +33,12 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     parameters: {}
 })
 
+export const getListQuickReply = (): IRequestBody => ({
+    method: "UFN_QUICKREPLY_LIST_SEL",
+    key: "UFN_QUICKREPLY_LIST_SEL",
+    parameters: { classificationid: 0, all: true }
+})
+
 export const insertClassificationConversation = (conversationid: number, classificationid: number, jobplan: string, operation: string): IRequestBody => ({
     method: "UFN_CONVERSATIONCLASSIFICATION_INS",
     key: "UFN_CONVERSATIONCLASSIFICATION_INS",

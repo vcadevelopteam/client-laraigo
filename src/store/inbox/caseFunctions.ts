@@ -34,7 +34,10 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 }
 
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
-
+    const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
+    interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
+    
+    interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
 

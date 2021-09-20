@@ -180,7 +180,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
             <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
                     <FileIcon width="20" height="20" />
-                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1 }}>{interactiontext.split("/").pop()}</div>
+                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
                     <DownloadIcon2 width="20" height="20" color="primary" />
 
                 </a>
