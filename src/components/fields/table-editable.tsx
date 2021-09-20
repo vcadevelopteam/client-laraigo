@@ -177,8 +177,8 @@ const TableZyxEditable = React.memo(({
     register,
     handleRegister,
     HeadComponent,
+    ButtonsElement,
     pageSizeDefault = 20,
-    hoverShadow = false,
     filterGeneral = true,
     loading = false,
     updateCell,
@@ -669,6 +669,7 @@ const TableZyxEditable = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
+                    {ButtonsElement && <ButtonsElement />}
                     {register && (
                         <Button
                             className={classes.button}
