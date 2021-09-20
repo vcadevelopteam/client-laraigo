@@ -104,7 +104,7 @@ export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
 
-export const connectAgent = (payload: IConnectAgenttParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
+export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
 
 export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
     callAPI: () => InboxService.closeTicket(params),

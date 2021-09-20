@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IAgentConnectParams, IConnectAgentParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams } from "@types";
 import { initialState, IState } from "./reducer";
 
 
