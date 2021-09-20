@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton } from '@material-ui/core';
+import { Box, IconButton } from '@material-ui/core';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
 interface RowSelected {
@@ -41,11 +41,28 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         background: '#fff',
     },
+    containerDetail2: {
+        position: "absolute",
+        width: "100%"
+    },
     button: {
         padding: 12,
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
+    },
+    containerHeader: {
+        display: 'block',
+        [theme.breakpoints.up('sm')]: {
+            display: 'flex',
+        },
+    },
+    title: {
+        fontSize: '22px',
+        lineHeight: '48px',
+        fontWeight: 'bold',
+        height: '48px',
+        color: theme.palette.text.primary,
     },
 }));
 
@@ -410,16 +427,56 @@ const Properties: FC = () => {
         }
 
         return (
-            <TableZyx
-                titlemodule={t(langKeys.property_plural, { count: 2 })}
-                ButtonsElement={HeaderFilter}
-                columns={columns}
-                data={mainResult.mainData.data}
-                loading={mainResult.mainData.loading}
-                download={true}
-                register={false}
-                handleRegister={handleRegister}
-            />
+            <Fragment>
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                    <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
+                </Box>
+                <div className={classes.containerDetail2}>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.level)}
+                            className="col-4"
+                            valueDefault={levelFilter}
+                            onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
+                            data={[
+                                {leveldesc:t(langKeys.corporation), levelvalue: "CORPORATION"},
+                                {leveldesc:t(langKeys.organization), levelvalue: "ORGANIZATION"},
+                                {leveldesc:t(langKeys.channel), levelvalue: "CHANNEL"},
+                                {leveldesc:t(langKeys.group), levelvalue: "GROUP"}
+                            ]}
+                            optionDesc="leveldesc"
+                            optionValue="levelvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.category)}
+                            className="col-4"
+                            valueDefault={categoryFilter}
+                            onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
+                            data={[
+                                {categorydesc:t(langKeys.closure), categoryvalue: "CLOSURE"},
+                                {categorydesc:t(langKeys.message), categoryvalue: "MESSAGE"},
+                                {categorydesc:t(langKeys.system), categoryvalue: "SYSTEM"},
+                                {categorydesc:t(langKeys.indicators), categoryvalue: "INDICATORS"},
+                                {categorydesc:t(langKeys.quiz), categoryvalue: "QUIZ"},
+                                {categorydesc:t(langKeys.labels), categoryvalue: "LABELS"}
+                            ]}
+                            optionDesc="categorydesc"
+                            optionValue="categoryvalue"
+                        />
+                    </div>
+                </div>
+                <TableZyx
+                    //titlemodule={t(langKeys.property_plural, { count: 2 })}
+                    //ButtonsElement={HeaderFilter}
+                    columns={columns}
+                    data={mainResult.mainData.data}
+                    loading={mainResult.mainData.loading}
+                    download={true}
+                    register={false}
+                    filterGeneral={false}
+                    //handleRegister={handleRegister}
+                />
+            </Fragment>
         )
     }
     else if (viewSelected === "view-2") {
