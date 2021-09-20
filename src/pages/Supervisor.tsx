@@ -148,7 +148,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, status, countActive, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, isConnected, countActive, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -160,7 +160,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
             <div className={classes.agentUp}>
                 <StyledBadge
                     overlap="circular"
-                    colortmp={status === "ACTIVO" ? "#44b700" : "#b41a1a"}
+                    colortmp={isConnected ? "#44b700" : "#b41a1a"}
                     anchorOrigin={{
                         vertical: 'top',
                         horizontal: 'right',

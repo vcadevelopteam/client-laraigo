@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IAgentConnectParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IAgentConnectParams, IConnectAgentParams } from "@types";
 import { initialState, IState } from "./reducer";
 
 
@@ -35,7 +35,7 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
     interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
-    
+
     interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
@@ -73,7 +73,8 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
         data: action.payload.data ? action.payload.data.map((x: any) => ({
             ...x,
             channels: x.channels?.split(",") || [],
-            countNotAnwsered: x.countActive - x.countAnwsered
+            countNotAnwsered: x.countActive - x.countAnwsered,
+            isConnected: x.status === "ACTIVO"
         })) : [],
         count: action.payload.count,
         loading: false,
@@ -251,6 +252,27 @@ export const addMessage = (state: IState, action: IAction): IState => {
         ...state,
         interactionList: {
             data: AddNewInteraction(state.interactionList.data, newInteraction),
+            count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
+export const connectAgent = (state: IState, action: IAction): IState => {
+    let newAgentList = [...state.agentList.data];
+    const data: IConnectAgentParams = action.payload;
+
+    const { userType } = state;
+
+    if (userType === 'SUPERVISOR') {
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, status: 'ACTIVO' } : x)
+    }
+
+    return {
+        ...state,
+        agentList: {
+            data: newAgentList,
             count: action.payload.count,
             loading: false,
             error: false,

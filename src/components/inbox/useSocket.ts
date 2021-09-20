@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import { useDispatch } from 'react-redux';
-import { newMessageFromClient, deleteTicket } from 'store/inbox/actions';
-import { IDeleteTicketParams, INewMessageParams, IReplyTicketParams } from "@types";
+import { newMessageFromClient, deleteTicket, connectAgent } from 'store/inbox/actions';
+import { IDeleteTicketParams, INewMessageParams, IConnectAgentParams } from "@types";
 
 interface ISocketProps {
     userType: string;
@@ -31,6 +31,11 @@ const useSocket = ({ userType, userId, orgId }: ISocketProps) => {
             socket?.on('deleteTicket', (data: IDeleteTicketParams) => {
                 console.log("deleteTicket", data)
                 dispatch(deleteTicket(data))
+            });
+
+            socket?.on('connectAgent', (data: IConnectAgentParams) => {
+                console.log("connectAgent", data)
+                dispatch(connectAgent(data))
             });
 
             socket?.on('newMessageFromBot', (data: INewMessageParams) => {

@@ -8,5 +8,6 @@ export interface IAgent {
     countNotAnwsered?: number;
     countPending: number;
     status: string | null;
-    channels: string[]
+    channels: string[];
+    isConnected?: boolean;
 }
