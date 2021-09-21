@@ -32,6 +32,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         });
 
         socket?.on("connect", () => {
+            dispatch({ type: typesInbox.WS_CONNECTED, payload: true })
             console.log("connect", socket.id);
         });
 
@@ -40,7 +41,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.emit(payload.event, payload.data);
         return;
     }
-    
+
     return next(action)
 };
 

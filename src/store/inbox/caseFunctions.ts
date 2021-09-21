@@ -646,3 +646,8 @@ export const getTipificationLevel3Reset = (state: IState): IState => ({
     tipificationsLevel3: initialState.tipificationsLevel3,
 });
 
+
+export const wsConnect = (state: IState, action: IAction): IState => ({
+    ...state,
+    wsConnected: action.payload
+});

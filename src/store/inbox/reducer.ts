@@ -37,6 +37,7 @@ export interface IState {
     triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    wsConnected: boolean;
 }
 
 export const initialState: IState = {
@@ -54,7 +55,8 @@ export const initialState: IState = {
     ticketSelected: null,
     agentSelected: null,
     showInfoPanel: false,
-    userType: null
+    userType: null,
+    wsConnected: false
 };
 
 export default createReducer<IState>(initialState, {
@@ -127,6 +129,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS]: caseFunctions.getTipificationLevel3Success,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE]: caseFunctions.getTipificationLevel3Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
+    [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
     
     
 });

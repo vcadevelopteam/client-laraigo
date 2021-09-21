@@ -72,6 +72,7 @@ const actionType = {
 
     
     WS_CONNECT: 'WS_CONNECT',
+    WS_CONNECTED: 'WS_CONNECTED',
     EMIT_EVENT: 'EMIT_EVENT',
 };
 

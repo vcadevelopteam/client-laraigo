@@ -300,6 +300,7 @@ const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const wsConnected = useSelector(state => state.inbox.wsConnected);
 
     useEffect(() => {
         dispatch(setOpenDrawer(false));
@@ -310,13 +311,17 @@ const Supervisor: FC = () => {
             getValuesFromDomain("GRUPOS"),
             getListQuickReply()
         ]))
-        setTimeout(() => {
+    }, [])
+
+    useEffect(() => {
+        if (wsConnected) {
+            console.log('SUPERVISOR AA')
             dispatch(emitEvent({
                 event: 'connectChat',
                 data: { usertype: 'SUPERVISOR' }
             }));
-        }, 500);
-    }, [])
+        }
+    }, [wsConnected])
 
     return (
         <div className={classes.container}>
