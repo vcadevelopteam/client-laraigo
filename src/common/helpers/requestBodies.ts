@@ -704,3 +704,71 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
     type: "CHATWEB",
     service,
 });
+
+export const getCampaignLst = (): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST",
+    parameters: {}
+});
+
+export const getCampaignSel = (id: number): IRequestBody => ({
+    method: "UFN_CAMPAIGN_SEL",
+    parameters: {
+        id
+    }
+});
+
+export const insCampaign = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    executiontype,
+    batchjson,
+    fields,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader,
+        messagetemplatebuttons,
+        executiontype,
+        batchjson,
+        fields,
+        operation
+    }
+});
+
+export const getUserGroupsSel = (): IRequestBody => ({
+    method: "UFN_USER_GROUPS_SEL",
+    parameters: {}
+});

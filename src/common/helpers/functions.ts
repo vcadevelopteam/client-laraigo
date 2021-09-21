@@ -36,6 +36,37 @@ export function dictToArrayKV(dict: Dictionary, key: string = 'key', value: stri
     }, []);
 }
 
+export function filterPipe(items: Dictionary[], field: string, value: any, inv?: string) {
+    // If there are not items return empty//
+    if (!items) return [];
+    // If '%' contains wildcard and value is empty return items//
+    if (inv === '%' && (!value || value === '')) return items;
+    // If filter === '' return empty//
+    if (value === '') return [];
+    // If there are not filter value return all items//
+    if (!value || value.length === 0) return [];
+    // If the filter value is a number//
+    if (typeof items[0][field] === 'number') {
+        return items.filter(it => it[field] === value);
+    }
+    // If '%' contains wildcard is a string contains//
+    else if (inv === '%') {
+        return items.filter(it => it[field].toLowerCase().includes(value.toLowerCase()));
+    }
+    // If '!' inverter filter is a string not equals//
+    else if (inv === '!') {
+        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) == -1);
+    }
+    // If the filter value is a string is a string equals//
+    else {
+        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) != -1);
+    }
+}
+
+export function filterIf(data: Dictionary[], rif?: string, rifvalue?: string) {
+    return data.filter(d => d.rif === null || (d.rif === rif && d.rifvalue === rifvalue));
+}
+
 export function downloadCSV(filename: string, data: Dictionary[]) {
     let columns = Object.keys(data[0]);
     let headers = columns.join(';');
