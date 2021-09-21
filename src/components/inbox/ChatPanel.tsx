@@ -10,7 +10,7 @@ import CallIcon from '@material-ui/icons/Call';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -19,7 +19,7 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 
-const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, socketEmitEvent: (event: string, param: any) => void }> = ({ setOpenModal, openModal, socketEmitEvent }) => {
+const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -36,13 +36,16 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-                socketEmitEvent('deleteTicket', {
-                    conversationid: ticketSelected?.conversationid,
-                    ticketnum: ticketSelected?.ticketnum,
-                    status: ticketSelected?.status,
-                    isanswered: ticketSelected?.isAnswered,
-                    userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                });
+                dispatch(emitEvent({
+                    event: 'deleteTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        ticketnum: ticketSelected?.ticketnum,
+                        status: ticketSelected?.status,
+                        isanswered: ticketSelected?.isAnswered,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    }
+                }));
                 setWaitClose(false);
             } else if (closingRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
@@ -112,7 +115,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
         </DialogZyx>)
 }
 
-const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, socketEmitEvent: (event: string, param: any) => void }> = ({ setOpenModal, openModal, socketEmitEvent }) => {
+const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
@@ -137,11 +140,16 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
-                socketEmitEvent("reassignTicket", {
-                    ...ticketSelected,
-                    userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                    newuserid: getValues('newUserId') || 3,
-                })
+
+                dispatch(emitEvent({
+                    event: 'reassignTicket',
+                    data: {
+                        ...ticketSelected,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                        newuserid: getValues('newUserId') || 3,
+                    }
+                }));
+                
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -359,7 +367,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
         </DialogZyx>)
 }
 
-const ButtonsManageTicket: React.FC<{ classes: any, socketEmitEvent: (event: string, param: any) => void }> = ({ classes, socketEmitEvent }) => {
+const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
     const handleClose = () => setAnchorEl(null);
@@ -410,12 +418,10 @@ const ButtonsManageTicket: React.FC<{ classes: any, socketEmitEvent: (event: str
                 }}>{t(langKeys.typify)}</MenuItem>
             </Menu>
             <DialogCloseticket
-                socketEmitEvent={socketEmitEvent}
                 openModal={openModalCloseticket}
                 setOpenModal={setOpenModalCloseticket}
             />
             <DialogReassignticket
-                socketEmitEvent={socketEmitEvent}
                 openModal={openModalReassignticket}
                 setOpenModal={setOpenModalReassignticket}
             />
@@ -424,7 +430,7 @@ const ButtonsManageTicket: React.FC<{ classes: any, socketEmitEvent: (event: str
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket, socketEmitEvent: (event: string, param: any) => void }> = React.memo(({ classes, socketEmitEvent, ticket, ticket: { ticketnum } }) => {
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum } }) => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
@@ -437,13 +443,12 @@ const ChatPanel: React.FC<{ classes: any, ticket: ITicket, socketEmitEvent: (eve
                         onClick={showInfoPanelTrigger}
                     >Ticket #{ticketnum}</span>
                 </div>
-                <ButtonsManageTicket classes={classes} socketEmitEvent={socketEmitEvent} />
+                <ButtonsManageTicket classes={classes} />
             </div>
             <InteractionsPanel
                 classes={classes}
                 ticket={ticket} />
             <ReplyPanel
-                socketEmitEvent={socketEmitEvent}
                 classes={classes} />
         </div>
     )

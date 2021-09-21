@@ -100,11 +100,13 @@ export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_A
 
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
 
-export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType});
+export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType });
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
 
 export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
+
+
 
 export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
     callAPI: () => InboxService.closeTicket(params),
@@ -166,3 +168,13 @@ export const getTipificationLevel3 = (classificationid: number): IActionCall => 
 });
 
 export const resetGetTipificationLevel3 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_3_RESET });
+
+
+
+
+
+
+
+export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_CONNECT, payload });
+
+export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMIT_EVENT, payload });

@@ -5,7 +5,7 @@ import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { replyMessage, replyTicket } from 'store/inbox/actions';
+import { emitEvent, replyTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -80,6 +80,7 @@ const IconUploader: React.FC<{ classes: any, type: "image" | "file", setFiles: (
         </>
     )
 }
+
 const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ item, setFiles }) => (
     <div style={{ position: 'relative' }}>
         <div key={item.id} style={{ width: 70, height: 70, border: '1px solid #e1e1e1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -99,6 +100,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
         </IconButton>
     </div>
 )
+
 const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
@@ -124,7 +126,7 @@ const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void 
             .replace("{{nombre_asesor}}", user?.firstname + " " + user?.lastname)
         );
     }
-    
+
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div>
@@ -155,7 +157,7 @@ const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void 
     )
 }
 
-const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, param: any) => void }> = ({ classes, socketEmitEvent }) => {
+const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -166,6 +168,9 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
 
     const triggerReplyMessage = () => {
         const callback = () => {
+            
+            console.log("reply message success")
+
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
@@ -186,7 +191,12 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
                         usertype: "agent",
                         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
-                    socketEmitEvent('newMessageFromAgent', newInteractionSocket);
+                    dispatch(emitEvent({
+                        event: 'newMessageFromAgent',
+                        data: newInteractionSocket
+                    }));
+
+                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
                 })
                 setFiles([])
             }
@@ -205,7 +215,11 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
                         ticketWasAnswered: !ticketSelected!!.isAnswered,
                     }
                     //websocket
-                    socketEmitEvent('newMessageFromAgent', newInteractionSocket);
+                    dispatch(emitEvent({
+                        event: 'newMessageFromAgent',
+                        data: newInteractionSocket
+                    }));
+                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
 
                     //send to answer with integration
                     dispatch(replyTicket({

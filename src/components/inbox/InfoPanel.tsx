@@ -114,17 +114,6 @@ const Variables: React.FC = () => {
     return (
         <div className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
 
-            {variablecontext && (variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
-                const variabletmp = variablecontext.find(x => x.Name === variable);
-                return (
-                    <div key={index} className={classes.containerName}>
-                        <div style={{ fontWeight: fontbold ? 'bold' : 'normal', color: fontcolor }}>
-                            <div className={classes.label}>{description}</div>
-                            <div >{variabletmp?.Value || '-'}</div>
-                        </div>
-                    </div>
-                )
-            })}
             {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
                 const variabletmp = variablecontext[variable];
                 return (
