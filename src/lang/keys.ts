@@ -196,13 +196,13 @@ export const langKeys = {
 
     active: 'active',
     inactive: 'inactive',
-    
+
     attending: 'attending',
-    
+
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
-    
+
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',
@@ -395,6 +395,7 @@ export const langKeys = {
     close_ticket: "close_ticket",
     client_detail: "client_detail",
 
+    report_loginhistory: 'report_loginhistory',
     report_loginhistory_createdate: 'report_loginhistory_createdate',
     report_loginhistory_createhour: 'report_loginhistory_createhour',
     report_loginhistory_nombre_usuario: 'report_loginhistory_nombre_usuario',
@@ -402,6 +403,7 @@ export const langKeys = {
     report_loginhistory_status: 'report_loginhistory_status',
     report_loginhistory_type: 'report_loginhistory_type',
 
+    report_inputretry: 'report_inputretry',
     report_inputretry_numeroticket: 'report_inputretry_numeroticket',
     report_inputretry_cliente: 'report_inputretry_cliente',
     report_inputretry_canal: 'report_inputretry_canal',
@@ -411,6 +413,7 @@ export const langKeys = {
     report_inputretry_intento: 'report_inputretry_intento',
     report_inputretry_valido: 'report_inputretry_valido',
 
+    report_interaction: 'report_interaction',
     report_interaction_numeroticket: 'report_interaction_numeroticket',
     report_interaction_anioticket: 'report_interaction_anioticket',
     report_interaction_mesticket: 'report_interaction_mesticket',
@@ -429,6 +432,7 @@ export const langKeys = {
     report_interaction_texto: 'report_interaction_texto',
     report_interaction_phone: 'report_interaction_phone',
 
+    report_productivity: 'report_productivity',
     report_productivity_numeroticket: 'report_productivity_numeroticket',
     report_productivity_anio: 'report_productivity_anio',
     report_productivity_mes: 'report_productivity_mes',
@@ -461,6 +465,7 @@ export const langKeys = {
     report_productivity_tmoasesor: 'report_productivity_tmoasesor',
     report_productivity_holdingwaitingtime: 'report_productivity_holdingwaitingtime',
 
+    report_tipification: 'report_tipification',
     report_tipification_numeroticket: 'report_tipification_numeroticket',
     report_tipification_fechaticket: 'report_tipification_fechaticket',
     report_tipification_horaticket: 'report_tipification_horaticket',
@@ -474,6 +479,7 @@ export const langKeys = {
     report_tipification_submotivo: 'report_tipification_submotivo',
     report_tipification_valoracion: 'report_tipification_valoracion',
 
+    report_userproductivityhours: 'report_userproductivityhours',
     report_userproductivityhours_datestr: 'report_userproductivityhours_datestr',
     report_userproductivityhours_fullname: 'report_userproductivityhours_fullname',
     report_userproductivityhours_hours: 'report_userproductivityhours_hours',
@@ -492,6 +498,7 @@ export const langKeys = {
     report_userproductivityhours_filter_channels: 'report_userproductivityhours_filter_channels',
     report_userproductivityhours_filter_hours: 'report_userproductivityhours_filter_hours',
 
+    report_userproductivity: 'report_userproductivity',
     report_userproductivity_totalclosedtickets: 'report_userproductivity_totalclosedtickets',
     report_userproductivity_holdingtickets: 'report_userproductivity_holdingtickets',
     report_userproductivity_asesortickets: 'report_userproductivity_asesortickets',
