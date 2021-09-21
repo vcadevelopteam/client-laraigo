@@ -3,6 +3,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
 
 import { useSelector } from 'hooks';
+import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
 import { replyMessage, replyTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
@@ -15,6 +16,8 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Tooltip from '@material-ui/core/Tooltip';
 
 interface IFile {
     type: string;
@@ -22,7 +25,7 @@ interface IFile {
     id: string;
     error?: boolean;
 }
-const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }> = ({ classes, setFiles }) => {
+const IconUploader: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -52,7 +55,7 @@ const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }
         fd.append('file', selectedFile, selectedFile.name);
         setvaluefile('')
         setIdUpload(idd);
-        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type: 'image' }]);
+        setFiles((x: IFile[]) => [...x, { id: idd, url: '', type }]);
         dispatch(uploadFile(fd));
         setWaitSave(true)
     }
@@ -61,15 +64,18 @@ const IconUploadImage: React.FC<{ classes: any, setFiles: (param: any) => void }
         <>
             <input
                 name="file"
-                accept="image/*"
-                id="laraigo-upload-image-file"
+                accept={type === "image" ? "image/*" : undefined}
+                id={`laraigo-upload-${type}`}
                 type="file"
                 value={valuefile}
                 style={{ display: 'none' }}
                 onChange={(e) => onSelectImage(e.target.files)}
             />
-            <label htmlFor="laraigo-upload-image-file">
-                <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+            <label htmlFor={`laraigo-upload-${type}`}>
+                {type === "image" ?
+                    <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
+                    <AttachmentIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                }
             </label>
         </>
     )
@@ -93,6 +99,61 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
         </IconButton>
     </div>
 )
+const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+    const [open, setOpen] = React.useState(false);
+    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const handleClick = () => setOpen((prev) => !prev);
+
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const handleClickAway = () => setOpen(false);
+
+    useEffect(() => {
+        if (!multiData.loading && !multiData.error && multiData?.data[4]) {
+            setquickReplies(multiData?.data[4].data)
+        }
+    }, [multiData])
+
+    const handlerClickItem = (item: Dictionary) => {
+        setOpen(false);
+        setText(item.quickreply
+            .replace("{{numticket}}", ticketSelected?.ticketnum)
+            .replace("{{nombre_cliente}}", ticketSelected?.displayname)
+            .replace("{{nombre_asesor}}", user?.firstname + " " + user?.lastname)
+        );
+    }
+    
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <div>
+                <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 50
+                    }}>
+                        <div className={classes.containerQuickReply}>
+                            <div className={classes.headerQuickReply}>User Quick Response</div>
+                            <div>
+                                {quickReplies.slice(0, 7).map((item) => (
+                                    <div key={item.quickreplyid} >
+                                        <Tooltip title={item.quickreply} arrow placement="top">
+                                            <div className={classes.itemQuickReply} onClick={() => handlerClickItem(item)}>
+                                                {item.description}
+                                            </div>
+                                        </Tooltip>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </ClickAwayListener>
+    )
+}
 
 const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, param: any) => void }> = ({ classes, socketEmitEvent }) => {
     const dispatch = useDispatch();
@@ -108,51 +169,52 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
-                    interactiontype: "image",
+                    interactiontype: x.type,
                     interactiontext: x.url,
-                    isAnswered: true
                 }))
                 dispatch(replyTicket(listMessages, true))
 
-                files.forEach(x => {
-                    const newInteraction = {
+                files.forEach((x, i) => {
+                    const newInteractionSocket = {
                         ...ticketSelected!!,
                         interactionid: 0,
-                        typemessage: "image",
+                        typemessage: x.type,
                         typeinteraction: null,
                         lastmessage: x.url,
                         createdate: new Date().toISOString(),
                         userid: 0,
                         usertype: "agent",
+                        ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
-                    socketEmitEvent('newMessageFromAgent', newInteraction);
+                    socketEmitEvent('newMessageFromAgent', newInteractionSocket);
                 })
                 setFiles([])
             }
             if (text) {
                 const textCleaned = text.trim();
+                if (textCleaned) {
+                    const newInteractionSocket = {
+                        ...ticketSelected!!,
+                        interactionid: 0,
+                        typemessage: "text",
+                        typeinteraction: null,
+                        lastmessage: textCleaned,
+                        createdate: new Date().toISOString(),
+                        userid: 0,
+                        usertype: "agent",
+                        ticketWasAnswered: !ticketSelected!!.isAnswered,
+                    }
+                    //websocket
+                    socketEmitEvent('newMessageFromAgent', newInteractionSocket);
 
-                const newInteractionSocket = {
-                    ...ticketSelected!!,
-                    interactionid: 0,
-                    typemessage: "text",
-                    typeinteraction: null,
-                    lastmessage: textCleaned,
-                    createdate: new Date().toISOString(),
-                    userid: 0,
-                    usertype: "agent",
-                    ticketWasAnswered: ticketSelected!!.isAnswered ? false : true,
+                    //send to answer with integration
+                    dispatch(replyTicket({
+                        ...ticketSelected!!,
+                        interactiontype: "text",
+                        interactiontext: textCleaned,
+                    }));
+                    setText("");
                 }
-                //websocket
-                socketEmitEvent('newMessageFromAgent', newInteractionSocket);
-
-                //send to answer with integration
-                dispatch(replyTicket({
-                    ...ticketSelected!!,
-                    interactiontype: "text",
-                    interactiontext: textCleaned,
-                }));
-                setText("");
             }
         }
 
@@ -168,8 +230,11 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
     }
 
     const handleKeyPress = (event: any) => {
-        if (event.ctrlKey && event.charCode === 13) {
-            triggerReplyMessage()
+        if (event.ctrlKey || event.shiftKey)
+            return;
+        if (event.charCode === 13) {
+            if (text.trim() || files.length > 0)
+                triggerReplyMessage()
         }
     }
 
@@ -194,10 +259,10 @@ const ReplyPanel: React.FC<{ classes: any, socketEmitEvent: (event: string, para
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
-                    <QuickresponseIcon className={classes.iconResponse} />
-                    <IconUploadImage classes={classes} setFiles={setFiles} />
+                    <IconQuickReply classes={classes} setText={setText} />
+                    <IconUploader type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
-                    <AttachmentIcon className={classes.iconResponse} />
+                    <IconUploader type="file" classes={classes} setFiles={setFiles} />
                 </div>
                 <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
                     <SendIcon />

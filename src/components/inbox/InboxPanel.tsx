@@ -231,6 +231,29 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '16px',
         lineHeight: '22px',
         wordBreak: 'break-word'
+    },
+    containerQuickReply: {
+        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+        backgroundColor: '#FFF',
+        width: 250,
+        // padding: theme.spacing(1)
+    },
+    headerQuickReply: {
+        fontSize: 13, 
+        fontWeight: 500,
+        padding: theme.spacing(1.5),
+        borderBottom: '1px solid #EBEAED'
+    },
+    itemQuickReply: {
+        fontSize: 13, 
+        paddingTop: theme.spacing(.7),
+        paddingBottom: theme.spacing(.7),
+        paddingLeft: theme.spacing(1.5),
+        paddingRight: theme.spacing(1.5),
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            cursor: 'pointer'
+        }
     }
 }));
 

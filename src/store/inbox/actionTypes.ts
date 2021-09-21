@@ -68,6 +68,7 @@ const actionType = {
     RESET_SELECT_AGENT: 'ticket/RESET_SELECT_AGENT',
     NEW_MESSAGE_FROM_CLIENT: 'ticket/NEW_MESSAGE_FROM_CLIENT',
     DELETE_TICKET: 'ticket/DELETE_TICKET',
+    CONNECT_AGENT: 'ticket/CONNECT_AGENT',
 };
 
 export default actionType;

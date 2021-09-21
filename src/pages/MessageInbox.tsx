@@ -6,7 +6,7 @@ import InboxPanel from 'components/inbox/InboxPanel'
 import useSocket from 'components/inbox/useSocket'
 import { useSelector } from 'hooks';
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1 } from 'common/helpers';
+import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const MessageInbox: React.FC = () => {
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
+            getListQuickReply()
         ]))
     }, [])
 

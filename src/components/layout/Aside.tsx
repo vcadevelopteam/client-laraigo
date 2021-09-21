@@ -124,7 +124,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             </div>
             <Divider />
             <div style={{ height: 18 }} />
-            {routes.map((ele) => (applications && applications[ele.key || 'x'][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+            {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             <div style={{ flexGrow: 1 }} />
             <div className={classes.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>

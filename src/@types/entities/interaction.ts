@@ -20,4 +20,5 @@ export interface IGroupInteraction {
     usertype: string | null;
     interactions: IInteraction[];
     interactionid: number;
+    listImage?: string[];
 }
