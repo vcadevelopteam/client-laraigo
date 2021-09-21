@@ -1,7 +1,7 @@
 import callAPIMiddleware from 'middlewares/apiMiddleware';
+import callWSMiddleware from 'middlewares/wsMiddleware';
 import { applyMiddleware, compose, createStore, combineReducers, Middleware } from 'redux';
 import thunk from 'redux-thunk';
-
 import ticketReducer, { IState as ITicketState } from './ticket/reducer';
 import channelReducer, { IState as IChannelState } from './channel/reducer';
 import loginReducer, { IState as ILogin } from './login/reducer';
@@ -40,9 +40,9 @@ const rootReducer = combineReducers<IRootState>({
 });
 
 export default function configureStore(preloadedState?: IRootState) {
-    const middleware: Middleware[] = [callAPIMiddleware];
-    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+    const middleware: Middleware[] = [callAPIMiddleware, callWSMiddleware];
 
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
     const middlewareEnhancer = composeEnhancers(applyMiddleware(thunk, ...middleware));
 
