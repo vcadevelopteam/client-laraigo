@@ -182,7 +182,7 @@ const translation: LangKeys = {
     return: "Regresar",
     active: 'Activo',
     inactive: 'Inactivo',
-    
+
     status_activo: 'activo',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
@@ -202,7 +202,7 @@ const translation: LangKeys = {
     delete: 'Eliminar',
     search: 'Buscar',
     duplicate: 'Duplicar',
-    label:"Etiqueta",
+    label: "Etiqueta",
     newuser: "Nuevo usuario",
     newdomain: "Nuevo dominio",
     newgroupconfig: "Nuevo grupo configuración",
@@ -390,6 +390,7 @@ const translation: LangKeys = {
     close_ticket: "Cerrar ticket",
     client_detail: "Detalle cliente",
 
+    report_loginhistory: 'Conexión de usuario',
     report_loginhistory_createdate: 'Fecha',
     report_loginhistory_createhour: 'Hora',
     report_loginhistory_nombre_usuario: 'Nombre del usuario',
@@ -397,6 +398,7 @@ const translation: LangKeys = {
     report_loginhistory_status: 'Estado',
     report_loginhistory_type: 'Tipo',
 
+    report_inputretry: 'Reintentos',
     report_inputretry_numeroticket: 'Ticket',
     report_inputretry_cliente: 'Usuario',
     report_inputretry_canal: 'Canal',
@@ -406,6 +408,7 @@ const translation: LangKeys = {
     report_inputretry_intento: 'Intento',
     report_inputretry_valido: 'Válido',
 
+    report_interaction: 'Interacciones',
     report_interaction_numeroticket: 'Ticket',
     report_interaction_anioticket: 'Año',
     report_interaction_mesticket: 'Mes',
@@ -424,6 +427,7 @@ const translation: LangKeys = {
     report_interaction_texto: 'Texto',
     report_interaction_phone: 'Número cliente',
 
+    report_productivity: 'Conversaciones',
     report_productivity_numeroticket: 'Ticket',
     report_productivity_anio: 'Año',
     report_productivity_mes: 'Mes',
@@ -456,6 +460,7 @@ const translation: LangKeys = {
     report_productivity_tmoasesor: 'TMO Asesor',
     report_productivity_holdingwaitingtime: 'Tiempo espera holding',
 
+    report_tipification: 'Tipificaciones',
     report_tipification_numeroticket: 'Ticket',
     report_tipification_fechaticket: 'Fecha',
     report_tipification_horaticket: 'Hora',
@@ -469,6 +474,7 @@ const translation: LangKeys = {
     report_tipification_submotivo: 'Submotivo',
     report_tipification_valoracion: 'Valoración',
 
+    report_userproductivityhours: 'Productividad de asesores hora',
     report_userproductivityhours_datestr: 'Fecha',
     report_userproductivityhours_fullname: 'Asesor',
     report_userproductivityhours_hours: 'Hora',
@@ -487,6 +493,7 @@ const translation: LangKeys = {
     report_userproductivityhours_filter_channels: 'Canal',
     report_userproductivityhours_filter_hours: 'Hora',
 
+    report_userproductivity: 'Productividad de asesores',
     report_userproductivity_totalclosedtickets: 'N° Tickets cerrados',
     report_userproductivity_holdingtickets: 'N° Tickets en holding',
     report_userproductivity_asesortickets: 'N° Tickets en asesor',

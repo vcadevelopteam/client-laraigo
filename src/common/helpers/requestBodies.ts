@@ -335,7 +335,8 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
-        bot: allParameters['bot'] ? allParameters['bot'] : false
+        bot: allParameters['bot'] ? allParameters['bot'] : false,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 

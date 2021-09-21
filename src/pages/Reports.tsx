@@ -183,7 +183,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 <>
                     <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                         <span className={classes.title}>
-                            {row?.description || ''}
+                            {t('report_' + row?.origin)}
                         </span>
                     </Box>
                     {customReport ?
@@ -316,7 +316,7 @@ const Reports: FC = () => {
     }, []);
 
     const handleFiend = (valor: string) => {
-        const filteredReports = reportsResult.mainData.data.filter(report => (`${report.description}`.toLowerCase().includes(valor.toLowerCase())))
+        const filteredReports = reportsResult.mainData.data.filter(report => (`${t('report_' + report?.origin)}`.toLowerCase().includes(valor.toLowerCase())))
         setReports(filteredReports);
     }
 
@@ -364,7 +364,7 @@ const Reports: FC = () => {
                     </div>
                 </Box>
                 <div className={classes.containerDetails}>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={3} style={{ justifyContent: 'center' }}>
                         {
                             (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
                                 <Grid item key={report.reportid + " " + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
@@ -375,11 +375,11 @@ const Reports: FC = () => {
                                                 height="140"
                                                 className={classes.media}
                                                 image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                                title={report.description}
+                                                title={t('report_' + report?.origin)}
                                             />
                                             <CardContent>
                                                 <Typography gutterBottom variant="h6" component="div">
-                                                    {report.description}
+                                                    {t('report_' + report?.origin)}
                                                 </Typography>
                                             </CardContent>
                                         </CardActionArea>
