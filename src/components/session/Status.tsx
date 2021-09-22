@@ -34,8 +34,7 @@ const Status: FC = () => {
             }
         }));
     }
-    // const [status, setStatus] = useState(userConnected);
-
+    
     return (
         <Paper elevation={0} className={classes.root}>
             <label className={classes.connectionText}><Trans>{userConnected ? langKeys.online : langKeys.offline}</Trans></label>

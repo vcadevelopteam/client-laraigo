@@ -40,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerTickets: {
         flex: '0 0 300px',
+        maxWidth: 300,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
@@ -133,11 +134,23 @@ const useStyles = makeStyles((theme) => ({
     containerResponse: {
         padding: theme.spacing(2),
         background: '#FFF',
+        position: 'relative'
     },
     containerChat: {
         flex: '1',
         flexDirection: 'column',
         display: 'flex',
+        position: 'relative'
+    },
+    collapseInfo: {
+        position: 'absolute',
+        top: 'calc(50% - 20px)'
+    },
+    infoOpen: {
+        right: -20,
+    },
+    infoClose: {
+        right: 0,
     },
     containerProfile: {
         flex: '0 0 300px',
@@ -146,7 +159,9 @@ const useStyles = makeStyles((theme) => ({
     iconResponse: {
         cursor: 'pointer',
         poisition: 'relative',
+        color: '#2E2C34',
         '&:hover': {
+            // color: theme.palette.primary.main,
             backgroundColor: '#EBEAED',
             borderRadius: 4
         }
@@ -227,10 +242,16 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center'
     },
     name: {
+        flex: 1,
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '22px',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        maxWidth: 200
     },
     containerQuickReply: {
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',

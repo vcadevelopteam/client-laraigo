@@ -56,6 +56,33 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
     return groupsInteraction;
 }
 
+const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
+    let validatelog = true;
+    //#region HIDE LOGS, ONLY SHOW LAST LOG
+    for (let i = 0; i < interactions.length; i++) {
+        if (interactions[i].interactiontext.toLowerCase().includes("balanceo") && validatelog) {
+            let countlogconsecutive = 0;
+            for (let j = i + 1; j < interactions.length; j++) {
+                if (interactions[j].interactiontext.toLowerCase().includes("balanceo")) {
+                    countlogconsecutive++;
+                    validatelog = false;
+                } else
+                    break;
+            }
+            if (countlogconsecutive > 0) {
+                const cc = countlogconsecutive;
+                for (let k = 0; k < cc; k++) {
+                    interactions[i + k].isHide = true
+                }
+            }
+        } else
+            validatelog = true;
+    }
+    //#endregion
+    //interactions = interactions.filter(i => i.interactiontype != "HIDE");
+    return interactions.filter(x => !x.isHide);
+}
+
 export const getAgents = (state: IState): IState => ({
     ...state,
     userType: "SUPERVISOR",
@@ -75,7 +102,7 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
             channels: x.channels?.split(",") || [],
             countNotAnwsered: x.countActive - x.countAnwsered,
             isConnected: x.status === "ACTIVO"
-        })) : [],
+        })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 ) : [],
         count: action.payload.count,
         loading: false,
         error: false,
@@ -221,6 +248,7 @@ export const getTickets = (state: IState): IState => ({
 
 export const getTicketsSuccess = (state: IState, action: IAction): IState => ({
     ...state,
+    isOnBottom: null,
     ticketList: {
         data: action.payload.data || [],
         count: action.payload.count,
@@ -264,12 +292,10 @@ export const connectAgent = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
     
-    console.log(data)
-
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x)
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 )
     }
     
     return {
@@ -287,6 +313,13 @@ export const connectAgentUI = (state: IState, action: IAction): IState => {
     return {
         ...state,
         userConnected: action.payload
+    };
+}
+
+export const goToBottom = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        isOnBottom: action.payload
     };
 }
 
@@ -348,6 +381,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
     return {
         ...state,
+        triggerNewMessageClient: !state.triggerNewMessageClient,
+        // isOnBottom: null,
         ticketList: {
             ...state.ticketList,
             data: newticketList
@@ -420,13 +455,14 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
     ...state,
     ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
     interactionList: {
-        data: getGroupInteractions(action.payload.data[0].data),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
         count: action.payload.count,
         loading: false,
         error: false,
     },
+    isOnBottom: null,
     configurationVariables: {
-        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority > b.priority) ? 1 : ((b.priority > a.priority) ? -1 : 0)) || [],
+        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
         count: action.payload.count,
         loading: false,
         error: false,

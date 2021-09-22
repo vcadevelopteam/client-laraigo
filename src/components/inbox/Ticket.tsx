@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
+import { styled } from '@material-ui/core/styles';
+
 import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
+import Badge from '@material-ui/core/Badge';
+
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
 
 const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; timer?: number }> = ({ label, color, timer, isTimer }) => {
@@ -21,47 +25,59 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
     )
 }
 
+const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
+    width: 22,
+    backgroundColor: '#b41a1a',
+    height: 22,
+    fontSize: 12,
+  }));
+
 const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     return (
-        (
-            <div
-                className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
-                onClick={() => setTicketSelected(item)}
+        <div
+            className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
+            onClick={() => setTicketSelected(item)}>
+
+            <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                badgeContent={
+                    (countnewmessages || 0) > 0 ? <SmallAvatar>{countnewmessages > 9 ? '+9' : countnewmessages }</SmallAvatar> : null
+                }
             >
                 <Avatar src={imageurldef} />
-                <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                        <GetIcon channelType={communicationchanneltype} />
-                        <div className={classes.name}>{displayname}</div>
-                    </div>
-                    <div style={{color: '#465a6ed9'}}>
-                        {lastmessage}
-                    </div>
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                        <LabelGo
-                            label={ticketnum}
-                            color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
-                        />
+            </Badge>
+
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <GetIcon channelType={communicationchanneltype} />
+                    <div className={classes.name}>{displayname}</div>
+                </div>
+                <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: 240 }}>
+                    {lastmessage}
+                </div>
+                <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                    <LabelGo
+                        label={ticketnum}
+                        color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
+                    />
+                    <LabelGo
+                        isTimer={true}
+                        timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
+                        color="#465a6ed9"
+                    />
+                    {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
-                            timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
-                            color="#465a6ed9"
+                            timer={getSecondsUntelNow(convertLocalDate(lastconversationdate, true))}
+                            color="#FB5F5F"
                         />
-                        {(countnewmessages || 0) > 0 &&
-                            <LabelGo
-                                isTimer={true}
-                                timer={getSecondsUntelNow(convertLocalDate(lastconversationdate, true))}
-                                color="#FB5F5F"
-                            />
-                        }
-                    </div>
+                    }
                 </div>
-                {(countnewmessages || 0) > 0 &&
-                    <div className={classes.containerNewMessages}>{(countnewmessages || 0)}</div>
-                }
             </div>
-        )
+        </div>
+
     )
 }
 

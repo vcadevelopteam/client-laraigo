@@ -19,6 +19,12 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 
+import clsx from 'clsx';
+import Fab from '@material-ui/core/Fab';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+
+
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -149,7 +155,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         newuserid: getValues('newUserId') || 3,
                     }
                 }));
-                
+
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -430,28 +436,51 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum } }) => {
+const ManageButton: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
+    const [showInfo, setshowInfo] = useState(false);
     return (
-        <div className={classes.containerChat}>
-            <div className={classes.headChat}>
-                <div>
-                    <span
-                        className={classes.titleTicketChat}
-                        onClick={showInfoPanelTrigger}
-                    >Ticket #{ticketnum}</span>
-                </div>
-                <ButtonsManageTicket classes={classes} />
-            </div>
-            <InteractionsPanel
-                classes={classes}
-                ticket={ticket} />
-            <ReplyPanel
-                classes={classes} />
+        <div className={clsx(classes.collapseInfo, {
+            [classes.infoOpen]: showInfo,
+            [classes.infoClose]: !showInfo,
+        })}>
+            <Fab
+                size="small"
+                onClick={() => {
+                    showInfoPanelTrigger();
+                    setshowInfo(!showInfo);
+                }}
+            >
+                {!showInfo ?
+                    <NavigateBeforeIcon style={{ color: '#2E2C34' }} /> :
+                    <NavigateNextIcon style={{ color: '#2E2C34' }} />
+                }
+            </Fab>
         </div>
     )
-})
+}
+
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum, displayname } }) => (
+    <div className={classes.containerChat}>
+        <div className={classes.headChat}>
+            <div>
+                <span
+                    className={classes.titleTicketChat}
+                >{displayname} - Ticket #{ticketnum}</span>
+            </div>
+            <ButtonsManageTicket classes={classes} />
+        </div>
+        <InteractionsPanel
+            classes={classes}
+            ticket={ticket} />
+        <ReplyPanel
+            classes={classes} />
+        <ManageButton
+            classes={classes}
+        />
+    </div>
+))
 
 export default ChatPanel;

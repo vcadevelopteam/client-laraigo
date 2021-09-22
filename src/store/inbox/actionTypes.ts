@@ -71,6 +71,7 @@ const actionType = {
     CONNECT_AGENT: 'inbox/CONNECT_AGENT',
     
     CONNECT_AGENT_UI: 'inbox/CONNECT_AGENT_UI',
+    GO_TO_BOTTOM: 'inbox/GO_TO_BOTTOM',
     
 
     

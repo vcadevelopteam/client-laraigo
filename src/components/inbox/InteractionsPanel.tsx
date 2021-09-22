@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
 import { convertLocalDate, toTime24HR } from 'common/helpers';
 import { manageLightBox } from 'store/popus/actions';
+import { goToBottom } from 'store/inbox/actions';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 
@@ -177,14 +178,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = (
     } else if (interactiontype === "file") {
         return (
             <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
-                <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
-                    <FileIcon width="20" height="20" />
-                    <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
-                    <DownloadIcon2 width="20" height="20" color="primary" />
+                <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
+                    <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
+                        <FileIcon width="20" height="20" />
+                        <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
+                        <DownloadIcon2 width="20" height="20" color="primary" />
 
-                </a>
-            </div>
+                    </a>
+                </div>
             </Tooltip>
         )
     }
@@ -218,23 +219,46 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
 }
 
 const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket: { displayname, imageurldef } }) => {
+    const dispatch = useDispatch();
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
+    const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
+    const isOnBottom = useSelector(state => state.inbox.isOnBottom);
 
     const el = useRef<null | HTMLDivElement>(null);
+
     const scrollToBottom = () => {
-        setTimeout(() => {
+        if (!loadingInteractions && (isOnBottom || isOnBottom === null)) {
             if (el?.current) {
-                el.current.scrollIntoView({ behavior: "smooth" });
+                el.current.scrollIntoView({ behavior: 'smooth' })
             }
-        }, 300);
+        }
     };
-    useEffect(scrollToBottom, [groupInteractionList]);
+
+    useEffect(scrollToBottom, [loadingInteractions, isOnBottom]);
+
+    const handleScroll = (e: any) => {
+        const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+        if (isOnBottom === null) {
+            if (bottom)
+                dispatch(goToBottom(true));
+        } else {
+            if (bottom) {
+                if (isOnBottom === false && isOnBottom !== null) {
+                    dispatch(goToBottom(true));
+                }
+            } else {
+                if (isOnBottom) {
+                    dispatch(goToBottom(false))
+                }
+            }
+        }
+    }
 
     return (
-        <div className={classes.containerInteractions}>
+        <div className={classes.containerInteractions} onScroll={handleScroll}>
             {groupInteractionList.loading ? <ListItemSkeleton /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {groupInteractionList.data.map((groupInteraction, index) => (
+                    {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={imageurldef}
                             clientName={displayname}
