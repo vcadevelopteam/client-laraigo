@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
+import { useSelector } from 'hooks';
 import { setUserType, emitEvent } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
@@ -8,7 +9,8 @@ import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuic
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
-  
+    const wsConnected = useSelector(state => state.inbox.wsConnected);
+
     useEffect(() => {
         dispatch(setUserType("AGENT"));
         dispatch(getMultiCollection([
@@ -18,12 +20,17 @@ const MessageInbox: React.FC = () => {
             getValuesFromDomain("GRUPOS"),
             getListQuickReply()
         ]))
-
-        dispatch(emitEvent({
-            event: 'connectChat',
-            data: { usertype: 'AGENT' }
-        }));
     }, [])
+
+    useEffect(() => {
+        if (wsConnected) {
+            console.log('AGENT AA')
+            dispatch(emitEvent({
+                event: 'connectChat',
+                data: { usertype: 'AGENT' }
+            }));
+        }
+    }, [wsConnected])
 
     return (
         <div style={{

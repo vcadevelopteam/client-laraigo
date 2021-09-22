@@ -6,8 +6,8 @@ import typesInbox from 'store/inbox/actionTypes';
 const eventsListeners = [
     { event: 'deleteTicket', type: typesInbox.DELETE_TICKET },
     { event: 'connectAgent', type: typesInbox.CONNECT_AGENT },
-    { event: 'newMessageFromClient', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: { usertype: 'client' } },
-    { event: 'newMessageFromBot', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: { newConversation: false, usertype: 'agent' } },
+    { event: 'newMessageFromClient', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {  } },
+    { event: 'newMessageFromBot', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {  } },
 ]
 
 let socket = io(apiUrls.WS_URL, {
@@ -32,6 +32,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         });
 
         socket?.on("connect", () => {
+            dispatch({ type: typesInbox.WS_CONNECTED, payload: true })
             console.log("connect", socket.id);
         });
 
@@ -40,7 +41,7 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.emit(payload.event, payload.data);
         return;
     }
-    
+
     return next(action)
 };
 
