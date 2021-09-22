@@ -213,6 +213,7 @@ interface InputProps {
     maxLength?: number;
     fregister?: Dictionary;
     uset?: boolean;
+    inputProps?: any
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -223,7 +224,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {} }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -250,6 +251,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
+                inputProps={inputProps}
             />
         </div>
     )

@@ -18,9 +18,9 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
-export const getOrgsByCorp = (orgid: number): IRequestBody => ({
+export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
-    key: "UFN_CORP_ORG_SEL",
+    key: "UFN_CORP_ORG_SEL" + (keytmp || ""),
     parameters: {
         id: orgid,
         all: true
@@ -132,11 +132,12 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
-    key: "UFN_DOMAIN_LST_VALORES",
+    key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
-        domainname
+        domainname,
+        orgid: orgid || undefined
     }
 });
 
