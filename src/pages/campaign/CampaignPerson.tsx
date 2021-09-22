@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
-// import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
@@ -60,8 +59,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
         detaildata.selectedColumns
         ? detaildata.selectedColumns
-        : (detaildata.fields.primarykey || '') !== ''
-            ? JSON.parse(JSON.stringify(detaildata.fields))
+        : (detaildata.fields?.primarykey || '') !== ''
+            ? { ...detaildata.fields } as SelectedColumns
             : new SelectedColumns());
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
     const [selection, setSelection] = useState<string[]>(detaildata.selection || []);
@@ -115,9 +114,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         let localColumnList = actualHeaders ? actualHeaders : newHeaders;
         setColumnList(localColumnList);
         // Backup of columns if user cancel modal
-        setSelectedColumnsBackup(JSON.parse(JSON.stringify(selectedColumns)));
+        setSelectedColumnsBackup({ ...selectedColumns });
         // Initialize primary key
-        let localSelectedColumns = JSON.parse(JSON.stringify(selectedColumns));
+        let localSelectedColumns = { ...selectedColumns };
         if (!localColumnList.includes(localSelectedColumns.primarykey)) {
             localSelectedColumns = {...localSelectedColumns, primarykey: ''};
         }
@@ -149,8 +148,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         setHeaders([]);
         setJsonData([]);
         setColumnList([]);
-        if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && detaildata.fields.primarykey !== '') {
-            setSelectedColumns(JSON.parse(JSON.stringify(detaildata.fields)));
+        if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
+            setSelectedColumns({...detaildata.fields} as SelectedColumns);
         }
         else {
             setSelectedColumns(new SelectedColumns());
@@ -159,7 +158,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const handleCancelModal = () => {
-        setSelectedColumns(JSON.parse(JSON.stringify(selectedColumnsBackup)));
+        setSelectedColumns({...selectedColumnsBackup} as SelectedColumns);
         setOpenModal(false);
     }
 
@@ -195,21 +194,21 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 ]
             )
             // Changing field(n) with new order
-            if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && detaildata.fields.primarykey !== '') {
-                detaildata.fields.columns.forEach((c: string, i: number) => {
+            if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
+                detaildata.fields?.columns.forEach((c: string, i: number) => {
                     let newi = selectedColumns.columns.findIndex(cs => cs === c);
                     if (newi === -1) {
-                        detaildata.message = detaildata.message.replace(`{{${c}}}`, `{{${i + 1}}}`);
-                        detaildata.message = detaildata.message.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
+                        detaildata.message = detaildata.message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
+                        detaildata.message = detaildata.message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
                     }
                     else {
-                        detaildata.message = detaildata.message.replace(`{{field${i + 2}}}`, `{{${c}}}`);
+                        detaildata.message = detaildata.message?.replace(`{{field${i + 2}}}`, `{{${c}}}`);
                     }
                 });
             }
             else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
                 detaildata.message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
-                    detaildata.message = detaildata.message.replace(`${c}`, `{{${i + 1}}}`);
+                    detaildata.message = detaildata.message?.replace(`${c}`, `{{${i + 1}}}`);
                 });
             }
             setOpenModal(false);
@@ -248,6 +247,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selection: selection,
+                person: jsonData
             });
         }
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
@@ -258,6 +258,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selection: selection,
+                person: jsonData
             });
         }
         else if (detaildata.source === 'EXTERNAL') {
@@ -268,6 +269,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selection: selection,
+                person: jsonData
             });
         }
         setStep(step);
@@ -330,7 +332,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         variant="contained"
                         type="button"
                         color="primary"
-                        // startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => setViewSelected("view-1")}
                     >{t(langKeys.cancel)}</Button>
@@ -340,7 +341,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             variant="contained"
                             color="primary"
                             type="button"
-                            // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#53a6fa" }}
                             onClick={() => changeStep("step-1")}
                         >{t(langKeys.back)}
@@ -352,7 +352,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             variant="contained"
                             color="primary"
                             type="button"
-                            // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
                             onClick={() => changeStep("step-3")}
                         >{t(langKeys.next)}

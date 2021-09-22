@@ -1,20 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
 // import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail } from 'components';
-import { Dictionary, MultiData } from "@types";
+import { FieldEdit, FieldEditMulti, FieldView, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import { execute } from 'store/main/actions';
+import { insCampaign } from 'common/helpers';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
+import { useSelector } from 'hooks';
 
 
 interface DetailProps {
     row: Dictionary | null,
     edit: boolean,
     auxdata: Dictionary;
-    detaildata: Dictionary;
+    detaildata: ICampaign;
     setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
     setStep: (step: string) => void;
@@ -48,7 +52,40 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const executeRes = useSelector(state => state.main.execute);
     // const auxResult = useSelector(state => state.main.mainAux);
+
+    const [waitSave, setWaitSave] = useState(false);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = () => {
+        const callback = () => {
+            dispatch(execute(insCampaign(detaildata)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    };
     
     return (
         <React.Fragment>
@@ -67,7 +104,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         variant="contained"
                         type="button"
                         color="primary"
-                        // startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => setViewSelected("view-1")}
                     >{t(langKeys.cancel)}</Button>
@@ -77,7 +113,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             variant="contained"
                             color="primary"
                             type="button"
-                            // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#53a6fa" }}
                             onClick={() => setStep("step-2")}
                         >{t(langKeys.back)}
@@ -89,15 +124,73 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             variant="contained"
                             color="primary"
                             type="button"
-                            // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => console.log(detaildata)}
+                            onClick={() => {
+                                console.log(detaildata);
+                                onSubmit();
+                            }}
                         >{t(langKeys.next)}
                         </Button>
                     }
                 </div>
             </div>
             <div className={classes.containerDetail}>
+                {detaildata.communicationchanneltype === 'MAIL' ?
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldEdit
+                            label={t(langKeys.title)}
+                            className="col-12"
+                            valueDefault={detaildata.subject || ''}
+                            onChange={(value) => setDetailData({...detaildata, subject: value})}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.title)}
+                            value={detaildata.subject || ''}
+                            className="col-12"
+                        />
+                    }
+                </div> : null}
+                {(detaildata.messagetemplateheader?.type || '') !== '' ?
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldEdit
+                            label={t(langKeys.header)}
+                            className="col-12"
+                            valueDefault={detaildata.messagetemplateheader?.value || ''}
+                            onChange={(value) => setDetailData({
+                                ...detaildata, 
+                                messagetemplateheader: {...detaildata.messagetemplateheader, value: value}
+                            })}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.title)}
+                            value={detaildata.messagetemplateheader?.value || ''}
+                            className="col-12"
+                        />
+                    }
+                </div> : null}
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldEditMulti
+                            label={t(langKeys.message)}
+                            className="col-12"
+                            valueDefault={detaildata.message || ''}
+                            onChange={(value) => setDetailData({
+                                ...detaildata, 
+                                message: value
+                            })}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.title)}
+                            value={detaildata.messagetemplateheader?.value || ''}
+                            className="col-12"
+                        />
+                    }
+                </div>
             </div>
         </React.Fragment>
     )

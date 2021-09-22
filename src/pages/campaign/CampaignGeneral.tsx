@@ -4,7 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
-import { Dictionary, ICampaign, MultiData } from "@types";
+import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -64,7 +64,7 @@ const dataCampaignType = [
 type FormFields = {
     isnew: boolean,
     id: number,
-	communicationchannelid: string,
+	communicationchannelid: number,
     communicationchanneltype: string,
 	usergroup: string,
 	type: string,
@@ -78,14 +78,14 @@ type FormFields = {
 	repeatable: boolean,
 	frecuency: number,
     source: string,
-	messagetemplateid: string,
+	messagetemplateid: number,
 	messagetemplatename: string,
 	messagetemplatenamespace: string,
 	messagetemplateheader: Dictionary,
 	messagetemplatebuttons: Dictionary[],
 	executiontype: string,
 	batchjson: Dictionary[],
-	fields: Dictionary,
+	fields: SelectedColumns,
     operation: string
 }
 
@@ -102,7 +102,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
-            communicationchannelid: '',
+            communicationchannelid: 0,
             communicationchanneltype: '',
             usergroup: '',
             type: 'TEXTO',
@@ -116,14 +116,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             repeatable: false,
             frecuency: 0,
             source: 'EXTERNAL',
-            messagetemplateid: '',
+            messagetemplateid: 0,
             messagetemplatename: '',
             messagetemplatenamespace: '',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
             executiontype: 'MANUAL',
             batchjson: [],
-            fields: {},
+            fields: new SelectedColumns() ,
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -146,10 +146,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }, [edit, register]);
     
     useEffect(() => {
-        if (row !== null && detaildata === null) {
+        if (row !== null && Object.keys(detaildata).length === 0) {
             setStepData(auxdata);
         }
-        else if (detaildata !== null) {
+        else if (Object.keys(detaildata).length !== 0) {
             setStepData(detaildata);
             trigger();
         }
@@ -177,14 +177,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
-        setValue('fields', data.fields || {});
+        setValue('fields', data.fields || new SelectedColumns());
     }
 
     const onSubmit = handleSubmit((data) => {
         data.messagetemplateheader = data.messagetemplateheader || {};
         data.messagetemplatebuttons = data.messagetemplatebuttons || [];
         data.batchjson = data.batchjson || [];
-        data.fields = data.fields || {};
+        data.fields = data.fields || new SelectedColumns();
         setDetailData({...detaildata, ...data});
         setStep("step-2");
     });
@@ -236,7 +236,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const onChangeType = async (data: Dictionary) => {
         setValue('type', data?.key || '');
         setValue('message', '');
-        setValue('messagetemplateid', '');
+        setValue('messagetemplateid', 0);
         setValue('messagetemplatename', '');
         setValue('messagetemplatenamespace', '');
         setValue('messagetemplateheader', {});
@@ -263,7 +263,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     return (
         <React.Fragment>
-            {/* <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div> */}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
@@ -401,7 +400,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldSelect
                             label={t(langKeys.channel)}
                             className="col-8"
-                            valueDefault={getValues('communicationchannelid')}
+                            valueDefault={getValues('communicationchannelid').toString()}
                             onChange={onChangeChannel}
                             error={errors?.communicationchannelid?.message}
                             data={dataChannel}
@@ -498,7 +497,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldSelect
                             label={t(langKeys.messagetemplate)}
                             className="col-6"
-                            valueDefault={getValues('messagetemplateid')}
+                            valueDefault={getValues('messagetemplateid').toString()}
                             onChange={onChangeMessageTemplateId}
                             error={errors?.messagetemplateid?.message}
                             data={filterMessageTemplate()}
@@ -521,7 +520,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                             valueDefault={getValues('messagetemplatenamespace')}
                             onChange={(value) => setValue('messagetemplatenamespace', value)}
-                            disabled={getValues('messagetemplateid') !== ''}
+                            disabled={getValues('messagetemplateid') !== 0}
                             error={errors?.messagetemplatenamespace?.message}
                         />
                         :

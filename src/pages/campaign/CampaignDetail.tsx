@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getCampaignSel } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { Dictionary, ICampaign, MultiData } from "@types";
 import { getCollectionAux, resetMainAux } from 'store/main/actions';
 import { CampaignGeneral, CampaignPerson, CampaignMessage } from 'pages';
 
@@ -24,7 +24,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const auxResult = useSelector(state => state.main.mainAux);
     const [step, setStep] = useState("step-1");
     const [auxData, setAuxData] = useState({});
-    const [detailData, setDetailData] = useState<any>(null);
+    const [detailData, setDetailData] = useState<ICampaign>({});
     
     const fetchDetailData = (id: number) => dispatch(getCollectionAux(getCampaignSel(id)));
 
