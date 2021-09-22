@@ -104,7 +104,9 @@ export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
 
-export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
+export const connectAgent = (payload: boolean): IActionCall => ({ type: actionTypes.CONNECT_AGENT_UI, payload });
+
+// export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
 
 
 

@@ -69,6 +69,9 @@ const actionType = {
     NEW_MESSAGE_FROM_CLIENT: 'inbox/NEW_MESSAGE_FROM_CLIENT',
     DELETE_TICKET: 'inbox/DELETE_TICKET',
     CONNECT_AGENT: 'inbox/CONNECT_AGENT',
+    
+    CONNECT_AGENT_UI: 'inbox/CONNECT_AGENT_UI',
+    
 
     
     WS_CONNECT: 'WS_CONNECT',

@@ -38,6 +38,7 @@ export interface IState {
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
     wsConnected: boolean;
+    userConnected: boolean;
 }
 
 export const initialState: IState = {
@@ -56,7 +57,8 @@ export const initialState: IState = {
     agentSelected: null,
     showInfoPanel: false,
     userType: null,
-    wsConnected: false
+    wsConnected: false,
+    userConnected: false,
 };
 
 export default createReducer<IState>(initialState, {
@@ -103,6 +105,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
     [actionTypes.CONNECT_AGENT]: caseFunctions.connectAgent,
+    [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
