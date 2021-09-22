@@ -4,7 +4,7 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, Tickets, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
+	Reports, Tickets, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM, PersonDetail } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -59,7 +59,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -179,6 +179,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON}>
 					<ExtrasLayout><Person /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.PERSON_DETAIL.path}>
+					<ExtrasLayout><PersonDetail /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
 				<ExtrasLayout><MessageTemplates /></ExtrasLayout>

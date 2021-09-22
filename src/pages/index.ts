@@ -9,7 +9,7 @@ export { default as IntelligentModels } from './IntelligentModels';
 export { default as SLA } from './SLA';
 export { default as Domains } from './Domains';
 export { default as Reports } from './Reports';
-export { default as Person } from './Person';
+export { Person, PersonDetail } from './Person';
 export { default as Supervisor } from './Supervisor';
 export { default as MessageTemplates } from './MessageTemplates';
 export { default as Tipifications } from './Tipifications';

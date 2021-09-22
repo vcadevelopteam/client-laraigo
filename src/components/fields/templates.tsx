@@ -80,6 +80,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 aria-haspopup="true"
                 size="small"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
+                style={{ display: deleteFunction ? 'block' : 'none' }}
             >
                 <MoreVertIcon style={{ color: '#B6B4BA' }} />
             </IconButton>
