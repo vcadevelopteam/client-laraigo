@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 // import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateBreadcrumbs, TitleDetail } from 'components';
-import { Dictionary, ICampaign, MultiData } from "@types";
+import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
@@ -46,90 +46,35 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-class SelectedColumns {
-    primarykey: string;
-    column: boolean[];
-    columns: string[];
-    firstname: string;
-    lastname: string;
-    constructor() {
-        this.primarykey = '';
-        this.column = [];
-        this.columns = [];
-        this.firstname = '';
-        this.lastname = '';
-    }
-}
-
 export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const [loadingPerson, setLoadingPerson] = useState(false);
-    const [headers, setHeaders] = useState<any[]>([]);
-    const [personData, setPersonData] = useState<any[]>([]);
-    const [selection, setSelection] = useState<string[]>([]);
-
     const [valuefile, setvaluefile] = useState('');
-    
-    const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
-    const [jsonData, setJsonData] = useState<any[]>([]);
-    const [columnList, setColumnList] = useState<string[]>([]);
-    const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(new SelectedColumns());
-    const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
-    
     const [openModal, setOpenModal] = useState(false);
-
-    const setTableData = (localSelectedColumns: SelectedColumns, localJsonData: any[]) => {
-        if (openModal === false && selectedColumns.primarykey !== '') {
-            setHeaders([
-                localSelectedColumns.primarykey,
-                ...localSelectedColumns.columns
-            ].map(c => {
-                return {
-                    Header: c,
-                    accessor: c
-                }
-            }));
-            setPersonData(localJsonData);
-        }
-    }
+    const [columnList, setColumnList] = useState<string[]>([]);
+    const [headers, setHeaders] = useState<any[]>(detaildata.headers || []);
+    const [jsonData, setJsonData] = useState<any[]>(detaildata.jsonData || []);
+    const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
+    const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(
+        detaildata.selectedColumns
+        ? detaildata.selectedColumns
+        : (detaildata.fields.primarykey || '') !== ''
+            ? JSON.parse(JSON.stringify(detaildata.fields))
+            : new SelectedColumns());
+    const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
+    const [selection, setSelection] = useState<string[]>(detaildata.selection || []);
 
     useEffect(() => {
-        let localSelectedColumns = new SelectedColumns();
         if (detaildata.operation === 'INSERT') {
             if (detaildata.source === 'INTERNAL') {
                 // dispatch(getPersonSel());
-                setSelection(detaildata.selection ? detaildata.selection : selection);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                setJsonData(detaildata.jsonData ? detaildata.jsonData : jsonData);
-                localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : selectedColumns;
-                setTableData(
-                    localSelectedColumns,
-                    detaildata.person ? detaildata.person : personData
-                )
-                setSelectedColumns(localSelectedColumns);
-                setSelection(detaildata.selection ? detaildata.selection : selection);
             }
         }
         else if (detaildata.operation === 'UPDATE') {
             if (detaildata.source === 'INTERNAL') {
                 // dispatch(getCampaignPersonSel());
-                setSelection(detaildata.selection ? detaildata.selection : selection);
-            }
-            else if (detaildata.source === 'EXTERNAL') {
-                setJsonData(detaildata.jsonData ? detaildata.jsonData : jsonData);
-                setPersonData(detaildata.person ? detaildata.person : personData);
-                if (detaildata.fields.primarykey !== '') {
-                    localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : JSON.parse(JSON.stringify(detaildata.fields));
-                }
-                else {
-                    localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : selectedColumns;
-                }
-                setSelectedColumns(localSelectedColumns);
-                setSelection(detaildata.selection ? detaildata.selection : selection);
             }
         }
     }, [detaildata])
@@ -200,7 +145,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const cleanData = () => {
-        setPersonData([]);
+        setJsonData([]);
         setHeaders([]);
         setJsonData([]);
         setColumnList([]);
@@ -278,37 +223,51 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     useEffect(() => {
-        setTableData(selectedColumns, jsonData);
-    }, [openModal, headers, personData])
+        setHeaderTableData(selectedColumns);
+    }, [openModal])
+
+    const setHeaderTableData = (localSelectedColumns: SelectedColumns) => {
+        if (openModal === false && selectedColumns.primarykey !== '') {
+            setHeaders([
+                localSelectedColumns.primarykey,
+                ...localSelectedColumns.columns
+            ].map(c => {
+                return {
+                    Header: c,
+                    accessor: c
+                }
+            }));
+        }
+    }
 
     const changeStep = (step: string) => {
         if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
             setDetailData({
                 ...detaildata,
-                person: personData,
-                selection: selection,
+                headers: setHeaderTableData(selectedColumns),
+                jsonData: jsonData,
                 selectedColumns: selectedColumns,
-                jsonData: jsonData
+                selection: selection,
             });
         }
         else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
             // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
             setDetailData({
                 ...detaildata,
-                person: personData,
-                selection: selection,
+                headers: setHeaderTableData(selectedColumns),
+                jsonData: jsonData,
                 selectedColumns: selectedColumns,
-                jsonData: jsonData
+                selection: selection,
             });
         }
         else if (detaildata.source === 'EXTERNAL') {
             // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
             setDetailData({
                 ...detaildata,
-                person: personData,
-                selection: selection,
+                headers: setHeaderTableData(selectedColumns),
+                jsonData: jsonData,
                 selectedColumns: selectedColumns,
-                jsonData: jsonData
+                selection: selection,
             });
         }
         setStep(step);
@@ -350,13 +309,12 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
     return (
         <React.Fragment>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>headers: {JSON.stringify(headers)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>personData: {JSON.stringify(personData)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>selection: {JSON.stringify(selection)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonDataTemp: {JSON.stringify(jsonDataTemp)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonData: {JSON.stringify(jsonData)}</div><br />
             <div className="col-12" style={{overflowWrap: 'break-word'}}>columnList: {JSON.stringify(columnList)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>headers: {JSON.stringify(headers)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonData: {JSON.stringify(jsonData)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonDataTemp: {JSON.stringify(jsonDataTemp)}</div><br />
             <div className="col-12" style={{overflowWrap: 'break-word'}}>selectedColumns: {JSON.stringify(selectedColumns)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>selection: {JSON.stringify(selection)}</div><br />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
@@ -405,8 +363,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             <div className={classes.containerDetail}>
                 <TableZyx
                     columns={headers}
-                    data={personData}
-                    loading={loadingPerson}
+                    data={jsonData}
                     download={false}
                     filterGeneral={false}
                     ButtonsElement={AdditionalButtons}

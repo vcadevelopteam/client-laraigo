@@ -1,5 +1,20 @@
 import { Dictionary } from "@types";
 
+export class SelectedColumns {
+    primarykey: string;
+    column: boolean[];
+    columns: string[];
+    firstname: string;
+    lastname: string;
+    constructor() {
+        this.primarykey = '';
+        this.column = [];
+        this.columns = [];
+        this.firstname = '';
+        this.lastname = '';
+    }
+}
+
 export interface ICampaign {
     isnew: boolean,
     id: number,
@@ -10,8 +25,6 @@ export interface ICampaign {
 	status: string,
 	title: string,
 	description: string,
-	subject: string,
-	message: string, 
 	startdate: string,
 	enddate: string,
 	repeatable: boolean,
@@ -27,8 +40,12 @@ export interface ICampaign {
 	fields: Dictionary,
     operation: string,
 
-    person: any,
-	selection: any,
-    selectedColumns: any,
-    jsonData: any
+    headers: any[],
+    jsonData: any[],
+    selectedColumns: SelectedColumns,
+	selection: any[],
+	person: any[],
+
+	subject: string,
+	message: string, 
 }
