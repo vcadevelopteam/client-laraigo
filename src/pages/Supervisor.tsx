@@ -4,7 +4,6 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
-import useSocket from 'components/inbox/useSocket'
 import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
@@ -12,7 +11,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
 import { getMultiCollection } from 'store/main/actions';
 import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -148,7 +147,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, isConnected, countActive, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -301,13 +300,7 @@ const Supervisor: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const user = useSelector(state => state.login.validateToken.user);
-
-    const [socketEmitEvent] = useSocket({ userType: 'SUPERVISOR', userId: user?.userid!!, orgId: user?.orgid!! });
-
-    // useEffect(() => {
-    //     console.log("was connected: ", isConnected);
-    // }, [isConnected])
+    const wsConnected = useSelector(state => state.inbox.wsConnected);
 
     useEffect(() => {
         dispatch(setOpenDrawer(false));
@@ -320,11 +313,21 @@ const Supervisor: FC = () => {
         ]))
     }, [])
 
+    useEffect(() => {
+        if (wsConnected) {
+            console.log('SUPERVISOR AA')
+            dispatch(emitEvent({
+                event: 'connectChat',
+                data: { usertype: 'SUPERVISOR' }
+            }));
+        }
+    }, [wsConnected])
+
     return (
         <div className={classes.container}>
             <AgentPanel classes={classes} />
             {agentSelected &&
-                <InboxPanel userType="SUPERVISOR" socketEmitEvent={socketEmitEvent} />
+                <InboxPanel userType="SUPERVISOR" />
             }
         </div>
     )

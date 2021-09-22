@@ -259,16 +259,19 @@ export const addMessage = (state: IState, action: IAction): IState => {
     };
 }
 
+
 export const connectAgent = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
+    
+    console.log(data)
 
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, status: 'ACTIVO' } : x)
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x)
     }
-
+    
     return {
         ...state,
         agentList: {
@@ -280,16 +283,23 @@ export const connectAgent = (state: IState, action: IAction): IState => {
     };
 }
 
+export const connectAgentUI = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        userConnected: action.payload
+    };
+}
+
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-
+    console.log(data)
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
-    let newTicketSelected: any = { ...state.ticketSelected };
+    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let newAgentList = [...state.agentList.data];
-
+    
     const { agentSelected, ticketSelected, userType } = state;
-
+    
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -320,7 +330,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (ticketSelected?.conversationid === data.conversationid) {
 
             if (data.usertype === "agent" && data.ticketWasAnswered) {
-                newTicketSelected.isAnswered = true;
+                if (newTicketSelected)
+                    newTicketSelected.isAnswered = true;
             }
 
             const newInteraction: IInteraction = {
@@ -644,4 +655,10 @@ export const getTipificationLevel3Failure = (state: IState, action: IAction): IS
 export const getTipificationLevel3Reset = (state: IState): IState => ({
     ...state,
     tipificationsLevel3: initialState.tipificationsLevel3,
+});
+
+
+export const wsConnect = (state: IState, action: IAction): IState => ({
+    ...state,
+    wsConnected: action.payload
 });

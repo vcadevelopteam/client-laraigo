@@ -1,18 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'
-import { setUserType } from 'store/inbox/actions';
+import React, { useEffect } from 'react';
+import { useSelector } from 'hooks';
+import { setUserType, emitEvent } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
-import useSocket from 'components/inbox/useSocket'
-import { useSelector } from 'hooks';
 import { getMultiCollection } from 'store/main/actions';
 import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
-    const user = useSelector(state => state.login.validateToken.user);
-
-    const [socketEmitEvent] = useSocket({ userType: 'AGENT', userId: user?.userid!!, orgId: user?.orgid!! });
+    const wsConnected = useSelector(state => state.inbox.wsConnected);
 
     useEffect(() => {
         dispatch(setUserType("AGENT"));
@@ -25,6 +22,16 @@ const MessageInbox: React.FC = () => {
         ]))
     }, [])
 
+    useEffect(() => {
+        if (wsConnected) {
+            console.log('AGENT AA')
+            dispatch(emitEvent({
+                event: 'connectChat',
+                data: { usertype: 'AGENT' }
+            }));
+        }
+    }, [wsConnected])
+
     return (
         <div style={{
             display: 'flex',
@@ -32,7 +39,7 @@ const MessageInbox: React.FC = () => {
             borderTop: '1px solid #EBEAED',
             width: '100%'
         }}>
-            <InboxPanel userType="AGENT" socketEmitEvent={socketEmitEvent} />
+            <InboxPanel userType="AGENT" />
         </div>
     );
 }
