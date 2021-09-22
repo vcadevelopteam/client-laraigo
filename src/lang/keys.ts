@@ -302,6 +302,7 @@ export const langKeys = {
     source: 'source',
     bdinternal: 'bdinternal',
     bdexternal: 'bdexternal',
+    clean: 'clean',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

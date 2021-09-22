@@ -12,7 +12,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { CampaignGeneral } from 'pages';
+import { CampaignDetail } from 'pages';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -204,7 +204,7 @@ export const Campaign: FC = () => {
     }
     else
         return (
-            <CampaignGeneral
+            <CampaignDetail
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}

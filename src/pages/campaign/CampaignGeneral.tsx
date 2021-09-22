@@ -1,28 +1,24 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
-import { useSelector } from 'hooks';
-import { useDispatch } from 'react-redux';
+import React, { useEffect } from 'react'; // we need this to make JSX compile
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
-import { getCampaignSel, dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
-import { Dictionary, MultiData } from "@types";
+import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
+import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollectionAux, resetMainAux } from 'store/main/actions';
-// import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
 
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-
 interface DetailProps {
-    data: RowSelected;
+    row: Dictionary | null,
+    edit: boolean,
+    auxdata: Dictionary;
+    detaildata: ICampaign;
+    setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
+    setStep: (step: string) => void;
     multiData: MultiData[];
     fetchData: () => void
 }
@@ -93,13 +89,9 @@ type FormFields = {
     operation: string
 }
 
-export const CampaignGeneral: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
     const classes = useStyles();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
-    const auxResult = useSelector(state => state.main.mainAux);
-    
-    const fetchDetailData = (id: number) => dispatch(getCollectionAux(getCampaignSel(id)));
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataChannel = multiData[1] && multiData[1].success ? multiData[1].data : [];
@@ -135,15 +127,6 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ data: { row, edit }, se
             operation: row ? "EDIT" : "INSERT"
         }
     });
-    
-    useEffect(() => {
-        if (row !== null) {
-            fetchDetailData(row?.id);
-            return () => {
-                dispatch(resetMainAux());
-            };
-        }
-    }, []);
 
     useEffect(() => {
         register('title', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -160,50 +143,50 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ data: { row, edit }, se
         register('status', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('source', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
-        // register('message', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
     
     useEffect(() => {
-        if (!auxResult.loading && !auxResult.error && row !== null) {
-            const detailData: any = auxResult.data;
-            setValue('id', detailData.id);
-            setValue('communicationchannelid', detailData.communicationchannelid);
-            setValue('usergroup', detailData.usergroup);
-            setValue('type', detailData.type);
-            setValue('status', detailData.status);
-            setValue('title', detailData.title);
-            setValue('description', detailData.description);
-            setValue('subject', detailData.subject);
-            setValue('message', detailData.message);
-            setValue('startdate', detailData.startdate);
-            setValue('enddate', detailData.enddate);
-            setValue('repeatable', detailData.repeatable);
-            setValue('frecuency', detailData.frecuency);
-            setValue('source', 'INTERNAL');
-            setValue('messagetemplateid', detailData.messagetemplateid);
-            setValue('messagetemplatename', detailData.messagetemplatename);
-            setValue('messagetemplatenamespace', detailData.messagetemplatenamespace);
-            setValue('messagetemplateheader', detailData.messagetemplateheader);
-            setValue('messagetemplatebuttons', detailData.messagetemplatebuttons);
-            setValue('executiontype', detailData.executiontype);
-            setValue('batchjson', detailData.batchjson);
-            setValue('fields', detailData.fields);
+        if (row !== null && detaildata === null) {
+            setStepData(auxdata);
         }
-    }, [auxResult]);
+        else if (detaildata !== null) {
+            setStepData(detaildata);
+            trigger();
+        }
+    }, [auxdata, detaildata]);
+
+    const setStepData = (data: Dictionary) => {
+        setValue('id', data.id);
+        setValue('communicationchannelid', data.communicationchannelid);
+        setValue('usergroup', data.usergroup);
+        setValue('type', data.type);
+        setValue('status', data.status);
+        setValue('title', data.title);
+        setValue('description', data.description);
+        setValue('subject', data.subject);
+        setValue('message', data.message);
+        setValue('startdate', data.startdate);
+        setValue('enddate', data.enddate);
+        setValue('repeatable', data.repeatable);
+        setValue('frecuency', data.frecuency);
+        setValue('source', data.source || 'INTERNAL');
+        setValue('messagetemplateid', data.messagetemplateid);
+        setValue('messagetemplatename', data.messagetemplatename);
+        setValue('messagetemplatenamespace', data.messagetemplatenamespace);
+        setValue('messagetemplateheader', data.messagetemplateheader || {});
+        setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
+        setValue('executiontype', data.executiontype);
+        setValue('batchjson', data.batchjson || []);
+        setValue('fields', data.fields || {});
+    }
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
-        // const callback = () => {
-        //     dispatch(execute(insIntegrationManager(data)));
-        //     dispatch(showBackdrop(true));
-        //     setWaitSave(true)
-        // }
-
-        // dispatch(manageConfirmation({
-        //     visible: true,
-        //     question: t(langKeys.confirmation_save),
-        //     callback
-        // }))
+        data.messagetemplateheader = data.messagetemplateheader || {};
+        data.messagetemplatebuttons = data.messagetemplatebuttons || [];
+        data.batchjson = data.batchjson || [];
+        data.fields = data.fields || {};
+        setDetailData({...detaildata, ...data});
+        setStep("step-2");
     });
 
     const validateDate = (value: string): any => {
@@ -252,6 +235,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onChangeType = async (data: Dictionary) => {
         setValue('type', data?.key || '');
+        setValue('message', '');
+        setValue('messagetemplateid', '');
+        setValue('messagetemplatename', '');
+        setValue('messagetemplatenamespace', '');
+        setValue('messagetemplateheader', {});
+        setValue('messagetemplatebuttons', []);
         await trigger('type');
     }
     
@@ -261,288 +250,290 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onChangeMessageTemplateId = async (data: Dictionary) => {
         setValue('messagetemplateid', data?.id || '');
-        setValue('messagetemplatename', dataMessageTemplate.filter(d => d.id === data?.id)[0]?.name);
-        setValue('messagetemplatenamespace', dataMessageTemplate.filter(d => d.id === data?.id)[0]?.namespace);
+        let messageTemplate = dataMessageTemplate.filter(d => d.id === data?.id)[0];
+        setValue('message', messageTemplate?.body);
+        setValue('messagetemplatename', messageTemplate?.name);
+        setValue('messagetemplatenamespace', messageTemplate?.namespace);
+        if (data.type === 'HSM') {
+            setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
+            setValue('messagetemplatebuttons', JSON.parse(messageTemplate?.buttons || []));
+        }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace']);
     }
 
     return (
-        <div style={{ width: '100%' }}>
+        <React.Fragment>
             <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
-            <form>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row ? `${row.name}` : t(langKeys.newcampaign)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={setViewSelected}
+                    />
+                    <TitleDetail
+                        title={row ? `${row.name}` : t(langKeys.newcampaign)}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={() => setViewSelected("view-1")}
+                    >{t(langKeys.cancel)}</Button>
+                    {edit &&
                         <Button
+                            className={classes.button}
                             variant="contained"
-                            type="button"
                             color="primary"
-                            // startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.cancel)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="button"
-                                // startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                                onClick={() => onSubmit()}
-                            >{t(langKeys.next)}
-                            </Button>
-                        }
-                    </div>
+                            type="button"
+                            style={{ backgroundColor: "#55BD84" }}
+                            onClick={() => onSubmit()}
+                        >{t(langKeys.next)}
+                        </Button>
+                    }
                 </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.title)}
-                                className="col-6"
-                                valueDefault={getValues('title')}
-                                onChange={(value) => setValue('title', value)}
-                                error={errors?.title?.message}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.title)}
-                                value={row?.title || ""}
-                                className="col-6"
-                            />
-                        }
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                className="col-6"
-                                valueDefault={getValues('description')}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.description)}
-                                value={row?.description || ""}
-                                className="col-6"
-                            />
-                        }
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                type="date"
-                                label={t(langKeys.startdate)}
-                                className="col-4"
-                                valueDefault={getValues('startdate')}
-                                onChange={(value) => setValue('startdate', value)}
-                                error={errors?.startdate?.message}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.startdate)}
-                                value={row?.startdate || ""}
-                                className="col-4"
-                            />
-                        }
-                        {edit ?
-                            <FieldEdit
-                                type="date"
-                                label={t(langKeys.enddate)}
-                                className="col-4"
-                                valueDefault={getValues('enddate')}
-                                onChange={(value) => setValue('enddate', value)}
-                                error={errors?.enddate?.message}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.enddate)}
-                                value={row?.enddate || ""}
-                                className="col-4"
-                            />
-                        }
-                        {edit ?
-                            <div className="col-4" style={{display: 'flex'}}>
-                                <FieldSelect
-                                    uset={true}
-                                    label={t(langKeys.executiontype)}
-                                    className={classes.flexgrow1}
-                                    valueDefault={getValues('executiontype')}
-                                    onChange={onChangeExecutionType}
-                                    error={errors?.executiontype?.message}
-                                    data={dictToArrayKV(dataExecutionType)}
-                                    optionDesc="value"
-                                    optionValue="key"
-                                />
-                                {getValues('executiontype') === 'SCHEDULED' ? 
-                                <IconButton
-                                    style={{flexGrow: 0}}    
-                                    aria-label="more"
-                                    aria-controls="long-menu"
-                                    aria-haspopup="true"
-                                    size="small"
-                                    onClick={(e) => console.log(e)}
-                                >
-                                    <EventIcon style={{ color: '#777777' }} />
-                                </IconButton>
-                                :
-                                null}
-                            </div>
-                            :
-                            <FieldView
+            </div>
+            <div className={classes.containerDetail}>
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldEdit
+                            label={t(langKeys.title)}
+                            className="col-6"
+                            valueDefault={getValues('title')}
+                            onChange={(value) => setValue('title', value)}
+                            error={errors?.title?.message}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.title)}
+                            value={row?.title || ""}
+                            className="col-6"
+                        />
+                    }
+                    {edit ?
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            className="col-6"
+                            valueDefault={getValues('description')}
+                            onChange={(value) => setValue('description', value)}
+                            error={errors?.description?.message}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.description)}
+                            value={row?.description || ""}
+                            className="col-6"
+                        />
+                    }
+                </div>
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldEdit
+                            type="date"
+                            label={t(langKeys.startdate)}
+                            className="col-4"
+                            valueDefault={getValues('startdate')}
+                            onChange={(value) => setValue('startdate', value)}
+                            error={errors?.startdate?.message}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.startdate)}
+                            value={row?.startdate || ""}
+                            className="col-4"
+                        />
+                    }
+                    {edit ?
+                        <FieldEdit
+                            type="date"
+                            label={t(langKeys.enddate)}
+                            className="col-4"
+                            valueDefault={getValues('enddate')}
+                            onChange={(value) => setValue('enddate', value)}
+                            error={errors?.enddate?.message}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.enddate)}
+                            value={row?.enddate || ""}
+                            className="col-4"
+                        />
+                    }
+                    {edit ?
+                        <div className="col-4" style={{display: 'flex'}}>
+                            <FieldSelect
+                                uset={true}
                                 label={t(langKeys.executiontype)}
-                                value={t(dataExecutionType[row?.executiontype]) || ""}
-                                className="col-4"
-                            />
-                        }
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.channel)}
-                                className="col-8"
-                                valueDefault={getValues('communicationchannelid')}
-                                onChange={onChangeChannel}
-                                error={errors?.communicationchannelid?.message}
-                                data={dataChannel}
-                                optionDesc="communicationchanneldesc"
-                                optionValue="communicationchannelid"
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.type)}
-                                value={dataChannel.filter(d => d.communicationchannelid === row?.communicationchannelid)[0].communicationchanneldesc || ""}
-                                className="col-8"
-                            />
-                        }
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.group)}
-                                className="col-4"
-                                valueDefault={getValues('usergroup')}
-                                onChange={onChangeGroup}
-                                error={errors?.usergroup?.message}
-                                data={dataGroup}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.group)}
-                                value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
-                                className="col-4"
-                            />
-                        }
-                    </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-4"
-                                valueDefault={getValues('status')}
-                                onChange={onChangeStatus}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.status)}
-                                value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
-                                className="col-4"
-                            />
-                        }
-                        {edit ?
-                            <FieldSelect
-                                uset={true}
-                                label={t(langKeys.source)}
-                                className="col-4"
-                                valueDefault={getValues('source')}
-                                onChange={onChangeSource}
-                                error={errors?.source?.message}
-                                data={filterDataSource()}
+                                className={classes.flexgrow1}
+                                valueDefault={getValues('executiontype')}
+                                onChange={onChangeExecutionType}
+                                error={errors?.executiontype?.message}
+                                data={dictToArrayKV(dataExecutionType)}
                                 optionDesc="value"
                                 optionValue="key"
                             />
+                            {getValues('executiontype') === 'SCHEDULED' ? 
+                            <IconButton
+                                style={{flexGrow: 0}}    
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={(e) => console.log(e)}
+                            >
+                                <EventIcon style={{ color: '#777777' }} />
+                            </IconButton>
                             :
-                            <FieldView
-                                label={t(langKeys.source)}
-                                value={t(dataSource[row?.source]) || ""}
-                                className="col-4"
-                            />
-                        }
-                        {edit ?
-                            <FieldSelect
-                                uset={true}
-                                label={t(langKeys.messagetype)}
-                                className="col-4"
-                                valueDefault={getValues('type')}
-                                onChange={onChangeType}
-                                error={errors?.type?.message}
-                                data={filterDataCampaignType()}
-                                optionDesc="value"
-                                optionValue="key"
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.messagetype)}
-                                value={t(dataCampaignType.filter(d => d.key === row?.type)[0].value) || ""}
-                                className="col-4"
-                            />
-                        }
-                    </div>
-                    {['HSM','SMS'].includes(getValues('type')) ?
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.messagetemplate)}
-                                className="col-6"
-                                valueDefault={getValues('messagetemplateid')}
-                                onChange={onChangeMessageTemplateId}
-                                error={errors?.messagetemplateid?.message}
-                                data={filterMessageTemplate()}
-                                optionDesc="name"
-                                optionValue="id"
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.messagetemplate)}
-                                value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
-                                className="col-6"
-                            />
-                        }
-                        {edit ?
-                            <FieldEdit
-                                fregister={{...register(`messagetemplatenamespace`, {
-                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                })}}    
-                                label={t(langKeys.namespace)}
-                                className="col-6"
-                                valueDefault={getValues('messagetemplatenamespace')}
-                                onChange={(value) => setValue('messagetemplatenamespace', value)}
-                                disabled={getValues('messagetemplateid') !== ''}
-                                error={errors?.messagetemplatenamespace?.message}
-                            />
-                            :
-                            <FieldView
-                                label={t(langKeys.namespace)}
-                                value={row?.messagetemplatenamespace || ""}
-                                className="col-4"
-                            />
-                        }
-                    </div>
-                    : null}
+                            null}
+                        </div>
+                        :
+                        <FieldView
+                            label={t(langKeys.executiontype)}
+                            value={t(dataExecutionType[row?.executiontype]) || ""}
+                            className="col-4"
+                        />
+                    }
                 </div>
-            </form>
-        </div>
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.channel)}
+                            className="col-8"
+                            valueDefault={getValues('communicationchannelid')}
+                            onChange={onChangeChannel}
+                            error={errors?.communicationchannelid?.message}
+                            data={dataChannel}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.type)}
+                            value={dataChannel.filter(d => d.communicationchannelid === row?.communicationchannelid)[0].communicationchanneldesc || ""}
+                            className="col-8"
+                        />
+                    }
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.group)}
+                            className="col-4"
+                            valueDefault={getValues('usergroup')}
+                            onChange={onChangeGroup}
+                            error={errors?.usergroup?.message}
+                            data={dataGroup}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.group)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.usergroup)[0].domaindesc || ""}
+                            className="col-4"
+                        />
+                    }
+                </div>
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-4"
+                            valueDefault={getValues('status')}
+                            onChange={onChangeStatus}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.status)}
+                            value={dataGroup.filter(d => d.domainvalue === row?.status)[0].domaindesc || ""}
+                            className="col-4"
+                        />
+                    }
+                    {edit ?
+                        <FieldSelect
+                            uset={true}
+                            label={t(langKeys.source)}
+                            className="col-4"
+                            valueDefault={getValues('source')}
+                            onChange={onChangeSource}
+                            error={errors?.source?.message}
+                            data={filterDataSource()}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.source)}
+                            value={t(dataSource[row?.source]) || ""}
+                            className="col-4"
+                        />
+                    }
+                    {edit ?
+                        <FieldSelect
+                            uset={true}
+                            label={t(langKeys.messagetype)}
+                            className="col-4"
+                            valueDefault={getValues('type')}
+                            onChange={onChangeType}
+                            error={errors?.type?.message}
+                            data={filterDataCampaignType()}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.messagetype)}
+                            value={t(dataCampaignType.filter(d => d.key === row?.type)[0].value) || ""}
+                            className="col-4"
+                        />
+                    }
+                </div>
+                {['HSM','SMS'].includes(getValues('type')) ?
+                <div className="row-zyx">
+                    {edit ?
+                        <FieldSelect
+                            label={t(langKeys.messagetemplate)}
+                            className="col-6"
+                            valueDefault={getValues('messagetemplateid')}
+                            onChange={onChangeMessageTemplateId}
+                            error={errors?.messagetemplateid?.message}
+                            data={filterMessageTemplate()}
+                            optionDesc="name"
+                            optionValue="id"
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.messagetemplate)}
+                            value={dataMessageTemplate.filter(d => d.id === row?.messagetemplateid)[0].name || ""}
+                            className="col-6"
+                        />
+                    }
+                    {edit ?
+                        <FieldEdit
+                            fregister={{...register(`messagetemplatenamespace`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })}}    
+                            label={t(langKeys.namespace)}
+                            className="col-6"
+                            valueDefault={getValues('messagetemplatenamespace')}
+                            onChange={(value) => setValue('messagetemplatenamespace', value)}
+                            disabled={getValues('messagetemplateid') !== ''}
+                            error={errors?.messagetemplatenamespace?.message}
+                        />
+                        :
+                        <FieldView
+                            label={t(langKeys.namespace)}
+                            value={row?.messagetemplatenamespace || ""}
+                            className="col-4"
+                        />
+                    }
+                </div>
+                : null}
+            </div>
+        </React.Fragment>
     )
 }

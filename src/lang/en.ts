@@ -263,6 +263,7 @@ const translation: LangKeys = {
     source: 'Source',
     bdinternal: 'Internal data',
     bdexternal: 'External data',
+    clean: 'Clean',
 
     variable: "Variable",
     successful_transaction: 'Successful transaction',

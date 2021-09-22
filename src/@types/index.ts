@@ -5,6 +5,7 @@ export * from './entities/user';
 export * from './entities/requestBody';
 export * from './entities/template';
 export * from './entities/person';
+export * from './entities/campaign';
 export * from './reducerState';
 export * from './action';
 export * from './route';

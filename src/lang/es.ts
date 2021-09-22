@@ -300,6 +300,7 @@ const translation: LangKeys = {
     source: 'Fuente',
     bdinternal: 'Base interna',
     bdexternal: 'Base externa',
+    clean: 'Limpiar',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
