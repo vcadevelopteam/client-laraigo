@@ -263,7 +263,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     return (
         <React.Fragment>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div>
+            {/* <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(getValues())}</div> */}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs

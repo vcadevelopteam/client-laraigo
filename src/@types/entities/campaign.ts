@@ -27,7 +27,8 @@ export interface ICampaign {
 	fields: Dictionary,
     operation: string,
 
-    selection: any,
+    person: any,
+	selection: any,
     selectedColumns: any,
-    jsondata: any
+    jsonData: any
 }

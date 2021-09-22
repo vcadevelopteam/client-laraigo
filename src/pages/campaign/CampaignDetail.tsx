@@ -45,7 +45,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     return (
         <div style={{ width: '100%' }}>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(detailData)}</div>
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>{JSON.stringify(detailData)}</div><br />
             {step === "step-1" ?
             <CampaignGeneral 
                 row={row}

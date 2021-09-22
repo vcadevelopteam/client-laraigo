@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useDispatch } from 'react-redux';
 // import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail } from 'components';
+import { DialogZyx, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { uploadExcel } from 'common/helpers';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -45,45 +46,301 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+class SelectedColumns {
+    primarykey: string;
+    column: boolean[];
+    columns: string[];
+    firstname: string;
+    lastname: string;
+    constructor() {
+        this.primarykey = '';
+        this.column = [];
+        this.columns = [];
+        this.firstname = '';
+        this.lastname = '';
+    }
+}
+
 export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
-    const [personData, setPersonData] = useState([]);
     const [loadingPerson, setLoadingPerson] = useState(false);
+    const [headers, setHeaders] = useState<any[]>([]);
+    const [personData, setPersonData] = useState<any[]>([]);
+    const [selection, setSelection] = useState<string[]>([]);
 
-    const columns = React.useMemo(
-        () => [],
-        []
-    )
+    const [valuefile, setvaluefile] = useState('');
+    
+    const [jsonDataTemp, setJsonDataTemp] = useState<any[]>([]);
+    const [jsonData, setJsonData] = useState<any[]>([]);
+    const [columnList, setColumnList] = useState<string[]>([]);
+    const [selectedColumns, setSelectedColumns] = useState<SelectedColumns>(new SelectedColumns());
+    const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
+    
+    const [openModal, setOpenModal] = useState(false);
+
+    const setTableData = (localSelectedColumns: SelectedColumns, localJsonData: any[]) => {
+        if (openModal === false && selectedColumns.primarykey !== '') {
+            setHeaders([
+                localSelectedColumns.primarykey,
+                ...localSelectedColumns.columns
+            ].map(c => {
+                return {
+                    Header: c,
+                    accessor: c
+                }
+            }));
+            setPersonData(localJsonData);
+        }
+    }
 
     useEffect(() => {
-        if (detaildata.source === 'INTERNAL') {
-            // dispatch(getPersonSel());
+        let localSelectedColumns = new SelectedColumns();
+        if (detaildata.operation === 'INSERT') {
+            if (detaildata.source === 'INTERNAL') {
+                // dispatch(getPersonSel());
+                setSelection(detaildata.selection ? detaildata.selection : selection);
+            }
+            else if (detaildata.source === 'EXTERNAL') {
+                setJsonData(detaildata.jsonData ? detaildata.jsonData : jsonData);
+                localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : selectedColumns;
+                setTableData(
+                    localSelectedColumns,
+                    detaildata.person ? detaildata.person : personData
+                )
+                setSelectedColumns(localSelectedColumns);
+                setSelection(detaildata.selection ? detaildata.selection : selection);
+            }
         }
-        else if (detaildata.source === 'EXTERNAL') {
+        else if (detaildata.operation === 'UPDATE') {
+            if (detaildata.source === 'INTERNAL') {
+                // dispatch(getCampaignPersonSel());
+                setSelection(detaildata.selection ? detaildata.selection : selection);
+            }
+            else if (detaildata.source === 'EXTERNAL') {
+                setJsonData(detaildata.jsonData ? detaildata.jsonData : jsonData);
+                setPersonData(detaildata.person ? detaildata.person : personData);
+                if (detaildata.fields.primarykey !== '') {
+                    localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : JSON.parse(JSON.stringify(detaildata.fields));
+                }
+                else {
+                    localSelectedColumns = detaildata.selectedColumns ? detaildata.selectedColumns : selectedColumns;
+                }
+                setSelectedColumns(localSelectedColumns);
+                setSelection(detaildata.selection ? detaildata.selection : selection);
+            }
         }
     }, [detaildata])
+
+    const handleUpload = async (files: any) => {
+        const file = files[0];
+        const data = await uploadExcel(file);
+        setvaluefile('')
+        if (data) {
+            uploadData(data);
+        }
+    }
+
+    const uploadData = (data: any) => {
+        if (data.length === 0) {
+            alert('Archivo sin data!');
+            return null;
+        }
+        if (data.length > 100000) {
+            alert('Archivo con demasiados registros!');
+            return null;
+        }
+        let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
+        let newHeaders = Object.keys(data[0]);
+        if (actualHeaders) {
+            if (actualHeaders.length !== newHeaders.length) {
+                alert('Archivo incompatible con el anterior!');
+                return null;
+            }
+            if (!newHeaders.every(h => actualHeaders?.includes(h))) {
+                alert('Archivo incompatible con el anterior!');
+                return null;
+            }
+        }
+        // Set olny new records
+        setJsonDataTemp(data.filter((d: any) => jsonData.findIndex((j: any) => JSON.stringify(j) === JSON.stringify(d)) === -1));
+        // Set actual headers or new headers
+        let localColumnList = actualHeaders ? actualHeaders : newHeaders;
+        setColumnList(localColumnList);
+        // Backup of columns if user cancel modal
+        setSelectedColumnsBackup(JSON.parse(JSON.stringify(selectedColumns)));
+        // Initialize primary key
+        let localSelectedColumns = JSON.parse(JSON.stringify(selectedColumns));
+        if (!localColumnList.includes(localSelectedColumns.primarykey)) {
+            localSelectedColumns = {...localSelectedColumns, primarykey: ''};
+        }
+        // Initialize selected column booleans
+        if (selectedColumns.columns.length === 0) {
+            localSelectedColumns = {...localSelectedColumns, column: new Array(localColumnList.length).fill(false)};
+        }
+        // Code for reuse campaign
+        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
+            // Asign [true, false] if columns has new order
+            // Asign columns that exist
+            localSelectedColumns = {
+                ...localSelectedColumns,
+                column: localColumnList.map(c => localSelectedColumns.columns.includes(c)),
+                columns: localColumnList.reduce((ac: any, c: any) => {
+                    if (localSelectedColumns.columns.includes(c)) {
+                        ac.push(c);
+                    }
+                    return ac;
+                }, [])
+            };
+        }
+        setSelectedColumns(localSelectedColumns);
+        setOpenModal(true);
+    }
+
+    const cleanData = () => {
+        setPersonData([]);
+        setHeaders([]);
+        setJsonData([]);
+        setColumnList([]);
+        if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && detaildata.fields.primarykey !== '') {
+            setSelectedColumns(JSON.parse(JSON.stringify(detaildata.fields)));
+        }
+        else {
+            setSelectedColumns(new SelectedColumns());
+        }
+        setSelection([]);
+    }
+
+    const handleCancelModal = () => {
+        setSelectedColumns(JSON.parse(JSON.stringify(selectedColumnsBackup)));
+        setOpenModal(false);
+    }
+
+    const handleSaveModal = () => {
+        if (selectedColumns.primarykey !== '') {
+            let columns = columnList.reduce((h: string[], c: string, i: number) => {
+                if (c !== selectedColumns.primarykey && selectedColumns.column[i]) {
+                    h.push(c);
+                }
+                return h
+            }, []);
+            setSelectedColumns({...selectedColumns, columns: columns})
+            setJsonDataTemp(
+                JSON.parse(JSON.stringify(jsonDataTemp, [
+                    selectedColumns.primarykey,
+                    ...columns
+                ]))
+            )
+            setJsonData(
+                [
+                    ...JSON.parse(JSON.stringify(jsonData,
+                    [
+                        selectedColumns.primarykey,
+                        ...columns
+                    ])),
+                    ...JSON.parse(JSON.stringify(jsonDataTemp.filter(j => 
+                        !jsonData.map(jd => jd[selectedColumns.primarykey])
+                        .includes(j[selectedColumns.primarykey])),
+                    [
+                        selectedColumns.primarykey,
+                        ...columns
+                    ]))
+                ]
+            )
+            // Changing field(n) with new order
+            if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && detaildata.fields.primarykey !== '') {
+                detaildata.fields.columns.forEach((c: string, i: number) => {
+                    let newi = selectedColumns.columns.findIndex(cs => cs === c);
+                    if (newi === -1) {
+                        detaildata.message = detaildata.message.replace(`{{${c}}}`, `{{${i + 1}}}`);
+                        detaildata.message = detaildata.message.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
+                    }
+                    else {
+                        detaildata.message = detaildata.message.replace(`{{field${i + 2}}}`, `{{${c}}}`);
+                    }
+                });
+            }
+            else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
+                detaildata.message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
+                    detaildata.message = detaildata.message.replace(`${c}`, `{{${i + 1}}}`);
+                });
+            }
+            setOpenModal(false);
+        }
+        else {
+            console.log(columnList);
+            console.log(selectedColumns);
+            console.log(jsonData);
+            console.log(jsonDataTemp);
+        }
+    }
+
+    useEffect(() => {
+        setTableData(selectedColumns, jsonData);
+    }, [openModal, headers, personData])
+
+    const changeStep = (step: string) => {
+        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+            setDetailData({
+                ...detaildata,
+                person: personData,
+                selection: selection,
+                selectedColumns: selectedColumns,
+                jsonData: jsonData
+            });
+        }
+        else if (detaildata.operation === 'UPDATE' && detaildata.source === 'INTERNAL') {
+            // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
+            setDetailData({
+                ...detaildata,
+                person: personData,
+                selection: selection,
+                selectedColumns: selectedColumns,
+                jsonData: jsonData
+            });
+        }
+        else if (detaildata.source === 'EXTERNAL') {
+            // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
+            setDetailData({
+                ...detaildata,
+                person: personData,
+                selection: selection,
+                selectedColumns: selectedColumns,
+                jsonData: jsonData
+            });
+        }
+        setStep(step);
+    }
 
     const AdditionalButtons = () => {
         return (
             <React.Fragment>
+                <input
+                    id="upload-file"
+                    name="file"
+                    type="file"
+                    accept=".xls,.xlsx"
+                    value={valuefile}
+                    style={{ display: 'none' }}
+                    onChange={(e) => handleUpload(e.target.files)}
+                />
+                <label htmlFor="upload-file">
+                    <Button
+                        component="span"
+                        className={classes.button}
+                        variant="contained"
+                        color="primary"
+                        style={{ backgroundColor: "#ea2e49" }}
+                    ><Trans i18nKey={langKeys.uploadFile} />
+                    </Button>
+                </label> 
                 <Button
                     className={classes.button}
                     variant="contained"
                     color="primary"
-                    // startIcon={<AddIcon color="secondary" />}
-                    onClick={() => console.log('blacklist')}
-                    style={{ backgroundColor: "#ea2e49" }}
-                ><Trans i18nKey={langKeys.uploadFile} />
-                </Button>
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    // startIcon={<AddIcon color="secondary" />}
-                    onClick={() => console.log('report')}
+                    onClick={() => cleanData()}
                     style={{ backgroundColor: "#22b66e" }}
                 ><Trans i18nKey={langKeys.clean} />
                 </Button>
@@ -93,6 +350,13 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
     return (
         <React.Fragment>
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>headers: {JSON.stringify(headers)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>personData: {JSON.stringify(personData)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>selection: {JSON.stringify(selection)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonDataTemp: {JSON.stringify(jsonDataTemp)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonData: {JSON.stringify(jsonData)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>columnList: {JSON.stringify(columnList)}</div><br />
+            <div className="col-12" style={{overflowWrap: 'break-word'}}>selectedColumns: {JSON.stringify(selectedColumns)}</div><br />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs
@@ -120,7 +384,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             type="button"
                             // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#53a6fa" }}
-                            onClick={() => setStep("step-1")}
+                            onClick={() => changeStep("step-1")}
                         >{t(langKeys.back)}
                         </Button>
                     }
@@ -132,7 +396,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             type="button"
                             // startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
-                            onClick={() => setStep("step-3")}
+                            onClick={() => changeStep("step-3")}
                         >{t(langKeys.next)}
                         </Button>
                     }
@@ -140,7 +404,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             </div>
             <div className={classes.containerDetail}>
                 <TableZyx
-                    columns={columns}
+                    columns={headers}
                     data={personData}
                     loading={loadingPerson}
                     download={false}
@@ -148,6 +412,96 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     ButtonsElement={AdditionalButtons}
                 />
             </div>
+            <ModalCampaignColumns
+                columnList={columnList}
+                selectedColumns={selectedColumns}
+                setSelectedColumns={setSelectedColumns}
+                openModal={openModal}
+                handleCancelModal={handleCancelModal}
+                handleSaveModal={handleSaveModal}
+            />
         </React.Fragment>
+    )
+}
+
+interface ModalProps {
+    columnList: string[];
+    selectedColumns: SelectedColumns;
+    setSelectedColumns: (data: SelectedColumns) => void;
+    openModal: boolean;
+    handleCancelModal: () => void;
+    handleSaveModal: () => void;
+}
+
+const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumns, setSelectedColumns, openModal, handleCancelModal, handleSaveModal }) => {
+    const { t } = useTranslation();
+
+    const [checkboxEnable, setCheckboxEnable] = useState(true);
+    
+    const handleMaxColumns = () => {
+        setCheckboxEnable(selectedColumns.column.filter(c => c === true).length < 14 ? true : false);
+    }
+
+    useEffect(() => {
+        handleMaxColumns();
+    }, [selectedColumns])
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.select_column_plural)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.save)}
+            handleClickButton2={handleSaveModal}
+        >
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>{t(langKeys.name)}</TableCell>
+                            <TableCell>{t(langKeys.key)}</TableCell>
+                            <TableCell>{t(langKeys.column)}</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {columnList.map((c, i) => 
+                            <TableRow key={i}>
+                                <TableCell>{c}</TableCell>
+                                <TableCell>
+                                    <input
+                                        type="radio"
+                                        value={c}
+                                        checked={selectedColumns.primarykey === c || false}
+                                        onChange={(e) => {
+                                            setSelectedColumns({
+                                                ...selectedColumns,
+                                                primarykey: c || '',
+                                                column: selectedColumns.column.map((sc, sci) => sci === i ? false : sc) || []
+                                            });
+                                        }}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedColumns.column[i] || false}
+                                        disabled={selectedColumns.primarykey === c || (!checkboxEnable && selectedColumns.column[i] === false)}
+                                        onChange={(e) => {
+                                            setSelectedColumns({
+                                                ...selectedColumns,
+                                                column: selectedColumns.column.map((sc, sci) => sci === i ? e.target.checked : sc) || []
+                                            });
+                                        }}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </DialogZyx>
     )
 }

@@ -303,6 +303,8 @@ export const langKeys = {
     bdinternal: 'bdinternal',
     bdexternal: 'bdexternal',
     clean: 'clean',
+    column: 'column',
+    select_column_plural: 'select_column_plural',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

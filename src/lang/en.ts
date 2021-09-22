@@ -264,6 +264,8 @@ const translation: LangKeys = {
     bdinternal: 'Internal data',
     bdexternal: 'External data',
     clean: 'Clean',
+    column: 'Column',
+    select_column_plural: 'Select columns',
 
     variable: "Variable",
     successful_transaction: 'Successful transaction',
