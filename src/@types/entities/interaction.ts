@@ -12,6 +12,7 @@ export interface IInteraction {
     indexImage?: number | undefined;
     listImage?: string[] | undefined;
     isHide?: boolean;
+    onlyTime?: string;
 }
 
 export interface IGroupInteraction {

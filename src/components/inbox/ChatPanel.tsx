@@ -18,12 +18,10 @@ import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti }
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
 
-import clsx from 'clsx';
-import Fab from '@material-ui/core/Fab';
-import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
-import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-
+import CloseIcon from '@material-ui/icons/Close';
 
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -385,18 +383,28 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <div className={classes.buttonCloseticket} onClick={closeTicket}>
+                {/* <div className={classes.buttonCloseticket} onClick={closeTicket}>
                     <CheckIcon /> <span style={{ marginLeft: 8 }} >Close ticket</span>
-                </div>
-                <div className={classes.buttonIcon} onClick={(e) => setAnchorEl(e.currentTarget)}>
+                </div> */}
+                <IconButton
+                    onClick={closeTicket}
+                >
+                    <CloseIcon />
+                </IconButton>
+                <IconButton
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                >
+                    <MoreVertIcon />
+                </IconButton>
+                {/* <div className={classes.buttonIcon} onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon style={{ color: '#000' }} />
-                </div>
-                <div className={classes.buttonIcon}>
+                </div> */}
+                {/* <div className={classes.buttonIcon}>
                     <VideocamIcon style={{ color: '#000' }} />
                 </div>
                 <div className={classes.buttonIcon}>
                     <CallIcon style={{ color: '#000' }} />
-                </div>
+                </div> */}
             </div>
             <Menu
                 id="menu-appbar"
@@ -436,50 +444,40 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ManageButton: React.FC<{ classes: any }> = ({ classes }) => {
+
+const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { ticketnum, displayname, imageurldef } }) => {
     const dispatch = useDispatch();
+
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
-    const [showInfo, setshowInfo] = useState(false);
     return (
-        <div className={clsx(classes.collapseInfo, {
-            [classes.infoOpen]: showInfo,
-            [classes.infoClose]: !showInfo,
-        })}>
-            <Fab
-                size="small"
-                onClick={() => {
-                    showInfoPanelTrigger();
-                    setshowInfo(!showInfo);
-                }}
-            >
-                {!showInfo ?
-                    <NavigateBeforeIcon style={{ color: '#2E2C34' }} /> :
-                    <NavigateNextIcon style={{ color: '#2E2C34' }} />
-                }
-            </Fab>
+        <div className={classes.headChat} onClick={showInfoPanelTrigger}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <Avatar src={imageurldef || ""} />
+                <div className={classes.titleTicketChat}>
+                    <div>
+                        {displayname}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 400 }}>
+                        Ticket #{ticketnum}
+                    </div>
+                </div>
+            </div>
+            <ButtonsManageTicket classes={classes} />
         </div>
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum, displayname } }) => (
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket }) => (
     <div className={classes.containerChat}>
-        <div className={classes.headChat}>
-            <div>
-                <span
-                    className={classes.titleTicketChat}
-                >{displayname} - Ticket #{ticketnum}</span>
-            </div>
-            <ButtonsManageTicket classes={classes} />
-        </div>
+        <HeadChat 
+            classes={classes} 
+            ticket={ticket} />
         <InteractionsPanel
             classes={classes}
             ticket={ticket} />
         <ReplyPanel
             classes={classes} />
-        <ManageButton
-            classes={classes}
-        />
     </div>
 ))
 

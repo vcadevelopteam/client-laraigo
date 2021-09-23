@@ -1,5 +1,6 @@
 import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams } from "@types";
 import { initialState, IState } from "./reducer";
+import { toTime24HR, convertLocalDate } from 'common/helpers';
 
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
@@ -10,6 +11,7 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
     return interactions.reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
+        item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
         const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
@@ -36,6 +38,8 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
     interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
 
+    interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false).toLocaleTimeString())
+    
     interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;

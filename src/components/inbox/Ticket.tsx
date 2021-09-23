@@ -26,10 +26,10 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
 }
 
 const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
-    width: 22,
+    width: 18,
     backgroundColor: '#b41a1a',
-    height: 22,
-    fontSize: 12,
+    height: 18,
+    fontSize: 11,
   }));
 
 const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
