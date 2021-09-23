@@ -37,8 +37,8 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
     interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
-
-    interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false).toLocaleTimeString())
+    
+    interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false, false).toLocaleTimeString())
     
     interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
@@ -277,19 +277,19 @@ export const getTicketsReset = (state: IState): IState => ({
     ticketList: initialState.ticketList,
 });
 
-export const addMessage = (state: IState, action: IAction): IState => {
-    const newInteraction: IInteraction = action.payload;
-    newInteraction.interactionid = state.interactionList.data.length * -1;
-    return {
-        ...state,
-        interactionList: {
-            data: AddNewInteraction(state.interactionList.data, newInteraction),
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-    };
-}
+// export const addMessage = (state: IState, action: IAction): IState => {
+//     const newInteraction: IInteraction = action.payload;
+//     newInteraction.interactionid = state.interactionList.data.length * -1;
+//     return {
+//         ...state,
+//         interactionList: {
+//             data: AddNewInteraction(state.interactionList.data, newInteraction),
+//             count: action.payload.count,
+//             loading: false,
+//             error: false,
+//         },
+//     };
+// }
 
 
 export const connectAgentWS = (state: IState, action: IAction): IState => {
@@ -329,7 +329,7 @@ export const goToBottom = (state: IState, action: IAction): IState => {
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-    console.log(data)
+    console.log("newMessageFromClient", data)
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
