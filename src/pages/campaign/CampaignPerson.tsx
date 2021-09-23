@@ -208,30 +208,27 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 ]
             )
             // Changing field(n) with new order
+            let message: string = detaildata.message || '';
             if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL' && (detaildata.fields?.primarykey || '') !== '') {
                 detaildata.fields?.columns.forEach((c: string, i: number) => {
                     let newi = selectedColumns.columns.findIndex(cs => cs === c);
                     if (newi === -1) {
-                        detaildata.message = detaildata.message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
-                        detaildata.message = detaildata.message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
+                        message = message?.replace(`{{${c}}}`, `{{${i + 1}}}`);
+                        message = message?.replace(`{{field${i + 2}}}`, `{{${i + 1}}}`);
                     }
                     else {
-                        detaildata.message = detaildata.message?.replace(`{{field${i + 2}}}`, `{{${c}}}`);
+                        message = message?.replace(`{{field${i + 2}}}`, `{{${c}}}`);
                     }
                 });
+                setDetailData({...detaildata, message: message});
             }
             else if (detaildata.operation === 'UPDATE' && detaildata.source === 'EXTERNAL') {
-                detaildata.message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
-                    detaildata.message = detaildata.message?.replace(`${c}`, `{{${i + 1}}}`);
+                message?.match(/({{)(.*?)(}})/g)?.forEach((c: string, i: number) => {
+                    message = message?.replace(`${c}`, `{{${i + 1}}}`);
                 });
+                setDetailData({...detaildata, message: message});
             }
             setOpenModal(false);
-        }
-        else {
-            console.log(columnList);
-            console.log(selectedColumns);
-            console.log(jsonData);
-            console.log(jsonDataTemp);
         }
     }
 
@@ -325,12 +322,6 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     
     return (
         <React.Fragment>
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>columnList: {JSON.stringify(columnList)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>headers: {JSON.stringify(headers)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonData: {JSON.stringify(jsonData)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>jsonDataTemp: {JSON.stringify(jsonDataTemp)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>selectedColumns: {JSON.stringify(selectedColumns)}</div><br />
-            <div className="col-12" style={{overflowWrap: 'break-word'}}>selection: {JSON.stringify(selection)}</div><br />
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <div>
                     <TemplateBreadcrumbs

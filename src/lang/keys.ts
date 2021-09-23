@@ -302,6 +302,8 @@ export const langKeys = {
     source: 'source',
     bdinternal: 'bdinternal',
     bdexternal: 'bdexternal',
+    date: 'date',
+    hour: 'hour',
     clean: 'clean',
     column: 'column',
     select_column_plural: 'select_column_plural',

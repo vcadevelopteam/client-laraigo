@@ -23,7 +23,7 @@ interface DetailProps {
 export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const dispatch = useDispatch();
     const auxResult = useSelector(state => state.main.mainAux);
-    const [step, setStep] = useState("step-1");
+    const [step, setStep] = useState("step-0");
     const [auxData, setAuxData] = useState({});
     const [detailData, setDetailData] = useState<ICampaign>({});
     const [waitView, setWaitView] = useState(false);
@@ -39,6 +39,9 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 dispatch(resetMainAux());
             };
         }
+        else {
+            setStep("step-1");
+        }
     }, []);
 
     useEffect(() => {
@@ -47,9 +50,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 setAuxData(auxResult.data);
                 dispatch(showBackdrop(false));
                 setWaitView(false);
+                setStep("step-1");
             }
         }
     }, [auxResult, waitView]);
+
+    useEffect(() => {
+        console.log(detailData);
+    }, [step])
 
     return (
         <div style={{ width: '100%' }}>

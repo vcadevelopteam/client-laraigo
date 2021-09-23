@@ -263,6 +263,8 @@ const translation: LangKeys = {
     source: 'Source',
     bdinternal: 'Internal data',
     bdexternal: 'External data',
+    date: 'Date',
+    hour: 'Hour',
     clean: 'Clean',
     column: 'Column',
     select_column_plural: 'Select columns',

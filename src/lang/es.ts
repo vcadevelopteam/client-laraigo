@@ -300,6 +300,8 @@ const translation: LangKeys = {
     source: 'Fuente',
     bdinternal: 'Base interna',
     bdexternal: 'Base externa',
+    date: 'Fecha',
+    hour: 'Hora',
     clean: 'Limpiar',
     column: 'Columna',
     select_column_plural: 'Seleccione columnas',
