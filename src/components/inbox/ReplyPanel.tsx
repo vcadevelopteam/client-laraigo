@@ -249,8 +249,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         event: 'newMessageFromAgent',
                         data: newInteractionSocket
                     }));
-
-                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
                 })
                 setFiles([])
             }
@@ -273,7 +271,6 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         event: 'newMessageFromAgent',
                         data: newInteractionSocket
                     }));
-                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
 
                     //send to answer with integration
                     dispatch(replyTicket({
@@ -301,8 +298,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         if (event.ctrlKey || event.shiftKey)
             return;
         if (event.charCode === 13) {
+            event.preventDefault();
             if (text.trim() || files.length > 0)
-                triggerReplyMessage()
+                return triggerReplyMessage()
         }
     }
 

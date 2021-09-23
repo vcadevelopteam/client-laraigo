@@ -104,7 +104,7 @@ export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
 
-export const connectAgent = (payload: boolean): IActionCall => {
+export const connectAgentUI = (payload: boolean): IActionCall => {
     localStorage.setItem("agentConnected", payload ? "1" : "")
     return { type: actionTypes.CONNECT_AGENT_UI, payload }
 };
@@ -177,7 +177,17 @@ export const getTipificationLevel3 = (classificationid: number): IActionCall => 
 export const resetGetTipificationLevel3 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_3_RESET });
 
 
+export const connectAgentAPI = (connect: boolean, description: string | null = null, motive: string | null = null): IActionCall => ({
+    callAPI: () => InboxService.connectUser({ connect, description, motive }),
+    types: {
+        loading: actionTypes.CONNECT_AGENT_API,
+        success: actionTypes.CONNECT_AGENT_API_SUCCESS,
+        failure: actionTypes.CONNECT_AGENT_API_FAILURE,
+    },
+    type: null,
+});
 
+export const resetConnectAgentAPI = (): IActionCall => ({ type: actionTypes.CONNECT_AGENT_API_RESET });
 
 
 
