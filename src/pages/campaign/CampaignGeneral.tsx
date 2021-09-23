@@ -18,6 +18,7 @@ interface DetailProps {
     detaildata: ICampaign;
     setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
+    step: string;
     setStep: (step: string) => void;
     multiData: MultiData[];
     fetchData: () => void
@@ -89,7 +90,7 @@ type FormFields = {
     operation: string
 }
 
-export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
+export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
 
@@ -124,7 +125,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             executiontype: 'MANUAL',
             batchjson: [],
             fields: new SelectedColumns() ,
-            operation: row ? "EDIT" : "INSERT"
+            operation: row ? "UPDATE" : "INSERT"
         }
     });
 
@@ -147,7 +148,10 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
-            setStepData(auxdata);
+            if (auxdata.length > 0) {
+                setStepData(auxdata[0]);
+                trigger();
+            }
         }
         else if (Object.keys(detaildata).length !== 0) {
             setStepData(detaildata);
@@ -199,7 +203,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const onChangeChannel = async (data: Dictionary) => {
-        setValue('communicationchannelid', data?.communicationchannelid || '');
+        setValue('communicationchannelid', data?.communicationchannelid || 0);
         setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
         setValue('type', 'TEXTO');
         await trigger(['communicationchannelid', 'communicationchanneltype', 'type']);
@@ -249,7 +253,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const onChangeMessageTemplateId = async (data: Dictionary) => {
-        setValue('messagetemplateid', data?.id || '');
+        setValue('messagetemplateid', data?.id || 0);
         let messageTemplate = dataMessageTemplate.filter(d => d.id === data?.id)[0];
         setValue('message', messageTemplate?.body);
         setValue('messagetemplatename', messageTemplate?.name);
@@ -270,7 +274,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         handleClick={setViewSelected}
                     />
                     <TitleDetail
-                        title={row ? `${row.name}` : t(langKeys.newcampaign)}
+                        title={row ? `${row.title}` : t(langKeys.newcampaign)}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -400,7 +404,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldSelect
                             label={t(langKeys.channel)}
                             className="col-8"
-                            valueDefault={getValues('communicationchannelid').toString()}
+                            valueDefault={getValues('communicationchannelid') as any}
                             onChange={onChangeChannel}
                             error={errors?.communicationchannelid?.message}
                             data={dataChannel}
@@ -497,7 +501,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         <FieldSelect
                             label={t(langKeys.messagetemplate)}
                             className="col-6"
-                            valueDefault={getValues('messagetemplateid').toString()}
+                            valueDefault={getValues('messagetemplateid') as any}
                             onChange={onChangeMessageTemplateId}
                             error={errors?.messagetemplateid?.message}
                             data={filterMessageTemplate()}

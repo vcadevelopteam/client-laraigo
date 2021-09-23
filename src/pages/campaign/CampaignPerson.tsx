@@ -8,8 +8,10 @@ import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { uploadExcel } from 'common/helpers';
+import { getCampaignMemberSel, uploadExcel } from 'common/helpers';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
+import { useSelector } from 'hooks';
+import { getCollectionAux } from 'store/main/actions';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -18,6 +20,7 @@ interface DetailProps {
     detaildata: ICampaign;
     setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
+    step: string;
     setStep: (step: string) => void;
     multiData: MultiData[];
     fetchData: () => void
@@ -45,10 +48,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
+export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    
+    const auxResult = useSelector(state => state.main.multiDataAux);
 
     const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -65,6 +70,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const [selectedColumnsBackup, setSelectedColumnsBackup] = useState<SelectedColumns>(new SelectedColumns());
     const [selection, setSelection] = useState<string[]>(detaildata.selection || []);
 
+    const fetchPersonData = (id: number) => dispatch(getCollectionAux(getCampaignMemberSel(id)));
+
     useEffect(() => {
         if (detaildata.operation === 'INSERT') {
             if (detaildata.source === 'INTERNAL') {
@@ -73,10 +80,17 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         }
         else if (detaildata.operation === 'UPDATE') {
             if (detaildata.source === 'INTERNAL') {
-                // dispatch(getCampaignPersonSel());
+                fetchPersonData(row?.id);
             }
         }
-    }, [detaildata])
+    }, [detaildata]);
+
+    useEffect(() => {
+        if (!auxResult.loading && !auxResult.error
+            && row !== null && detaildata.source === 'INTERNAL') {
+            setJsonData(auxResult.data[0] as any);
+        }
+    }, [auxResult]);
 
     const handleUpload = async (files: any) => {
         const file = files[0];
@@ -324,7 +338,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         handleClick={setViewSelected}
                     />
                     <TitleDetail
-                        title={row ? `${row.name}` : t(langKeys.person_plural)}
+                        title={row ? `${row.title}` : t(langKeys.newcampaign)}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -361,6 +375,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             </div>
             <div className={classes.containerDetail}>
                 <TableZyx
+                    titlemodule={t(langKeys.person_plural)}
                     columns={headers}
                     data={jsonData}
                     download={false}

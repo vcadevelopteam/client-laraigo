@@ -41,6 +41,7 @@ export interface IState {
     userConnected: boolean;
     isOnBottom: boolean | null;
     triggerNewMessageClient: boolean | null;
+    triggerConnectAgentGo: IBaseState;
 }
 
 export const initialState: IState = {
@@ -54,6 +55,7 @@ export const initialState: IState = {
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
+    triggerConnectAgentGo: initialTransaction,
     triggerReassignTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
@@ -108,7 +110,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
-    [actionTypes.CONNECT_AGENT]: caseFunctions.connectAgent,
+    [actionTypes.CONNECT_AGENT_WS]: caseFunctions.connectAgentWS,
     [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
@@ -131,6 +133,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_2_SUCCESS]: caseFunctions.getTipificationLevel2Success,
     [actionTypes.GET_TIPIFICATION_LEVEL_2_FAILURE]: caseFunctions.getTipificationLevel2Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_2_RESET]: caseFunctions.getTipificationLevel2Reset,
+
+    [actionTypes.CONNECT_AGENT_API]: caseFunctions.connectAgentUItmp,
+    [actionTypes.CONNECT_AGENT_API_SUCCESS]: caseFunctions.connectAgentUItmpSuccess,
+    [actionTypes.CONNECT_AGENT_API_FAILURE]: caseFunctions.connectAgentUItmpFailure,
+    [actionTypes.CONNECT_AGENT_API_RESET]: caseFunctions.connectAgentUItmpReset,
 
     [actionTypes.GET_TIPIFICATION_LEVEL_3]: caseFunctions.getTipificationLevel3,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS]: caseFunctions.getTipificationLevel3Success,

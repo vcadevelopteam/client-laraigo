@@ -292,7 +292,7 @@ export const addMessage = (state: IState, action: IAction): IState => {
 }
 
 
-export const connectAgent = (state: IState, action: IAction): IState => {
+export const connectAgentWS = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
     
@@ -411,7 +411,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
-    let newTicketSelected: any = { ...state.ticketSelected };
+    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
 
     const { agentSelected, userType } = state;
 
@@ -599,6 +599,42 @@ export const reassignTicketReset = (state: IState): IState => ({
     ...state,
     triggerReassignTicket: initialState.triggerReassignTicket,
 });
+
+
+
+
+
+
+export const connectAgentUItmp = (state: IState): IState => ({
+    ...state,
+    triggerConnectAgentGo: { ...state.triggerConnectAgentGo, loading: true, error: false },
+});
+
+export const connectAgentUItmpSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerConnectAgentGo: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const connectAgentUItmpFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerConnectAgentGo: {
+        ...state.triggerConnectAgentGo,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const connectAgentUItmpReset = (state: IState): IState => ({
+    ...state,
+    triggerConnectAgentGo: initialState.triggerConnectAgentGo,
+});
+
+
 
 
 export const replyTicket = (state: IState): IState => ({
