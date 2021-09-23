@@ -7,11 +7,15 @@ import { AntTab } from 'components';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon } from 'icons';
-import { getTicketsPerson } from 'store/inbox/actions';
+import { getTicketsPerson, showInfoPanel } from 'store/inbox/actions';
 import { GetIcon } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { convertLocalDate } from 'common/helpers';
+import Fab from '@material-ui/core/Fab';
+import clsx from 'clsx';
+import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -20,7 +24,15 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         backgroundColor: '#fff',
         overflowWrap: 'anywhere',
-        borderLeft: '1px solid rgba(132, 129, 138, 0.101961);'
+        borderLeft: '1px solid rgba(132, 129, 138, 0.101961);',
+        position: 'relative'
+    },
+    collapseInfo: {
+        position: 'absolute',
+        top: 'calc(50% - 20px)',
+    },
+    infoClose: {
+        left: -20,
     },
     containerName: {
         display: 'flex',
@@ -166,6 +178,26 @@ const PreviewTickets = () => {
     )
 }
 
+const ManageButton: React.FC = () => {
+    const classes = useStyles();
+
+    const dispatch = useDispatch();
+    const showInfoPanelTrigger = () => dispatch(showInfoPanel())
+
+    return (
+        <div className={clsx(classes.collapseInfo, classes.infoClose)}>
+            <Fab
+                size="small"
+                style={{ backgroundColor: '#fff', }}
+                onClick={showInfoPanelTrigger}
+            >
+                <NavigateNextIcon style={{ color: '#2E2C34' }} />
+            </Fab>
+        </div>
+    )
+}
+
+
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
@@ -189,7 +221,7 @@ const InfoPanel: React.FC = () => {
             {pageSelected === 0 && <InfoClient />}
             {pageSelected === 1 && <Variables />}
             {pageSelected === 2 && <PreviewTickets />}
-
+            <ManageButton />
         </div>
     );
 }

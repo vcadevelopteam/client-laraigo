@@ -194,3 +194,8 @@ footer a {
         padding-right: 0px
     }
 }
+
+
+.emoji-mart-bar .emoji-mart-preview {
+    display: none;
+}

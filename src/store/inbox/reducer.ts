@@ -39,6 +39,8 @@ export interface IState {
     userType: "SUPERVISOR" | "AGENT" | null;
     wsConnected: boolean;
     userConnected: boolean;
+    isOnBottom: boolean | null;
+    triggerNewMessageClient: boolean | null;
 }
 
 export const initialState: IState = {
@@ -58,7 +60,9 @@ export const initialState: IState = {
     showInfoPanel: false,
     userType: null,
     wsConnected: false,
-    userConnected: false,
+    userConnected: !!localStorage.getItem("agentConnected"),
+    isOnBottom: null,
+    triggerNewMessageClient: false
 };
 
 export default createReducer<IState>(initialState, {
@@ -133,6 +137,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE]: caseFunctions.getTipificationLevel3Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
     [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
-    
-    
+    [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
 });

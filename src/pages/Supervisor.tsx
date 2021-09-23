@@ -315,7 +315,6 @@ const Supervisor: FC = () => {
 
     useEffect(() => {
         if (wsConnected) {
-            console.log('SUPERVISOR AA')
             dispatch(emitEvent({
                 event: 'connectChat',
                 data: { usertype: 'SUPERVISOR' }
