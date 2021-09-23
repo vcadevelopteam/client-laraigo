@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
@@ -77,35 +77,15 @@ const VariableConfiguration: FC = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            size="small"
-                            onClick={() => handleEdit(row)}>
-                            <EditIcon style={{ color: '#B6B4BA' }} />
-                        </IconButton>
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.flow),
-                accessor: 'title',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.channel_plural),
-                accessor: 'channels',
-                NoFilter: true
-            },
-            {
-                accessor: 'actions',
-                NoFilter: true,
-                isComponent: true,
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
                         <React.Fragment>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={() => handleEdit(row)}>
+                                <VisibilityIcon style={{ color: '#B6B4BA' }} />
+                            </IconButton>
                             <IconButton
                                 aria-label="more"
                                 aria-controls="long-menu"
@@ -137,6 +117,16 @@ const VariableConfiguration: FC = () => {
                         </React.Fragment>
                     )
                 }
+            },
+            {
+                Header: t(langKeys.flow),
+                accessor: 'title',
+                NoFilter: true
+            },
+            {
+                Header: t(langKeys.channel_plural),
+                accessor: 'channels',
+                NoFilter: true
             }
         ],
         []
@@ -410,24 +400,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
         setSkipAutoReset(false)
     }, [updatingDataTable])
 
-    return (
-        <div style={{ width: '100%' }}>
-            <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
-                handleClick={setViewSelected}
-            />
-            <TableZyxEditable
-                columns={columns}
-                titlemodule={`${t(langKeys.variableconfiguration_plural, { count: 2 })}${row ? ` (${row.title})` : ''}`}
-                data={dataTable}
-                download={false}
-                loading={detailResult.loading}
-                register={false}
-                filterGeneral={false}
-                updateCell={updateCell}
-                updateColumn={updateColumn}
-                skipAutoReset={skipAutoReset}
-            />
+    const ButtonsElement = () => {
+        return (
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
                 <Button
                     variant="contained"
@@ -450,6 +424,28 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                     </Button>
                 }
             </div>
+        )
+    }
+
+    return (
+        <div style={{ width: '100%' }}>
+            <TemplateBreadcrumbs
+                breadcrumbs={arrayBread}
+                handleClick={setViewSelected}
+            />
+            <TableZyxEditable
+                columns={columns}
+                titlemodule={`${t(langKeys.variableconfiguration_plural, { count: 2 })}${row ? ` (${row.title})` : ''}`}
+                data={dataTable}
+                ButtonsElement={ButtonsElement}
+                download={false}
+                loading={detailResult.loading}
+                register={false}
+                filterGeneral={false}
+                updateCell={updateCell}
+                updateColumn={updateColumn}
+                skipAutoReset={skipAutoReset}
+            />
         </div>
     )
 }

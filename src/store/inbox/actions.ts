@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IConnectAgentParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -100,9 +100,20 @@ export const resetSelectAgent = (): IActionCall => ({ type: actionTypes.SELECT_A
 
 export const showInfoPanel = (): IActionCall => ({ type: actionTypes.SHOW_INFO_PANEL });
 
-export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType});
+export const setUserType = (userType: "AGENT" | "SUPERVISOR"): IActionCall => ({ type: actionTypes.SET_USER_TYPE, payload: userType });
 
 export const replyMessage = (interaction: IInteraction): IActionCall => ({ type: actionTypes.REPLY_MESSAGE, payload: interaction });
+
+export const connectAgent = (payload: boolean): IActionCall => {
+    localStorage.setItem("agentConnected", payload ? "1" : "")
+    return { type: actionTypes.CONNECT_AGENT_UI, payload }
+};
+
+export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
+
+// export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
+
+
 
 export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
     callAPI: () => InboxService.closeTicket(params),
@@ -164,3 +175,13 @@ export const getTipificationLevel3 = (classificationid: number): IActionCall => 
 });
 
 export const resetGetTipificationLevel3 = (): IActionCall => ({ type: actionTypes.GET_TIPIFICATION_LEVEL_3_RESET });
+
+
+
+
+
+
+
+export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_CONNECT, payload });
+
+export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMIT_EVENT, payload });

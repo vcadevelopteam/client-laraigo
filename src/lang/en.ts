@@ -251,6 +251,22 @@ const translation: LangKeys = {
     bold: 'Bold',
     show: 'Show',
 
+    campaign: 'Campaign',
+    campaign_plural: 'Campaigns',
+    newcampaign: 'New campaign',
+    startdate: 'Start date',
+    enddate: 'End date',
+    blacklist: 'Blacklist',
+    executiontype: 'Execution type',
+    manual: 'Manual',
+    scheduled: 'Scheduled',
+    source: 'Source',
+    bdinternal: 'Internal data',
+    bdexternal: 'External data',
+    clean: 'Clean',
+    column: 'Column',
+    select_column_plural: 'Select columns',
+
     variable: "Variable",
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
@@ -270,6 +286,7 @@ const translation: LangKeys = {
     field_duplicate: 'Field duplicate',
     field_startwithchar: 'Field must start with a letter',
     field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
+    field_afterstart: 'Field must be after start',
     affirmative: 'Yes',
     negative: 'No',
     opendrilldown: "Open Drilldown",
@@ -398,6 +415,7 @@ const translation: LangKeys = {
     close_ticket: "Close ticket",
     client_detail: "Client detail",
 
+    report_loginhistory: 'User login',
     report_loginhistory_createdate: 'Date',
     report_loginhistory_createhour: 'Hour',
     report_loginhistory_nombre_usuario: 'Username',
@@ -405,6 +423,7 @@ const translation: LangKeys = {
     report_loginhistory_status: 'Status ',
     report_loginhistory_type: 'Type',
 
+    report_inputretry: 'Retries',
     report_inputretry_numeroticket: 'Ticket',
     report_inputretry_cliente: 'User',
     report_inputretry_canal: 'Channel',
@@ -414,6 +433,7 @@ const translation: LangKeys = {
     report_inputretry_intento: 'Attempt',
     report_inputretry_valido: 'Valid?',
 
+    report_interaction: 'Interactions',
     report_interaction_numeroticket: 'Ticket',
     report_interaction_anioticket: 'Year',
     report_interaction_mesticket: 'Month',
@@ -432,6 +452,7 @@ const translation: LangKeys = {
     report_interaction_texto: 'Text',
     report_interaction_phone: 'Client number',
 
+    report_productivity: 'Conversations',
     report_productivity_numeroticket: 'Ticket number',
     report_productivity_anio: 'Year',
     report_productivity_mes: 'Month',
@@ -464,6 +485,7 @@ const translation: LangKeys = {
     report_productivity_tmoasesor: 'TMO advisor',
     report_productivity_holdingwaitingtime: 'Holding hold time',
 
+    report_tipification: 'Classifications',
     report_tipification_numeroticket: 'Ticket',
     report_tipification_fechaticket: 'Date',
     report_tipification_horaticket: 'Hour',
@@ -477,6 +499,7 @@ const translation: LangKeys = {
     report_tipification_submotivo: 'Sub motive',
     report_tipification_valoracion: 'Assessment',
 
+    report_userproductivityhours: 'Hourly advisor productivity',
     report_userproductivityhours_datestr: 'Date',
     report_userproductivityhours_fullname: 'Adviser',
     report_userproductivityhours_hours: 'Hour',
@@ -495,6 +518,7 @@ const translation: LangKeys = {
     report_userproductivityhours_filter_channels: 'Channels',
     report_userproductivityhours_filter_hours: 'Hour',
 
+    report_userproductivity: 'Adviser productivity',
     report_userproductivity_totalclosedtickets: 'Closed ticket number',
     report_userproductivity_holdingtickets: 'Holding ticket number',
     report_userproductivity_asesortickets: 'Adviser ticket number',

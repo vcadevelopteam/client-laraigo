@@ -44,3 +44,8 @@ export interface IDeleteTicketParams {
     isanswered: boolean;
     userid: number;
 }
+
+export interface IConnectAgentParams {
+    isconnected: boolean;
+    userid: number;
+}

@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex'
     },
     titleTicketChat: {
-        fontWeight: 500,
-        fontSize: 20,
-        '&:hover': {
-            cursor: 'pointer',
-            borderBottom: '1px solid #2E2C34'
-        }
+        fontWeight: 'bold',
+        fontSize: 15,
+        // '&:hover': {
+        //     cursor: 'pointer',
+        //     borderBottom: '1px solid #2E2C34'
+        // }
     },
     interactionAgent: {
         marginLeft: 'auto'
@@ -40,20 +40,25 @@ const useStyles = makeStyles((theme) => ({
     },
     containerTickets: {
         flex: '0 0 300px',
+        maxWidth: 300,
         backgroundColor: '#FFF',
         flexDirection: 'column',
         display: 'flex',
-        borderRight: '1px solid rgba(132, 129, 138, 0.101961);'
+        borderRight: '1px solid #84818a1a'
     },
     headChat: {
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
-        borderBottom: '1px solid rgba(132, 129, 138, 0.101961);'
+        padding: theme.spacing(1),
+        borderBottom: '1px solid #84818a1a',
+        display: 'flex',
+        justifyContent: 'space-between',
+        cursor: 'pointer'
     },
     containerInteractions: {
         padding: theme.spacing(2),
         flex: 1,
         overflowY: 'auto',
+        backgroundColor: '#e0e0e0',
     },
     containerQuickreply: {
         whiteSpace: 'break-spaces',
@@ -112,15 +117,38 @@ const useStyles = makeStyles((theme) => ({
         color: '#2E2C34',
         wordBreak: 'break-word',
         width: 'fit-content',
-        borderRadius: 4,
-        padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+        borderRadius: 12,
+        borderBottomLeftRadius: 0,
+        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(.7)}px ${theme.spacing(1)}px`,
+        position: 'relative',
+        maxWidth: 480,
         backgroundColor: '#FFF',
+        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
+    },
+    interactionTextAgent: {
+        borderBottomLeftRadius: 12,
+        borderBottomRightRadius: 0,
+        backgroundColor: "#eeffde",
     },
     interactionImage: {
-        padding: theme.spacing(1),
-        borderRadius: 4,
+        borderRadius: theme.spacing(1.5),
         backgroundColor: '#FFF',
-        width: '200px'
+        position: 'relative',
+        width: '328px',
+        height: '340px',
+    },
+    imageCard: {
+        width: '100%',
+        maxWidth: '100%',
+        cursor: 'pointer',
+        objectFit: 'cover',
+        height: '100%',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        borderRadius: 'inherit'
     },
     timeInteraction: {
         color: '#84818A',
@@ -133,11 +161,23 @@ const useStyles = makeStyles((theme) => ({
     containerResponse: {
         padding: theme.spacing(2),
         background: '#FFF',
+        position: 'relative'
     },
     containerChat: {
         flex: '1',
         flexDirection: 'column',
         display: 'flex',
+        
+    },
+    collapseInfo: {
+        position: 'absolute',
+        top: 'calc(50% - 20px)'
+    },
+    infoOpen: {
+        right: -20,
+    },
+    infoClose: {
+        right: 0,
     },
     containerProfile: {
         flex: '0 0 300px',
@@ -146,7 +186,9 @@ const useStyles = makeStyles((theme) => ({
     iconResponse: {
         cursor: 'pointer',
         poisition: 'relative',
+        color: '#2E2C34',
         '&:hover': {
+            // color: theme.palette.primary.main,
             backgroundColor: '#EBEAED',
             borderRadius: 4
         }
@@ -167,8 +209,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerButtonsChat: {
         display: 'flex',
-        marginTop: 8,
-        gap: '8px'
     },
     buttonCloseticket: {
         background: '#F9F9FA',
@@ -227,10 +267,39 @@ const useStyles = makeStyles((theme) => ({
         textAlign: 'center'
     },
     name: {
+        flex: 1,
         fontWeight: 500,
         fontSize: '16px',
         lineHeight: '22px',
-        wordBreak: 'break-word'
+        wordBreak: 'break-word',
+
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        maxWidth: 200
+    },
+    containerQuickReply: {
+        boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
+        backgroundColor: '#FFF',
+        width: 250,
+        // padding: theme.spacing(1)
+    },
+    headerQuickReply: {
+        fontSize: 13, 
+        fontWeight: 500,
+        padding: theme.spacing(1.5),
+        borderBottom: '1px solid #EBEAED'
+    },
+    itemQuickReply: {
+        fontSize: 13, 
+        paddingTop: theme.spacing(.7),
+        paddingBottom: theme.spacing(.7),
+        paddingLeft: theme.spacing(1.5),
+        paddingRight: theme.spacing(1.5),
+        '&:hover': {
+            backgroundColor: '#EBEAED',
+            cursor: 'pointer'
+        }
     }
 }));
 
@@ -346,7 +415,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     )
 }
 
-const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", socketEmitEvent: (event: string, param: any) => void }> = ({ userType, socketEmitEvent }) => {
+const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }) => {
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const showInfoPanel = useSelector(state => state.inbox.showInfoPanel);
@@ -359,7 +428,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR", socketEmitEvent: 
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} socketEmitEvent={socketEmitEvent} classes={classes} />
+                    <ChatPanel ticket={ticketSelected} classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

@@ -4,7 +4,8 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign
+} from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -12,11 +13,14 @@ import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import { wsConnect } from "store/inbox/actions";
 import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
+
+
+
 const useStyles = makeStyles((theme) => ({
 	main: {
 		padding: theme.spacing(3),
@@ -42,10 +46,17 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	const existToken = getAccessToken();
 
 	React.useEffect(() => {
-		if (existToken) {}
+		if (existToken)
 			dispatch(validateToken());
 	}, [])
-	
+
+	React.useEffect(() => {
+		if (!resValidateToken.error && !resValidateToken.loading) {
+			const { userid, orgid } = resValidateToken.user!!
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM' }));
+		}
+	}, [resValidateToken])
+
 	if (!existToken) {
 		return <Redirect to={{ pathname: "/sign-in" }} />;
 	} else if (resValidateToken.loading && !applications) {
@@ -74,9 +85,9 @@ const RouterApp: FC = () => {
 	return (
 		<Router basename={process.env.PUBLIC_URL}>
 			<Switch>
-				<ProtectRoute exact path="/"/>
+				<ProtectRoute exact path="/" />
 				<Route exact path="/sign-in" component={SignIn} />
-				
+
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
@@ -181,16 +192,19 @@ const RouterApp: FC = () => {
 					<ExtrasLayout><Person /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
-				<ExtrasLayout><MessageTemplates /></ExtrasLayout>
+					<ExtrasLayout><MessageTemplates /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INTEGRATIONMANAGER}>
-				<ExtrasLayout><IntegrationManager /></ExtrasLayout>
+					<ExtrasLayout><IntegrationManager /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CAMPAIGN}>
+				<ExtrasLayout><Campaign /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.FLOWDESIGNER}>
-				<ExtrasLayout><FlowDesigner /></ExtrasLayout>
+					<ExtrasLayout><FlowDesigner /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
-				<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

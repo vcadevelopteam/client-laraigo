@@ -37,6 +37,10 @@ export interface IState {
     triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    wsConnected: boolean;
+    userConnected: boolean;
+    isOnBottom: boolean | null;
+    triggerNewMessageClient: boolean | null;
 }
 
 export const initialState: IState = {
@@ -54,7 +58,11 @@ export const initialState: IState = {
     ticketSelected: null,
     agentSelected: null,
     showInfoPanel: false,
-    userType: null
+    userType: null,
+    wsConnected: false,
+    userConnected: !!localStorage.getItem("agentConnected"),
+    isOnBottom: null,
+    triggerNewMessageClient: false
 };
 
 export default createReducer<IState>(initialState, {
@@ -100,6 +108,8 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
+    [actionTypes.CONNECT_AGENT]: caseFunctions.connectAgent,
+    [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
@@ -126,4 +136,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS]: caseFunctions.getTipificationLevel3Success,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE]: caseFunctions.getTipificationLevel3Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
+    [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
+    [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
 });

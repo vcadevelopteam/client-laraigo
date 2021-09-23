@@ -33,6 +33,12 @@ export const getUsersBySupervisor = (): IRequestBody => ({
     parameters: {}
 })
 
+export const getListQuickReply = (): IRequestBody => ({
+    method: "UFN_QUICKREPLY_LIST_SEL",
+    key: "UFN_QUICKREPLY_LIST_SEL",
+    parameters: { classificationid: 0, all: true }
+})
+
 export const insertClassificationConversation = (conversationid: number, classificationid: number, jobplan: string, operation: string): IRequestBody => ({
     method: "UFN_CONVERSATIONCLASSIFICATION_INS",
     key: "UFN_CONVERSATIONCLASSIFICATION_INS",
@@ -329,7 +335,8 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         userstatus: allParameters['userstatus'] ? allParameters['userstatus'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
-        bot: allParameters['bot'] ? allParameters['bot'] : false
+        bot: allParameters['bot'] ? allParameters['bot'] : false,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
 
@@ -696,4 +703,72 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
     },
     type: "CHATWEB",
     service,
+});
+
+export const getCampaignLst = (): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST",
+    parameters: {}
+});
+
+export const getCampaignSel = (id: number): IRequestBody => ({
+    method: "UFN_CAMPAIGN_SEL",
+    parameters: {
+        id
+    }
+});
+
+export const insCampaign = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    executiontype,
+    batchjson,
+    fields,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader,
+        messagetemplatebuttons,
+        executiontype,
+        batchjson,
+        fields,
+        operation
+    }
+});
+
+export const getUserGroupsSel = (): IRequestBody => ({
+    method: "UFN_USER_GROUPS_SEL",
+    parameters: {}
 });
