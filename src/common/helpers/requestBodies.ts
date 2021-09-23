@@ -772,3 +772,67 @@ export const getUserGroupsSel = (): IRequestBody => ({
     method: "UFN_USER_GROUPS_SEL",
     parameters: {}
 });
+
+export const getCampaignMemberSel = (campaignid: number): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_SEL",
+    parameters: {
+        campaignid
+    }
+});
+
+export const insCampaignMember = ({
+    id,
+    campaignid,
+    personid,
+    personcommunicationchannel,
+    personcommunicationchannelowner,
+    type,
+    displayname,
+    status,
+    field1,
+    field2,
+    field3,
+    field4,
+    field5,
+    field6,
+    field7,
+    field8,
+    field9,
+    field10,
+    field11,
+    field12,
+    field13,
+    field14,
+    field15,
+    batchindex,
+    operation,
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_INS",
+    parameters: {
+        id,
+        campaignid,
+        personid,
+        personcommunicationchannel,
+        personcommunicationchannelowner,
+        type,
+        displayname,
+        status,
+        field1,
+        field2,
+        field3,
+        field4,
+        field5,
+        field6,
+        field7,
+        field8,
+        field9,
+        field10,
+        field11,
+        field12,
+        field13,
+        field14,
+        field15,
+        batchindex,
+        operation,
+    }
+});

@@ -6,6 +6,7 @@ import { getCampaignSel } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { getCollectionAux, resetMainAux } from 'store/main/actions';
 import { CampaignGeneral, CampaignPerson, CampaignMessage } from 'pages';
+import { showBackdrop } from 'store/popus/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -25,12 +26,15 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const [step, setStep] = useState("step-1");
     const [auxData, setAuxData] = useState({});
     const [detailData, setDetailData] = useState<ICampaign>({});
+    const [waitView, setWaitView] = useState(false);
     
     const fetchDetailData = (id: number) => dispatch(getCollectionAux(getCampaignSel(id)));
 
     useEffect(() => {
         if (row !== null) {
             fetchDetailData(row?.id);
+            dispatch(showBackdrop(true));
+            setWaitView(true);
             return () => {
                 dispatch(resetMainAux());
             };
@@ -38,10 +42,14 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     }, []);
 
     useEffect(() => {
-        if (!auxResult.loading && !auxResult.error && row !== null) {
-            setAuxData(auxResult.data);
+        if (waitView) {
+            if (!auxResult.loading && !auxResult.error && row !== null) {
+                setAuxData(auxResult.data);
+                dispatch(showBackdrop(false));
+                setWaitView(false);
+            }
         }
-    }, [auxResult]);
+    }, [auxResult, waitView]);
 
     return (
         <div style={{ width: '100%' }}>
@@ -54,6 +62,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 detaildata={detailData}
                 setDetailData={setDetailData}
                 setViewSelected={setViewSelected}
+                step={step}
                 setStep={setStep}
                 multiData={multiData}
                 fetchData={fetchData}
@@ -67,6 +76,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 detaildata={detailData}
                 setDetailData={setDetailData}
                 setViewSelected={setViewSelected}
+                step={step}
                 setStep={setStep}
                 multiData={multiData}
                 fetchData={fetchData}
@@ -80,6 +90,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                 detaildata={detailData}
                 setDetailData={setDetailData}
                 setViewSelected={setViewSelected}
+                step={step}
                 setStep={setStep}
                 multiData={multiData}
                 fetchData={fetchData}
