@@ -18,6 +18,10 @@ import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti }
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+
+import CloseIcon from '@material-ui/icons/Close';
 
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -149,7 +153,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         newuserid: getValues('newUserId') || 3,
                     }
                 }));
-                
+
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -379,18 +383,28 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <div className={classes.buttonCloseticket} onClick={closeTicket}>
+                {/* <div className={classes.buttonCloseticket} onClick={closeTicket}>
                     <CheckIcon /> <span style={{ marginLeft: 8 }} >Close ticket</span>
-                </div>
-                <div className={classes.buttonIcon} onClick={(e) => setAnchorEl(e.currentTarget)}>
+                </div> */}
+                <IconButton
+                    onClick={closeTicket}
+                >
+                    <CloseIcon />
+                </IconButton>
+                <IconButton
+                    onClick={(e) => setAnchorEl(e.currentTarget)}
+                >
+                    <MoreVertIcon />
+                </IconButton>
+                {/* <div className={classes.buttonIcon} onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon style={{ color: '#000' }} />
-                </div>
-                <div className={classes.buttonIcon}>
+                </div> */}
+                {/* <div className={classes.buttonIcon}>
                     <VideocamIcon style={{ color: '#000' }} />
                 </div>
                 <div className={classes.buttonIcon}>
                     <CallIcon style={{ color: '#000' }} />
-                </div>
+                </div> */}
             </div>
             <Menu
                 id="menu-appbar"
@@ -430,28 +444,41 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket, ticket: { ticketnum } }) => {
+
+const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { ticketnum, displayname, imageurldef } }) => {
     const dispatch = useDispatch();
+
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
-        <div className={classes.containerChat}>
-            <div className={classes.headChat}>
-                <div>
-                    <span
-                        className={classes.titleTicketChat}
-                        onClick={showInfoPanelTrigger}
-                    >Ticket #{ticketnum}</span>
+        <div className={classes.headChat} onClick={showInfoPanelTrigger}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                <Avatar src={imageurldef || ""} />
+                <div className={classes.titleTicketChat}>
+                    <div>
+                        {displayname}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 400 }}>
+                        Ticket #{ticketnum}
+                    </div>
                 </div>
-                <ButtonsManageTicket classes={classes} />
             </div>
-            <InteractionsPanel
-                classes={classes}
-                ticket={ticket} />
-            <ReplyPanel
-                classes={classes} />
+            <ButtonsManageTicket classes={classes} />
         </div>
     )
-})
+}
+
+const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket }) => (
+    <div className={classes.containerChat}>
+        <HeadChat 
+            classes={classes} 
+            ticket={ticket} />
+        <InteractionsPanel
+            classes={classes}
+            ticket={ticket} />
+        <ReplyPanel
+            classes={classes} />
+    </div>
+))
 
 export default ChatPanel;

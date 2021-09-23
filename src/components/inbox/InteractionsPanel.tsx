@@ -10,8 +10,9 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
-import { convertLocalDate, toTime24HR } from 'common/helpers';
+import { convertLocalDate, toTime12HR } from 'common/helpers';
 import { manageLightBox } from 'store/popus/actions';
+import { goToBottom } from 'store/inbox/actions';
 import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 
@@ -95,146 +96,237 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     )
 }
 
+const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ time, background }) => (
+    <span style={{
+        visibility: 'hidden',
+        fontSize: 12,
+        display: 'inline-flex',
+        float: 'right',
+        marginLeft: 4,
+        paddingRight: 6,
+        lineHeight: 1
+    }}>
+        {time}
+        {!background ?
+            <div style={{
+                position: 'absolute',
+                bottom: 0,
+                height: 16,
+                right: 0,
+                visibility: 'visible',
+                color: '#757377',
+                padding: 'inherit'
 
-const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate }, classes }) => {
+            }}>
+                {time}
+            </div> :
+            <div style={{
+                position: 'absolute',
+                bottom: 4,
+                height: 15,
+                right: 0,
+                visibility: 'visible',
+                backgroundColor: '#00000059',
+                color: '#fff',
+                padding: '2px 4px 2px 3px',
+                borderRadius: 4,
+                marginRight: 4
+            }}>
+                {time}
+            </div>
+        }
+    </span>
+)
+
+const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ userType, fill = '#FFF' }) => {
+    if (userType === 'client')
+        return (
+            <svg viewBox="0 0 11 20" width="11" height="20" style={{ position: 'absolute', bottom: -1, left: -9, fill }}>
+                <svg id="message-tail-filled" viewBox="0 0 11 20"><g transform="translate(9 -14)" fill="inherit" fill-rule="evenodd"><path d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z" transform="matrix(1 0 0 -1 0 49)" id="corner-fill" fill="inherit"></path></g></svg>
+
+            </svg>
+        )
+    else
+        return (
+            <svg viewBox="0 0 11 20" width="11" height="20" style={{ position: 'absolute', bottom: 0, right: -9, transform: 'translateY(1px) scaleX(-1)', fill }}>
+                <svg id="message-tail-filled" viewBox="0 0 11 20"><g transform="translate(9 -14)" fill="inherit" fill-rule="evenodd"><path d="M-6 16h6v17c-.193-2.84-.876-5.767-2.05-8.782-.904-2.325-2.446-4.485-4.625-6.48A1 1 0 01-6 16z" transform="matrix(1 0 0 -1 0 49)" id="corner-fill" fill="inherit"></path></g></svg>
+            </svg>
+        )
+}
+
+const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userType: string }> = ({ interaction: { interactiontype, interactiontext, listImage, indexImage, createdate, onlyTime }, classes, userType }) => {
     const dispatch = useDispatch();
 
     if (interactiontype === "text")
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>
-                    {interactiontext}
-                </div>
-            </Tooltip>
+            <div className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                {interactiontext}
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction time={onlyTime || ""} />
+            </div>
         );
     else if (interactiontype === "image")
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <div className={classes.interactionImage}>
-                    <img
-                        style={{ width: '100%', cursor: 'pointer' }}
-                        src={interactiontext} alt=""
-                        onClick={() => {
-                            dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
-                        }}
-                    />
-                </div>
-            </Tooltip>
+            <div className={classes.interactionImage}>
+                <img
+                    className={classes.imageCard}
+                    src={interactiontext} alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
+                <TimerInteraction time={onlyTime || ""} background={true} />
+            </div>
         );
     else if (interactiontype === "quickreply") {
         const [text, json] = interactiontext.split("&&&");
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>
-                    {text}
-                    <div className={classes.containerQuickreply}>
-                        {listButtons.map((item: Dictionary, index: number) => {
-                            return <div key={index} className={classes.buttonQuickreply}>{item.text}
-                            </div>
-                        })}
-                    </div>
+            <div className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })} style={{ display: 'inline-block' }}>
+                {text}
+                <div className={classes.containerQuickreply}>
+                    {listButtons.map((item: Dictionary, index: number) => {
+                        return <div key={index} className={classes.buttonQuickreply}>{item.text}
+                        </div>
+                    })}
                 </div>
-            </Tooltip>
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction time={onlyTime || ""} />
+            </div>
         )
     } else if (interactiontype === "postback") {
         const [text, json] = interactiontext.split("&&&");
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
-                    <div className={classes.headerPostback}>
-                        {text}
-                    </div>
-                    <div >
-                        {listButtons.map((item: Dictionary, index: number) => {
-                            return <div key={index} className={classes.buttonPostback}>{item.text}
-                            </div>
-                        })}
-                    </div>
+            <div className={classes.containerPostback} style={{ backgroundColor: 'white' }}>
+                <div className={classes.headerPostback}>
+                    {text}
                 </div>
-            </Tooltip>
+                <div >
+                    {listButtons.map((item: Dictionary, index: number) => {
+                        return <div key={index} className={classes.buttonPostback}>{item.text}
+                        </div>
+                    })}
+                </div>
+            </div>
         )
     } else if (interactiontype === "LOG") {
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <div className={classes.interactionText} style={{ backgroundColor: '#84818A', color: 'white' }}>
-                    {interactiontext}
-                </div>
-            </Tooltip>
+            <div className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })} style={{ backgroundColor: '#84818A', color: 'white' }}>
+                {interactiontext}
+                <PickerInteraction userType={userType!!} fill="#84818A" />
+                <TimerInteraction background={true} time={onlyTime || ""} />
+            </div>
         );
     } else if (interactiontype === "carousel") {
         const listItems: Dictionary[] = JSON.parse(`[${interactiontext}]`);
-        return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-                <Carousel carousel={listItems} />
-            </Tooltip>
-        )
+        return (<Carousel carousel={listItems} />)
     } else if (interactiontype === "audio" || (interactiontype === "video" && interactiontext.includes(".oga"))) {
-        return <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top"><audio controls src={interactiontext} ></audio></Tooltip>
+        return (
+            <div className={classes.interactionImage} style={{ borderRadius: 0, height: 50, backgroundColor: 'transparent' }}>
+                <audio controls src={interactiontext} className={classes.imageCard} style={{}}></audio>
+                <TimerInteraction background={true} time={onlyTime || ""} />
+            </div>
+        )
     } else if (interactiontype === "video") {
-        return <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top"><video width="200" controls src={interactiontext} /></Tooltip>
+        return (
+            <div className={classes.interactionImage}>
+                <video className={classes.imageCard} width="200" controls src={interactiontext} />
+                <TimerInteraction time={onlyTime || ""} background={true} />
+            </div>
+        )
     } else if (interactiontype === "file") {
         return (
-            <Tooltip title={convertLocalDate(createdate).toLocaleString()} arrow placement="top">
-            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4 }}>
+            <div style={{ width: 200, backgroundColor: 'white', padding: '16px 13px', borderRadius: 4, position: 'relative' }}>
                 <a download rel="noreferrer" target="_blank" href={interactiontext} style={{ textDecoration: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 4 }}>
                     <FileIcon width="20" height="20" />
                     <div style={{ color: '#171717', textOverflow: 'ellipsis', overflowX: 'hidden', flex: 1, whiteSpace: 'nowrap' }}>{interactiontext.split("/").pop()}</div>
                     <DownloadIcon2 width="20" height="20" color="primary" />
 
                 </a>
+                <TimerInteraction background={true} time={onlyTime || ""} />
             </div>
-            </Tooltip>
         )
     }
-    return <div className={classes.interactionText} style={{ backgroundColor: 'white' }}>{interactiontype} {interactiontext}</div>;
+    return (
+        <div className={clsx(classes.interactionText, {
+            [classes.interactionTextAgent]: userType !== 'client',
+        })}>
+            {interactiontext}
+            <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+            <TimerInteraction time={onlyTime || ""} />
+        </div>
+    );
 }
 
-const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, createdate, interactions }, clientName, imageClient }) => {
-    const time = toTime24HR(convertLocalDate(createdate, false).toLocaleTimeString());
+const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions }, clientName, imageClient }) => {
+
     return (
         <div style={{ display: 'flex', gap: 8 }}>
-            {usertype === "client" && <Avatar src={imageClient || ""} />}
             <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column' }} className={clsx({ [classes.groupInteractionAgent]: usertype !== "client" })}>
-                    <div className={clsx(classes.name, { [classes.groupInteractionAgent]: usertype !== "client" })}>{usertype === "BOT" ? "BOT" : (usertype === "agent" ? "Agent" : clientName)}</div>
-                    <div className={clsx(classes.timeInteraction, { [classes.groupInteractionAgent]: usertype !== "client" })}>{time}</div>
-                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {interactions.map((item: IInteraction, index: number) => (
                         <div key={index} className={clsx({ [classes.interactionAgent]: usertype !== "client" })}>
-                            <ItemInteraction interaction={item} classes={classes} />
+                            <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
                         </div>
                     ))}
                 </div>
             </div>
             {usertype === "agent" ?
-                <div><AgentIcon style={{ width: 40, height: 40 }} /></div> :
-                (usertype === "BOT" && <div><BotIcon style={{ width: 40, height: 40 }} /></div>)
+                <div style={{marginTop: 'auto'}}><AgentIcon style={{ width: 40, height: 40 }} /></div> :
+                (usertype === "BOT" && <div style={{marginTop: 'auto'}}><BotIcon style={{ width: 40, height: 40 }} /></div>)
             }
         </div>
     );
 }
 
 const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket: { displayname, imageurldef } }) => {
+    const dispatch = useDispatch();
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
+    const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
+    const isOnBottom = useSelector(state => state.inbox.isOnBottom);
 
     const el = useRef<null | HTMLDivElement>(null);
+
     const scrollToBottom = () => {
-        setTimeout(() => {
+        if (!loadingInteractions && (isOnBottom || isOnBottom === null)) {
             if (el?.current) {
-                el.current.scrollIntoView({ behavior: "smooth" });
+                el.current.scrollIntoView({ behavior: 'smooth' })
             }
-        }, 300);
+        }
     };
-    useEffect(scrollToBottom, [groupInteractionList]);
+
+    useEffect(scrollToBottom, [loadingInteractions, isOnBottom]);
+
+    const handleScroll = (e: any) => {
+        const bottom = e.target.scrollHeight - e.target.scrollTop === e.target.clientHeight;
+        if (isOnBottom === null) {
+            if (bottom)
+                dispatch(goToBottom(true));
+        } else {
+            if (bottom) {
+                if (isOnBottom === false && isOnBottom !== null) {
+                    dispatch(goToBottom(true));
+                }
+            } else {
+                if (isOnBottom) {
+                    dispatch(goToBottom(false))
+                }
+            }
+        }
+    }
 
     return (
-        <div className={classes.containerInteractions}>
+        <div className={classes.containerInteractions} onScroll={handleScroll}>
             {groupInteractionList.loading ? <ListItemSkeleton /> :
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                    {groupInteractionList.data.map((groupInteraction, index) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', }}>
+                    {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={imageurldef}
                             clientName={displayname}

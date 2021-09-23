@@ -149,10 +149,16 @@ export const convertLocalDate = (date: string | null | undefined, validateWithTo
     return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
 }
 
-export const toTime24HR = (time: string): string => {
+export const toTime12HR = (time: string): string => {
     const [h, m] = time.split(':');
     const hint = parseInt(h)
     return `${(hint > 12 ? 24 - hint : hint).toString().padStart(2, "0")}:${m}:${hint > 11 ? "PM" : "AM"}`
+}
+
+export const toTime24HR = (time: string): string => {
+    const [h, m] = time.split(':');
+    const hint = parseInt(h)
+    return `${hint.toString().padStart(2, "0")}:${m}`
 }
 
 export const secondsToTime = (seconds: number): string => {

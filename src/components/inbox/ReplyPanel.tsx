@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
-
+import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -18,13 +18,18 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Tooltip from '@material-ui/core/Tooltip';
-
+import Fab from '@material-ui/core/Fab';
+import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
+import Avatar from '@material-ui/core/Avatar';
+import Badge from '@material-ui/core/Badge';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 interface IFile {
     type: string;
     url: string;
     id: string;
     error?: boolean;
 }
+
 const IconUploader: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
@@ -74,7 +79,7 @@ const IconUploader: React.FC<{ classes: any, type: "image" | "file", setFiles: (
             <label htmlFor={`laraigo-upload-${type}`}>
                 {type === "image" ?
                     <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
-                    <AttachmentIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                    <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
                 }
             </label>
         </>
@@ -157,20 +162,69 @@ const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void 
     )
 }
 
+const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
+    width: 22,
+    backgroundColor: '#0ac630',
+    height: 22,
+    fontSize: 12,
+}));
+
+
+const BottomGoToUnder: React.FC = () => {
+    const dispatch = useDispatch();
+    const isOnBottom = useSelector(state => state.inbox.isOnBottom);
+    const triggerNewMessageClient = useSelector(state => state.inbox.triggerNewMessageClient);
+    const [countNewMessage, setCountNewMessage] = useState(0)
+
+    useEffect(() => {
+        if (triggerNewMessageClient !== null) {
+            if (isOnBottom || isOnBottom === null)
+                dispatch(goToBottom(null))
+            else 
+                setCountNewMessage(countNewMessage + 1)
+        }
+    }, [triggerNewMessageClient])
+
+
+    useEffect(() => {
+        if (isOnBottom) {
+            setCountNewMessage(0)
+        }
+    }, [isOnBottom])
+
+    if (isOnBottom || isOnBottom === null)
+        return null;
+
+    return (
+        <div style={{ position: 'absolute', right: 20, top: -60 }}>
+            <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                badgeContent={
+                    countNewMessage > 0 && <SmallAvatar>{countNewMessage}</SmallAvatar>
+                }
+            >
+                <Fab
+                    size="small"
+                    onClick={() => dispatch(goToBottom(true))}>
+                    <DoubleArrowIcon style={{ color: '#2e2c34ba', transform: 'rotate(90deg)', width: 20, height: 20 }} />
+                </Fab>
+            </Badge>
+
+        </div>
+    )
+}
+
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
 
     const triggerReplyMessage = () => {
         const callback = () => {
-            
-            console.log("reply message success")
-
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
@@ -282,6 +336,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     <SendIcon />
                 </div>
             </div>
+            <BottomGoToUnder />
         </div>
     )
 }

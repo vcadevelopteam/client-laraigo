@@ -24,7 +24,6 @@ const MessageInbox: React.FC = () => {
 
     useEffect(() => {
         if (wsConnected) {
-            console.log('AGENT AA')
             dispatch(emitEvent({
                 event: 'connectChat',
                 data: { usertype: 'AGENT' }
