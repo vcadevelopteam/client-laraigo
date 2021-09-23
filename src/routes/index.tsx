@@ -2,9 +2,10 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign
+import {
+	Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis
 } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
@@ -18,8 +19,6 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
-
-
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -198,13 +197,16 @@ const RouterApp: FC = () => {
 					<ExtrasLayout><IntegrationManager /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CAMPAIGN}>
-				<ExtrasLayout><Campaign /></ExtrasLayout>
+					<ExtrasLayout><Campaign /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.FLOWDESIGNER}>
 					<ExtrasLayout><FlowDesigner /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
 					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.EMOJIS}>
+					<ExtrasLayout><Emojis /></ExtrasLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

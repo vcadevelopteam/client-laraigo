@@ -35,7 +35,7 @@ const MessageInbox: React.FC = () => {
         <div style={{
             display: 'flex',
             gap: 16,
-            borderTop: '1px solid #EBEAED',
+            
             width: '100%'
         }}>
             <InboxPanel userType="AGENT" />

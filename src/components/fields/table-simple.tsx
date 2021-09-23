@@ -401,7 +401,7 @@ const TableZyx = React.memo(({
 
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                    <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
@@ -455,22 +455,26 @@ const TableZyx = React.memo(({
                                             {row.cells.map((cell, i) =>
                                                 <TableCell
                                                     {...cell.getCellProps({
-                                                        style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                                                        style: {
+                                                            minWidth: cell.column.minWidth,
+                                                            width: cell.column.width,
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'nowrap',
+                                                        },
                                                     })}
                                                 >
                                                     {headerGroups[0].headers[i].isComponent ?
                                                         cell.render('Cell')
                                                         :
-                                                        (cell.value?.length > 100 ?
+                                                        (cell.value?.length > 50 ?
                                                             <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                                                <div style={{width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis'}}>
                                                                     {cell.render('Cell')}
-                                                                </Box>
+                                                                </div>
                                                             </Tooltip>
                                                             :
-                                                            <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
-                                                                {cell.render('Cell')}
-                                                            </Box>
+                                                            cell.render('Cell')
                                                         )
                                                     }
                                                 </TableCell>

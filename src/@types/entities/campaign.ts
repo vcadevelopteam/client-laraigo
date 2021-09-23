@@ -47,5 +47,6 @@ export interface ICampaign {
 	person?: any[],
 
 	subject?: string,
-	message?: string, 
+	message?: string,
+	variablereplace?: string[],
 }
