@@ -282,6 +282,7 @@ export const langKeys = {
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
     flowdesigner: 'flowdesigner',
+    least_user_or_group: 'least_user_or_group',
 
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',

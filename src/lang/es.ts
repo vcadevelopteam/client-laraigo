@@ -216,7 +216,7 @@ const translation: LangKeys = {
     neworganization: "Nueva organización",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
-
+    least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Tipificación',
     tipification_plural: 'Tipificaciones',
     id: 'Id',

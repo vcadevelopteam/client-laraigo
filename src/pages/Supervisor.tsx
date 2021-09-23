@@ -140,7 +140,7 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
 )
 
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
-    <div>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={channelName}>
             <span><GetIcon channelType={channelType} color={`#${color}`} /></span>
         </Tooltip>

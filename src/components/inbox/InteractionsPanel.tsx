@@ -276,8 +276,8 @@ const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInt
                 </div>
             </div>
             {usertype === "agent" ?
-                <div style={{marginTop: 'auto'}}><AgentIcon style={{ width: 40, height: 40 }} /></div> :
-                (usertype === "BOT" && <div style={{marginTop: 'auto'}}><BotIcon style={{ width: 40, height: 40 }} /></div>)
+                <div style={{ marginTop: 'auto' }}><AgentIcon style={{ width: 40, height: 40 }} /></div> :
+                (usertype === "BOT" && <div style={{ marginTop: 'auto' }}><BotIcon style={{ width: 40, height: 40 }} /></div>)
             }
         </div>
     );
@@ -322,7 +322,7 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
     return (
         <div className={classes.containerInteractions} onScroll={handleScroll}>
             {groupInteractionList.loading ? <ListItemSkeleton /> :
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={imageurldef}

@@ -34,7 +34,6 @@ import { EmojiICon, GifIcon } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 
-
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -322,8 +321,9 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-
-    return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    console.log(channelType)
+    return <TelegramIcon style={{ color, width, height }} />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {

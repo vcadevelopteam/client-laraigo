@@ -451,6 +451,7 @@ const translation: LangKeys = {
     report_interaction_usergroup: 'Group ',
     report_interaction_texto: 'Text',
     report_interaction_phone: 'Client number',
+    least_user_or_group: 'Should choose at least user or group',
 
     report_productivity: 'Conversations',
     report_productivity_numeroticket: 'Ticket number',
