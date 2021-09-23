@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { execute } from 'store/main/actions';
-import { insCampaign } from 'common/helpers';
+import { extractVariables, filterPipe, insCampaign } from 'common/helpers';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useSelector } from 'hooks';
 
@@ -21,6 +21,7 @@ interface DetailProps {
     detaildata: ICampaign;
     setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
+    step: string,
     setStep: (step: string) => void;
     multiData: MultiData[];
     fetchData: () => void
@@ -48,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -56,6 +57,62 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     // const auxResult = useSelector(state => state.main.mainAux);
 
     const [waitSave, setWaitSave] = useState(false);
+    const [tablevariable, setTableVariable] = useState<any[]>([]);
+    const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
+
+    const [actualid, setActualId] = useState<string>('');
+    const [showTableVariable, setShowTableVariable] = useState(false);
+
+    useEffect(() => {
+        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+            setTableVariable([
+                { "description": "personcommunicationchannelowner", "persistent": false },
+                { "description": "name", "persistent": false },
+                { "description": "personcommunicationchannel", "persistent": false },
+                { "description": "type", "persistent": false },
+                { "description": "phone", "persistent": false },
+                { "description": "email", "persistent": false },
+            ]);
+        }
+        else if (detaildata.source === 'EXTERNAL') {
+            setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
+                ac.push({description: c, persistent: false})
+                return ac;
+            }, []));
+        }
+        else {
+            setTableVariable([
+                {"description":"corpid","persistent":true}, 
+                {"description":"orgid","persistent":true}, 
+                {"description":"campaignmemberid","persistent":true}, 
+                {"description":"campaignid","persistent":true}, 
+                {"description":"personid","persistent":true}, 
+                {"description":"status","persistent":true}, 
+                {"description":"globalid","persistent":true}, 
+                {"description":"personcommunicationchannel","persistent":true}, 
+                {"description":"type","persistent":true}, 
+                {"description":"displayname","persistent":true}, 
+                {"description":"personcommunicationchannelowner","persistent":true}, 
+                {"description":"field1","persistent":true}, 
+                {"description":"field2","persistent":true}, 
+                {"description":"field3","persistent":true}, 
+                {"description":"field4","persistent":true}, 
+                {"description":"field5","persistent":true}, 
+                {"description":"field6","persistent":true}, 
+                {"description":"field7","persistent":true}, 
+                {"description":"field8","persistent":true}, 
+                {"description":"field9","persistent":true}, 
+                {"description":"field10","persistent":true}, 
+                {"description":"field11","persistent":true}, 
+                {"description":"field12","persistent":true}, 
+                {"description":"field13","persistent":true}, 
+                {"description":"field14","persistent":true}, 
+                {"description":"field15","persistent":true}, 
+                {"description":"resultfromsend","persistent":true}, 
+                {"description":"batchindex","persistent":true}
+            ]);
+        }
+    }, [step])
 
     useEffect(() => {
         if (waitSave) {
@@ -73,7 +130,38 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [executeRes, waitSave])
 
+    const checkValidity = () => {
+        if (detaildata.messagetemplateheader?.type === 'text'
+        && detaildata.messagetemplateheader?.value === '') {
+            return { success: false, message: 'NANO__Falta encabezado' }
+        }
+        let elemVariables = [];
+        let errorIndex = null;
+        if (detaildata.communicationchanneltype === 'MAIL') {
+            elemVariables = extractVariables(detaildata.subject || '');
+            errorIndex = elemVariables.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)))
+            if (!errorIndex) {
+                return { success: false, message: `NANO__Parámetro inválido ${elemVariables[errorIndex]}` }
+            }
+        }
+        if ((detaildata.messagetemplateheader?.value || '') !== '') {
+            elemVariables = extractVariables(detaildata.messagetemplateheader?.value || '')
+            errorIndex = elemVariables.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)))
+            if (!errorIndex) {
+                return { success: false, message: `NANO__Parámetro inválido ${elemVariables[errorIndex]}` }
+            }
+        }
+        if ((detaildata.message || '') !== '') {
+            elemVariables = extractVariables(detaildata.message || '')
+            errorIndex = elemVariables.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)))
+            if (!errorIndex) {
+                return { success: false, message: `NANO__Parámetro inválido ${elemVariables[errorIndex]}` }
+            }
+        }
+    }
+
     const onSubmit = () => {
+        // checkValidity();
         const callback = () => {
             dispatch(execute(insCampaign(detaildata)));
             dispatch(showBackdrop(true));
@@ -86,6 +174,24 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             callback
         }))
     };
+
+    const toggleVariableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let elem = e.target;
+        setActualId(elem.id);
+        if (elem) {
+            let selectionStart = elem.selectionStart || 0;
+            let startIndex = elem.value.slice(0, selectionStart || 0).lastIndexOf('{{');
+            let partialText = '';
+            if (startIndex !== -1) {
+                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
+                && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1) {
+                    setShowTableVariable(true);
+                    partialText = elem.value.slice(startIndex + 2, selectionStart);
+                    setTableVariableShow(filterPipe(tablevariable, 'description', partialText));
+                }
+            }
+        }
+    }
     
     return (
         <React.Fragment>
@@ -96,7 +202,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         handleClick={setViewSelected}
                     />
                     <TitleDetail
-                        title={row ? `${row.name}` : t(langKeys.message)}
+                        title={row ? `${row.title}` : t(langKeys.newcampaign)}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -175,13 +281,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 <div className="row-zyx">
                     {edit ?
                         <FieldEditMulti
+                            primitive={true}
                             label={t(langKeys.message)}
                             className="col-12"
                             valueDefault={detaildata.message || ''}
-                            onChange={(value) => setDetailData({
-                                ...detaildata, 
-                                message: value
-                            })}
+                            onChange={(e) => {
+                                setDetailData({
+                                    ...detaildata, 
+                                    message: e.target.value
+                                });
+                                toggleVariableSelect(e)
+                            }}
                         />
                         :
                         <FieldView

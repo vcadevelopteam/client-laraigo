@@ -214,6 +214,7 @@ interface InputProps {
     fregister?: Dictionary;
     uset?: boolean;
     variant?: "standard" | "outlined" | "filled" | undefined;
+    primitive?: boolean;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -255,7 +256,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {} }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, primitive = false }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -279,7 +280,11 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
                         setvalue(e.target.value);
-                        onChange && onChange(e.target.value);
+                        if (primitive) {
+                            onChange && onChange(e);
+                        }
+                        else
+                            onChange && onChange(e.target.value);
                     }
                 }}
                 onBlur={(e) => {
