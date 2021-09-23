@@ -265,18 +265,40 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     const fetchDetailData = (corpid: number, propertyname: string, description: string, category: string, level: string) => dispatch(getCollectionAux(getPropertySel(corpid, propertyname, description, category, level, 0)))
 
     const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(insProperty(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
+        if (data.table) {
+            const callback = () => {
+                dispatch(execute({
+                    header: null,
+                    detail: data.table.map((x: any) => insProperty({
+                        ...x,
+                        operation: 'UPDATE',
+                        id: x.propertyid,
+                        orgid: x.orgid
+                    }))
+                }, true));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            }
+    
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
     });
+
+    const onBlurFieldValue = (index: any, param: string, value: any) => {
+        fieldsUpdate(index, { ...fields[index], [param]: value});
+    }
+
+    const onChangeSwitchValue = (index: any, param: string, value: any) => {
+        fieldsUpdate(index, { ...fields[index], [param]: (value ? '1' : '0')});
+    }
+
+    const onChangeSelectValue = (index: any, param: string, value: any) => {
+        fieldsUpdate(index, { ...fields[index], [param]: value});
+    }
 
     useEffect(() => {
         fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
@@ -426,7 +448,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             key={`detail${index}`}
                             multiData={multiData}
                             preData={fields}
-                            updateRecords={setPropertyDetailTable}
+                            onBlurFieldValue={onBlurFieldValue}
+                            onChangeSwitchValue = {onChangeSwitchValue}
+                            onChangeSelectValue = {onChangeSelectValue}
                         />
                     ))}
                 </div>
@@ -444,7 +468,9 @@ interface ModalProps {
     setAllIndex?: (index: any) => void;
     setOpenModal?: (open: boolean) => void;
     triggerSave?: boolean;
-    updateRecords?: (record: any) => void;
+    onBlurFieldValue: (index: any, param: string, value: any) => void;
+    onChangeSwitchValue: (index: any, param: string, value: any) => void;
+    onChangeSelectValue: (index: any, param: string, value: any) => void;
 }
 
 interface RowSelected {
@@ -452,7 +478,7 @@ interface RowSelected {
     row: Dictionary | null
 }
 
-const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, preData, setAllIndex, triggerSave, updateRecords }) => {
+const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, preData, setAllIndex, triggerSave, onBlurFieldValue, onChangeSwitchValue, onChangeSelectValue }) => {
     const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -466,7 +492,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
 
     const dispatch = useDispatch();
 
-    const { formState: { errors }, getValues, handleSubmit, register, reset, setValue, trigger } = useForm();
+    const { formState: { errors }, setValue } = useForm();
 
     var valueInput = null;
 
@@ -479,8 +505,9 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                     valueInput =
                         <TemplateSwitch
                         label={t(langKeys.value)}
-                        className={classes.mb2}
                         valueDefault={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
+                        onChange={(value) => onChangeSwitchValue(index, 'propertyvalue', value)}
+                        className={classes.mb2}
                     />
                 }
                 else {
@@ -500,6 +527,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         label={t(langKeys.value)}
                         valueDefault={row?.propertyvalue || ''}
                         error={errors?.propertyvalue?.message}
+                        onChange={(value) => onChangeSelectValue(index, 'propertyvalue', value ? value.domainvalue : '')}
                         data={domainTable.data}
                         optionDesc='domaindesc'
                         optionValue='domainvalue'
@@ -525,6 +553,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         inputProps={{step: 0.1}}
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                         error={errors?.propertyvalue?.message}
+                        onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
                         className={classes.mb2}
                     />
                 }
@@ -548,6 +577,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         label={t(langKeys.value)}
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                         error={errors?.propertyvalue?.message}
+                        onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
                         className={classes.mb2}
                     />
                 }
@@ -583,13 +613,6 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             setGroupTable({ loading: false, data: [] });
         }
     }
-
-    const onSubmit = handleSubmit((data) => {
-        if (!row)
-            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: 'INSERT' }])
-        else
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.orgid === row ? { ...x, ...data, operation: (x.operation || 'UPDATE') } : x))
-    });
 
     useEffect(() => {
         const indexChannelTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_COMMUNICATIONCHANNELBYORG_LST' + (index + 1)));
@@ -682,11 +705,11 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 <FieldSelect
                                     label={t(langKeys.organization)}
                                     valueDefault={row?.orgid || ''}
-                                    onChange={onChangeOrganization}
+                                    onChange={(value) => { onChangeSelectValue(index, 'orgid', value ? value.orgid : 0); onChangeOrganization(value) }}
                                     error={errors?.orgid?.message}
                                     data={orgTable.data}
-                                    optionDesc="orgdesc"
-                                    optionValue="orgid"
+                                    optionDesc='orgdesc'
+                                    optionValue='orgid'
                                     className={classes.mb2}
                                 />
                                 : <FieldView
@@ -699,6 +722,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 <FieldSelect
                                     label={t(langKeys.channel)}
                                     valueDefault={row?.communicationchannelid || ''}
+                                    onChange={(value) => onChangeSelectValue(index, 'communicationchannelid', value ? value.communicationchannelid : 0)}
                                     error={errors?.communicationchannelid?.message}
                                     data={channelTable.data}
                                     optionDesc='description'
@@ -715,6 +739,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                 <FieldSelect
                                     label={t(langKeys.group)}
                                     valueDefault={row?.group || ''}
+                                    onChange={(value) => onChangeSelectValue(index, 'group', value ? value.domainvalue : '')}
                                     error={errors?.group?.message}
                                     data={groupTable.data}
                                     optionDesc='domaindesc'
@@ -732,6 +757,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     label={t(langKeys.status)}
                                     className={classes.mb2}
                                     valueDefault={row?.status || 'ACTIVO'}
+                                    onChange={(value) => onChangeSelectValue(index, 'status', value ? value.domainvalue : '')}
                                     error={errors?.status?.message}
                                     data={dataStatus}
                                     optionDesc='domaindesc'
