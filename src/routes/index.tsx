@@ -4,7 +4,7 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM } from 'pages';
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter,ChannelAddTwitterDM, Emojis } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -191,6 +191,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
 				<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.EMOJIS}>
+				<ExtrasLayout><Emojis /></ExtrasLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

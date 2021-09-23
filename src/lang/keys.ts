@@ -97,6 +97,8 @@ export const langKeys = {
     usergroup: 'usergroup',
     domain: 'domain',
     domain_plural: 'domain_plural',
+    emoji: 'emoji',
+    emoji_plural: 'emoji_plural',
     intelligentmodels: 'intelligentmodels',
     endpoint: 'endpoint',
     modelid: 'modelid',

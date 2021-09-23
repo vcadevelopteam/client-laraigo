@@ -164,4 +164,10 @@ export const subroutes: RouteConfig[] = [
         path: paths.VARIABLECONFIGURATION,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    {
+        key: paths.EMOJIS,
+        description: <Trans i18nKey={langKeys.emoji_plural} count={2} />,
+        path: paths.EMOJIS,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    }
 ];

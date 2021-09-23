@@ -79,6 +79,8 @@ const translation: LangKeys = {
     domain: 'Domain',
     classification: 'Classification',
     domain_plural: 'Domains',
+    emoji: 'Emoji',
+    emoji_plural: 'Emojis',
     valuelist: 'Values list',
     documenttype: 'Document type',
     documentnumber: 'Document number',

@@ -63,6 +63,7 @@ const paths = {
     INTEGRATIONMANAGER: '/extras/integrationmanager',
     FLOWDESIGNER: '/extras/flowdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
+    EMOJIS: '/extras/emojis'
 };
 
 export default paths;

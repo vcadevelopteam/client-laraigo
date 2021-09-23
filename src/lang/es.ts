@@ -60,6 +60,8 @@ const translation: LangKeys = {
     review: 'Resumen',
     domain: 'Dominio',
     domain_plural: 'Dominios',
+    emoji: 'Emoji',
+    emoji_plural: 'Emojis',
     valuelist: 'Lista de valores',
     classification: 'Clasificación',
     code: 'Código',
