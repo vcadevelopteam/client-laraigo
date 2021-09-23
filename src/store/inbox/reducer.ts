@@ -37,6 +37,11 @@ export interface IState {
     triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
     userType: "SUPERVISOR" | "AGENT" | null;
+    wsConnected: boolean;
+    userConnected: boolean;
+    isOnBottom: boolean | null;
+    triggerNewMessageClient: boolean | null;
+    triggerConnectAgentGo: IBaseState;
 }
 
 export const initialState: IState = {
@@ -50,11 +55,16 @@ export const initialState: IState = {
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
+    triggerConnectAgentGo: initialTransaction,
     triggerReassignTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
     showInfoPanel: false,
-    userType: null
+    userType: null,
+    wsConnected: false,
+    userConnected: !!localStorage.getItem("agentConnected"),
+    isOnBottom: null,
+    triggerNewMessageClient: false
 };
 
 export default createReducer<IState>(initialState, {
@@ -94,13 +104,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.RESET_SELECT_AGENT]: caseFunctions.resetSelectAgent,
     
     [actionTypes.SHOW_INFO_PANEL]: caseFunctions.showInfoPanel,
-    [actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
+    //[actionTypes.REPLY_MESSAGE]: caseFunctions.addMessage,
     [actionTypes.SET_USER_TYPE]: caseFunctions.setUserType,
     [actionTypes.ADD_TICKET]: caseFunctions.addTicket,
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
-    [actionTypes.CONNECT_AGENT]: caseFunctions.connectAgent,
+    [actionTypes.CONNECT_AGENT_WS]: caseFunctions.connectAgentWS,
+    [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
@@ -123,8 +134,15 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_2_FAILURE]: caseFunctions.getTipificationLevel2Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_2_RESET]: caseFunctions.getTipificationLevel2Reset,
 
+    [actionTypes.CONNECT_AGENT_API]: caseFunctions.connectAgentUItmp,
+    [actionTypes.CONNECT_AGENT_API_SUCCESS]: caseFunctions.connectAgentUItmpSuccess,
+    [actionTypes.CONNECT_AGENT_API_FAILURE]: caseFunctions.connectAgentUItmpFailure,
+    [actionTypes.CONNECT_AGENT_API_RESET]: caseFunctions.connectAgentUItmpReset,
+
     [actionTypes.GET_TIPIFICATION_LEVEL_3]: caseFunctions.getTipificationLevel3,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_SUCCESS]: caseFunctions.getTipificationLevel3Success,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_FAILURE]: caseFunctions.getTipificationLevel3Failure,
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
+    [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
+    [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
 });

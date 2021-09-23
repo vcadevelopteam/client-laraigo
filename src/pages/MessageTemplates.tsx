@@ -14,7 +14,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -268,7 +268,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
     
-    const { register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
+    const { control, register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.id : 0,
             description: row?.description || '',
@@ -286,9 +286,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             footerenabled: row?.footerenabled || true,
             footer: row?.footer || '',
             buttonsenabled: row?.buttonsenabled || true,
-            buttons: row && row.buttons ? JSON.parse(row.buttons) : [],
+            buttons: row ? (row.buttons || []) : [],
             operation: row ? "EDIT" : "INSERT"
         }
+    });
+
+    const { fields: buttons, append: buttonsAppend, remove: buttonsRemove, update: buttonsUpdate } = useFieldArray({
+        control,
+        name: "buttons",
     });
 
     const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('type') === 'SMS');

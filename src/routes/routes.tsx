@@ -9,37 +9,37 @@ export const routes: RouteConfig[] = [
         key: paths.DASHBOARD,
         description: <Trans i18nKey={langKeys.dashboard} />,
         path: paths.DASHBOARD,
-        icon: (className) => <DashboardIcon className={className} />,
+        icon: (className) => <DashboardIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.REPORTS,
         description: <Trans i18nKey={langKeys.report} count={2} />, // prop:count for plural purposes
         path: paths.REPORTS,
-        icon: (className) => <ReportsIcon className={className} />,
+        icon: (className) => <ReportsIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.TICKETS,
         description: <Trans i18nKey={langKeys.ticket} count={2} />,
         path: paths.TICKETS,
-        icon: (className) => <TicketIcon className={className} />,
+        icon: (className) => <TicketIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.EMAIL_INBOX,
         description: <Trans i18nKey={langKeys.eMailInbox} />,
         path: paths.EMAIL_INBOX,
-        icon: (className) => <EMailInboxIcon className={className} />,
+        icon: (className) => <EMailInboxIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.MESSAGE_INBOX,
         description: <Trans i18nKey={langKeys.messageInbox} />,
         path: paths.MESSAGE_INBOX,
-        icon: (className) => <MessageInboxIcon className={className} />,
+        icon: (className) => <MessageInboxIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.SUPERVISOR,
         description: <Trans i18nKey={langKeys.supervisor} />,
         path: paths.SUPERVISOR,
-        icon: (className) => <SupervisorIcon className={className} />,
+        icon: (className) => <SupervisorIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: 'system-label',
@@ -49,25 +49,25 @@ export const routes: RouteConfig[] = [
         key: paths.ORGANIZATIONS,
         description: <Trans i18nKey={langKeys.organization} count={2} />,
         path: paths.ORGANIZATIONS,
-        icon: (className) => <OrganizationIcon className={className} />,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.CHANNELS,
         description: <Trans i18nKey={langKeys.channel} count={2} />,
         path: paths.CHANNELS,
-        icon: (className) => <ChannelIcon className={className} />,
+        icon: (className) => <ChannelIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.BILLING_SETUPS,
         description: <Trans i18nKey={langKeys.billingSetup} />,
         path: paths.BILLING_SETUPS,
-        icon: (className) => <BillingSetupIcon className={className} />,
+        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.CONFIGURATION,
         description: <Trans i18nKey={langKeys.configuration} />,
         path: paths.CONFIGURATION,
-        icon: (className) => <ConfigurationIcon className={className} />,
+        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.EXTRAS,
@@ -75,7 +75,7 @@ export const routes: RouteConfig[] = [
         path: paths.EXTRAS,
         subroute: true,
         initialSubroute: paths.USERS,
-        icon: (className) => <ExtrasIcon className={className} />,
+        icon: (className) => <ExtrasIcon style={{width: 22, height: 22}} className={className} />,
     },
 ];
 
@@ -150,6 +150,12 @@ export const subroutes: RouteConfig[] = [
         key: paths.INTEGRATIONMANAGER,
         description: <Trans i18nKey={langKeys.integrationmanager_plural} count={2} />,
         path: paths.INTEGRATIONMANAGER,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
+    {
+        key: paths.CAMPAIGN,
+        description: <Trans i18nKey={langKeys.campaign} count={2} />,
+        path: paths.CAMPAIGN,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {

@@ -46,6 +46,12 @@ export interface IDeleteTicketParams {
 }
 
 export interface IConnectAgentParams {
-    isConnected: boolean;
+    isconnected: boolean;
     userid: number;
+}
+
+export interface IConnectAgentUIParams {
+    connect: boolean;
+    description?: string | null;
+    motive?: string | null;
 }

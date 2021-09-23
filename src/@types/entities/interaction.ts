@@ -11,6 +11,8 @@ export interface IInteraction {
     hiddenwall?: boolean | null;
     indexImage?: number | undefined;
     listImage?: string[] | undefined;
+    isHide?: boolean;
+    onlyTime?: string;
 }
 
 export interface IGroupInteraction {

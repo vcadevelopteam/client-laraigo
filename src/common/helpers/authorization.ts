@@ -13,6 +13,7 @@ export function saveAuthorizationToken(token: string): void {
 
 export function removeAuthorizationToken(): void {
     localStorage.removeItem(keys.JWT_TOKEN);
+    localStorage.removeItem(keys.AGENT_CONNECTED);
 }
 
 export function getAuthorizationToken(): string {

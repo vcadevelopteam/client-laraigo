@@ -61,6 +61,7 @@ const paths = {
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
+    CAMPAIGN: '/extras/campaign',
     FLOWDESIGNER: '/extras/flowdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
     EMOJIS: '/extras/emojis'

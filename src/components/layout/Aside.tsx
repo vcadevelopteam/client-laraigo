@@ -79,6 +79,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             key={config.path}
             onClick={onClick}
             className={clsx(className)}
+            
         >
             <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
             <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />

@@ -3,8 +3,10 @@ const BASE_URL = 'https://apix.laraigo.com/api';
 //const BASE_URL = 'http://localhost:6065/api';
 
 export const apiUrls = {
+    WS_URL: 'https://socket.laraigo.com',
     TICKET_URL: `${BASE_URL}/main`,
     LOGIN_URL: `${BASE_URL}/auth`,
+    CONNECT_INBOX: `${BASE_URL}/auth/connect`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,

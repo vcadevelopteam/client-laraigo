@@ -543,7 +543,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: buttons ? JSON.stringify(buttons) : "",
+            buttons: JSON.stringify(buttons),
             operation
         }
     });
@@ -736,4 +736,136 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
     },
     type: "CHATWEB",
     service,
+});
+
+export const getCampaignLst = (): IRequestBody => ({
+    method: "UFN_CAMPAIGN_LST",
+    parameters: {}
+});
+
+export const getCampaignSel = (id: number): IRequestBody => ({
+    method: "UFN_CAMPAIGN_SEL",
+    parameters: {
+        id
+    }
+});
+
+export const insCampaign = ({
+    id,
+    communicationchannelid,
+    usergroup,
+    type,
+    status,
+    title,
+    description,
+    subject,
+    message,
+    startdate,
+    enddate,
+    repeatable,
+    frecuency,
+    messagetemplateid,
+    messagetemplatename,
+    messagetemplatenamespace,
+    messagetemplateheader,
+    messagetemplatebuttons,
+    executiontype,
+    batchjson,
+    fields,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGN_INS",
+    parameters: {
+        id,
+        communicationchannelid,
+        usergroup,
+        type,
+        status,
+        title,
+        description,
+        subject,
+        message,
+        startdate,
+        enddate,
+        repeatable,
+        frecuency,
+        messagetemplateid,
+        messagetemplatename,
+        messagetemplatenamespace,
+        messagetemplateheader,
+        messagetemplatebuttons,
+        executiontype,
+        batchjson,
+        fields,
+        operation
+    }
+});
+
+export const getUserGroupsSel = (): IRequestBody => ({
+    method: "UFN_USER_GROUPS_SEL",
+    parameters: {}
+});
+
+export const getCampaignMemberSel = (campaignid: number): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_SEL",
+    parameters: {
+        campaignid
+    }
+});
+
+export const insCampaignMember = ({
+    id,
+    campaignid,
+    personid,
+    personcommunicationchannel,
+    personcommunicationchannelowner,
+    type,
+    displayname,
+    status,
+    field1,
+    field2,
+    field3,
+    field4,
+    field5,
+    field6,
+    field7,
+    field8,
+    field9,
+    field10,
+    field11,
+    field12,
+    field13,
+    field14,
+    field15,
+    batchindex,
+    operation,
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_INS",
+    parameters: {
+        id,
+        campaignid,
+        personid,
+        personcommunicationchannel,
+        personcommunicationchannelowner,
+        type,
+        displayname,
+        status,
+        field1,
+        field2,
+        field3,
+        field4,
+        field5,
+        field6,
+        field7,
+        field8,
+        field9,
+        field10,
+        field11,
+        field12,
+        field13,
+        field14,
+        field15,
+        batchindex,
+        operation,
+    }
 });

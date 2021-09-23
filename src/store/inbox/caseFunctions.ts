@@ -1,5 +1,6 @@
 import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams } from "@types";
 import { initialState, IState } from "./reducer";
+import { toTime24HR, convertLocalDate } from 'common/helpers';
 
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
@@ -10,6 +11,7 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
     return interactions.reduce((acc: any, item: IInteraction) => {
         item.indexImage = indexImage;
         item.listImage = listImages;
+        item.onlyTime = toTime24HR(convertLocalDate(item.createdate, false).toLocaleTimeString())
         const currentUser = item.usertype === "BOT" ? "BOT" : (item.userid ? "agent" : "client");
         if (acc.last === "") {
             return { data: [{ ...item, usertype: currentUser, interactions: [item] }], last: currentUser }
@@ -35,7 +37,9 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
     interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
-
+    
+    interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false, false).toLocaleTimeString())
+    
     interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
@@ -54,6 +58,33 @@ const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: 
         groupsInteraction[groupsInteraction.length - 1].interactions.push(interaction)
     }
     return groupsInteraction;
+}
+
+const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
+    let validatelog = true;
+    //#region HIDE LOGS, ONLY SHOW LAST LOG
+    for (let i = 0; i < interactions.length; i++) {
+        if (interactions[i].interactiontext.toLowerCase().includes("balanceo") && validatelog) {
+            let countlogconsecutive = 0;
+            for (let j = i + 1; j < interactions.length; j++) {
+                if (interactions[j].interactiontext.toLowerCase().includes("balanceo")) {
+                    countlogconsecutive++;
+                    validatelog = false;
+                } else
+                    break;
+            }
+            if (countlogconsecutive > 0) {
+                const cc = countlogconsecutive;
+                for (let k = 0; k < cc; k++) {
+                    interactions[i + k].isHide = true
+                }
+            }
+        } else
+            validatelog = true;
+    }
+    //#endregion
+    //interactions = interactions.filter(i => i.interactiontype != "HIDE");
+    return interactions.filter(x => !x.isHide);
 }
 
 export const getAgents = (state: IState): IState => ({
@@ -75,7 +106,7 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
             channels: x.channels?.split(",") || [],
             countNotAnwsered: x.countActive - x.countAnwsered,
             isConnected: x.status === "ACTIVO"
-        })) : [],
+        })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 ) : [],
         count: action.payload.count,
         loading: false,
         error: false,
@@ -221,6 +252,7 @@ export const getTickets = (state: IState): IState => ({
 
 export const getTicketsSuccess = (state: IState, action: IAction): IState => ({
     ...state,
+    isOnBottom: null,
     ticketList: {
         data: action.payload.data || [],
         count: action.payload.count,
@@ -245,30 +277,31 @@ export const getTicketsReset = (state: IState): IState => ({
     ticketList: initialState.ticketList,
 });
 
-export const addMessage = (state: IState, action: IAction): IState => {
-    const newInteraction: IInteraction = action.payload;
-    newInteraction.interactionid = state.interactionList.data.length * -1;
-    return {
-        ...state,
-        interactionList: {
-            data: AddNewInteraction(state.interactionList.data, newInteraction),
-            count: action.payload.count,
-            loading: false,
-            error: false,
-        },
-    };
-}
+// export const addMessage = (state: IState, action: IAction): IState => {
+//     const newInteraction: IInteraction = action.payload;
+//     newInteraction.interactionid = state.interactionList.data.length * -1;
+//     return {
+//         ...state,
+//         interactionList: {
+//             data: AddNewInteraction(state.interactionList.data, newInteraction),
+//             count: action.payload.count,
+//             loading: false,
+//             error: false,
+//         },
+//     };
+// }
 
-export const connectAgent = (state: IState, action: IAction): IState => {
+
+export const connectAgentWS = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
-
+    
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, status: 'ACTIVO' } : x)
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 )
     }
-
+    
     return {
         ...state,
         agentList: {
@@ -280,16 +313,30 @@ export const connectAgent = (state: IState, action: IAction): IState => {
     };
 }
 
+export const connectAgentUI = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        userConnected: action.payload
+    };
+}
+
+export const goToBottom = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        isOnBottom: action.payload
+    };
+}
+
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
-
+    console.log("newMessageFromClient", data)
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
-    let newTicketSelected: any = { ...state.ticketSelected };
+    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let newAgentList = [...state.agentList.data];
-
+    
     const { agentSelected, ticketSelected, userType } = state;
-
+    
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -320,7 +367,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         if (ticketSelected?.conversationid === data.conversationid) {
 
             if (data.usertype === "agent" && data.ticketWasAnswered) {
-                newTicketSelected.isAnswered = true;
+                if (newTicketSelected)
+                    newTicketSelected.isAnswered = true;
             }
 
             const newInteraction: IInteraction = {
@@ -337,6 +385,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
     return {
         ...state,
+        triggerNewMessageClient: !state.triggerNewMessageClient,
+        // isOnBottom: null,
         ticketList: {
             ...state.ticketList,
             data: newticketList
@@ -361,7 +411,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
-    let newTicketSelected: any = { ...state.ticketSelected };
+    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
 
     const { agentSelected, userType } = state;
 
@@ -409,13 +459,14 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
     ...state,
     ticketSelected: { ...state.ticketSelected!!, isAnswered: action.payload.data[0].data.some((x: IInteraction) => x.userid === state.agentSelected?.userid && x.interactiontype !== "LOG") },
     interactionList: {
-        data: getGroupInteractions(action.payload.data[0].data),
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data[0].data)),
         count: action.payload.count,
         loading: false,
         error: false,
     },
+    isOnBottom: null,
     configurationVariables: {
-        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority > b.priority) ? 1 : ((b.priority > a.priority) ? -1 : 0)) || [],
+        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
         count: action.payload.count,
         loading: false,
         error: false,
@@ -550,6 +601,42 @@ export const reassignTicketReset = (state: IState): IState => ({
 });
 
 
+
+
+
+
+export const connectAgentUItmp = (state: IState): IState => ({
+    ...state,
+    triggerConnectAgentGo: { ...state.triggerConnectAgentGo, loading: true, error: false },
+});
+
+export const connectAgentUItmpSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerConnectAgentGo: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const connectAgentUItmpFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerConnectAgentGo: {
+        ...state.triggerConnectAgentGo,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const connectAgentUItmpReset = (state: IState): IState => ({
+    ...state,
+    triggerConnectAgentGo: initialState.triggerConnectAgentGo,
+});
+
+
+
+
 export const replyTicket = (state: IState): IState => ({
     ...state,
     triggerReplyTicket: { ...state.triggerReplyTicket, loading: true, error: false },
@@ -644,4 +731,10 @@ export const getTipificationLevel3Failure = (state: IState, action: IAction): IS
 export const getTipificationLevel3Reset = (state: IState): IState => ({
     ...state,
     tipificationsLevel3: initialState.tipificationsLevel3,
+});
+
+
+export const wsConnect = (state: IState, action: IAction): IState => ({
+    ...state,
+    wsConnected: action.payload
 });

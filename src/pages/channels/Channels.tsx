@@ -44,9 +44,7 @@ export const Channels: FC = () => {
 
     useEffect(() => {
         if (waitSave) {
-            console.log("dddaaaww", executeResult)
             if (!executeResult.loading && !executeResult.error) {
-                console.log("ddaaa111")
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
                 
@@ -54,7 +52,6 @@ export const Channels: FC = () => {
                 setWaitSave(false);
                 //dispatch(getCollection(getChannelSel(0)));
             } else if (executeResult.error) {
-                console.log("ddaaa")
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
