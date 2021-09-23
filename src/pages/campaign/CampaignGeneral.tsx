@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
@@ -8,8 +8,11 @@ import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -99,6 +102,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const dataGroup = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataMessageTemplate = multiData[3] && multiData[3].success ? multiData[3].data : [];
     
+    const [openModal, setOpenModal] = useState(false);
+    
     const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
@@ -124,7 +129,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplatebuttons: [],
             executiontype: 'MANUAL',
             batchjson: [],
-            fields: new SelectedColumns() ,
+            fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT"
         }
     });
@@ -181,14 +186,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
-        setValue('fields', data.fields || new SelectedColumns());
+        setValue('fields', {...data.fields, ...new SelectedColumns()});
     }
 
     const onSubmit = handleSubmit((data) => {
         data.messagetemplateheader = data.messagetemplateheader || {};
         data.messagetemplatebuttons = data.messagetemplatebuttons || [];
         data.batchjson = data.batchjson || [];
-        data.fields = data.fields || new SelectedColumns();
+        data.fields = {...data.fields, ...new SelectedColumns()};
         setDetailData({...detaildata, ...data});
         setStep("step-2");
     });
@@ -384,7 +389,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                                 aria-controls="long-menu"
                                 aria-haspopup="true"
                                 size="small"
-                                onClick={(e) => console.log(e)}
+                                onClick={(e) => setOpenModal(true)}
                             >
                                 <EventIcon style={{ color: '#777777' }} />
                             </IconButton>
@@ -537,6 +542,140 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 </div>
                 : null}
             </div>
+            <ModalCampaignSchedule
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                data={getValues('batchjson')}
+                parentSetValue={setValue}
+            />
         </React.Fragment>
+    )
+}
+
+interface ModalProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    data: any[];
+    parentSetValue: (...param: any) => any;
+}
+
+const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, data = [], parentSetValue }) => {
+    const { t } = useTranslation();
+
+    const { control, register, handleSubmit, setValue, getValues, formState: { errors }, clearErrors } = useForm<any>({
+        defaultValues: {
+            batchjson: data
+        }
+    });
+
+    const { fields: schedule, append: scheduleAppend, remove: scheduleRemove } = useFieldArray({
+        control,
+        name: "batchjson",
+    });
+
+    const onClickAddSchedule = async () => {
+        scheduleAppend({ date: '', time: '', quantity: 0 });
+    }
+
+    const onClickDeleteSchedule = async (index: number) => {
+        scheduleRemove(index);
+    }
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+        setValue('batchjson', data);
+        clearErrors();
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        parentSetValue('batchjson', data.batchjson);
+        setOpenModal(false);
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.scheduled)}
+            button1Type="button"
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={handleCancelModal}
+            button2Type="button"
+            buttonText2={t(langKeys.save)}
+            handleClickButton2={onSubmit}
+        >
+            <TableContainer>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => onClickAddSchedule()}
+                                >
+                                    <AddIcon style={{ color: '#7721AD' }} />
+                                </IconButton>
+                            </TableCell>
+                            <TableCell>{t(langKeys.date)}</TableCell>
+                            <TableCell>{t(langKeys.hour)}</TableCell>
+                            <TableCell>{t(langKeys.quantity)}</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {schedule.map((item: any, i) => 
+                            <TableRow key={item.id}>
+                                <TableCell>
+                                    <IconButton
+                                        size="small"
+                                        onClick={() => onClickDeleteSchedule(i)}
+                                    >
+                                        <DeleteIcon style={{ color: '#777777' }} />
+                                    </IconButton>
+                                </TableCell>
+                                <TableCell>
+                                    <TextField
+                                        {...register(`batchjson.${i}.date`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}
+                                        color="primary"
+                                        type="date"
+                                        defaultValue={item.date}
+                                        error={!!errors?.batchjson?.[i]?.date?.message}
+                                        helperText={errors?.batchjson?.[i]?.date?.message || null}
+                                        onChange={(e: any) => setValue(`batchjson[${i}].date`, e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <TextField
+                                        {...register(`batchjson.${i}.time`, {
+                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                        })}
+                                        color="primary"
+                                        type="time"
+                                        defaultValue={item.time}
+                                        error={!!errors?.batchjson?.[i]?.time?.message}
+                                        helperText={errors?.batchjson?.[i]?.time?.message || null}
+                                        onChange={(e: any) => setValue(`batchjson[${i}].time`, e.target.value)}
+                                    />
+                                </TableCell>
+                                <TableCell>
+                                    <TextField
+                                        {...register(`batchjson.${i}.quantity`, {
+                                            validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
+                                        })}
+                                        color="primary"
+                                        type="number"
+                                        defaultValue={item.quantity}
+                                        error={!!errors?.batchjson?.[i]?.quantity?.message}
+                                        helperText={errors?.batchjson?.[i]?.quantity?.message || null}
+                                        onChange={(e: any) => setValue(`batchjson.${i}.quantity`, e.target.value)}
+                                        inputProps={{ min: 0, step: 1 }}
+                                    />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </DialogZyx>
     )
 }
