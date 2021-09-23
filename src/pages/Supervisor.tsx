@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        borderTop: '1px solid #EBEAED',
+        // borderTop: '1px solid #EBEAED',
         width: '100%'
     },
     containerAgents: {
@@ -140,7 +140,7 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
 )
 
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
-    <div>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={channelName}>
             <span><GetIcon channelType={channelType} color={`#${color}`} /></span>
         </Tooltip>

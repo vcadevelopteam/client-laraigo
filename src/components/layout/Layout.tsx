@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
         borderColor: '#EBEAED',
     },
     drawerLabel: {
-        margin: '22px 20px;',
+        margin: '8px 20px;',
         fontWeight: 400,
         fontSize: 14,
     },
@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 400,
         fontSize: 14,
         color: 'white',
-        margin: '22px auto',
+        margin: '8px auto',
         opacity: .85,
     },
     hide: {
@@ -112,6 +112,13 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 1),
         // necessary for content to be below app bar
         ...theme.mixins.toolbar,
+    },
+    toolbar2: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
     },
     content: {
         flexGrow: 1,

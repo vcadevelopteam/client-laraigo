@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { AttachmentIcon, ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
+import { ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket, goToBottom } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom, reassignTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
 import clsx from 'clsx';
-import { EmojiPickerZyx } from 'components'
+import { EmojiPickerZyx, GifPickerZyx } from 'components'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
@@ -23,6 +23,7 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
+
 interface IFile {
     type: string;
     url: string;
@@ -30,7 +31,7 @@ interface IFile {
     error?: boolean;
 }
 
-const IconUploader: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
+const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (param: any) => void }> = ({ classes, setFiles, type }) => {
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
@@ -106,7 +107,7 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
     </div>
 )
 
-const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
     const handleClick = () => setOpen((prev) => !prev);
@@ -127,8 +128,8 @@ const IconQuickReply: React.FC<{ classes: any, setText: (param: string) => void 
         setOpen(false);
         setText(item.quickreply
             .replace("{{numticket}}", ticketSelected?.ticketnum)
-            .replace("{{nombre_cliente}}", ticketSelected?.displayname)
-            .replace("{{nombre_asesor}}", user?.firstname + " " + user?.lastname)
+            .replace("{{client_name}}", ticketSelected?.displayname)
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
         );
     }
 
@@ -219,18 +220,21 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
 
     const triggerReplyMessage = () => {
         const callback = () => {
+            let wasSend = false;
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
                     interactiontext: x.url,
                 }))
+                wasSend = true;
                 dispatch(replyTicket(listMessages, true))
 
                 files.forEach((x, i) => {
@@ -245,18 +249,19 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         usertype: "agent",
                         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
-                    dispatch(emitEvent({
-                        event: 'newMessageFromAgent',
-                        data: newInteractionSocket
-                    }));
-
-                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
+                    if (userType === "AGENT") {
+                        dispatch(emitEvent({
+                            event: 'newMessageFromAgent',
+                            data: newInteractionSocket
+                        }));
+                    }
                 })
                 setFiles([])
             }
             if (text) {
                 const textCleaned = text.trim();
                 if (textCleaned) {
+                    wasSend = true
                     const newInteractionSocket = {
                         ...ticketSelected!!,
                         interactionid: 0,
@@ -268,13 +273,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         usertype: "agent",
                         ticketWasAnswered: !ticketSelected!!.isAnswered,
                     }
-                    //websocket
-                    dispatch(emitEvent({
-                        event: 'newMessageFromAgent',
-                        data: newInteractionSocket
-                    }));
-                    // socketEmitEvent('newMessageFromAgent', newInteractionSocket);
-
+                    if (userType === "AGENT") {
+                        dispatch(emitEvent({
+                            event: 'newMessageFromAgent',
+                            data: newInteractionSocket
+                        }));
+                    }
                     //send to answer with integration
                     dispatch(replyTicket({
                         ...ticketSelected!!,
@@ -282,6 +286,28 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         interactiontext: textCleaned,
                     }));
                     setText("");
+                }
+            }
+
+            if (wasSend) {
+                if (userType === "SUPERVISOR") {
+                    dispatch(reassignTicket({
+                        ...ticketSelected!!,
+                        newUserId: 0,
+                        newUserGroup: '',
+                        observation: 'Reassigned from supervisor',
+                        newConversation: true,
+                        wasanswered: true
+                    }));
+
+                    dispatch(emitEvent({
+                        event: 'reassignTicket',
+                        data: {
+                            ...ticketSelected,
+                            userid: agentSelected?.userid,
+                            newuserid: 0,
+                        }
+                    }));
                 }
             }
         }
@@ -301,8 +327,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
         if (event.ctrlKey || event.shiftKey)
             return;
         if (event.charCode === 13) {
+            event.preventDefault();
             if (text.trim() || files.length > 0)
-                triggerReplyMessage()
+                return triggerReplyMessage()
         }
     }
 
@@ -327,10 +354,11 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
-                    <IconQuickReply classes={classes} setText={setText} />
-                    <IconUploader type="image" classes={classes} setFiles={setFiles} />
+                    <QuickReplyIcon classes={classes} setText={setText} />
+                    <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
-                    <IconUploader type="file" classes={classes} setFiles={setFiles} />
+                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, {type: 'image', url, id: new Date().toISOString()}])} />
+                    <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                 </div>
                 <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
                     <SendIcon />

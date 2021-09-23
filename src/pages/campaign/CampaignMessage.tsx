@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { execute } from 'store/main/actions';
-import { insCampaign } from 'common/helpers';
+import { extractVariables, filterPipe, insCampaign, insCampaignMember } from 'common/helpers';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useSelector } from 'hooks';
 
@@ -21,6 +21,7 @@ interface DetailProps {
     detaildata: ICampaign;
     setDetailData: (data: any) => void;
     setViewSelected: (view: string) => void;
+    step: string,
     setStep: (step: string) => void;
     multiData: MultiData[];
     fetchData: () => void
@@ -48,45 +49,310 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, setStep, multiData, fetchData }) => {
+export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const executeRes = useSelector(state => state.main.execute);
-    // const auxResult = useSelector(state => state.main.mainAux);
 
-    const [waitSave, setWaitSave] = useState(false);
+    const [save, setSave] = useState('');
+    const [tablevariable, setTableVariable] = useState<any[]>([]);
+    const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
+
+    const [actualid, setActualId] = useState<string>('');
+    const [showTableVariable, setShowTableVariable] = useState(false);
+
+    const [elemVariables, setElemVariables] = useState<string[]>([]);
+
+    const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
 
     useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
+        if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
+            setTableVariable([
+                { "description": "personcommunicationchannelowner", "persistent": false },
+                { "description": "name", "persistent": false },
+                { "description": "personcommunicationchannel", "persistent": false },
+                { "description": "type", "persistent": false },
+                { "description": "phone", "persistent": false },
+                { "description": "email", "persistent": false },
+            ]);
+        }
+        else if (detaildata.source === 'EXTERNAL') {
+            setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
+                ac.push({description: c, persistent: false})
+                return ac;
+            }, []));
+        }
+        else {
+            setTableVariable([
+                {"description":"corpid","persistent":true}, 
+                {"description":"orgid","persistent":true}, 
+                {"description":"campaignmemberid","persistent":true}, 
+                {"description":"campaignid","persistent":true}, 
+                {"description":"personid","persistent":true}, 
+                {"description":"status","persistent":true}, 
+                {"description":"globalid","persistent":true}, 
+                {"description":"personcommunicationchannel","persistent":true}, 
+                {"description":"type","persistent":true}, 
+                {"description":"displayname","persistent":true}, 
+                {"description":"personcommunicationchannelowner","persistent":true}, 
+                {"description":"field1","persistent":true}, 
+                {"description":"field2","persistent":true}, 
+                {"description":"field3","persistent":true}, 
+                {"description":"field4","persistent":true}, 
+                {"description":"field5","persistent":true}, 
+                {"description":"field6","persistent":true}, 
+                {"description":"field7","persistent":true}, 
+                {"description":"field8","persistent":true}, 
+                {"description":"field9","persistent":true}, 
+                {"description":"field10","persistent":true}, 
+                {"description":"field11","persistent":true}, 
+                {"description":"field12","persistent":true}, 
+                {"description":"field13","persistent":true}, 
+                {"description":"field14","persistent":true}, 
+                {"description":"field15","persistent":true}, 
+                {"description":"resultfromsend","persistent":true}, 
+                {"description":"batchindex","persistent":true}
+            ]);
+        }
+    }, [step]);
+
+    const toggleVariableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let elem = e.target;
+        setActualId(elem.id);
+        if (elem) {
+            let selectionStart = elem.selectionStart || 0;
+            let startIndex = elem.value.slice(0, selectionStart || 0).lastIndexOf('{{');
+            let partialText = '';
+            if (startIndex !== -1) {
+                if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
+                && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1) {
+                    setShowTableVariable(true);
+                    partialText = elem.value.slice(startIndex + 2, selectionStart);
+                    setTableVariableShow(filterPipe(tablevariable, 'description', partialText));
+                }
             }
         }
-    }, [executeRes, waitSave])
+    }
+
+    const formatMessage = () => {
+        let subject = detaildata.subject || '';
+        let header = detaildata.messagetemplateheader?.value || '';
+        let message = detaildata.message || '';
+        tablevariable.map((v: any, i: number) => {
+            subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+            header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+            message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+        });
+        return { subject, header, message }
+    }
+
+    const checkValidation = () => {
+        if (detaildata.messagetemplateheader?.type === 'text'
+        && detaildata.messagetemplateheader?.value === '') {
+            dispatch(showSnackbar({ show: true, success: false, message: 'NANO__Falta encabezado' }));
+        }
+        let elemVariables: string[] = [];
+        let errorIndex = null;
+        if (detaildata.communicationchanneltype === 'MAIL') {
+            let vars = extractVariables(detaildata.subject || '');
+            errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            if (errorIndex !== -1) {
+                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+            }
+            elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
+        }
+        if ((detaildata.messagetemplateheader?.value || '') !== '') {
+            let vars = extractVariables(detaildata.messagetemplateheader?.value || '')
+            errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            if (errorIndex !== -1) {
+                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+            }
+            elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
+        }
+        if ((detaildata.message || '') !== '') {
+            let vars = extractVariables(detaildata.message || '')
+            errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
+            if (errorIndex !== -1) {
+                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+            }
+            elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
+        }
+        let newmessages = formatMessage();
+        setDetailData({
+            ...detaildata,
+            variablereplace: elemVariables,
+            batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
+            subject: newmessages.subject,
+            messagetemplateheader: {...detaildata.messagetemplateheader, value: newmessages.header},
+            message: newmessages.message,
+        });
+    }
+
+    const buildingMembers = () => {
+        let campaignMemberList: any[] = [];
+        if (detaildata.source === 'EXTERNAL') {
+            campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                ap.push({
+                    id: 0,
+                    personid: 0,
+                    personcommunicationchannel: '',
+                    personcommunicationchannelowner: p[Object.keys(p)[0]] || '',
+                    type: '',
+                    displayname: '',
+                    status: 'ACTIVO',
+                    field1: p[Object.keys(p)[0]] || '',
+                    field2: p[Object.keys(p)[1]] || '',
+                    field3: p[Object.keys(p)[2]] || '',
+                    field4: p[Object.keys(p)[3]] || '',
+                    field5: p[Object.keys(p)[4]] || '',
+                    field6: p[Object.keys(p)[5]] || '',
+                    field7: p[Object.keys(p)[6]] || '',
+                    field8: p[Object.keys(p)[7]] || '',
+                    field9: p[Object.keys(p)[8]] || '',
+                    field10: p[Object.keys(p)[9]] || '',
+                    field11: p[Object.keys(p)[10]] || '',
+                    field12: p[Object.keys(p)[11]] || '',
+                    field13: p[Object.keys(p)[12]] || '',
+                    field14: p[Object.keys(p)[13]] || '',
+                    field15: p[Object.keys(p)[14]] || '',
+                    batchindex: 0,
+                    operation: detaildata.operation
+                })
+                return ap;
+            }, []);
+        }
+        else if (detaildata.source === 'INTERNAL') {
+            if (detaildata.operation === 'INSERT') {
+                campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                    ap.push({
+                        id: 0,
+                        personid: p.personid || 0,
+                        personcommunicationchannel: p.personcommunicationchannel || '',
+                        personcommunicationchannelowner: p.personcommunicationchannelowner || '',
+                        type: p.type || '',
+                        displayname: p.name || '',
+                        status: 'ACTIVO',
+                        field1: p[tablevariable[0]] || '',
+                        field2: p[tablevariable[1]] || '',
+                        field3: p[tablevariable[2]] || '',
+                        field4: p[tablevariable[3]] || '',
+                        field5: p[tablevariable[4]] || '',
+                        field6: p[tablevariable[5]] || '',
+                        field7: '',
+                        field8: '',
+                        field9: '',
+                        field10: '',
+                        field11: '',
+                        field12: '',
+                        field13: '',
+                        field14: '',
+                        field15: '',
+                        batchindex: 0,
+                        operation: detaildata.operation
+                    })
+                    return ap;
+                }, []);
+            }
+            else if (detaildata.operation === 'UPDATE') {
+                campaignMemberList = detaildata.person?.reduce((ap, p) => {
+                    ap.push({
+                        id: p.campaignmemberid,
+                        personid: p.personid,
+                        personcommunicationchannel: p.personcommunicationchannel,
+                        personcommunicationchannelowner: p.personcommunicationchannelowner,
+                        type: p.type,
+                        displayname: p.displayname,
+                        status: p.status,
+                        field1: p.field1,
+                        field2: p.field2,
+                        field3: p.field3,
+                        field4: p.field4,
+                        field5: p.field5,
+                        field6: p.field6,
+                        field7: p.field7,
+                        field8: p.field8,
+                        field9: p.field9,
+                        field10: p.field10,
+                        field11: p.field11,
+                        field12: p.field12,
+                        field13: p.field13,
+                        field14: p.field14,
+                        field15: p.field15,
+                        batchindex: 0,
+                        operation: detaildata.operation
+                    })
+                    return ap;
+                }, []);
+            }
+        }
+        if (detaildata.executiontype === 'SCHEDULED') {
+            detaildata.batchjson?.reduce((bda, bdc, i) => {
+                campaignMemberList.filter((cm, j) => j >= bda && j < bda + bdc.quantity).map(cm => cm.batchindex = bdc.batchindex);
+                return bda + bdc.quantity;
+            }, 0);
+        }
+        setCampaignMembers(campaignMemberList);
+        setSave('SUBMIT');
+    }
+
+    const saveCampaign = (data: any) => dispatch(execute(insCampaign(data)));
+    const saveCampaignMembers = (data: any, campaignid: number) => dispatch(execute({
+        header: null,
+        detail: [...data.map((x: any) => insCampaignMember({...x, campaignid: campaignid }))]
+    }, true));
 
     const onSubmit = () => {
         const callback = () => {
-            dispatch(execute(insCampaign(detaildata)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
+            setSave('PARENT');
+            saveCampaign(detaildata);
         }
-
         dispatch(manageConfirmation({
             visible: true,
             question: t(langKeys.confirmation_save),
             callback
         }))
     };
-    
+
+    useEffect(() => {
+        if (save === 'VALIDATION') {
+            checkValidation();
+            setSave('PREPARING');
+        }
+        else if (save === 'PREPARING') {
+            buildingMembers();
+        }
+        else if (save === 'SUBMIT') {
+            onSubmit();
+        }
+        else if (save === 'PARENT') {
+            if (!executeRes.loading && !executeRes.error) {
+                setSave('MEMBERS');
+                saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setSave('');
+            }
+
+        }
+        else if (save === 'MEMBERS') {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1");
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setSave('');
+            }
+        }
+    }, [save, executeRes])
+
     return (
         <React.Fragment>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -96,7 +362,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         handleClick={setViewSelected}
                     />
                     <TitleDetail
-                        title={row ? `${row.name}` : t(langKeys.message)}
+                        title={row ? `${row.title}` : t(langKeys.newcampaign)}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -126,10 +392,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             type="button"
                             style={{ backgroundColor: "#55BD84" }}
                             onClick={() => {
-                                console.log(detaildata);
-                                onSubmit();
+                                setSave('VALIDATION')
                             }}
-                        >{t(langKeys.next)}
+                        >{t(langKeys.save)}
                         </Button>
                     }
                 </div>
@@ -175,13 +440,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 <div className="row-zyx">
                     {edit ?
                         <FieldEditMulti
+                            primitive={true}
                             label={t(langKeys.message)}
                             className="col-12"
                             valueDefault={detaildata.message || ''}
-                            onChange={(value) => setDetailData({
-                                ...detaildata, 
-                                message: value
-                            })}
+                            onChange={(e) => {
+                                setDetailData({
+                                    ...detaildata, 
+                                    message: e.target.value
+                                });
+                                toggleVariableSelect(e)
+                            }}
                         />
                         :
                         <FieldView

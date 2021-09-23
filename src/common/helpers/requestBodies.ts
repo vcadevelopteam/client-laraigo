@@ -340,6 +340,39 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     }
 });
 
+export const getEmojiGroupSel = (categorydesc: string, all: boolean): IRequestBody => ({
+    method: "UFN_EMOJI_GROUP_SEL",
+    key: "UFN_EMOJI_GROUP_SEL",
+    parameters: {
+        categorydesc,
+        all
+    }
+})
+
+export const getEmojiSel = (emojichar: string): IRequestBody => ({
+    method: "UFN_EMOJI_SEL",
+    key: "UFN_EMOJI_SEL",
+    parameters: {
+        emojichar
+    }
+})
+
+export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => {
+    console.log('allParameters', allParameters);
+
+    return ({
+        method: "UFN_EMOJI_UPDATE",
+        key: "UFN_EMOJI_UPDATE",
+        parameters: {
+            favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
+            restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
+            orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
+            emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
+        }
+    }
+    )
+}
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
@@ -510,7 +543,7 @@ export const insMessageTemplate = (
             footerenabled,
             footer,
             buttonsenabled,
-            buttons: buttons ? JSON.stringify(buttons) : "",
+            buttons: JSON.stringify(buttons),
             operation
         }
     });
@@ -771,4 +804,68 @@ export const insCampaign = ({
 export const getUserGroupsSel = (): IRequestBody => ({
     method: "UFN_USER_GROUPS_SEL",
     parameters: {}
+});
+
+export const getCampaignMemberSel = (campaignid: number): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_SEL",
+    parameters: {
+        campaignid
+    }
+});
+
+export const insCampaignMember = ({
+    id,
+    campaignid,
+    personid,
+    personcommunicationchannel,
+    personcommunicationchannelowner,
+    type,
+    displayname,
+    status,
+    field1,
+    field2,
+    field3,
+    field4,
+    field5,
+    field6,
+    field7,
+    field8,
+    field9,
+    field10,
+    field11,
+    field12,
+    field13,
+    field14,
+    field15,
+    batchindex,
+    operation,
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGNMEMBER_INS",
+    parameters: {
+        id,
+        campaignid,
+        personid,
+        personcommunicationchannel,
+        personcommunicationchannelowner,
+        type,
+        displayname,
+        status,
+        field1,
+        field2,
+        field3,
+        field4,
+        field5,
+        field6,
+        field7,
+        field8,
+        field9,
+        field10,
+        field11,
+        field12,
+        field13,
+        field14,
+        field15,
+        batchindex,
+        operation,
+    }
 });

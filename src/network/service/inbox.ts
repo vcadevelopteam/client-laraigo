@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams } from '@types';
+import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
@@ -73,4 +73,11 @@ export function reassignTicket(paramtmp: IReassignicketParams) {
         isanswered: true,
     }
     return APIManager.post(apiUrls.REASSIGN_TICKET, { data: { data } }, true);
+}
+
+export function connectUser(params: IConnectAgentUIParams) {
+    const data = {
+        ...params
+    }
+    return APIManager.post(apiUrls.CONNECT_INBOX, { data: { data } }, true);
 }

@@ -58,7 +58,8 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
         flex: 1,
         overflowY: 'auto',
-        backgroundColor: '#e0e0e0',
+        // backgroundColor: '#e0e0e0',
+        background: 'linear-gradient(90deg, rgba(119,33,173,0.7203256302521008) 35%, rgba(189,240,249,1) 100%)'
     },
     containerQuickreply: {
         whiteSpace: 'break-spaces',
@@ -161,7 +162,8 @@ const useStyles = makeStyles((theme) => ({
     containerResponse: {
         padding: theme.spacing(2),
         background: '#FFF',
-        position: 'relative'
+        position: 'relative',
+        borderTop: '1px solid #84818a1a'
     },
     containerChat: {
         flex: '1',

@@ -164,7 +164,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 
     useEffect(() => {
         if (multiData?.data[1])
-            // setAgentsConnected(multiData?.data[1].data.filter(x => x.status === 'ACTIVO'))
             setAgentsConnected(multiData?.data[1].data)
     }, [multiData])
 
@@ -182,9 +181,14 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.newUserId === 0 || !data.newUserGroup) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            return;
+        }
         const dd: IReassignicketParams = {
             ...ticketSelected!!,
             ...data,
+            newUserId: 0,
             newConversation: true,
             wasanswered: true
         }
@@ -383,9 +387,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {/* <div className={classes.buttonCloseticket} onClick={closeTicket}>
-                    <CheckIcon /> <span style={{ marginLeft: 8 }} >Close ticket</span>
-                </div> */}
                 <IconButton
                     onClick={closeTicket}
                 >
@@ -396,15 +397,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 >
                     <MoreVertIcon />
                 </IconButton>
-                {/* <div className={classes.buttonIcon} onClick={(e) => setAnchorEl(e.currentTarget)}>
-                    <MoreVertIcon style={{ color: '#000' }} />
-                </div> */}
-                {/* <div className={classes.buttonIcon}>
-                    <VideocamIcon style={{ color: '#000' }} />
-                </div>
-                <div className={classes.buttonIcon}>
-                    <CallIcon style={{ color: '#000' }} />
-                </div> */}
             </div>
             <Menu
                 id="menu-appbar"
@@ -451,27 +443,30 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
-        <div className={classes.headChat} onClick={showInfoPanelTrigger}>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <Avatar src={imageurldef || ""} />
-                <div className={classes.titleTicketChat}>
-                    <div>
-                        {displayname}
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 400 }}>
-                        Ticket #{ticketnum}
+        <div  style={{ position: 'relative' }}>
+            <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
+            <div className={classes.headChat}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <Avatar src={imageurldef || ""} />
+                    <div className={classes.titleTicketChat}>
+                        <div>
+                            {displayname}
+                        </div>
+                        <div style={{ fontSize: 14, fontWeight: 400 }}>
+                            Ticket #{ticketnum}
+                        </div>
                     </div>
                 </div>
+                <ButtonsManageTicket classes={classes} />
             </div>
-            <ButtonsManageTicket classes={classes} />
         </div>
     )
 }
 
 const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket }) => (
     <div className={classes.containerChat}>
-        <HeadChat 
-            classes={classes} 
+        <HeadChat
+            classes={classes}
             ticket={ticket} />
         <InteractionsPanel
             classes={classes}

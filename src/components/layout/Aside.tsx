@@ -79,6 +79,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             key={config.path}
             onClick={onClick}
             className={clsx(className)}
+
         >
             <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
             <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
@@ -126,7 +127,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             <div style={{ height: 18 }} />
             {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             <div style={{ flexGrow: 1 }} />
-            <div className={classes.toolbar}>
+            <div className={classes.toolbar2}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
                     <ChevronIcon />
                 </IconButton>

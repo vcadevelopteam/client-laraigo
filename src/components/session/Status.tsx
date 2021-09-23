@@ -4,7 +4,7 @@ import IOSSwitch from "components/fields/IOSSwitch";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from 'hooks';
-import { emitEvent, connectAgent } from 'store/inbox/actions';
+import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -24,7 +24,8 @@ const Status: FC = () => {
     const userConnected = useSelector(state => state.inbox.userConnected);
 
     const onChecked = () => {
-        dispatch(connectAgent(!userConnected))
+        dispatch(connectAgentAPI(!userConnected))
+        dispatch(connectAgentUI(!userConnected))
         dispatch(emitEvent({
             event: 'connectAgent',
             data: {

@@ -30,8 +30,9 @@ import { FormHelperText, useTheme } from '@material-ui/core';
 import { Divider, Grid, ListItem } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import { EmojiICon } from 'icons';
+import { EmojiICon, GifIcon } from 'icons';
 import { Picker } from 'emoji-mart'
+import { SearchField } from 'components';
 
 import {
     WebMessengerIcon,
@@ -214,6 +215,7 @@ interface InputProps {
     fregister?: Dictionary;
     uset?: boolean;
     variant?: "standard" | "outlined" | "filled" | undefined;
+    primitive?: boolean;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -255,7 +257,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {} }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, primitive = false }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -279,7 +281,11 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
                         setvalue(e.target.value);
-                        onChange && onChange(e.target.value);
+                        if (primitive) {
+                            onChange && onChange(e);
+                        }
+                        else
+                            onChange && onChange(e.target.value);
                     }
                 }}
                 onBlur={(e) => {
@@ -315,8 +321,9 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-
-    return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    console.log(channelType)
+    return <TelegramIcon style={{ color, width, height }} />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {
@@ -646,7 +653,6 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
                         bottom: 50
                     }}>
                         <Picker
-                            // showPreview={false}
                             onSelect={onSelect}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.indexOf(emoji.unified) === -1 : undefined}
                         />
@@ -654,5 +660,84 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
                 )}
             </span>
         </ClickAwayListener>
+    )
+}
+
+export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }> = ({ onSelect, style }) => {
+    const [open, setOpen] = React.useState(false);
+    const classes = emojiPickerStyle();
+    const handleClick = () => setOpen((prev) => !prev);
+
+    const handleClickAway = () => setOpen(false);
+    const [listGif, setListGif] = useState([]);
+
+    const handlerSearch = (text: string) => {
+        setListGif([])
+        fetch(`https://api.tenor.com/v1/search?tag=${text}&key=WL0G6J5OBD12&locale=pe_EN&media_filter=minimal&limit=30`)
+            .then(response => response.json())
+            .then(function (res) {
+                setListGif(res.results)
+            });
+    }
+
+    React.useEffect(() => {
+        fetch(
+            'https://api.tenor.com/v1/trending?key=WL0G6J5OBD12&locale=pe_ES&media_filter=minimal&limit=30')
+            .then(response => response.json())
+            .then(function (res) {
+                setListGif(res.results)
+            });
+    }, [])
+
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <span style={style || undefined}>
+                <GifIcon className={classes.root} onClick={handleClick} />
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 50,
+                        width: 342,
+                        height: 400,
+                        backgroundColor: 'white',
+                        padding: 4,
+                        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}>
+                        <SearchField
+                            colorPlaceHolder='#FFF'
+                            handleChangeOther={handlerSearch}
+                            lazy
+                        />
+                        <div style={{
+                            display: 'flex',
+                            gap: 8,
+                            marginTop: 4,
+                            flexWrap: 'wrap',
+                            height: '100%',
+                            width: '100%',
+                            overflowY: 'auto',
+                        }}>
+                            {listGif.map((item: any, index) => {
+                                return (
+                                    <img
+                                        style={{ cursor: 'pointer' }}
+                                        alt="gif"
+                                        width={100}
+                                        height={100}
+                                        className="pointer"
+                                        onClick={() => {
+                                            onSelect && onSelect(item.media[0].tinygif.url)
+                                            handleClickAway()
+                                        }}
+                                        src={item.media[0].tinygif.url} key={index} />
+                                )
+                            })}
+                        </div>
+                    </div>
+                )}
+            </span>
+        </ClickAwayListener >
     )
 }

@@ -49,3 +49,9 @@ export interface IConnectAgentParams {
     isconnected: boolean;
     userid: number;
 }
+
+export interface IConnectAgentUIParams {
+    connect: boolean;
+    description?: string | null;
+    motive?: string | null;
+}
