@@ -23,7 +23,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 [classes.appBarShift]: openDrawer,
             })}
         >
-            <Toolbar>
+            <Toolbar style={{borderBottom: '1px solid #EBEAED',}}>
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
                 <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                     <div className={classes.title} style={{ width: '400px' }}>

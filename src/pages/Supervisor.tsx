@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
         gap: theme.spacing(2),
-        borderTop: '1px solid #EBEAED',
+        // borderTop: '1px solid #EBEAED',
         width: '100%'
     },
     containerAgents: {

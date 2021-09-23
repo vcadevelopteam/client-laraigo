@@ -161,7 +161,8 @@ const useStyles = makeStyles((theme) => ({
     containerResponse: {
         padding: theme.spacing(2),
         background: '#FFF',
-        position: 'relative'
+        position: 'relative',
+        borderTop: '1px solid #84818a1a'
     },
     containerChat: {
         flex: '1',
