@@ -3,17 +3,14 @@ import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { BotIcon, AgentIcon, DownloadIcon2, FileIcon } from 'icons';
-import Avatar from '@material-ui/core/Avatar';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import { useSelector } from 'hooks';
 import clsx from 'clsx';
 import { ListItemSkeleton } from 'components'
-import { convertLocalDate, toTime12HR } from 'common/helpers';
 import { manageLightBox } from 'store/popus/actions';
 import { goToBottom } from 'store/inbox/actions';
-import Tooltip from '@material-ui/core/Tooltip';
 import { useDispatch } from 'react-redux';
 
 const useStylesCarousel = makeStyles((theme) => ({
@@ -325,7 +322,7 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
     return (
         <div className={classes.containerInteractions} onScroll={handleScroll}>
             {groupInteractionList.loading ? <ListItemSkeleton /> :
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={imageurldef}

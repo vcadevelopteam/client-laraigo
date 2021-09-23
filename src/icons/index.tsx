@@ -91,3 +91,4 @@ export { ReactComponent as DownloadIcon2 } from './download.svg';
 export { ReactComponent as FileIcon } from './file.svg';
 export { ReactComponent as DocumentIcon } from './document.svg';
 export { ReactComponent as CalendarIcon } from './calendar.svg';
+export { ReactComponent as GifIcon } from './gif.svg';
