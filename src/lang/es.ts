@@ -399,7 +399,6 @@ const translation: LangKeys = {
     error_login_user_inactive: "Tu usuario está inactivo",
     error_login_no_integration: "No hay ningun usuario registrado integrado a esa cuenta",
 
-
     all_adivisers: "Todos",
     conected: "Activos",
     disconected: "Inactivos",
@@ -411,6 +410,11 @@ const translation: LangKeys = {
     closed_on: "Cerrado en",
     close_ticket: "Cerrar ticket",
     client_detail: "Detalle cliente",
+
+    emoji_name: 'Nombre',
+    emoji_category_name: 'Categoría',
+    emoji_favorites: 'Favoritos',
+    emoji_restricted: 'Restringido',
 
     report_loginhistory: 'Conexión de usuario',
     report_loginhistory_createdate: 'Fecha',
