@@ -268,6 +268,9 @@ const translation: LangKeys = {
     clean: 'Clean',
     column: 'Column',
     select_column_plural: 'Select columns',
+    field: 'Field',
+    missing_header: 'Missing header',
+    invalid_parameter: 'Invalid parameter',
 
     variable: "Variable",
     successful_transaction: 'Successful transaction',

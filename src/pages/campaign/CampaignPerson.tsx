@@ -53,7 +53,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const dispatch = useDispatch();
     const { t } = useTranslation();
     
-    const auxResult = useSelector(state => state.main.multiDataAux);
+    const auxResult = useSelector(state => state.main.mainAux);
 
     const [valuefile, setvaluefile] = useState('');
     const [openModal, setOpenModal] = useState(false);
@@ -88,7 +88,28 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error
             && row !== null && detaildata.source === 'INTERNAL') {
-            setJsonData(auxResult.data[0] as any);
+            setJsonData(auxResult.data);
+            setHeaders([
+                { Header: t(langKeys.name), accessor: 'displayname' },
+                { Header: 'PCC', accessor: 'personcommunicationchannelowner' },
+                { Header: t(langKeys.type), accessor: 'type' },
+                { Header: t(langKeys.status), accessor: 'status' },
+                { Header: `${t(langKeys.field)} 1`, accessor: 'field1' },
+                { Header: `${t(langKeys.field)} 2`, accessor: 'field2' },
+                { Header: `${t(langKeys.field)} 3`, accessor: 'field3' },
+                { Header: `${t(langKeys.field)} 4`, accessor: 'field4' },
+                { Header: `${t(langKeys.field)} 5`, accessor: 'field5' },
+                { Header: `${t(langKeys.field)} 6`, accessor: 'field6' },
+                { Header: `${t(langKeys.field)} 7`, accessor: 'field7' },
+                { Header: `${t(langKeys.field)} 8`, accessor: 'field8' },
+                { Header: `${t(langKeys.field)} 9`, accessor: 'field9' },
+                { Header: `${t(langKeys.field)} 10`, accessor: 'field10' },
+                { Header: `${t(langKeys.field)} 11`, accessor: 'field11' },
+                { Header: `${t(langKeys.field)} 12`, accessor: 'field12' },
+                { Header: `${t(langKeys.field)} 13`, accessor: 'field13' },
+                { Header: `${t(langKeys.field)} 14`, accessor: 'field14' },
+                { Header: `${t(langKeys.field)} 15`, accessor: 'field15' }
+            ])
         }
     }, [auxResult]);
 
@@ -287,37 +308,42 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     const AdditionalButtons = () => {
-        return (
-            <React.Fragment>
-                <input
-                    id="upload-file"
-                    name="file"
-                    type="file"
-                    accept=".xls,.xlsx"
-                    value={valuefile}
-                    style={{ display: 'none' }}
-                    onChange={(e) => handleUpload(e.target.files)}
-                />
-                <label htmlFor="upload-file">
+        if (detaildata.source === 'EXTERNAL') {
+            return (
+                <React.Fragment>
+                    <input
+                        id="upload-file"
+                        name="file"
+                        type="file"
+                        accept=".xls,.xlsx"
+                        value={valuefile}
+                        style={{ display: 'none' }}
+                        onChange={(e) => handleUpload(e.target.files)}
+                    />
+                    <label htmlFor="upload-file">
+                        <Button
+                            component="span"
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            style={{ backgroundColor: "#ea2e49" }}
+                        ><Trans i18nKey={langKeys.uploadFile} />
+                        </Button>
+                    </label> 
                     <Button
-                        component="span"
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        style={{ backgroundColor: "#ea2e49" }}
-                    ><Trans i18nKey={langKeys.uploadFile} />
+                        onClick={() => cleanData()}
+                        style={{ backgroundColor: "#22b66e" }}
+                    ><Trans i18nKey={langKeys.clean} />
                     </Button>
-                </label> 
-                <Button
-                    className={classes.button}
-                    variant="contained"
-                    color="primary"
-                    onClick={() => cleanData()}
-                    style={{ backgroundColor: "#22b66e" }}
-                ><Trans i18nKey={langKeys.clean} />
-                </Button>
-            </React.Fragment>
-        )
+                </React.Fragment>
+            )
+        }
+        else {
+            return null
+        }
     }
     
     return (

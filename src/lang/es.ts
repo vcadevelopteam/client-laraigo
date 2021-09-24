@@ -305,6 +305,9 @@ const translation: LangKeys = {
     clean: 'Limpiar',
     column: 'Columna',
     select_column_plural: 'Seleccione columnas',
+    field: 'Campo',
+    missing_header: 'Falta cabecera',
+    invalid_parameter: 'Parámetro inválido',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
