@@ -98,7 +98,7 @@ export const ChannelAddInstagram: FC = () => {
         }
     }
     function setValueField(value: any) {
-        setNextbutton(value==null)
+        setNextbutton(value === null)
         let partialf = fields;
         partialf.parameters.communicationchannelsite = value?.id||""
         partialf.parameters.communicationchannelowner = value?.name||""

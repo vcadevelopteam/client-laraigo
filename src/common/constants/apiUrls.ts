@@ -26,4 +26,6 @@ export const apiUrls = {
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
+
+    PERSON: `${BASE_URL}/person`,
 };

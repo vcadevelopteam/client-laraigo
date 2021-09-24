@@ -241,3 +241,25 @@ footer a {
     -webkit-transition: .2s ease-in-out;
     transition: .2s ease-in-out
 }
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background: #7721AD;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #381052;
+}

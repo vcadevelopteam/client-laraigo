@@ -1,4 +1,4 @@
-import { IAction, IListStatePaginated, IObjectState, IProcessState, ITemplate } from "@types";
+import { IAction, IListState, IListStatePaginated, IObjectState, IProcessState, ITemplate } from "@types";
 
 interface IHandler<T> {
     [x: string]: (state: T, action: IAction) => any;
@@ -43,5 +43,13 @@ export const initialCommon: ITemplate = {
     loading: false,
     code: undefined,
     error: undefined,
+    message: undefined,
+};
+
+export const initialListState: IListState<any> = {
+    data: [],
+    loading: false,
+    code: undefined,
+    error: false,
     message: undefined,
 };
