@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti, TemplateSwitch } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -207,11 +207,12 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         defaultValues: {
             type: 'NINGUNO',
             communicationchannelid: row?.communicationchannelid || 0,
-            classificationid: row ? row.classificationid : 0,
+            classificationid: row?.classificationid || 0,
             id: row?.quickreplyid || 0,
             quickreply: row?.quickreply || '',
-            description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
+            description: row?.description || '',
+            favorite: row?.favorite || false,
+            status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -223,6 +224,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         register('communicationchannelid');
         register('type');
         register('id');
+        register('favorite');
         register('classificationid');//, { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('quickreply', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -327,6 +329,21 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 <div className={classes.containerDetail}>
                     <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
 
+                    <div className="row-zyx">
+                        {edit ?
+                            <TemplateSwitch
+                                label={t(langKeys.favorite)}
+                                className="col-12"
+                                valueDefault={row?.favorite || false}
+                                onChange={(value) => setValue('favorite', value)}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.favorite)}
+                                value={row ? (row.value ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                className="col-6"
+                            />
+                        }
+                    </div>
                     <div className="row-zyx">
                         {edit ?
                             <FieldEdit

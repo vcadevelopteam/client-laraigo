@@ -435,10 +435,10 @@ export const insOrg = ({ description, status, type, id, operation }: Dictionary)
     parameters: { id, description, status, type, operation }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation,favorite }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation }
+    parameters: { id, classificationid, description, quickreply, status, type, operation,favorite }
 });
 
 export const getClassificationSel = (id: number): IRequestBody => ({
@@ -810,11 +810,11 @@ export const insCampaign = ({
         messagetemplateid,
         messagetemplatename,
         messagetemplatenamespace,
-        messagetemplateheader,
-        messagetemplatebuttons,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
         executiontype,
-        batchjson,
-        fields,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(fields),
         operation
     }
 });

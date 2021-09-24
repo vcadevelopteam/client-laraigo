@@ -23,6 +23,7 @@ import SmsIcon from '@material-ui/icons/Sms';
 import { AnyRecord } from "dns";
 import { Dictionary } from "@types";
 import { FieldEdit } from "components/fields/templates";
+import {FirstStep2} from './FirstStep2';
 import { useForm } from "react-hook-form";
 
 interface ChannelOption {
@@ -115,10 +116,24 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
+export const FirstStep: FC<{setStep:(param:any)=>void,step:any}> = ({setStep,step}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [mainData, setMainData] = useState<Dictionary>({
-        email: ""
+        email: "",
+        password: "",
+        firstandlastname: "",
+        companybusinessname: "",
+        mobilephone: "",
+        sales: false,
+        customerservice: false,
+        marketing: false,
+    });
+    const [errors, setErrors] = useState<Dictionary>({
+        email: "",
+        password: "",
+        confirmpassword:"",
+        firstandlastname: "",
+        companybusinessname: "",
     });
 
     const [listchannels, setlistchannels] = useState<Dictionary>({
@@ -136,9 +151,8 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
     });
 
     function maindataChange(field:string,value:any){
-        let tempfield = mainData;
-        tempfield[field] = value;
-        setMainData(tempfield);
+        setMainData(p=>({...p,[field]:value}))
+        setErrors(p=>({...p,[field]: !value?t(langKeys.field_required):""}))
     }
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
@@ -249,15 +263,6 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         },
     ];
 
-    const processFacebookCallback = async (r: any) => {
-        if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken))
-            setViewSelected("view2")
-            dispatch(showBackdrop(true));
-        }
-    }
-    const handleClickShowPassword = () => setShowPassword(!showPassword);
-    const handleMouseDownPassword = (event: any) => event.preventDefault();
     const Option: FC<{ option: ChannelOption, selected: Boolean }> = ({ option,selected }) => {
         const [color, setColor] = useState('#989898');
         return (
@@ -283,113 +288,16 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
             </Paper>
         );
     };
-    if(viewSelected==="view1"){
-        return (
-            <div style={{ width: '100%' }}>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.signupstep1title)}</div>
-    
-                        <FacebookLogin
-                            appId="474255543421911"
-                            callback={processFacebookCallback}
-                            autoLoad={false}
-                            buttonStyle={{ borderRadius: '3px',width: "50%", marginLeft: "25%", height: '60px', display: 'flex', alignItems: 'center', 'fontSize': '24px', 
-                            fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', marginBottom: '20px' }}
+    if(step===1){
+        return(
+            <FirstStep2
+                setMainData={setMainData}
+                mainData={mainData}
+                setStep={setStep}
+            ></FirstStep2>
 
-                            textButton={t(langKeys.signupfacebookbutton)}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
-                        />
-                        <div className={classes.buttonGoogle}>
-                            <GoogleLogin
-                                clientId="792367159924-f7uvieuu5bq7m7mvnik2a7t5mnepekel.apps.googleusercontent.com"
-                                buttonText={t(langKeys.signupgooglebutton)}
-                                style={{ borderRadius: '3px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
-                                //onSuccess={onGoogleLoginSucess}
-                                //onFailure={onGoogleLoginFailure}
-                                cookiePolicy={'single_host_origin'}
-                            />
-                        </div>    
-                </div>
-                <div style={{display:"flex",width:"50%",marginLeft: "25%", padding: "30px 0"}}>
-                    <div className={classes.separator}></div>
-                    <div style={{fontSize: "1.8em",fontWeight:"bold",color:"#989898"}}>Or</div>
-                    <div className={classes.separator}></div>
-                </div>
-                
-                <div style={{padding:"20px"}}>
-                    <FieldEdit
-                        valueDefault={mainData.email}
-                        onChange={(value) => maindataChange('email',value)}
-                        label={t(langKeys.email)}
-                        className="col-12"
-                        variant="outlined"
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        label={t(langKeys.password)}
-                        name="password"
-                        type={showPassword ? 'text' : 'password'}
-                        autoComplete="current-password"
-                        //value={dataAuth.password}
-                        //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
-                        label={t(langKeys.confirmpassword)}
-                        name="confirmpassword"
-                        type={showPassword ? 'text' : 'password'}
-                        autoComplete="current-password"
-                        //value={dataAuth.password}
-                        //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        onMouseDown={handleMouseDownPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
-                    />
-                    <div style={{ textAlign: "center", padding: "20px"}}>{t(langKeys.tos)}</div>
-                    <div >
-                        <Button
-                            onClick={() => { setViewSelected("view2");setStep(2) }}
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            //disabled={nextbutton}
-                        >{t(langKeys.submit)}
-                        </Button>
-                    </div>
-
-                </div>
-            </div>
         )
-    }else if(viewSelected==="view2"){
+    }else if(step===2){
         return (
             <div style={{ width: '100%' }}>
                 <div>
@@ -401,8 +309,9 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                             fullWidth
                             label={t(langKeys.firstandlastname)}
                             name="firstandlastname"
-                            //value={dataAuth.password}
-                            //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                            error={!!errors.firstandlastname}
+                            helperText={errors.firstandlastname}
+                            onChange={(e) => maindataChange('firstandlastname',e.target.value)}
                         />
                         <TextField
                             variant="outlined"
@@ -410,8 +319,9 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                             fullWidth
                             label={t(langKeys.companybusinessname)}
                             name="companybusinessname"
-                            //value={dataAuth.password}
-                            //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                            error={!!errors.companybusinessname}
+                            helperText={errors.companybusinessname}
+                            onChange={(e) => maindataChange('companybusinessname',e.target.value)}
                         />
                         <TextField
                             variant="outlined"
@@ -420,8 +330,7 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                             fullWidth
                             label={t(langKeys.mobilephoneoptional)}
                             name="mobilephone"
-                            //value={dataAuth.password}
-                            //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                            onChange={(e) => setMainData(p=>({...p,mobilephone:e.target.value}))}
                         />
                         <div style={{padding:"20px",fontWeight: "bold", color: "#381052"}}>{t(langKeys.laraigouse)}</div>
                         <FormControl component="fieldset" style={{padding: "0 20px"}}>
@@ -429,21 +338,27 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                                 <FormControlLabel
                                     style={{fontSize:"20px!important"}}
                                     value="sales"
-                                    control={<Checkbox />}
+                                    control={<Checkbox 
+                                        onChange={e=>setMainData(p=>({...p,sales:!p.sales}))}
+                                    />}
                                     label={t(langKeys.sales)}
                                     labelPlacement="end"
                                 />
                                 <FormControlLabel
                                     style={{fontSize:"20px!important"}}
                                     value="customerservice"
-                                    control={<Checkbox />}
+                                    control={<Checkbox 
+                                        onChange={e=>setMainData(p=>({...p,customerservice:!p.customerservice}))}
+                                    />}
                                     label={t(langKeys.customerservice)}
                                     labelPlacement="end"
                                 />
                                 <FormControlLabel
                                     style={{fontSize:"20px!important"}}
                                     value="marketing"
-                                    control={<Checkbox />}
+                                    control={<Checkbox 
+                                        onChange={e=>setMainData(p=>({...p,marketing:!p.marketing}))}
+                                    />}
                                     label={t(langKeys.marketing)}
                                     labelPlacement="end"
                                 />
@@ -454,7 +369,7 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
 
                     <div style={{ width: "100%" }}>
                         <Button
-                            onClick={() => { setViewSelected("viewfinishreg");setStep(3) }}
+                            onClick={() => { setViewSelected("viewfinishreg");setStep(3);console.log(mainData)}}
                             className={classes.button}
                             style={{ width: "80%",marginLeft:"10%" }}
                             variant="contained"

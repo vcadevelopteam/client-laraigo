@@ -1,4 +1,5 @@
 export const langKeys = {
+    passwordsmustbeequal:"passwordsmustbeequal",
     data: "data",
     variable: "variable",
     dashboard: 'dashboard',
@@ -90,6 +91,7 @@ export const langKeys = {
     signupgooglebutton:'signupgooglebutton',
     classification: 'classification',
     summarize: 'summarize',
+    favorite: "favorite",
     detail: 'detail',
     detail_plural: 'detail_plural',
     label: "label",
