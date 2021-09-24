@@ -194,8 +194,45 @@ footer a {
         padding-right: 0px
     }
 }
-
-
 .emoji-mart-bar .emoji-mart-preview {
     display: none;
+}
+.scroll-style-go {
+    overflow-y: overlay;
+    
+}
+.scroll-style-go::-webkit-scrollbar-track
+{
+	border-radius: 5px;
+	background-color: transparent;
+}
+.scroll-style-go:hover::-webkit-scrollbar-track
+{
+	border-radius: 5px;
+	background-color: #dbdfe4;
+}
+.scroll-style-go::-webkit-scrollbar
+{
+	width: 5px;
+	background-color: transparent;
+}
+.scroll-style-go:hover:-webkit-scrollbar
+{
+	width: 5px;
+	background-color: #dbdfe4;
+}
+.scroll-style-go::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, 0);
+    -webkit-transition: .2s ease-in-out;
+    transition: .2s ease-in-out
+}
+ 
+.scroll-style-go:hover::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	background-color: rgba(0, 0, 0, .2);
+    -webkit-transition: .2s ease-in-out;
+    transition: .2s ease-in-out
 }
