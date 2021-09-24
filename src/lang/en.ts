@@ -279,6 +279,10 @@ const translation: LangKeys = {
     clean: 'Clean',
     column: 'Column',
     select_column_plural: 'Select columns',
+    field: 'Field',
+    missing_header: 'Missing header',
+    invalid_parameter: 'Invalid parameter',
+
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',
     signupgooglebutton: 'Sign up with Google',    

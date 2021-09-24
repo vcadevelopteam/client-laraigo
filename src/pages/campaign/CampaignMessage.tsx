@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'; // we need this to make JSX 
 import { useDispatch } from 'react-redux';
 // import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { FieldEdit, FieldEditMulti, FieldView, TemplateBreadcrumbs, TitleDetail } from 'components';
+import { FieldEdit, FieldEditWithSelect, TemplateBreadcrumbs, TitleDetail } from 'components';
 import { Dictionary, ICampaign, MultiData } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ interface DetailProps {
     step: string,
     setStep: (step: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
 }
 
 const arrayBread = [
@@ -49,6 +49,27 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+class VariableHandler {
+    show: boolean;
+    item: any;
+    inputkey: string;
+    inputvalue: string;
+    range: number[];
+    top: number;
+    left: number;
+    changer: ({...param}) => any;
+    constructor() {
+        this.show = false;
+        this.item = null;
+        this.inputkey = '';
+        this.inputvalue = '';
+        this.range = [-1, -1];
+        this.changer = ({...param}) => null;
+        this.top = 0;
+        this.left = 0;
+    }
+}
+
 export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -59,22 +80,22 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [tablevariable, setTableVariable] = useState<any[]>([]);
     const [tablevariableShow, setTableVariableShow] = useState<any[]>([]);
 
-    const [actualid, setActualId] = useState<string>('');
-    const [showTableVariable, setShowTableVariable] = useState(false);
-
-    const [elemVariables, setElemVariables] = useState<string[]>([]);
-
     const [campaignMembers, setCampaignMembers] = useState<any[]>([]);
+    const [valid, setValid] = useState(true);
+
+    const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
+    // const [showTableVariable, setShowTableVariable] = useState(false);
+    // const [textareaPosition, setTextareaPosition] = useState<any>({top: 0, left: 0});
 
     useEffect(() => {
         if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
             setTableVariable([
-                { "description": "personcommunicationchannelowner", "persistent": false },
-                { "description": "name", "persistent": false },
-                { "description": "personcommunicationchannel", "persistent": false },
-                { "description": "type", "persistent": false },
-                { "description": "phone", "persistent": false },
-                { "description": "email", "persistent": false },
+                {description: "personcommunicationchannelowner", persistent: false },
+                {description: "name", persistent: false },
+                {description: "personcommunicationchannel", persistent: false },
+                {description: "type", persistent: false },
+                {description: "phone", persistent: false },
+                {description: "email", persistent: false },
             ]);
         }
         else if (detaildata.source === 'EXTERNAL') {
@@ -85,72 +106,103 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         else {
             setTableVariable([
-                {"description":"corpid","persistent":true}, 
-                {"description":"orgid","persistent":true}, 
-                {"description":"campaignmemberid","persistent":true}, 
-                {"description":"campaignid","persistent":true}, 
-                {"description":"personid","persistent":true}, 
-                {"description":"status","persistent":true}, 
-                {"description":"globalid","persistent":true}, 
-                {"description":"personcommunicationchannel","persistent":true}, 
-                {"description":"type","persistent":true}, 
-                {"description":"displayname","persistent":true}, 
-                {"description":"personcommunicationchannelowner","persistent":true}, 
-                {"description":"field1","persistent":true}, 
-                {"description":"field2","persistent":true}, 
-                {"description":"field3","persistent":true}, 
-                {"description":"field4","persistent":true}, 
-                {"description":"field5","persistent":true}, 
-                {"description":"field6","persistent":true}, 
-                {"description":"field7","persistent":true}, 
-                {"description":"field8","persistent":true}, 
-                {"description":"field9","persistent":true}, 
-                {"description":"field10","persistent":true}, 
-                {"description":"field11","persistent":true}, 
-                {"description":"field12","persistent":true}, 
-                {"description":"field13","persistent":true}, 
-                {"description":"field14","persistent":true}, 
-                {"description":"field15","persistent":true}, 
-                {"description":"resultfromsend","persistent":true}, 
-                {"description":"batchindex","persistent":true}
+                {description:"corpid", persistent:true}, 
+                {description:"orgid", persistent:true}, 
+                {description:"campaignmemberid", persistent:true}, 
+                {description:"campaignid", persistent:true}, 
+                {description:"personid", persistent:true}, 
+                {description:"status", persistent:true}, 
+                {description:"globalid", persistent:true}, 
+                {description:"personcommunicationchannel", persistent:true}, 
+                {description:"type", persistent:true}, 
+                {description:"displayname", persistent:true}, 
+                {description:"personcommunicationchannelowner", persistent:true}, 
+                {description:"field1", persistent:true}, 
+                {description:"field2", persistent:true}, 
+                {description:"field3", persistent:true}, 
+                {description:"field4", persistent:true}, 
+                {description:"field5", persistent:true}, 
+                {description:"field6", persistent:true}, 
+                {description:"field7", persistent:true}, 
+                {description:"field8", persistent:true}, 
+                {description:"field9", persistent:true}, 
+                {description:"field10", persistent:true}, 
+                {description:"field11", persistent:true}, 
+                {description:"field12", persistent:true}, 
+                {description:"field13", persistent:true}, 
+                {description:"field14", persistent:true}, 
+                {description:"field15", persistent:true}, 
+                {description:"resultfromsend", persistent:true}, 
+                {description:"batchindex", persistent:true}
             ]);
         }
     }, [step]);
 
-    const toggleVariableSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({...param}) => void) => {
         let elem = e.target;
-        setActualId(elem.id);
         if (elem) {
             let selectionStart = elem.selectionStart || 0;
-            let startIndex = elem.value.slice(0, selectionStart || 0).lastIndexOf('{{');
+            let lines = (elem.value || '').substr(0, selectionStart).split('\n');
+            let row = lines.length - 1;
+            let column = lines[row].length * 3;
+            let startIndex = (elem.value || '').slice(0, selectionStart || 0)?.lastIndexOf('{{');
             let partialText = '';
             if (startIndex !== -1) {
                 if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
                 && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1) {
-                    setShowTableVariable(true);
                     partialText = elem.value.slice(startIndex + 2, selectionStart);
+                    let endIndex = startIndex + partialText.length + (elem.value || '').slice(selectionStart, elem.value.length).indexOf('}}') + 4;
+                    setVariableHandler({
+                        show: true,
+                        item: item,
+                        inputkey: inputkey,
+                        inputvalue: elem.value,
+                        range: [startIndex + 2, endIndex - 2],
+                        changer: ({...param}) => changefunc({...param}),
+                        top: 24 + row * 21,
+                        left: column
+                    })
                     setTableVariableShow(filterPipe(tablevariable, 'description', partialText));
+                }
+                else {
+                    setVariableHandler(new VariableHandler());
                 }
             }
         }
+    }
+    
+    const selectionVariableSelect = (e: React.ChangeEvent<any>, value: string) => {
+        const {item, inputkey, inputvalue, range, changer} = variableHandler;
+        if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
+            changer({
+                ...item,
+                [inputkey]: inputvalue.substring(0, range[0]) + value + inputvalue.substring(range[1])
+            });
+            setVariableHandler(new VariableHandler());
+        }
+        console.log(e)
     }
 
     const formatMessage = () => {
         let subject = detaildata.subject || '';
         let header = detaildata.messagetemplateheader?.value || '';
         let message = detaildata.message || '';
-        tablevariable.map((v: any, i: number) => {
-            subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
-            header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
-            message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
-        });
+        if (detaildata.operation === 'INSERT' || detaildata.source === 'EXTERNAL') {
+            tablevariable.forEach((v: any, i: number) => {
+                subject = subject.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+                header = header.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+                message = message.replace(new RegExp(`{{${v.description}}}`, 'g'), `{{field${i + 1}}}`);
+            });
+        }
         return { subject, header, message }
     }
 
     const checkValidation = () => {
-        if (detaildata.messagetemplateheader?.type === 'text'
+        let valid = true;
+        if (detaildata.messagetemplatetype === 'MULTIMEDIA'
         && detaildata.messagetemplateheader?.value === '') {
-            dispatch(showSnackbar({ show: true, success: false, message: 'NANO__Falta encabezado' }));
+            valid = false;
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.missing_header)}));
         }
         let elemVariables: string[] = [];
         let errorIndex = null;
@@ -158,15 +210,17 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             let vars = extractVariables(detaildata.subject || '');
             errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
             if (errorIndex !== -1) {
-                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+                valid = false;
+                dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.missing_header)} ${vars[errorIndex]}` }));
             }
             elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
         }
-        if ((detaildata.messagetemplateheader?.value || '') !== '') {
+        if (detaildata.messagetemplatetype === 'MULTIMEDIA' && (detaildata.messagetemplateheader?.value || '') !== '') {
             let vars = extractVariables(detaildata.messagetemplateheader?.value || '')
             errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
             if (errorIndex !== -1) {
-                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+                valid = false;
+                dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
             }
             elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
         }
@@ -174,19 +228,23 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             let vars = extractVariables(detaildata.message || '')
             errorIndex = vars.findIndex(v => !(v.includes('field') || tablevariable.map(t => t.description).includes(v)));
             if (errorIndex !== -1) {
-                dispatch(showSnackbar({ show: true, success: false, message: `NANO__Parámetro inválido ${vars[errorIndex]}` }));
+                valid = false;
+                dispatch(showSnackbar({ show: true, success: false, message: `${t(langKeys.invalid_parameter)} ${vars[errorIndex]}` }));
             }
             elemVariables = Array.from(new Set([...elemVariables, ...(vars || [])]));
         }
-        let newmessages = formatMessage();
-        setDetailData({
-            ...detaildata,
-            variablereplace: elemVariables,
-            batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
-            subject: newmessages.subject,
-            messagetemplateheader: {...detaildata.messagetemplateheader, value: newmessages.header},
-            message: newmessages.message,
-        });
+        setValid(valid);
+        if (valid) {
+            let newmessages = formatMessage();
+            setDetailData({
+                ...detaildata,
+                variablereplace: elemVariables,
+                batchjson: detaildata.executiontype === 'SCHEDULED' ? detaildata.batchjson : [],
+                subject: newmessages.subject,
+                messagetemplateheader: {...detaildata.messagetemplateheader, value: newmessages.header},
+                message: newmessages.message,
+            });
+        }
     }
 
     const buildingMembers = () => {
@@ -320,35 +378,37 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             checkValidation();
             setSave('PREPARING');
         }
-        else if (save === 'PREPARING') {
-            buildingMembers();
-        }
-        else if (save === 'SUBMIT') {
-            onSubmit();
-        }
-        else if (save === 'PARENT') {
-            if (!executeRes.loading && !executeRes.error) {
-                setSave('MEMBERS');
-                saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setSave('');
+        if (valid) {
+            if (save === 'PREPARING') {
+                buildingMembers();
             }
-
-        }
-        else if (save === 'MEMBERS') {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1");
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setSave('');
+            else if (save === 'SUBMIT') {
+                onSubmit();
+            }
+            else if (save === 'PARENT') {
+                if (!executeRes.loading && !executeRes.error) {
+                    setSave('MEMBERS');
+                    saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
+                } else if (executeRes.error) {
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showBackdrop(false));
+                    setSave('');
+                }
+    
+            }
+            else if (save === 'MEMBERS') {
+                if (!executeRes.loading && !executeRes.error) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("view-1");
+                } else if (executeRes.error) {
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                    dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                    dispatch(showBackdrop(false));
+                    setSave('');
+                }
             }
         }
     }, [save, executeRes])
@@ -402,63 +462,48 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             <div className={classes.containerDetail}>
                 {detaildata.communicationchanneltype === 'MAIL' ?
                 <div className="row-zyx">
-                    {edit ?
-                        <FieldEdit
-                            label={t(langKeys.title)}
-                            className="col-12"
-                            valueDefault={detaildata.subject || ''}
-                            onChange={(value) => setDetailData({...detaildata, subject: value})}
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.title)}
-                            value={detaildata.subject || ''}
-                            className="col-12"
-                        />
-                    }
+                    <FieldEdit
+                        label={t(langKeys.title)}
+                        className="col-12"
+                        valueDefault={detaildata.subject}
+                        onChange={(value) => setDetailData({...detaildata, subject: value})}
+                    />
                 </div> : null}
-                {(detaildata.messagetemplateheader?.type || '') !== '' ?
+                {(detaildata.messagetemplatetype || 'STANDARD') !== 'STANDARD' ?
                 <div className="row-zyx">
-                    {edit ?
-                        <FieldEdit
-                            label={t(langKeys.header)}
-                            className="col-12"
-                            valueDefault={detaildata.messagetemplateheader?.value || ''}
-                            onChange={(value) => setDetailData({
-                                ...detaildata, 
-                                messagetemplateheader: {...detaildata.messagetemplateheader, value: value}
-                            })}
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.title)}
-                            value={detaildata.messagetemplateheader?.value || ''}
-                            className="col-12"
-                        />
-                    }
+                    <FieldEdit
+                        label={t(langKeys.header)}
+                        className="col-12"
+                        valueDefault={detaildata.messagetemplateheader?.value}
+                        onChange={(value) => setDetailData({
+                            ...detaildata, 
+                            messagetemplateheader: {...detaildata.messagetemplateheader, value: value}
+                        })}
+                        inputProps={{
+                            readOnly: detaildata.messagetemplateid !== 0
+                        }}
+                    />
                 </div> : null}
                 <div className="row-zyx">
-                    {edit ?
-                        <FieldEditMulti
-                            primitive={true}
-                            label={t(langKeys.message)}
-                            className="col-12"
-                            valueDefault={detaildata.message || ''}
-                            onChange={(e) => {
-                                setDetailData({
-                                    ...detaildata, 
-                                    message: e.target.value
-                                });
-                                toggleVariableSelect(e)
-                            }}
-                        />
-                        :
-                        <FieldView
-                            label={t(langKeys.title)}
-                            value={detaildata.messagetemplateheader?.value || ''}
-                            className="col-12"
-                        />
-                    }
+                    <FieldEditWithSelect
+                        label={t(langKeys.message)}
+                        className="col-12"
+                        rows={10}
+                        valueDefault={detaildata.message}
+                        onChange={(value) => setDetailData({...detaildata, message: value})}
+                        inputProps={{
+                            readOnly: ['HSM','SMS'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0,
+                            onClick: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData),
+                            onKeyUp: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData),
+                        }}
+                        show={variableHandler.show}
+                        data={tablevariable}
+                        datakey="description"
+                        top={variableHandler.top}
+                        left={variableHandler.left}
+                        onClickSelection={(e, value) => selectionVariableSelect(e, value)}
+                        onClickAway={(variableHandler) => setVariableHandler({...variableHandler, show: false})}
+                    />
                 </div>
             </div>
         </React.Fragment>
