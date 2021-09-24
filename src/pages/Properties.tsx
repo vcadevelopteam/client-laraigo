@@ -302,10 +302,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         fieldsUpdate(index, { ...fields[index], [param]: (value ? '1' : '0')});
     }
 
-    // const updateFieldsValue = (index: any, param: string, value: any) => {
-    //     fieldsUpdate(index, { ...fields[index], [param]: value});
-    // }
-
     useEffect(() => {
         fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
         return () => {
@@ -462,9 +458,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             onBlurFieldValue={onBlurFieldValue}
                             onChangeSelectValue = {onChangeSelectValue}
                             onChangeSwitchValue = {onChangeSwitchValue}
-                            // updateFieldsValue = {updateFieldsValue}
-                            // register={register}
-                            // errors={errors}
                         />
                     ))}
                 </div>
@@ -485,12 +478,9 @@ interface ModalProps {
     trigger: (...param: any) => any;
     errors: any;
     setValue: (...param: any) => any
-    // register: (...param: any) => any;
     onBlurFieldValue: (index: any, param: string, value: any) => void;
     onChangeSelectValue: (index: any, param: string, value: any) => void;
     onChangeSwitchValue: (index: any, param: string, value: any) => void;
-    // updateFieldsValue: (index: any, param: string, value: any) => void;
-    // errors: any;
 }
 
 interface RowSelected {
@@ -498,13 +488,7 @@ interface RowSelected {
     row: Dictionary | null
 }
 
-const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields,
-    // register, 
-    onBlurFieldValue,
-    onChangeSelectValue, onChangeSwitchValue,
-    // updateFieldsValue, errors
-    control, register, trigger, errors, setValue
-}) => {
+const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue }) => {
     const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -540,7 +524,6 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             }
                         })}}
                         label={t(langKeys.value)}
-                        // onChange={(value) => onChangeSwitchValue(index, 'propertyvalue', value)}
                         onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
                         defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
                     />
@@ -598,8 +581,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         })}}
                         inputProps={{step: 0.1}}
                         label={t(langKeys.value)} 
-                        onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
-                        // onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                        onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                         type='number'
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                     />
@@ -629,8 +611,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             }
                         })}}
                         label={t(langKeys.value)}
-                        onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
-                        // onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                        onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                     />
                 }
@@ -654,54 +635,15 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                     getValuesFromDomain(row?.domainname, index + 1, row?.orgid)
                 ]))
             }
-
-            /*if (row?.level !== 'CORPORATION') {
-                setOrgTable({ loading: true, data: [] });
-                dispatch(getMultiCollectionAux([
-                    getOrgsByCorp(0, index + 1)
-                ]))
-            }*/
-
-            /*if (row?.level === 'CHANNEL') {
-                setChannelTable({ loading: true, data: [] });
-                dispatch(getMultiCollectionAux([
-                    getChannelsByOrg(row?.orgid, index + 1)
-                ]))
-            }*/
-
-            /*if (row?.level === 'GROUP') {
-                setGroupTable({ loading: true, data: [] });
-                dispatch(getMultiCollectionAux([
-                    getValuesFromDomain('GRUPOS', ('GRUPO' + (index + 1)), row?.orgid)
-                ]))
-            }*/
         }
     }, []);
 
     useEffect(() => {
-        //const indexChannelTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_COMMUNICATIONCHANNELBYORG_LST' + (index + 1)));
-
         const indexDomainTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + (index + 1)));
-
-        //const indexGroupTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + ('GRUPO' + (index + 1))));
-
-        //const indexOrgTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_ORG_SEL' + (index + 1)));
-
-        /*if (indexChannelTable > -1) {
-            setChannelTable({ loading: false, data: responseFromSelect.data[indexChannelTable] && responseFromSelect.data[indexChannelTable].success ? responseFromSelect.data[indexChannelTable].data : [] });
-        }*/
 
         if (indexDomainTable > -1) {
             setDomainTable({ loading: false, data: responseFromSelect.data[indexDomainTable] && responseFromSelect.data[indexDomainTable].success ? responseFromSelect.data[indexDomainTable].data : [] });
         }
-
-        /*if (indexGroupTable > -1) {
-            setGroupTable({ loading: false, data: responseFromSelect.data[indexGroupTable] && responseFromSelect.data[indexGroupTable].success ? responseFromSelect.data[indexGroupTable].data : [] });
-        }*/
-
-        /*if (indexOrgTable > -1) {
-            setOrgTable({ loading: false, data: responseFromSelect.data[indexOrgTable] && responseFromSelect.data[indexOrgTable].success ? responseFromSelect.data[indexOrgTable].data : [] });
-        }*/
     }, [responseFromSelect]);
 
     React.useEffect(() => {
@@ -743,36 +685,6 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 setFieldValue(null);
                 setComboValue(null);
                 break;
-
-            // case 'CHANNEL':
-            //     setComboStep('GROUP');
-            //     if (row?.level === 'CHANNEL') {
-            //         updateFieldsValue(index, 'communicationchannelid', 0);
-            //     }
-            //     else {
-            //         updateFieldsValue(index, 'communicationchannelid', row?.communicationchannelid);
-            //     }
-            //     break;
-
-            // case 'GROUP':
-            //     setComboStep('DOMAIN');
-            //     if (row?.level === 'GROUP') {
-            //         updateFieldsValue(index, 'group', '');
-            //     }
-            //     else {
-            //         updateFieldsValue(index, 'group', row?.group);
-            //     }
-            //     break;
-
-            // case 'DOMAIN':
-            //     setComboStep('NONE');
-            //     if (row?.inputtype === 'DOMAIN') {
-            //         updateFieldsValue(index, 'propertyvalue', '');
-            //     }
-            //     else {
-            //         updateFieldsValue(index, 'group', row?.propertyvalue);
-            //     }
-            //     break;
         }
     }, [fields]);
 
