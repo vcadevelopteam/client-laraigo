@@ -102,7 +102,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
                 ac.push({description: c, persistent: false})
                 return ac;
-            }, []));
+            }, [{description: detaildata.selectedColumns.primarykey, persistent: false}]));
         }
         else {
             setTableVariable([

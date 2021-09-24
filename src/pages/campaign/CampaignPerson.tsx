@@ -326,7 +326,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                            style={{ backgroundColor: "#ea2e49" }}
+                            style={{ backgroundColor: "#53a6fa" }}
                         ><Trans i18nKey={langKeys.uploadFile} />
                         </Button>
                     </label> 
@@ -335,7 +335,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         variant="contained"
                         color="primary"
                         onClick={() => cleanData()}
-                        style={{ backgroundColor: "#22b66e" }}
+                        style={{ backgroundColor: "#53a6fa" }}
                     ><Trans i18nKey={langKeys.clean} />
                     </Button>
                 </React.Fragment>
