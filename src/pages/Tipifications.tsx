@@ -470,18 +470,7 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
-
-    const [idSelected, setIdSelected] = useState({}); //checkb table
-
-    // const memoSetAux = (checked: Object) => {  //checkb table
-    //     setIdSelected(checked)
-    // }
-
-    const memoSetAux = React.useCallback((checked: Object) => {
-        setIdSelected(checked)
-    }, [])
-
-
+y
     const columns = React.useMemo(
         () => [
 
@@ -644,8 +633,6 @@ const Tipifications: FC = () => {
                     register={true}
                     importCSV={importCSV}
                     handleRegister={handleRegister}
-                    rowChekedID="classificationid"
-                    setCheckID={memoSetAux}
                     ButtonsElement={()=>
                         <Button
                             variant="contained"
