@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import React from 'react'
+
 import { FC, useEffect, useState } from "react";
 import Box from "@material-ui/core/Box/Box";
 import { langKeys } from "lang/keys";
@@ -205,6 +207,27 @@ const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData,
         </DialogZyx>
     );
 }
+const getEmojis = (emojiResult: any[], searchValue: string | null, category: string) => {
+    const filteredEmojis = emojiResult.filter(emoji => {
+        if (searchValue === null || searchValue.trim().length === 0) {
+            switch (category) {
+                case 'FAVORITES': {
+                    return emoji?.favorite === true;
+                }
+                case 'RESTRICTED': {
+                    return emoji?.restricted === true;
+                }
+                default: {
+                    return emoji?.categorydesc === category;
+                }
+            }
+        } else {
+            return emoji?.emojidec.includes(searchValue);
+        }
+    });
+
+    return filteredEmojis;
+}
 
 const Emojis: FC = () => {
     const { t } = useTranslation();
@@ -236,7 +259,7 @@ const Emojis: FC = () => {
     }, []);
 
     useEffect(() => {
-        setEmojisFilter(getEmojis());
+        setEmojisFilter(getEmojis(emojiResult, searchValue, category));
 
     }, [category, searchValue]);
 
@@ -250,7 +273,7 @@ const Emojis: FC = () => {
         dispatch(getCollectionAux(getEmojiSel(emoji?.emojidec)));
         setEmojiSelected(emoji);
         setOpenDialog(true);
-    };
+    }
 
     const handleTabClick = (categorydesc: string) => {
         setCategory(categorydesc);
@@ -261,27 +284,7 @@ const Emojis: FC = () => {
         setSearchValue(searchValue);
     };
 
-    const getEmojis = () => {
-        const filteredEmojis = emojiResult.filter(emoji => {
-            if (searchValue === null || searchValue.trim().length === 0) {
-                switch (category) {
-                    case 'FAVORITES': {
-                        return emoji?.favorite === true;
-                    }
-                    case 'RESTRICTED': {
-                        return emoji?.restricted === true;
-                    }
-                    default: {
-                        return emoji?.categorydesc === category;
-                    }
-                }
-            } else {
-                return emoji?.emojidec.includes(searchValue);
-            }
-        });
-
-        return filteredEmojis;
-    }
+    
 
     return (
         <div className={classes.container}>
@@ -322,10 +325,9 @@ const Emojis: FC = () => {
 
                 <Box>
                     <div
-                        key='tabPanel_emoji'
                         style={{ padding: 12, backgroundColor: '#fff', marginTop: '12px' }}>
                         {
-                            (emojisFilter.length > 0 ? emojisFilter : getEmojis()).map((emoji: Dictionary) =>
+                            (emojisFilter.length > 0 ? emojisFilter : getEmojis(emojiResult, searchValue, category)).map((emoji: Dictionary) =>
                                 <MenuEmoji
                                     key={"menuEmoji_" + emoji?.emojidec}
                                     emoji={emoji}
@@ -349,7 +351,12 @@ const Emojis: FC = () => {
     )
 }
 
-const MenuEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) => void }> = ({ emoji, handleDoubleClick }) => {
+
+// const BoxEmoji: FC<{ data: Dictionary[], handleDoubleClick: (emoji: Dictionary) => void }> = ({ data, handleDoubleClick }) => {
+//     return 
+// }
+
+const MenuEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) => void }> = React.memo(({ emoji, handleDoubleClick }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event: any) => {
@@ -381,7 +388,7 @@ const MenuEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) 
             </Menu>
         </>
     )
-}
+})
 
 const ButtonEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) => void, handleClick: (event: any) => void }> = ({ emoji, handleDoubleClick, handleClick }) => {
     return (

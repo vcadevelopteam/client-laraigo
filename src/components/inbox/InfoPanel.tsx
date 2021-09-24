@@ -205,6 +205,11 @@ const InfoPanel: React.FC = () => {
 
     return (
         <div className={classes.containerInfo}>
+            <div>
+                <div>
+                    Information
+                </div>
+            </div>
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
@@ -213,7 +218,7 @@ const InfoPanel: React.FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label={t(langKeys.client_detail)} />
+                <AntTab label="Client" />
                 <AntTab label="Variables" />
                 <AntTab label="Tickets" />
                 {/* <AntTab label="Attachments" /> */}
