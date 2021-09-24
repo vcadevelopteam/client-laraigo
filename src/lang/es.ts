@@ -119,7 +119,20 @@ const translation: LangKeys = {
     variable: "Variable",
     role: 'Rol',
     role_plural: 'Roles',
+    submit:'Enviar',
     data: "Data",
+    firstandlastname:"Nombres y apellidos",
+    companybusinessname: "Nombre de la Empresa o Compañia",
+    signupstep1title2: 'Complete su Información personal y comercial',
+    tos: "Al registrarte aceptas nuestras condiciones de uso y política de privacidad",
+    signupstep1title: '¡Registrate en menos de un minuto!',
+    signupfacebookbutton: 'Registrate por Facebook',
+    mobilephoneoptional:"Teléfono móvil (opcional)",
+    laraigouse:"¿Para qué deseas usar laraigo?",
+    sales:"Ventas",
+    marketing:"Marketing",
+    customerservice:"Servicio al cliente",
+    signupgooglebutton: 'Registrate por Google',
     connectface: "Conecta tu Facebook",
     connectface2: "Instala el chatbot en tu página de Facebook y empieza a conseguir clientes potenciales.",
     connectface3: "Solo necesitas ser administrador de tu página de Facebook.",
@@ -218,7 +231,7 @@ const translation: LangKeys = {
     neworganization: "Nueva organización",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
-
+    least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Tipificación',
     tipification_plural: 'Tipificaciones',
     id: 'Id',
@@ -606,6 +619,11 @@ const translation: LangKeys = {
     form: 'Formulario',
     bubble: 'Burbuja',
     bubble_plural: 'Burbujas',
+    
+    closure: 'Cierre',
+    indicators: 'Indicadores',
+    quiz: 'Encuesta',
+    labels: 'Etiquetas',
 };
 
 const esResource: ResourceLanguage = {

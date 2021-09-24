@@ -34,7 +34,6 @@ import { EmojiICon, GifIcon } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 
-
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -217,6 +216,7 @@ interface InputProps {
     uset?: boolean;
     variant?: "standard" | "outlined" | "filled" | undefined;
     primitive?: boolean;
+    inputProps?: any
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -227,7 +227,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {} }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -254,6 +254,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
+                inputProps={inputProps}
             />
         </div>
     )
@@ -322,8 +323,9 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "LINE") return <LineIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "SMS") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-
-    return <TelegramIcon color={color} width={width} fill={color} stroke={color} height={height} />
+    if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    console.log(channelType)
+    return <TelegramIcon style={{ color, width, height }} />
 }
 
 export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {

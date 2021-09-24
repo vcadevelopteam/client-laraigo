@@ -122,7 +122,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     useEffect(() => {
         if (triggerSave) {
             (async () => {
-                const allOk = await trigger();
+                const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
                 if (allOk) {
                     if (!row)

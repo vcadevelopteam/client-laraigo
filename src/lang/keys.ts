@@ -10,6 +10,7 @@ export const langKeys = {
     report: 'report',
     report_plural: 'report_plural',
     next: "next",
+    tos: "tos",
     tag: 'tag',
     ticket: 'ticket',
     ticket_plural: 'ticket_plural',
@@ -25,6 +26,14 @@ export const langKeys = {
     channel: 'channel',
     channel_plural: 'channel_plural',
     return: "return",
+    firstandlastname:"firstandlastname",
+    companybusinessname: "companybusinessname",
+    mobilephoneoptional:"mobilephoneoptional",
+    sales:"sales",
+    customerservice:"customerservice",
+    marketing:"marketing",
+    laraigouse:"laraigouse",
+    submit:'submit',
     twittertitle: "twittertitle",
     twittertitle2: "twittertitle2",
     devenvironment: "devenvironment",
@@ -75,6 +84,10 @@ export const langKeys = {
     person: 'person',
     opendrilldown: "opendrilldown",
     person_plural: 'person_plural',
+    signupstep1title: 'signupstep1title',
+    signupstep1title2: 'signupstep1title2',
+    signupfacebookbutton: 'signupfacebookbutton',
+    signupgooglebutton:'signupgooglebutton',
     classification: 'classification',
     summarize: 'summarize',
     detail: 'detail',
@@ -284,6 +297,7 @@ export const langKeys = {
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
     flowdesigner: 'flowdesigner',
+    least_user_or_group: 'least_user_or_group',
 
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',
@@ -610,6 +624,11 @@ export const langKeys = {
     form: 'form',
     bubble: 'bubble',
     bubble_plural: 'bubble_plural',
+
+    closure: 'closure',
+    indicators: 'indicators',
+    quiz: 'quiz',
+    labels: 'labels',
 };
 
 export type LangKeys = typeof langKeys;

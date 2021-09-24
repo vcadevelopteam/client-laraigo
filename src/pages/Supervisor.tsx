@@ -49,15 +49,14 @@ const filterAboutStatusName = (data: IAgent[], page: number, searchName: string)
 const useStyles = makeStyles((theme) => ({
     container: {
         display: 'flex',
-        gap: theme.spacing(2),
-        // borderTop: '1px solid #EBEAED',
         width: '100%'
     },
     containerAgents: {
         flex: '0 0 300px',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        borderRight: '1px solid #EBEAED'
     },
     containerPanel: {
         flex: '1'
@@ -80,7 +79,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     containerItemAgent: {
-        padding: `14px ${theme.spacing(3)}px`,
+        padding: `14px ${theme.spacing(2)}px`,
         borderBottom: '1px solid #EBEAED',
         cursor: 'pointer',
         '&:hover': {
@@ -140,7 +139,7 @@ const CountTicket: FC<{ label: string, count: number, color: string }> = ({ labe
 )
 
 const ChannelTicket: FC<{ channelName: string, channelType: string, color: string }> = ({ channelName, channelType, color }) => (
-    <div>
+    <div style={{ display: 'flex', alignItems: 'center' }}>
         <Tooltip title={channelName}>
             <span><GetIcon channelType={channelType} color={`#${color}`} /></span>
         </Tooltip>
@@ -288,7 +287,7 @@ const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
         <div className={classes.containerAgents}>
             <HeaderAgentPanel classes={classes} onSearch={onSearch} />
             {agentList.loading ? <ListItemSkeleton /> :
-                <div style={{ overflowY: 'auto' }}>
+                <div className="scroll-style-go">
                     {agentsToShow.map((agent) => (<ItemAgent key={agent.userid} agent={agent} />))}
                 </div>
             }
