@@ -767,7 +767,7 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                 <ListItem
                     key={index}
                     button
-                    style={style}
+                    style={{...style, padding: '8px'}}
                     onClick={(e) => onClickSelection(e, data[index][datakey])}
                     divider={true}
                 >
