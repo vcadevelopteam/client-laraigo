@@ -19,6 +19,10 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import SmsIcon from '@material-ui/icons/Sms';
+import { AnyRecord } from "dns";
+import { Dictionary } from "@types";
+import { FieldEdit } from "components/fields/templates";
+import { useForm } from "react-hook-form";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -111,8 +115,13 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
+    const [mainData, setMainData] = useState<Dictionary>({
+        email: ""
+    });
+    const [error, setError] = useState<Dictionary>({
+        email: false
+    });
+
     const [listchannels, setlistchannels] = useState({
         facebook:false,
         instagram: false,
@@ -126,9 +135,14 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         phone: false,
         sms: false,
     });
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
+    function maindataChange(field:string,value:any){
+        let tempfield = mainData;
+        let temperror = error;
+        tempfield[field] = value;
+        temperror[field] = value!!;
+        setMainData(tempfield);
+        setError(temperror);
+    }
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
@@ -249,35 +263,12 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
             selected: listchannels.sms
         },
     ];
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
-            setWaitSave(true);
         }
     }
     const handleClickShowPassword = () => setShowPassword(!showPassword);
@@ -337,14 +328,13 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                 </div>
                 
                 <div style={{padding:"20px"}}>
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
+                    <FieldEdit
+                        valueDefault={mainData.email}
+                        onChange={(value) => maindataChange('email',value)}
                         label={t(langKeys.email)}
-                        name="email"
-                        //value={dataAuth.password}
-                        //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                        className="col-12"
+                        variant="outlined"
+                        error={error.email}
                     />
                     <TextField
                         variant="outlined"
