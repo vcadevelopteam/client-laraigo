@@ -305,9 +305,6 @@ const TableZyx = React.memo(({
         usePagination
     )
 
-    // const currentPage = React.useRef(pageIndex + 1);
-    // const totalPages = React.useRef(pageOptions.length);
-
     useEffect(() => {
         let next = true;
         if (fetchData && next) {
