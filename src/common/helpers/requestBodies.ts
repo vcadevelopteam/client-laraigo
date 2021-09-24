@@ -810,11 +810,24 @@ export const insCampaign = ({
         messagetemplateid,
         messagetemplatename,
         messagetemplatenamespace,
-        messagetemplateheader,
-        messagetemplatebuttons,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
         executiontype,
-        batchjson,
-        fields,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(fields),
+        operation
+    }
+});
+
+export const delCampaign = ({
+    id,
+    status,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_CAMPAIGN_DEL",
+    parameters: {
+        id,
+        status,
         operation
     }
 });

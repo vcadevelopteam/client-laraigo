@@ -134,11 +134,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
-            if (actualHeaders.length !== newHeaders.length) {
-                alert('Archivo incompatible con el anterior!');
-                return null;
-            }
-            if (!newHeaders.every(h => actualHeaders?.includes(h))) {
+            if (!actualHeaders.every(h => newHeaders?.includes(h))) {
                 alert('Archivo incompatible con el anterior!');
                 return null;
             }
@@ -326,7 +322,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                             className={classes.button}
                             variant="contained"
                             color="primary"
-                            style={{ backgroundColor: "#ea2e49" }}
+                            style={{ backgroundColor: "#53a6fa" }}
                         ><Trans i18nKey={langKeys.uploadFile} />
                         </Button>
                     </label> 
@@ -335,7 +331,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                         variant="contained"
                         color="primary"
                         onClick={() => cleanData()}
-                        style={{ backgroundColor: "#22b66e" }}
+                        style={{ backgroundColor: "#53a6fa" }}
                     ><Trans i18nKey={langKeys.clean} />
                     </Button>
                 </React.Fragment>
@@ -396,6 +392,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     columns={headers}
                     data={jsonData}
                     download={false}
+                    loading={detaildata.source === 'INTERNAL' && auxResult.loading}
                     filterGeneral={false}
                     ButtonsElement={AdditionalButtons}
                 />

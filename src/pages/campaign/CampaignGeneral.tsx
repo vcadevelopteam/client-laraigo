@@ -13,6 +13,8 @@ import { Event as EventIcon } from '@material-ui/icons';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import { resetMainAux } from 'store/main/actions';
+import { useDispatch } from 'react-redux';
 
 interface DetailProps {
     row: Dictionary | null,
@@ -96,6 +98,7 @@ type FormFields = {
 
 export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
     const classes = useStyles();
+    const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
@@ -164,6 +167,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     messagetemplatetype: messageTemplateData.templatetype || 'STANDARD',
                 });
                 trigger();
+                dispatch(resetMainAux());
             }
         }
         else if (Object.keys(detaildata).length !== 0) {

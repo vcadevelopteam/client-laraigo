@@ -84,8 +84,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const [valid, setValid] = useState(true);
 
     const [variableHandler, setVariableHandler] = useState<VariableHandler>(new VariableHandler());
-    // const [showTableVariable, setShowTableVariable] = useState(false);
-    // const [textareaPosition, setTextareaPosition] = useState<any>({top: 0, left: 0});
 
     useEffect(() => {
         if (detaildata.operation === 'INSERT' && detaildata.source === 'INTERNAL') {
@@ -102,7 +100,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             setTableVariable(detaildata.selectedColumns?.columns.reduce((ac: any, c: string) => {
                 ac.push({description: c, persistent: false})
                 return ac;
-            }, []));
+            }, [{description: detaildata.selectedColumns.primarykey, persistent: false}]));
         }
         else {
             setTableVariable([
@@ -138,7 +136,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
     }, [step]);
 
-    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({...param}) => void) => {
+    const toggleVariableSelect = (e: React.ChangeEvent<any>, item: any, inputkey: string, changefunc: ({...param}) => void, filter = true) => {
         let elem = e.target;
         if (elem) {
             let selectionStart = elem.selectionStart || 0;
@@ -151,22 +149,32 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 if (elem.value.slice(startIndex, selectionStart).indexOf(' ') === -1
                 && elem.value.slice(startIndex, selectionStart).indexOf('}}') === -1) {
                     partialText = elem.value.slice(startIndex + 2, selectionStart);
-                    let endIndex = startIndex + partialText.length + (elem.value || '').slice(selectionStart, elem.value.length).indexOf('}}') + 4;
+                    let rightText = (elem.value || '').slice(selectionStart, elem.value.length);
+                    let selectionEnd = rightText.indexOf('}}') !== -1 ? rightText.indexOf('}}') : 0;
+                    let endIndex = startIndex + partialText.length + selectionEnd + 4;
                     setVariableHandler({
                         show: true,
                         item: item,
                         inputkey: inputkey,
                         inputvalue: elem.value,
-                        range: [startIndex + 2, endIndex - 2],
+                        range: [startIndex, endIndex],
                         changer: ({...param}) => changefunc({...param}),
                         top: 24 + row * 21,
                         left: column
                     })
-                    setTableVariableShow(filterPipe(tablevariable, 'description', partialText));
+                    if (filter) {
+                        setTableVariableShow(filterPipe(tablevariable, 'description', partialText, '%'));
+                    }
+                    else {
+                        setTableVariableShow(tablevariable);
+                    }
                 }
                 else {
                     setVariableHandler(new VariableHandler());
                 }
+            }
+            else {
+                setVariableHandler(new VariableHandler());
             }
         }
     }
@@ -176,7 +184,10 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         if (range[1] !== -1 && (range[1] > range[0] || range[0] !== -1)) {
             changer({
                 ...item,
-                [inputkey]: inputvalue.substring(0, range[0]) + value + inputvalue.substring(range[1])
+                [inputkey]: inputvalue.substring(0, range[0] + 2)
+                + value
+                + (inputvalue[range[1] - 2] !== '}' ? '}}' : '')
+                + inputvalue.substring(range[1] - 2)
             });
             setVariableHandler(new VariableHandler());
         }
@@ -346,8 +357,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         if (detaildata.executiontype === 'SCHEDULED') {
             detaildata.batchjson?.reduce((bda, bdc, i) => {
-                campaignMemberList.filter((cm, j) => j >= bda && j < bda + bdc.quantity).map(cm => cm.batchindex = bdc.batchindex);
-                return bda + bdc.quantity;
+                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = i);
+                return bda + parseInt(bdc.quantity);
             }, 0);
         }
         setCampaignMembers(campaignMemberList);
@@ -493,11 +504,11 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         onChange={(value) => setDetailData({...detaildata, message: value})}
                         inputProps={{
                             readOnly: ['HSM','SMS'].includes(detaildata.type || '') && detaildata.messagetemplateid !== 0,
-                            onClick: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData),
-                            onKeyUp: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData),
+                            onClick: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData, detaildata.type === 'TEXTO'),
+                            onInput: (e: any) => toggleVariableSelect(e, detaildata, 'message', setDetailData, detaildata.type === 'TEXTO'),
                         }}
                         show={variableHandler.show}
-                        data={tablevariable}
+                        data={tablevariableShow}
                         datakey="description"
                         top={variableHandler.top}
                         left={variableHandler.left}
