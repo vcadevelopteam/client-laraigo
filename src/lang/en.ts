@@ -245,7 +245,8 @@ const translation: LangKeys = {
     typify_ticket: 'Typify ticket',
     observation: 'Observation',
     flowdesigner: 'Flow designer',
-
+    passwordsmustbeequal:"The passwords must be equal",
+    favorite: "Favorite",
     variableconfiguration: 'Variable Configuration',
     variableconfiguration_plural: 'Variable Configuration',
     flow: 'Flow',
