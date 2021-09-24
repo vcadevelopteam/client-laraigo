@@ -619,6 +619,11 @@ export const langKeys = {
     form: 'form',
     bubble: 'bubble',
     bubble_plural: 'bubble_plural',
+
+    closure: 'closure',
+    indicators: 'indicators',
+    quiz: 'quiz',
+    labels: 'labels',
 };
 
 export type LangKeys = typeof langKeys;

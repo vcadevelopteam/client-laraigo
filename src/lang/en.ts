@@ -621,6 +621,11 @@ const translation: LangKeys = {
     form: 'Form',
     bubble: 'Bubble',
     bubble_plural: 'Bubbles',
+    
+    closure: 'Closure',
+    indicators: 'Indicators',
+    quiz: 'Quiz',
+    labels: 'Labels',
 };
 
 const enResource: ResourceLanguage = {
