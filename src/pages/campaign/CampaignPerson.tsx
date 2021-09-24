@@ -134,11 +134,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
-            if (actualHeaders.length !== newHeaders.length) {
-                alert('Archivo incompatible con el anterior!');
-                return null;
-            }
-            if (!newHeaders.every(h => actualHeaders?.includes(h))) {
+            if (!actualHeaders.every(h => newHeaders?.includes(h))) {
                 alert('Archivo incompatible con el anterior!');
                 return null;
             }
@@ -396,6 +392,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     columns={headers}
                     data={jsonData}
                     download={false}
+                    loading={detaildata.source === 'INTERNAL' && auxResult.loading}
                     filterGeneral={false}
                     ButtonsElement={AdditionalButtons}
                 />
