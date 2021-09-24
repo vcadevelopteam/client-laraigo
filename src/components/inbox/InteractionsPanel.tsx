@@ -320,7 +320,7 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
     }
 
     return (
-        <div className={classes.containerInteractions} onScroll={handleScroll}>
+        <div className={`scroll-style-go ${classes.containerInteractions}`} onScroll={handleScroll}>
             {groupInteractionList.loading ? <ListItemSkeleton /> :
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (

@@ -430,6 +430,11 @@ const translation: LangKeys = {
     close_ticket: "Close ticket",
     client_detail: "Client detail",
 
+    emoji_name: 'Name',
+    emoji_category_name: 'Category',
+    emoji_favorites: 'Favorites',
+    emoji_restricted: 'Restricted',
+
     report_loginhistory: 'User login',
     report_loginhistory_createdate: 'Date',
     report_loginhistory_createhour: 'Hour',
@@ -621,6 +626,11 @@ const translation: LangKeys = {
     form: 'Form',
     bubble: 'Bubble',
     bubble_plural: 'Bubbles',
+    
+    closure: 'Closure',
+    indicators: 'Indicators',
+    quiz: 'Quiz',
+    labels: 'Labels',
 };
 
 const enResource: ResourceLanguage = {

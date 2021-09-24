@@ -429,6 +429,11 @@ export const langKeys = {
     close_ticket: "close_ticket",
     client_detail: "client_detail",
 
+    emoji_name: 'emoji_name',
+    emoji_category_name: 'emoji_category_name',
+    emoji_favorites: 'emoji_favorites',
+    emoji_restricted: 'emoji_restricted',
+
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_createdate: 'report_loginhistory_createdate',
     report_loginhistory_createhour: 'report_loginhistory_createhour',
@@ -619,6 +624,11 @@ export const langKeys = {
     form: 'form',
     bubble: 'bubble',
     bubble_plural: 'bubble_plural',
+
+    closure: 'closure',
+    indicators: 'indicators',
+    quiz: 'quiz',
+    labels: 'labels',
 };
 
 export type LangKeys = typeof langKeys;

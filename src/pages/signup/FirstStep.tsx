@@ -10,6 +10,7 @@ import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
+import clsx from "clsx";
 import { useDispatch } from "react-redux";
 import { getChannelsList } from "store/channel/actions";
 import GoogleLogin from 'react-google-login';
@@ -278,7 +279,13 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
 
         return (
             <Paper
-                className={option.selected?classes.optionContainerSelected:classes.optionContainer}
+                className={
+                    clsx({
+                        [classes.optionContainerSelected]: option.selected,
+                        [classes.optionContainer]: !option.selected,
+                    })
+                    //option.selected?classes.optionContainerSelected:classes.optionContainer
+                }
                 elevation={0}
                 onClick={option.onClick}
                 onMouseOver={() => setColor('white')}

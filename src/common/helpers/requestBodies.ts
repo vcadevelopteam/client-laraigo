@@ -19,9 +19,9 @@ export const getOrgUserSel = (userid: number, orgid: number): IRequestBody => ({
         all: true
     }
 })
-export const getOrgsByCorp = (orgid: number): IRequestBody => ({
+export const getOrgsByCorp = (orgid: number, keytmp?: number): IRequestBody => ({
     method: "UFN_CORP_ORG_SEL",
-    key: "UFN_CORP_ORG_SEL",
+    key: "UFN_CORP_ORG_SEL" + (keytmp || ""),
     parameters: {
         id: orgid,
         all: true
@@ -98,15 +98,30 @@ export const getApplicationsByRole = (roleid: number, keytmp?: number): IRequest
     }
 })
 
-export const getPropertySel = (propertyid: number): IRequestBody => ({
+export const getPropertySel = (corpid: number, propertyname: string, description: string, category: string, level: string, propertyid: number): IRequestBody => ({
     method: "UFN_PROPERTY_SEL",
     key: "UFN_PROPERTY_SEL",
     parameters: {
+        corpid,
+        propertyname,
+        description,
+        category,
+        level,
         id: propertyid,
         all: propertyid === 0,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getDistinctPropertySel = (category: string, level: string): IRequestBody => ({
+    method: "UFN_DISTINCT_PROPERTY_SEL",
+    key: "UFN_DISTINCT_PROPERTY_SEL",
+    parameters: {
+        category,
+        level
+    }
+});
+
 export const getGroupConfigSel = (groupconfigid: number): IRequestBody => ({
     method: "UFN_GROUPCONFIGURATION_SEL",
     key: "UFN_GROUPCONFIGURATION_SEL",
@@ -124,11 +139,12 @@ export const getChannelsByOrg = (orgid?: number | null, keytmp?: any): IRequestB
     }
 });
 
-export const getValuesFromDomain = (domainname: string): IRequestBody => ({
+export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
-    key: "UFN_DOMAIN_LST_VALORES",
+    key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
     parameters: {
-        domainname
+        domainname,
+        orgid: orgid || undefined
     }
 });
 
@@ -163,10 +179,10 @@ export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels,
     parameters: { orgid, roleid, usersupervisor: supervisor, bydefault, labels, groups, channels, status, type, defaultsort: 1, operation, redirect }
 });
 
-export const insProperty = ({ communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const insProperty = ({ orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }: Dictionary): IRequestBody => ({
     method: "UFN_PROPERTY_INS",
     key: "UFN_PROPERTY_INS",
-    parameters: { communicationchannelid, id, propertyname, propertyvalue, description, status, type, operation }
+    parameters: { orgid, communicationchannelid, id, propertyname, propertyvalue, description, status, type, category, domainname, group, level, operation }
 });
 
 
@@ -340,38 +356,40 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     }
 });
 
-export const getEmojiGroupSel = (categorydesc: string, all: boolean): IRequestBody => ({
+export const getEmojiGroupSel = (all: boolean): IRequestBody => ({
     method: "UFN_EMOJI_GROUP_SEL",
     key: "UFN_EMOJI_GROUP_SEL",
     parameters: {
-        categorydesc,
         all
     }
 })
 
-export const getEmojiSel = (emojichar: string): IRequestBody => ({
+export const getEmojiSel = (emojidec: string): IRequestBody => ({
     method: "UFN_EMOJI_SEL",
     key: "UFN_EMOJI_SEL",
     parameters: {
-        emojichar
+        emojidec
     }
 })
 
-export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => {
-    console.log('allParameters', allParameters);
-
-    return ({
-        method: "UFN_EMOJI_UPDATE",
-        key: "UFN_EMOJI_UPDATE",
-        parameters: {
-            favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
-            restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
-            orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
-            emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
-        }
+export const getEmojiAllSel = (): IRequestBody => ({
+    method: "UFN_EMOJI_ALL_SEL",
+    key: "UFN_EMOJI_ALL_SEL",
+    parameters: {
+        all: true
     }
-    )
-}
+})
+
+export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_EMOJI_UPDATE",
+    key: "UFN_EMOJI_UPDATE",
+    parameters: {
+        favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
+        restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
+        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
+        emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
+    }
+})
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
