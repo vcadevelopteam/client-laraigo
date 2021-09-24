@@ -790,7 +790,8 @@ export const insCampaign = ({
     executiontype,
     batchjson,
     fields,
-    operation
+    operation,
+    selectedColumns
 }: Dictionary): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
@@ -814,7 +815,7 @@ export const insCampaign = ({
         messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(fields),
+        fields: JSON.stringify(selectedColumns || fields),
         operation
     }
 });
