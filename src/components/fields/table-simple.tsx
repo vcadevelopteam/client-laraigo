@@ -28,13 +28,12 @@ import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import BackupIcon from '@material-ui/icons/Backup';
-import { TableConfig } from '@types'
+import { Dictionary, TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import { optionsMenu } from './table-paginated';
-
+import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
     useFilters,
@@ -135,10 +134,13 @@ const TableZyx = React.memo(({
     pageSizeDefault = 20,
     importCSV,
     filterGeneral = true,
-    loading = false
+    loading = false,
+    rowChekedID,
+    setCheckID
 }: TableConfig) => {
     const classes = useStyles();
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
+
+    const [dataChecked, setDataChecked] = useState<Dictionary>({})
 
     const SelectColumnFilter = ({
         column: { setFilter, type },
@@ -311,6 +313,25 @@ const TableZyx = React.memo(({
             fetchData();
         }
     }, [fetchData])
+
+
+    useEffect(() => {
+        setCheckID && setCheckID(dataChecked);
+    }, [dataChecked])
+
+    const onCheckedRow = React.useCallback((row) => {
+        if (!rowChekedID) return
+        if (dataChecked[row[rowChekedID]]) {
+            setDataChecked(prev => {
+                const { [row[rowChekedID]]: remove, ...rest } = prev;
+                return rest;
+            })
+        }
+        else {
+            setDataChecked(prev => ({ ...prev, [row[rowChekedID]]: row[rowChekedID] }))
+        }
+    }, [dataChecked, setDataChecked])
+
     return (
         <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -402,6 +423,11 @@ const TableZyx = React.memo(({
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                    {!!rowChekedID && (
+                                        <TableCell padding="checkbox">
+                                            {''}
+                                        </TableCell>
+                                    )}
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
@@ -444,11 +470,21 @@ const TableZyx = React.memo(({
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
                                 page.map(row => {
                                     prepareRow(row);
+                                    const isSelected = rowChekedID ? !!dataChecked[row.original[rowChekedID]] : false;
                                     return (
                                         <TableRow
                                             {...row.getRowProps()}
                                             hover
+                                            selected={isSelected}
+                                            onClick={!!rowChekedID ? () => onCheckedRow(row.original) : undefined}
                                         >
+                                            {rowChekedID && (
+                                                <TableCell padding="checkbox">
+                                                    <Checkbox
+                                                        checked={isSelected}
+                                                    />
+                                                </TableCell>
+                                            )}
                                             {row.cells.map((cell, i) =>
                                                 <TableCell
                                                     {...cell.getCellProps({
@@ -466,7 +502,7 @@ const TableZyx = React.memo(({
                                                         :
                                                         (cell.value?.length > 50 ?
                                                             <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <div style={{width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                                                                <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                     {cell.render('Cell')}
                                                                 </div>
                                                             </Tooltip>

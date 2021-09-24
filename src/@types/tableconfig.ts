@@ -9,28 +9,30 @@ export interface MultiData {
 }
 
 export interface TableConfig {
-    columns: any,
-    data: Dictionary[],
-    filterrange?: boolean,
-    totalrow?: number,
-    fetchData?(param?: any | undefined): void,
-    pageCount?: number,
-    titlemodule?: string,
-    methodexport?: string,
-    exportPersonalized?(param?: any): void,
+    columns: any;
+    data: Dictionary[];
+    filterrange?: boolean;
+    totalrow?: number;
+    fetchData?(param?: any | undefined): void;
+    pageCount?: number;
+    titlemodule?: string;
+    methodexport?: string;
+    exportPersonalized?(param?: any): void;
     importCSV?: (param?: any) => void
-    download?: boolean,
-    register?: boolean,
-    handleRegister?(param: any): void,
-    HeadComponent?: () => JSX.Element |null,
-    ButtonsElement?: () => JSX.Element |null,
-    pageSizeDefault?: number,
-    filterGeneral?: boolean,
-    hoverShadow?: boolean,
-    loading?: boolean,
-    updateCell?(index: number, id: any, value: any): void
-    updateColumn?(index: number[], id: any, value: any): void
-    skipAutoReset?: boolean
+    download?: boolean;
+    register?: boolean;
+    handleRegister?(param: any): void;
+    HeadComponent?: () => JSX.Element |null;
+    ButtonsElement?: () => JSX.Element |null;
+    pageSizeDefault?: number;
+    filterGeneral?: boolean;
+    hoverShadow?: boolean;
+    loading?: boolean;
+    updateCell?(index: number, id: any, value: any): void;
+    updateColumn?(index: number[], id: any, value: any): void;
+    skipAutoReset?: boolean;
+    rowChekedID?: string | null;
+    setCheckID?: (param?: any) => void;
 }
 
 export interface Pagination {
