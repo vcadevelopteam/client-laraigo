@@ -15,7 +15,7 @@ import { getDomainValueSel, getEmojiAllSel, getEmojiGroupSel, getEmojiSel, getOr
 import { useSelector } from 'hooks';
 import { Dictionary, MultiData } from "@types";
 import { useForm } from "react-hook-form";
-import { Button, Grid, Tooltip } from "@material-ui/core";
+import { Button, Grid, Menu, MenuItem, Tooltip } from "@material-ui/core";
 import { manageConfirmation } from "store/popus/actions";
 
 interface ModalProps {
@@ -326,16 +326,11 @@ const Emojis: FC = () => {
                         style={{ padding: 12, backgroundColor: '#fff', marginTop: '12px' }}>
                         {
                             (emojisFilter.length > 0 ? emojisFilter : getEmojis()).map((emoji: Dictionary) =>
-                                <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
-                                    <Button
-                                        key={'button_' + emoji?.emojidec}
-                                        onDoubleClick={() => handleDoubleClick(emoji)}
-                                        style={{ padding: 0, fontSize: '30px' }}>
-                                        <label
-                                            key={'label_' + emoji?.emojidec}
-                                            style={{ fontSize: 30 }}>{emoji?.emojichar}</label>
-                                    </Button>
-                                </Tooltip>
+                                <MenuEmoji
+                                    key={"menuEmoji_" + emoji?.emojidec}
+                                    emoji={emoji}
+                                    handleDoubleClick={handleDoubleClick}
+                                />
                             )
                         }
                     </div>
@@ -351,6 +346,61 @@ const Emojis: FC = () => {
             />
 
         </div>
+    )
+}
+
+const MenuEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) => void }> = ({ emoji, handleDoubleClick }) => {
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event: any) => {
+        event.preventDefault();
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    return (
+        <>
+            <ButtonEmoji
+                key={"buttonEmoji_" + emoji?.emojidec}
+                emoji={emoji}
+                handleDoubleClick={handleDoubleClick}
+                handleClick={handleClick}
+            />
+
+            <Menu
+                key={"simple-menu_" + emoji?.emojidec}
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem key={"menu_item_" + emoji?.emojidec} onClick={handleClose}>Restricted</MenuItem>
+            </Menu>
+        </>
+    )
+}
+
+const ButtonEmoji: FC<{ emoji: Dictionary, handleDoubleClick: (emoji: Dictionary) => void, handleClick: (event: any) => void }> = ({ emoji, handleDoubleClick, handleClick }) => {
+    return (
+        <>
+            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
+                <Button
+                    aria-controls="simple-menu" aria-haspopup="true"
+                    onContextMenu={handleClick}
+
+                    key={'button_' + emoji?.emojidec}
+                    onDoubleClick={() => handleDoubleClick(emoji)}
+                    style={{ padding: 0, fontSize: '30px' }}>
+
+                    <label
+                        key={'label_' + emoji?.emojidec}
+                        style={{ fontSize: 30 }}>{emoji?.emojichar}</label>
+                </Button>
+            </Tooltip>
+        </>
     )
 }
 
