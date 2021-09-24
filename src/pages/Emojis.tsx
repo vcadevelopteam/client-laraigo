@@ -9,21 +9,21 @@ import { EmojiICon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import { DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from "components/fields/templates";
-import Typography from "@material-ui/core/Typography/Typography";
 import { useDispatch } from "react-redux";
-import { execute, getCollection, getCollectionAux, getMultiCollection, resetMain } from "store/main/actions";
-import { getDomainValueSel, getEmojiGroupSel, getEmojiSel, getOrgsByCorp, updateEmojiOrganization } from "common/helpers";
+import { execute, getCollection, getCollectionAux, getMultiCollection, resetMain, resetMainAux, resetMultiMain } from "store/main/actions";
+import { getDomainValueSel, getEmojiAllSel, getEmojiGroupSel, getEmojiSel, getOrgsByCorp, updateEmojiOrganization } from "common/helpers";
 import { useSelector } from 'hooks';
 import { Dictionary, MultiData } from "@types";
 import { useForm } from "react-hook-form";
-import { Button } from "@material-ui/core";
-import { manageConfirmation, showBackdrop } from "store/popus/actions";
+import { Button, Grid, Tooltip } from "@material-ui/core";
+import { manageConfirmation } from "store/popus/actions";
 
 interface ModalProps {
     openModal: boolean;
     setOpenModal: (open: boolean) => void;
     multiData: MultiData[];
     fetchData: () => void;
+    emoji: Dictionary;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -50,115 +50,104 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function TabPanel(props: any) {
-    const { children, value, index, ...other } = props;
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`scrollable-force-tabpanel-${index}`}
-            aria-labelledby={`scrollable-force-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Typography key={"typography_" + index}>{children}</Typography>
-            )}
-        </div>
-    );
-}
-
-function a11yProps(index: any) {
-    return {
-        id: `scrollable-force-tab-${index}`,
-        'aria-controls': `scrollable-force-tabpanel-${index}`,
-    };
-}
-
-const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData, fetchData }) => {
+const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData, fetchData, emoji }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const mainAuxResult = useSelector(state => state.main.mainAux);
     const dataOrganization = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const datachannels = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
+    const { handleSubmit, setValue, reset, getValues } = useForm();
     const [allParameters, setAllParameters] = useState({});
     const [channelsOrganization, setChannelsOrganization] = useState<Dictionary[]>([]);
+    const [waitSave, setWaitSave] = useState(false);
 
     const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(updateEmojiOrganization({ ...allParameters, emojidec: mainAuxResult.data[0].emojidec })));
-            fetchData();
+        if (waitSave) {
+            const callback = () => {
+                dispatch(execute(updateEmojiOrganization({ ...allParameters, emojidec: emoji?.emojidec })));
+                dispatch(resetMainAux());
+                fetchData();
+                setOpenModal(false);
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        } else {
+            dispatch(resetMainAux());
             setOpenModal(false);
-
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
     });
 
     useEffect(() => {
         if (openModal) {
             reset({
                 organization: '',
-                emojidec: mainAuxResult.data[0]?.emojidec,
-                //favoritechannels:
-                //favoritechannels:
+                favorites: '',
+                restricted: ''
             })
         }
 
         setChannelsOrganization([]);
         setAllParameters({});
+        setWaitSave(false);
 
     }, [openModal]);
 
     const setValueChannel = (orgid: number) => {
         setChannelsOrganization(mainAuxResult.data.filter(x => x.orgid === orgid));
         setAllParameters({ ...allParameters, ['orgid']: getValues('organization') });
+        setWaitSave(false);
     }
 
     const setFavoritesChange = () => {
         setAllParameters({ ...allParameters, ['favoritechannels']: getValues('favorites') });
+        setWaitSave(true);
     }
 
     const setRestrictedChange = () => {
         setAllParameters({ ...allParameters, ['restrictedchannels']: getValues('restricted') });
+        setWaitSave(true);
     }
 
     return (
         <DialogZyx
             open={openModal}
-            title="Emoji"
+            title={t(langKeys.emoji)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div className="row-zyx">
-                {
-                    <FieldEdit
-                        label="Name"
-                        disabled={true}
-                        className="col-6"
-                        valueDefault={mainAuxResult.data[0]?.emojidec}
-                    //onChange={(value) => setValue('emojidec', value)}
-                    />
-                }
-                {
-                    <FieldEdit
-                        label="Category name"
-                        disabled={true}
-                        className="col-6"
-                        valueDefault={mainAuxResult.data[0]?.categorydesc}
-                    //onChange={(value) => setValue('categorydesc', value)}
-                    />
-                }
-            </div>
+            <Grid container spacing={1} style={{ paddingBottom: 40 }}>
+                <Grid item xs={12} md={6} lg={6}>
+                    <h1 style={{ fontSize: 120, margin: 0, textAlign: 'center' }}>{emoji?.emojichar}</h1>
+                </Grid>
+                <Grid item xs={12} md={6} lg={6}>
+                    <Grid item xs={12} md={12} lg={12} style={{ paddingTop: 20, paddingBottom: 25 }}>
+                        <FieldEdit
+                            label={t(langKeys.emoji_name)}
+                            disabled={true}
+                            className="col-6"
+                            valueDefault={emoji?.emojidec}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={12}>
+                        <FieldEdit
+                            label={t(langKeys.emoji_category_name)}
+                            disabled={true}
+                            className="col-6"
+                            valueDefault={emoji?.categorydesc}
+                        />
+                    </Grid>
+
+                </Grid>
+            </Grid>
+
             <div className="row-zyx">
                 {
                     <FieldEdit
@@ -166,7 +155,6 @@ const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData,
                         disabled={true}
                         className="col-6"
                         valueDefault={user?.corpdesc}
-                    //onChange={(value) => setValue('corpdesc', value)}
                     />
                 }
                 {
@@ -187,7 +175,7 @@ const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData,
             <div className="row-zyx">
                 {
                     <FieldMultiSelect
-                        label="Favorites"
+                        label={t(langKeys.emoji_favorites)}
                         className="col-12"
                         onChange={(value) => {
                             setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
@@ -201,7 +189,7 @@ const DetailValue: React.FC<ModalProps> = ({ openModal, setOpenModal, multiData,
                 }
                 {
                     <FieldMultiSelect
-                        label="Restricted"
+                        label={t(langKeys.emoji_restricted)}
                         className="col-12"
                         onChange={(value) => {
                             setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
@@ -223,41 +211,81 @@ const Emojis: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const mainResult = useSelector(state => state.main);
-    const emojiGroupResult = useSelector(state => state.main.mainData.data);
+    const emojiResult = useSelector(state => state.main.mainData.data);
     const [openDialog, setOpenDialog] = useState(false);
     const [value, setValue] = useState(0);
-
-    const fetchData = () => dispatch(getCollection(getEmojiGroupSel("", true)));
+    const [emojisFilter, setEmojisFilter] = useState<Dictionary[]>([]);
+    const [emojiSelected, setEmojiSelected] = useState<Dictionary>([]);
+    const [category, setCategory] = useState('FAVORITES');
+    const [searchValue, setSearchValue] = useState('');
 
     useEffect(() => {
         fetchData();
 
         dispatch(getMultiCollection([
             getOrgsByCorp(0),
-            getDomainValueSel("TIPOCANAL")
+            getDomainValueSel("TIPOCANAL"),
+            getEmojiGroupSel(true)
         ]));
 
         return () => {
+            dispatch(resetMainAux());
+            dispatch(resetMultiMain());
             dispatch(resetMain());
         };
     }, []);
+
+    useEffect(() => {
+        setEmojisFilter(getEmojis());
+
+    }, [category, searchValue]);
+
+    const fetchData = () => dispatch(getCollection(getEmojiAllSel()));
 
     const handleChange = (event: any, newValue: any) => {
         setValue(newValue);
     };
 
     const handleDoubleClick = (emoji: Dictionary) => {
+        dispatch(getCollectionAux(getEmojiSel(emoji?.emojidec)));
+        setEmojiSelected(emoji);
         setOpenDialog(true);
-        dispatch(getCollectionAux(getEmojiSel(String(emoji))));
     };
 
-    //Para implementar la busqueda de un emoji.
-    const handleFiend = (valor: string) => {
-
+    const handleTabClick = (categorydesc: string) => {
+        setCategory(categorydesc);
+        setSearchValue('');
     };
+
+    const handleFiend = (searchValue: string) => {
+        setSearchValue(searchValue);
+    };
+
+    const getEmojis = () => {
+        const filteredEmojis = emojiResult.filter(emoji => {
+            if (searchValue === null || searchValue.trim().length === 0) {
+                switch (category) {
+                    case 'FAVORITES': {
+                        return emoji?.favorite === true;
+                    }
+                    case 'RESTRICTED': {
+                        return emoji?.restricted === true;
+                    }
+                    default: {
+                        return emoji?.categorydesc === category;
+                    }
+                }
+            } else {
+                return emoji?.emojidec.includes(searchValue);
+            }
+        });
+
+        return filteredEmojis;
+    }
 
     return (
         <div className={classes.container}>
+
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                 <span className={classes.title}>
                     {t(langKeys.emoji_plural)}
@@ -275,12 +303,13 @@ const Emojis: FC = () => {
                     aria-label="scrollable force tabs example"
                     style={{ paddingBottom: 12 }}
                 >
-                    {
-                        emojiGroupResult.map(group =>
+                    {mainResult?.multiData?.data[2]?.data &&
+                        mainResult?.multiData?.data[2]?.data?.map(group =>
                             <Tab
-                                key={'tab_' + (group.categoryorder)}
-                                label={group.categorydesc} icon={<EmojiICon />}
-                                {...a11yProps(group.categoryorder - 1)} />
+                                key={'tab_' + (group?.categoryorder)}
+                                label={group?.categorydesc} icon={<EmojiICon />}
+                                onClick={() => handleTabClick(group?.categorydesc)}
+                            />
                         )
                     }
                 </Tabs>
@@ -292,38 +321,24 @@ const Emojis: FC = () => {
                 />
 
                 <Box>
-                    {emojiGroupResult &&
-                        <>
-                            {emojiGroupResult.map(group => {
-
-                                let emojisarreglo: Dictionary[] = group.emojis;
-
-                                return (
-                                    <TabPanel
-                                        key={'tabPanel_' + (group.categoryorder)}
-                                        value={value}
-                                        index={group.categoryorder - 1}
-                                        style={{ padding: 12, backgroundColor: '#fff', marginTop: '12px' }}>
-                                        {
-                                            emojisarreglo &&
-                                            emojisarreglo.map(x =>
-                                                <Button
-                                                    key={'button_' + (group.categoryorder) + "_" + x}
-                                                    onDoubleClick={() => handleDoubleClick(x)}
-                                                    style={{ padding: 0, fontSize: '30px' }}>
-                                                    <label
-                                                        key={'label_' + (group.categoryorder) + "_" + x}
-                                                        style={{ fontSize: 30 }}>{x}</label>
-                                                </Button>
-                                            )
-                                        }
-                                    </TabPanel>
-                                )
-                            }
+                    <div
+                        key='tabPanel_emoji'
+                        style={{ padding: 12, backgroundColor: '#fff', marginTop: '12px' }}>
+                        {
+                            (emojisFilter.length > 0 ? emojisFilter : getEmojis()).map((emoji: Dictionary) =>
+                                <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
+                                    <Button
+                                        key={'button_' + emoji?.emojidec}
+                                        onDoubleClick={() => handleDoubleClick(emoji)}
+                                        style={{ padding: 0, fontSize: '30px' }}>
+                                        <label
+                                            key={'label_' + emoji?.emojidec}
+                                            style={{ fontSize: 30 }}>{emoji?.emojichar}</label>
+                                    </Button>
+                                </Tooltip>
                             )
-                            }
-                        </>
-                    }
+                        }
+                    </div>
                 </Box>
             </div>
 
@@ -332,6 +347,7 @@ const Emojis: FC = () => {
                 setOpenModal={setOpenDialog}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                emoji={emojiSelected}
             />
 
         </div>

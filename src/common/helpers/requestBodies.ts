@@ -356,38 +356,40 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     }
 });
 
-export const getEmojiGroupSel = (categorydesc: string, all: boolean): IRequestBody => ({
+export const getEmojiGroupSel = (all: boolean): IRequestBody => ({
     method: "UFN_EMOJI_GROUP_SEL",
     key: "UFN_EMOJI_GROUP_SEL",
     parameters: {
-        categorydesc,
         all
     }
 })
 
-export const getEmojiSel = (emojichar: string): IRequestBody => ({
+export const getEmojiSel = (emojidec: string): IRequestBody => ({
     method: "UFN_EMOJI_SEL",
     key: "UFN_EMOJI_SEL",
     parameters: {
-        emojichar
+        emojidec
     }
 })
 
-export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => {
-    console.log('allParameters', allParameters);
-
-    return ({
-        method: "UFN_EMOJI_UPDATE",
-        key: "UFN_EMOJI_UPDATE",
-        parameters: {
-            favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
-            restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
-            orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
-            emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
-        }
+export const getEmojiAllSel = (): IRequestBody => ({
+    method: "UFN_EMOJI_ALL_SEL",
+    key: "UFN_EMOJI_ALL_SEL",
+    parameters: {
+        all: true
     }
-    )
-}
+})
+
+export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_EMOJI_UPDATE",
+    key: "UFN_EMOJI_UPDATE",
+    parameters: {
+        favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
+        restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
+        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
+        emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
+    }
+})
 
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
