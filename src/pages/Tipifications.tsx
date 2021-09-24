@@ -470,7 +470,7 @@ const Tipifications: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
-y
+
     const columns = React.useMemo(
         () => [
 
