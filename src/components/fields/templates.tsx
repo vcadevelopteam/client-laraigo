@@ -202,7 +202,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
 )
 
 interface InputProps {
-    label: string;
+    label?: string;
     className?: any;
     valueDefault?: string;
     disabled?: boolean;
@@ -831,6 +831,33 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                     : null}
                 </div>
             </ClickAwayListener>
+        </div>
+    )
+}
+
+export const FieldEditArray: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
+    return (
+        <div className={className}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
+            <TextField
+                {...fregister}
+                color="primary"
+                fullWidth
+                disabled={disabled}
+                type={type}
+                defaultValue={valueDefault}
+                variant={variant}
+                error={!!error}
+                helperText={error || null}
+                rows={rows}
+                onChange={(e) => {
+                    onChange && onChange(e.target.value);
+                }}
+                onBlur={(e) => {
+                    onBlur && onBlur(e.target.value);
+                }}
+                inputProps={inputProps}
+            />
         </div>
     )
 }
