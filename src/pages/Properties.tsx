@@ -14,7 +14,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 
 import { Box, IconButton, TextField } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
-import { FieldEdit, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitch, TitleDetail } from 'components';
+import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitch, TitleDetail } from 'components';
 
 import { getChannelsByOrg, getDistinctPropertySel, getOrgsByCorp, getPropertySel, getValuesFromDomain, insProperty } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute } from 'store/main/actions';
@@ -251,7 +251,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue, formState: { errors } } = useForm<any>({
         defaultValues: {
             table: []
         }
@@ -302,9 +302,9 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
         fieldsUpdate(index, { ...fields[index], [param]: (value ? '1' : '0')});
     }
 
-    const updateFieldsValue = (index: any, param: string, value: any) => {
-        fieldsUpdate(index, { ...fields[index], [param]: value});
-    }
+    // const updateFieldsValue = (index: any, param: string, value: any) => {
+    //     fieldsUpdate(index, { ...fields[index], [param]: value});
+    // }
 
     useEffect(() => {
         fetchDetailData(row?.corpid, row?.propertyname, row?.description, row?.category, row?.level);
@@ -454,12 +454,17 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             key={`detail${index}`}
                             multiData={multiData}
                             fields={fields}
+                            control={control}
+                            register={register}
+                            trigger={trigger}
+                            errors={errors}
+                            setValue={setValue}
                             onBlurFieldValue={onBlurFieldValue}
                             onChangeSelectValue = {onChangeSelectValue}
                             onChangeSwitchValue = {onChangeSwitchValue}
-                            updateFieldsValue = {updateFieldsValue}
-                            register={register}
-                            errors={errors}
+                            // updateFieldsValue = {updateFieldsValue}
+                            // register={register}
+                            // errors={errors}
                         />
                     ))}
                 </div>
@@ -475,12 +480,17 @@ interface ModalProps {
     fields: Dictionary[],
     openModal?: boolean;
     setOpenModal?: (open: boolean) => void;
+    control: any;
     register: (...param: any) => any;
+    trigger: (...param: any) => any;
+    errors: any;
+    setValue: (...param: any) => any
+    // register: (...param: any) => any;
     onBlurFieldValue: (index: any, param: string, value: any) => void;
     onChangeSelectValue: (index: any, param: string, value: any) => void;
     onChangeSwitchValue: (index: any, param: string, value: any) => void;
-    updateFieldsValue: (index: any, param: string, value: any) => void;
-    errors: any;
+    // updateFieldsValue: (index: any, param: string, value: any) => void;
+    // errors: any;
 }
 
 interface RowSelected {
@@ -488,7 +498,13 @@ interface RowSelected {
     row: Dictionary | null
 }
 
-const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, register, onBlurFieldValue, onChangeSelectValue, onChangeSwitchValue, updateFieldsValue, errors }) => {
+const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields,
+    // register, 
+    onBlurFieldValue,
+    onChangeSelectValue, onChangeSwitchValue,
+    // updateFieldsValue, errors
+    control, register, trigger, errors, setValue
+}) => {
     const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
@@ -571,7 +587,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             case 'NUMBER':
                 if (edit) {
                     valueInput =
-                        <FieldEdit
+                        <FieldEditArray
                         className={classes.mb2}
                         error={errors?.table?.[index]?.propertyvalue?.message}
                         fregister={{...register(`table.${index}.propertyvalue`, {
@@ -582,6 +598,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         inputProps={{step: 0.1}}
                         label={t(langKeys.value)} 
                         onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
+                        // onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                         type='number'
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                     />
@@ -612,6 +629,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         })}}
                         label={t(langKeys.value)}
                         onBlur={(value) => onBlurFieldValue(index, 'propertyvalue', value)}
+                        // onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                         valueDefault={row ? (row.propertyvalue || '') : ''}
                     />
                 }
@@ -725,35 +743,35 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 setComboValue(null);
                 break;
 
-            case 'CHANNEL':
-                setComboStep('GROUP');
-                if (row?.level === 'CHANNEL') {
-                    updateFieldsValue(index, 'communicationchannelid', 0);
-                }
-                else {
-                    updateFieldsValue(index, 'communicationchannelid', row?.communicationchannelid);
-                }
-                break;
+            // case 'CHANNEL':
+            //     setComboStep('GROUP');
+            //     if (row?.level === 'CHANNEL') {
+            //         updateFieldsValue(index, 'communicationchannelid', 0);
+            //     }
+            //     else {
+            //         updateFieldsValue(index, 'communicationchannelid', row?.communicationchannelid);
+            //     }
+            //     break;
 
-            case 'GROUP':
-                setComboStep('DOMAIN');
-                if (row?.level === 'GROUP') {
-                    updateFieldsValue(index, 'group', '');
-                }
-                else {
-                    updateFieldsValue(index, 'group', row?.group);
-                }
-                break;
+            // case 'GROUP':
+            //     setComboStep('DOMAIN');
+            //     if (row?.level === 'GROUP') {
+            //         updateFieldsValue(index, 'group', '');
+            //     }
+            //     else {
+            //         updateFieldsValue(index, 'group', row?.group);
+            //     }
+            //     break;
 
-            case 'DOMAIN':
-                setComboStep('NONE');
-                if (row?.inputtype === 'DOMAIN') {
-                    updateFieldsValue(index, 'propertyvalue', '');
-                }
-                else {
-                    updateFieldsValue(index, 'group', row?.propertyvalue);
-                }
-                break;
+            // case 'DOMAIN':
+            //     setComboStep('NONE');
+            //     if (row?.inputtype === 'DOMAIN') {
+            //         updateFieldsValue(index, 'propertyvalue', '');
+            //     }
+            //     else {
+            //         updateFieldsValue(index, 'group', row?.propertyvalue);
+            //     }
+            //     break;
         }
     }, [fields]);
 
