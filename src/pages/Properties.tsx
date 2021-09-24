@@ -636,53 +636,53 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 ]))
             }
 
-            if (row?.level !== 'CORPORATION') {
+            /*if (row?.level !== 'CORPORATION') {
                 setOrgTable({ loading: true, data: [] });
                 dispatch(getMultiCollectionAux([
                     getOrgsByCorp(0, index + 1)
                 ]))
-            }
+            }*/
 
-            if (row?.level === 'CHANNEL') {
+            /*if (row?.level === 'CHANNEL') {
                 setChannelTable({ loading: true, data: [] });
                 dispatch(getMultiCollectionAux([
                     getChannelsByOrg(row?.orgid, index + 1)
                 ]))
-            }
+            }*/
 
-            if (row?.level === 'GROUP') {
+            /*if (row?.level === 'GROUP') {
                 setGroupTable({ loading: true, data: [] });
                 dispatch(getMultiCollectionAux([
                     getValuesFromDomain('GRUPOS', ('GRUPO' + (index + 1)), row?.orgid)
                 ]))
-            }
+            }*/
         }
     }, []);
 
     useEffect(() => {
-        const indexChannelTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_COMMUNICATIONCHANNELBYORG_LST' + (index + 1)));
+        //const indexChannelTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_COMMUNICATIONCHANNELBYORG_LST' + (index + 1)));
 
         const indexDomainTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + (index + 1)));
 
-        const indexGroupTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + ('GRUPO' + (index + 1))));
+        //const indexGroupTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + ('GRUPO' + (index + 1))));
 
-        const indexOrgTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_ORG_SEL' + (index + 1)));
+        //const indexOrgTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_CORP_ORG_SEL' + (index + 1)));
 
-        if (indexChannelTable > -1) {
+        /*if (indexChannelTable > -1) {
             setChannelTable({ loading: false, data: responseFromSelect.data[indexChannelTable] && responseFromSelect.data[indexChannelTable].success ? responseFromSelect.data[indexChannelTable].data : [] });
-        }
+        }*/
 
         if (indexDomainTable > -1) {
             setDomainTable({ loading: false, data: responseFromSelect.data[indexDomainTable] && responseFromSelect.data[indexDomainTable].success ? responseFromSelect.data[indexDomainTable].data : [] });
         }
 
-       if (indexGroupTable > -1) {
+        /*if (indexGroupTable > -1) {
             setGroupTable({ loading: false, data: responseFromSelect.data[indexGroupTable] && responseFromSelect.data[indexGroupTable].success ? responseFromSelect.data[indexGroupTable].data : [] });
-        }
+        }*/
 
-        if (indexOrgTable > -1) {
+        /*if (indexOrgTable > -1) {
             setOrgTable({ loading: false, data: responseFromSelect.data[indexOrgTable] && responseFromSelect.data[indexOrgTable].success ? responseFromSelect.data[indexOrgTable].data : [] });
-        }
+        }*/
     }, [responseFromSelect]);
 
     React.useEffect(() => {
@@ -786,7 +786,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             {valueInput}
                         </div>
                         <div className='col-6'>
-                            {row?.level !== 'CORPORATION' ? (edit ?
+                            {row?.level !== 'CORPORATION' ? (false ?
                                 <FieldSelect
                                     className={classes.mb2}
                                     data={orgTable.data}
@@ -809,13 +809,14 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     optionValue='orgid'
                                     valueDefault={row?.orgid || ''}
                                 />
-                                : <FieldView
+                                : <FieldEdit
                                     className={classes.mb2}
+                                    disabled={true}
                                     label={t(langKeys.organization)}
-                                    value={row?.orgdesc || ''}
+                                    valueDefault={row ? (row.orgdesc || '') : ''}
                                 />) : null
                             }
-                            {row?.level === 'CHANNEL' ? (edit ?
+                            {row?.level === 'CHANNEL' ? (false ?
                                 <FieldSelect
                                     className={classes.mb2}
                                     data={channelTable.data}
@@ -832,13 +833,14 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     optionValue='communicationchannelid'
                                     valueDefault={row?.communicationchannelid || ''}
                                 />
-                                : <FieldView
+                                : <FieldEdit
                                     className={classes.mb2}
+                                    disabled={true}
                                     label={t(langKeys.channel)}
-                                    value={row?.communicationchannelid || ''}
+                                    valueDefault={row ? (row.communicationchanneldesc || '') : ''}
                                 />) : null
                             }
-                            {row?.level === 'GROUP' ? (edit ?
+                            {row?.level === 'GROUP' ? (false ?
                                 <FieldSelect
                                     className={classes.mb2}
                                     data={groupTable.data}
@@ -855,13 +857,14 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     optionValue='domainvalue'
                                     valueDefault={row?.group || ''}
                                 />
-                                : <FieldView
+                                : <FieldEdit
                                     className={classes.mb2}
+                                    disabled={true}
                                     label={t(langKeys.group)}
-                                    value={row?.group || ''}
+                                    valueDefault={row ? (row.group || '') : ''}
                                 />) : null
                             }
-                            {edit ?
+                            {false ?
                                 <FieldSelect
                                     className={classes.mb2}
                                     data={dataStatus}
@@ -877,10 +880,11 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     optionValue='domainvalue'
                                     valueDefault={row?.status || 'ACTIVO'}
                                 /> :
-                                <FieldView
+                                <FieldEdit
                                     className={classes.mb2}
+                                    disabled={true}
                                     label={t(langKeys.status)}
-                                    value={row ? row.status : ''}
+                                    valueDefault={row ? (row.status || '') : ''}
                                 />
                             }
                         </div>
