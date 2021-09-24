@@ -2,9 +2,9 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
+import { Users, SignIn,SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign
+	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis
 } from 'pages';
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
@@ -18,8 +18,6 @@ import { getAccessToken } from 'common/helpers';
 import { Redirect } from 'react-router-dom';
 import { validateToken } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
-
-
 
 const useStyles = makeStyles((theme) => ({
 	main: {
@@ -58,7 +56,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	}, [resValidateToken])
 
 	if (!existToken) {
-		return <Redirect to={{ pathname: "/sign-in" }} />;
+		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (resValidateToken.loading && !applications) {
 		return (
 			<Route {...rest}>
@@ -68,7 +66,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			</Route>
 		);
 	} else if (resValidateToken.error) {
-		return <Redirect to={{ pathname: "/sign-in" }} />;
+		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
@@ -86,7 +84,8 @@ const RouterApp: FC = () => {
 		<Router basename={process.env.PUBLIC_URL}>
 			<Switch>
 				<ProtectRoute exact path="/" />
-				<Route exact path="/sign-in" component={SignIn} />
+				<Route exact path={paths.SIGNIN} component={SignIn} />
+				<Route exact path={paths.SIGNUP} component={SignUp} />
 
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
@@ -198,13 +197,16 @@ const RouterApp: FC = () => {
 					<ExtrasLayout><IntegrationManager /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CAMPAIGN}>
-				<ExtrasLayout><Campaign /></ExtrasLayout>
+					<ExtrasLayout><Campaign /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.FLOWDESIGNER}>
 					<ExtrasLayout><FlowDesigner /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
 					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.EMOJIS}>
+					<ExtrasLayout><Emojis /></ExtrasLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

@@ -60,6 +60,8 @@ const translation: LangKeys = {
     review: 'Resumen',
     domain: 'Dominio',
     domain_plural: 'Dominios',
+    emoji: 'Emoji',
+    emoji_plural: 'Emojis',
     valuelist: 'Lista de valores',
     classification: 'Clasificación',
     code: 'Código',
@@ -117,7 +119,20 @@ const translation: LangKeys = {
     variable: "Variable",
     role: 'Rol',
     role_plural: 'Roles',
+    submit:'Enviar',
     data: "Data",
+    firstandlastname:"Nombres y apellidos",
+    companybusinessname: "Nombre de la Empresa o Compañia",
+    signupstep1title2: 'Complete su Información personal y comercial',
+    tos: "Al registrarte aceptas nuestras condiciones de uso y política de privacidad",
+    signupstep1title: '¡Registrate en menos de un minuto!',
+    signupfacebookbutton: 'Registrate por Facebook',
+    mobilephoneoptional:"Teléfono móvil (opcional)",
+    laraigouse:"¿Para qué deseas usar laraigo?",
+    sales:"Ventas",
+    marketing:"Marketing",
+    customerservice:"Servicio al cliente",
+    signupgooglebutton: 'Registrate por Google',
     connectface: "Conecta tu Facebook",
     connectface2: "Instala el chatbot en tu página de Facebook y empieza a conseguir clientes potenciales.",
     connectface3: "Solo necesitas ser administrador de tu página de Facebook.",
@@ -216,7 +231,7 @@ const translation: LangKeys = {
     neworganization: "Nueva organización",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
-
+    least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Tipificación',
     tipification_plural: 'Tipificaciones',
     id: 'Id',
@@ -400,7 +415,6 @@ const translation: LangKeys = {
     error_login_user_inactive: "Tu usuario está inactivo",
     error_login_no_integration: "No hay ningun usuario registrado integrado a esa cuenta",
 
-
     all_adivisers: "Todos",
     conected: "Activos",
     disconected: "Inactivos",
@@ -412,6 +426,11 @@ const translation: LangKeys = {
     closed_on: "Cerrado en",
     close_ticket: "Cerrar ticket",
     client_detail: "Detalle cliente",
+
+    emoji_name: 'Nombre',
+    emoji_category_name: 'Categoría',
+    emoji_favorites: 'Favoritos',
+    emoji_restricted: 'Restringido',
 
     report_loginhistory: 'Conexión de usuario',
     report_loginhistory_createdate: 'Fecha',
@@ -603,6 +622,11 @@ const translation: LangKeys = {
     form: 'Formulario',
     bubble: 'Burbuja',
     bubble_plural: 'Burbujas',
+    
+    closure: 'Cierre',
+    indicators: 'Indicadores',
+    quiz: 'Encuesta',
+    labels: 'Etiquetas',
 };
 
 const esResource: ResourceLanguage = {

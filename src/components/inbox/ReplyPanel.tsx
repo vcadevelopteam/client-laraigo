@@ -5,7 +5,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket, goToBottom } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom, reassignTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -128,8 +128,8 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
         setOpen(false);
         setText(item.quickreply
             .replace("{{numticket}}", ticketSelected?.ticketnum)
-            .replace("{{nombre_cliente}}", ticketSelected?.displayname)
-            .replace("{{nombre_asesor}}", user?.firstname + " " + user?.lastname)
+            .replace("{{client_name}}", ticketSelected?.displayname)
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname)
         );
     }
 
@@ -220,18 +220,21 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
 
     const triggerReplyMessage = () => {
         const callback = () => {
+            let wasSend = false;
             if (files.length > 0) {
                 const listMessages = files.map(x => ({
                     ...ticketSelected!!,
                     interactiontype: x.type,
                     interactiontext: x.url,
                 }))
+                wasSend = true;
                 dispatch(replyTicket(listMessages, true))
 
                 files.forEach((x, i) => {
@@ -246,16 +249,19 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         usertype: "agent",
                         ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
                     }
-                    dispatch(emitEvent({
-                        event: 'newMessageFromAgent',
-                        data: newInteractionSocket
-                    }));
+                    if (userType === "AGENT") {
+                        dispatch(emitEvent({
+                            event: 'newMessageFromAgent',
+                            data: newInteractionSocket
+                        }));
+                    }
                 })
                 setFiles([])
             }
             if (text) {
                 const textCleaned = text.trim();
                 if (textCleaned) {
+                    wasSend = true
                     const newInteractionSocket = {
                         ...ticketSelected!!,
                         interactionid: 0,
@@ -267,12 +273,12 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         usertype: "agent",
                         ticketWasAnswered: !ticketSelected!!.isAnswered,
                     }
-                    //websocket
-                    dispatch(emitEvent({
-                        event: 'newMessageFromAgent',
-                        data: newInteractionSocket
-                    }));
-
+                    if (userType === "AGENT") {
+                        dispatch(emitEvent({
+                            event: 'newMessageFromAgent',
+                            data: newInteractionSocket
+                        }));
+                    }
                     //send to answer with integration
                     dispatch(replyTicket({
                         ...ticketSelected!!,
@@ -280,6 +286,28 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                         interactiontext: textCleaned,
                     }));
                     setText("");
+                }
+            }
+
+            if (wasSend) {
+                if (userType === "SUPERVISOR") {
+                    dispatch(reassignTicket({
+                        ...ticketSelected!!,
+                        newUserId: 0,
+                        newUserGroup: '',
+                        observation: 'Reassigned from supervisor',
+                        newConversation: true,
+                        wasanswered: true
+                    }));
+
+                    dispatch(emitEvent({
+                        event: 'reassignTicket',
+                        data: {
+                            ...ticketSelected,
+                            userid: agentSelected?.userid,
+                            newuserid: 0,
+                        }
+                    }));
                 }
             }
         }

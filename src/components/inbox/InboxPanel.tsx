@@ -57,8 +57,9 @@ const useStyles = makeStyles((theme) => ({
     containerInteractions: {
         padding: theme.spacing(2),
         flex: 1,
-        overflowY: 'auto',
-        backgroundColor: '#e0e0e0',
+        // overflowY: 'auto',
+        // backgroundColor: '#e0e0e0',
+        background: 'linear-gradient(90deg, rgba(119,33,173,0.7203256302521008) 35%, rgba(189,240,249,1) 100%)'
     },
     containerQuickreply: {
         whiteSpace: 'break-spaces',

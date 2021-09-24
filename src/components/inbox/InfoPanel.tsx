@@ -124,7 +124,7 @@ const Variables: React.FC = () => {
     const classes = useStyles();
 
     return (
-        <div className={classes.containerInfoClient} style={{ overflowY: 'auto', flex: 1 }}>
+        <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1 }}>
 
             {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
                 const variabletmp = variablecontext[variable];
@@ -153,7 +153,7 @@ const PreviewTickets = () => {
     }, [])
 
     return (
-        <div style={{ overflowY: 'auto', flex: 1 }}>
+        <div style={{ flex: 1 }} className="scroll-style-go">
             {previewTicketList.loading ? "Espere" :
                 previewTicketList.data?.map((ticket, index) => (
                     <div key={index} className={classes.containerPreviewTicket}>
