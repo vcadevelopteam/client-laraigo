@@ -227,7 +227,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -244,6 +244,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 disabled={disabled}
                 type={type}
                 value={value}
+                variant={variant}
                 error={!!error}
                 helperText={error || null}
                 rows={rows}
