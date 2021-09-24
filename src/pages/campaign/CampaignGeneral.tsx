@@ -85,6 +85,7 @@ type FormFields = {
 	messagetemplateid: number,
 	messagetemplatename: string,
 	messagetemplatenamespace: string,
+    messagetemplatetype: string,
 	messagetemplateheader: Dictionary,
 	messagetemplatebuttons: Dictionary[],
 	executiontype: string,
@@ -104,7 +105,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     
     const [openModal, setOpenModal] = useState(false);
     
-    const { control, register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
+    const { register, handleSubmit, setValue, getValues, trigger, formState: { errors } } = useForm<FormFields>({
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
@@ -125,6 +126,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             messagetemplateid: 0,
             messagetemplatename: '',
             messagetemplatenamespace: '',
+            messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
             executiontype: 'MANUAL',
@@ -154,7 +156,13 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     useEffect(() => {
         if (row !== null && Object.keys(detaildata).length === 0) {
             if (auxdata.length > 0) {
-                setStepData(auxdata[0]);
+                let messageTemplateData = dataMessageTemplate.find(d => d.id === auxdata[0].messagetemplateid) || {};
+                setStepData({
+                    ...auxdata[0],
+                    messagetemplatename: messageTemplateData.name || '',
+                    messagetemplatenamespace: messageTemplateData.namespace || '',
+                    messagetemplatetype: messageTemplateData.templatetype || 'STANDARD',
+                });
                 trigger();
             }
         }
@@ -182,6 +190,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplateid', data.messagetemplateid);
         setValue('messagetemplatename', data.messagetemplatename);
         setValue('messagetemplatenamespace', data.messagetemplatenamespace);
+        setValue('messagetemplatetype', data.messagetemplatetype);
         setValue('messagetemplateheader', data.messagetemplateheader || {});
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
         setValue('executiontype', data.executiontype);
@@ -248,6 +257,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplateid', 0);
         setValue('messagetemplatename', '');
         setValue('messagetemplatenamespace', '');
+        setValue('messagetemplatetype', 'STANDARD');
         setValue('messagetemplateheader', {});
         setValue('messagetemplatebuttons', []);
         await trigger('type');
@@ -263,11 +273,12 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('message', messageTemplate?.body);
         setValue('messagetemplatename', messageTemplate?.name);
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
+        setValue('messagetemplatetype', messageTemplate?.templatetype);
         if (data.type === 'HSM') {
             setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
-            setValue('messagetemplatebuttons', JSON.parse(messageTemplate?.buttons || []));
+            setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
         }
-        await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace']);
+        await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }
 
     return (
@@ -562,7 +573,7 @@ interface ModalProps {
 const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, data = [], parentSetValue }) => {
     const { t } = useTranslation();
 
-    const { control, register, handleSubmit, setValue, getValues, formState: { errors }, clearErrors } = useForm<any>({
+    const { control, register, handleSubmit, setValue, formState: { errors }, clearErrors } = useForm<any>({
         defaultValues: {
             batchjson: data
         }

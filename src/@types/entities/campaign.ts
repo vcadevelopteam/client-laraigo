@@ -33,6 +33,7 @@ export interface ICampaign {
 	messagetemplateid?: number,
 	messagetemplatename?: string,
 	messagetemplatenamespace?: string,
+	messagetemplatetype?: string,
 	messagetemplateheader?: Dictionary,
 	messagetemplatebuttons?: Dictionary[],
 	executiontype?: string,

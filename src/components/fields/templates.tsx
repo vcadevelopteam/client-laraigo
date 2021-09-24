@@ -27,7 +27,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { FormHelperText, useTheme } from '@material-ui/core';
-import { Divider, Grid, ListItem } from '@material-ui/core';
+import { Divider, Grid, ListItem, ListItemText } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
@@ -50,6 +50,7 @@ import {
     EmailIcon,
     TelegramIcon
 } from 'icons';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 
 
 interface TemplateIconsProps {
@@ -215,8 +216,7 @@ interface InputProps {
     fregister?: Dictionary;
     uset?: boolean;
     variant?: "standard" | "outlined" | "filled" | undefined;
-    primitive?: boolean;
-    inputProps?: any
+    inputProps?: any;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -227,7 +227,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -244,6 +244,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 disabled={disabled}
                 type={type}
                 value={value}
+                variant={variant}
                 error={!!error}
                 helperText={error || null}
                 rows={rows}
@@ -259,7 +260,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
         </div>
     )
 }
-export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, primitive = false }) => {
+export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {}, inputProps = {} }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -283,16 +284,13 @@ export const FieldEditMulti: React.FC<InputProps> = ({ label, className, disable
                 onChange={(e) => {
                     if (maxLength === 0 || e.target.value.length <= maxLength) {
                         setvalue(e.target.value);
-                        if (primitive) {
-                            onChange && onChange(e);
-                        }
-                        else
-                            onChange && onChange(e.target.value);
+                        onChange && onChange(e.target.value);
                     }
                 }}
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
+                inputProps={inputProps}
             />
             {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
         </div>
@@ -741,5 +739,98 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
                 )}
             </span>
         </ClickAwayListener >
+    )
+}
+
+interface EditWithSelectProps extends InputProps {
+    primitive?: boolean;
+    show: boolean;
+    data: Dictionary[];
+    datakey: string;
+    top?: number;
+    left?: number;
+    onClickSelection: (e: any, value: string) => any
+    onClickAway: (...param: any) => any
+}
+
+export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {},
+primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onClickSelection, onClickAway }) => {
+    const [value, setvalue] = useState("");
+
+    useEffect(() => {
+        setvalue(valueDefault);
+    }, [valueDefault])
+
+    const renderRow = (props: ListChildComponentProps) => {
+        const { index, style } = props;
+        return (
+            <React.Fragment>
+                <ListItem
+                    key={index}
+                    button
+                    style={{...style, padding: '8px'}}
+                    onClick={(e) => onClickSelection(e, data[index][datakey])}
+                    divider={true}
+                >
+                    <ListItemText primary={data[index][datakey]} />
+                </ListItem>
+            </React.Fragment>
+        );
+    }
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            <ClickAwayListener onClickAway={({...param}) => onClickAway({...param})}>
+                <div style={{position: 'relative'}}>
+                    <TextField
+                        {...fregister}
+                        color="primary"
+                        fullWidth
+                        disabled={disabled}
+                        type={type}
+                        error={!!error}
+                        value={value}
+                        multiline
+                        minRows={rows}
+                        helperText={error || null}
+                        onChange={(e) => {
+                            if (maxLength === 0 || e.target.value.length <= maxLength) {
+                                setvalue(e.target.value);
+                                onChange && onChange(e.target.value);
+                            }
+                        }}
+                        onBlur={(e) => {
+                            onBlur && onBlur(e.target.value);
+                        }}
+                        inputProps={inputProps}
+                    />
+                    {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
+                    {show ?
+                    <div style={{
+                        backgroundColor: '#FFFFFF',
+                        position: 'absolute',
+                        top: top,
+                        left: left,
+                        borderColor: 'lightgray',
+                        borderStyle: 'solid',
+                        borderWidth: '1px',
+                        borderRadius: '5px',
+                    }}> 
+                        <FixedSizeList
+                        className="scroll-style-go"
+                        direction="vertical"
+                        height={200}
+                        width={280}
+                        itemSize={28}
+                        itemCount={data.length}
+                        >
+                            {renderRow}
+                        </FixedSizeList>
+                    </div>
+                    : null}
+                </div>
+            </ClickAwayListener>
+        </div>
     )
 }

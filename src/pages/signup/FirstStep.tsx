@@ -10,6 +10,7 @@ import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
+import clsx from "clsx";
 import { useDispatch } from "react-redux";
 import { getChannelsList } from "store/channel/actions";
 import GoogleLogin from 'react-google-login';
@@ -19,10 +20,15 @@ import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import SmsIcon from '@material-ui/icons/Sms';
+import { AnyRecord } from "dns";
+import { Dictionary } from "@types";
+import { FieldEdit } from "components/fields/templates";
+import { useForm } from "react-hook-form";
 
 interface ChannelOption {
     icon: React.ReactNode;
     label: React.ReactNode;
+    key: string;
     selected: Boolean;
     onClick: () => void;
 }
@@ -111,9 +117,11 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
-    const [listchannels, setlistchannels] = useState({
+    const [mainData, setMainData] = useState<Dictionary>({
+        email: ""
+    });
+
+    const [listchannels, setlistchannels] = useState<Dictionary>({
         facebook:false,
         instagram: false,
         messenger: false,
@@ -126,9 +134,12 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         phone: false,
         sms: false,
     });
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
+
+    function maindataChange(field:string,value:any){
+        let tempfield = mainData;
+        tempfield[field] = value;
+        setMainData(tempfield);
+    }
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
@@ -137,71 +148,63 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         {
             icon: <FacebookIcon color="inherit" />,
             label: 'Facebook',
+            key: 'facebook',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.facebook = !partiallist.facebook
-                setlistchannels(partiallist)
-                console.log(listchannels)
+                setlistchannels(p=>({...p,facebook:!p.facebook}))
             },
             selected: listchannels.facebook
         },
         {
             icon: <InstagramIcon color="inherit" />,
             label: 'Instagram',
+            key: 'instagram',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.instagram = !partiallist.instagram
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,instagram:!p.instagram}))
             },
             selected: listchannels.instagram
         },
         {
             icon: <MessageIcon color="inherit" />,
             label: 'Messenger',
+            key: 'messenger',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.messenger = !partiallist.messenger
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,messenger:!p.messenger}))
             },
             selected: listchannels.messenger
         },
         {
             icon: <WhatsAppIcon color="inherit" />,
             label: 'Whatsapp',
+            key: 'whatsapp',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.whatsapp = !partiallist.whatsapp
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,whatsapp:!p.whatsapp}))
             },
             selected: listchannels.whatsapp
         },
         {
             icon: <TelegramIcon color="inherit" />,
             label: 'Telegram',
+            key: 'telegram',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.telegram = !partiallist.telegram
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,telegram:!p.telegram}))
             },
             selected: listchannels.telegram
         },
         {
             icon: <TwitterIcon color="inherit" />,
             label: 'Twitter',
+            key: 'twitter',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.twitter = !partiallist.twitter
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,twitter:!p.twitter}))
             },
             selected: listchannels.twitter
         },
         {
             icon: <TwitterIcon color="inherit" />,
             label: 'Twitter DM',
+            key: 'twitterDM',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.twitterDM = !partiallist.twitterDM
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,twitterDM:!p.twitterDM}))
             },
             selected: listchannels.twitterDM
         },
@@ -210,20 +213,18 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         {
             icon: <FacebookIcon color="inherit" />,
             label: 'Chat Web',
+            key: 'chatWeb',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.chatWeb = !partiallist.chatWeb
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,chatWeb:!p.chatWeb}))
             },
             selected: listchannels.chatWeb
         },
         {
             icon: <EmailIcon color="inherit" />,
             label: 'Email',
+            key: 'email',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.email = !partiallist.email
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,email:!p.email}))
             },
             selected: listchannels.email
             
@@ -231,63 +232,42 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
         {
             icon: <PhoneIcon color="inherit" />,
             label: 'Phone',
+            key: 'phone',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.phone = !partiallist.phone
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,phone:!p.phone}))
             },
             selected: listchannels.phone
         },
         {
             icon: <SmsIcon color="inherit" />,
             label: 'Sms',
+            key: 'sms',
             onClick: () => {
-                let partiallist = listchannels;
-                partiallist.sms = !partiallist.sms
-                setlistchannels(partiallist)
+                setlistchannels(p=>({...p,sms:!p.sms}))
             },
             selected: listchannels.sms
         },
     ];
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsList(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
-            setWaitSave(true);
         }
     }
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleMouseDownPassword = (event: any) => event.preventDefault();
-    const Option: FC<{ option: ChannelOption }> = ({ option }) => {
+    const Option: FC<{ option: ChannelOption, selected: Boolean }> = ({ option,selected }) => {
         const [color, setColor] = useState('#989898');
-
         return (
             <Paper
-                className={option.selected?classes.optionContainerSelected:classes.optionContainer}
+                className={
+                    clsx({
+                        [classes.optionContainerSelected]: selected,
+                        [classes.optionContainer]: !selected,
+                    })
+                }
                 elevation={0}
                 onClick={option.onClick}
                 onMouseOver={() => setColor('white')}
@@ -337,14 +317,12 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                 </div>
                 
                 <div style={{padding:"20px"}}>
-                    <TextField
-                        variant="outlined"
-                        margin="normal"
-                        fullWidth
+                    <FieldEdit
+                        valueDefault={mainData.email}
+                        onChange={(value) => maindataChange('email',value)}
                         label={t(langKeys.email)}
-                        name="email"
-                        //value={dataAuth.password}
-                        //onChange={e => setDataAuth(p => ({ ...p, password: e.target.value.trim() }))}
+                        className="col-12"
+                        variant="outlined"
                     />
                     <TextField
                         variant="outlined"
@@ -509,12 +487,13 @@ export const FirstStep: FC<{setStep:(param:any)=>void}> = ({setStep}) => {
                             <Option
                                 key={`social_media_option_${i}`}
                                 option={e}
+                                selected={listchannels[e.key]} 
                             />
                         )}
                     </div>
                     <Typography className={classes.subtitle}>{t(langKeys.businesschannel)}</Typography>
                     <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                        {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} />)}
+                        {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} selected={listchannels[e.key]} />)}
                     </div>
                 </div>
                 <div style={{ width: "100%" }}>
