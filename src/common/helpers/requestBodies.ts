@@ -1,5 +1,7 @@
 import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
 
+type ID = string | number;
+
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
     key: "UFN_USER_SEL",
@@ -44,7 +46,7 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     parameters: { ...(userid && { userid }) }
 })
 
-export const getInfoPerson = (personid: number): IRequestBody => ({
+export const getInfoPerson = (personid: ID): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",
     key: "UFN_CONVERSATION_PERSON_SEL",
     parameters: { personid }
@@ -629,4 +631,35 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
     },
     type: "CHATWEB",
     service,
+});
+
+export const getTicketListByPersonBody = (personId: ID, offset = 0) => ({
+    method: "UFN_CONVERSATION_SEL_PERSON",
+    parameters: {
+        personid: personId,
+        offset,
+    },
+});
+
+export const getChannelListByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
+    parameters: {
+        personid: personId,
+        personcommunicationchannel: "",
+        all: true,
+    },
+});
+
+export const getAdditionalInfoByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONADDINFO_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const getOpportunitiesByPersonBody = (personId: ID) => ({
+    method: "",
+    parameters:{
+        personid: personId,
+    },
 });

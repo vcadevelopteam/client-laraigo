@@ -194,3 +194,25 @@ footer a {
         padding-right: 0px
     }
 }
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background: #7721AD;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #381052;
+}
