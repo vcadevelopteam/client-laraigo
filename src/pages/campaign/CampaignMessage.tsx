@@ -164,9 +164,9 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     })
                     setTableVariableShow(filterPipe(tablevariable, 'description', partialText));
                 }
-            }
-            else {
-                setVariableHandler(new VariableHandler());
+                else {
+                    setVariableHandler(new VariableHandler());
+                }
             }
         }
     }

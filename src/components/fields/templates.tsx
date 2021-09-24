@@ -763,14 +763,17 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
     const renderRow = (props: ListChildComponentProps) => {
         const { index, style } = props;
         return (
-            <ListItem
-                key={index}
-                button
-                style={style}
-                onClick={(e) => onClickSelection(e, data[index][datakey])}
-            >
-                <ListItemText primary={data[index][datakey]} />
-            </ListItem>
+            <React.Fragment>
+                <ListItem
+                    key={index}
+                    button
+                    style={style}
+                    onClick={(e) => onClickSelection(e, data[index][datakey])}
+                    divider={true}
+                >
+                    <ListItemText primary={data[index][datakey]} />
+                </ListItem>
+            </React.Fragment>
         );
     }
 
@@ -804,6 +807,7 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                     {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
                     {show ?
                     <div style={{
+                        backgroundColor: '#FFFFFF',
                         position: 'absolute',
                         top: top,
                         left: left,
@@ -813,10 +817,11 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                         borderRadius: '5px',
                     }}> 
                         <FixedSizeList
+                        className="scroll-style-go"
                         direction="vertical"
                         height={200}
                         width={280}
-                        itemSize={36}
+                        itemSize={28}
                         itemCount={data.length}
                         >
                             {renderRow}
