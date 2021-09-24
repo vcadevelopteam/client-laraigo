@@ -12,9 +12,9 @@ import TableZyx from '../components/fields/table-simple';
 import Typography from '@material-ui/core/Typography';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 
-import { Box, IconButton, TextField } from '@material-ui/core';
+import { Box, IconButton } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
-import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitch, TitleDetail } from 'components';
+import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
 import { getChannelsByOrg, getDistinctPropertySel, getOrgsByCorp, getPropertySel, getValuesFromDomain, insProperty } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute } from 'store/main/actions';
@@ -251,7 +251,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, trigger, setValue, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
         defaultValues: {
             table: []
         }
@@ -531,7 +531,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
             case 'BOOL':
                 if (edit) {
                     valueInput =
-                        <TemplateSwitch
+                        <TemplateSwitchArray
                         className={classes.mb2}
                         error={errors?.table?.[index]?.propertyvalue?.message}
                         fregister={{...register(`table.${index}.propertyvalue`, {
@@ -540,8 +540,9 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             }
                         })}}
                         label={t(langKeys.value)}
-                        onChange={(value) => onChangeSwitchValue(index, 'propertyvalue', value)}
-                        valueDefault={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
+                        // onChange={(value) => onChangeSwitchValue(index, 'propertyvalue', value)}
+                        onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
+                        defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
                     />
                 }
                 else {
