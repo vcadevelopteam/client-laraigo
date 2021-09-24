@@ -357,8 +357,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
         }
         if (detaildata.executiontype === 'SCHEDULED') {
             detaildata.batchjson?.reduce((bda, bdc, i) => {
-                campaignMemberList.filter((cm, j) => j >= bda && j < bda + bdc.quantity).map(cm => cm.batchindex = bdc.batchindex);
-                return bda + bdc.quantity;
+                campaignMemberList.filter((cm, j) => j >= bda && j < bda + parseInt(bdc.quantity)).map(cm => cm.batchindex = i);
+                return bda + parseInt(bdc.quantity);
             }, 0);
         }
         setCampaignMembers(campaignMemberList);
