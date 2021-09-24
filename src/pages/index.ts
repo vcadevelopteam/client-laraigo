@@ -26,5 +26,6 @@ export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 
 export * from './channels';
+export * from './signup';
 
 export { default as FlowDesigner } from './FlowDesigner';

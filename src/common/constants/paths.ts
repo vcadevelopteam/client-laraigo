@@ -6,6 +6,8 @@ const paths = {
     MESSAGE_INBOX: '/message_inbox',
     SUPERVISOR: '/supervisor',
     ORGANIZATIONS: '/organizations',
+    SIGNIN: "/sign-in",
+    SIGNUP: "/sign-up",
     CHANNELS: '/channels',
     // CHANNELS_ADD: {
     //     path: '/channels/:id/add',

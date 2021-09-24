@@ -251,9 +251,18 @@ const translation: LangKeys = {
     flow: 'Flow',
     color: 'Color',
     bold: 'Bold',
+    tos: "By signing up you accept our terms of use and privacy policy",
+    signupstep1title2: 'Complete Personal and Business Information',
     show: 'Show',
-
+    submit:'Submit',
+    firstandlastname:"First and last name",
+    companybusinessname: "Company or Business name",
     campaign: 'Campaign',
+    mobilephoneoptional:"Mobile number (optional)",
+    laraigouse:"What do you want to use laraigo for?",
+    sales:"Sales",
+    marketing:"Marketing",
+    customerservice:"Customer service",
     campaign_plural: 'Campaigns',
     newcampaign: 'New campaign',
     startdate: 'Start date',
@@ -270,7 +279,9 @@ const translation: LangKeys = {
     clean: 'Clean',
     column: 'Column',
     select_column_plural: 'Select columns',
-
+    signupstep1title: 'Sign up in less than a minute!',
+    signupfacebookbutton: 'Sign up with Facebook',
+    signupgooglebutton: 'Sign up with Google',    
     variable: "Variable",
     successful_transaction: 'Successful transaction',
     successful_edit: 'Edited successfully',
@@ -610,6 +621,11 @@ const translation: LangKeys = {
     form: 'Form',
     bubble: 'Bubble',
     bubble_plural: 'Bubbles',
+    
+    closure: 'Closure',
+    indicators: 'Indicators',
+    quiz: 'Quiz',
+    labels: 'Labels',
 };
 
 const enResource: ResourceLanguage = {
