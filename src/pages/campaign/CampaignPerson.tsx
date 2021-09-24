@@ -56,7 +56,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     const auxResult = useSelector(state => state.main.mainAux);
 
     const [valuefile, setvaluefile] = useState('');
-    const [openModal, setOpenModal] = useState(false);
+    const [openModal, setOpenModal] = useState<boolean | null>(null);
     const [columnList, setColumnList] = useState<string[]>([]);
     const [headers, setHeaders] = useState<any[]>(detaildata.headers || []);
     const [jsonData, setJsonData] = useState<any[]>(detaildata.jsonData || []);
@@ -82,9 +82,15 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             if (detaildata.source === 'INTERNAL') {
                 fetchPersonData(row?.id);
             }
+            else if (detaildata.source === 'EXTERNAL') {
+                if (!detaildata.headers) {
+                    setHeaders([]);
+                    setJsonData([]);
+                }
+            }
         }
-    }, [detaildata]);
-
+    }, [step])
+    
     useEffect(() => {
         if (!auxResult.loading && !auxResult.error
             && row !== null && detaildata.source === 'INTERNAL') {
@@ -250,12 +256,14 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
     }
 
     useEffect(() => {
-        setHeaderTableData(selectedColumns);
+        if (openModal === false) {
+            setHeaderTableData(selectedColumns);
+        }
     }, [openModal])
 
     const setHeaderTableData = (localSelectedColumns: SelectedColumns) => {
         if (openModal === false && selectedColumns.primarykey !== '') {
-            setHeaders([
+            let headers = [
                 localSelectedColumns.primarykey,
                 ...localSelectedColumns.columns
             ].map(c => {
@@ -263,7 +271,9 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                     Header: c,
                     accessor: c
                 }
-            }));
+            });
+            setHeaders(headers);
+            return headers;
         }
     }
 
@@ -293,7 +303,8 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
             // Cuando se use el seleccion, se updatea el status de cada person a ELIMINADO
             setDetailData({
                 ...detaildata,
-                headers: setHeaderTableData(selectedColumns),
+                // Update headers only where upload has used
+                headers: openModal === false ? setHeaderTableData(selectedColumns) : detaildata.headers,
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selection: selection,
@@ -413,7 +424,7 @@ interface ModalProps {
     columnList: string[];
     selectedColumns: SelectedColumns;
     setSelectedColumns: (data: SelectedColumns) => void;
-    openModal: boolean;
+    openModal: boolean | null;
     handleCancelModal: () => void;
     handleSaveModal: () => void;
 }
@@ -433,7 +444,7 @@ const ModalCampaignColumns: React.FC<ModalProps> = ({ columnList, selectedColumn
 
     return (
         <DialogZyx
-            open={openModal}
+            open={openModal || false}
             title={t(langKeys.select_column_plural)}
             button1Type="button"
             buttonText1={t(langKeys.cancel)}
