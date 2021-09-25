@@ -66,7 +66,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     };
 
     return (
-        <div style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
+        <div style={{ whiteSpace: 'nowrap', display: 'flex'}}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
