@@ -19,7 +19,7 @@ interface DetailProps {
     edit: boolean,
     auxdata: Dictionary;
     detaildata: ICampaign;
-    setDetailData: (data: any) => void;
+    setDetailData: (data: ICampaign) => void;
     setViewSelected: (view: string) => void;
     step: string,
     setStep: (step: string) => void;
