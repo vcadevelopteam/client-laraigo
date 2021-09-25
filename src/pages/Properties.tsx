@@ -695,7 +695,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 expandIcon={<ExpandMoreIcon />}
                 id='panel1a-header'
             >
-                <Typography>{'#' + (index + 1) + ' ' + row?.propertyname}</Typography>
+                <Typography>{`#${index + 1} ${row?.propertyname} - ${row?.level === 'CORPORATION' ? row?.corpdesc : ''}${row?.level === 'ORGANIZATION' ? row?.orgdesc : ''}${row?.level === 'CHANNEL' ? row?.communicationchanneldesc : ''}${row?.level === 'GROUP' ? row?.group : ''}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <div style={{ width: '100%' }}>
@@ -810,13 +810,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     optionDesc='domaindesc'
                                     optionValue='domainvalue'
                                     valueDefault={row?.status || 'ACTIVO'}
-                                /> :
-                                <FieldEdit
-                                    className={classes.mb2}
-                                    disabled={true}
-                                    label={t(langKeys.status)}
-                                    valueDefault={row ? (row.status || '') : ''}
-                                />
+                                /> : null
                             }
                         </div>
                     </div>

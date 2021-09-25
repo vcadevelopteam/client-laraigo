@@ -393,6 +393,15 @@ export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequ
     }
 })
 
+export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IRequestBody => ({
+    method: "UFN_EMOJI_CHANNELS_UPD",
+    key: "UFN_EMOJI_CHANNELS_UPD",
+    parameters: {
+        emojidec,
+        isfavorite
+    }
+})
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
