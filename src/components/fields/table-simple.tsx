@@ -29,7 +29,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
-import { Dictionary, TableConfig } from '@types'
+import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import { optionsMenu } from './table-paginated';
@@ -39,7 +39,8 @@ import {
     useFilters,
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect
 } from 'react-table'
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -135,12 +136,14 @@ const TableZyx = React.memo(({
     importCSV,
     filterGeneral = true,
     loading = false,
-    rowChekedID,
-    setCheckID
+    useSelection,
+    selectionKey,
+    initialSelectedRows,
+    setSelectedRows,
+    allRowsSelected,
+    setAllRowsSelected
 }: TableConfig) => {
     const classes = useStyles();
-
-    const [dataChecked, setDataChecked] = useState<Dictionary>({})
 
     const SelectColumnFilter = ({
         column: { setFilter, type },
@@ -294,17 +297,46 @@ const TableZyx = React.memo(({
         setPageSize,
         preGlobalFilteredRows,
         setGlobalFilter,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize, selectedRowIds },
+        toggleAllRowsSelected
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: 0, pageSize: pageSizeDefault },
-        defaultColumn
+        initialState: { pageIndex: 0, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
+        defaultColumn,
+        getRowId: (row, relativeIndex: any, parent: any) => selectionKey
+            ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
+            : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
         useFilters,
         useGlobalFilter,
         useSortBy,
-        usePagination
+        usePagination,
+        useRowSelect,
+        hooks => {
+            useSelection && hooks.visibleColumns.push(columns => [
+                {
+                    id: 'selection',
+                    Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
+                    <div>
+                        <Checkbox
+                            {...getToggleAllPageRowsSelectedProps()}
+                        />
+                    </div>
+                    ),
+                    Cell: ({ row }: any) => (
+                    <div>
+                        <Checkbox
+                            checked={row.isSelected}
+                            onChange={(e) => row.toggleRowSelected()}
+                        />
+                    </div>
+                    ),
+                    NoFilter: true
+                } as any,
+            ...columns,
+            ])
+        }
     )
 
     useEffect(() => {
@@ -314,23 +346,17 @@ const TableZyx = React.memo(({
         }
     }, [fetchData])
 
+    useEffect(() => {
+        setSelectedRows && setSelectedRows(selectedRowIds)
+    }, [selectedRowIds]);
 
     useEffect(() => {
-        setCheckID && setCheckID(dataChecked);
-    }, [dataChecked])
+        if (allRowsSelected) {
+            toggleAllRowsSelected(true);
+            setAllRowsSelected && setAllRowsSelected(false);
+        } 
+    }, [allRowsSelected])
 
-    const onCheckedRow = React.useCallback((row) => {
-        if (!rowChekedID) return
-        if (dataChecked[row[rowChekedID]]) {
-            setDataChecked(prev => {
-                const { [row[rowChekedID]]: remove, ...rest } = prev;
-                return rest;
-            })
-        }
-        else {
-            setDataChecked(prev => ({ ...prev, [row[rowChekedID]]: row[rowChekedID] }))
-        }
-    }, [dataChecked, setDataChecked])
 
     return (
         <Box width={1} >
@@ -423,11 +449,6 @@ const TableZyx = React.memo(({
                         <TableHead>
                             {headerGroups.map((headerGroup) => (
                                 <TableRow {...headerGroup.getHeaderGroupProps()}>
-                                    {!!rowChekedID && (
-                                        <TableCell padding="checkbox">
-                                            {''}
-                                        </TableCell>
-                                    )}
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
@@ -470,21 +491,11 @@ const TableZyx = React.memo(({
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
                                 page.map(row => {
                                     prepareRow(row);
-                                    const isSelected = rowChekedID ? !!dataChecked[row.original[rowChekedID]] : false;
                                     return (
                                         <TableRow
                                             {...row.getRowProps()}
                                             hover
-                                            selected={isSelected}
-                                            onClick={!!rowChekedID ? () => onCheckedRow(row.original) : undefined}
                                         >
-                                            {rowChekedID && (
-                                                <TableCell padding="checkbox">
-                                                    <Checkbox
-                                                        checked={isSelected}
-                                                    />
-                                                </TableCell>
-                                            )}
                                             {row.cells.map((cell, i) =>
                                                 <TableCell
                                                     {...cell.getCellProps({
