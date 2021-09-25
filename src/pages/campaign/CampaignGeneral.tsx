@@ -21,7 +21,7 @@ interface DetailProps {
     edit: boolean,
     auxdata: Dictionary;
     detaildata: ICampaign;
-    setDetailData: (data: any) => void;
+    setDetailData: (data: ICampaign) => void;
     setViewSelected: (view: string) => void;
     step: string;
     setStep: (step: string) => void;
@@ -93,7 +93,8 @@ type FormFields = {
 	executiontype: string,
 	batchjson: Dictionary[],
 	fields: SelectedColumns,
-    operation: string
+    operation: string,
+    sourcechanged: boolean
 }
 
 export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, detaildata, setDetailData, setViewSelected, step, setStep, multiData, fetchData }) => {
@@ -135,7 +136,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             executiontype: 'MANUAL',
             batchjson: [],
             fields: new SelectedColumns(),
-            operation: row ? "UPDATE" : "INSERT"
+            operation: row ? "UPDATE" : "INSERT",
+            sourcechanged: false,
         }
     });
 
@@ -241,6 +243,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
 
     const onChangeSource = (data: Dictionary) => {
         setValue('source', data?.key || '');
+        setValue('sourcechanged', true);
     }
 
     const filterDataCampaignType = () => {

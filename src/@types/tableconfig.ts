@@ -31,8 +31,12 @@ export interface TableConfig {
     updateCell?(index: number, id: any, value: any): void;
     updateColumn?(index: number[], id: any, value: any): void;
     skipAutoReset?: boolean;
-    rowChekedID?: string | null;
-    setCheckID?: (param?: any) => void;
+    useSelection?: boolean;
+    selectionKey?: string;
+    initialSelectedRows?: any;
+    setSelectedRows?: (param?: any) => void;
+    allRowsSelected?: boolean;
+    setAllRowsSelected?: (value: boolean) => void;
 }
 
 export interface Pagination {

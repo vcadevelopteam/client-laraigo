@@ -284,6 +284,7 @@ const translation: LangKeys = {
     field: 'Field',
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
+    no_record_selected: 'No record selected',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',
