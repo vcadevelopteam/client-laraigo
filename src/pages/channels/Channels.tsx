@@ -30,13 +30,12 @@ export const Channels: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
     
+
     const handleView = (row: Dictionary) => {
-        //setViewSelected("view-2");
         setRowSelected({ row, edit: false });
     }
 
     const handleEdit = (row: Dictionary) => {
-        //setViewSelected("view-2");
         setRowSelected({ row, edit: true });
     }
     
@@ -132,10 +131,6 @@ export const Channels: FC = () => {
 
     useEffect(() => {
         fetchData();
-        //dispatch(getMultiCollection([
-        //    getValuesFromDomain("ESTADOGENERICO"),
-        //    getValuesFromDomain("TIPOORG")
-        //]));
         return () => {
             dispatch(resetMain());
         };

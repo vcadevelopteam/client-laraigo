@@ -45,4 +45,64 @@ export interface IPerson {
     displayname: string;
     variablecontext: Dictionary;
     locked?: boolean;
+    createby: string;
+    createdate: string;
+    changeby: string;
+    changedate: string;
+}
+
+export interface IPersonChannel {
+    corpid: number;
+    displayname: string;
+    globalid: number;
+    orgid: number;
+    personcommunicationchannel: string;
+    personcommunicationchannelowner: string;
+    personid: number;
+    status: string;
+    statusdesc: string;
+    type: string;
+    typedesc: string;
+}
+
+export interface IPersonAdditionalInfo {
+    corpid: number;
+    orgid: number;
+    personid: number;
+    personaddinfoid: number;
+    description: string;
+    status: string;
+    type: string;
+    createdate: string;
+    createby: string;
+    changedate: string;
+    changeby: string;
+    longdesc: number;
+    globalid: number;
+    addinfo: string;
+    edit: boolean;
+}
+
+export interface IPersonConversation {
+    asesorfinal: string;
+    asesorinicial: string;
+    closetype: string;
+    empresa?: string;
+    fechafin: string;
+    fechahandoff?: string;
+    fechainicio: string;
+    grupo?: string;
+    labels?: string;
+    personcommunicationchannel: string;
+    personid: number;
+    realduration: string;
+    status: string;
+    ticketnum: string;
+    tiempopromediorespuestaasesor: string;
+    tiempopromediorespuestapersona: string;
+    tipification?: string;
+    totalduration: string;
+    totalpausaduration: string;
+    firstreplytime: string;
+    totalpauseduration: string;
 }

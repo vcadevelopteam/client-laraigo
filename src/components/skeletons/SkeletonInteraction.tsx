@@ -2,8 +2,8 @@ import { Skeleton } from '@material-ui/lab';
 
 const ListInteractionSkeleton: React.FC = () => (
     <div>
-        {[...Array(5)].map(() => (
-            <div>
+        {[...Array(5)].map((index) => (
+            <div key={index}>
                 <div style={{ display: 'flex', gap: 8 }}>
                     <Skeleton
                         width={40}

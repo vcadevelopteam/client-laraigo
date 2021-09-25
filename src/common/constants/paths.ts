@@ -9,10 +9,6 @@ const paths = {
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
     CHANNELS: '/channels',
-    // CHANNELS_ADD: {
-    //     path: '/channels/:id/add',
-    //     resolve: (channelId: string | number) => `/channels/${channelId}/add`,
-    // },
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/facebook`,
@@ -41,10 +37,6 @@ const paths = {
         path: '/channels/:id/add/twitterdm',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/twitterdm`,
     },
-    // CHANNELS_ADD_CHATWEB: {
-    //     path: '/channels/:id/add/chatweb',
-    //     resolve: (channelId: string | number) => `/channels/${channelId}/add/chatweb`,
-    // },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
     BILLING_SETUPS: '/billing_setups',
@@ -60,6 +52,10 @@ const paths = {
     SLA: '/extras/sla',
     DOMAINS: '/extras/domains',
     PERSON: '/extras/person',
+    PERSON_DETAIL: {
+        path: '/extras/person/:id',
+        resolve: (personId: string | number) => `/extras/person/${personId}`,
+    },
     MESSAGETEMPLATE: '/extras/messagetemplate',
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
