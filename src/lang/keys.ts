@@ -328,6 +328,7 @@ export const langKeys = {
     field: 'field',
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
+    no_record_selected: 'no_record_selected',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
