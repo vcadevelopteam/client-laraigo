@@ -56,7 +56,12 @@ const theme = createTheme({
 			flexContainer: {
 				flexWrap: 'inherit',
 			}
-		}
+		},
+		MuiDivider: {
+			root: {
+				backgroundColor: '#EBEAED',
+			},
+		},
 	}
 });
 

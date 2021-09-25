@@ -1,6 +1,8 @@
 import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
+type ID = string | number;
+
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
     key: "UFN_USER_SEL",
@@ -51,7 +53,7 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     parameters: { ...(userid && { userid }) }
 })
 
-export const getInfoPerson = (personid: number): IRequestBody => ({
+export const getInfoPerson = (personid: ID): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",
     key: "UFN_CONVERSATION_PERSON_SEL",
     parameters: { personid }
@@ -444,10 +446,10 @@ export const insOrg = ({ description, status, type, id, operation }: Dictionary)
     parameters: { id, description, status, type, operation }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation,favorite }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation }
+    parameters: { id, classificationid, description, quickreply, status, type, operation,favorite }
 });
 
 export const getClassificationSel = (id: number): IRequestBody => ({
@@ -799,7 +801,8 @@ export const insCampaign = ({
     executiontype,
     batchjson,
     fields,
-    operation
+    operation,
+    selectedColumns
 }: Dictionary): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
@@ -819,11 +822,11 @@ export const insCampaign = ({
         messagetemplateid,
         messagetemplatename,
         messagetemplatenamespace,
-        messagetemplateheader,
-        messagetemplatebuttons,
+        messagetemplateheader: JSON.stringify(messagetemplateheader),
+        messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
         executiontype,
-        batchjson,
-        fields,
+        batchjson: JSON.stringify(batchjson),
+        fields: JSON.stringify(selectedColumns || fields),
         operation
     }
 });
@@ -908,4 +911,34 @@ export const insCampaignMember = ({
         batchindex,
         operation,
     }
+});
+export const getTicketListByPersonBody = (personId: ID, offset = 0) => ({
+    method: "UFN_CONVERSATION_SEL_PERSON",
+    parameters: {
+        personid: personId,
+        offset,
+    },
+});
+
+export const getChannelListByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
+    parameters: {
+        personid: personId,
+        personcommunicationchannel: "",
+        all: true,
+    },
+});
+
+export const getAdditionalInfoByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONADDINFO_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const getOpportunitiesByPersonBody = (personId: ID) => ({
+    method: "",
+    parameters:{
+        personid: personId,
+    },
 });

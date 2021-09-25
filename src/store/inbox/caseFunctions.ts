@@ -503,25 +503,25 @@ export const getDataTicketReset = (state: IState): IState => ({
     person: initialState.person,
 });
 
-export const getInteractions = (state: IState): IState => ({
+export const getInteractionsExtra = (state: IState): IState => ({
     ...state,
-    interactionList: { ...state.interactionList, loading: true, error: false },
+    interactionExtraList: { ...state.interactionExtraList, loading: true, error: false },
 });
 
-export const getInteractionsSuccess = (state: IState, action: IAction): IState => ({
+export const getInteractionsExtraSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    interactionList: {
-        data: action.payload.data || [],
+    interactionExtraList: {
+        data: getGroupInteractions(cleanLogsReassignedTask(action.payload.data || [])),
         count: action.payload.count,
         loading: false,
         error: false,
     },
 });
 
-export const getInteractionsFailure = (state: IState, action: IAction): IState => ({
+export const getInteractionsExtraFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    interactionList: {
-        ...state.interactionList,
+    interactionExtraList: {
+        ...state.interactionExtraList,
         loading: false,
         error: true,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
@@ -529,9 +529,9 @@ export const getInteractionsFailure = (state: IState, action: IAction): IState =
     },
 });
 
-export const getInteractionsReset = (state: IState): IState => ({
+export const getInteractionsExtraReset = (state: IState): IState => ({
     ...state,
-    interactionList: initialState.interactionList,
+    interactionExtraList: initialState.interactionExtraList,
 });
 
 

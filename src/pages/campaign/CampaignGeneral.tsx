@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
-import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx } from 'components';
+import { TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditArray } from 'components';
 import { dictToArrayKV, filterIf, filterPipe } from 'common/helpers';
 import { Dictionary, ICampaign, MultiData, SelectedColumns } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { Event as EventIcon } from '@material-ui/icons';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { resetMainAux } from 'store/main/actions';
@@ -199,14 +199,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatebuttons', data.messagetemplatebuttons || []);
         setValue('executiontype', data.executiontype);
         setValue('batchjson', data.batchjson || []);
-        setValue('fields', {...data.fields, ...new SelectedColumns()});
+        setValue('fields', {...new SelectedColumns(), ...data.fields});
     }
 
     const onSubmit = handleSubmit((data) => {
         data.messagetemplateheader = data.messagetemplateheader || {};
         data.messagetemplatebuttons = data.messagetemplatebuttons || [];
         data.batchjson = data.batchjson || [];
-        data.fields = {...data.fields, ...new SelectedColumns()};
+        data.fields = {...new SelectedColumns(), ...data.fields};
         setDetailData({...detaildata, ...data});
         setStep("step-2");
     });
@@ -583,6 +583,10 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
         }
     });
 
+    useEffect(() => {
+        setValue('batchjson', data);
+    }, [data]);
+
     const { fields: schedule, append: scheduleAppend, remove: scheduleRemove } = useFieldArray({
         control,
         name: "batchjson",
@@ -647,42 +651,36 @@ const ModalCampaignSchedule: React.FC<ModalProps> = ({ openModal, setOpenModal, 
                                     </IconButton>
                                 </TableCell>
                                 <TableCell>
-                                    <TextField
-                                        {...register(`batchjson.${i}.date`, {
+                                    <FieldEditArray 
+                                        fregister={{...register(`batchjson.${i}.date`, {
                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        })}
-                                        color="primary"
+                                        })}}
                                         type="date"
-                                        defaultValue={item.date}
-                                        error={!!errors?.batchjson?.[i]?.date?.message}
-                                        helperText={errors?.batchjson?.[i]?.date?.message || null}
-                                        onChange={(e: any) => setValue(`batchjson[${i}].date`, e.target.value)}
+                                        valueDefault={item.date}
+                                        error={errors?.batchjson?.[i]?.date?.message}
+                                        onChange={(value) => setValue(`batchjson[${i}].date`, value)}
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <TextField
-                                        {...register(`batchjson.${i}.time`, {
+                                    <FieldEditArray 
+                                        fregister={{...register(`batchjson.${i}.time`, {
                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        })}
-                                        color="primary"
+                                        })}}
                                         type="time"
-                                        defaultValue={item.time}
-                                        error={!!errors?.batchjson?.[i]?.time?.message}
-                                        helperText={errors?.batchjson?.[i]?.time?.message || null}
-                                        onChange={(e: any) => setValue(`batchjson[${i}].time`, e.target.value)}
+                                        valueDefault={item.time}
+                                        error={errors?.batchjson?.[i]?.time?.message}
+                                        onChange={(value) => setValue(`batchjson[${i}].time`, value)}
                                     />
                                 </TableCell>
                                 <TableCell>
-                                    <TextField
-                                        {...register(`batchjson.${i}.quantity`, {
+                                    <FieldEditArray 
+                                        fregister={{...register(`batchjson.${i}.quantity`, {
                                             validate: (value: any) => (value && value > 0) || t(langKeys.field_required)
-                                        })}
-                                        color="primary"
+                                        })}}
                                         type="number"
-                                        defaultValue={item.quantity}
-                                        error={!!errors?.batchjson?.[i]?.quantity?.message}
-                                        helperText={errors?.batchjson?.[i]?.quantity?.message || null}
-                                        onChange={(e: any) => setValue(`batchjson.${i}.quantity`, e.target.value)}
+                                        valueDefault={item.quantity}
+                                        error={errors?.batchjson?.[i]?.quantity?.message}
+                                        onChange={(value) => setValue(`batchjson[${i}].quantity`, value)}
                                         inputProps={{ min: 0, step: 1 }}
                                     />
                                 </TableCell>

@@ -25,6 +25,7 @@ export interface IState {
     ticketList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
+    interactionExtraList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
     tipificationsLevel2: IListStatePaginated<Dictionary>;
     tipificationsLevel3: IListStatePaginated<Dictionary>;
@@ -49,6 +50,7 @@ export const initialState: IState = {
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
+    interactionExtraList: initialListPaginatedState,
     configurationVariables: initialListPaginatedState,
     tipificationsLevel2: initialListPaginatedState,
     tipificationsLevel3: initialListPaginatedState,
@@ -78,10 +80,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_AGENTS_FAILURE]: caseFunctions.getAgentsFailure,
     [actionTypes.GET_AGENTS_RESET]: caseFunctions.getAgentsReset,
 
-    [actionTypes.GET_INTERACTIONS]: caseFunctions.getInteractions,
-    [actionTypes.GET_INTERACTIONS_SUCCESS]: caseFunctions.getInteractionsSuccess,
-    [actionTypes.GET_INTERACTIONS_FAILURE]: caseFunctions.getInteractionsFailure,
-    [actionTypes.GET_INTERACTIONS_RESET]: caseFunctions.getInteractionsReset,
+    [actionTypes.GET_INTERACTIONS_EXTRA]: caseFunctions.getInteractionsExtra,
+    [actionTypes.GET_INTERACTIONS_EXTRA_SUCCESS]: caseFunctions.getInteractionsExtraSuccess,
+    [actionTypes.GET_INTERACTIONS_EXTRA_FAILURE]: caseFunctions.getInteractionsExtraFailure,
+    [actionTypes.GET_INTERACTIONS_EXTRA_RESET]: caseFunctions.getInteractionsExtraReset,
     
     [actionTypes.GET_TICKETS_BY_PERSON]: caseFunctions.getTicketsByPerson,
     [actionTypes.GET_TICKETS_BY_PERSON_SUCCESS]: caseFunctions.getTicketsByPersonSuccess,

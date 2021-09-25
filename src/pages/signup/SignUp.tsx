@@ -67,6 +67,7 @@ export const SignUp: FC = () => {
                 <div className="col-6">
                     <FirstStep
                         setStep={setStep}
+                        step={step}
                     />
                 </div>
             </div>
