@@ -1,6 +1,7 @@
 const paths = {
     DASHBOARD: '/dashboard',
     REPORTS: '/reports',
+    REPORTSTEMPLATE: '/reporttemplate',
     TICKETS: '/tickets',
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',

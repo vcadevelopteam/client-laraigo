@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerDetail2: {
         position: 'absolute',
-        width: '100%'
+        // width: '100%'
     },
     button: {
         fontSize: '14px',
@@ -76,7 +76,7 @@ const Properties: FC = () => {
     const mainResult = useSelector(state => state.main);
 
     const classes = useStyles();
-    
+
     const { t } = useTranslation();
 
     const dispatch = useDispatch();
@@ -168,15 +168,16 @@ const Properties: FC = () => {
         }
         return (
             <Fragment>
-                <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
-                    <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
-                </Box>
-                <div className={classes.containerDetail2}>
-                    <div className='row-zyx'>
+                <div style={{ position: 'relative' }}>
+                    <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
+                        <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
+                    </Box>
+                    <div className='row-zyx' style={{ position: 'absolute', width: 700 }}>
                         <FieldSelect
                             label={t(langKeys.level)}
                             className='col-4'
                             valueDefault={levelFilter}
+                            variant="outlined"
                             onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
                             data={[
                                 { leveldesc: t(langKeys.corporation), levelvalue: 'CORPORATION' },
@@ -190,6 +191,7 @@ const Properties: FC = () => {
                         <FieldSelect
                             label={t(langKeys.category)}
                             className='col-4'
+                            variant="outlined"
                             valueDefault={categoryFilter}
                             onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
                             data={[
@@ -281,7 +283,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                 dispatch(showBackdrop(true));
                 setWaitSave(true);
             }
-    
+
             dispatch(manageConfirmation({
                 visible: true,
                 question: t(langKeys.confirmation_save),
@@ -291,15 +293,15 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
     });
 
     const onBlurFieldValue = (index: any, param: string, value: any) => {
-        fieldsUpdate(index, { ...fields[index], [param]: value});
+        fieldsUpdate(index, { ...fields[index], [param]: value });
     }
 
     const onChangeSelectValue = (index: any, param: string, value: any) => {
-        fieldsUpdate(index, { ...fields[index], [param]: value});
+        fieldsUpdate(index, { ...fields[index], [param]: value });
     }
 
     const onChangeSwitchValue = (index: any, param: string, value: any) => {
-        fieldsUpdate(index, { ...fields[index], [param]: (value ? '1' : '0')});
+        fieldsUpdate(index, { ...fields[index], [param]: (value ? '1' : '0') });
     }
 
     useEffect(() => {
@@ -445,7 +447,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                 <div>
                     {fields.map((item, index) => (
                         <DetailNivelProperty
-                            data={{ row: item, edit }}    
+                            data={{ row: item, edit }}
                             index={index}
                             key={`detail${index}`}
                             multiData={multiData}
@@ -456,8 +458,8 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             errors={errors}
                             setValue={setValue}
                             onBlurFieldValue={onBlurFieldValue}
-                            onChangeSelectValue = {onChangeSelectValue}
-                            onChangeSwitchValue = {onChangeSwitchValue}
+                            onChangeSelectValue={onChangeSelectValue}
+                            onChangeSwitchValue={onChangeSwitchValue}
                         />
                     ))}
                 </div>
@@ -516,25 +518,27 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 if (edit) {
                     valueInput =
                         <TemplateSwitchArray
-                        className={classes.mb2}
-                        error={errors?.table?.[index]?.propertyvalue?.message}
-                        fregister={{...register(`table.${index}.propertyvalue`, {
-                            validate: {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            }
-                        })}}
-                        label={t(langKeys.value)}
-                        onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
-                        defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
-                    />
+                            className={classes.mb2}
+                            error={errors?.table?.[index]?.propertyvalue?.message}
+                            fregister={{
+                                ...register(`table.${index}.propertyvalue`, {
+                                    validate: {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    }
+                                })
+                            }}
+                            label={t(langKeys.value)}
+                            onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
+                            defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
+                        />
                 }
                 else {
                     valueInput =
                         <FieldView
-                        className={classes.mb2}
-                        label={t(langKeys.value)}
-                        value={row ? (row.propertyvalue === '1' ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                    />
+                            className={classes.mb2}
+                            label={t(langKeys.value)}
+                            value={row ? (row.propertyvalue === '1' ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                        />
                 }
                 break;
 
@@ -542,29 +546,31 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 if (edit) {
                     valueInput =
                         <FieldSelect
-                        className={classes.mb2}
-                        data={domainTable.data}
-                        error={errors?.table?.[index]?.propertyvalue?.message}
-                        fregister={{...register(`table.${index}.propertyvalue`, {
-                            validate: {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            }
-                        })}}
-                        label={t(langKeys.value)}
-                        loading={domainTable.loading}
-                        onChange={(value) => onChangeSelectValue(index, 'propertyvalue', value ? value.domainvalue : '')}
-                        optionDesc='domaindesc'
-                        optionValue='domainvalue'
-                        valueDefault={row?.propertyvalue || ''}
-                    />
+                            className={classes.mb2}
+                            data={domainTable.data}
+                            error={errors?.table?.[index]?.propertyvalue?.message}
+                            fregister={{
+                                ...register(`table.${index}.propertyvalue`, {
+                                    validate: {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    }
+                                })
+                            }}
+                            label={t(langKeys.value)}
+                            loading={domainTable.loading}
+                            onChange={(value) => onChangeSelectValue(index, 'propertyvalue', value ? value.domainvalue : '')}
+                            optionDesc='domaindesc'
+                            optionValue='domainvalue'
+                            valueDefault={row?.propertyvalue || ''}
+                        />
                 }
                 else {
                     valueInput =
                         <FieldView
-                        className={classes.mb2}
-                        label={t(langKeys.value)}
-                        value={row ? row.propertyvalue : ''}
-                    />
+                            className={classes.mb2}
+                            label={t(langKeys.value)}
+                            value={row ? row.propertyvalue : ''}
+                        />
                 }
                 break;
 
@@ -572,27 +578,29 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 if (edit) {
                     valueInput =
                         <FieldEditArray
-                        className={classes.mb2}
-                        error={errors?.table?.[index]?.propertyvalue?.message}
-                        fregister={{...register(`table.${index}.propertyvalue`, {
-                            validate: {
-                                value: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            }
-                        })}}
-                        inputProps={{step: 0.1}}
-                        label={t(langKeys.value)} 
-                        onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
-                        type='number'
-                        valueDefault={row ? (row.propertyvalue || '') : ''}
-                    />
+                            className={classes.mb2}
+                            error={errors?.table?.[index]?.propertyvalue?.message}
+                            fregister={{
+                                ...register(`table.${index}.propertyvalue`, {
+                                    validate: {
+                                        value: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    }
+                                })
+                            }}
+                            inputProps={{ step: 0.1 }}
+                            label={t(langKeys.value)}
+                            onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                            type='number'
+                            valueDefault={row ? (row.propertyvalue || '') : ''}
+                        />
                 }
                 else {
                     valueInput =
                         <FieldView
-                        className={classes.mb2}
-                        label={t(langKeys.value)}
-                        value={row?.propertyvalue || ''}
-                    />
+                            className={classes.mb2}
+                            label={t(langKeys.value)}
+                            value={row?.propertyvalue || ''}
+                        />
                 }
                 break;
 
@@ -603,25 +611,27 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 if (edit) {
                     valueInput =
                         <FieldEdit
-                        className={classes.mb2}
-                        error={errors?.table?.[index]?.propertyvalue?.message}
-                        fregister={{...register(`table.${index}.propertyvalue`, {
-                            validate: {
-                                value: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            }
-                        })}}
-                        label={t(langKeys.value)}
-                        onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
-                        valueDefault={row ? (row.propertyvalue || '') : ''}
-                    />
+                            className={classes.mb2}
+                            error={errors?.table?.[index]?.propertyvalue?.message}
+                            fregister={{
+                                ...register(`table.${index}.propertyvalue`, {
+                                    validate: {
+                                        value: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    }
+                                })
+                            }}
+                            label={t(langKeys.value)}
+                            onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
+                            valueDefault={row ? (row.propertyvalue || '') : ''}
+                        />
                 }
                 else {
                     valueInput =
                         <FieldView
-                        className={classes.mb2}
-                        label={t(langKeys.value)}
-                        value={row?.propertyvalue || ''}
-                    />
+                            className={classes.mb2}
+                            label={t(langKeys.value)}
+                            value={row?.propertyvalue || ''}
+                        />
                 }
                 break;
         }
@@ -672,11 +682,11 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                     if (row?.level === 'CHANNEL') {
                         setChannelTable({ loading: false, data: [] });
                     }
-        
+
                     if (row?.level === 'GROUP') {
                         setGroupTable({ loading: false, data: [] });
                     }
-        
+
                     if (row?.inputtype === 'DOMAIN') {
                         setDomainTable({ loading: false, data: [] });
                     }
@@ -695,7 +705,7 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 expandIcon={<ExpandMoreIcon />}
                 id='panel1a-header'
             >
-                <Typography>{`#${index + 1} ${row?.propertyname} - ${row?.level === 'CORPORATION' ? row?.corpdesc : ''}${row?.level === 'ORGANIZATION' ? row?.orgdesc : ''}${row?.level === 'CHANNEL' ? row?.communicationchanneldesc : ''}${row?.level === 'GROUP' ? row?.group : ''}`}</Typography>
+                <Typography>{`${row?.level === 'CORPORATION' ? row?.corpdesc : ''}${row?.level === 'ORGANIZATION' ? row?.orgdesc : ''}${row?.level === 'CHANNEL' ? row?.communicationchanneldesc : ''}${row?.level === 'GROUP' ? row?.group : ''}`}</Typography>
             </AccordionSummary>
             <AccordionDetails>
                 <div style={{ width: '100%' }}>
@@ -722,11 +732,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     className={classes.mb2}
                                     data={orgTable.data}
                                     error={errors?.table?.[index]?.orgid?.message}
-                                    fregister={{...register(`table.${index}.orgid`, {
-                                        validate: {
-                                            validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
-                                        }
-                                    })}}
+                                    fregister={{
+                                        ...register(`table.${index}.orgid`, {
+                                            validate: {
+                                                validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
+                                            }
+                                        })
+                                    }}
                                     label={t(langKeys.organization)}
                                     loading={orgTable.loading}
                                     onChange={(value) => {
@@ -752,11 +764,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     className={classes.mb2}
                                     data={channelTable.data}
                                     error={errors?.table?.[index]?.communicationchannelid?.message}
-                                    fregister={{...register(`table.${index}.communicationchannelid`, {
-                                        validate: {
-                                            validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
-                                        }
-                                    })}}
+                                    fregister={{
+                                        ...register(`table.${index}.communicationchannelid`, {
+                                            validate: {
+                                                validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
+                                            }
+                                        })
+                                    }}
                                     label={t(langKeys.channel)}
                                     loading={channelTable.loading}
                                     onChange={(value) => onChangeSelectValue(index, 'communicationchannelid', value ? value.communicationchannelid : 0)}
@@ -776,11 +790,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     className={classes.mb2}
                                     data={groupTable.data}
                                     error={errors?.table?.[index]?.group?.message}
-                                    fregister={{...register(`table.${index}.group`, {
-                                        validate: {
-                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        }
-                                    })}}
+                                    fregister={{
+                                        ...register(`table.${index}.group`, {
+                                            validate: {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            }
+                                        })
+                                    }}
                                     label={t(langKeys.group)}
                                     loading={groupTable.loading}
                                     onChange={(value) => onChangeSelectValue(index, 'group', value ? value.domainvalue : '')}
@@ -800,11 +816,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                                     className={classes.mb2}
                                     data={dataStatus}
                                     error={errors?.table?.[index]?.status?.message}
-                                    fregister={{...register(`table.${index}.status`, {
-                                        validate: {
-                                            validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                        }
-                                    })}}
+                                    fregister={{
+                                        ...register(`table.${index}.status`, {
+                                            validate: {
+                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                            }
+                                        })
+                                    }}
                                     label={t(langKeys.status)}
                                     onChange={(value) => onChangeSelectValue(index, 'status', value ? value.domainvalue : '')}
                                     optionDesc='domaindesc'

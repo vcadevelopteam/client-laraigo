@@ -16,6 +16,7 @@ export { default as MessageTemplates } from './MessageTemplates';
 export { default as Tipifications } from './Tipifications';
 export { default as IntegrationManager } from './IntegrationManager';
 export { default as VariableConfiguration } from './VariableConfiguration';
+export { default as ReportTemplate } from './ReportTemplate';
 export { default as Emojis } from './Emojis';
 export * from './campaign';
 
