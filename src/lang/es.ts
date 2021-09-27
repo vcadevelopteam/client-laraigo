@@ -237,6 +237,14 @@ const translation: LangKeys = {
     least_user_or_group: 'Debe elegir al menos usuario o grupo',
     tipification: 'Tipificación',
     tipification_plural: 'Tipificaciones',
+
+    report_designer: 'Diseñador de reportes',
+    column_plural: 'Columnas',
+    new_report_designer: 'Nuevo reporte',
+    designed_reports: 'Reportes personalizados',
+    filters: 'Filtros',
+
+
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
     messagetemplate: 'Plantilla de comunicación',

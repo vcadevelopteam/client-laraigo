@@ -24,6 +24,14 @@ export const langKeys = {
     supervisor_plural: 'supervisor_plural',
     tipification: 'tipification',
     tipification_plural: 'tipification_plural',
+
+    report_designer: 'report_designer',
+    column_plural: 'column_plural',
+    new_report_designer: 'new_report_designer',
+    designed_reports: 'designed_reports',
+    filters: 'filters',
+
+
     channel: 'channel',
     channel_plural: 'channel_plural',
     return: "return",

@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        border: '#EBEAED solid 1px',
+        // border: '#EBEAED solid 1px',
     },
     menuButton: {
         marginRight: 36,

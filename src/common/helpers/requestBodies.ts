@@ -446,10 +446,10 @@ export const insOrg = ({ description, status, type, id, operation }: Dictionary)
     parameters: { id, description, status, type, operation }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation,favorite }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation,favorite }
+    parameters: { id, classificationid, description, quickreply, status, type, operation, favorite }
 });
 
 export const getClassificationSel = (id: number): IRequestBody => ({
@@ -938,29 +938,29 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
 
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
-    parameters:{
+    parameters: {
         personid: personId,
     },
 });
 
 export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
-    parameters:{
+    parameters: {
         reporttemplateid,
         all
     },
 });
 export const insertReportTemplate = (
-    id: number,
-    description: string,
-    status: string,
-    type: string,
-    columnjson: string,
-    filterjson: string,
-    operation: string,
+    { id,
+        description,
+        status,
+        type,
+        columnjson,
+        filterjson,
+        operation }: Dictionary
 ) => ({
     method: "UFN_REPORTTEMPLATE_INS",
-    parameters:{
+    parameters: {
         id,
         description,
         status,
