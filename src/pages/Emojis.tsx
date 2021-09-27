@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import Box from "@material-ui/core/Box/Box";
 import { langKeys } from "lang/keys";
 import { useTranslation } from 'react-i18next';
@@ -50,6 +50,215 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const Emojis: FC = () => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const classes = useStyles();
+    const mainResult = useSelector(state => state.main);
+    const emojiResult = useSelector(state => state.main.mainData.data);
+    const [openDialog, setOpenDialog] = useState(false);
+    const [emojiSelected, setEmojiSelected] = useState<Dictionary>([]);
+    const [category, setCategory] = useState('FAVORITES');
+    const [searchValue, setSearchValue] = useState('');
+
+    const filteredEmojis = useMemo(() =>
+        emojiResult.filter(emoji => {
+            if (searchValue === null || searchValue.trim().length === 0) {
+                switch (category) {
+                    case 'FAVORITES': {
+                        return emoji?.favorite === true;
+                    }
+                    case 'RESTRICTED': {
+                        return emoji?.restricted === true;
+                    }
+                    default: {
+                        return emoji?.categorydesc === category;
+                    }
+                }
+            } else {
+                return emoji?.emojidec.includes(searchValue);
+            }
+        }), [category, searchValue, emojiResult]);
+
+    const fetchData = () => dispatch(getCollection(getEmojiAllSel()));
+
+    const handleFiend = (searchValue: string) => {
+        setSearchValue(searchValue);
+    };
+
+    useEffect(() => {
+        fetchData();
+
+        dispatch(getMultiCollection([
+            getOrgsByCorp(0),
+            getDomainValueSel("TIPOCANAL"),
+            getEmojiGroupSel(true)
+        ]));
+
+        return () => {
+            dispatch(resetMainAux());
+            dispatch(resetMultiMain());
+            dispatch(resetMain());
+        };
+    }, []);
+
+    //console.log('Page Emojis');
+
+    return (
+        <div className={classes.container}>
+
+            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                <span className={classes.title}>
+                    {t(langKeys.emoji_plural)}
+                </span>
+            </Box>
+
+            <div className={classes.root}>
+                <TabEmoji
+                    mainResult={mainResult?.multiData?.data[2]?.data}
+                    setCategory={setCategory}
+                    setSearchValue={setSearchValue}
+                />
+
+                <SearchField
+                    colorPlaceHolder='#EAE9E9'
+                    handleChangeOther={handleFiend}
+                    lazy
+                />
+
+                <div
+                    key='tabPanel_emoji'
+                    style={{ padding: 12, marginTop: '12px' }}>
+                    {
+                        filteredEmojis.map((emoji: Dictionary) =>
+                            <Emoji
+                                key={"menuEmoji_" + emoji?.emojidec}
+                                emoji={emoji}
+                                setOpenDialog={setOpenDialog}
+                                setEmojiSelected={setEmojiSelected}
+                                fetchData={fetchData}
+                            />
+                        )
+                    }
+                </div>
+            </div>
+
+            <EmojiDetails
+                openModal={openDialog}
+                setOpenModal={setOpenDialog}
+                multiData={mainResult.multiData.data}
+                fetchData={fetchData}
+                emoji={emojiSelected}
+            />
+
+        </div>
+    )
+}
+
+const TabEmoji: FC<{ mainResult: Dictionary[], setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any }> = React.memo(({ mainResult, setCategory, setSearchValue }) => {
+    const [value, setValue] = useState(0);
+
+    const handleChange = (event: any, newValue: any) => {
+        setValue(newValue);
+    };
+
+    const handleTabClick = (categorydesc: string) => {
+        setCategory(categorydesc);
+        setSearchValue('');
+    };
+
+    //console.log('TabEmoji');
+
+    return (
+        <Tabs
+            value={value}
+            onChange={handleChange}
+            variant="scrollable"
+            scrollButtons="on"
+            indicatorColor="primary"
+            textColor="primary"
+            aria-label="scrollable force tabs example"
+            style={{ paddingBottom: 12 }}
+        >
+            {mainResult &&
+                mainResult.map(group =>
+                    <Tab
+                        key={'tab_' + (group?.categoryorder)}
+                        label={group?.categorydesc} icon={<EmojiICon />}
+                        onClick={() => handleTabClick(group?.categorydesc)}
+                    />
+                )
+            }
+        </Tabs>
+    )
+})
+
+const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => void, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void }> = React.memo(({ emoji, setOpenDialog, setEmojiSelected, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleDoubleClick = (emoji: Dictionary) => {
+        dispatch(getCollectionAux(getEmojiSel(emoji?.emojidec)));
+        setEmojiSelected(emoji);
+        setOpenDialog(true);
+    };
+
+    const handleClick = (event: any) => {
+        event.preventDefault();
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = (isfavorite: boolean) => {
+        setAnchorEl(null);
+
+        const callback = () => {
+            dispatch(execute(updateEmojiChannels(emoji?.emojidec, isfavorite)));
+            fetchData();
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(isfavorite ? langKeys.emoji_message_favorites : langKeys.emoji_message_restricted),
+            callback
+        }))
+    };
+
+    const handleOnClose = () => {
+        setAnchorEl(null);
+    };
+
+    //console.log('Emoji');
+
+    return (
+        <>
+            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
+                <Button
+                    aria-controls="simple-menu" aria-haspopup="true"
+                    onContextMenu={handleClick}
+                    key={'button_' + emoji?.emojidec}
+                    onDoubleClick={() => handleDoubleClick(emoji)}
+                    style={{ padding: 0, fontSize: '30px' }}>
+
+                    <label
+                        key={'label_' + emoji?.emojidec}
+                        style={{ fontSize: 30 }}>{emoji?.emojichar}
+                    </label>
+                </Button>
+            </Tooltip>
+            <Menu
+                key={"simple-menu_" + emoji?.emojidec}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleOnClose}
+            >
+                <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleClose(true)}>{t(langKeys.emoji_favorites)}</MenuItem>
+                <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleClose(false)}>{t(langKeys.emoji_restricted)}</MenuItem>
+            </Menu>
+        </>
+    )
+})
+
 const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal, multiData, fetchData, emoji }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -85,17 +294,17 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
 
     const setValueChannel = (orgid: number) => {
         setChannelsOrganization(mainAuxResult.data.filter(x => x.orgid === orgid));
-        setAllParameters({ ...allParameters, ['orgid']: getValues('organization') });
+        setAllParameters({ ...allParameters, orgid: getValues('organization') });
         setWaitSave(false);
     }
 
     const setFavoritesChange = () => {
-        setAllParameters({ ...allParameters, ['favoritechannels']: getValues('favorites') });
+        setAllParameters({ ...allParameters, favoritechannels: getValues('favorites') });
         setWaitSave(true);
     }
 
     const setRestrictedChange = () => {
-        setAllParameters({ ...allParameters, ['restrictedchannels']: getValues('restricted') });
+        setAllParameters({ ...allParameters, restrictedchannels: getValues('restricted') });
         setWaitSave(true);
     }
 
@@ -113,6 +322,8 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
         setWaitSave(false);
 
     }, [openModal]);
+
+    //console.log('EmojiDetails');
 
     return (
         <DialogZyx
@@ -206,220 +417,6 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
             </div>
         </DialogZyx>
     );
-})
-
-const Emojis: FC = React.memo(() => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const classes = useStyles();
-    const mainResult = useSelector(state => state.main);
-    const emojiResult = useSelector(state => state.main.mainData.data);
-    const [openDialog, setOpenDialog] = useState(false);
-    const [emojisFilter, setEmojisFilter] = useState<Dictionary[]>([]);
-    const [emojiSelected, setEmojiSelected] = useState<Dictionary>([]);
-    const [category, setCategory] = useState('FAVORITES');
-    const [searchValue, setSearchValue] = useState('');
-
-    const fetchData = () => dispatch(getCollection(getEmojiAllSel()));
-
-    const handleFiend = (searchValue: string) => {
-        setSearchValue(searchValue);
-    };
-
-    const getEmojis = () => {
-        const filteredEmojis = emojiResult.filter(emoji => {
-            if (searchValue === null || searchValue.trim().length === 0) {
-                switch (category) {
-                    case 'FAVORITES': {
-                        return emoji?.favorite === true;
-                    }
-                    case 'RESTRICTED': {
-                        return emoji?.restricted === true;
-                    }
-                    default: {
-                        return emoji?.categorydesc === category;
-                    }
-                }
-            } else {
-                return emoji?.emojidec.includes(searchValue);
-            }
-        });
-
-        return filteredEmojis;
-    }
-
-    useEffect(() => {
-        fetchData();
-
-        dispatch(getMultiCollection([
-            getOrgsByCorp(0),
-            getDomainValueSel("TIPOCANAL"),
-            getEmojiGroupSel(true)
-        ]));
-
-        return () => {
-            dispatch(resetMainAux());
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
-        };
-    }, []);
-
-    useEffect(() => {
-        setEmojisFilter(getEmojis());
-
-    }, [category, searchValue]);
-
-    return (
-        <div className={classes.container}>
-
-            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                <span className={classes.title}>
-                    {t(langKeys.emoji_plural)}
-                </span>
-            </Box>
-
-            <div className={classes.root}>
-                <TabEmoji
-                    mainResult={mainResult?.multiData?.data[2]?.data}
-                    setCategory={setCategory}
-                    setSearchValue={setSearchValue}
-                />
-
-                <SearchField
-                    colorPlaceHolder='#EAE9E9'
-                    handleChangeOther={handleFiend}
-                    lazy
-                />
-
-                <div
-                    key='tabPanel_emoji'
-                    style={{ padding: 12, marginTop: '12px' }}>
-                    {
-                        (emojisFilter.length > 0 ? emojisFilter : getEmojis()).map((emoji: Dictionary) =>
-                            <Emoji
-                                key={"menuEmoji_" + emoji?.emojidec}
-                                emoji={emoji}
-                                setOpenDialog={setOpenDialog}
-                                setEmojiSelected={setEmojiSelected}
-                                fetchData={fetchData}
-                            />
-                        )
-                    }
-                </div>
-            </div>
-
-            <EmojiDetails
-                openModal={openDialog}
-                setOpenModal={setOpenDialog}
-                multiData={mainResult.multiData.data}
-                fetchData={fetchData}
-                emoji={emojiSelected}
-            />
-
-        </div>
-    )
-})
-
-const TabEmoji: FC<{ mainResult: Dictionary[], setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any }> = React.memo(({ mainResult, setCategory, setSearchValue }) => {
-    const [value, setValue] = useState(0);
-
-    const handleChange = (event: any, newValue: any) => {
-        setValue(newValue);
-    };
-
-    const handleTabClick = (categorydesc: string) => {
-        setCategory(categorydesc);
-        setSearchValue('');
-    };
-
-    return (
-        <Tabs
-            value={value}
-            onChange={handleChange}
-            variant="scrollable"
-            scrollButtons="on"
-            indicatorColor="primary"
-            textColor="primary"
-            aria-label="scrollable force tabs example"
-            style={{ paddingBottom: 12 }}
-        >
-            {mainResult &&
-                mainResult.map(group =>
-                    <Tab
-                        key={'tab_' + (group?.categoryorder)}
-                        label={group?.categorydesc} icon={<EmojiICon />}
-                        onClick={() => handleTabClick(group?.categorydesc)}
-                    />
-                )
-            }
-        </Tabs>
-    )
-})
-
-const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => void, setEmojiSelected: (emojiSelected: Dictionary) => void, fetchData: () => void }> = React.memo(({ emoji, setOpenDialog, setEmojiSelected, fetchData }) => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const handleDoubleClick = (emoji: Dictionary) => {
-        dispatch(getCollectionAux(getEmojiSel(emoji?.emojidec)));
-        setEmojiSelected(emoji);
-        setOpenDialog(true);
-    };
-
-    const handleClick = (event: any) => {
-        event.preventDefault();
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = (isfavorite: boolean) => {
-        setAnchorEl(null);
-
-        const callback = () => {
-            dispatch(execute(updateEmojiChannels(emoji?.emojidec, isfavorite)));
-            fetchData();
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(isfavorite ? langKeys.emoji_message_favorites : langKeys.emoji_message_restricted),
-            callback
-        }))
-    };
-
-    const handleOnClose = () => {
-        setAnchorEl(null);
-    };
-
-    return (
-        <>
-            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
-                <Button
-                    aria-controls="simple-menu" aria-haspopup="true"
-                    onContextMenu={handleClick}
-                    key={'button_' + emoji?.emojidec}
-                    onDoubleClick={() => handleDoubleClick(emoji)}
-                    style={{ padding: 0, fontSize: '30px' }}>
-
-                    <label
-                        key={'label_' + emoji?.emojidec}
-                        style={{ fontSize: 30 }}>{emoji?.emojichar}
-                    </label>
-                </Button>
-            </Tooltip>
-
-            <Menu
-                key={"simple-menu_" + emoji?.emojidec}
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleOnClose}
-            >
-                <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleClose(true)}>{t(langKeys.emoji_favorites)}</MenuItem>
-                <MenuItem key={"menu_item_2_" + emoji?.emojidec} onClick={() => handleClose(false)}>{t(langKeys.emoji_restricted)}</MenuItem>
-            </Menu>
-        </>
-    )
 })
 
 export default Emojis;

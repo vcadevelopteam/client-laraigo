@@ -847,24 +847,24 @@ export default TableZyxEditable;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
+        items.push(<TableCell component="div" key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
 
     return (
         <>
-            <TableRow key="1aux1">
+            <TableRow component="div" key="1aux1">
                 {items}
             </TableRow>
-            <TableRow key="2aux2">
+            <TableRow component="div" key="2aux2">
                 {items}
             </TableRow>
-            <TableRow key="3aux3">
+            <TableRow component="div" key="3aux3">
                 {items}
             </TableRow>
-            <TableRow key="4aux4">
+            <TableRow component="div" key="4aux4">
                 {items}
             </TableRow>
-            <TableRow key="5aux5">
+            <TableRow component="div" key="5aux5">
                 {items}
             </TableRow>
         </>
