@@ -402,6 +402,38 @@ export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IReq
     }
 })
 
+export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CONVERSATIONGRID_SEL",
+    methodCount: "UFN_CONVERSATIONGRID_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "ticket",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATIONGRID_EXPORT",
+    key: "UFN_CONVERSATIONGRID_EXPORT",
+    parameters: {
+        origin: "ticket",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
@@ -446,10 +478,10 @@ export const insOrg = ({ description, status, type, id, operation }: Dictionary)
     parameters: { id, description, status, type, operation }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation,favorite }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation,favorite }
+    parameters: { id, classificationid, description, quickreply, status, type, operation, favorite }
 });
 
 export const getClassificationSel = (id: number): IRequestBody => ({
@@ -938,14 +970,14 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
 
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
-    parameters:{
+    parameters: {
         personid: personId,
     },
 });
 
 export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
-    parameters:{
+    parameters: {
         reporttemplateid,
         all
     },
@@ -960,7 +992,7 @@ export const insertReportTemplate = (
     operation: string,
 ) => ({
     method: "UFN_REPORTTEMPLATE_INS",
-    parameters:{
+    parameters: {
         id,
         description,
         status,
