@@ -178,7 +178,6 @@ interface TemplateDialogProps {
 export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
     <Dialog
         open={open}
-        keepMounted
         fullWidth
         maxWidth={maxWidth}
         style={{ zIndex: 1300 }}>

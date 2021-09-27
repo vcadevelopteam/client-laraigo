@@ -411,7 +411,6 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
             <Menu
                 key={"simple-menu_" + emoji?.emojidec}
                 anchorEl={anchorEl}
-                keepMounted
                 open={Boolean(anchorEl)}
                 onClose={handleOnClose}
             >
