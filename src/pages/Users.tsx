@@ -70,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         lineHeight: '48px',
-        // fontWeight: 'bold',
         height: '48px',
         color: theme.palette.text.primary,
     },
