@@ -326,7 +326,7 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
                 jsonData: jsonData,
                 selectedColumns: selectedColumns,
                 selectedRows: selectedRows,
-                person: detaildata.jsonData?.map(j => 
+                person: jsonData.map(j => 
                     Object.keys(selectedRows).includes('' + j[selectionKey]) ? j : {...j, status: 'ELIMINADO'}
                 )
             });
