@@ -88,7 +88,7 @@ const Tickets = () => {
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             take: pageSize,
-            skip: pageIndex,
+            skip: pageIndex * pageSize,
             sorts: sorts,
             filters: filters,
         })))

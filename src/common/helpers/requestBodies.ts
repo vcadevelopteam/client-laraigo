@@ -971,3 +971,39 @@ export const insertReportTemplate = (
         operation,
     },
 });
+
+export const insBlacklist = ({ id, description, type, status, phone, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS",
+    parameters:{
+        id,
+        description,
+        type,
+        status,
+        phone,
+        operation,
+    },
+});
+
+export const getBlacklistPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_BLACKLIST_SEL",
+    methodCount: "UFN_BLACKLIST_TOTALRECORDS",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        take,
+        skip,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_EXPORT",
+    key: "UFN_BLACKLIST_EXPORT",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

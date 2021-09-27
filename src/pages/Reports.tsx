@@ -155,7 +155,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 take: pageSize,
-                skip: pageIndex,
+                skip: pageIndex * pageSize,
                 sorts: sorts,
                 filters: filters,
                 ...allParameters
