@@ -16,6 +16,7 @@ import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson } from 'store/person/actions';
+import { FixedSizeList as List } from 'react-window';
 
 interface PersonItemProps {
     person: IPerson;
@@ -449,9 +450,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         flexDirection: 'row',
         alignItems: 'stretch',
         flexGrow: 1,
-        // minHeight: "100%",
-        // height: "100%",
-        // overflowY: 'hidden',
+        overflowY: 'hidden',
     },
     tabs: {
         backgroundColor: '#EBEAED',
@@ -525,13 +524,13 @@ export const PersonDetail: FC = () => {
                         e.preventDefault();
                     }}
                 >
-                    <Trans i18nKey={langKeys.personDetail} count={2} />
+                    <Trans i18nKey={langKeys.personDetail} />
                 </Link>
             </Breadcrumbs>
             <h1>{person.name}</h1>
             <div style={{ height: 7 }} />
             <div className={classes.rootContent}>
-                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflowY: 'hidden' }}>
                     <AppBar position="static" elevation={0}>
                         <Tabs
                             value={tabIndex}
@@ -679,21 +678,21 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
                         title={<Trans i18nKey={langKeys.firstConnection} />}
-                        subtitle="-"
+                        subtitle={channel.firstcontact}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
                         title={<Trans i18nKey={langKeys.lastConnection} />}
-                        subtitle="-"
+                        subtitle={channel.lastcontact}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
                         title={<Trans i18nKey={langKeys.conversation} count={2} />}
-                        subtitle="-"
+                        subtitle={channel.conversations || '0'}
                         m={1}
                     />
                 </Grid>
@@ -879,19 +878,34 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
         };
     }, [dispatch, person]);
 
+    if (conversations.data.length <= 100) {
+        return (
+            <div>
+                {conversations.data.map((e, i) => (
+                    <ConversationItem conversation={e} key={`conversation_item_${i}`} />
+                ))}
+            </div>
+        );
+    }
     return (
-        <div>
-            {/* <FixedSizeList
-                direction="vertical"
-                width="100%"
-                height={600}
-                itemCount={conversations.data.length}
-                itemSize={82}
-            >
-                {(i: any, style) => <ConversationItem conversation={conversations.data[i]} key={`conversation_item_${i}`} />}
-            </FixedSizeList> */}
-            {conversations.data.map((e, i) => <ConversationItem conversation={e} key={`conversation_item_${i}`} />)}
-        </div>
+        <List
+            direction="vertical"
+            width="100%"
+            height={600}
+            itemCount={conversations.data.length}
+            itemSize={82}
+        >
+            {({ index, style }) => {
+                return (
+                    <div style={style}>
+                        <ConversationItem
+                            conversation={conversations.data[index]}
+                            key={`conversation_item_${index}`}
+                        />
+                    </div>
+                );
+            }}
+        </List>
     );
 }
 
@@ -1100,7 +1114,7 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
         };
     }, [dispatch, person]);
 
-    console.log(opportunityList);
+    // console.log(opportunityList);
 
     return (
         <div>
