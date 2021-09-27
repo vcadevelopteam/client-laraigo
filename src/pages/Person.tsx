@@ -16,7 +16,6 @@ import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson } from 'store/person/actions';
-import { FixedSizeList as List } from 'react-window';
 
 interface PersonItemProps {
     person: IPerson;
@@ -878,35 +877,33 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
         };
     }, [dispatch, person]);
 
-    if (conversations.data.length <= 100) {
-        return (
-            <div>
-                {conversations.data.map((e, i) => (
-                    <ConversationItem conversation={e} key={`conversation_item_${i}`} />
-                ))}
-            </div>
-        );
-    }
     return (
-        <List
-            direction="vertical"
-            width="100%"
-            height={600}
-            itemCount={conversations.data.length}
-            itemSize={82}
-        >
-            {({ index, style }) => {
-                return (
-                    <div style={style}>
-                        <ConversationItem
-                            conversation={conversations.data[index]}
-                            key={`conversation_item_${index}`}
-                        />
-                    </div>
-                );
-            }}
-        </List>
+        <div>
+            {conversations.data.map((e, i) => (
+                <ConversationItem conversation={e} key={`conversation_item_${i}`} />
+            ))}
+        </div>
     );
+    // return (
+    //     <List
+    //         direction="vertical"
+    //         width="100%"
+    //         height={600}
+    //         itemCount={conversations.data.length}
+    //         itemSize={82}
+    //     >
+    //         {({ index, style }) => {
+    //             return (
+    //                 <div style={style}>
+    //                     <ConversationItem
+    //                         conversation={conversations.data[index]}
+    //                         key={`conversation_item_${index}`}
+    //                     />
+    //                 </div>
+    //             );
+    //         }}
+    //     </List>
+    // );
 }
 
 const useConversationsItemStyles = makeStyles(theme => ({
