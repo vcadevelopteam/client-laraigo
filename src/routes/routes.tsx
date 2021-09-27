@@ -18,6 +18,12 @@ export const routes: RouteConfig[] = [
         icon: (className) => <ReportsIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
+        key: paths.REPORTSTEMPLATE,
+        description: <Trans i18nKey={langKeys.report} count={2} />, // prop:count for plural purposes
+        path: paths.REPORTSTEMPLATE,
+        icon: (className) => <ReportsIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
         key: paths.TICKETS,
         description: <Trans i18nKey={langKeys.ticket} count={2} />,
         path: paths.TICKETS,

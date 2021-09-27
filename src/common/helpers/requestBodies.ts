@@ -942,3 +942,32 @@ export const getOpportunitiesByPersonBody = (personId: ID) => ({
         personid: personId,
     },
 });
+
+export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
+    method: "UFN_REPORTTEMPLATE_SEL",
+    parameters:{
+        reporttemplateid,
+        all
+    },
+});
+export const insertReportTemplate = (
+    id: number,
+    description: string,
+    status: string,
+    type: string,
+    columnjson: string,
+    filterjson: string,
+    operation: string,
+) => ({
+    method: "UFN_REPORTTEMPLATE_INS",
+    parameters:{
+        id,
+        description,
+        status,
+        type,
+        columnjson,
+        filterjson,
+        communicationchannelid: '',
+        operation,
+    },
+});
