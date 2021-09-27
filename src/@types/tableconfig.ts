@@ -37,6 +37,7 @@ export interface TableConfig {
     setSelectedRows?: (param?: any) => void;
     allRowsSelected?: boolean;
     setAllRowsSelected?: (value: boolean) => void;
+    autotrigger?: boolean;
 }
 
 export interface Pagination {

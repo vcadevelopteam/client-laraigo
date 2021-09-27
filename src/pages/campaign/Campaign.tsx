@@ -13,6 +13,8 @@ import { langKeys } from 'lang/keys';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from 'pages';
+import { Blacklist } from './Blacklist';
+import { CampaignReport } from './CampaignReport';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -165,7 +167,7 @@ export const Campaign: FC = () => {
                     color="primary"
                     disabled={mainResult.mainData.loading}
                     // startIcon={<AddIcon color="secondary" />}
-                    onClick={() => console.log('blacklist')}
+                    onClick={() => setViewSelected("blacklist")}
                     style={{ backgroundColor: "#ea2e49" }}
                 ><Trans i18nKey={langKeys.blacklist} />
                 </Button>
@@ -175,7 +177,7 @@ export const Campaign: FC = () => {
                     color="primary"
                     disabled={mainResult.mainData.loading}
                     // startIcon={<AddIcon color="secondary" />}
-                    onClick={() => console.log('report')}
+                    onClick={() => setViewSelected("report")}
                     style={{ backgroundColor: "#22b66e" }}
                 ><Trans i18nKey={langKeys.report} />
                 </Button>
@@ -202,7 +204,7 @@ export const Campaign: FC = () => {
             />
         )
     }
-    else
+    else if (viewSelected === "view-2") {
         return (
             <CampaignDetail
                 data={rowSelected}
@@ -211,4 +213,22 @@ export const Campaign: FC = () => {
                 fetchData={fetchData}
             />
         )
+    }
+    else if (viewSelected === "blacklist") {
+        return (
+            <Blacklist
+                setViewSelected={setViewSelected}
+            />
+        )
+    }
+    else if (viewSelected === "report") {
+        return (
+            <CampaignReport
+                setViewSelected={setViewSelected}
+            />
+        )
+    }
+    else {
+        return null
+    }
 }

@@ -983,13 +983,13 @@ export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     },
 });
 export const insertReportTemplate = (
-    id: number,
-    description: string,
-    status: string,
-    type: string,
-    columnjson: string,
-    filterjson: string,
-    operation: string,
+    { id,
+        description,
+        status,
+        type,
+        columnjson,
+        filterjson,
+        operation }: Dictionary
 ) => ({
     method: "UFN_REPORTTEMPLATE_INS",
     parameters: {
@@ -1002,4 +1002,40 @@ export const insertReportTemplate = (
         communicationchannelid: '',
         operation,
     },
+});
+
+export const insBlacklist = ({ id, description, type, status, phone, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS",
+    parameters:{
+        id,
+        description,
+        type,
+        status,
+        phone,
+        operation,
+    },
+});
+
+export const getBlacklistPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_BLACKLIST_SEL",
+    methodCount: "UFN_BLACKLIST_TOTALRECORDS",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        take,
+        skip,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_EXPORT",
+    key: "UFN_BLACKLIST_EXPORT",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });

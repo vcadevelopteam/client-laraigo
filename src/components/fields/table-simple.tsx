@@ -45,6 +45,7 @@ import {
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
+import { FixedSizeList } from 'react-window';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -317,6 +318,7 @@ const TableZyx = React.memo(({
             useSelection && hooks.visibleColumns.push(columns => [
                 {
                     id: 'selection',
+                    width: 80,
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                     <div>
                         <Checkbox
@@ -332,7 +334,7 @@ const TableZyx = React.memo(({
                         />
                     </div>
                     ),
-                    NoFilter: true
+                    NoFilter: true,
                 } as any,
             ...columns,
             ])
@@ -348,6 +350,7 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
 
     useEffect(() => {
@@ -355,8 +358,53 @@ const TableZyx = React.memo(({
             toggleAllRowsSelected(true);
             setAllRowsSelected && setAllRowsSelected(false);
         } 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allRowsSelected])
 
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            style = {...style, display: 'flex'}
+            const row = page[index]
+            prepareRow(row);
+            return (
+                <TableRow
+                    component="div"
+                    {...row.getRowProps({ style })}
+                    hover
+                >
+                    {row.cells.map((cell, i) =>
+                        <TableCell
+                            component="div"
+                            {...cell.getCellProps({
+                                style: {
+                                    minWidth: cell.column.minWidth,
+                                    width: cell.column.width,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                },
+                            })}
+                        >
+                            {headerGroups[0].headers[i].isComponent ?
+                                cell.render('Cell')
+                                :
+                                (cell.value?.length > 50 ?
+                                    <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                        <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {cell.render('Cell')}
+                                        </div>
+                                    </Tooltip>
+                                    :
+                                    cell.render('Cell')
+                                )
+                            }
+                        </TableCell>
+                    )}
+                </TableRow>
+            )
+        },
+        [headerGroups, prepareRow, page]
+    )
 
     return (
         <Box width={1} >
@@ -443,16 +491,16 @@ const TableZyx = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
+            <TableContainer component="div" style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead>
+                    <Table component="div" size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                        <TableHead component="div" style={{display: useSelection ? 'flex' : 'table-header-group'}}>
                             {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <TableCell component="div" key={ii} style={useSelection ? {minWidth: `${column.width}px`, maxWidth: `${column.width}px`} : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -486,18 +534,36 @@ const TableZyx = React.memo(({
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
+                        <TableBody
+                            component="div" 
+                            {...getTableBodyProps()}
+                            style={{ backgroundColor: 'white' }}
+                        >
                             {loading ?
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
+                                useSelection ?
+                                <FixedSizeList
+                                    style={{overflowX: 'hidden'}}
+                                    direction="vertical"
+                                    width="auto"
+                                    height={window.innerHeight - 470}
+                                    itemCount={page.length}
+                                    itemSize={43}
+                                    >
+                                    {RenderRow}
+                                </FixedSizeList>
+                                :
                                 page.map(row => {
                                     prepareRow(row);
                                     return (
                                         <TableRow
+                                            component="div"    
                                             {...row.getRowProps()}
                                             hover
                                         >
                                             {row.cells.map((cell, i) =>
                                                 <TableCell
+                                                    component="div"     
                                                     {...cell.getCellProps({
                                                         style: {
                                                             minWidth: cell.column.minWidth,
@@ -525,7 +591,8 @@ const TableZyx = React.memo(({
                                             )}
                                         </TableRow>
                                     )
-                                })}
+                                })
+                            }
                         </TableBody>
                     </Table>
                 </Box>
@@ -600,14 +667,14 @@ export default TableZyx;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
+        items.push(<TableCell component="div" key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
     return (
         <>
-            <TableRow key="1aux1">
+            <TableRow component="div" key="1aux1">
                 {items}
             </TableRow>
-            <TableRow key="2aux2">
+            <TableRow component="div" key="2aux2">
                 {items}
             </TableRow>
         </>

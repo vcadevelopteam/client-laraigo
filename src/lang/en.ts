@@ -181,6 +181,14 @@ const translation: LangKeys = {
     tableShowingRecordOf: 'Showing {{itemCount}} records of {{totalItems}}',
     tipification: 'Tipification',
     tipification_plural: 'Tipifications',
+
+    report_designer: 'Report designer',
+    column_plural: 'Columns',
+    new_report_designer: 'New report',
+    designed_reports: 'Personalized reports',
+    filters: 'Filters',
+
+
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
     return: "Return",
