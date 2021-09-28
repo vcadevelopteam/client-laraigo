@@ -12,7 +12,7 @@ import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/channel/actions";
+import { getChannelsListSub } from "store/signup/actions";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
