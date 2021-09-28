@@ -169,3 +169,5 @@ export const secondsToTime = (seconds: number): string => {
 }
 
 export const getSecondsUntelNow = (date: Date): number => Math.floor((new Date().getTime() - date.getTime()) / 1000);
+
+export const getDateCleaned = (date: Date): string => new Date(date.setHours(10)).toISOString().substring(0, 10)

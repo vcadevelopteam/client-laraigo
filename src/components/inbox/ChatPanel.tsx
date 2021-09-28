@@ -4,9 +4,8 @@ import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CheckIcon } from 'icons';
-import VideocamIcon from '@material-ui/icons/Videocam';
-import CallIcon from '@material-ui/icons/Call';
+import { CloseTicketIcon } from 'icons';
+
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -390,7 +389,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 <IconButton
                     onClick={closeTicket}
                 >
-                    <CloseIcon />
+                    <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
                 </IconButton>
                 <IconButton
                     onClick={(e) => setAnchorEl(e.currentTarget)}

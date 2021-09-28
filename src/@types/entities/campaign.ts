@@ -44,10 +44,12 @@ export interface ICampaign {
     headers?: any[],
     jsonData?: any[],
     selectedColumns?: SelectedColumns,
-	selection?: any[],
+	selectedRows?: any[],
 	person?: any[],
 
 	subject?: string,
 	message?: string,
 	variablereplace?: string[],
+
+	sourcechanged?: boolean,
 }

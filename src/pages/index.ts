@@ -9,13 +9,14 @@ export { default as IntelligentModels } from './IntelligentModels';
 export { default as SLA } from './SLA';
 export { default as Domains } from './Domains';
 export { default as Reports } from './Reports';
-export { default as Person } from './Person';
+export { Person, PersonDetail } from './Person';
 export { default as Supervisor } from './Supervisor';
 export { default as MessageInbox } from './MessageInbox';
 export { default as MessageTemplates } from './MessageTemplates';
 export { default as Tipifications } from './Tipifications';
 export { default as IntegrationManager } from './IntegrationManager';
 export { default as VariableConfiguration } from './VariableConfiguration';
+export { default as ReportTemplate } from './ReportTemplate';
 export { default as Emojis } from './Emojis';
 export * from './campaign';
 

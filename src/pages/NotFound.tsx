@@ -1,6 +1,7 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
+import Error404 from 'images/error_404.png';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -26,7 +27,7 @@ const NotFound: FC = () => {
 
     return (
         <div className={classes.root}>
-            <img src="/not_found.svg" style={{ height: '40%', width: 'auto' }} alt="404" />
+            <img src={Error404} style={{ height: '40%', width: 'auto' }} alt="404" />
             <div style={{ width: 80 }} />
             <div className={classes.home}>
                 <label className={classes.str404text}>404</label>

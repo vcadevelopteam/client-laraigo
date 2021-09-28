@@ -66,7 +66,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     };
 
     return (
-        <div style={{ whiteSpace: 'nowrap', display: 'inline-block' }}>
+        <div style={{ whiteSpace: 'nowrap', display: 'flex'}}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
@@ -82,6 +82,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 aria-haspopup="true"
                 size="small"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
+                style={{ display: deleteFunction ? 'block' : 'none' }}
             >
                 <MoreVertIcon style={{ color: '#B6B4BA' }} />
             </IconButton>
@@ -177,7 +178,6 @@ interface TemplateDialogProps {
 export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, buttonText1, buttonText2, handleClickButton2, handleClickButton1, title, maxWidth = "sm", button2Type = "button", button1Type = "button" }) => (
     <Dialog
         open={open}
-        keepMounted
         fullWidth
         maxWidth={maxWidth}
         style={{ zIndex: 1300 }}>
@@ -462,7 +462,7 @@ interface TemplateSwitchProps extends InputProps {
     label: string;
 }
 
-export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label }) => {
+export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onChange, valueDefault, label, style }) => {
     const [checkedaux, setChecked] = useState(false);
 
     useEffect(() => {
@@ -470,7 +470,7 @@ export const TemplateSwitch: React.FC<TemplateSwitchProps> = ({ className, onCha
     }, [valueDefault])
 
     return (
-        <div className={className} style={{ paddingBottom: '3px' }}>
+        <div className={className} style={{ ...style, paddingBottom: '3px' }}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>
             <IOSSwitch checked={checkedaux} onChange={(e) => {
                 setChecked(e.target.checked);
@@ -835,9 +835,9 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
     )
 }
 
-export const FieldEditArray: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
+export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
     return (
-        <div className={className}>
+        <div className={className} style={style}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
             <TextField
                 {...fregister}
@@ -860,4 +860,22 @@ export const FieldEditArray: React.FC<InputProps> = ({ label, className, disable
             />
         </div>
     )
+}
+
+interface TemplateSwitchArrayProps extends InputProps {
+    defaultValue?: boolean;
+    className?: any;
+    label: string;
+}
+
+
+export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ className, onChange, defaultValue, label }) => {
+    return (
+        <div className={className} style={{ paddingBottom: '3px' }}>
+            {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{label}</Box>}
+            <IOSSwitch defaultChecked={defaultValue} onChange={(e) => {
+                onChange && onChange(e.target.checked)
+            }} />
+        </div>
+    );
 }

@@ -1,6 +1,8 @@
 import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
+type ID = string | number;
+
 export const getUserSel = (userid: number): IRequestBody => ({
     method: "UFN_USER_SEL",
     key: "UFN_USER_SEL",
@@ -51,7 +53,7 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     parameters: { ...(userid && { userid }) }
 })
 
-export const getInfoPerson = (personid: number): IRequestBody => ({
+export const getInfoPerson = (personid: ID): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",
     key: "UFN_CONVERSATION_PERSON_SEL",
     parameters: { personid }
@@ -391,6 +393,47 @@ export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequ
     }
 })
 
+export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IRequestBody => ({
+    method: "UFN_EMOJI_CHANNELS_UPD",
+    key: "UFN_EMOJI_CHANNELS_UPD",
+    parameters: {
+        emojidec,
+        isfavorite
+    }
+})
+
+export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CONVERSATIONGRID_SEL",
+    methodCount: "UFN_CONVERSATIONGRID_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "ticket",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATIONGRID_EXPORT",
+    key: "UFN_CONVERSATIONGRID_EXPORT",
+    parameters: {
+        origin: "ticket",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
@@ -435,10 +478,10 @@ export const insOrg = ({ description, status, type, id, operation }: Dictionary)
     parameters: { id, description, status, type, operation }
 });
 
-export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation,favorite }: Dictionary): IRequestBody => ({
+export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
     method: "UFN_QUICKREPLY_INS",
     key: "UFN_QUICKREPLY_INS",
-    parameters: { id, classificationid, description, quickreply, status, type, operation,favorite }
+    parameters: { id, classificationid, description, quickreply, status, type, operation, favorite }
 });
 
 export const getClassificationSel = (id: number): IRequestBody => ({
@@ -790,7 +833,8 @@ export const insCampaign = ({
     executiontype,
     batchjson,
     fields,
-    operation
+    operation,
+    selectedColumns
 }: Dictionary): IRequestBody => ({
     method: "UFN_CAMPAIGN_INS",
     parameters: {
@@ -814,7 +858,7 @@ export const insCampaign = ({
         messagetemplatebuttons: JSON.stringify(messagetemplatebuttons),
         executiontype,
         batchjson: JSON.stringify(batchjson),
-        fields: JSON.stringify(fields),
+        fields: JSON.stringify(selectedColumns || fields),
         operation
     }
 });
@@ -898,5 +942,111 @@ export const insCampaignMember = ({
         field15,
         batchindex,
         operation,
+    }
+});
+export const getTicketListByPersonBody = (personId: ID, offset = 0) => ({
+    method: "UFN_CONVERSATION_SEL_PERSON",
+    parameters: {
+        personid: personId,
+        offset,
+    },
+});
+
+export const getChannelListByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
+    parameters: {
+        personid: personId,
+        personcommunicationchannel: "",
+        all: true,
+    },
+});
+
+export const getAdditionalInfoByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONADDINFO_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const getOpportunitiesByPersonBody = (personId: ID) => ({
+    method: "",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const getTagsChatflow = () => ({
+    method: "UFN_CHATFLOW_TAG_SEL",
+    parameters: {},
+});
+export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
+    method: "UFN_REPORTTEMPLATE_SEL",
+    parameters: {
+        reporttemplateid,
+        all
+    },
+});
+export const insertReportTemplate = (
+    { id,
+        description,
+        status,
+        type,
+        columnjson,
+        filterjson,
+        operation }: Dictionary
+) => ({
+    method: "UFN_REPORTTEMPLATE_INS",
+    parameters: {
+        id,
+        description,
+        status,
+        type,
+        columnjson,
+        filterjson,
+        communicationchannelid: '',
+        operation,
+    },
+});
+
+export const insBlacklist = ({ id, description, type, status, phone, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS",
+    parameters:{
+        id,
+        description,
+        type,
+        status,
+        phone,
+        operation,
+    },
+});
+
+export const insarrayBlacklist = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS_ARRAY",
+    parameters:{
+        table: JSON.stringify(table)
+    },
+});
+
+export const getBlacklistPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_BLACKLIST_SEL",
+    methodCount: "UFN_BLACKLIST_TOTALRECORDS",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        take,
+        skip,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_BLACKLIST_EXPORT",
+    key: "UFN_BLACKLIST_EXPORT",
+    parameters: {
+        origin: "blacklist",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

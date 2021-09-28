@@ -28,23 +28,24 @@ import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import BackupIcon from '@material-ui/icons/Backup';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import { optionsMenu } from './table-paginated';
-
+import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
     useFilters,
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
+    useRowSelect
 } from 'react-table'
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
+import { FixedSizeList } from 'react-window';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -80,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: `${theme.spacing(2)}px`,
     },
     containerfloat: {
         borderBottom: 'none',
@@ -123,10 +124,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TableZyx = React.memo(({
-    columns,
     titlemodule,
-    fetchData,
+    columns,
     data,
+    fetchData,
     download = true,
     register,
     handleRegister,
@@ -135,10 +136,15 @@ const TableZyx = React.memo(({
     pageSizeDefault = 20,
     importCSV,
     filterGeneral = true,
-    loading = false
+    loading = false,
+    useSelection,
+    selectionKey,
+    initialSelectedRows,
+    setSelectedRows,
+    allRowsSelected,
+    setAllRowsSelected
 }: TableConfig) => {
     const classes = useStyles();
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
     const SelectColumnFilter = ({
         column: { setFilter, type },
@@ -177,26 +183,30 @@ const TableZyx = React.memo(({
                     type={type === "number" ? "number" : "text"}
                     style={{ fontSize: '15px', minWidth: '100px' }}
                     fullWidth
+
                     value={value}
                     onKeyDown={keyPress}
                     onChange={e => {
                         setValue(e.target.value || '');
                     }}
                 />
-                <div style={{ width: '12px' }} />
-                <MoreVertIcon
-                    style={{ cursor: 'pointer' }}
-                    aria-label="more"
-                    aria-controls="long-menu"
-                    aria-haspopup="true"
+                <IconButton
                     onClick={handleClickMenu}
-                    color="action"
-                    fontSize="small"
-                />
+                    size="small"
+                >
+                    <MoreVertIcon
+                        style={{ cursor: 'pointer' }}
+                        aria-label="more"
+                        aria-controls="long-menu"
+                        aria-haspopup="true"
+                        color="action"
+                        fontSize="small"
+                    />
+                </IconButton>
+
                 <Menu
                     id="long-menu"
                     anchorEl={anchorEl}
-                    keepMounted
                     open={open}
                     onClose={handleCloseMenu}
                     PaperProps={{
@@ -292,21 +302,48 @@ const TableZyx = React.memo(({
         setPageSize,
         preGlobalFilteredRows,
         setGlobalFilter,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize, selectedRowIds },
+        toggleAllRowsSelected
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: 0, pageSize: pageSizeDefault },
-        defaultColumn
+        initialState: { pageIndex: 0, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
+        defaultColumn,
+        getRowId: (row, relativeIndex: any, parent: any) => selectionKey
+            ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
+            : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
     },
         useFilters,
         useGlobalFilter,
         useSortBy,
-        usePagination
+        usePagination,
+        useRowSelect,
+        hooks => {
+            useSelection && hooks.visibleColumns.push(columns => [
+                {
+                    id: 'selection',
+                    width: 80,
+                    Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
+                        <div>
+                            <Checkbox
+                                {...getToggleAllPageRowsSelectedProps()}
+                            />
+                        </div>
+                    ),
+                    Cell: ({ row }: any) => (
+                        <div>
+                            <Checkbox
+                                checked={row.isSelected}
+                                onChange={(e) => row.toggleRowSelected()}
+                            />
+                        </div>
+                    ),
+                    NoFilter: true,
+                } as any,
+                ...columns,
+            ])
+        }
     )
-
-    // const currentPage = React.useRef(pageIndex + 1);
-    // const totalPages = React.useRef(pageOptions.length);
 
     useEffect(() => {
         let next = true;
@@ -314,6 +351,65 @@ const TableZyx = React.memo(({
             fetchData();
         }
     }, [fetchData])
+
+    useEffect(() => {
+        setSelectedRows && setSelectedRows(selectedRowIds)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedRowIds]);
+
+    useEffect(() => {
+        if (allRowsSelected) {
+            toggleAllRowsSelected(true);
+            setAllRowsSelected && setAllRowsSelected(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allRowsSelected])
+
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            style = { ...style, display: 'flex' }
+            const row = page[index]
+            prepareRow(row);
+            return (
+                <TableRow
+                    component="div"
+                    {...row.getRowProps({ style })}
+                    hover
+                >
+                    {row.cells.map((cell, i) =>
+                        <TableCell
+                            component="div"
+                            {...cell.getCellProps({
+                                style: {
+                                    minWidth: cell.column.minWidth,
+                                    width: cell.column.width,
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                },
+                            })}
+                        >
+                            {headerGroups[0].headers[i].isComponent ?
+                                cell.render('Cell')
+                                :
+                                (cell.value?.length > 50 ?
+                                    <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                        <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {cell.render('Cell')}
+                                        </div>
+                                    </Tooltip>
+                                    :
+                                    cell.render('Cell')
+                                )
+                            }
+                        </TableCell>
+                    )}
+                </TableRow>
+            )
+        },
+        [headerGroups, prepareRow, page]
+    )
+
     return (
         <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -399,16 +495,16 @@ const TableZyx = React.memo(({
 
             {HeadComponent && <HeadComponent />}
 
-            <TableContainer style={{ position: "relative" }}>
+            <TableContainer component="div" style={{ position: "relative" }}>
                 <Box overflow="auto" >
-                    <Table size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
-                        <TableHead>
+                    <Table component="div" size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                        <TableHead component="div" style={{ display: useSelection ? 'flex' : 'table-header-group' }}>
                             {headerGroups.map((headerGroup) => (
-                                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell key={ii}>
+                                            <TableCell component="div" key={ii} style={useSelection ? { minWidth: `${column.width}px`, maxWidth: `${column.width}px` } : {}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -442,46 +538,65 @@ const TableZyx = React.memo(({
                                 </TableRow>
                             ))}
                         </TableHead>
-                        <TableBody {...getTableBodyProps()} style={{ backgroundColor: 'white' }}>
+                        <TableBody
+                            component="div"
+                            {...getTableBodyProps()}
+                            style={{ backgroundColor: 'white' }}
+                        >
                             {loading ?
                                 <LoadingSkeleton columns={headerGroups[0].headers.length} /> :
-                                page.map(row => {
-                                    prepareRow(row);
-                                    return (
-                                        <TableRow
-                                            {...row.getRowProps()}
-                                            hover
-                                        >
-                                            {row.cells.map((cell, i) =>
-                                                <TableCell
-                                                    {...cell.getCellProps({
-                                                        style: {
-                                                            minWidth: cell.column.minWidth,
-                                                            width: cell.column.width,
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                            whiteSpace: 'nowrap',
-                                                        },
-                                                    })}
-                                                >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 50 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <div style={{width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-                                                                    {cell.render('Cell')}
-                                                                </div>
-                                                            </Tooltip>
-                                                            :
+                                useSelection ?
+                                    <FixedSizeList
+                                        style={{ overflowX: 'hidden' }}
+                                        direction="vertical"
+                                        width="auto"
+                                        height={window.innerHeight - 470}
+                                        itemCount={page.length}
+                                        itemSize={43}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                    :
+                                    page.map(row => {
+                                        prepareRow(row);
+                                        return (
+                                            <TableRow
+                                                component="div"
+                                                {...row.getRowProps()}
+                                                hover
+                                            >
+                                                {row.cells.map((cell, i) =>
+                                                    <TableCell
+                                                        component="div"
+                                                        {...cell.getCellProps({
+                                                            style: {
+                                                                minWidth: cell.column.minWidth,
+                                                                width: cell.column.width,
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap',
+                                                            },
+                                                        })}
+                                                    >
+                                                        {headerGroups[0].headers[i].isComponent ?
                                                             cell.render('Cell')
-                                                        )
-                                                    }
-                                                </TableCell>
-                                            )}
-                                        </TableRow>
-                                    )
-                                })}
+                                                            :
+                                                            (cell.value?.length > 50 ?
+                                                                <Tooltip TransitionComponent={Zoom} title={cell.value}>
+                                                                    <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                                        {cell.render('Cell')}
+                                                                    </div>
+                                                                </Tooltip>
+                                                                :
+                                                                cell.render('Cell')
+                                                            )
+                                                        }
+                                                    </TableCell>
+                                                )}
+                                            </TableRow>
+                                        )
+                                    })
+                            }
                         </TableBody>
                     </Table>
                 </Box>
@@ -556,14 +671,14 @@ export default TableZyx;
 const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
     const items: React.ReactNode[] = [];
     for (let i = 0; i < columns; i++) {
-        items.push(<TableCell key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
+        items.push(<TableCell component="div" key={`table-simple-skeleton-${i}`}><Skeleton /></TableCell>);
     }
     return (
         <>
-            <TableRow key="1aux1">
+            <TableRow component="div" key="1aux1">
                 {items}
             </TableRow>
-            <TableRow key="2aux2">
+            <TableRow component="div" key="2aux2">
                 {items}
             </TableRow>
         </>

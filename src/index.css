@@ -203,7 +203,7 @@ footer a {
     display: none;
 }
 .scroll-style-go {
-    overflow-y: overlay;
+    overflow-y: overlay!important;
     
 }
 .scroll-style-go::-webkit-scrollbar-track
@@ -240,4 +240,26 @@ footer a {
 	background-color: rgba(0, 0, 0, .2);
     -webkit-transition: .2s ease-in-out;
     transition: .2s ease-in-out
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background: #7721AD;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #381052;
 }

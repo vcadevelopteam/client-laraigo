@@ -2,10 +2,12 @@
 import React, { FC } from "react";
 import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
-import { Users, SignIn,SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger,ChannelAddInstagram,ChannelAddWhatsapp,ChannelAddTelegram,
-	Reports, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis
+import {
+	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
+	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail
 } from 'pages';
+
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { ExtrasLayout } from "components";
@@ -68,6 +70,8 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
+		return <Redirect to={{ pathname: "/sign-in" }} />;
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -90,6 +94,21 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.REPORTDESIGNER}>
+					<Layout mainClasses={classes.main}>
+						<ReportTemplate />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.PERSONALIZEDREPORTS}>
+					<Layout mainClasses={classes.main}>
+						<ReportTemplate />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.TICKETS}>
+					<Layout mainClasses={classes.main}>
+						<Tickets />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS}>
@@ -189,6 +208,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON}>
 					<ExtrasLayout><Person /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.PERSON_DETAIL.path}>
+					<ExtrasLayout><PersonDetail /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
 					<ExtrasLayout><MessageTemplates /></ExtrasLayout>

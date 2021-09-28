@@ -1,6 +1,7 @@
 import { Button, makeStyles } from "@material-ui/core";
 import { FC } from "react";
 import { useHistory } from "react-router-dom";
+import Error403 from 'images/error_403.png';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -26,7 +27,7 @@ const Forbidden: FC = () => {
 
     return (
         <div className={classes.root}>
-            <img src="/forbidden.svg" style={{ height: '40%', width: 'auto' }} alt="forbidden"/>
+            <img src={Error403} style={{ height: '40%', width: 'auto' }} alt="forbidden"/>
             <div style={{ width: 80 }} />
             <div className={classes.home}>
                 <label className={classes.str404text}>403</label>

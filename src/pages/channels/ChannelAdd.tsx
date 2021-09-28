@@ -1,18 +1,15 @@
 import React, { FC, useState } from "react";
 import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
-import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
+import { Facebook as FacebookIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import TelegramIcon from '@material-ui/icons/Telegram';
-import TwitterIcon from '@material-ui/icons/Twitter';
-import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
-import SmsIcon from '@material-ui/icons/Sms';
+import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
 
 interface ChannelOption {
-    icon: React.ReactNode;
+    icon: (className: string) => React.ReactNode;
     label: React.ReactNode;
     onClick: () => void;
 }
@@ -55,8 +52,10 @@ const useChannelAddStyles = makeStyles(theme => ({
         fontSize: 16,
         fontWeight: 400,
         color: '#A59F9F',
+        fill: '#A59F9F',
         '&:hover': {
             color: 'white',
+            fill: 'white',
             backgroundColor: '#7721AD',
             cursor: 'pointer',
             fontWeight: 700,
@@ -74,6 +73,10 @@ const useChannelAddStyles = makeStyles(theme => ({
         textTransform: 'initial',
         width: "180px"
     },
+    icon: {
+        fill: 'inherit',
+        height: 40,
+    },
 }));
 
 export const ChannelAdd: FC = () => {
@@ -83,37 +86,37 @@ export const ChannelAdd: FC = () => {
 
     const socialMediaOptions: ChannelOption[] = [
         {
-            icon: <FacebookIcon color="inherit" />,
+            icon: c => <FacebookWallIcon className={c} />,
             label: 'Facebook',
             onClick: () => {history.push(paths.CHANNELS_ADD_FACEBOOK.path)},
         },
         {
-            icon: <InstagramIcon color="inherit" />,
+            icon: c => <InstagramIcon className={c} />,
             label: 'Instagram',
             onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path)},
         },
         {
-            icon: <MessageIcon color="inherit" />,
+            icon: c => <FacebookMessengerIcon className={c} />,
             label: 'Messenger',
             onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path)},
         },
         {
-            icon: <WhatsAppIcon color="inherit" />,
+            icon: c => <WhatsappIcon className={c}/>,
             label: 'Whatsapp',
             onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path)},
         },
         {
-            icon: <TelegramIcon color="inherit" />,
+            icon: c => <TelegramIcon className={c} />,
             label: 'Telegram',
             onClick: () => {history.push(paths.CHANNELS_ADD_TELEGRAM.path)},
         },
         {
-            icon: <TwitterIcon color="inherit" />,
+            icon: c => <TwitterIcon className={c} />,
             label: 'Twitter',
             onClick: () => {history.push(paths.CHANNELS_ADD_TWITTER.path)},
         },
         {
-            icon: <TwitterIcon color="inherit" />,
+            icon: c => <TwitterIcon className={c} />,
             label: 'Twitter DM',
             onClick: () => {history.push(paths.CHANNELS_ADD_TWITTERDM.path)},
         },
@@ -122,23 +125,33 @@ export const ChannelAdd: FC = () => {
 
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: <FacebookIcon color="inherit" />,
+            icon: c => <ZyxmeMessengerIcon className={c} />,
             label: 'Chat Web',
             onClick: () => history.push(paths.CHANNELS_ADD_CHATWEB),
         },
         {
-            icon: <EmailIcon color="inherit" />,
+            icon: c => <EmailIcon className={c} />,
             label: 'Email',
             onClick: () => { },
         },
         {
-            icon: <PhoneIcon color="inherit" />,
+            icon: c => <CallIcon className={c} />,
             label: 'Phone',
             onClick: () => { },
         },
         {
-            icon: <SmsIcon color="inherit" />,
+            icon: c => <SmsIcon className={c} />,
             label: 'Sms',
+            onClick: () => { },
+        },
+        {
+            icon: c => <AppleIcon className={c} />,
+            label: 'iOS SDk',
+            onClick: () => { },
+        },
+        {
+            icon: c => <AndroidIcon className={c} />,
+            label: 'Android SDK',
             onClick: () => { },
         },
     ];
@@ -155,10 +168,10 @@ export const ChannelAdd: FC = () => {
                 onMouseLeave={() => setColor('#989898')}
             >
                 <div style={{ flexGrow: 2, alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
-                    {option.icon}
+                    {option.icon(classes.icon)}
                 </div>
                 <div style={{ height: 1, backgroundColor: color }} />
-                <div style={{ flexGrow: 1, alignItems: 'center', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ flexGrow: 1, alignItems: 'center', display: 'flex', justifyContent: 'center', maxHeight: 39 }}>
                     {option.label}
                 </div>
             </Paper>

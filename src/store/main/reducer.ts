@@ -14,19 +14,21 @@ export interface IUpload extends ITemplate {
 }
 
 export interface IState {
-    mainData: IListStatePaginated<Dictionary>,
-    multiData: IListStatePaginated<itemMulti>,
-    multiDataAux: IListStatePaginated<itemMulti>,
-    execute: IListStatePaginated<Dictionary>,
-    mainAux: IListStatePaginated<Dictionary>,
-    mainAux2: IListStatePaginated<Dictionary>,
-    mainPaginated: IListStatePaginated<Dictionary>,
-    uploadFile: IUpload,
-    exportData: IUpload,
+    mainData: IListStatePaginated<Dictionary>;
+    mainDynamic: IListStatePaginated<Dictionary>;
+    multiData: IListStatePaginated<itemMulti>;
+    multiDataAux: IListStatePaginated<itemMulti>;
+    execute: IListStatePaginated<Dictionary>;
+    mainAux: IListStatePaginated<Dictionary>;
+    mainAux2: IListStatePaginated<Dictionary>;
+    mainPaginated: IListStatePaginated<Dictionary>;
+    uploadFile: IUpload;
+    exportData: IUpload;
 }
 
 export const initialState: IState = {
     mainData: initialListPaginatedState,
+    mainDynamic: initialListPaginatedState,
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
     execute: initialListPaginatedState,
@@ -78,4 +80,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EXPORT_DATA_SUCCESS]: caseFunctions.exportDataSuccess,
     [actionTypes.EXPORT_DATA_FAILURE]: caseFunctions.exportDataFailure,
     [actionTypes.EXPORT_DATA_RESET]: caseFunctions.exportDataReset,
+
+    [actionTypes.DATA_DYNAMIC]: caseFunctions.mainDynamic,
+    [actionTypes.DATA_DYNAMIC_SUCCESS]: caseFunctions.mainDynamicSuccess,
+    [actionTypes.DATA_DYNAMIC_FAILURE]: caseFunctions.mainDynamicFailure,
+    [actionTypes.DATA_DYNAMIC_RESET]: caseFunctions.mainDynamicReset,
 });

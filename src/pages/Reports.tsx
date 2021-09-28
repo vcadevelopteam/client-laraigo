@@ -20,7 +20,8 @@ import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
 import AssessorProductivity from 'components/report/AssessorProductivity';
-import { Skeleton } from '@material-ui/lab';
+
+import { SkeletonReport } from 'components';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -154,7 +155,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 take: pageSize,
-                skip: pageIndex,
+                skip: pageIndex * pageSize,
                 sorts: sorts,
                 filters: filters,
                 ...allParameters
@@ -243,47 +244,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
                     }
                 </>
                 :
-                <Grid container >
-                    <Grid item xs>
-                        <Typography component="div" variant="h5">
-                            <Skeleton
-                                width={300}
-                                animation="wave"
-                                style={{ marginBottom: 6 }}
-                            />
-                        </Typography>
-                        <Typography component="div" variant="h5">
-                            <Skeleton
-                                animation="wave"
-                                style={{ marginBottom: 6 }}
-                            />
-                        </Typography>
-                        <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between' }}>
-                            <div style={{ width: '85%', gap: 8, display: 'inline-flex' }}>
-                                <Skeleton
-                                    animation="wave"
-                                    width="15%"
-                                    height={40}
-                                    style={{ marginBottom: 6 }}
-                                />
-                                <Skeleton
-                                    animation="wave"
-                                    height={40}
-                                    width="15%"
-                                    style={{ marginBottom: 6 }}
-                                />
-                            </div>
-                            <Skeleton
-                                animation="wave"
-                                height={40}
-                                width="15%"
-                                style={{ marginBottom: 6 }}
-                            />
-                        </div>
-                        <Skeleton variant="rect" height={400} />
-
-                    </Grid>
-                </Grid>
+                <SkeletonReport />
             }
         </div>
     );

@@ -11,6 +11,7 @@ import inboxReducer, { IState as IInbox } from './inbox/reducer';
 import integrationManagerReducer, { IState as IIntegrationManager } from './integrationmanager/reducer';
 import flowdesignerReducer, { IState as IFlowDesigner } from './flowdesigner/reducer';
 import signupReducer, { IState as ISignUp} from './signup/reducer';
+import personReducer, { IState as IPerson } from './person/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -22,6 +23,7 @@ export interface IRootState {
     integrationmanager: IIntegrationManager;
     flowdesigner: IFlowDesigner;
     signup: ISignUp;
+    person: IPerson;
 }
 
 declare global {
@@ -39,7 +41,8 @@ const rootReducer = combineReducers<IRootState>({
     integrationmanager: integrationManagerReducer,
     channel: channelReducer,
     flowdesigner: flowdesignerReducer,
-    signup: signupReducer
+    signup: signupReducer,
+    person: personReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

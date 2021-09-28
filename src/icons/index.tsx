@@ -92,3 +92,7 @@ export { ReactComponent as FileIcon } from './file.svg';
 export { ReactComponent as DocumentIcon } from './document.svg';
 export { ReactComponent as CalendarIcon } from './calendar.svg';
 export { ReactComponent as GifIcon } from './gif.svg';
+export { ReactComponent as CloseTicketIcon } from './close-ticket.svg';
+
+export { ReactComponent as GenderIcon } from './gender.svg';
+export { ReactComponent as BuildingIcon } from './building-city-town.svg';
