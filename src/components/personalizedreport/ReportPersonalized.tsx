@@ -2,8 +2,8 @@
 import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { TemplateIcons, TemplateBreadcrumbs, DateRangePicker, FieldMultiSelect, FieldSelect } from 'components';
-import { getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
+import { TemplateBreadcrumbs, DateRangePicker, FieldMultiSelect, FieldSelect } from 'components';
+
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,9 +11,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { CalendarIcon } from 'icons';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { CalendarIcon, DownloadIcon } from 'icons';
+import { getCollectionDynamic, resetMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
 const arrayBread = [
@@ -65,55 +64,38 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     const classes = useStyles()
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
+    const [columnsDynamic, setcolumnsDynamic] = useState([])
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [openDateRangeFinishDateModal, setOpenDateRangeFinishDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dateRangeFinishDate, setDateRangeFinishDate] = useState<Range>(initialRange);
-
     const [filters, setFilters] = useState({
         usergroup: "",
         communicationchannelid: "",
         tag: ""
     })
 
-    const mainResult = useSelector(state => state.main);
+    useEffect(() => {
+        dispatch(resetMainDynamic())
+        setcolumnsDynamic(columns.map((x: Dictionary) => ({
+            Header: x.value,
+            accessor: x.key,
+        })))
+    }, [])
 
+    const mainDynamic = useSelector(state => state.main.mainDynamic);
 
     const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataChannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
-    const columnstt = React.useMemo(
-        () => [
-            {
-                Header: t(langKeys.description),
-                accessor: 'orgdesc',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                NoFilter: true
-            },
-            {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getOrgSel(0)));
-
     const onSearch = () => {
         const body = {
             columns,
+            parameters: {
+                offset: (new Date().getTimezoneOffset() / 60) * -1,
+                reportName: description
+            },
             filters: [
                 ...(startdate ? [{
                     column: "startdate",
@@ -139,9 +121,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                 }] : []),
             ]
         }
+        dispatch(getCollectionDynamic(body));
     }
-
-    // console.log(item)
 
     return (
         <div style={{ width: '100%' }}>
@@ -175,7 +156,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                         onSelect={setDateRangeFinishDate}
                     >
                         <Button
-                            // disabled={loading}
+                            disabled={mainDynamic.loading}
                             className={classes.itemDate}
                             startIcon={<CalendarIcon />}
                             onClick={() => setOpenDateRangeFinishDateModal(!openDateRangeFinishDateModal)}
@@ -217,10 +198,8 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                         optionValue="domainvalue"
                     />
                 }
-            </div>
-            <div className={classes.containerFilters}>
                 <Button
-                    // disabled={loading}
+                    disabled={mainDynamic.loading}
                     variant="contained"
                     color="primary"
                     startIcon={<SearchIcon style={{ color: 'white' }} />}
@@ -229,13 +208,21 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                 >
                     {t(langKeys.search)}
                 </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={mainDynamic.loading}
+                    // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    startIcon={<DownloadIcon />}
+                >{t(langKeys.download)}
+                </Button>
             </div>
             <TableZyx
-                columns={columnstt}
-                // titlemodule={description}
-                data={mainResult.mainData.data}
+                columns={columnsDynamic}
+                filterGeneral={false}
+                data={mainDynamic.data}
                 download={false}
-                loading={mainResult.mainData.loading}
+                loading={mainDynamic.loading}
             // fetchData={fetchData}
             />
         </div >

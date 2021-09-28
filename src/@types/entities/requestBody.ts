@@ -28,3 +28,22 @@ export interface ITransaction {
     header: IRequestBody | null,
     detail: (IRequestBody | null)[]
 }
+
+type IColumnTemplate = {
+    key: string;
+    value: string;
+    filter: string;
+}
+
+type IFilter = {
+    column: string;
+    start?: string | null | undefined;
+    end?: string | null | undefined;
+    value?: string | null | undefined; 
+}
+
+export interface IRequestBodyDynamic {
+    columns: IColumnTemplate[];
+    filters: IFilter[];
+    parameters: Dictionary
+}
