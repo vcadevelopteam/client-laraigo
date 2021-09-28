@@ -26,7 +26,9 @@ export const apiUrls = {
 
     INTEGRATION_URL: `${BASE_URL}/load`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
+    GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
+    EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 
     PERSON: `${BASE_URL}/person`,

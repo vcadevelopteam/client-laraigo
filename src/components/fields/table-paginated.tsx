@@ -39,10 +39,12 @@ import {
     useTable,
     useFilters,
     useGlobalFilter,
-    usePagination
+    usePagination,
+    useRowSelect
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
+import { Checkbox } from '@material-ui/core';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -230,20 +232,26 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
 }
 
 const TableZyx = React.memo(({
+    titlemodule,
     columns,
     data,
+    fetchData,
     filterrange,
     totalrow,
-    fetchData,
     pageCount: controlledPageCount,
-    titlemodule,
-    handleRegister,
-    exportPersonalized,
-    register,
-    loading,
     download,
+    register,
+    handleRegister,
+    HeadComponent,
+    ButtonsElement,
+    exportPersonalized,
+    loading,
     importCSV,
-    autotrigger = false
+    autotrigger = false,
+    useSelection,
+    selectionKey,
+    initialSelectedRows,
+    setSelectedRows,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -261,12 +269,12 @@ const TableZyx = React.memo(({
         pageOptions,
         pageCount,
         setPageSize,
-        state: { pageIndex, pageSize },
+        state: { pageIndex, pageSize, selectedRowIds },
     } = useTable(
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 20 },
+            initialState: { pageIndex: 0, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
@@ -276,10 +284,41 @@ const TableZyx = React.memo(({
                     // eslint-disable-next-line react-hooks/exhaustive-deps
                 }), [state, pagination.pageIndex])
             },
+            autoResetSelectedRows: false,
+            getRowId: (row, relativeIndex: any, parent: any) => selectionKey
+                ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
+                : (parent ? [parent.id, relativeIndex].join('.') : relativeIndex),
         },
         useFilters,
         useGlobalFilter,
         usePagination,
+        useRowSelect,
+        hooks => {
+            useSelection && hooks.visibleColumns.push(columns => [
+                {
+                    id: 'selection',
+                    width: 80,
+                    Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
+                    <div>
+                        <Checkbox
+                            {...getToggleAllPageRowsSelectedProps()}
+                        />
+                    </div>
+                    ),
+                    Cell: ({ row }: any) => (
+                    <div>
+                        <Checkbox
+                            checked={row.isSelected}
+                            onChange={(e) => row.toggleRowSelected()}
+                        />
+                    </div>
+                    ),
+                    NoFilter: true,
+                    isComponent: true
+                } as any,
+            ...columns,
+            ])
+        }
     )
 
     const setFilters = (filters: any, page: number) => {
@@ -329,6 +368,11 @@ const TableZyx = React.memo(({
         triggerSearch && triggertmp();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
+
+    useEffect(() => {
+        setSelectedRows && setSelectedRows(selectedRowIds)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedRowIds]);
 
     const exportData = () => {
         exportPersonalized && exportPersonalized({
@@ -392,6 +436,7 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )} */}
+                    {ButtonsElement && <ButtonsElement />}
                     {importCSV && (
                         <>
                             <input
@@ -442,6 +487,8 @@ const TableZyx = React.memo(({
                     )}
                 </div>
             </Box>
+
+            {HeadComponent && <HeadComponent />}
 
             <TableContainer style={{ position: "relative" }}>
                 <Box overflow="auto">

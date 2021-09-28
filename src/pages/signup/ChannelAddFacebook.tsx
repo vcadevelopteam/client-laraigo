@@ -1,18 +1,15 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, TemplateSwitch } from "components";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
+import { getChannelsListSub } from "store/channel/actions";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,15 +21,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddFacebook: FC = () => {
+export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -61,27 +55,9 @@ export const ChannelAddFacebook: FC = () => {
     })
 
     async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
-        setWaitSave(true);
-        setViewSelected("main")
+        setrequestchannels((p:any)=>([...p,fields]))
+        setlistchannels((p:any)=>({...p,facebook:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -91,7 +67,7 @@ export const ChannelAddFacebook: FC = () => {
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken))
+            dispatch(getChannelsListSub(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
             setWaitSave(true);
@@ -121,11 +97,6 @@ export const ChannelAddFacebook: FC = () => {
     if(viewSelected==="view1"){
         return (
             <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD)}}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>

@@ -124,10 +124,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const TableZyx = React.memo(({
-    columns,
     titlemodule,
-    fetchData,
+    columns,
     data,
+    fetchData,
     download = true,
     register,
     handleRegister,

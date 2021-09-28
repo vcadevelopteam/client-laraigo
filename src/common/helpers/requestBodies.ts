@@ -1020,6 +1020,13 @@ export const insBlacklist = ({ id, description, type, status, phone, operation }
     },
 });
 
+export const insarrayBlacklist = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS_ARRAY",
+    parameters:{
+        table: JSON.stringify(table)
+    },
+});
+
 export const getBlacklistPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_BLACKLIST_SEL",
     methodCount: "UFN_BLACKLIST_TOTALRECORDS",
