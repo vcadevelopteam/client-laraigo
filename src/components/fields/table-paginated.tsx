@@ -18,6 +18,7 @@ import { Trans } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
+import BackupIcon from '@material-ui/icons/Backup';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Skeleton } from '@material-ui/lab';
 import {
@@ -240,13 +241,15 @@ const TableZyx = React.memo(({
     exportPersonalized,
     register,
     loading,
-    download
+    download,
+    importCSV,
+    autotrigger = false
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
     const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    const [triggerSearch, setTriggerSearch] = useState(false);
+    const [triggerSearch, setTriggerSearch] = useState(autotrigger);
     const {
         getTableProps,
         getTableBodyProps,
@@ -389,6 +392,30 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )} */}
+                    {importCSV && (
+                        <>
+                            <input
+                                name="file"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                id="laraigo-upload-csv-file"
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={(e) => importCSV(e.target.files)}
+                            />
+                            <label htmlFor="laraigo-upload-csv-file">
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    disabled={loading}
+                                    startIcon={<BackupIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                ><Trans i18nKey={langKeys.import} />
+                                </Button>
+                            </label>
+                        </>
+                    )}
                     {register && (
                         <Button
                             className={classes.button}
@@ -446,8 +473,8 @@ const TableZyx = React.memo(({
                                                             {column.render('Header')}
                                                             {pagination.sorts[column.id]
                                                                 && (pagination.sorts[column.id] === "asc"
-                                                                    ? <ArrowDownwardIcon className={classes.iconOrder} color="action" />
-                                                                    : <ArrowUpwardIcon className={classes.iconOrder} color="action" />)
+                                                                    ? <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                                    : <ArrowDownwardIcon className={classes.iconOrder} color="action" />)
                                                             }
                                                         </Box>
                                                         {!column.NoFilter &&
