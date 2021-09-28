@@ -12,6 +12,8 @@ export const apiUrls = {
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
+    MAIN_DYNAMIC: `${BASE_URL}/reportdesigner`,
+    MAIN_DYNAMIC_EXPORT: `${BASE_URL}/reportdesigner/export`,
     INTEGRATION: `${BASE_URL}/integration`,
     UPLOAD_FILE: `${BASE_URL}/upload`,
     EXPORT_DATA: `${BASE_URL}/main/exportexcel`,

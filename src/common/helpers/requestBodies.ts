@@ -402,6 +402,38 @@ export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IReq
     }
 })
 
+export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CONVERSATIONGRID_SEL",
+    methodCount: "UFN_CONVERSATIONGRID_TOTALRECORDS",
+    parameters: {
+        startdate,
+        enddate,
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "ticket",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_CONVERSATIONGRID_EXPORT",
+    key: "UFN_CONVERSATIONGRID_EXPORT",
+    parameters: {
+        origin: "ticket",
+        filters,
+        startdate,
+        enddate,
+        sorts,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
@@ -943,6 +975,10 @@ export const getOpportunitiesByPersonBody = (personId: ID) => ({
     },
 });
 
+export const getTagsChatflow = () => ({
+    method: "UFN_CHATFLOW_TAG_SEL",
+    parameters: {},
+});
 export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
     parameters: {

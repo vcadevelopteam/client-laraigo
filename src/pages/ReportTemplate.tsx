@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, TemplateSwitchArray, TemplateSwitch } from 'components';
-import { getReportTemplate, getValuesFromDomain, insertReportTemplate, insOrg } from 'common/helpers';
+import { getReportTemplate, getValuesFromDomain, insertReportTemplate, getTagsChatflow, getCommChannelLst } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
@@ -492,6 +492,9 @@ const ReportsTemplate: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("GRUPOS"),
+            getTagsChatflow(),
+            getCommChannelLst()
         ]));
         return () => {
             dispatch(resetMain());
@@ -586,6 +589,7 @@ const ReportsTemplate: FC = () => {
         return (
             <ReportPersonalized
                 item={rowSelected.row!!}
+                multiData={mainResult.multiData.data}
                 setViewSelected={setViewSelected}
             />
         )

@@ -203,7 +203,7 @@ footer a {
     display: none;
 }
 .scroll-style-go {
-    overflow-y: overlay;
+    overflow-y: overlay!important;
     
 }
 .scroll-style-go::-webkit-scrollbar-track
