@@ -84,6 +84,7 @@ type IColumnTemplate = {
     value: string;
     filter: string;
     hasFilter: boolean;
+    id: any;
 }
 type FormFields = {
     reporttemplateid: number;
@@ -239,7 +240,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     const handlerNewColumn = (item: Dictionary | null | undefined = null) => fieldsAppend({ key: item?.key || '', value: item?.value || '', filter: '', hasFilter: false });
 
-    const handlerDeleteColumn = (index: number) => fieldRemove(index);
+    const handlerDeleteColumn = (index: number) => {
+        fieldRemove(index)
+    };
 
     return (
         <>
@@ -359,7 +362,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                 </TableHead>
                                 <TableBody>
                                     {fields.map((item: IColumnTemplate, i) =>
-                                        <TableRow key={i}>
+                                        <TableRow key={item.id}>
                                             <TableCell width={30}>
                                                 <div style={{ display: 'flex' }}>
                                                     <IconButton
@@ -405,6 +408,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onChange={(value) => {
                                                             setValue(`columns.${i}.hasFilter`, value);
                                                             trigger(`columns.${i}.hasFilter`)
+                                                            if (!value) {
+                                                                setValue(`columns.${i}.filter`, "");
+                                                                trigger(`columns.${i}.filter`)
+                                                            }
                                                         }}
                                                         defaultValue={item.hasFilter}
                                                     />
