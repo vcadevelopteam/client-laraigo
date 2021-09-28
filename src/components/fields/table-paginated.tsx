@@ -185,25 +185,25 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                 onKeyDown={keyPress}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-            // startAdornment={
-            //     <InputAdornment position="start">
-            //         <SearchIcon color="action" fontSize="small" />
-            //     </InputAdornment>
-            // }
             />
-            <MoreVertIcon
-                style={{ cursor: 'pointer' }}
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
+            <IconButton
                 onClick={handleClickMenu}
-                color="action"
-                fontSize="small"
-            />
+                size="small"
+            >
+                <MoreVertIcon
+                    style={{ cursor: 'pointer' }}
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    onClick={handleClickMenu}
+                    color="action"
+                    fontSize="small"
+                />
+            </IconButton>
+
             <Menu
                 id="long-menu"
                 anchorEl={anchorEl}
-                keepMounted
                 open={open}
                 onClose={handleCloseMenu}
                 PaperProps={{
@@ -255,7 +255,6 @@ const TableZyx = React.memo(({
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
     const {

@@ -212,7 +212,6 @@ const PreviewTickets = () => {
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
-    const { t } = useTranslation();
 
     return (
         <div className={classes.containerInfo}>

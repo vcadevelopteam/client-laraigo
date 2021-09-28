@@ -15,6 +15,8 @@ import { CalendarIcon, DownloadIcon, SearchIcon } from 'icons';
 import Button from '@material-ui/core/Button/Button';
 import { DateRangePicker, FieldMultiSelect } from 'components';
 import { Range } from 'react-date-range';
+import Link from '@material-ui/core/Link';
+import { DialogInteractions } from 'components';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -110,178 +112,197 @@ const Tickets = () => {
 
 
 
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModal, setOpenModal] = useState(false);
 
-
+    const handleClickOpen = (row: any) => {
+        console.log(row)
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
+    };
 
     const columns = React.useMemo(
         () => [
             {
-                Header: 'N° Ticket',
-                accessor: 'numeroticket'
+                Header: t(langKeys.ticket_numeroticket),
+                accessor: 'numeroticket',//ticketnum
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <Link
+                            component="button"
+                            variant="body2"
+                            onClick={() => handleClickOpen(row)}
+                        >
+                            {row.numeroticket}
+                        </Link>
+                    )
+                }
             },
             {
-                Header: 'Fecha',
+                Header: t(langKeys.ticket_fecha),
                 accessor: 'fecha'
             },
             {
-                Header: 'G. inicial del ticket',
+                Header: t(langKeys.ticket_firstusergroup),
                 accessor: 'firstusergroup'
             },
             {
-                Header: 'Grupo del ticket',
+                Header: t(langKeys.ticket_ticketgroup),
                 accessor: 'ticketgroup'
             },
             {
-                Header: 'Canal',
+                Header: t(langKeys.ticket_communicationchanneldescription),
                 accessor: 'communicationchanneldescription'
             },
             {
-                Header: 'Cliente',
+                Header: t(langKeys.ticket_name),//displayname
                 accessor: 'name'
             },
             {
-                Header: 'ID persona canal',
+                Header: t(langKeys.ticket_canalpersonareferencia),
                 accessor: 'canalpersonareferencia'
             },
             {
-                Header: 'Apertura',
+                Header: t(langKeys.ticket_fechainicio),
                 accessor: 'fechainicio'
             },
             {
-                Header: 'Cierre',
+                Header: t(langKeys.ticket_fechafin),
                 accessor: 'fechafin'
             },
             {
-                Header: 'Primera comunicación',
+                Header: t(langKeys.ticket_fechaprimeraconversacion),
                 accessor: 'fechaprimeraconversacion'
             },
             {
-                Header: 'Última conversación',
+                Header: t(langKeys.ticket_fechaultimaconversacion),
                 accessor: 'fechaultimaconversacion'
             },
             {
-                Header: 'Derivación',
+                Header: t(langKeys.ticket_fechahandoff),
                 accessor: 'fechahandoff'
             },
             {
-                Header: 'Asesor inicial',
+                Header: t(langKeys.ticket_asesorinicial),
                 accessor: 'asesorinicial'
             },
             {
-                Header: 'Asesor final',
+                Header: t(langKeys.ticket_asesorfinal),
                 accessor: 'asesorfinal'
             },
             {
-                Header: 'Supervisor',
+                Header: t(langKeys.ticket_supervisor),
                 accessor: 'supervisor'
             },
             {
-                Header: 'Empresa',
+                Header: t(langKeys.ticket_empresa),
                 accessor: 'empresa'
             },
             {
-                Header: 'Grupos del asesor',
+                Header: t(langKeys.ticket_attentiongroup),
                 accessor: 'attentiongroup'
             },
             {
-                Header: 'Servicio',
+                Header: t(langKeys.ticket_classification),
                 accessor: 'classification'
             },
             {
-                Header: 'ART',
+                Header: t(langKeys.ticket_tiempopromediorespuesta),
                 accessor: 'tiempopromediorespuesta'
             },
             {
-                Header: 'FRT',
+                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
                 accessor: 'tiempoprimerarespuestaasesor'
             },
             {
-                Header: 'ART Asesor',
+                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
                 accessor: 'tiempopromediorespuestaasesor'
             },
             {
-                Header: 'ART Cliente',
+                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
                 accessor: 'tiempopromediorespuestapersona'
             },
             {
-                Header: 'Duración total',
+                Header: t(langKeys.ticket_duraciontotal),
                 accessor: 'duraciontotal'
             },
             {
-                Header: 'Duración real',
+                Header: t(langKeys.ticket_duracionreal),
                 accessor: 'duracionreal'
             },
             {
-                Header: 'Tiempo pausado',
+                Header: t(langKeys.ticket_duracionpausa),
                 accessor: 'duracionpausa'
             },
             {
-                Header: 'TMO Asesor',
+                Header: t(langKeys.ticket_tmoasesor),
                 accessor: 'tmoasesor'
             },
             {
-                Header: 'Primera asignación',
+                Header: t(langKeys.ticket_tiempoprimeraasignacion),
                 accessor: 'tiempoprimeraasignacion'
             },
             {
-                Header: 'Estado',
+                Header: t(langKeys.ticket_estadoconversacion),
                 accessor: 'estadoconversacion'
             },
             {
-                Header: 'Tipo de cierre',
+                Header: t(langKeys.ticket_tipocierre),
                 accessor: 'tipocierre'
             },
             {
-                Header: 'Tipificación',
+                Header: t(langKeys.ticket_tipification),
                 accessor: 'tipification'
             },
             {
-                Header: 'Nombre o razón social',
+                Header: t(langKeys.ticket_firstname),
                 accessor: 'firstname'
             },
             {
-                Header: 'Persona quien contacta',
+                Header: t(langKeys.ticket_contact),
                 accessor: 'contact'
             },
             {
-                Header: 'Apellidos',
+                Header: t(langKeys.ticket_lastname),
                 accessor: 'lastname'
             },
             {
-                Header: 'Correo',
+                Header: t(langKeys.ticket_email),
                 accessor: 'email'
             },
             {
-                Header: 'Teléfono',
+                Header: t(langKeys.ticket_phone),
                 accessor: 'phone'
             },
             {
-                Header: 'N° Balanceos',
+                Header: t(langKeys.ticket_balancetimes),
                 accessor: 'balancetimes'
             },
             {
-                Header: 'Tipo de documento',
+                Header: t(langKeys.ticket_documenttype),
                 accessor: 'documenttype'
             }
             ,
             {
-                Header: 'N° Documento',
+                Header: t(langKeys.ticket_dni),
                 accessor: 'dni'
             },
             {
-                Header: 'Abandono',
+                Header: t(langKeys.ticket_abandoned),
                 accessor: 'abandoned'
             },
             {
-                Header: 'Consultas',
+                Header: t(langKeys.ticket_enquiries),
                 accessor: 'enquiries'
             },
             {
-                Header: 'Labels',
+                Header: t(langKeys.ticket_labels),
                 accessor: 'labels'
             },
             {
-                Header: 'TDA',
+                Header: t(langKeys.ticket_tdatime),
                 accessor: 'tdatime'
             }
         ],
@@ -357,7 +378,7 @@ const Tickets = () => {
 
 
 
-    
+
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
     const [pageCount, setPageCount] = useState(0);
@@ -400,7 +421,7 @@ const Tickets = () => {
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        
+
         console.log('allParameters', allParameters);
         console.log('fetchDataAux', fetchDataAux);
 
@@ -411,7 +432,7 @@ const Tickets = () => {
             take: pageSize,
             skip: pageIndex,
             sorts: sorts,
-            filters: filters,            
+            filters: filters,
             ...allParameters
         })))
     };
@@ -516,6 +537,13 @@ const Tickets = () => {
                 download={true}
                 fetchData={fetchData}
                 exportPersonalized={triggerExportData}
+            />
+
+
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
             />
 
         </div >

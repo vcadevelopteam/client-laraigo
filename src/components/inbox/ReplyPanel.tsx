@@ -184,6 +184,7 @@ const BottomGoToUnder: React.FC = () => {
             else 
                 setCountNewMessage(countNewMessage + 1)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerNewMessageClient])
 
 

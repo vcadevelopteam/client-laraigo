@@ -27,6 +27,19 @@ export const getCollectionDynamic = (requestBody: IRequestBodyDynamic): IActionC
 export const resetMainDynamic = (): IActionCall => ({type: actionTypes.DATA_DYNAMIC_RESET});
 
 
+export const exportDynamic = (requestBody: IRequestBodyDynamic): IActionCall => ({
+    callAPI: () => CommonService.mainDynamicExport(requestBody),
+    types: {
+        loading: actionTypes.DATA_EXPORT_DYNAMIC,
+        success: actionTypes.DATA_EXPORT_DYNAMIC_SUCCESS,
+        failure: actionTypes.DATA_EXPORT_DYNAMIC_FAILURE,
+    },
+    type: null,
+});
+
+export const resetExportMainDynamic = (): IActionCall => ({type: actionTypes.DATA_EXPORT_DYNAMIC_RESET});
+
+
 
 
 export const uploadFile = (data: FormData): IActionCall => ({

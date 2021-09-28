@@ -70,6 +70,48 @@ export const mainDynamicReset = (state: IState): IState => ({
     mainDynamic: initialState.mainDynamic,
 });
 
+
+
+export const exportDataDynamic = (state: IState): IState => ({
+    ...state,
+    exportDynamicData: { ...state.exportDynamicData, loading: true, error: false }
+});
+
+export const exportDataDynamicSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        exportDynamicData: {
+            url: action.payload.url,
+            loading: false,
+            code: undefined,
+            error: false,
+            message: undefined,
+        }
+    }
+};
+
+export const exportDataDynamicFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    exportDynamicData: {
+        ...state.exportDynamicData,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const exportDataDynamicReset = (state: IState): IState => ({
+    ...state,
+    exportDynamicData: initialState.exportDynamicData,
+});
+
+
+
+
+
+
+
 export const uploadFile = (state: IState): IState => ({
     ...state,
     uploadFile: { ...state.uploadFile, loading: true, error: false }

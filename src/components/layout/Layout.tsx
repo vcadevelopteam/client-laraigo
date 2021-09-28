@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
+        overflow: 'overlay',
         // padding: theme.spacing(3),
         // transition: theme.transitions.create('margin', {
         //     easing: theme.transitions.easing.sharp,
@@ -208,7 +209,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             classes={classes}
                             theme={theme}
                         />
-                        <main className={clsx(classes.content)}>
+                        <main className={classes.content}>
                             <div className={classes.toolbar} />
                             <div className={clsx(classes.mainContent,
                                 openDrawer ? classes.contentDrawerOpen : classes.contentDrawerClosed)}>

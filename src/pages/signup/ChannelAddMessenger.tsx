@@ -12,7 +12,7 @@ import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { getChannelsList, insertChannel } from "store/channel/actions";
+import { getChannelsListSub } from "store/signup/actions";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,7 +24,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddMessenger: FC = () => {
+export const ChannelAddMessenger: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
@@ -61,10 +61,8 @@ export const ChannelAddMessenger: FC = () => {
     })
 
     async function finishreg() {
-        setsetins(true)
-        dispatch(insertChannel(fields))
-        setWaitSave(true);
-        setViewSelected("main")
+        setrequestchannels((p:any)=>([...p,fields]))
+        setlistchannels((p:any)=>({...p,messenger:false}))
     }
     useEffect(() => {
         if (waitSave && setins) {
@@ -91,7 +89,7 @@ export const ChannelAddMessenger: FC = () => {
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsList(r.accessToken))
+            dispatch(getChannelsListSub(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
             setWaitSave(true);
@@ -121,11 +119,6 @@ export const ChannelAddMessenger: FC = () => {
     if(viewSelected==="view1"){
         return (
             <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => {e.preventDefault();history.push(paths.CHANNELS_ADD)}}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>
