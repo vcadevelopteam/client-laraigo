@@ -137,13 +137,13 @@ const DialogVariables: React.FC<{
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Datos del cliente" />
-                <AntTab label="Información del ticket" />
-                <AntTab label="Servicios IA" />
-                <AntTab label="Variable del sistema" />
-                <AntTab label="Variables Odoo" />
+                <AntTab label={t(langKeys.personinformation)} />
+                <AntTab label={t(langKeys.ticketinformation)} />
+                <AntTab label={t(langKeys.AIservices)} />
+                <AntTab label={t(langKeys.systemvariables)} />
+                <AntTab label={t(langKeys.odoovariables)} />
             </Tabs>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 16, justifyContent: 'center' }}>
                 {variablesToShow.map((x, index) => (
                     <div
                         key={index}

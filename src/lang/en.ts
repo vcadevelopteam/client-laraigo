@@ -47,6 +47,12 @@ const translation: LangKeys = {
     user: 'User',
     user_plural: 'Users',
 
+    personinformation: 'Person',
+    ticketinformation: 'Ticket',
+    AIservices: 'AI Services',
+    systemvariables: 'System',
+    odoovariables: 'Odoo',
+
     property: 'Property',
     property_plural: 'Properties',
 

@@ -179,7 +179,7 @@ const TableZyx = React.memo(({
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <Input
-                    disabled={loading}
+                    // disabled={loading}
                     type={type === "number" ? "number" : "text"}
                     style={{ fontSize: '15px', minWidth: '100px' }}
                     fullWidth

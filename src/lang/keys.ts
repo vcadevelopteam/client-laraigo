@@ -36,6 +36,11 @@ export const langKeys = {
     designed_reports: 'designed_reports',
     filters: 'filters',
 
+    personinformation: 'personinformation',
+    ticketinformation: 'ticketinformation',
+    AIservices: 'AIservices',
+    systemvariables: 'systemvariables',
+    odoovariables: 'odoovariables',
 
     channel: 'channel',
     channel_plural: 'channel_plural',

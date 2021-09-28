@@ -255,7 +255,6 @@ const TableZyx = React.memo(({
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
     const {

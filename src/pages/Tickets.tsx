@@ -16,7 +16,7 @@ import Button from '@material-ui/core/Button/Button';
 import { DateRangePicker, FieldMultiSelect } from 'components';
 import { Range } from 'react-date-range';
 import Link from '@material-ui/core/Link';
-import { DialogInteractions} from 'components';
+import { DialogInteractions } from 'components';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -116,8 +116,9 @@ const Tickets = () => {
     const [openModal, setOpenModal] = useState(false);
 
     const handleClickOpen = (row: any) => {
+        console.log(row)
         setOpenModal(true);
-        setRowSelected(row)
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
     };
 
     const columns = React.useMemo(

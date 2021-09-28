@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { createStyles, makeStyles, Paper, Theme } from "@material-ui/core";
 import IOSSwitch from "components/fields/IOSSwitch";
 import { Trans } from "react-i18next";

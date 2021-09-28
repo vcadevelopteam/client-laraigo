@@ -52,6 +52,12 @@ const translation: LangKeys = {
 
     groupconfig: "Configuración de Grupos",
 
+    personinformation: 'Persona',
+    ticketinformation: 'Ticket',
+    AIservices: 'Servicios IA',
+    systemvariables: 'Sistema',
+    odoovariables: 'Odoo',
+
     quantity: 'Cantidad',
     quantity_plural: "Cantidades",
     summarize: 'Resumen',
