@@ -12,7 +12,7 @@ import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { CalendarIcon, DownloadIcon } from 'icons';
-import { getCollectionDynamic, resetMainDynamic } from 'store/main/actions';
+import { getCollectionDynamic, resetMainDynamic, exportDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
 const arrayBread = [
@@ -84,12 +84,20 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     }, [])
 
     const mainDynamic = useSelector(state => state.main.mainDynamic);
+    const resExportDynamic = useSelector(state => state.main.exportDynamicData);
 
     const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataChannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
-    const onSearch = () => {
+    useEffect(() => {
+        if (!resExportDynamic.loading && !resExportDynamic.error && resExportDynamic.url) {
+            window.open(resExportDynamic.url, '_blank');
+        }
+    }, [resExportDynamic])
+
+    const onSearch = (isExport: Boolean = false) => {
+        console.log(isExport)
         const body = {
             columns,
             parameters: {
@@ -121,7 +129,10 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                 }] : []),
             ]
         }
-        dispatch(getCollectionDynamic(body));
+        if (isExport)
+            dispatch(exportDynamic(body));
+        else 
+            dispatch(getCollectionDynamic(body));
     }
 
     return (
@@ -204,14 +215,15 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                     color="primary"
                     startIcon={<SearchIcon style={{ color: 'white' }} />}
                     style={{ backgroundColor: '#55BD84', width: 120 }}
-                    onClick={onSearch}
+                    onClick={() => onSearch()}
                 >
                     {t(langKeys.search)}
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={mainDynamic.loading}
+                    disabled={resExportDynamic.loading}
+                    onClick={() => onSearch(true)}
                     // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                     startIcon={<DownloadIcon />}
                 >{t(langKeys.download)}

@@ -183,25 +183,25 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                 onKeyDown={keyPress}
                 value={value}
                 onChange={e => setValue(e.target.value)}
-            // startAdornment={
-            //     <InputAdornment position="start">
-            //         <SearchIcon color="action" fontSize="small" />
-            //     </InputAdornment>
-            // }
             />
-            <MoreVertIcon
-                style={{ cursor: 'pointer' }}
-                aria-label="more"
-                aria-controls="long-menu"
-                aria-haspopup="true"
+            <IconButton
                 onClick={handleClickMenu}
-                color="action"
-                fontSize="small"
-            />
+                size="small"
+            >
+                <MoreVertIcon
+                    style={{ cursor: 'pointer' }}
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    onClick={handleClickMenu}
+                    color="action"
+                    fontSize="small"
+                />
+            </IconButton>
+
             <Menu
                 id="long-menu"
                 anchorEl={anchorEl}
-                keepMounted
                 open={open}
                 onClose={handleCloseMenu}
                 PaperProps={{
