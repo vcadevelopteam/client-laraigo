@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insBlacklist, uploadExcel } from 'common/helpers';
+import { convertLocalDate, getBlacklistExport, getBlacklistPaginated, insarrayBlacklist, insBlacklist, uploadExcel } from 'common/helpers';
 import { Dictionary, IFetchData } from "@types";
 import { execute, exportData, getCollectionPaginated, resetCollectionPaginated } from 'store/main/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
@@ -126,16 +126,16 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
         if (file) {
             const data: any = await uploadExcel(file, undefined);
             dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: null,
-                detail: data.map((x: any) => insBlacklist({
-                    ...x,
-                    id: 0,
-                    type: 'NINGUNO',
-                    status: 'ACTIVO',
-                    operation: 'INSERT',
-                }))
-            }, true));
+            dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
+                ad.push({
+                    ...d,
+                    id: d.id || 0,
+                    type: d.type || 'NINGUNO',
+                    status: d.status || 'ACTIVO',
+                    operation: d.operation || 'INSERT',
+                })
+                return ad;
+            }, []))));
             setWaitImport(true)
         }
     }
