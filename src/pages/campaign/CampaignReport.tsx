@@ -48,6 +48,8 @@ const dataReportType = {
     proactive: 'proactive'
 }
 
+const selectionKey = 'id';
+
 export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -61,8 +63,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
 
     const [openModal, setOpenModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<Dictionary | undefined>({});
-
-    const [selectionKey, setSelectionKey] = useState<string>('id')
+    
     const [selectedRows, setSelectedRows] = useState<any>({});
     const [reportType, setReportType] = useState<string>('default');
     
@@ -79,7 +80,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 : row[column.id]}
             </div>
         )
-        
     }
 
     const columns = React.useMemo(
@@ -204,11 +204,6 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
         }
     };
 
-    const handleDetail = (row?: Dictionary) => {
-        setSelectedRow(row);
-        setOpenModal(true);
-    }
-
     useEffect(() => {
         dispatch(resetCollectionPaginated());
         fetchData(fetchDataAux);
@@ -312,7 +307,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     const { t } = useTranslation();
 
     const mainAux = useSelector(state => state.main.mainAux);
-    const [auxData, setAuxData] = useState<Dictionary[]>([]);
     const [waitView, setWaitView] = useState(false);
 
     const columns = React.useMemo(
@@ -356,7 +350,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     useEffect(() => {
         if (waitView) {
             if (!mainAux.loading && !mainAux.error) {
-                setAuxData(mainAux.data);
                 dispatch(showBackdrop(false));
                 setWaitView(false);
             }
