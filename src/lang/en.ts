@@ -47,6 +47,12 @@ const translation: LangKeys = {
     user: 'User',
     user_plural: 'Users',
 
+    personinformation: 'Person',
+    ticketinformation: 'Ticket',
+    AIservices: 'AI Services',
+    systemvariables: 'System',
+    odoovariables: 'Odoo',
+
     property: 'Property',
     property_plural: 'Properties',
 
@@ -298,6 +304,18 @@ const translation: LangKeys = {
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
     no_record_selected: 'No record selected',
+    rundate: 'Run date',
+    total: 'Total',
+    success: 'Success',
+    success_percent: '% Success',
+    failed: 'Failed',
+    failed_percent: '% Failed',
+    attended: 'Attended',
+    locked: 'Locked',
+    blacklisted: 'Blacklisted',
+    default: 'Default',
+    proactive: 'Proactive',
+    log: 'Log',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',

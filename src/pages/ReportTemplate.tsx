@@ -84,6 +84,7 @@ type IColumnTemplate = {
     value: string;
     filter: string;
     hasFilter: boolean;
+    id: any;
 }
 type FormFields = {
     reporttemplateid: number;
@@ -137,13 +138,13 @@ const DialogVariables: React.FC<{
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Datos del cliente" />
-                <AntTab label="Información del ticket" />
-                <AntTab label="Servicios IA" />
-                <AntTab label="Variable del sistema" />
-                <AntTab label="Variables Odoo" />
+                <AntTab label={t(langKeys.personinformation)} />
+                <AntTab label={t(langKeys.ticketinformation)} />
+                <AntTab label={t(langKeys.AIservices)} />
+                <AntTab label={t(langKeys.systemvariables)} />
+                <AntTab label={t(langKeys.odoovariables)} />
             </Tabs>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 8 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, paddingTop: 16, justifyContent: 'center' }}>
                 {variablesToShow.map((x, index) => (
                     <div
                         key={index}
@@ -239,7 +240,9 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
 
     const handlerNewColumn = (item: Dictionary | null | undefined = null) => fieldsAppend({ key: item?.key || '', value: item?.value || '', filter: '', hasFilter: false });
 
-    const handlerDeleteColumn = (index: number) => fieldRemove(index);
+    const handlerDeleteColumn = (index: number) => {
+        fieldRemove(index)
+    };
 
     return (
         <>
@@ -359,7 +362,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                 </TableHead>
                                 <TableBody>
                                     {fields.map((item: IColumnTemplate, i) =>
-                                        <TableRow key={i}>
+                                        <TableRow key={item.id}>
                                             <TableCell width={30}>
                                                 <div style={{ display: 'flex' }}>
                                                     <IconButton
@@ -405,6 +408,10 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
                                                         onChange={(value) => {
                                                             setValue(`columns.${i}.hasFilter`, value);
                                                             trigger(`columns.${i}.hasFilter`)
+                                                            if (!value) {
+                                                                setValue(`columns.${i}.filter`, "");
+                                                                trigger(`columns.${i}.filter`)
+                                                            }
                                                         }}
                                                         defaultValue={item.hasFilter}
                                                     />

@@ -1050,3 +1050,38 @@ export const getBlacklistExport = ({ filters, sorts }: Dictionary): IRequestBody
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const getCampaignReportPaginated = ({ filters, sorts, take, skip }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CAMPAIGNREPORT_SEL",
+    methodCount: "UFN_CAMPAIGNREPORT_TOTALRECORDS",
+    parameters: {
+        origin: "campaignreport",
+        filters,
+        sorts,
+        take,
+        skip,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getCampaignReportExport = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CAMPAIGNREPORT_EXPORT",
+    key: "UFN_CAMPAIGNREPORT_EXPORT",
+    parameters: {
+        origin: "campaignreport",
+        table: JSON.stringify(table),
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        isNotPaginated: true
+    }
+});
+
+export const getCampaignReportProactiveExport = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_CAMPAIGNREPORT_PROACTIVE_EXPORT",
+    key: "UFN_CAMPAIGNREPORT_PROACTIVE_EXPORT",
+    parameters: {
+        origin: "campaignreport",
+        table: JSON.stringify(table),
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        isNotPaginated: true
+    }
+});

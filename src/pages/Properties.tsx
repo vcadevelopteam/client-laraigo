@@ -16,7 +16,7 @@ import { Box, IconButton } from '@material-ui/core';
 import { Dictionary, MultiData } from '@types';
 import { FieldEdit, FieldEditArray, FieldSelect, FieldView, TemplateBreadcrumbs, TemplateSwitchArray, TitleDetail } from 'components';
 
-import { getChannelsByOrg, getDistinctPropertySel, getOrgsByCorp, getPropertySel, getValuesFromDomain, insProperty } from 'common/helpers';
+import { getDistinctPropertySel, getPropertySel, getValuesFromDomain, insProperty } from 'common/helpers';
 import { getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, execute } from 'store/main/actions';
 import { langKeys } from 'lang/keys';
 import { makeStyles } from '@material-ui/core/styles';
@@ -135,11 +135,12 @@ const Properties: FC = () => {
     }
 
     useEffect(() => {
+
         fetchData();
     }, [categoryFilter, levelFilter]);
 
     useEffect(() => {
-        fetchData();
+        // fetchData();
         dispatch(getMultiCollection([getValuesFromDomain('ESTADOGENERICO')]));
         return () => {
             dispatch(resetMain());
@@ -240,7 +241,7 @@ interface DetailPropertyProps {
 }
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
-    const [propertyDetailTable, setPropertyDetailTable] = useState<any[]>([]);
+    // const [propertyDetailTable, setPropertyDetailTable] = useState<any[]>([]);
     const [waitSave, setWaitSave] = useState(false);
 
     const detailResult = useSelector(state => state.main.mainAux);
@@ -253,7 +254,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const dispatch = useDispatch();
 
-    const { control, register, handleSubmit, trigger, setValue, getValues, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, trigger, setValue, formState: { errors } } = useForm<any>({
         defaultValues: {
             table: []
         }
@@ -313,7 +314,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
-            setPropertyDetailTable(detailResult.data);
+            // setPropertyDetailTable(detailResult.data);
             fieldsAppend(detailResult.data);
         }
     }, [detailResult]);
@@ -491,10 +492,9 @@ interface RowSelected {
 }
 
 const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue }) => {
-    const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    // const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [orgTable, setOrgTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    // const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
 
     const [fieldValue, setFieldValue] = useState(null);
     const [comboStep, setComboStep] = useState('NONE');
@@ -509,8 +509,6 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
     const dispatch = useDispatch();
 
     var valueInput = null;
-
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
 
     if (row) {
         switch (row?.inputtype) {
@@ -663,13 +661,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 onChangeSelectValue(index, 'orgdesc', fieldValue ? fieldValue : '');
 
                 if (comboValue) {
-                    if (row?.level === 'CHANNEL') {
-                        setChannelTable({ loading: true, data: [] });
-                        dispatch(getMultiCollectionAux([getChannelsByOrg(comboValue.orgid, index + 1)]));
-                    }
+                    // if (row?.level === 'CHANNEL') {
+                        // setChannelTable({ loading: true, data: [] });
+                    //     dispatch(getMultiCollectionAux([getChannelsByOrg(comboValue.orgid, index + 1)]));
+                    // }
 
                     if (row?.level === 'GROUP') {
-                        setGroupTable({ loading: true, data: [] });
+                        // setGroupTable({ loading: true, data: [] });
                         dispatch(getMultiCollectionAux([getValuesFromDomain('GRUPOS', ('GRUPO' + (index + 1)), comboValue.orgid)]));
                     }
 
@@ -679,13 +677,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                     }
                 }
                 else {
-                    if (row?.level === 'CHANNEL') {
-                        setChannelTable({ loading: false, data: [] });
-                    }
+                    // if (row?.level === 'CHANNEL') {
+                        // setChannelTable({ loading: false, data: [] });
+                    // }
 
-                    if (row?.level === 'GROUP') {
-                        setGroupTable({ loading: false, data: [] });
-                    }
+                    // if (row?.level === 'GROUP') {
+                        // setGroupTable({ loading: false, data: [] });
+                    // }
 
                     if (row?.inputtype === 'DOMAIN') {
                         setDomainTable({ loading: false, data: [] });
@@ -727,108 +725,29 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             {valueInput}
                         </div>
                         <div className='col-6'>
-                            {row?.level !== 'CORPORATION' ? (false ?
-                                <FieldSelect
-                                    className={classes.mb2}
-                                    data={orgTable.data}
-                                    error={errors?.table?.[index]?.orgid?.message}
-                                    fregister={{
-                                        ...register(`table.${index}.orgid`, {
-                                            validate: {
-                                                validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
-                                            }
-                                        })
-                                    }}
-                                    label={t(langKeys.organization)}
-                                    loading={orgTable.loading}
-                                    onChange={(value) => {
-                                        setFieldValue(value ? value.orgdesc : '');
-                                        setComboStep('ORGDESC');
-                                        setComboValue(value);
-
-                                        onChangeSelectValue(index, 'orgid', value ? value.orgid : 0);
-                                    }}
-                                    optionDesc='orgdesc'
-                                    optionValue='orgid'
-                                    valueDefault={row?.orgid || ''}
-                                />
-                                : <FieldEdit
+                            {row?.level !== 'CORPORATION' &&
+                                <FieldEdit
                                     className={classes.mb2}
                                     disabled={true}
                                     label={t(langKeys.organization)}
                                     valueDefault={row ? (row.orgdesc || '') : ''}
-                                />) : null
-                            }
-                            {row?.level === 'CHANNEL' ? (false ?
-                                <FieldSelect
-                                    className={classes.mb2}
-                                    data={channelTable.data}
-                                    error={errors?.table?.[index]?.communicationchannelid?.message}
-                                    fregister={{
-                                        ...register(`table.${index}.communicationchannelid`, {
-                                            validate: {
-                                                validate: (value: any) => (value && !isNaN(value)) || t(langKeys.field_required)
-                                            }
-                                        })
-                                    }}
-                                    label={t(langKeys.channel)}
-                                    loading={channelTable.loading}
-                                    onChange={(value) => onChangeSelectValue(index, 'communicationchannelid', value ? value.communicationchannelid : 0)}
-                                    optionDesc='description'
-                                    optionValue='communicationchannelid'
-                                    valueDefault={row?.communicationchannelid || ''}
                                 />
-                                : <FieldEdit
+                            }
+                            {row?.level === 'CHANNEL' &&
+                                <FieldEdit
                                     className={classes.mb2}
                                     disabled={true}
                                     label={t(langKeys.channel)}
                                     valueDefault={row ? (row.communicationchanneldesc || '') : ''}
-                                />) : null
-                            }
-                            {row?.level === 'GROUP' ? (false ?
-                                <FieldSelect
-                                    className={classes.mb2}
-                                    data={groupTable.data}
-                                    error={errors?.table?.[index]?.group?.message}
-                                    fregister={{
-                                        ...register(`table.${index}.group`, {
-                                            validate: {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            }
-                                        })
-                                    }}
-                                    label={t(langKeys.group)}
-                                    loading={groupTable.loading}
-                                    onChange={(value) => onChangeSelectValue(index, 'group', value ? value.domainvalue : '')}
-                                    optionDesc='domaindesc'
-                                    optionValue='domainvalue'
-                                    valueDefault={row?.group || ''}
                                 />
-                                : <FieldEdit
+                            }
+                            {row?.level === 'GROUP' &&
+                                <FieldEdit
                                     className={classes.mb2}
                                     disabled={true}
                                     label={t(langKeys.group)}
                                     valueDefault={row ? (row.group || '') : ''}
-                                />) : null
-                            }
-                            {false ?
-                                <FieldSelect
-                                    className={classes.mb2}
-                                    data={dataStatus}
-                                    error={errors?.table?.[index]?.status?.message}
-                                    fregister={{
-                                        ...register(`table.${index}.status`, {
-                                            validate: {
-                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                                            }
-                                        })
-                                    }}
-                                    label={t(langKeys.status)}
-                                    onChange={(value) => onChangeSelectValue(index, 'status', value ? value.domainvalue : '')}
-                                    optionDesc='domaindesc'
-                                    optionValue='domainvalue'
-                                    valueDefault={row?.status || 'ACTIVO'}
-                                /> : null
+                                />
                             }
                         </div>
                     </div>
