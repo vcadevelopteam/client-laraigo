@@ -339,7 +339,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
                     rundate: row.id.split('_')[1],
                 }]
             )))
-            dispatch(showBackdrop(true));
             setWaitView(true);
             return () => {
                 dispatch(resetMainAux());
@@ -350,7 +349,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     useEffect(() => {
         if (waitView) {
             if (!mainAux.loading && !mainAux.error) {
-                dispatch(showBackdrop(false));
                 setWaitView(false);
             }
         }
@@ -369,6 +367,7 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
                 <TableZyx
                     columns={columns}
                     data={mainAux.data}
+                    loading={mainAux.loading}
                     filterGeneral={false}
                     download={false}
                 />
