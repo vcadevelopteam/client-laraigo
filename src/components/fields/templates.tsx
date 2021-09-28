@@ -182,7 +182,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
         maxWidth={maxWidth}
         style={{ zIndex: 1300 }}>
         <form onSubmit={(button1Type === "submit" ? handleClickButton1 : (button2Type === "submit" ? handleClickButton2 : () => { }))}>
-            <DialogTitle>{title}</DialogTitle>
+            {title && <DialogTitle>{title}</DialogTitle>}
             <DialogContent>
                 {children}
             </DialogContent>

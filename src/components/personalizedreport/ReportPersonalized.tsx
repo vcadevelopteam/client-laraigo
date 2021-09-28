@@ -3,7 +3,6 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { TemplateBreadcrumbs, DateRangePicker, FieldMultiSelect, FieldSelect } from 'components';
-
 import { Dictionary } from "@types";
 import TableZyx from 'components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { CalendarIcon, DownloadIcon } from 'icons';
-import { getCollectionDynamic, resetMainDynamic, exportDynamic } from 'store/main/actions';
+import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
 const arrayBread = [
@@ -77,6 +76,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
 
     useEffect(() => {
         dispatch(resetMainDynamic())
+        dispatch(resetExportMainDynamic())
         setcolumnsDynamic(columns.map((x: Dictionary) => ({
             Header: x.value,
             accessor: x.key,
@@ -85,7 +85,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
 
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
-
 
     const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -132,7 +131,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
         }
         if (isExport)
             dispatch(exportDynamic(body));
-        else 
+        else
             dispatch(getCollectionDynamic(body));
     }
 
