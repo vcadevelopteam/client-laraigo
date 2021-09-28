@@ -3,7 +3,10 @@ import { FC ,useState} from "react";
 import { makeStyles, Button, TextField} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+
+import { useSelector } from 'hooks';
+import { useDispatch } from "react-redux";
+
 import { executeSubscription } from "store/signup/actions";
 
 const useChannelAddStyles = makeStyles(theme => ({

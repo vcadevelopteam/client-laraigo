@@ -86,6 +86,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     const mainDynamic = useSelector(state => state.main.mainDynamic);
     const resExportDynamic = useSelector(state => state.main.exportDynamicData);
 
+
     const dataGroups = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataTags = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataChannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
