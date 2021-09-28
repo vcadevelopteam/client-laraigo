@@ -975,6 +975,10 @@ export const getOpportunitiesByPersonBody = (personId: ID) => ({
     },
 });
 
+export const getTagsChatflow = () => ({
+    method: "UFN_CHATFLOW_TAG_SEL",
+    parameters: {},
+});
 export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
     parameters: {
@@ -1013,6 +1017,13 @@ export const insBlacklist = ({ id, description, type, status, phone, operation }
         status,
         phone,
         operation,
+    },
+});
+
+export const insarrayBlacklist = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_BLACKLIST_INS_ARRAY",
+    parameters:{
+        table: JSON.stringify(table)
     },
 });
 

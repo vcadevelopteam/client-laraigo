@@ -4,3 +4,4 @@ export * from './keys';
 export * from './apiUrls';
 export * from './paths';
 export * from './icons';
+export * from './variablesTemplate';

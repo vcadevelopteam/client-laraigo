@@ -114,7 +114,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
             anchor="left"
             open={openDrawer}
             classes={{
-                paper: clsx({
+                paper: clsx("scroll-style-go", {
                     [classes.drawerOpen]: openDrawer,
                     [classes.drawerClose]: !openDrawer,
                 }),

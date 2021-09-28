@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction } from "@types";
+import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -13,6 +13,31 @@ export const getCollection = (requestBody: IRequestBody): IActionCall => ({
 });
 
 export const resetMain = (): IActionCall => ({type: actionTypes.MAIN_RESET});
+
+export const getCollectionDynamic = (requestBody: IRequestBodyDynamic): IActionCall => ({
+    callAPI: () => CommonService.mainDynamic(requestBody),
+    types: {
+        loading: actionTypes.DATA_DYNAMIC,
+        success: actionTypes.DATA_DYNAMIC_SUCCESS,
+        failure: actionTypes.DATA_DYNAMIC_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMainDynamic = (): IActionCall => ({type: actionTypes.DATA_DYNAMIC_RESET});
+
+
+export const exportDynamic = (requestBody: IRequestBodyDynamic): IActionCall => ({
+    callAPI: () => CommonService.mainDynamicExport(requestBody),
+    types: {
+        loading: actionTypes.DATA_EXPORT_DYNAMIC,
+        success: actionTypes.DATA_EXPORT_DYNAMIC_SUCCESS,
+        failure: actionTypes.DATA_EXPORT_DYNAMIC_FAILURE,
+    },
+    type: null,
+});
+
+export const resetExportMainDynamic = (): IActionCall => ({type: actionTypes.DATA_EXPORT_DYNAMIC_RESET});
 
 
 

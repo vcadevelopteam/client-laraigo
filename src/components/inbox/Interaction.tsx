@@ -1,17 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, IInteraction, IGroupInteraction, Dictionary } from "@types";
+import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
 import { BotIcon, AgentIcon, DownloadIcon2, FileIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import { useSelector } from 'hooks';
 import clsx from 'clsx';
-import { ListItemSkeleton } from 'components'
-import { Skeleton } from '@material-ui/lab';
 import { manageLightBox } from 'store/popus/actions';
-import { goToBottom } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 
 const useStylesCarousel = makeStyles((theme) => ({

@@ -1328,7 +1328,7 @@ const TabPanelExtras: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
 
 const useStyles = makeStyles(theme => ({
     root: {
-        width: 'inherit',
+        width: '100%',
         marginLeft: 'auto',
         marginRight: 'auto',
         display: 'flex',
@@ -1423,7 +1423,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC = () => {
+export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const classes = useStyles();
     const history = useHistory();
     const dispatch = useDispatch();
@@ -1509,7 +1509,8 @@ export const ChannelAddChatWeb: FC = () => {
     const handleSubmit = (name: string, auto: boolean) => {
         // return console.log(form.getValues());
         const body = getInsertChatwebChannel(name, auto, form.getValues());
-        dispatch(insertChannel2(body));
+        setrequestchannels((p:any)=>([...p,body]))
+        setlistchannels((p:any)=>({...p,chatWeb:false}))
     }
 
     const handleGoBack: React.MouseEventHandler = (e) => {
@@ -1520,11 +1521,6 @@ export const ChannelAddChatWeb: FC = () => {
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key="mainview" href="/" onClick={handleGoBack}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
                 <h2 className={classes.title}>
                     <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />
                 </h2>

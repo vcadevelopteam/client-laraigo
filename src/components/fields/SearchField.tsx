@@ -21,7 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: '2px 4px',
             display: 'flex',
             alignItems: 'center',
-            height: 42,
+            height: 35,
             border: '1px solid #EBEAED',
             backgroundColor: (props: any) => props.colorPlaceHolder || '#F9F9FA',
         },

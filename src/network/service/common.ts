@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { IRequestBody, IRequestBodyPaginated, ITransaction } from '@types';
+import { IRequestBody, IRequestBodyPaginated, ITransaction, IRequestBodyDynamic } from '@types';
 import { APIManager, ExternalRequestManager } from '../manager';
 import { removeAuthorizationToken } from "common/helpers";
 
@@ -35,6 +35,14 @@ export function multiMain(requestBody: IRequestBody[]) {
 
 export function mainPaginated(requestBody: IRequestBodyPaginated) {
     return APIManager.post(apiUrls.MAIN_PAGINATED, { data: requestBody }, true);
+}
+
+export function mainDynamic(requestBody: IRequestBodyDynamic) {
+    return APIManager.post(apiUrls.MAIN_DYNAMIC, { data: requestBody }, true);
+}
+
+export function mainDynamicExport(requestBody: IRequestBodyDynamic) {
+    return APIManager.post(apiUrls.MAIN_DYNAMIC_EXPORT, { data: requestBody }, true);
 }
 
 export function getTickets(page: number, pageSize: number) {

@@ -1,13 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, Fragment, useState } from 'react';
-import { Dictionary } from '@types';
 import { makeStyles } from '@material-ui/styles';
-import {FirstStep} from './FirstStep';
+import {RightSideMenu} from './RightSideMenu';
 
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
 const useSignUpStyles = makeStyles(theme => ({
     purplecircle: {
         padding: "1vh",
@@ -65,7 +60,7 @@ export const SignUp: FC = () => {
                     <img src="./Laraigo-vertical-logo-name.svg" alt="logo" />
                 </div>
                 <div className="col-6">
-                    <FirstStep
+                    <RightSideMenu
                         setStep={setStep}
                         step={step}
                     />

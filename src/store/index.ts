@@ -10,6 +10,7 @@ import popusReducer, { IState as IPopus } from './popus/reducer';
 import inboxReducer, { IState as IInbox } from './inbox/reducer';
 import integrationManagerReducer, { IState as IIntegrationManager } from './integrationmanager/reducer';
 import flowdesignerReducer, { IState as IFlowDesigner } from './flowdesigner/reducer';
+import signupReducer, { IState as ISignUp} from './signup/reducer';
 import personReducer, { IState as IPerson } from './person/reducer';
 
 export interface IRootState {
@@ -21,6 +22,7 @@ export interface IRootState {
     channel: IChannelState;
     integrationmanager: IIntegrationManager;
     flowdesigner: IFlowDesigner;
+    signup: ISignUp;
     person: IPerson;
 }
 
@@ -39,6 +41,7 @@ const rootReducer = combineReducers<IRootState>({
     integrationmanager: integrationManagerReducer,
     channel: channelReducer,
     flowdesigner: flowdesignerReducer,
+    signup: signupReducer,
     person: personReducer,
 });
 
