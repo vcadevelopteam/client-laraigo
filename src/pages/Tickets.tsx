@@ -17,10 +17,7 @@ import { DateRangePicker, FieldMultiSelect } from 'components';
 import { Range } from 'react-date-range';
 import Link from '@material-ui/core/Link';
 import { DialogInteractions } from 'components';
-<<<<<<< HEAD
 import { Checkbox } from '@material-ui/core';
-=======
->>>>>>> f2939dc7b1c1b9334aa4a1fecc9e29c7d4de3530
 
 const useStyles = makeStyles((theme) => ({
     container: {
