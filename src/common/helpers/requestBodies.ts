@@ -943,6 +943,10 @@ export const getOpportunitiesByPersonBody = (personId: ID) => ({
     },
 });
 
+export const getTagsChatflow = () => ({
+    method: "UFN_CHATFLOW_TAG_SEL",
+    parameters: {},
+});
 export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
     parameters: {
