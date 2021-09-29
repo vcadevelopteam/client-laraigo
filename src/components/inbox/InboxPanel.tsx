@@ -66,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
-        gap: theme.spacing(1),
+        // gap: theme.spacing(1),
     },
     containerPostback: {
         width: 200,
@@ -164,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
         flex: '1',
         flexDirection: 'column',
         display: 'flex',
-        
+
     },
     collapseInfo: {
         position: 'absolute',
@@ -281,20 +281,28 @@ const useStyles = makeStyles((theme) => ({
         // padding: theme.spacing(1)
     },
     headerQuickReply: {
-        fontSize: 13, 
+        fontSize: 14,
         fontWeight: 500,
-        padding: theme.spacing(1.5),
-        borderBottom: '1px solid #EBEAED'
-    },
-    itemQuickReply: {
-        fontSize: 13, 
-        paddingTop: theme.spacing(.7),
-        paddingBottom: theme.spacing(.7),
+        padding: theme.spacing(1),
         paddingLeft: theme.spacing(1.5),
-        paddingRight: theme.spacing(1.5),
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    hotKeyQuickReply: {
+        padding: theme.spacing(.5),
+        flex: '0 0 28px',
+        backgroundColor: theme.palette.primary.main,
+        color: '#FFF',
+        borderRadius: 4,
+        width: 200,
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+        overflowX: 'hidden',
+        textOverflow: 'ellipsis',
         '&:hover': {
-            backgroundColor: '#EBEAED',
-            cursor: 'pointer'
+            backgroundColor: '#bd95d7',
+            fontWeight: 500
         }
     }
 }));
@@ -332,7 +340,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     const ticketList = useSelector(state => state.inbox.ticketList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
-    
+
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
         dispatch(getDataTicket(ticket))
@@ -355,7 +363,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const onChangeSearchTicket = (e: any) => {
         setSearch(e.target.value)
     }
-    
+
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
