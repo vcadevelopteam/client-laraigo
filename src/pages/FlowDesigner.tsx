@@ -10,9 +10,9 @@ const FlowDesigner: FC = () => {
     const history = useHistory();
     
     //const origin = 'https://localhost:4200';
-    const origin = 'https://zyxmedev.com';
+    const origin = 'https://zyxmelinux.zyxmeapp.com';
     //const path = '';
-    const path = '/chatweb/chatflow';
+    const path = '/chatflow';
 
     const receiveCrossDomainMessage = (event: any) => {
         if (event?.origin === origin) {
