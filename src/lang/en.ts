@@ -167,6 +167,7 @@ const translation: LangKeys = {
     status_activo: 'active',
     status_inactivo: 'inactive',
     status_bloqueado: 'locked',
+    status_ejecutando: 'executing',
 
     attending: 'Attending',
 
@@ -316,6 +317,8 @@ const translation: LangKeys = {
     default: 'Default',
     proactive: 'Proactive',
     log: 'Log',
+    execute: 'Execute',
+    sent: 'sent',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',

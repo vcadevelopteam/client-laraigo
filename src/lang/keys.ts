@@ -238,6 +238,7 @@ export const langKeys = {
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
+    status_ejecutando: 'status_ejecutando',
 
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
@@ -360,6 +361,8 @@ export const langKeys = {
     default: 'default',
     proactive: 'proactive',
     log: 'log',
+    execute: 'execute',
+    sent: 'sent',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

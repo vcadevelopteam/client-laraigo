@@ -215,6 +215,7 @@ const translation: LangKeys = {
     status_activo: 'activo',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
+    status_ejecutando: 'ejecutando',
 
     attending: 'En atención',
 
@@ -358,6 +359,8 @@ const translation: LangKeys = {
     default: 'Predeterminado',
     proactive: 'Proactivo',
     log: 'Log',
+    execute: 'Ejecutar',
+    sent: 'enviado',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
