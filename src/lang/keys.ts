@@ -29,7 +29,7 @@ export const langKeys = {
     supervisor_plural: 'supervisor_plural',
     tipification: 'tipification',
     tipification_plural: 'tipification_plural',
-
+    useralreadyregistered: "useralreadyregistered",
     report_designer: 'report_designer',
     column_plural: 'column_plural',
     new_report_designer: 'new_report_designer',
@@ -349,6 +349,8 @@ export const langKeys = {
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
     no_record_selected: 'no_record_selected',
+    reporttype: 'reporttype',
+    no_type_selected: 'no_type_selected',
     rundate: 'rundate',
     total: 'total',
     success: 'success',
@@ -363,6 +365,7 @@ export const langKeys = {
     log: 'log',
     execute: 'execute',
     sent: 'sent',
+    campaign_in_execution: 'campaign_in_execution',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -402,6 +405,7 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     login_with_facebook: 'login_with_facebook',
+    signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',

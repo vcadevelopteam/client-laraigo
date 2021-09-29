@@ -1,5 +1,5 @@
-import { IActionCall, IChatWebAdd, IRequestBody } from "@types";
-import { ChannelsService, CommonService } from "network";
+import { IActionCall, IRequestBody } from "@types";
+import { ChannelsService } from "network";
 import actionTypes from "./actionTypes";
 
 export const getChannelsListSub = (accessToken: String): IActionCall => ({
@@ -15,8 +15,17 @@ export const executeSubscription = (requestBody: IRequestBody): IActionCall => (
     callAPI: () => ChannelsService.execSub(requestBody),
     types: {
         loading: actionTypes.SIGNUP,
-        success: actionTypes.PAGELIST_SUCCESS,
+        success: actionTypes.SIGNUP_SUCCESS,
         failure: actionTypes.SIGNUP_FAILURE,
+    },
+    type: null,
+});
+export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => ChannelsService.validateNewUser(requestBody),
+    types: {
+        loading: actionTypes.ISVALID,
+        success: actionTypes.ISVALID_SUCCESS,
+        failure: actionTypes.ISVALID_FAILURE,
     },
     type: null,
 });

@@ -1071,7 +1071,6 @@ export const getCampaignReportExport = (table: Dictionary[]): IRequestBody => ({
         origin: "campaignreport",
         table: JSON.stringify(table),
         offset: (new Date().getTimezoneOffset() / 60) * -1,
-        isNotPaginated: true
     }
 });
 
@@ -1082,7 +1081,6 @@ export const getCampaignReportProactiveExport = (table: Dictionary[]): IRequestB
         origin: "campaignreport",
         table: JSON.stringify(table),
         offset: (new Date().getTimezoneOffset() / 60) * -1,
-        isNotPaginated: true
     }
 });
 

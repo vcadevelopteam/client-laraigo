@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { exportExcel, getCommChannelLst, getPaginatedPerson, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain } from 'common/helpers';
+import { getCommChannelLst, getPaginatedTicket, getTicketExport, getValuesFromDomain } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -11,11 +11,8 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { CalendarIcon, DownloadIcon, SearchIcon } from 'icons';
 import Button from '@material-ui/core/Button/Button';
-import { DateRangePicker, FieldMultiSelect } from 'components';
-import { Range } from 'react-date-range';
-import Link from '@material-ui/core/Link';
+import { FieldMultiSelect } from 'components';
 import { DialogInteractions } from 'components';
 import { Checkbox } from '@material-ui/core';
 
