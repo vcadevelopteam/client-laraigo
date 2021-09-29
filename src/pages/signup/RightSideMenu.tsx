@@ -15,7 +15,7 @@ import {ChannelAddTwitterDM} from './ChannelAddTwitterDM'
 import {ChannelAddChatWeb} from './ChannelAddChatWeb'
 
 
-export const RightSideMenu: FC<{setStep:(param:any)=>void,step:any}> = ({setStep,step}) => {
+export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any}> = ({setSnackbar,setBackdrop,setStep,step}) => {
     const [mainData, setMainData] = useState<Dictionary>({
         email: "",
         password: "",
@@ -23,6 +23,8 @@ export const RightSideMenu: FC<{setStep:(param:any)=>void,step:any}> = ({setStep
         firstandlastname: "",
         companybusinessname: "",
         mobilephone: "",
+        facebookid: "",
+        googleid: "",
         sales: false,
         customerservice: false,
         marketing: false,
@@ -50,6 +52,7 @@ export const RightSideMenu: FC<{setStep:(param:any)=>void,step:any}> = ({setStep
                 setMainData={setMainData}
                 mainData={mainData}
                 setStep={setStep}
+                setSnackbar={setSnackbar}
             ></FirstStep>
         )
     }else if(step===2){
@@ -93,10 +96,10 @@ export const RightSideMenu: FC<{setStep:(param:any)=>void,step:any}> = ({setStep
     else {
         return(
             <LastStep
-                setMainData={setMainData}
                 mainData={mainData}
                 requestchannels={requestchannels}
-                setStep={setStep}
+                setSnackbar={setSnackbar}
+                setBackdrop={setBackdrop}
             ></LastStep>
         )
     }

@@ -29,7 +29,7 @@ export const langKeys = {
     supervisor_plural: 'supervisor_plural',
     tipification: 'tipification',
     tipification_plural: 'tipification_plural',
-
+    useralreadyregistered: "useralreadyregistered",
     report_designer: 'report_designer',
     column_plural: 'column_plural',
     new_report_designer: 'new_report_designer',
@@ -382,6 +382,7 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     login_with_facebook: 'login_with_facebook',
+    signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',

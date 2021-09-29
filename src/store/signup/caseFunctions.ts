@@ -19,6 +19,20 @@ export const getChannelsSuccess = (state: IState, action: IAction): IState => {
     }
 };
 
+export const getChannelsSuccessInsert = (state: IState, action: IAction): IState => {
+    return{
+        ...state,
+        channelList: {
+            data: [],
+            count: 0,
+            loading: false,
+            error: false,
+        },
+        successinsert:false
+    }
+}
+;
+
 export const getChannelsFailure = (state: IState, action: IAction): IState => ({
     ...state,
     channelList: {
@@ -35,4 +49,60 @@ export const getChannelsReset = (state: IState): IState => ({
     ...state,
     channelList: initialState.channelList,
     successinsert: false
+});
+
+export const insertChannel = (state: IState): IState => ({
+    ...state,
+    insertChannel: { ...state.insertChannel, loading: true, error: false },
+});
+
+export const insertChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    insertChannel: {
+        ...state.insertChannel,
+        value: action.payload,
+        loading: false,
+        error: false,
+    },
+});
+
+export const insertChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    insertChannel: {
+        value: undefined,
+        loading: false,
+        error: true,
+        message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+    },
+});
+
+export const insertChannelReset = (state: IState): IState => ({
+    ...state,
+    insertChannel: initialState.insertChannel,
+});
+
+export const checkvalidity = (state: IState): IState => ({
+    ...state,
+    isvalid: false,
+    loading: true,
+    error: false,
+});
+export const checkvaliditySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    isvalid: action.payload?.isvalid,
+    loading: false,
+    error: false,
+});
+export const checkvalidityFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    loading: false,
+    error: true,
+    message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+});
+export const checkvalidityReset = (state: IState): IState => ({
+    ...state,
+    isvalid: false,
+    loading: false,
+    error: false,
+    message: ""
 });
