@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { CalendarIcon, DownloadIcon } from 'icons';
+import { showSnackbar } from 'store/popus/actions';
 import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
@@ -93,6 +94,9 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     useEffect(() => {
         if (!resExportDynamic.loading && !resExportDynamic.error && resExportDynamic.url) {
             window.open(resExportDynamic.url, '_blank');
+        } else if (resExportDynamic.error) {
+            const errormessage = t(resExportDynamic.code || "error_unexpected_error")
+            dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
         }
     }, [resExportDynamic])
 
@@ -102,7 +106,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
             columns,
             parameters: {
                 offset: (new Date().getTimezoneOffset() / 60) * -1,
-                reportName: description
             },
             filters: [
                 ...(startdate ? [{
@@ -130,7 +133,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
             ]
         }
         if (isExport)
-            dispatch(exportDynamic(body));
+            dispatch(exportDynamic(body, description));
         else
             dispatch(getCollectionDynamic(body));
     }

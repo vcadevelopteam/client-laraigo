@@ -62,7 +62,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerQuickreply: {
         whiteSpace: 'break-spaces',
-        fontFamily: 'DM Sans',
         flexWrap: 'wrap',
         fontStyle: 'normal',
         fontWeight: 'normal',
@@ -72,7 +71,6 @@ const useStyles = makeStyles((theme) => ({
     containerPostback: {
         width: 200,
         padding: 0,
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         fontSize: '14px',
@@ -109,7 +107,6 @@ const useStyles = makeStyles((theme) => ({
     },
     interactionText: {
         whiteSpace: 'break-spaces',
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         fontSize: '14px',
@@ -153,7 +150,6 @@ const useStyles = makeStyles((theme) => ({
     timeInteraction: {
         color: '#84818A',
         fontSize: 13,
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         lineHeight: 2,
@@ -218,7 +214,6 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: '4px',
         width: '150px',
         height: '42px',
-        fontFamily: 'Manrope',
         fontStyle: 'normal',
         fontWeight: 600,
         fontSize: '14px',

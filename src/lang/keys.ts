@@ -390,6 +390,8 @@ export const langKeys = {
     login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',
+    error_cos_unexpected: 'cos_unexpected',
+    error_zero_records: 'error_zero_records',
     error_parameter_too_long: 'error_parameter_too_long',
     error_divison_by_zero: 'error_divison_by_zero',
     error_unexpected_db_error: 'error_unexpected_db_error',

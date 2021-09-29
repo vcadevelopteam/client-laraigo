@@ -388,6 +388,10 @@ const translation: LangKeys = {
     businesschannel: "Business Channel",
     hasactionplan: 'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
+
+    error_cos_unexpected: '5005: There was an error, contact the administrator',
+    error_zero_records: '5005: Nothing to export',
+
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
     error_divison_by_zero: '22012: There was an error, contact the administrator ',
     error_unexpected_db_error: '5003: There was an error, contact the administrator ',

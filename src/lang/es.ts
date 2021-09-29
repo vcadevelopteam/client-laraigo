@@ -385,6 +385,9 @@ const translation: LangKeys = {
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
 
+    error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
+    error_zero_records: '5005: Nada a exportar',
+
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',
     error_divison_by_zero: '22012: Hubo un error, comuniquese con el administrador',
