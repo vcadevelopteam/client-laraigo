@@ -101,11 +101,6 @@ const RouterApp: FC = () => {
 						<ReportTemplate />
 					</Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.PERSONALIZEDREPORTS}>
-					<Layout mainClasses={classes.main}>
-						<ReportTemplate />
-					</Layout>
-				</ProtectRoute>
 				<ProtectRoute exact path={paths.TICKETS}>
 					<Layout mainClasses={classes.main}>
 						<Tickets />

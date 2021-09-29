@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getInteractions } from 'store/inbox/actions'
-import { Dictionary, IGroupInteraction } from '@types';
+import { Dictionary } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ItemGroupInteraction from './Interaction';
@@ -55,7 +55,6 @@ const useStyles = makeStyles((theme) => ({
     },
     containerQuickreply: {
         whiteSpace: 'break-spaces',
-        fontFamily: 'DM Sans',
         flexWrap: 'wrap',
         fontStyle: 'normal',
         fontWeight: 'normal',
@@ -65,7 +64,6 @@ const useStyles = makeStyles((theme) => ({
     containerPostback: {
         width: 200,
         padding: 0,
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         fontSize: '14px',
@@ -102,7 +100,6 @@ const useStyles = makeStyles((theme) => ({
     },
     interactionText: {
         whiteSpace: 'break-spaces',
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         fontSize: '14px',
@@ -146,7 +143,6 @@ const useStyles = makeStyles((theme) => ({
     timeInteraction: {
         color: '#84818A',
         fontSize: 13,
-        fontFamily: 'DM Sans',
         fontStyle: 'normal',
         fontWeight: 'normal',
         lineHeight: 2,

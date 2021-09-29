@@ -195,7 +195,6 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                     aria-label="more"
                     aria-controls="long-menu"
                     aria-haspopup="true"
-                    onClick={handleClickMenu}
                     color="action"
                     fontSize="small"
                 />
@@ -255,7 +254,6 @@ const TableZyx = React.memo(({
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
     const {

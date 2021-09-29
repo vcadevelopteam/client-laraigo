@@ -291,7 +291,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     });
 
-    const { fields: buttons, append: buttonsAppend, remove: buttonsRemove, update: buttonsUpdate } = useFieldArray({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { fields: buttons } = useFieldArray({
         control,
         name: "buttons",
     });

@@ -1,15 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
-import { showBackdrop } from 'store/popus/actions';
 import { Visibility, VisibilityOff} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import FacebookLogin from 'react-facebook-login';
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/signup/actions";
 import GoogleLogin from 'react-google-login';
-import { login } from 'store/login/actions';
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import { Dictionary } from "@types";
 import { useSelector } from 'hooks';

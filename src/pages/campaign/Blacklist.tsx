@@ -61,7 +61,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'blacklistid',
+                accessor: 'id',
                 NoFilter: true,
                 isComponent: true,
                 minWidth: 60,

@@ -1,8 +1,0 @@
-SECRETA=palabrasecreta
-DBNAME=laraigodev
-DBUSER=admin
-DBPASSWORD=Sistemas247
-DBHOST=d5f3bbe9-f872-48c5-93b0-768afcc6a391.4b2136ddd30a46e9b7bdb2b2db7f8cd0.private.databases.appdomain.cloud
-APISERVICES=https://zyxmelinux.zyxmeapp.com/zyxme/apiservices/api/
-APP=https://zyxmelinux.zyxmeapp.com/zyxme/app/
-SERVICES=https://zyxmelinux.zyxmeapp.com/zyxme/services/api/

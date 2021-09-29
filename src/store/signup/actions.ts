@@ -1,5 +1,5 @@
-import { IActionCall, IChatWebAdd, IRequestBody } from "@types";
-import { ChannelsService, CommonService } from "network";
+import { IActionCall, IRequestBody } from "@types";
+import { ChannelsService } from "network";
 import actionTypes from "./actionTypes";
 
 export const getChannelsListSub = (accessToken: String): IActionCall => ({
