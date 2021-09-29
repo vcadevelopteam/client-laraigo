@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { exportExcel, getCommChannelLst, getPaginatedPerson, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
@@ -17,6 +17,7 @@ import { DateRangePicker, FieldMultiSelect } from 'components';
 import { Range } from 'react-date-range';
 import Link from '@material-ui/core/Link';
 import { DialogInteractions } from 'components';
+import { Checkbox } from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -50,6 +51,11 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         fontSize: '14px',
         textTransform: 'initial'
+    },
+    labellink: {
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
     }
 }));
 
@@ -65,11 +71,12 @@ const Tickets = () => {
 
     //const format = (date: Date) => date.toISOString().split('T')[0];
 
+    
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
 
-    /*
+/*
     useEffect(() => {
         setAllParameters({
             ...allParameters,
@@ -77,7 +84,7 @@ const Tickets = () => {
             enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
         });
     }, [dateRange]);
-    */
+*/
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -115,28 +122,45 @@ const Tickets = () => {
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
 
-    const handleClickOpen = (row: any) => {
-        console.log(row)
+    const handleClickOpen = useCallback((row: any) => {
         setOpenModal(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    };
+    }, [mainResult]);
 
     const columns = React.useMemo(
         () => [
             {
+                Header: (props: any) => {
+                    //const row = props.cell.row.original;
+                    return (
+                        <Checkbox></Checkbox>
+                    )
+                },
+                accessor: 'select',
+                NoFilter: true,
+                type: 'boolean',
+                editable: true,
+                
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <Checkbox></Checkbox>
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.ticket_numeroticket),
-                accessor: 'numeroticket',//ticketnum
+                accessor: 'numeroticket',
                 NoFilter: false,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <Link
-                            component="button"
-                            variant="body2"
+                        <label
+                            className={classes.labellink}
                             onClick={() => handleClickOpen(row)}
                         >
                             {row.numeroticket}
-                        </Link>
+                        </label>
                     )
                 }
             },
@@ -157,7 +181,7 @@ const Tickets = () => {
                 accessor: 'communicationchanneldescription'
             },
             {
-                Header: t(langKeys.ticket_name),//displayname
+                Header: t(langKeys.ticket_name),
                 accessor: 'name'
             },
             {
@@ -421,16 +445,12 @@ const Tickets = () => {
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-
-        console.log('allParameters', allParameters);
-        console.log('fetchDataAux', fetchDataAux);
-
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getCollectionPaginated(getPaginatedTicket({
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             take: pageSize,
-            skip: pageIndex,
+            skip: pageIndex * pageSize,
             sorts: sorts,
             filters: filters,
             ...allParameters
@@ -448,6 +468,40 @@ const Tickets = () => {
                 <span className={classes.title}>
                     {t(langKeys.ticket_plural)}
                 </span>
+            </Box>
+            
+
+            <Box width={1} paddingBottom={2} style={{ display: 'flex', flexWrap: 'wrap', gap: 15, alignItems: "flex-start", justifyContent: "flex-end" }}>
+                <Button
+                    //className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading}
+                    style={{ backgroundColor: 'red', width: 120 }}
+                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    //startIcon={<DownloadIcon />}
+                >{t(langKeys.ticket_close)}
+                </Button>
+                <Button
+                    //className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading}
+                    style={{ backgroundColor: 'green', width: 120 }}
+                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    //startIcon={<DownloadIcon />}
+                >{t(langKeys.ticket_typify)}
+                </Button>
+                <Button
+                    //className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={mainPaginated.loading}
+                    style={{ backgroundColor: 'blue', width: 120 }}
+                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    //startIcon={<DownloadIcon />}
+                >{t(langKeys.ticket_reasign)}
+                </Button>
             </Box>
             <Box width={1}>
                 <Box className={classes.containerHeader} justifyContent="space-between" mb={1} alignItems="flex-start">
@@ -497,35 +551,38 @@ const Tickets = () => {
                             />
                         }
                         {/*
-                        <Button
-                            disabled={mainPaginated.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ backgroundColor: '#55BD84', width: 120 }}
-                            onClick={() => {
-                                fetchData(fetchDataAux)
-                            }}
-                        >{t(langKeys.search)}
-                        </Button>
+                            <Button
+                                disabled={mainPaginated.loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: '#55BD84', width: 120 }}
+                                onClick={() => {
+                                    fetchData(fetchDataAux)
+                                }}
+                            >{t(langKeys.search)}
+                            </Button>
                         */}
 
                     </div>
 
                     {/*
-                    <Button
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                        startIcon={<DownloadIcon />}
-                    >{t(langKeys.download)}
-                    </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={mainPaginated.loading}
+                            onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            startIcon={<DownloadIcon />}
+                        >{t(langKeys.download)}
+                        </Button>
                     */}
 
                 </Box>
             </Box>
+
+
+
 
             <TablePaginated
                 columns={columns}

@@ -476,6 +476,10 @@ export const langKeys = {
     emoji_message_favorites: 'emoji_message_favorites',
     emoji_message_restricted: 'emoji_message_restricted',
 
+    ticket_close: 'ticket_close',
+    ticket_typify: 'ticket_typify',
+    ticket_reasign: 'ticket_reasign',
+
     ticket_numeroticket: 'ticket_numeroticket',
     ticket_fecha: 'ticket_fecha',
     ticket_firstusergroup: 'ticket_firstusergroup',

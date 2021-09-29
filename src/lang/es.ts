@@ -132,8 +132,8 @@ const translation: LangKeys = {
     role_plural: 'Roles',
     companysize: "Tamaño de la empresa",
     roleincompany: "Tu rol en la empresa",
-    submit:'Enviar',
-    passwordsmustbeequal:"Las contraseñas deben ser iguales",
+    submit: 'Enviar',
+    passwordsmustbeequal: "Las contraseñas deben ser iguales",
     data: "Data",
     firstandlastname: "Nombres y apellidos",
     companybusinessname: "Nombre de la Empresa o Compañia",
@@ -471,6 +471,10 @@ const translation: LangKeys = {
     emoji_restricted: 'Restringidos',
     emoji_message_favorites: 'Usted desea enviar el emoji como favorito a todas las organizaciones y canales',
     emoji_message_restricted: 'Usted desea restringir el emoji a todas las organizaciones y canales',
+
+    ticket_close: 'Cerrar',
+    ticket_typify: 'Tipificar',
+    ticket_reasign: 'Reasignar',
 
     ticket_numeroticket: 'N° Ticket',
     ticket_fecha: 'Fecha',

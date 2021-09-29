@@ -263,7 +263,7 @@ const translation: LangKeys = {
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",
     flowdesigner: 'Flow designer',
-    passwordsmustbeequal:"The passwords must be equal",
+    passwordsmustbeequal: "The passwords must be equal",
     industry: "Industry",
     favorite: "Favorite",
     companysize: "Company size",
@@ -477,6 +477,10 @@ const translation: LangKeys = {
     emoji_restricted: 'Restricted',
     emoji_message_favorites: 'You want to send the emoji as a favorite to all organizations and channels',
     emoji_message_restricted: 'You want to restrict the emoji to all organizations and channels',
+
+    ticket_close: 'Close',
+    ticket_typify: 'Typify',
+    ticket_reasign: 'Reasign',
 
     ticket_numeroticket: 'Ticket',
     ticket_fecha: 'Date',
