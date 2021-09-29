@@ -1010,7 +1010,7 @@ export const insertReportTemplate = (
 
 export const insBlacklist = ({ id, description, type, status, phone, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BLACKLIST_INS",
-    parameters:{
+    parameters: {
         id,
         description,
         type,
@@ -1022,7 +1022,7 @@ export const insBlacklist = ({ id, description, type, status, phone, operation }
 
 export const insarrayBlacklist = (table: Dictionary[]): IRequestBody => ({
     method: "UFN_BLACKLIST_INS_ARRAY",
-    parameters:{
+    parameters: {
         table: JSON.stringify(table)
     },
 });
@@ -1086,7 +1086,7 @@ export const getCampaignReportProactiveExport = (table: Dictionary[]): IRequestB
 
 export const getCampaignStart = (id: number): IRequestBody => ({
     method: "UFN_CAMPAIGN_START",
-    parameters:{
+    parameters: {
         id,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     },
@@ -1094,7 +1094,12 @@ export const getCampaignStart = (id: number): IRequestBody => ({
 
 export const getCampaignStatus = (id: number): IRequestBody => ({
     method: "UFN_CAMPAIGN_STATUS",
-    parameters:{
+    parameters: {
         id,
     },
+});
+
+export const getBlocksUserFromChatfow = (communicationchannelid: number): IRequestBody => ({
+    method: "UFN_CHATFLOW_ISSELFBLOCK_SEL",
+    parameters: { communicationchannelid },
 });

@@ -27,6 +27,7 @@ export interface IState {
     interactionList: IListStatePaginated<IGroupInteraction>;
     interactionExtraList: IListStatePaginated<IGroupInteraction>;
     configurationVariables: IListStatePaginated<Dictionary>;
+    richResponseList: IListStatePaginated<Dictionary>;
     tipificationsLevel2: IListStatePaginated<Dictionary>;
     tipificationsLevel3: IListStatePaginated<Dictionary>;
     ticketSelected: ITicket | null;
@@ -50,6 +51,7 @@ export const initialState: IState = {
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
+    richResponseList: initialListPaginatedState,
     interactionExtraList: initialListPaginatedState,
     configurationVariables: initialListPaginatedState,
     tipificationsLevel2: initialListPaginatedState,
