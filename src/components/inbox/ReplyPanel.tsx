@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
+import { ImageIcon, QuickresponseIcon, SendIcon, RickResponseIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -126,12 +126,14 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
 
+
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data)
             setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+            
         }
     }, [multiData])
 
@@ -277,9 +279,13 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
+    const richResponseList = useSelector(state => state.inbox.richResponseList);
 
+    const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
+    const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
+
 
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
@@ -395,15 +401,22 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [multiData])
 
     useEffect(() => {
-        console.log(text.substring(0, 2))
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            setTypeHotKey("quickreply")
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
-
             if (textToSearch === "")
                 setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
             else
                 setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
+        } else if (text.substring(0, 2).toLowerCase() === "\\r") {
+            setTypeHotKey("richresponse")
+            setOpenDialogHotKey(true);
+            const textToSearch = text.trim().split(text.trim().includes("\\r") ? "\\r" : "\\R")[1];
+            if (textToSearch === "")
+                setRichResponseToShow(richResponseList.data)
+            else
+                setRichResponseToShow(richResponseList.data.filter(x => x.title.toLowerCase().includes(textToSearch.toLowerCase())))
         } else {
             setOpenDialogHotKey(false);
         }
@@ -457,16 +470,28 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 gap: 4,
                                 flexDirection: 'column',
                             }}>
-                                {quickRepliesToShow.map((item) => (
-                                    <div
-                                        key={item.quickreplyid}
-                                        className={classes.hotKeyQuickReply}
-                                        onClick={() => selectQuickReply(item.quickreply)}
-                                    >
-                                        {item.description}
-                                    </div>
+                                {typeHotKey === "quickreply" ?
+                                    quickRepliesToShow.map((item) => (
+                                        <div
+                                            key={item.quickreplyid}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectQuickReply(item.quickreply)}
+                                        >
+                                            {item.description}
+                                        </div>
 
-                                ))}
+                                    )) :
+                                    richResponseToShow.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectQuickReply(item.quickreply)}
+                                        >
+                                            {item.title}
+                                        </div>
+
+                                    ))
+                                }
                             </div>
                         </div>
                     )}
@@ -476,6 +501,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <QuickReplyIcon classes={classes} setText={setText} />
+                    <RickResponseIcon className={classes.iconResponse} />
                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />

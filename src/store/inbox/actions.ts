@@ -1,7 +1,7 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IConnectAgentParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
+import { getUsersBySupervisor, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -69,7 +69,8 @@ export const getDataTicket = (ticket: ITicket): IActionCall => ({
     callAPI: () => CommonService.multiMain([
         getInteractionsByConversation(ticket.conversationid, false, 0),
         getInfoPerson(ticket.personid),
-        getConfigurationVariables(ticket.communicationchannelid)
+        getConfigurationVariables(ticket.communicationchannelid),
+        getBlocksUserFromChatfow(ticket.communicationchannelid),
     ]),
     types: {
         loading: actionTypes.GET_DATA_TICKET,
