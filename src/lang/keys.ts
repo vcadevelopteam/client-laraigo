@@ -349,6 +349,8 @@ export const langKeys = {
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
     no_record_selected: 'no_record_selected',
+    reporttype: 'reporttype',
+    no_type_selected: 'no_type_selected',
     rundate: 'rundate',
     total: 'total',
     success: 'success',
@@ -363,6 +365,7 @@ export const langKeys = {
     log: 'log',
     execute: 'execute',
     sent: 'sent',
+    campaign_in_execution: 'campaign_in_execution',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

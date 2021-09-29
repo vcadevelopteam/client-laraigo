@@ -210,14 +210,20 @@ export const Campaign: FC = () => {
     }
 
     const handleEdit = (row: Dictionary) => {
-        if (row.status !== 'EJECUTANDO') {
+        if (row.status === 'EJECUTANDO') {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.campaign_in_execution) }));
+        }
+        else {
             setViewSelected("view-2");
             setRowSelected({ row, edit: true });
         }
     }
 
     const handleDelete = (row: Dictionary) => {
-        if (row.status !== 'EJECUTANDO') {
+        if (row.status === 'EJECUTANDO') {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.campaign_in_execution) }));
+        }
+        else {
             const callback = () => {
                 dispatch(execute(delCampaign({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
                 dispatch(showBackdrop(true));

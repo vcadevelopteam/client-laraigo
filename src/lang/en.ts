@@ -305,6 +305,8 @@ const translation: LangKeys = {
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
     no_record_selected: 'No record selected',
+    reporttype: 'Report type',
+    no_type_selected: 'No type selected',
     rundate: 'Run date',
     total: 'Total',
     success: 'Success',
@@ -319,6 +321,7 @@ const translation: LangKeys = {
     log: 'Log',
     execute: 'Execute',
     sent: 'sent',
+    campaign_in_execution: 'Campaign in execution',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',

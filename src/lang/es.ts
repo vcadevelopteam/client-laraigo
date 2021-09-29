@@ -347,6 +347,8 @@ const translation: LangKeys = {
     missing_header: 'Falta cabecera',
     invalid_parameter: 'Parámetro inválido',
     no_record_selected: 'Ningún registro seleccionado',
+    reporttype: 'Tipo de reporte',
+    no_type_selected: 'Ningún tipo seleccionado',
     rundate: 'Fecha ejecución',
     total: 'Total',
     success: 'Satisfactorio',
@@ -361,6 +363,7 @@ const translation: LangKeys = {
     log: 'Log',
     execute: 'Ejecutar',
     sent: 'enviado',
+    campaign_in_execution: 'Campaña en ejecución',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
