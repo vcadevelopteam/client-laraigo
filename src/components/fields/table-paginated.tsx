@@ -195,7 +195,6 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
                     aria-label="more"
                     aria-controls="long-menu"
                     aria-haspopup="true"
-                    onClick={handleClickMenu}
                     color="action"
                     fontSize="small"
                 />

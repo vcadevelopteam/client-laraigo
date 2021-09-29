@@ -4,13 +4,13 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel } from 'common/helpers';
+import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from 'pages';
 import { Blacklist } from './Blacklist';
@@ -40,11 +40,14 @@ export const Campaign: FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
+    const auxResult = useSelector(state => state.main.mainAux);
     const executeResult = useSelector(state => state.main.execute);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [waitStart, setWaitStart] = useState(false);
+    const [waitStatus, setWaitStatus] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -94,11 +97,52 @@ export const Campaign: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                accessor: 'execute',
+                isComponent: true,
+                Cell: (props: any) => {
+                    const { status, id } = props.cell.row.original;
+                    if (status === 'EJECUTANDO') {
+                        return <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleStatus(id)}
+                            style={{ backgroundColor: "#55bd84" }}
+                        ><Trans i18nKey={langKeys.status} />
+                        </Button>
+                    }
+                    else {
+                        return <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => handleStart(id)}
+                            style={{ backgroundColor: "#55bd84" }}
+                        ><Trans i18nKey={langKeys.execute} />
+                        </Button>
+                    }
+                }
+            },
         ],
         []
     )
 
     const fetchData = () => dispatch(getCollection(getCampaignLst()));
+
+    const handleStatus = (id: number) => {
+        if (!waitStatus) {
+            dispatch(getCollectionAux(getCampaignStatus(id)));
+            setWaitStatus(true);
+        }
+    }
+
+    const handleStart = (id: number) => {
+        if (!waitStart) {
+            dispatch(getCollectionAux(getCampaignStart(id)));
+            setWaitStart(true);
+        }
+    }
 
     useEffect(() => {
         fetchData();
@@ -127,7 +171,33 @@ export const Campaign: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave]);
+        if (waitStart) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                fetchData();
+                setWaitStart(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitStart(false);
+            }
+        }
+    }, [executeResult, waitSave, waitStart]);
+
+    useEffect(() => {
+        if (waitStatus) {
+            if (!auxResult.loading && !auxResult.error) {
+                const { status, enviado, total } = auxResult.data[0];
+                dispatch(showSnackbar({ show: true, success: true, message: `${(t(`status_${status}`.toLowerCase()) || "").toUpperCase()}: ${t(langKeys.sent)} ${enviado}/${total}` }))
+                setWaitStatus(false);
+            } else if (auxResult.error) {
+                const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitStatus(false);
+            }
+        }
+    }, [auxResult, waitStatus])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -140,22 +210,26 @@ export const Campaign: FC = () => {
     }
 
     const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
+        if (row.status !== 'EJECUTANDO') {
+            setViewSelected("view-2");
+            setRowSelected({ row, edit: true });
+        }
     }
 
     const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(delCampaign({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
+        if (row.status !== 'EJECUTANDO') {
+            const callback = () => {
+                dispatch(execute(delCampaign({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
+                dispatch(showBackdrop(true));
+                setWaitSave(true);
+            }
 
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_delete),
+                callback
+            }))
+        }
     }
 
     const AdditionalButtons = () => {
