@@ -77,7 +77,7 @@ const Emojis: FC = () => {
                     }
                 }
             } else {
-                return emoji?.description.includes(searchValue);
+                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase());
             }
         }), [category, searchValue, emojiResult]);
 
@@ -127,7 +127,7 @@ const Emojis: FC = () => {
 
                 <div
                     key='tabPanel_emoji'
-                    style={{ padding: 12, marginTop: '12px' }}>
+                    style={{ padding: 12, marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {
                         filteredEmojis.map((emoji: Dictionary) =>
                             <Emoji
@@ -227,14 +227,13 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
 
     return (
         <>
-            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
+            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.description} arrow>
                 <Button
                     aria-controls="simple-menu" aria-haspopup="true"
                     onContextMenu={handleClick}
                     key={'button_' + emoji?.emojidec}
                     onDoubleClick={() => handleDoubleClick(emoji)}
-                    style={{ padding: 0, fontSize: '30px' }}>
-
+                    style={{ padding: 0, minWidth: 50 }}>
                     <label
                         key={'label_' + emoji?.emojidec}
                         style={{ fontSize: 30 }}>{emoji?.emojichar}
@@ -338,7 +337,7 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
                             label={t(langKeys.emoji_name)}
                             disabled={true}
                             className="col-6"
-                            valueDefault={emoji?.emojidec}
+                            valueDefault={emoji?.description}
                         />
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>

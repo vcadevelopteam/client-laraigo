@@ -130,7 +130,8 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) => {
     const [value, setValue] = useState('');
-
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
     const [operator, setoperator] = useState("contains");
 
     useEffect(() => {
@@ -156,20 +157,15 @@ const DefaultColumnFilter = ({ header, setFilters, filters, firstvalue }: any) =
         }
     }
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
-
-    const handleClickMenu = (event: any) => {
-        setAnchorEl(event.currentTarget);
-    };
-
     const handleCloseMenu = () => {
         setAnchorEl(null);
     };
-
     const handleClickItemMenu = (op: any) => {
         setAnchorEl(null);
         setoperator(op)
+    };
+    const handleClickMenu = (event: any) => {
+        setAnchorEl(event.currentTarget);
     };
 
     useEffect(() => {

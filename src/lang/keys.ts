@@ -485,6 +485,9 @@ export const langKeys = {
     ticket_close: 'ticket_close',
     ticket_typify: 'ticket_typify',
     ticket_reasign: 'ticket_reasign',
+    ticket_reason: 'ticket_reason',
+    ticket_comment: 'ticket_comment',
+    ticket_user: 'ticket_user',
 
     ticket_numeroticket: 'ticket_numeroticket',
     ticket_fecha: 'ticket_fecha',
