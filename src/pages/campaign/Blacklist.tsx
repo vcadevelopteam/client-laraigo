@@ -88,6 +88,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
             {
                 Header: t(langKeys.creationdate),
                 accessor: 'createdate',
+                type: 'date',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
