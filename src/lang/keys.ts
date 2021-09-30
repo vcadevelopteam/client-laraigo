@@ -1,4 +1,6 @@
 export const langKeys = {
+    english: 'english',
+    spanish: 'spanish',
     passwordsmustbeequal: "passwordsmustbeequal",
     data: "data",
     variable: "variable",

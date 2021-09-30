@@ -511,6 +511,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     optionValue="domainvalue"
                                 />
                                 <FieldSelect
+                                    uset={true}
                                     label={t(langKeys.language)}
                                     className="col-6"
                                     valueDefault={getValues('language')}
