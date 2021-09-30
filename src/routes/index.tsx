@@ -69,8 +69,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
-		return <Redirect to={{ pathname: "/sign-in" }} />;
 	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
