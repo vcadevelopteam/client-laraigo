@@ -49,7 +49,7 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
     const [disablebutton, setdisablebutton] = useState(true);
     const [firstlaunch, setfirstlaunch] = useState(true);
     useEffect(() => {
-        setdisablebutton(!(mainData.email !== "" && mainData.password !== "" &&  mainData.confirmpassword !== "" && mainData.confirmpassword===mainData.password))
+        setdisablebutton(!(mainData.email !== "" && mainData.email.includes('@') && mainData.email.includes('.') && mainData.password !== "" &&  mainData.confirmpassword !== "" && mainData.confirmpassword===mainData.password))
     }, [mainData])
 
     function maindataChange(field:string,value:any){
@@ -165,7 +165,11 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                     name="email"
                     error={!!errors.email}
                     helperText={errors.email}
-                    onChange={(e) => maindataChange('email',e.target.value)}
+                    onChange={(e) => {
+                        setMainData((p:any) =>({...p,email:e.target.value}))
+                        setErrors(p=>({...p,email: !e.target.value?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,email: e.target.value.includes('@') && e.target.value.includes('.')?"":t(langKeys.emailverification)}))
+                    }}
                 />
                 <TextField
                     variant="outlined"

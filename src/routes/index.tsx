@@ -5,12 +5,12 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail
+	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagement
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
-import { ExtrasLayout } from "components";
+import { ExtrasLayout,DashboardsLayout } from "components";
 import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -224,6 +224,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.EMOJIS}>
 					<ExtrasLayout><Emojis /></ExtrasLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARDMANAGEMENT}>
+					<DashboardsLayout><DashboardManagement /></DashboardsLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

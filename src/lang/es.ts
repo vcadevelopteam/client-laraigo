@@ -117,6 +117,8 @@ const translation: LangKeys = {
     doubleAuthentication: 'Doble autenticación',
     signup_with_facebook: "Registrate con Facebook",
     next: "Siguiente",
+    management: "Gerencial",
+    emailverification: 'Debe insertar un correo valido',
     completedesc: 'Descripción completa',
     laststepsignup2: "Conocerte mejor nos ayuda a optimizar el servicio a lo que necesitan tus clientes",
     actionplan: 'Plan de acción',

@@ -30,3 +30,4 @@ export * from './channels';
 export * from './signup';
 
 export { default as FlowDesigner } from './FlowDesigner';
+export { default as DashboardManagement } from './DashboardManagement';
