@@ -52,10 +52,6 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
         setdisablebutton(!(mainData.email !== "" && mainData.email.includes('@') && mainData.email.includes('.') && mainData.password !== "" &&  mainData.confirmpassword !== "" && mainData.confirmpassword===mainData.password))
     }, [mainData])
 
-    function maindataChange(field:string,value:any){
-        setMainData((p:any) =>({...p,[field]:value}))
-        setErrors(p=>({...p,[field]: !value?t(langKeys.field_required):""}))
-    }
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
@@ -78,6 +74,7 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
     }, [rescheckuser])
     
     const onGoogleLoginSucess = (r: any) => {
+        console.log(r)
         if (r && r.googleId) {
             const content={
                 "method": "UFN_USERIDBYUSER",
@@ -100,7 +97,7 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
             const content={
                 "method": "UFN_USERIDBYUSER",
                 "parameters": {
-                    "usr": null,
+                    "usr": r.dt.Ot,
                     "facebookid": String(r.id),
                     "googleid": null
                 }
@@ -180,7 +177,12 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                     autoComplete="current-password"
                     error={!!errors.password}
                     helperText={errors.password}
-                    onChange={(e) => maindataChange('password',e.target.value)}
+                    onChange={(e) => {
+                        setMainData((p:any) =>({...p,password:e.target.value}))
+                        setErrors(p=>({...p,password: !e.target.value?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,confirmpassword: !mainData.confirmpassword?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,confirmpassword: mainData.confirmpassword===e.target.value?p.confirmpassword:t(langKeys.passwordsmustbeequal)}))
+                    }}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
