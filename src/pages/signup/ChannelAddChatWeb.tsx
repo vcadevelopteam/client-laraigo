@@ -1466,10 +1466,10 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
             },
             color: {
                 header: "#fff",
-                background: "#7721AD",
-                border: "#fff",
+                background: "#F9F9FA",
+                border: "#EBEAED",
                 client: "#fff",
-                bot: "#fff",
+                bot: "#aa53e0",
             },
             form: [],
             bubble: {
