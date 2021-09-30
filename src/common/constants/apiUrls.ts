@@ -11,7 +11,7 @@ const WS_URL = 'https://testsocket.laraigo.com'; //testing
 const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
 
 // const CHATFLOW_URL = 'https://localhost:4200' //local
-const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
+//const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
 // const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
 
 export const apiUrls = {
