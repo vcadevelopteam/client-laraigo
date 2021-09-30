@@ -261,7 +261,7 @@ const translation: LangKeys = {
     typify_ticket: 'Typify ticket',
     emailverification: 'The email must be valid',
     signup_with_facebook: "Sign up with Facebook",
-    management: "Management",
+    managerial: "Managerial",
     observation: 'Observation',
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",

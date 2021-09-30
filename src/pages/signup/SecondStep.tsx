@@ -39,6 +39,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                         variant="outlined"
                         margin="normal"
                         fullWidth
+                        defaultValue={mainData.firstandlastname}
                         label={t(langKeys.firstandlastname)}
                         name="firstandlastname"
                         error={!!errors.firstandlastname}
@@ -51,6 +52,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                         fullWidth
                         label={t(langKeys.companybusinessname)}
                         name="companybusinessname"
+                        defaultValue={mainData.companybusinessname}
                         error={!!errors.companybusinessname}
                         helperText={errors.companybusinessname}
                         onChange={(e) => maindataChange('companybusinessname',e.target.value)}
@@ -60,6 +62,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                         margin="normal"
                         type="number"
                         fullWidth
+                        defaultValue={mainData.mobilephone}
                         label={t(langKeys.mobilephoneoptional)}
                         name="mobilephone"
                         onChange={(e) => setMainData((p:any)=>({...p,mobilephone:e.target.value}))}
@@ -71,6 +74,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                                 style={{fontSize:"20px!important"}}
                                 value="sales"
                                 control={<Checkbox 
+                                    checked={mainData.sales}
                                     onChange={e=>setMainData((p:any)=>({...p,sales:!p.sales}))}
                                 />}
                                 label={t(langKeys.sales)}
@@ -80,6 +84,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                                 style={{fontSize:"20px!important"}}
                                 value="customerservice"
                                 control={<Checkbox 
+                                    checked={mainData.customerservice}
                                     onChange={e=>setMainData((p:any)=>({...p,customerservice:!p.customerservice}))}
                                 />}
                                 label={t(langKeys.customerservice)}
@@ -89,6 +94,7 @@ export const SecondStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:
                                 style={{fontSize:"20px!important"}}
                                 value="marketing"
                                 control={<Checkbox 
+                                    checked={mainData.marketing}
                                     onChange={e=>setMainData((p:any)=>({...p,marketing:!p.marketing}))}
                                 />}
                                 label={t(langKeys.marketing)}

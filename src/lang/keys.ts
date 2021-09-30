@@ -327,7 +327,7 @@ export const langKeys = {
     color: 'color',
     bold: 'bold',
     show: 'show',
-    management: "management",
+    managerial: "managerial",
 
     campaign: 'campaign',
     campaign_plural: 'campaign_plural',
