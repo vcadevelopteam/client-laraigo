@@ -303,13 +303,8 @@ const TableZyxEditable = React.memo(({
                 :
                 <React.Fragment>
                     <Input
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <SearchIcon color="action" fontSize="small" />
-                            </InputAdornment>
-                        }
-                        disabled={loading}
-                        type="text"
+                        // disabled={loading}
+                        type={type === 'color' ? 'text' : type}
                         style={{ fontSize: '15px', minWidth: '100px' }}
                         fullWidth
                         value={value}
@@ -318,16 +313,19 @@ const TableZyxEditable = React.memo(({
                             setValue(e.target.value || '');
                         }}
                     />
-                    <div style={{ width: '12px' }} />
-                    <MoreVertIcon
-                        style={{ cursor: 'pointer' }}
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
+                    <IconButton
                         onClick={handleClickMenu}
-                        color="action"
-                        fontSize="small"
-                    />
+                        size="small"
+                    >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                    </IconButton>
                     <Menu
                         id="long-menu"
                         anchorEl={anchorEl}
@@ -464,6 +462,7 @@ const TableZyxEditable = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
+        
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null) {
