@@ -167,6 +167,7 @@ const translation: LangKeys = {
     status_activo: 'active',
     status_inactivo: 'inactive',
     status_bloqueado: 'locked',
+    status_ejecutando: 'executing',
 
     attending: 'Attending',
 
@@ -258,11 +259,13 @@ const translation: LangKeys = {
     reassign_ticket: 'Reassign ticket',
     typify: 'Typify',
     typify_ticket: 'Typify ticket',
+    signup_with_facebook: "Sign up with Facebook",
     observation: 'Observation',
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",
     flowdesigner: 'Flow designer',
-    passwordsmustbeequal: "The passwords must be equal",
+    passwordsmustbeequal:"The passwords must be equal",
+    useralreadyregistered: "The user is already registered",
     industry: "Industry",
     favorite: "Favorite",
     companysize: "Company size",
@@ -304,6 +307,8 @@ const translation: LangKeys = {
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
     no_record_selected: 'No record selected',
+    reporttype: 'Report type',
+    no_type_selected: 'No type selected',
     rundate: 'Run date',
     total: 'Total',
     success: 'Success',
@@ -316,6 +321,9 @@ const translation: LangKeys = {
     default: 'Default',
     proactive: 'Proactive',
     log: 'Log',
+    execute: 'Execute',
+    sent: 'sent',
+    campaign_in_execution: 'Campaign in execution',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',
@@ -400,6 +408,10 @@ const translation: LangKeys = {
     businesschannel: "Business Channel",
     hasactionplan: 'Has action plan',
     error_already_exists_record: '23505: There is already the same {{module}} registered',
+
+    error_cos_unexpected: '5005: There was an error, contact the administrator',
+    error_zero_records: '5005: Nothing to export',
+
     error_parameter_too_long: '22001: There was an error, contact the administrator ',
     error_divison_by_zero: '22012: There was an error, contact the administrator ',
     error_unexpected_db_error: '5003: There was an error, contact the administrator ',

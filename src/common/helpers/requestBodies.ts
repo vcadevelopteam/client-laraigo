@@ -1090,7 +1090,6 @@ export const getCampaignReportExport = (table: Dictionary[]): IRequestBody => ({
         origin: "campaignreport",
         table: JSON.stringify(table),
         offset: (new Date().getTimezoneOffset() / 60) * -1,
-        isNotPaginated: true
     }
 });
 
@@ -1101,6 +1100,25 @@ export const getCampaignReportProactiveExport = (table: Dictionary[]): IRequestB
         origin: "campaignreport",
         table: JSON.stringify(table),
         offset: (new Date().getTimezoneOffset() / 60) * -1,
-        isNotPaginated: true
     }
+});
+
+export const getCampaignStart = (id: number): IRequestBody => ({
+    method: "UFN_CAMPAIGN_START",
+    parameters: {
+        id,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    },
+});
+
+export const getCampaignStatus = (id: number): IRequestBody => ({
+    method: "UFN_CAMPAIGN_STATUS",
+    parameters: {
+        id,
+    },
+});
+
+export const getBlocksUserFromChatfow = (communicationchannelid: number): IRequestBody => ({
+    method: "UFN_CHATFLOW_ISSELFBLOCK_SEL",
+    parameters: { communicationchannelid },
 });

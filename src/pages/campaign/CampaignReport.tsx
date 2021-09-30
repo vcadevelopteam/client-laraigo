@@ -95,6 +95,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Cell: cell
             },
             {
+                Header: t(langKeys.templatetype),
+                accessor: 'templatetype',
+                Cell: cell
+            },
+            {
                 Header: t(langKeys.channel),
                 accessor: 'channel',
                 Cell: cell
@@ -178,6 +183,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
     };
 
     const triggerExportData = () => {
+        if (Object.keys(selectedRows).length === 0) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_record_selected)}));
+            return null;
+        }
+        if (!reportType) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_type_selected)}));
+            return null;
+        }
         if (reportType === dataReportType.default) {
             dispatch(exportData(getCampaignReportExport(
                 Object.keys(selectedRows).reduce((ad: any[], d: any) => {
@@ -186,7 +199,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                         rundate: d.split('_')[1]
                     })
                     return ad;
-                }, []))));
+                }, [])),
+                `${t(langKeys.report)}.xlsx`,
+                'excel',
+                true
+            ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
         }
@@ -198,7 +215,11 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                         rundate: d.split('_')[1]
                     })
                     return ad;
-                }, []))));
+                }, [])),
+                `${t(langKeys.report)}.xlsx`,
+                'excel',
+                true
+            ));
             dispatch(showBackdrop(true));
             setWaitExport(true);
         }
@@ -238,6 +259,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
         return (
             <FieldSelect
                 uset={true}
+                label={t(langKeys.reporttype)}
                 className={classes.select}
                 valueDefault={reportType}
                 onChange={(value) => setReportType(value?.key)}
@@ -339,7 +361,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
                     rundate: row.id.split('_')[1],
                 }]
             )))
-            dispatch(showBackdrop(true));
             setWaitView(true);
             return () => {
                 dispatch(resetMainAux());
@@ -350,7 +371,6 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     useEffect(() => {
         if (waitView) {
             if (!mainAux.loading && !mainAux.error) {
-                dispatch(showBackdrop(false));
                 setWaitView(false);
             }
         }
@@ -369,6 +389,7 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
                 <TableZyx
                     columns={columns}
                     data={mainAux.data}
+                    loading={mainAux.loading}
                     filterGeneral={false}
                     download={false}
                 />

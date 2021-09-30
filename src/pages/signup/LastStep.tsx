@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC ,useState} from "react";
+import { FC ,useEffect,useState} from "react";
 import { makeStyles, Button, TextField} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
@@ -35,11 +35,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const LastStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(param:any)=>void,requestchannels:any}> = ({setMainData,mainData,setStep,requestchannels}) => {
+export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void}> = ({mainData,requestchannels,setSnackbar,setBackdrop}) => {
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const mainResult = useSelector(state => state.signup.channelList)
     const executeResult = useSelector(state => state.signup.successinsert)
     
     const [lastfields, setLastFields] = useState({
@@ -59,19 +60,36 @@ export const LastStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(p
                 doctype: "",
                 docnumber: "",
                 organizationname: mainData.companybusinessname,
-                mobilephone: mainData.mobilephone,
+                phone: mainData.mobilephone,
                 sales: mainData.sales,
                 customerservice: mainData.customerservice,
                 marketing: mainData.marketing,
+                facebookid: mainData.facebookid,
+                googleid: mainData.googleid,
                 industry: lastfields.industry,
                 companysize: lastfields.companysize,
-                companyrole: lastfields.companyrole,
+                rolecompany: lastfields.companyrole,
             },
             channellist: requestchannels
         }
+        setBackdrop(true)
         dispatch(executeSubscription(majorfield))
         setWaitSave(true);
     }
+    useEffect(() => {
+        if (waitSave) {
+            if (!mainResult.loading && !mainResult.error) {
+                setBackdrop(false)
+                setSnackbar({ state: true, success: true, message: t(langKeys.successful_register) })
+                setWaitSave(false);
+            } else if (mainResult.error) {
+                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                setSnackbar({ state: true, success: false, message: errormessage })
+                setBackdrop(false)
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult,waitSave])
 
     return (
         <div style={{ width: '100%' }}>
@@ -103,7 +121,7 @@ export const LastStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(p
                     fullWidth
                     label={t(langKeys.roleincompany)}
                     name="roleincompany"
-                    onChange={(e) => {setLastFields((p:any) =>({...p,roleincompany:e.target.value}))}}
+                    onChange={(e) => {setLastFields((p:any) =>({...p,companyrole:e.target.value}))}}
                 />
                 <div >
                     <Button

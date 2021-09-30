@@ -115,6 +115,7 @@ const translation: LangKeys = {
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
     doubleAuthentication: 'Doble autenticación',
+    signup_with_facebook: "Registrate con Facebook",
     next: "Siguiente",
     completedesc: 'Descripción completa',
     laststepsignup2: "Conocerte mejor nos ayuda a optimizar el servicio a lo que necesitan tus clientes",
@@ -123,6 +124,7 @@ const translation: LangKeys = {
     group_plural: 'Grupos',
     hasactionplan: 'Tiene Plan de Acción',
     action: 'Acción',
+    useralreadyregistered: "El usuario ya se encuentra registrado",
     laststepsignup: "Queremos ayudarte a crecer",
     action_plural: 'Acciones',
     variable: "Variable",
@@ -215,6 +217,7 @@ const translation: LangKeys = {
     status_activo: 'activo',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
+    status_ejecutando: 'ejecutando',
 
     attending: 'En atención',
 
@@ -346,6 +349,8 @@ const translation: LangKeys = {
     missing_header: 'Falta cabecera',
     invalid_parameter: 'Parámetro inválido',
     no_record_selected: 'Ningún registro seleccionado',
+    reporttype: 'Tipo de reporte',
+    no_type_selected: 'Ningún tipo seleccionado',
     rundate: 'Fecha ejecución',
     total: 'Total',
     success: 'Satisfactorio',
@@ -358,6 +363,9 @@ const translation: LangKeys = {
     default: 'Predeterminado',
     proactive: 'Proactivo',
     log: 'Log',
+    execute: 'Ejecutar',
+    sent: 'enviado',
+    campaign_in_execution: 'Campaña en ejecución',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
@@ -396,6 +404,9 @@ const translation: LangKeys = {
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
+
+    error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
+    error_zero_records: '5005: Nada a exportar',
 
     error_already_exists_record: '23505: Ya existe un mismo {{module}} registrado',
     error_parameter_too_long: '22001: Hubo un error, comuniquese con el administrador',

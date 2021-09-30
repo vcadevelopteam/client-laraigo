@@ -1,11 +1,9 @@
 import React, { FC, useState } from "react";
 import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
-import { Facebook as FacebookIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
-import PhoneIcon from '@material-ui/icons/Phone';
 import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
 
 interface ChannelOption {

@@ -11,7 +11,6 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import { CalendarIcon, DownloadIcon, SearchIcon } from 'icons';
 import Button from '@material-ui/core/Button/Button';
 import { DateRangePicker, DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from 'components';
 import { Range } from 'react-date-range';

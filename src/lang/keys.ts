@@ -29,7 +29,7 @@ export const langKeys = {
     supervisor_plural: 'supervisor_plural',
     tipification: 'tipification',
     tipification_plural: 'tipification_plural',
-
+    useralreadyregistered: "useralreadyregistered",
     report_designer: 'report_designer',
     column_plural: 'column_plural',
     new_report_designer: 'new_report_designer',
@@ -238,6 +238,7 @@ export const langKeys = {
     status_activo: 'status_activo',
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
+    status_ejecutando: 'status_ejecutando',
 
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
@@ -348,6 +349,8 @@ export const langKeys = {
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
     no_record_selected: 'no_record_selected',
+    reporttype: 'reporttype',
+    no_type_selected: 'no_type_selected',
     rundate: 'rundate',
     total: 'total',
     success: 'success',
@@ -360,6 +363,9 @@ export const langKeys = {
     default: 'default',
     proactive: 'proactive',
     log: 'log',
+    execute: 'execute',
+    sent: 'sent',
+    campaign_in_execution: 'campaign_in_execution',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',
@@ -399,9 +405,12 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     login_with_facebook: 'login_with_facebook',
+    signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
 
     error_already_exists_record: 'error_already_exists_record',
+    error_cos_unexpected: 'cos_unexpected',
+    error_zero_records: 'error_zero_records',
     error_parameter_too_long: 'error_parameter_too_long',
     error_divison_by_zero: 'error_divison_by_zero',
     error_unexpected_db_error: 'error_unexpected_db_error',

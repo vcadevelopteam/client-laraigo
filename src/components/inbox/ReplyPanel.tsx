@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import { ImageIcon, QuickresponseIcon, SendIcon, RickResponseIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -23,7 +24,15 @@ import DoubleArrowIcon from '@material-ui/icons/DoubleArrow';
 import Avatar from '@material-ui/core/Avatar';
 import Badge from '@material-ui/core/Badge';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
-
+import { SearchIcon } from 'icons';
+import List from '@material-ui/core/List';
+// import ListItemButton from '@material-ui/core/but';
+import ListItem from '@material-ui/core/ListItem';
+import Divider from '@material-ui/core/Divider';
+import ListItemText from '@material-ui/core/ListItemText';
+import TextField from '@material-ui/core/TextField';
+import { showSnackbar } from 'store/popus/actions';
+import { cleanedRichResponse } from 'common/helpers/functions'
 interface IFile {
     type: string;
     url: string;
@@ -110,19 +119,33 @@ const ItemFile: React.FC<{ item: IFile, setFiles: (param: any) => void }> = ({ i
 const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const handleClick = () => setOpen((prev) => !prev);
+    const [showSearch, setShowSearch] = useState(false);
+    const [search, setSearch] = useState("");
 
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
+
 
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data)
+            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+
         }
     }, [multiData])
+
+    useEffect(() => {
+        if (search === "") {
+            setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
+        } else {
+            setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(search.toLowerCase())))
+        }
+    }, [search, quickReplies])
 
     const handlerClickItem = (item: Dictionary) => {
         setOpen(false);
@@ -135,30 +158,65 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div>
+            <>
                 <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 {open && (
                     <div style={{
                         position: 'absolute',
-                        bottom: 50
+                        bottom: 60
                     }}>
                         <div className={classes.containerQuickReply}>
-                            <div className={classes.headerQuickReply}>User Quick Response</div>
                             <div>
-                                {quickReplies.slice(0, 7).map((item) => (
-                                    <div key={item.quickreplyid} >
-                                        <Tooltip title={item.quickreply} arrow placement="top">
-                                            <div className={classes.itemQuickReply} onClick={() => handlerClickItem(item)}>
-                                                {item.description}
-                                            </div>
-                                        </Tooltip>
+                                {!showSearch ?
+                                    <div className={classes.headerQuickReply}>
+                                        <div >User Quick Response</div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setShowSearch(true)} edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+
                                     </div>
-                                ))}
+                                    :
+                                    <TextField
+                                        color="primary"
+                                        fullWidth
+                                        autoFocus
+                                        placeholder="Search quickreplies"
+                                        style={{ padding: '6px 6px 6px 12px' }}
+                                        onBlur={() => !search && setShowSearch(false)}
+                                        onChange={e => setSearch(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton size="small">
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                }
                             </div>
+                            <Divider />
+                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                {quickRepliesToShow.map((item) => (
+                                    <ListItem
+                                        button
+                                        key={item.quickreplyid}
+                                        onClick={() => handlerClickItem(item)}
+                                    >
+                                        <Tooltip title={item.quickreply} arrow placement="top">
+                                            <ListItemText primary={item.description} />
+                                        </Tooltip>
+                                    </ListItem>
+                                ))}
+                            </List>
                         </div>
                     </div>
                 )}
-            </div>
+            </>
         </ClickAwayListener>
     )
 }
@@ -181,10 +239,10 @@ const BottomGoToUnder: React.FC = () => {
         if (triggerNewMessageClient !== null) {
             if (isOnBottom || isOnBottom === null)
                 dispatch(goToBottom(null))
-            else 
+            else
                 setCountNewMessage(countNewMessage + 1)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [triggerNewMessageClient])
 
 
@@ -220,11 +278,42 @@ const BottomGoToUnder: React.FC = () => {
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const user = useSelector(state => state.login.validateToken.user);
+    const richResponseList = useSelector(state => state.inbox.richResponseList);
+
+    const [typeHotKey, setTypeHotKey] = useState("")
+    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
+    const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
+
+
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
+    const multiData = useSelector(state => state.main.multiData);
+
+    const reasignTicket = React.useCallback(() => {
+        dispatch(reassignTicket({
+            ...ticketSelected!!,
+            newUserId: 0,
+            newUserGroup: '',
+            observation: 'Reassigned from supervisor',
+            newConversation: true,
+            wasanswered: true
+        }));
+        dispatch(emitEvent({
+            event: 'reassignTicket',
+            data: {
+                ...ticketSelected,
+                userid: agentSelected?.userid,
+                newuserid: 0,
+            }
+        }));
+    }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
         const callback = () => {
@@ -290,27 +379,99 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 }
             }
 
-            if (wasSend) {
-                if (userType === "SUPERVISOR") {
-                    dispatch(reassignTicket({
-                        ...ticketSelected!!,
-                        newUserId: 0,
-                        newUserGroup: '',
-                        observation: 'Reassigned from supervisor',
-                        newConversation: true,
-                        wasanswered: true
-                    }));
+            if (wasSend && userType === "SUPERVISOR")
+                reasignTicket()
+        }
 
+        if (userType === "SUPERVISOR") {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reasign_with_reply),
+                callback
+            }))
+        } else {
+            callback();
+        }
+    }
+
+    const [openDialogHotKey, setOpenDialogHotKey] = React.useState(false);
+    const handleClickAway = () => setOpenDialogHotKey(false);
+
+    useEffect(() => {
+        if (!multiData.loading && !multiData.error && multiData?.data[4]) {
+            setquickReplies(multiData?.data[4].data)
+            setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+        }
+    }, [multiData])
+
+    useEffect(() => {
+        if (text.substring(0, 2).toLowerCase() === "\\q") {
+            setTypeHotKey("quickreply")
+            setOpenDialogHotKey(true);
+            const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
+            if (textToSearch === "")
+                setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
+            else
+                setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
+        } else if (text.substring(0, 2).toLowerCase() === "\\r") {
+            setTypeHotKey("richresponse")
+            setOpenDialogHotKey(true);
+            const textToSearch = text.trim().split(text.trim().includes("\\r") ? "\\r" : "\\R")[1];
+            if (textToSearch === "")
+                setRichResponseToShow(richResponseList.data)
+            else
+                setRichResponseToShow(richResponseList.data.filter(x => x.title.toLowerCase().includes(textToSearch.toLowerCase())))
+        } else {
+            setOpenDialogHotKey(false);
+        }
+    }, [text])
+
+    const selectQuickReply = (value: string) => {
+        setText(value
+            .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
+            .replace("{{client_name}}", "" + ticketSelected?.displayname)
+            .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+    }
+
+    const selectRichResponse = (block: Dictionary) => {
+        const callback = () => {
+            const listInteractions = cleanedRichResponse(block.cards, variablecontext)
+
+            if (listInteractions.length === 0) {
+                dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+                return;
+            }
+
+            dispatch(replyTicket(listInteractions.map(x => ({
+                ...ticketSelected!!,
+                interactiontype: x.type,
+                interactiontext: x.content
+            })), true));
+
+            listInteractions.forEach((x: Dictionary, i: number) => {
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: x.type,
+                    typeinteraction: null,
+                    lastmessage: x.content,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                }
+                if (userType === "AGENT") {
                     dispatch(emitEvent({
-                        event: 'reassignTicket',
-                        data: {
-                            ...ticketSelected,
-                            userid: agentSelected?.userid,
-                            newuserid: 0,
-                        }
+                        event: 'newMessageFromAgent',
+                        data: newInteractionSocket
                     }));
                 }
-            }
+            })
+
+            if (userType === "SUPERVISOR")
+                reasignTicket()
+
+            setText("");
         }
 
         if (userType === "SUPERVISOR") {
@@ -341,24 +502,65 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                     {files.map((item: IFile) => <ItemFile key={item.id} item={item} setFiles={setFiles} />)}
                 </div>
             }
-            <div>
-                <InputBase
-                    fullWidth
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    placeholder="Send your message..."
-                    onKeyPress={handleKeyPress}
-                    rows={2}
-                    multiline
-                    inputProps={{ 'aria-label': 'naked' }}
-                />
-            </div>
+            <ClickAwayListener onClickAway={handleClickAway}>
+                <div>
+                    <InputBase
+                        fullWidth
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="Send your message..."
+                        onKeyPress={handleKeyPress}
+                        rows={2}
+                        multiline
+                        inputProps={{ 'aria-label': 'naked' }}
+                    />
+                    {openDialogHotKey && (
+                        <div style={{
+                            position: 'absolute',
+                            bottom: 100,
+                            left: 15
+                        }}>
+                            <div className="scroll-style-go" style={{
+                                maxHeight: 200,
+                                display: 'flex',
+                                gap: 4,
+                                flexDirection: 'column',
+                            }}>
+                                {typeHotKey === "quickreply" ?
+                                    quickRepliesToShow.map((item) => (
+                                        <div
+                                            key={item.quickreplyid}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectQuickReply(item.quickreply)}
+                                        >
+                                            {item.description}
+                                        </div>
+
+                                    )) :
+                                    richResponseToShow.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectRichResponse(item)}
+                                        >
+                                            {item.title}
+                                        </div>
+
+                                    ))
+                                }
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+            </ClickAwayListener>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                     <QuickReplyIcon classes={classes} setText={setText} />
+                    <RickResponseIcon className={classes.iconResponse} style={{ width: 22, height: 22 }} />
                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
-                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, {type: 'image', url, id: new Date().toISOString()}])} />
+                    <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                     <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                 </div>
                 <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>

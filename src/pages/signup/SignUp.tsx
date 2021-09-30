@@ -2,6 +2,10 @@
 import { FC, Fragment, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import {RightSideMenu} from './RightSideMenu';
+import Backdrop from '@material-ui/core/Backdrop';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { CircularProgress } from '@material-ui/core';
 
 const useSignUpStyles = makeStyles(theme => ({
     purplecircle: {
@@ -34,15 +38,41 @@ const useSignUpStyles = makeStyles(theme => ({
         borderBottom: "grey solid 1px",
         width: "10vh",
         height: "3.3vh",
+    },
+    cookieAlert: {
+        "& svg": {
+            color: 'white'
+        }
     }
 }));
 
 export const SignUp: FC = () => {
     const classes = useSignUpStyles();
     const [step, setStep] = useState(1);
+    const [snackbar, setSnackbar] = useState({
+        state:false,
+        success: true,
+        message: ""
+    });
+    const [backdrop, setBackdrop] = useState(false);
     
     return (
         <Fragment>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                color="white"
+                open={snackbar.state}
+                key={'topright'}
+            >
+                <MuiAlert className={classes.cookieAlert} elevation={6} variant="filled" onClick={()=>setSnackbar((p:any)=>({...p,state:false}))} severity={snackbar.success ? "success" : "error"}>
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
+
+            <Backdrop style={{ zIndex: 999999999, color: '#fff', }} open={backdrop}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            
             <div className="col-12 row-zyx" style={{display:"flex",height: "7vh", borderBottom: "grey solid 1px", boxShadow: "0px 3px 1px lightgrey"}}>
                 <div className="col-6"></div>
                 <div className="col-6" style={{display:"flex", transform: "translate(15%, 0%)"}}>
@@ -61,6 +91,8 @@ export const SignUp: FC = () => {
                 </div>
                 <div className="col-6">
                     <RightSideMenu
+                        setSnackbar={setSnackbar}
+                        setBackdrop={setBackdrop}
                         setStep={setStep}
                         step={step}
                     />
