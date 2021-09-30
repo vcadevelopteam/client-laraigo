@@ -4,15 +4,14 @@ import { useDispatch } from 'react-redux';
 import { chatblock_set } from 'store/flowdesigner/actions';
 import { useHistory } from 'react-router-dom'
 import paths from 'common/constants/paths';
+import { apiUrls } from 'common/constants';
 
 const FlowDesigner: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     
-    //const origin = 'https://localhost:4200';
-    const origin = 'https://zyxmelinux.zyxmeapp.com';
-    //const path = '';
-    const path = '/chatflow';
+    const origin = new URL(apiUrls.CHATFLOW).origin;
+    const pathname = new URL(apiUrls.CHATFLOW).pathname
 
     const receiveCrossDomainMessage = (event: any) => {
         if (event?.origin === origin) {
@@ -31,12 +30,12 @@ const FlowDesigner: FC = () => {
         return undefined;
     }
     
-    const [frame, setFrame] = useState(false)
-    const [url, setUrl] = useState('')
+    const [frame, setFrame] = useState(false);
+    const [url, setUrl] = useState('');
     
     useEffect(() => {
         postCrossDomainMessage(localStorage.getItem('accessToken'));
-        setUrl(`${origin}/${path}`);
+        setUrl(`${origin}${pathname}`);
     },[frame])
 
     return (
