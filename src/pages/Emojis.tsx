@@ -5,6 +5,7 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
+import { emojis } from "common/constants";
 import { EmojiICon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
@@ -76,7 +77,7 @@ const Emojis: FC = () => {
                     }
                 }
             } else {
-                return emoji?.emojidec.includes(searchValue);
+                return emoji?.description.includes(searchValue);
             }
         }), [category, searchValue, emojiResult]);
 
@@ -101,8 +102,6 @@ const Emojis: FC = () => {
             dispatch(resetMain());
         };
     }, []);
-
-    //console.log('Page Emojis');
 
     return (
         <div className={classes.container}>
@@ -167,8 +166,6 @@ const TabEmoji: FC<{ mainResult: Dictionary[], setCategory: (categorydesc: any) 
         setSearchValue('');
     };
 
-    //console.log('TabEmoji');
-
     return (
         <Tabs
             value={value}
@@ -227,8 +224,6 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
     const handleOnClose = () => {
         setAnchorEl(null);
     };
-
-    //console.log('Emoji');
 
     return (
         <>
@@ -323,8 +318,6 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
 
     }, [openModal]);
 
-    //console.log('EmojiDetails');
-
     return (
         <DialogZyx
             open={openModal}
@@ -360,60 +353,52 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
             </Grid>
 
             <div className="row-zyx">
-                {
-                    <FieldEdit
-                        label={t(langKeys.corporation)}
-                        disabled={true}
-                        className="col-6"
-                        valueDefault={user?.corpdesc}
-                    />
-                }
-                {
-                    <FieldSelect
-                        label={t(langKeys.organization)}
-                        className="col-6"
-                        valueDefault={getValues('organization')}
-                        onChange={(value) => {
-                            setValue('organization', value.orgid)
-                            setValueChannel(value.orgid)
-                        }}
-                        data={dataOrganization}
-                        optionDesc="orgdesc"
-                        optionValue="orgid"
-                    />
-                }
+                <FieldEdit
+                    label={t(langKeys.corporation)}
+                    disabled={true}
+                    className="col-6"
+                    valueDefault={user?.corpdesc}
+                />
+                <FieldSelect
+                    label={t(langKeys.organization)}
+                    className="col-6"
+                    valueDefault={getValues('organization')}
+                    onChange={(value) => {
+                        setValue('organization', value.orgid)
+                        setValueChannel(value.orgid)
+                    }}
+                    data={dataOrganization}
+                    optionDesc="orgdesc"
+                    optionValue="orgid"
+                />
             </div>
             <div className="row-zyx">
-                {
-                    <FieldMultiSelect
-                        label={t(langKeys.emoji_favorites)}
-                        className="col-12"
-                        onChange={(value) => {
-                            setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
-                            setFavoritesChange();
-                        }}
-                        valueDefault={channelsOrganization[0]?.favoritechannels}
-                        data={datachannels}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                        disabled={channelsOrganization[0] ? false : true}
-                    />
-                }
-                {
-                    <FieldMultiSelect
-                        label={t(langKeys.emoji_restricted)}
-                        className="col-12"
-                        onChange={(value) => {
-                            setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
-                            setRestrictedChange();
-                        }}
-                        valueDefault={channelsOrganization[0]?.restrictedchannels}
-                        data={datachannels}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                        disabled={channelsOrganization[0] ? false : true}
-                    />
-                }
+                <FieldMultiSelect
+                    label={t(langKeys.emoji_favorites)}
+                    className="col-12"
+                    onChange={(value) => {
+                        setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
+                        setFavoritesChange();
+                    }}
+                    valueDefault={channelsOrganization[0]?.favoritechannels}
+                    data={datachannels}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                    disabled={channelsOrganization[0] ? false : true}
+                />
+                <FieldMultiSelect
+                    label={t(langKeys.emoji_restricted)}
+                    className="col-12"
+                    onChange={(value) => {
+                        setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
+                        setRestrictedChange();
+                    }}
+                    valueDefault={channelsOrganization[0]?.restrictedchannels}
+                    data={datachannels}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                    disabled={channelsOrganization[0] ? false : true}
+                />
             </div>
         </DialogZyx>
     );

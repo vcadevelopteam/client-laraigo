@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { ImageIcon, QuickresponseIcon, SendIcon, RickResponseIcon } from 'icons';
+import { ImageIcon, QuickresponseIcon, SendIcon, RichResponseIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -128,7 +128,6 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
 
-
     const handleClickAway = () => setOpen(false);
 
     useEffect(() => {
@@ -158,7 +157,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <>
+            <div style={{ display: 'flex' }}>
                 <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 {open && (
                     <div style={{
@@ -216,10 +215,164 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
                         </div>
                     </div>
                 )}
-            </>
+            </div>
         </ClickAwayListener>
     )
 }
+
+
+
+
+const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+    const [open, setOpen] = React.useState(false);
+    const dispatch = useDispatch();
+
+    const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
+    const handleClick = () => setOpen((prev) => !prev);
+    const [showSearch, setShowSearch] = useState(false);
+    const [search, setSearch] = useState("");
+
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const richResponseList = useSelector(state => state.inbox.richResponseList.data);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
+
+    const handleClickAway = () => setOpen(false);
+
+    useEffect(() => {
+        setRichResponseToShow(richResponseList)
+    }, [richResponseList])
+
+    useEffect(() => {
+        if (search === "") {
+            setRichResponseToShow(richResponseList)
+        } else {
+            setRichResponseToShow(richResponseList.filter(x => x.title.toLowerCase().includes(search.toLowerCase())))
+        }
+    }, [search])
+
+    const reasignTicket = React.useCallback(() => {
+        dispatch(reassignTicket({
+            ...ticketSelected!!,
+            newUserId: 0,
+            newUserGroup: '',
+            observation: 'Reassigned from supervisor',
+            newConversation: true,
+            wasanswered: true
+        }));
+        dispatch(emitEvent({
+            event: 'reassignTicket',
+            data: {
+                ...ticketSelected,
+                userid: agentSelected?.userid,//CAMBIAR ESTO
+                newuserid: 0,
+            }
+        }));
+    }, [dispatch, ticketSelected, agentSelected])
+
+    const handlerClickItem = (block: Dictionary) => {
+        setOpen(false);
+        const listInteractions = cleanedRichResponse(block.cards, variablecontext)
+
+        if (listInteractions.length === 0) {
+            dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+            return;
+        }
+
+        dispatch(replyTicket(listInteractions.map(x => ({
+            ...ticketSelected!!,
+            interactiontype: x.type,
+            interactiontext: x.content
+        })), true));
+
+        listInteractions.forEach((x: Dictionary, i: number) => {
+            const newInteractionSocket = {
+                ...ticketSelected!!,
+                interactionid: 0,
+                typemessage: x.type,
+                typeinteraction: null,
+                lastmessage: x.content,
+                createdate: new Date().toISOString(),
+                userid: 0,
+                usertype: "agent",
+                ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+            }
+            if (userType === "AGENT") {
+                dispatch(emitEvent({
+                    event: 'newMessageFromAgent',
+                    data: newInteractionSocket
+                }));
+            }
+        })
+
+        if (userType === "SUPERVISOR")
+            reasignTicket()
+    }
+
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <div style={{ display: 'flex' }}>
+                <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 60
+                    }}>
+                        <div className={classes.containerQuickReply}>
+                            <div>
+                                {!showSearch ?
+                                    <div className={classes.headerQuickReply}>
+                                        <div >User Rich Response</div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setShowSearch(true)} edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+
+                                    </div>
+                                    :
+                                    <TextField
+                                        color="primary"
+                                        fullWidth
+                                        autoFocus
+                                        placeholder="Search quickreplies"
+                                        style={{ padding: '6px 6px 6px 12px' }}
+                                        onBlur={() => !search && setShowSearch(false)}
+                                        onChange={e => setSearch(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton size="small">
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                }
+                            </div>
+                            <Divider />
+                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                {richResponseToShow.map((item) => (
+                                    <ListItem
+                                        button
+                                        key={item.id}
+                                        onClick={() => handlerClickItem(item)}
+                                    >
+                                        <ListItemText primary={item.title} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </ClickAwayListener>
+    )
+}
+
 
 const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
     width: 22,
@@ -284,17 +437,15 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const richResponseList = useSelector(state => state.inbox.richResponseList);
+    const userType = useSelector(state => state.inbox.userType);
+    const [text, setText] = useState("");
+    const [files, setFiles] = useState<IFile[]>([]);
+    const multiData = useSelector(state => state.main.multiData);
 
     const [typeHotKey, setTypeHotKey] = useState("")
     const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
     const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
-
-
-    const userType = useSelector(state => state.inbox.userType);
-    const [text, setText] = useState("");
-    const [files, setFiles] = useState<IFile[]>([]);
-    const multiData = useSelector(state => state.main.multiData);
 
     const reasignTicket = React.useCallback(() => {
         dispatch(reassignTicket({
@@ -557,7 +708,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                     <QuickReplyIcon classes={classes} setText={setText} />
-                    <RickResponseIcon className={classes.iconResponse} style={{ width: 22, height: 22 }} />
+                    <TmpRichResponseIcon classes={classes} setText={setText} />
                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
