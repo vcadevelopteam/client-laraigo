@@ -6,6 +6,10 @@
 const BASE_URL = 'https://testapix.laraigo.com/api'; //testing
 const WS_URL = 'https://testsocket.laraigo.com'; //testing
 
+// const CHATFLOW_URL = 'https://localhost:4200' //local
+// const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
+const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
+
 export const apiUrls = {
     WS_URL,
     TICKET_URL: `${BASE_URL}/main`,
@@ -36,4 +40,6 @@ export const apiUrls = {
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 
     PERSON: `${BASE_URL}/person`,
+
+    CHATFLOW: `${CHATFLOW_URL}`,
 };
