@@ -63,7 +63,8 @@ const paths = {
     CAMPAIGN: '/extras/campaign',
     FLOWDESIGNER: '/extras/flowdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
-    EMOJIS: '/extras/emojis'
+    EMOJIS: '/extras/emojis',
+    DASHBOARDMANAGEMENT: '/dashboard/management'
 };
 
 export default paths;

@@ -5,6 +5,7 @@ import { langKeys } from "lang/keys";
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
+import { emojis } from "common/constants";
 import { EmojiICon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
@@ -76,7 +77,7 @@ const Emojis: FC = () => {
                     }
                 }
             } else {
-                return emoji?.emojidec.includes(searchValue);
+                return String(emoji?.description).toLowerCase().includes(searchValue.toLowerCase());
             }
         }), [category, searchValue, emojiResult]);
 
@@ -102,8 +103,6 @@ const Emojis: FC = () => {
         };
     }, []);
 
-    //console.log('Page Emojis');
-
     return (
         <div className={classes.container}>
 
@@ -128,7 +127,7 @@ const Emojis: FC = () => {
 
                 <div
                     key='tabPanel_emoji'
-                    style={{ padding: 12, marginTop: '12px' }}>
+                    style={{ padding: 12, marginTop: '12px', display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {
                         filteredEmojis.map((emoji: Dictionary) =>
                             <Emoji
@@ -166,8 +165,6 @@ const TabEmoji: FC<{ mainResult: Dictionary[], setCategory: (categorydesc: any) 
         setCategory(categorydesc);
         setSearchValue('');
     };
-
-    //console.log('TabEmoji');
 
     return (
         <Tabs
@@ -228,18 +225,15 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
         setAnchorEl(null);
     };
 
-    //console.log('Emoji');
-
     return (
         <>
-            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.emojidec} arrow>
+            <Tooltip key={'tooltip_' + emoji?.emojidec} title={emoji?.description} arrow>
                 <Button
                     aria-controls="simple-menu" aria-haspopup="true"
                     onContextMenu={handleClick}
                     key={'button_' + emoji?.emojidec}
                     onDoubleClick={() => handleDoubleClick(emoji)}
-                    style={{ padding: 0, fontSize: '30px' }}>
-
+                    style={{ padding: 0, minWidth: 50 }}>
                     <label
                         key={'label_' + emoji?.emojidec}
                         style={{ fontSize: 30 }}>{emoji?.emojichar}
@@ -323,8 +317,6 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
 
     }, [openModal]);
 
-    //console.log('EmojiDetails');
-
     return (
         <DialogZyx
             open={openModal}
@@ -345,7 +337,7 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
                             label={t(langKeys.emoji_name)}
                             disabled={true}
                             className="col-6"
-                            valueDefault={emoji?.emojidec}
+                            valueDefault={emoji?.description}
                         />
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>
@@ -360,60 +352,52 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ openModal, setOpenModal
             </Grid>
 
             <div className="row-zyx">
-                {
-                    <FieldEdit
-                        label={t(langKeys.corporation)}
-                        disabled={true}
-                        className="col-6"
-                        valueDefault={user?.corpdesc}
-                    />
-                }
-                {
-                    <FieldSelect
-                        label={t(langKeys.organization)}
-                        className="col-6"
-                        valueDefault={getValues('organization')}
-                        onChange={(value) => {
-                            setValue('organization', value.orgid)
-                            setValueChannel(value.orgid)
-                        }}
-                        data={dataOrganization}
-                        optionDesc="orgdesc"
-                        optionValue="orgid"
-                    />
-                }
+                <FieldEdit
+                    label={t(langKeys.corporation)}
+                    disabled={true}
+                    className="col-6"
+                    valueDefault={user?.corpdesc}
+                />
+                <FieldSelect
+                    label={t(langKeys.organization)}
+                    className="col-6"
+                    valueDefault={getValues('organization')}
+                    onChange={(value) => {
+                        setValue('organization', value.orgid)
+                        setValueChannel(value.orgid)
+                    }}
+                    data={dataOrganization}
+                    optionDesc="orgdesc"
+                    optionValue="orgid"
+                />
             </div>
             <div className="row-zyx">
-                {
-                    <FieldMultiSelect
-                        label={t(langKeys.emoji_favorites)}
-                        className="col-12"
-                        onChange={(value) => {
-                            setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
-                            setFavoritesChange();
-                        }}
-                        valueDefault={channelsOrganization[0]?.favoritechannels}
-                        data={datachannels}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                        disabled={channelsOrganization[0] ? false : true}
-                    />
-                }
-                {
-                    <FieldMultiSelect
-                        label={t(langKeys.emoji_restricted)}
-                        className="col-12"
-                        onChange={(value) => {
-                            setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
-                            setRestrictedChange();
-                        }}
-                        valueDefault={channelsOrganization[0]?.restrictedchannels}
-                        data={datachannels}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                        disabled={channelsOrganization[0] ? false : true}
-                    />
-                }
+                <FieldMultiSelect
+                    label={t(langKeys.emoji_favorites)}
+                    className="col-12"
+                    onChange={(value) => {
+                        setValue('favorites', value.map((o: Dictionary) => o.domainvalue).join())
+                        setFavoritesChange();
+                    }}
+                    valueDefault={channelsOrganization[0]?.favoritechannels}
+                    data={datachannels}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                    disabled={channelsOrganization[0] ? false : true}
+                />
+                <FieldMultiSelect
+                    label={t(langKeys.emoji_restricted)}
+                    className="col-12"
+                    onChange={(value) => {
+                        setValue('restricted', value.map((o: Dictionary) => o.domainvalue).join())
+                        setRestrictedChange();
+                    }}
+                    valueDefault={channelsOrganization[0]?.restrictedchannels}
+                    data={datachannels}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                    disabled={channelsOrganization[0] ? false : true}
+                />
             </div>
         </DialogZyx>
     );
