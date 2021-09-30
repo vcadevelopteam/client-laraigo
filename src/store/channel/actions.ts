@@ -11,6 +11,15 @@ export const getChannelsList = (accessToken: String): IActionCall => ({
     },
     type: null,
 });
+export const getChannelsListSub = (accessToken: String): IActionCall => ({
+    callAPI: () => ChannelsService.getPagelistSub(accessToken),
+    types: {
+        loading: actionTypes.CHANNELS,
+        success: actionTypes.CHANNELS_SUCCESS,
+        failure: actionTypes.CHANNELS_FAILURE,
+    },
+    type: null,
+});
 export const insertChannel = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.insertchnl(requestBody),
     types: {

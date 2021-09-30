@@ -7,6 +7,10 @@ const actionType = {
     SIGNUP_FAILURE: 'signup/SIGNUP_FAILURE',
     SIGNUP_SUCCESS: 'signup/SIGNUP_SUCCESS',
     SIGNUP_RESET: 'signup/SIGNUP_RESET',
+    ISVALID: 'signup/ISVALID',
+    ISVALID_FAILURE: 'signup/ISVALID_FAILURE',
+    ISVALID_SUCCESS: 'signup/ISVALID_SUCCESS',
+    ISVALID_RESET: 'signup/ISVALID_RESET',
 };
 
 export default actionType;

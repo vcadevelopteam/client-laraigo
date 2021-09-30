@@ -471,6 +471,12 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
         loading: false,
         error: false,
     },
+    richResponseList: {
+        data: action.payload.data[3].data.map((x: any) => JSON.parse(x.block)) || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
     person: {
         data: action.payload.data[1].data && action.payload.data[1].data.length > 0 ? action.payload.data[1].data[0] : null,
         loading: false,

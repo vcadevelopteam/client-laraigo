@@ -164,8 +164,8 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                 let messageTemplateData = dataMessageTemplate.find(d => d.id === auxdata[0].messagetemplateid) || {};
                 setStepData({
                     ...auxdata[0],
-                    messagetemplatename: messageTemplateData.name || '',
-                    messagetemplatenamespace: messageTemplateData.namespace || '',
+                    messagetemplatename: messageTemplateData.name || auxdata[0].messagetemplatename ||'',
+                    messagetemplatenamespace: messageTemplateData.namespace || auxdata[0].messagetemplatenamespace || '',
                     messagetemplatetype: messageTemplateData.templatetype || 'STANDARD',
                 });
                 trigger();
@@ -214,7 +214,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     });
 
     const validateDate = (value: string): any => {
-        return new Date(value) > new Date(getValues('startdate'))
+        return new Date(value) >= new Date(getValues('startdate'))
     }
 
     const onChangeExecutionType = async (data: Dictionary) => {
@@ -428,6 +428,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             label={t(langKeys.channel)}
                             className="col-8"
                             valueDefault={getValues('communicationchannelid') as any}
+                            disabled={!getValues('isnew')}
                             onChange={onChangeChannel}
                             error={errors?.communicationchannelid?.message}
                             data={dataChannel}
@@ -504,6 +505,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             label={t(langKeys.messagetype)}
                             className="col-4"
                             valueDefault={getValues('type')}
+                            disabled={!getValues('isnew')}
                             onChange={onChangeType}
                             error={errors?.type?.message}
                             data={filterDataCampaignType()}
@@ -525,6 +527,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             label={t(langKeys.messagetemplate)}
                             className="col-6"
                             valueDefault={getValues('messagetemplateid') as any}
+                            disabled={!getValues('isnew')}
                             onChange={onChangeMessageTemplateId}
                             error={errors?.messagetemplateid?.message}
                             data={filterMessageTemplate()}
@@ -547,7 +550,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
                             className="col-6"
                             valueDefault={getValues('messagetemplatenamespace')}
                             onChange={(value) => setValue('messagetemplatenamespace', value)}
-                            disabled={getValues('messagetemplateid') !== 0}
+                            disabled={!getValues('isnew') || getValues('messagetemplateid') !== 0}
                             error={errors?.messagetemplatenamespace?.message}
                         />
                         :

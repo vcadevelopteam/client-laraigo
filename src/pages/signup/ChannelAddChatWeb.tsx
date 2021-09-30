@@ -11,7 +11,7 @@ import { useHistory } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
-import { insertChannel2, reserInsertChannel } from 'store/channel/actions';
+import { reserInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
@@ -1425,7 +1425,6 @@ const useStyles = makeStyles(theme => ({
 
 export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const classes = useStyles();
-    const history = useHistory();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
     const [showFinalStep, setShowFinalStep] = useState(false);
@@ -1467,10 +1466,10 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
             },
             color: {
                 header: "#fff",
-                background: "#7721AD",
-                border: "#fff",
+                background: "#F9F9FA",
+                border: "#EBEAED",
                 client: "#fff",
-                bot: "#fff",
+                bot: "#aa53e0",
             },
             form: [],
             bubble: {
@@ -1511,11 +1510,6 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
         const body = getInsertChatwebChannel(name, auto, form.getValues());
         setrequestchannels((p:any)=>([...p,body]))
         setlistchannels((p:any)=>({...p,chatWeb:false}))
-    }
-
-    const handleGoBack: React.MouseEventHandler = (e) => {
-        e.preventDefault();
-        if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     }
 
     return (

@@ -108,6 +108,7 @@ const SignIn = () => {
 
     const onAuthWithFacebook = (r: any) => {
         if (r && r.id) {
+            console.log(r.id)
             dispatch(login(null, null, r.id));
         }
     }
@@ -140,7 +141,7 @@ const SignIn = () => {
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             //redirect to page tickets
-            history.push(resLogin.user.redirect);
+            history.push(resLogin.user.redirect?resLogin.user.redirect:"/supervisor");
         }
     }, [resLogin]);
 
@@ -203,7 +204,7 @@ const SignIn = () => {
                                     <Trans i18nKey={langKeys.logIn} />
                                 </Button>
                                 <FacebookLogin
-                                    appId="474255543421911"
+                                    appId="1094526090706564"
                                     callback={onAuthWithFacebook}
                                     buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
 

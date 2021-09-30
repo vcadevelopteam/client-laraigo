@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { ImageIcon, QuickresponseIcon, SendIcon } from 'icons';
+import { ImageIcon, QuickresponseIcon, SendIcon, RichResponseIcon } from 'icons';
 import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -31,6 +31,8 @@ import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
+import { showSnackbar } from 'store/popus/actions';
+import { cleanedRichResponse } from 'common/helpers/functions'
 interface IFile {
     type: string;
     url: string;
@@ -132,6 +134,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data)
             setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
+
         }
     }, [multiData])
 
@@ -154,7 +157,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div>
+            <div style={{ display: 'flex' }}>
                 <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 {open && (
                     <div style={{
@@ -217,6 +220,160 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     )
 }
 
+
+
+
+const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
+    const [open, setOpen] = React.useState(false);
+    const dispatch = useDispatch();
+
+    const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
+    const handleClick = () => setOpen((prev) => !prev);
+    const [showSearch, setShowSearch] = useState(false);
+    const [search, setSearch] = useState("");
+
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const richResponseList = useSelector(state => state.inbox.richResponseList.data);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
+
+    const handleClickAway = () => setOpen(false);
+
+    useEffect(() => {
+        setRichResponseToShow(richResponseList)
+    }, [richResponseList])
+
+    useEffect(() => {
+        if (search === "") {
+            setRichResponseToShow(richResponseList)
+        } else {
+            setRichResponseToShow(richResponseList.filter(x => x.title.toLowerCase().includes(search.toLowerCase())))
+        }
+    }, [search])
+
+    const reasignTicket = React.useCallback(() => {
+        dispatch(reassignTicket({
+            ...ticketSelected!!,
+            newUserId: 0,
+            newUserGroup: '',
+            observation: 'Reassigned from supervisor',
+            newConversation: true,
+            wasanswered: true
+        }));
+        dispatch(emitEvent({
+            event: 'reassignTicket',
+            data: {
+                ...ticketSelected,
+                userid: agentSelected?.userid,//CAMBIAR ESTO
+                newuserid: 0,
+            }
+        }));
+    }, [dispatch, ticketSelected, agentSelected])
+
+    const handlerClickItem = (block: Dictionary) => {
+        setOpen(false);
+        const listInteractions = cleanedRichResponse(block.cards, variablecontext)
+
+        if (listInteractions.length === 0) {
+            dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+            return;
+        }
+
+        dispatch(replyTicket(listInteractions.map(x => ({
+            ...ticketSelected!!,
+            interactiontype: x.type,
+            interactiontext: x.content
+        })), true));
+
+        listInteractions.forEach((x: Dictionary, i: number) => {
+            const newInteractionSocket = {
+                ...ticketSelected!!,
+                interactionid: 0,
+                typemessage: x.type,
+                typeinteraction: null,
+                lastmessage: x.content,
+                createdate: new Date().toISOString(),
+                userid: 0,
+                usertype: "agent",
+                ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+            }
+            if (userType === "AGENT") {
+                dispatch(emitEvent({
+                    event: 'newMessageFromAgent',
+                    data: newInteractionSocket
+                }));
+            }
+        })
+
+        if (userType === "SUPERVISOR")
+            reasignTicket()
+    }
+
+    return (
+        <ClickAwayListener onClickAway={handleClickAway}>
+            <div style={{ display: 'flex' }}>
+                <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                {open && (
+                    <div style={{
+                        position: 'absolute',
+                        bottom: 60
+                    }}>
+                        <div className={classes.containerQuickReply}>
+                            <div>
+                                {!showSearch ?
+                                    <div className={classes.headerQuickReply}>
+                                        <div >User Rich Response</div>
+                                        <IconButton
+                                            size="small"
+                                            onClick={() => setShowSearch(true)} edge="end"
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+
+                                    </div>
+                                    :
+                                    <TextField
+                                        color="primary"
+                                        fullWidth
+                                        autoFocus
+                                        placeholder="Search quickreplies"
+                                        style={{ padding: '6px 6px 6px 12px' }}
+                                        onBlur={() => !search && setShowSearch(false)}
+                                        onChange={e => setSearch(e.target.value)}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton size="small">
+                                                        <SearchIcon />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
+                                    />
+                                }
+                            </div>
+                            <Divider />
+                            <List component="nav" disablePadding style={{ maxHeight: 200, overflowY: 'overlay' as any }}>
+                                {richResponseToShow.map((item) => (
+                                    <ListItem
+                                        button
+                                        key={item.id}
+                                        onClick={() => handlerClickItem(item)}
+                                    >
+                                        <ListItemText primary={item.title} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </ClickAwayListener>
+    )
+}
+
+
 const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
     width: 22,
     backgroundColor: '#0ac630',
@@ -274,17 +431,40 @@ const BottomGoToUnder: React.FC = () => {
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
-
-    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
-    const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
-
+    const richResponseList = useSelector(state => state.inbox.richResponseList);
     const userType = useSelector(state => state.inbox.userType);
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+
+    const [typeHotKey, setTypeHotKey] = useState("")
+    const [quickReplies, setquickReplies] = useState<Dictionary[]>([])
+    const [quickRepliesToShow, setquickRepliesToShow] = useState<Dictionary[]>([])
+    const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
+
+    const reasignTicket = React.useCallback(() => {
+        dispatch(reassignTicket({
+            ...ticketSelected!!,
+            newUserId: 0,
+            newUserGroup: '',
+            observation: 'Reassigned from supervisor',
+            newConversation: true,
+            wasanswered: true
+        }));
+        dispatch(emitEvent({
+            event: 'reassignTicket',
+            data: {
+                ...ticketSelected,
+                userid: agentSelected?.userid,
+                newuserid: 0,
+            }
+        }));
+    }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
         const callback = () => {
@@ -350,27 +530,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 }
             }
 
-            if (wasSend) {
-                if (userType === "SUPERVISOR") {
-                    dispatch(reassignTicket({
-                        ...ticketSelected!!,
-                        newUserId: 0,
-                        newUserGroup: '',
-                        observation: 'Reassigned from supervisor',
-                        newConversation: true,
-                        wasanswered: true
-                    }));
-
-                    dispatch(emitEvent({
-                        event: 'reassignTicket',
-                        data: {
-                            ...ticketSelected,
-                            userid: agentSelected?.userid,
-                            newuserid: 0,
-                        }
-                    }));
-                }
-            }
+            if (wasSend && userType === "SUPERVISOR")
+                reasignTicket()
         }
 
         if (userType === "SUPERVISOR") {
@@ -395,15 +556,22 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     }, [multiData])
 
     useEffect(() => {
-        console.log(text.substring(0, 2))
         if (text.substring(0, 2).toLowerCase() === "\\q") {
+            setTypeHotKey("quickreply")
             setOpenDialogHotKey(true);
             const textToSearch = text.trim().split(text.trim().includes("\\q") ? "\\q" : "\\Q")[1];
-
             if (textToSearch === "")
                 setquickRepliesToShow(quickReplies.filter(x => !!x.favorite))
             else
                 setquickRepliesToShow(quickReplies.filter(x => x.description.toLowerCase().includes(textToSearch.toLowerCase())))
+        } else if (text.substring(0, 2).toLowerCase() === "\\r") {
+            setTypeHotKey("richresponse")
+            setOpenDialogHotKey(true);
+            const textToSearch = text.trim().split(text.trim().includes("\\r") ? "\\r" : "\\R")[1];
+            if (textToSearch === "")
+                setRichResponseToShow(richResponseList.data)
+            else
+                setRichResponseToShow(richResponseList.data.filter(x => x.title.toLowerCase().includes(textToSearch.toLowerCase())))
         } else {
             setOpenDialogHotKey(false);
         }
@@ -414,6 +582,58 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+    }
+
+    const selectRichResponse = (block: Dictionary) => {
+        const callback = () => {
+            const listInteractions = cleanedRichResponse(block.cards, variablecontext)
+
+            if (listInteractions.length === 0) {
+                dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+                return;
+            }
+
+            dispatch(replyTicket(listInteractions.map(x => ({
+                ...ticketSelected!!,
+                interactiontype: x.type,
+                interactiontext: x.content
+            })), true));
+
+            listInteractions.forEach((x: Dictionary, i: number) => {
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: x.type,
+                    typeinteraction: null,
+                    lastmessage: x.content,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                }
+                if (userType === "AGENT") {
+                    dispatch(emitEvent({
+                        event: 'newMessageFromAgent',
+                        data: newInteractionSocket
+                    }));
+                }
+            })
+
+            if (userType === "SUPERVISOR")
+                reasignTicket()
+
+            setText("");
+        }
+
+        if (userType === "SUPERVISOR") {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reasign_with_reply),
+                callback
+            }))
+        } else {
+            callback();
+        }
     }
 
     const handleKeyPress = (event: any) => {
@@ -457,16 +677,28 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                 gap: 4,
                                 flexDirection: 'column',
                             }}>
-                                {quickRepliesToShow.map((item) => (
-                                    <div
-                                        key={item.quickreplyid}
-                                        className={classes.hotKeyQuickReply}
-                                        onClick={() => selectQuickReply(item.quickreply)}
-                                    >
-                                        {item.description}
-                                    </div>
+                                {typeHotKey === "quickreply" ?
+                                    quickRepliesToShow.map((item) => (
+                                        <div
+                                            key={item.quickreplyid}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectQuickReply(item.quickreply)}
+                                        >
+                                            {item.description}
+                                        </div>
 
-                                ))}
+                                    )) :
+                                    richResponseToShow.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className={classes.hotKeyQuickReply}
+                                            onClick={() => selectRichResponse(item)}
+                                        >
+                                            {item.title}
+                                        </div>
+
+                                    ))
+                                }
                             </div>
                         </div>
                     )}
@@ -474,8 +706,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
             </ClickAwayListener>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                     <QuickReplyIcon classes={classes} setText={setText} />
+                    <TmpRichResponseIcon classes={classes} setText={setText} />
                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />

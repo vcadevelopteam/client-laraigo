@@ -16,6 +16,9 @@ export function insertchnl(requestBody: IRequestBody ) {
 export function execSub(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.EXEC_SUB, { data: requestBody }, true);
 }
+export function validateNewUser(requestBody: IRequestBody ) {
+    return APIManager.post(apiUrls.VALIDATE_NEW_USER, { data: requestBody }, true);
+}
 export function deletechnl(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.DELETE_CHANNEL, { data: requestBody }, true);
 }

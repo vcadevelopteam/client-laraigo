@@ -9,6 +9,8 @@ export const routes: RouteConfig[] = [
         key: paths.DASHBOARD,
         description: <Trans i18nKey={langKeys.dashboard} />,
         path: paths.DASHBOARD,
+        subroute: true,
+        initialSubroute: paths.DASHBOARDMANAGERIAL,
         icon: (className) => <DashboardIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
@@ -182,4 +184,12 @@ export const subroutes: RouteConfig[] = [
         path: paths.EMOJIS,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     }
+];
+
+export const subroutesDashboards: RouteConfig[] = [
+    {
+        key: paths.DASHBOARDMANAGERIAL,
+        description: <Trans i18nKey={langKeys.managerial} />,
+        path: paths.DASHBOARDMANAGERIAL,
+    },
 ];

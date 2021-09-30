@@ -10,6 +10,10 @@ const WS_URL = 'https://testsocket.laraigo.com'; //testing
 // const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
 const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
 
+// const CHATFLOW_URL = 'https://localhost:4200' //local
+const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
+// const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
+
 export const apiUrls = {
     WS_URL,
     TICKET_URL: `${BASE_URL}/main`,
@@ -37,6 +41,7 @@ export const apiUrls = {
     GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
+    VALIDATE_NEW_USER: `${BASE_URL}/subscription/validateusername`,
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 
     PERSON: `${BASE_URL}/person`,

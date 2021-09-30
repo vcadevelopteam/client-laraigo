@@ -1,17 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, InputAdornment, IconButton } from '@material-ui/core';
-import { showBackdrop } from 'store/popus/actions';
 import { Visibility, VisibilityOff} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import FacebookLogin from 'react-facebook-login';
 import { useDispatch } from "react-redux";
-import { getChannelsListSub } from "store/signup/actions";
 import GoogleLogin from 'react-google-login';
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import { Dictionary } from "@types";
+import { useSelector } from 'hooks';
 
+import { executeCheckNewUser } from "store/signup/actions";
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
         padding: 12,
@@ -38,47 +38,101 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(param:any)=>void}> = ({setMainData,mainData,setStep}) => {
+export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(param:any)=>void,setSnackbar:(param:any)=>void}> = ({setMainData,mainData,setStep,setSnackbar}) => {
     const [errors, setErrors] = useState<Dictionary>({
         email: "",
         password: "",
         confirmpassword:"",
     });
+    const resLogin = useSelector(state => state.login.login);
+    const rescheckuser = useSelector(state => state.signup);
     const [disablebutton, setdisablebutton] = useState(true);
+    const [firstlaunch, setfirstlaunch] = useState(true);
     useEffect(() => {
-        setdisablebutton(!(mainData.email !== "" && mainData.password !== "" &&  mainData.confirmpassword !== "" && mainData.confirmpassword===mainData.password))
+        setdisablebutton(!(mainData.email !== "" && mainData.email.includes('@') && mainData.email.includes('.') && mainData.password !== "" &&  mainData.confirmpassword !== "" && mainData.confirmpassword===mainData.password))
     }, [mainData])
 
-    function maindataChange(field:string,value:any){
-        setMainData((p:any) =>({...p,[field]:value}))
-        setErrors(p=>({...p,[field]: !value?t(langKeys.field_required):""}))
-    }
     const dispatch = useDispatch();
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-
-    const processFacebookCallback = async (r: any) => {
-        if (r.status !== "unknown" && !r.error) {
-            dispatch(getChannelsListSub(r.accessToken))
-            dispatch(showBackdrop(true));
+    useEffect(() => {
+        console.log(resLogin)
+    }, [resLogin])
+    useEffect(() => {
+        if(!rescheckuser.loading){
+            if(rescheckuser.isvalid){
+                setStep(2)
+            }else{
+                if(!firstlaunch){
+                    setSnackbar({ state: true, success: false, message: t(langKeys.useralreadyregistered) })
+                }else{
+                    setfirstlaunch(false)
+                }
+            }
+        }
+    }, [rescheckuser])
+    
+    const onGoogleLoginSucess = (r: any) => {
+        console.log(r)
+        if (r && r.googleId) {
+            const content={
+                "method": "UFN_USERIDBYUSER",
+                "parameters": {
+                    "usr": null,
+                    "facebookid": null,
+                    "googleid": String(r.googleId)
+                }
+            }
+            setMainData((p:any) =>({...p,password:""}))
+            setMainData((p:any) =>({...p,email:""}))
+            setMainData((p:any)=>({...p,googleid:r.googleId}))
+            dispatch(executeCheckNewUser(content))
         }
     }
+    
+
+    const onAuthWithFacebook = (r: any) => {
+        if (r && r.id) {
+            const content={
+                "method": "UFN_USERIDBYUSER",
+                "parameters": {
+                    "usr": r.dt.Ot,
+                    "facebookid": String(r.id),
+                    "googleid": null
+                }
+            }
+            setMainData((p:any) =>({...p,password:""}))
+            setMainData((p:any) =>({...p,email:""}))
+            setMainData((p:any)=>({...p,facebookid:r.id}))
+            dispatch(executeCheckNewUser(content))
+        }
+    }
+    function handlesubmit(){
+        const content={
+            "method": "UFN_USERIDBYUSER",
+            "parameters": {
+                "usr": mainData.email,
+                "facebookid": null,
+                "googleid": null
+            }
+        }
+        dispatch(executeCheckNewUser(content))
+        
+    }
+
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleMouseDownPassword = (event: any) => event.preventDefault();
     return (
         <div style={{ width: '100%' }}>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.signupstep1title)}</div>
-
                     <FacebookLogin
-                        appId="474255543421911"
-                        callback={processFacebookCallback}
-                        autoLoad={false}
+                        appId="1094526090706564"
+                        callback={onAuthWithFacebook}
                         buttonStyle={{ borderRadius: '3px',width: "50%", marginLeft: "25%", height: '60px', display: 'flex', alignItems: 'center', 'fontSize': '24px', 
                         fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', marginBottom: '20px' }}
-
-                        textButton={t(langKeys.signupfacebookbutton)}
+                        textButton={t(langKeys.signup_with_facebook)}
                         icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                     />
                     <div className={classes.buttonGoogle}>
@@ -87,6 +141,7 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                             buttonText={t(langKeys.signupgooglebutton)}
                             style={{ borderRadius: '3px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}
                             cookiePolicy={'single_host_origin'}
+                            onSuccess={onGoogleLoginSucess}
                         />
                     </div>    
             </div>
@@ -106,7 +161,11 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                     name="email"
                     error={!!errors.email}
                     helperText={errors.email}
-                    onChange={(e) => maindataChange('email',e.target.value)}
+                    onChange={(e) => {
+                        setMainData((p:any) =>({...p,email:e.target.value}))
+                        setErrors(p=>({...p,email: !e.target.value?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,email: e.target.value.includes('@') && e.target.value.includes('.')?"":t(langKeys.emailverification)}))
+                    }}
                 />
                 <TextField
                     variant="outlined"
@@ -118,7 +177,12 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                     autoComplete="current-password"
                     error={!!errors.password}
                     helperText={errors.password}
-                    onChange={(e) => maindataChange('password',e.target.value)}
+                    onChange={(e) => {
+                        setMainData((p:any) =>({...p,password:e.target.value}))
+                        setErrors(p=>({...p,password: !e.target.value?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,confirmpassword: !mainData.confirmpassword?t(langKeys.field_required):""}))
+                        setErrors(p=>({...p,confirmpassword: mainData.confirmpassword===e.target.value?p.confirmpassword:t(langKeys.passwordsmustbeequal)}))
+                    }}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -167,7 +231,7 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
                 <div style={{ textAlign: "center", padding: "20px"}}>{t(langKeys.tos)}</div>
                 <div >
                     <Button
-                        onClick={() => {setStep(2) }}
+                        onClick={() => {handlesubmit() }}
                         className={classes.button}
                         variant="contained"
                         color="primary"
