@@ -478,6 +478,9 @@ const translation: LangKeys = {
     ticket_close: 'Close',
     ticket_typify: 'Typify',
     ticket_reasign: 'Reasign',
+    ticket_reason: 'Reason',
+    ticket_comment: 'Comment',
+    ticket_user: 'User',
 
     ticket_numeroticket: 'Ticket',
     ticket_fecha: 'Date',

@@ -434,6 +434,25 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
     }
 });
 
+export const getComunicationChannelDelegate = (communicationchannelid: string): IRequestBody => ({
+    method: "UFN_COMMUNICATIONCHANNELID_LST_USRDELEGATE",
+    key: "UFN_COMMUNICATIONCHANNELID_LST_USRDELEGATE",
+    parameters: {
+        communicationchannelid
+    }
+})
+
+export const insConversationClassificationMassive = (conversationid: string, classificationid: number, username: any, result: string): IRequestBody => ({
+    method: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
+    key: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
+    parameters: {
+        conversationid,
+        classificationid,
+        username,
+        result
+    }
+});
+
 export const getDomainSel = (domainname: string): IRequestBody => ({
     method: "UFN_DOMAIN_SEL",
     key: "UFN_DOMAIN_SEL",
@@ -1010,7 +1029,7 @@ export const insertReportTemplate = (
 
 export const insBlacklist = ({ id, description, type, status, phone, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BLACKLIST_INS",
-    parameters:{
+    parameters: {
         id,
         description,
         type,
@@ -1022,7 +1041,7 @@ export const insBlacklist = ({ id, description, type, status, phone, operation }
 
 export const insarrayBlacklist = (table: Dictionary[]): IRequestBody => ({
     method: "UFN_BLACKLIST_INS_ARRAY",
-    parameters:{
+    parameters: {
         table: JSON.stringify(table)
     },
 });
