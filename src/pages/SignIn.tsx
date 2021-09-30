@@ -140,7 +140,8 @@ const SignIn = () => {
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
             //redirect to page tickets
-            history.push(resLogin.user.redirect);
+            debugger
+            history.push(resLogin.user.redirect?resLogin.user.redirect:"/supervisor");
         }
     }, [resLogin]);
 

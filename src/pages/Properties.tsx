@@ -38,8 +38,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2)
     },
     containerDetail2: {
-        position: 'absolute',
-        // width: '100%'
+        position: 'absolute'
     },
     button: {
         fontSize: '14px',
@@ -140,7 +139,6 @@ const Properties: FC = () => {
     }, [categoryFilter, levelFilter]);
 
     useEffect(() => {
-        // fetchData();
         dispatch(getMultiCollection([getValuesFromDomain('ESTADOGENERICO')]));
         return () => {
             dispatch(resetMain());
@@ -241,11 +239,12 @@ interface DetailPropertyProps {
 }
 
 const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fetchData, multiData, setViewSelected }) => {
-    // const [propertyDetailTable, setPropertyDetailTable] = useState<any[]>([]);
+    const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [waitSave, setWaitSave] = useState(false);
 
     const detailResult = useSelector(state => state.main.mainAux);
     const executeRes = useSelector(state => state.main.execute);
+    const responseFromSelect = useSelector(state => state.main.multiDataAux);
     const user = useSelector(state => state.login.validateToken.user);
 
     const classes = useStyles();
@@ -269,8 +268,6 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     const onSubmit = handleSubmit((data) => {
         if (data.table) {
-            console.log(JSON.stringify(data.table));
-
             const callback = () => {
                 dispatch(execute({
                     header: null,
@@ -314,10 +311,30 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
 
     useEffect(() => {
         if (!detailResult.loading && !detailResult.error) {
-            // setPropertyDetailTable(detailResult.data);
             fieldsAppend(detailResult.data);
+
+            if (detailResult.data) {
+                if (detailResult.data instanceof Array) {
+                    if (detailResult.data.length > 0) {
+                        if (detailResult.data[0].inputtype == 'DOMAIN') {
+                            setDomainTable({ loading: true, data: [] });
+                            dispatch(getMultiCollectionAux([
+                                getValuesFromDomain(detailResult.data[0].domainname, null, detailResult.data[0].orgid)
+                            ]))
+                        }
+                    }
+                }
+            }
         }
     }, [detailResult]);
+
+    useEffect(() => {
+        const indexDomainTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES'));
+
+        if (indexDomainTable > -1) {
+            setDomainTable({ loading: false, data: responseFromSelect.data[indexDomainTable] && responseFromSelect.data[indexDomainTable].success ? responseFromSelect.data[indexDomainTable].data : [] });
+        }
+    }, [responseFromSelect]);
 
     useEffect(() => {
         if (waitSave) {
@@ -461,6 +478,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
                             onBlurFieldValue={onBlurFieldValue}
                             onChangeSelectValue={onChangeSelectValue}
                             onChangeSwitchValue={onChangeSwitchValue}
+                            domainTable={domainTable}
                         />
                     ))}
                 </div>
@@ -484,6 +502,7 @@ interface ModalProps {
     onBlurFieldValue: (index: any, param: string, value: any) => void;
     onChangeSelectValue: (index: any, param: string, value: any) => void;
     onChangeSwitchValue: (index: any, param: string, value: any) => void;
+    domainTable: any;
 }
 
 interface RowSelected {
@@ -491,16 +510,10 @@ interface RowSelected {
     row: Dictionary | null
 }
 
-const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue }) => {
-    // const [channelTable, setChannelTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    const [domainTable, setDomainTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-    // const [groupTable, setGroupTable] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
-
+const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index, multiData, fields, onChangeSelectValue, register, errors, setValue, domainTable }) => {
     const [fieldValue, setFieldValue] = useState(null);
     const [comboStep, setComboStep] = useState('NONE');
     const [comboValue, setComboValue] = useState<any>(null);
-
-    const responseFromSelect = useSelector(state => state.main.multiDataAux);
 
     const classes = useStyles();
 
@@ -635,25 +648,6 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
         }
     }
 
-    useEffect(() => {
-        if (row) {
-            if (row?.inputtype === 'DOMAIN') {
-                setDomainTable({ loading: true, data: [] });
-                dispatch(getMultiCollectionAux([
-                    getValuesFromDomain(row?.domainname, index + 1, row?.orgid)
-                ]))
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        const indexDomainTable = responseFromSelect.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES' + (index + 1)));
-
-        if (indexDomainTable > -1) {
-            setDomainTable({ loading: false, data: responseFromSelect.data[indexDomainTable] && responseFromSelect.data[indexDomainTable].success ? responseFromSelect.data[indexDomainTable].data : [] });
-        }
-    }, [responseFromSelect]);
-
     React.useEffect(() => {
         switch (comboStep) {
             case 'ORGDESC':
@@ -661,32 +655,8 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                 onChangeSelectValue(index, 'orgdesc', fieldValue ? fieldValue : '');
 
                 if (comboValue) {
-                    // if (row?.level === 'CHANNEL') {
-                        // setChannelTable({ loading: true, data: [] });
-                    //     dispatch(getMultiCollectionAux([getChannelsByOrg(comboValue.orgid, index + 1)]));
-                    // }
-
                     if (row?.level === 'GROUP') {
-                        // setGroupTable({ loading: true, data: [] });
                         dispatch(getMultiCollectionAux([getValuesFromDomain('GRUPOS', ('GRUPO' + (index + 1)), comboValue.orgid)]));
-                    }
-
-                    if (row?.inputtype === 'DOMAIN') {
-                        setDomainTable({ loading: true, data: [] });
-                        dispatch(getMultiCollectionAux([getValuesFromDomain(row?.domainname, index + 1, comboValue.orgid)]));
-                    }
-                }
-                else {
-                    // if (row?.level === 'CHANNEL') {
-                        // setChannelTable({ loading: false, data: [] });
-                    // }
-
-                    // if (row?.level === 'GROUP') {
-                        // setGroupTable({ loading: false, data: [] });
-                    // }
-
-                    if (row?.inputtype === 'DOMAIN') {
-                        setDomainTable({ loading: false, data: [] });
                     }
                 }
 
