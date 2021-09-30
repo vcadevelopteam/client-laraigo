@@ -1,20 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback } from 'react'
-import { getCommChannelLst, getPaginatedTicket, getTicketExport, getValuesFromDomain } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import React, { useState, useEffect, useCallback, FC, useMemo } from 'react'
+import { exportExcel, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedPerson, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
+import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getMultiCollectionAux, getCollectionAux, getCollection, execute } from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation, manageLightBox } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Dictionary, IFetchData } from '@types'
+import { Dictionary, IFetchData, MultiData } from '@types'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import Button from '@material-ui/core/Button/Button';
-import { FieldMultiSelect } from 'components';
+import { DateRangePicker, DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from 'components';
+import { Range } from 'react-date-range';
+import Link from '@material-ui/core/Link';
 import { DialogInteractions } from 'components';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, TextField } from '@material-ui/core';
+import { useForm } from 'react-hook-form';
+
+const selectionKey = 'conversationid';
+
+const actions = {
+    close: 'close',
+    typify: 'typify',
+    reasign: 'reasign'
+}
+
+interface SelectedAction {
+    setOpenModalTicket: (value: boolean) => void,
+    setSelectedRows: (value: any) => void,
+    multiData: MultiData[],
+    selectedRows: any,
+    openModalTicket: boolean,
+    action: String
+}
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -65,86 +85,25 @@ const Tickets = () => {
     //const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     //const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [allParameters, setAllParameters] = useState({});
-
     //const format = (date: Date) => date.toISOString().split('T')[0];
+    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [openModalTicket, setOpenModalTicket] = useState(false);
+    const [action, setAction] = useState("");
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [openModal, setOpenModal] = useState(false);
+    const mainPaginated = useSelector(state => state.main.mainPaginated);
+    const resExportData = useSelector(state => state.main.exportData);
+    const [pageCount, setPageCount] = useState(0);
+    const [waitSave, setWaitSave] = useState(false);
+    const [totalrow, settotalrow] = useState(0);
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
 
-    
     const setValue = (parameterName: any, value: any) => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
 
-/*
-    useEffect(() => {
-        setAllParameters({
-            ...allParameters,
-            startdate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-            enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
-        });
-    }, [dateRange]);
-*/
-
-    useEffect(() => {
-        dispatch(getMultiCollection([
-            getCommChannelLst(),
-            getValuesFromDomain("GRUPOS")
-        ]));
-
-        return () => {
-            dispatch(resetCollectionPaginated());
-            dispatch(resetMultiMain());
-        };
-    }, []);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [openModal, setOpenModal] = useState(false);
-
-    const handleClickOpen = useCallback((row: any) => {
-        setOpenModal(true);
-        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
-    }, [mainResult]);
-
     const columns = React.useMemo(
         () => [
-            {
-                Header: (props: any) => {
-                    //const row = props.cell.row.original;
-                    return (
-                        <Checkbox></Checkbox>
-                    )
-                },
-                accessor: 'select',
-                NoFilter: true,
-                type: 'boolean',
-                editable: true,
-                
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <Checkbox></Checkbox>
-                    )
-                }
-            },
             {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: 'numeroticket',
@@ -330,8 +289,6 @@ const Tickets = () => {
         []
     );
 
-
-
     /*
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
@@ -390,44 +347,10 @@ const Tickets = () => {
     };
     */
 
-
-
-
-
-
-
-
-
-
-
-    const mainPaginated = useSelector(state => state.main.mainPaginated);
-    const resExportData = useSelector(state => state.main.exportData);
-    const [pageCount, setPageCount] = useState(0);
-    const [waitSave, setWaitSave] = useState(false);
-    const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-
-    useEffect(() => {
-        if (!mainPaginated.loading && !mainPaginated.error) {
-            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
-            settotalrow(mainPaginated.count);
-        }
-    }, [mainPaginated])
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                window.open(resExportData.url, '_blank');
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [resExportData, waitSave])
+    const handleClickOpen = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
+    }, [mainResult]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
         dispatch(exportData(getTicketExport({
@@ -454,9 +377,67 @@ const Tickets = () => {
         })))
     };
 
+    const onClickTicket = () => {
+        if (Object.keys(selectedRows).length > 0) {
+            setOpenModalTicket(true);
+        } else {
+            const callback = () => {
+                setOpenModalTicket(false);
+            }
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
+    }
 
+    /*
+        useEffect(() => {
+            setAllParameters({
+                ...allParameters,
+                startdate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
+                enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+            });
+        }, [dateRange]);
+    */
 
+    useEffect(() => {
+        dispatch(getMultiCollection([
+            getCommChannelLst(),
+            getValuesFromDomain("GRUPOS"),
+            getValuesFromDomain("MOTIVOCIERRE"),
+            getComunicationChannelDelegate(""),
+            getClassificationLevel1("TIPIFICACION")
+        ]));
 
+        return () => {
+            dispatch(resetCollectionPaginated());
+            dispatch(resetMultiMain());
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!mainPaginated.loading && !mainPaginated.error) {
+            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            settotalrow(mainPaginated.count);
+        }
+    }, [mainPaginated])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [resExportData, waitSave])
 
     return (
         <div className={classes.container}>
@@ -466,40 +447,47 @@ const Tickets = () => {
                     {t(langKeys.ticket_plural)}
                 </span>
             </Box>
-            
 
-            <Box width={1} paddingBottom={2} style={{ display: 'flex', flexWrap: 'wrap', gap: 15, alignItems: "flex-start", justifyContent: "flex-end" }}>
+            <Box width={1} paddingBottom={2} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: "flex-start", justifyContent: "flex-end" }}>
                 <Button
-                    //className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={mainPaginated.loading}
                     style={{ backgroundColor: 'red', width: 120 }}
-                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    //startIcon={<DownloadIcon />}
+                    onClick={() => {
+                        setAction(actions.close);
+                        onClickTicket();
+                    }}
+                //startIcon={<DownloadIcon />}
                 >{t(langKeys.ticket_close)}
                 </Button>
                 <Button
-                    //className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={mainPaginated.loading}
                     style={{ backgroundColor: 'green', width: 120 }}
-                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    //startIcon={<DownloadIcon />}
+                    onClick={() => {
+                        setAction(actions.typify);
+                        //setOpenModalTicket(true)
+                        onClickTicket();
+                    }}
+                //startIcon={<DownloadIcon />}
                 >{t(langKeys.ticket_typify)}
                 </Button>
                 <Button
-                    //className={classes.button}
                     variant="contained"
                     color="primary"
                     disabled={mainPaginated.loading}
                     style={{ backgroundColor: 'blue', width: 120 }}
-                    //onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    //startIcon={<DownloadIcon />}
+                    onClick={() => {
+                        setAction(actions.reasign);
+                        onClickTicket();
+                    }}
+                //startIcon={<DownloadIcon />}
                 >{t(langKeys.ticket_reasign)}
                 </Button>
             </Box>
+
             <Box width={1}>
                 <Box className={classes.containerHeader} justifyContent="space-between" mb={1} alignItems="flex-start">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: "flex-start" }}>
@@ -578,9 +566,6 @@ const Tickets = () => {
                 </Box>
             </Box>
 
-
-
-
             <TablePaginated
                 columns={columns}
                 data={mainPaginated.data}
@@ -591,8 +576,10 @@ const Tickets = () => {
                 download={true}
                 fetchData={fetchData}
                 exportPersonalized={triggerExportData}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
             />
-
 
             <DialogInteractions
                 openModal={openModal}
@@ -600,8 +587,185 @@ const Tickets = () => {
                 ticket={rowSelected}
             />
 
+            <DialogTicket
+                setOpenModalTicket={setOpenModalTicket}
+                setSelectedRows={setSelectedRows}
+                openModalTicket={openModalTicket}
+                multiData={mainResult.multiData.data}
+                selectedRows={selectedRows}
+                action={action}
+            />
+
         </div >
     )
+}
+
+const DialogTicket: FC<SelectedAction> = ({ setOpenModalTicket, setSelectedRows, multiData, selectedRows, openModalTicket, action }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const dataClasificationLevel2 = useSelector(state => state.main.mainData);
+    const dataClasificationLevel3 = useSelector(state => state.main.mainAux);
+    const user = useSelector(state => state.login.validateToken.user);
+    const dataClosingReasons = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataUser = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const dataClasificationLevel1 = multiData[4] && multiData[4].success ? multiData[4].data : [];
+    const { handleSubmit, setValue, reset, getValues } = useForm();
+    const [waitSave, setWaitSave] = useState(false);
+    const [sizeComment, setSizeComment] = useState(0);
+    const [classificationidLevel1, setClassificationidLevel1] = useState(-1);
+    const [classificationidLevel2, setClassificationidLevel2] = useState(-1);
+    const [classificationidLevel3, setClassificationidLevel3] = useState(-1);
+    const [allClassificationid, setAllClassificationid] = useState<Dictionary>({});
+
+    const onSubmit = handleSubmit((data) => {
+        if (waitSave) {
+            const callback = () => {
+                const alldifnegative = (Object.values(allClassificationid).filter(x => x != '-1'));
+
+                switch (action) {
+                    case actions.close:
+
+                        break;
+                    case actions.typify:
+
+                        dispatch(execute(insConversationClassificationMassive(
+                            (Object.keys(selectedRows).map(x => x)).join(),
+                            alldifnegative[alldifnegative.length - 1],
+                            user?.usr,
+                            ""
+                        )));
+
+                        break;
+                    case actions.reasign:
+
+                        break;
+                }
+
+                setOpenModalTicket(false);
+                setWaitSave(false);
+                setAllClassificationid({});
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        } else {
+            setOpenModalTicket(false);
+            setWaitSave(false);
+        }
+    });
+
+    useEffect(() => {
+        if (classificationidLevel1 > 0) {
+            dispatch(getCollection(
+                getClassificationLevel2("TIPIFICACION", classificationidLevel1)
+            ));
+        }
+    }, [classificationidLevel1]);
+
+    useEffect(() => {
+        if (classificationidLevel2 > 0) {
+            dispatch(getCollectionAux(
+                getClassificationLevel2("TIPIFICACION", classificationidLevel2)
+            ));
+        }
+    }, [classificationidLevel2]);
+
+    return (
+        <DialogZyx
+            title={t("ticket_" + action)}
+            open={openModalTicket}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(action === actions.reasign ? langKeys.submit : langKeys.save)}
+            handleClickButton1={() => setOpenModalTicket(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            {action === actions.typify ?
+                <>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.select)}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setWaitSave(true);
+                                setClassificationidLevel1(value ? value.classificationid : -1);
+                                setClassificationidLevel2(-1);
+                                setClassificationidLevel3(-1);
+                                setAllClassificationid({ ...allClassificationid, level1: (value ? value.classificationid : -1), level2: -1, level3: -1 });
+                            }}
+                            data={dataClasificationLevel1}
+                            optionDesc="description"
+                            optionValue="classificationid"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.select)}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setWaitSave(true);
+                                setClassificationidLevel2(value ? value.classificationid : -1);
+                                setClassificationidLevel3(-1);
+                                setAllClassificationid({ ...allClassificationid, level2: (value ? value.classificationid : -1), level3: -1 });
+                            }}
+                            data={dataClasificationLevel2.data}
+                            optionDesc="description"
+                            optionValue="classificationid"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(langKeys.select)}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setWaitSave(true);
+                                setClassificationidLevel3(value ? value.classificationid : -1);
+                                setAllClassificationid({ ...allClassificationid, level3: (value ? value.classificationid : -1) });
+                            }}
+                            data={dataClasificationLevel3.data}
+                            optionDesc="description"
+                            optionValue="classificationid"
+                        />
+                    </div>
+                </>
+                :
+                <>
+                    <div className="row-zyx">
+                        <FieldSelect
+                            label={t(action === actions.close ? langKeys.ticket_reason : langKeys.ticket_user)}
+                            variant="outlined"
+                            onChange={(value) => {
+                                setValue(action === actions.close ? "domainvalue" : "userid", action === actions.close ? value.domainvalue : value.userid);
+                                setWaitSave(true);
+                            }}
+                            data={action === actions.close ? dataClosingReasons : dataUser}
+                            optionDesc={action === actions.close ? "domaindesc" : "displayname"}
+                            optionValue={action === actions.close ? "domainvalue" : "userid"}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <TextField
+                            label={t(langKeys.ticket_comment)}
+                            multiline
+                            variant="outlined"
+                            rows={10}
+                            onChange={(value) => {
+                                setValue('comment', value?.target?.value);
+                                setSizeComment(value?.target?.value?.length);
+                            }}
+                            inputProps={{ maxLength: 4000 }}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <label style={{ textAlign: 'right' }}>{sizeComment}/4000</label>
+                    </div>
+                </>
+            }
+        </DialogZyx>
+    );
 }
 
 export default Tickets;

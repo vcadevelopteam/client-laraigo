@@ -130,9 +130,8 @@ export const FirstStep: FC<{setMainData:(param:any)=>void,mainData:any,setStep:(
         <div style={{ width: '100%' }}>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.signupstep1title)}</div>
-                    
                     <FacebookLogin
-                        appId="474255543421911"
+                        appId="1094526090706564"
                         callback={onAuthWithFacebook}
                         buttonStyle={{ borderRadius: '3px',width: "50%", marginLeft: "25%", height: '60px', display: 'flex', alignItems: 'center', 'fontSize': '24px', 
                         fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', marginBottom: '20px' }}

@@ -32,7 +32,6 @@ import BackupIcon from '@material-ui/icons/Backup';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
-import { optionsMenu } from './table-paginated';
 import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
@@ -42,7 +41,7 @@ import {
     usePagination,
     useRowSelect
 } from 'react-table'
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { FixedSizeList } from 'react-window';
@@ -123,6 +122,47 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+export const stringOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'contains', value: 'contains' },
+    { key: 'notcontains', value: 'notcontains' },
+    { key: 'isempty', value: 'isempty' },
+    { key: 'isnotempty', value: 'isnotempty' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const numberOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'greater', value: 'greater' },
+    { key: 'greaterorequals', value: 'greaterorequals' },
+    { key: 'less', value: 'less' },
+    { key: 'lessorequals', value: 'lessorequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const dateOptionsMenu = [
+    { key: 'equals', value: 'equals' },
+    { key: 'notequals', value: 'notequals' },
+    { key: 'after', value: 'after' },
+    { key: 'afterequals', value: 'afterequals' },
+    { key: 'before', value: 'before' },
+    { key: 'beforeequals', value: 'beforeequals' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
+export const booleanOptionsMenu = [
+    { key: 'all', value: 'all' },
+    { key: 'istrue', value: 'istrue' },
+    { key: 'isfalse', value: 'isfalse' },
+    { key: 'isnull', value: 'isnull' },
+    { key: 'isnotnull', value: 'isnotnull' },
+];
+
 const TableZyx = React.memo(({
     titlemodule,
     columns,
@@ -146,19 +186,25 @@ const TableZyx = React.memo(({
 }: TableConfig) => {
     const classes = useStyles();
 
-    const SelectColumnFilter = ({
-        column: { setFilter, type },
+    const DefaultColumnFilter = ({
+        column: { setFilter, type = "string" },
     }: any) => {
+        const { t } = useTranslation();
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState("contains");
+        
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
         const handleClickItemMenu = (op: any) => {
             setAnchorEl(null);
             setoperator(op)
+            if (type === 'boolean') {
+                setValue(operator);
+            }
+            setFilter({ value, operator, type });
         };
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
@@ -172,63 +218,108 @@ const TableZyx = React.memo(({
         }, [value])
 
         useEffect(() => {
-            if (type === "number")
-                setoperator("equals");
+            switch (type) {
+                case "number": case "date":
+                    setoperator("equals");
+                    break;
+                case "boolean":
+                    setoperator("all");
+                    break;
+                case "string": case "color":
+                default:
+                    setoperator("contains");
+                    break;
+            }
         }, [type]);
+
+        const optionsMenu = (type: string) => {
+            switch (type) {
+                case "number":
+                    return (
+                        numberOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "date":
+                    return (
+                        dateOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+                case "string": case "color":
+                default:
+                    return (
+                        stringOptionsMenu.map((option) => (
+                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                                {t(option.value)}
+                            </MenuItem>
+                        ))
+                    )
+            }
+        }
 
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <Input
-                    // disabled={loading}
-                    type={type === "number" ? "number" : "text"}
-                    style={{ fontSize: '15px', minWidth: '100px' }}
-                    fullWidth
-
-                    value={value}
-                    onKeyDown={keyPress}
-                    onChange={e => {
-                        setValue(e.target.value || '');
-                    }}
-                />
-                <IconButton
-                    onClick={handleClickMenu}
-                    size="small"
-                >
-                    <MoreVertIcon
-                        style={{ cursor: 'pointer' }}
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        color="action"
-                        fontSize="small"
+                {type === 'boolean' ?
+                <Select
+                    value={value || 'all'}
+                    onChange={(e) => handleClickItemMenu(e.target.value)}
+                    >
+                    {booleanOptionsMenu.map((option) => (
+                        <MenuItem key={option.key} value={option.key}>
+                            {t(option.value)}
+                        </MenuItem>
+                    ))}
+                </Select>
+                :
+                <React.Fragment>
+                    <Input
+                        // disabled={loading}
+                        type={type}
+                        style={{ fontSize: '15px', minWidth: '100px' }}
+                        fullWidth
+                        value={value}
+                        onKeyDown={keyPress}
+                        onChange={e => {
+                            setValue(e.target.value || '');
+                            if (['date'].includes(type)) {
+                                setFilter({ value: e.target.value, operator, type });
+                            }
+                        }}
                     />
-                </IconButton>
-
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                        },
-                    }}
-                >
-                    {type === "number" ?
-                        optionsMenu.filter(x => x.type !== 'onlystring').map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
-                            </MenuItem>
-                        ))
-                        :
-                        optionsMenu.filter(x => x.type !== 'onlynumber').map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {option.value}
-                            </MenuItem>
-                        ))}
-                </Menu>
+                    <IconButton
+                        onClick={handleClickMenu}
+                        size="small"
+                    >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: '20ch',
+                            },
+                        }}
+                    >
+                        {optionsMenu(type)}
+                    </Menu>
+                </React.Fragment>
+                }
             </div>
         );
     }
@@ -240,38 +331,85 @@ const TableZyx = React.memo(({
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
                 return false;
-            if (type === "number") {
-                switch (operator) {
-                    case 'greater':
-                        return cellvalue > value;
-                    case 'greaterequal':
-                        return cellvalue >= value;
-                    case 'smaller':
-                        return cellvalue < value;
-                    case 'smallerequal':
-                        return cellvalue <= value;
-                    case 'noequals':
-                        return cellvalue !== value;
-                    case 'equals':
-                    default:
-                        return cellvalue === value;
-                }
-            } else {
-                switch (operator) {
-                    case 'equals':
-                        return (cellvalue + "") === value;
-                    case 'noequals':
-                        return (cellvalue + "") !== value;
-                    case 'nocontains':
-                        return !(cellvalue + "").toLowerCase().includes(value.toLowerCase());
-                    case 'empty':
-                        return cellvalue === '' || cellvalue == null;
-                    case 'noempty':
-                        return cellvalue !== '' && cellvalue != null;
-                    case 'contains':
-                    default:
-                        return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
-                }
+            if (!(['isempty','isnotempty','isnull','isnotnull'].includes(operator) || type === 'boolean')
+                && (value || '') === '')
+                return true;
+            switch (type) {
+                case "number":
+                    switch (operator) {
+                        case 'greater':
+                            return cellvalue > Number(value);
+                        case 'greaterorequals':
+                            return cellvalue >= Number(value);
+                        case 'less':
+                            return cellvalue < Number(value);
+                        case 'lessorequals':
+                            return cellvalue <= Number(value);
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== Number(value);
+                        case 'equals':
+                        default:
+                            return cellvalue === Number(value);
+                    }
+                case "date":
+                    switch (operator) {
+                        case 'after':
+                            return cellvalue > value;
+                        case 'afterequals':
+                            return cellvalue >= value;
+                        case 'before':
+                            return cellvalue < value;
+                        case 'beforeequals':
+                            return cellvalue <= value;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'equals':
+                        default:
+                            return cellvalue === value;
+                    }
+                case "boolean":
+                    switch (operator) {
+                        case 'istrue':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'true' : cellvalue === true;
+                        case 'isfalse':
+                            return typeof(cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'all':
+                        default:
+                            return true;
+                    }
+                case "string":
+                default:
+                    switch (operator) {
+                        case 'equals':
+                            return cellvalue === value;
+                        case 'notequals':
+                            return cellvalue !== value;
+                        case 'isempty':
+                            return cellvalue === '';
+                        case 'isnotempty':
+                            return cellvalue !== '';
+                        case 'isnull':
+                            return cellvalue == null;
+                        case 'isnotnull':
+                            return cellvalue != null;
+                        case 'notcontains':
+                            return !cellvalue.toLowerCase().includes(value.toLowerCase());
+                        case 'contains':
+                        default:
+                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                    }
             }
         });
     }, []);
@@ -279,7 +417,7 @@ const TableZyx = React.memo(({
     const defaultColumn = React.useMemo(
         () => ({
             // Let's set up our default Filter UI
-            Filter: (props: any) => SelectColumnFilter({ ...props, data }),
+            Filter: (props: any) => DefaultColumnFilter({ ...props, data }),
             filter: filterCellValue,
         }),
         // eslint-disable-next-line react-hooks/exhaustive-deps

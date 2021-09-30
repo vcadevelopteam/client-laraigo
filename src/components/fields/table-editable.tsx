@@ -22,8 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Box from '@material-ui/core/Box';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
 import Zoom from '@material-ui/core/Zoom';
@@ -49,6 +47,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
+import { booleanOptionsMenu, dateOptionsMenu, numberOptionsMenu, stringOptionsMenu } from './table-simple';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -126,47 +125,6 @@ const useStyles = makeStyles((theme) => ({
         },
     }
 }));
-
-export const stringOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'contains', value: 'contains' },
-    { key: 'notcontains', value: 'notcontains' },
-    { key: 'isempty', value: 'isempty' },
-    { key: 'isnotempty', value: 'isnotempty' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const numberOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'greater', value: 'greater' },
-    { key: 'greaterorequals', value: 'greaterorequals' },
-    { key: 'less', value: 'less' },
-    { key: 'lessorequals', value: 'lessorequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const dateOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'after', value: 'after' },
-    { key: 'afterequals', value: 'afterequals' },
-    { key: 'before', value: 'before' },
-    { key: 'beforeequals', value: 'beforeequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const booleanOptionsMenu = [
-    { key: 'all', value: 'all' },
-    { key: 'istrue', value: 'istrue' },
-    { key: 'isfalse', value: 'isfalse' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
 
 const TableZyxEditable = React.memo(({
     columns,
@@ -303,13 +261,8 @@ const TableZyxEditable = React.memo(({
                 :
                 <React.Fragment>
                     <Input
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <SearchIcon color="action" fontSize="small" />
-                            </InputAdornment>
-                        }
-                        disabled={loading}
-                        type="text"
+                        // disabled={loading}
+                        type={type === 'color' ? 'text' : type}
                         style={{ fontSize: '15px', minWidth: '100px' }}
                         fullWidth
                         value={value}
@@ -318,16 +271,19 @@ const TableZyxEditable = React.memo(({
                             setValue(e.target.value || '');
                         }}
                     />
-                    <div style={{ width: '12px' }} />
-                    <MoreVertIcon
-                        style={{ cursor: 'pointer' }}
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
+                    <IconButton
                         onClick={handleClickMenu}
-                        color="action"
-                        fontSize="small"
-                    />
+                        size="small"
+                    >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                    </IconButton>
                     <Menu
                         id="long-menu"
                         anchorEl={anchorEl}
@@ -464,6 +420,7 @@ const TableZyxEditable = React.memo(({
 
     const filterCellValue = React.useCallback((rows, id, filterValue) => {
         const { value, operator, type } = filterValue;
+        
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
             if (cellvalue === null) {

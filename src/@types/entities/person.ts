@@ -63,6 +63,9 @@ export interface IPersonChannel {
     statusdesc: string;
     type: string;
     typedesc: string;
+    conversations?: number;
+    firstcontact: string;
+    lastcontact: string;
 }
 
 export interface IPersonAdditionalInfo {
