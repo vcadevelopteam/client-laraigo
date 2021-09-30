@@ -107,6 +107,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
+                type: 'date',
                 sortType: 'datetime',
                 Cell: cell
             },

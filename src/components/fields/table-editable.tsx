@@ -47,7 +47,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
-import { booleanOptionsMenu, dateOptionsMenu, numberOptionsMenu, stringOptionsMenu } from './table-simple';
+import { BooleanOptionsMenuComponent, OptionsMenuComponent } from './table-simple';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -152,7 +152,6 @@ const TableZyxEditable = React.memo(({
         page,
     }: any
     ) => {
-        const { t } = useTranslation();
         const [value, setValue] = useState<any>('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -205,36 +204,6 @@ const TableZyxEditable = React.memo(({
             updateColumn && updateColumn(page.map((p: Dictionary) => p.index), columnid, value);
         };
 
-        const optionsMenu = (type: string) => {
-            switch (type) {
-                case "number":
-                    return (
-                        numberOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-                case "date":
-                    return (
-                        dateOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-                case "string": case "color":
-                default:
-                    return (
-                        stringOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-            }
-        }
-
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {type === 'boolean' ?
@@ -247,16 +216,7 @@ const TableZyxEditable = React.memo(({
                             setColumnBoolean(value, columnid);
                         }}
                     />
-                    <Select
-                        value={value || 'all'}
-                        onChange={(e) => handleClickItemMenu(e.target.value)}
-                        >
-                        {booleanOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} value={option.key}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                    {BooleanOptionsMenuComponent(value, handleClickItemMenu)}
                 </React.Fragment>
                 :
                 <React.Fragment>
@@ -297,7 +257,7 @@ const TableZyxEditable = React.memo(({
                             },
                         }}
                     >
-                        {optionsMenu(type)}
+                        {OptionsMenuComponent(type, operator, handleClickItemMenu)}
                     </Menu>
                 </React.Fragment>
                 }
@@ -423,7 +383,7 @@ const TableZyxEditable = React.memo(({
         
         return rows.filter((row: any) => {
             const cellvalue = row.values[id];
-            if (cellvalue === null) {
+            if (cellvalue === null || cellvalue === undefined) {
                 return false;
             }
             if (!(['isempty','isnotempty','isnull','isnotnull'].includes(operator) || type === 'boolean')
