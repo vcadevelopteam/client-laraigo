@@ -171,3 +171,29 @@ export const secondsToTime = (seconds: number): string => {
 export const getSecondsUntelNow = (date: Date): number => Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
 export const getDateCleaned = (date: Date): string => new Date(date.setHours(10)).toISOString().substring(0, 10)
+
+export const cleanedRichResponse = (data: Dictionary[], variablesContext: Dictionary = {}): Dictionary[] => {
+    return  data.filter((x: Dictionary) => ["content", "structured message", "action"].includes(x.plugincategory) && !["closestlocation"].includes(x.pluginid)).map((y: Dictionary) => {
+        let content = y.stringsmooch;
+        if (y.config.randomlist) {
+            if (y.config.multiple) {
+                const rn = Math.floor(Math.random() * (y.config.randomlist.Count));
+                content = y.config.randomlist[rn].value;
+            }
+            else
+                content = y.config.randomlist[0].value;;
+        }
+        const variableToReplace = y.variablereplace ? y.variablereplace : [];
+
+        variableToReplace.forEach((varr: any) => {
+            const varrtmp = varr.split("&&&")[0];
+            const valueFound = variablesContext!![varrtmp]?.value || "";
+            content = content.replace('{{' + varrtmp + '}}', valueFound);
+        });
+
+        return {
+            type: y.pluginid === "url" ? "text" : y.pluginid,
+            content,
+        }
+    });
+}

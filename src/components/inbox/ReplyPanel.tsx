@@ -31,6 +31,8 @@ import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import TextField from '@material-ui/core/TextField';
+import { showSnackbar } from 'store/popus/actions';
+import { cleanedRichResponse } from 'common/helpers/functions'
 interface IFile {
     type: string;
     url: string;
@@ -133,7 +135,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
         if (!multiData.loading && !multiData.error && multiData?.data[4]) {
             setquickReplies(multiData?.data[4].data)
             setquickRepliesToShow(multiData?.data[4].data.filter(x => !!x.favorite))
-            
+
         }
     }, [multiData])
 
@@ -156,7 +158,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
-            <div>
+            <>
                 <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
                 {open && (
                     <div style={{
@@ -214,7 +216,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
                         </div>
                     </div>
                 )}
-            </div>
+            </>
         </ClickAwayListener>
     )
 }
@@ -276,7 +278,9 @@ const BottomGoToUnder: React.FC = () => {
 const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const richResponseList = useSelector(state => state.inbox.richResponseList);
@@ -291,6 +295,25 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [text, setText] = useState("");
     const [files, setFiles] = useState<IFile[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+
+    const reasignTicket = React.useCallback(() => {
+        dispatch(reassignTicket({
+            ...ticketSelected!!,
+            newUserId: 0,
+            newUserGroup: '',
+            observation: 'Reassigned from supervisor',
+            newConversation: true,
+            wasanswered: true
+        }));
+        dispatch(emitEvent({
+            event: 'reassignTicket',
+            data: {
+                ...ticketSelected,
+                userid: agentSelected?.userid,
+                newuserid: 0,
+            }
+        }));
+    }, [dispatch, ticketSelected, agentSelected])
 
     const triggerReplyMessage = () => {
         const callback = () => {
@@ -356,27 +379,8 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                 }
             }
 
-            if (wasSend) {
-                if (userType === "SUPERVISOR") {
-                    dispatch(reassignTicket({
-                        ...ticketSelected!!,
-                        newUserId: 0,
-                        newUserGroup: '',
-                        observation: 'Reassigned from supervisor',
-                        newConversation: true,
-                        wasanswered: true
-                    }));
-
-                    dispatch(emitEvent({
-                        event: 'reassignTicket',
-                        data: {
-                            ...ticketSelected,
-                            userid: agentSelected?.userid,
-                            newuserid: 0,
-                        }
-                    }));
-                }
-            }
+            if (wasSend && userType === "SUPERVISOR")
+                reasignTicket()
         }
 
         if (userType === "SUPERVISOR") {
@@ -427,6 +431,58 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             .replace("{{numticket}}", "" + ticketSelected?.ticketnum)
             .replace("{{client_name}}", "" + ticketSelected?.displayname)
             .replace("{{agent_name}}", user?.firstname + " " + user?.lastname))
+    }
+
+    const selectRichResponse = (block: Dictionary) => {
+        const callback = () => {
+            const listInteractions = cleanedRichResponse(block.cards, variablecontext)
+
+            if (listInteractions.length === 0) {
+                dispatch(showSnackbar({ show: true, success: false, message: 'No hay cards' }))
+                return;
+            }
+
+            dispatch(replyTicket(listInteractions.map(x => ({
+                ...ticketSelected!!,
+                interactiontype: x.type,
+                interactiontext: x.content
+            })), true));
+
+            listInteractions.forEach((x: Dictionary, i: number) => {
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: x.type,
+                    typeinteraction: null,
+                    lastmessage: x.content,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !(ticketSelected!!.isAnswered || i > 0), //solo enviar el cambio en el primer mensaje
+                }
+                if (userType === "AGENT") {
+                    dispatch(emitEvent({
+                        event: 'newMessageFromAgent',
+                        data: newInteractionSocket
+                    }));
+                }
+            })
+
+            if (userType === "SUPERVISOR")
+                reasignTicket()
+
+            setText("");
+        }
+
+        if (userType === "SUPERVISOR") {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_reasign_with_reply),
+                callback
+            }))
+        } else {
+            callback();
+        }
     }
 
     const handleKeyPress = (event: any) => {
@@ -485,7 +541,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                                         <div
                                             key={item.id}
                                             className={classes.hotKeyQuickReply}
-                                            onClick={() => selectQuickReply(item.quickreply)}
+                                            onClick={() => selectRichResponse(item)}
                                         >
                                             {item.title}
                                         </div>
@@ -499,9 +555,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
             </ClickAwayListener>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
                     <QuickReplyIcon classes={classes} setText={setText} />
-                    <RickResponseIcon className={classes.iconResponse} />
+                    <RickResponseIcon className={classes.iconResponse} style={{ width: 22, height: 22 }} />
                     <UploaderIcon type="image" classes={classes} setFiles={setFiles} />
                     <EmojiPickerZyx onSelect={e => setText(p => p + e.native)} />
                     <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />

@@ -594,7 +594,7 @@ const Domains: FC = () => {
                     <TableZyx
                         columns={columns}
                         titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                        data={mainResult.mainData.data.filter(x => x.type !== 'SISTEMA')}
+                        data={mainResult.mainData.data}
                         download={true}
                         loading={mainResult.mainData.loading}
                         register={true}
