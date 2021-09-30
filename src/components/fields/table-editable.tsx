@@ -47,6 +47,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
+import { booleanOptionsMenu, dateOptionsMenu, numberOptionsMenu, stringOptionsMenu } from './table-simple';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -124,47 +125,6 @@ const useStyles = makeStyles((theme) => ({
         },
     }
 }));
-
-export const stringOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'contains', value: 'contains' },
-    { key: 'notcontains', value: 'notcontains' },
-    { key: 'isempty', value: 'isempty' },
-    { key: 'isnotempty', value: 'isnotempty' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const numberOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'greater', value: 'greater' },
-    { key: 'greaterorequals', value: 'greaterorequals' },
-    { key: 'less', value: 'less' },
-    { key: 'lessorequals', value: 'lessorequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const dateOptionsMenu = [
-    { key: 'equals', value: 'equals' },
-    { key: 'notequals', value: 'notequals' },
-    { key: 'after', value: 'after' },
-    { key: 'afterequals', value: 'afterequals' },
-    { key: 'before', value: 'before' },
-    { key: 'beforeequals', value: 'beforeequals' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
-
-export const booleanOptionsMenu = [
-    { key: 'all', value: 'all' },
-    { key: 'istrue', value: 'istrue' },
-    { key: 'isfalse', value: 'isfalse' },
-    { key: 'isnull', value: 'isnull' },
-    { key: 'isnotnull', value: 'isnotnull' },
-];
 
 const TableZyxEditable = React.memo(({
     columns,
