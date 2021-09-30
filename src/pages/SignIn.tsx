@@ -108,6 +108,7 @@ const SignIn = () => {
 
     const onAuthWithFacebook = (r: any) => {
         if (r && r.id) {
+            console.log(r.id)
             dispatch(login(null, null, r.id));
         }
     }
