@@ -71,27 +71,29 @@ export const Campaign: FC = () => {
             {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
-                NoFilter: true
+                NoFilter: false,
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: true
+                NoFilter: false
             },
             {
                 Header: t(langKeys.startdate),
                 accessor: 'startdate',
-                NoFilter: true
+                NoFilter: false,
+                type: 'date'
             },
             {
                 Header: t(langKeys.enddate),
                 accessor: 'enddate',
-                NoFilter: true
+                NoFilter: false,
+                type: 'date'
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
-                NoFilter: true,
+                NoFilter: false,
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
