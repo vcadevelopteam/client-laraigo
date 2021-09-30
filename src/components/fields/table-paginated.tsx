@@ -124,25 +124,25 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const [operator, setoperator] = useState("contains");
 
     useEffect(() => {
-        if (type) {
-            switch (type) {
-                case "number": case "date":
-                    setoperator("equals");
-                    break;
-                case "boolean":
-                    setoperator("all");
-                    break;
-                case "string": case "color":
-                default:
-                    setoperator("contains");
-                    break;
-            }
-        }
-        else {
-            if (typeof firstvalue === "number")
+        switch (type) {
+            case "number": case "date":
                 setoperator("equals");
+                break;
+            case "boolean":
+                setoperator("all");
+                break;
+            case "string": case "color":
+            default:
+                setoperator("contains");
+                break;
         }
-    }, [type, firstvalue])
+    }, [type])
+    
+    useEffect(() => {
+        if (!type && typeof firstvalue === "number")
+            setoperator("equals");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [firstvalue])
 
     const keyPress = (e: any) => {
         if (e.keyCode === 13) {
