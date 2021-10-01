@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
-import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain } from 'common/helpers';
+import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain, convertLocalDate } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -139,7 +139,7 @@ const MessageTemplates: FC = () => {
                 NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return new Date(new Date(row.createdate).getTime() - (new Date().getTimezoneOffset() / 60)).toLocaleDateString()
+                    return convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})
                 }
             },
             {
