@@ -425,14 +425,12 @@ export const getComunicationChannelDelegate = (communicationchannelid: string): 
     }
 })
 
-export const insConversationClassificationMassive = (conversationid: string, classificationid: number, username: any, result: string): IRequestBody => ({
+export const insConversationClassificationMassive = (conversationid: string, classificationid: number): IRequestBody => ({
     method: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
     key: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
     parameters: {
         conversationid,
         classificationid,
-        username,
-        result
     }
 });
 

@@ -223,7 +223,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[1] && multiData?.data[3].data}
+                    data={multiData?.data[3] && multiData?.data[3].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />

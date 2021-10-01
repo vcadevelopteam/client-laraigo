@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback, FC } from 'react'
-import { exportExcel, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
+import { exportExcel, getListUsers, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getCollectionAux, getCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -12,25 +12,18 @@ import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import Button from '@material-ui/core/Button/Button';
-import { DialogZyx, FieldMultiSelect, FieldSelect } from 'components';
-import { Range } from 'react-date-range';
-import Link from '@material-ui/core/Link';
+import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
+import clsx from 'clsx';
 import { DialogInteractions } from 'components';
 import { TextField } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
-import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
 
 const selectionKey = 'conversationid';
-
-const actions = {
-    close: 'close',
-    typify: 'typify',
-    reasign: 'reasign'
-}
 
 interface SelectedAction {
     setOpenModalTicket: (value: boolean) => void,
@@ -64,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     filterComponent: {
-        width: '250px',
+        width: '300px',
         backgroundColor: '#FFF'
     },
     button: {
@@ -77,9 +70,368 @@ const useStyles = makeStyles((theme) => ({
         color: '#7721ad',
         textDecoration: 'underline',
         cursor: 'pointer'
+    },
+    filterStatus: {
+        fontWeight: 500,
+        fontSize: 16,
+        cursor: 'pointer'
+    },
+    filterStatusActive: {
+        color: theme.palette.primary.main,
     }
 }));
 
+const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param: any) => void, openModal: boolean, rowWithDataSelected: Dictionary[] }> = ({ setOpenModal, openModal, rowWithDataSelected, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!closingRes.loading && !closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                dispatch(emitEvent({
+                    event: 'deleteTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        ticketnum: ticketSelected?.ticketnum,
+                        status: ticketSelected?.status,
+                        isanswered: ticketSelected?.isAnswered,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    }
+                }));
+                setWaitClose(false);
+            } else if (closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [closingRes, waitClose])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                motive: '',
+                observation: ''
+            })
+            register('motive', { validate: (value) => ((value && value.length) || t(langKeys.field_required)) });
+            register('observation');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        // const dd: ICloseTicketsParams = {
+        //     conversationid: ticketSelected?.conversationid!!,
+        //     motive: data.motive,
+        //     observation: data.observation,
+        //     ticketnum: ticketSelected?.ticketnum!!,
+        //     personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+        //     communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+        //     communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+        //     status: 'CERRADO',
+        //     isAnswered: false,
+        // }
+        // dispatch(showBackdrop(true));
+        // dispatch(closeTicket(dd));
+        // setWaitClose(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.close_ticket)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.closing_reason)}
+                    className="col-12"
+                    valueDefault={getValues('motive')}
+                    onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
+                    error={errors?.motive?.message}
+                    data={multiData?.data[2] && multiData?.data[2].data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+                <FieldEditMulti
+                    label={t(langKeys.observation)}
+                    valueDefault={getValues('observation')}
+                    className="col-12"
+                    onChange={(value) => setValue('observation', value)}
+                    maxLength={1024}
+                />
+            </div>
+        </DialogZyx>)
+}
+
+const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (param: any) => void, openModal: boolean, rowWithDataSelected: Dictionary[] }> = ({ setOpenModal, openModal, rowWithDataSelected, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitReassign, setWaitReassign] = useState(false);
+
+    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        newUserId: number;
+        newUserGroup: string;
+        observation: string;
+    }>();
+
+    useEffect(() => {
+        if (waitReassign) {
+            if (!reassigningRes.loading && !reassigningRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitReassign(false);
+
+                dispatch(emitEvent({
+                    event: 'reassignTicket',
+                    data: {
+                        ...ticketSelected,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                        newuserid: getValues('newUserId') || 3,
+                    }
+                }));
+
+            } else if (reassigningRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitReassign(false);
+            }
+        }
+    }, [reassigningRes, waitReassign])
+
+    useEffect(() => {
+        if (multiData?.data[1])
+            setAgentsConnected(multiData?.data[3].data)
+    }, [multiData])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                newUserId: 0,
+                newUserGroup: '',
+                observation: ''
+            })
+            register('newUserId');
+            register('newUserGroup');
+            register('observation');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        // console.log(data)
+        // if (data.newUserId === 0 && !data.newUserGroup) {
+        //     dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+        //     return;
+        // }
+        // const dd: IReassignicketParams = {
+        //     ...ticketSelected!!,
+        //     ...data,
+        //     newUserId: 0,
+        //     newConversation: true,
+        //     wasanswered: true
+        // }
+        // dispatch(reassignTicket(dd));
+        // dispatch(showBackdrop(true));
+        // setWaitReassign(true)
+
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.reassign_ticket)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.user_plural)}
+                    className="col-12"
+                    valueDefault={"" + getValues('newUserId')}
+                    onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
+                    error={errors?.newUserId?.message}
+                    data={agentsConnected}
+                    optionDesc="displayname"
+                    optionValue="userid"
+                />
+                <FieldSelect
+                    label={t(langKeys.group_plural)}
+                    className="col-12"
+                    valueDefault={getValues('newUserGroup')}
+                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    error={errors?.newUserGroup?.message}
+                    data={multiData?.data[1] && multiData?.data[1].data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
+                <FieldEditMulti
+                    label={t(langKeys.observation)}
+                    valueDefault={getValues('observation')}
+                    className="col-12"
+                    onChange={(value) => setValue('observation', value)}
+                    maxLength={1024}
+                />
+            </div>
+        </DialogZyx>)
+}
+
+const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (param: any) => void, openModal: boolean, rowWithDataSelected: Dictionary[] }> = ({ setOpenModal, openModal, rowWithDataSelected, fetchData }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitTipify, setWaitTipify] = useState(false);
+    const multiData = useSelector(state => state.main.multiData);
+    const tipificationLevel2 = useSelector(state => state.inbox.tipificationsLevel2);
+    const tipificationLevel3 = useSelector(state => state.inbox.tipificationsLevel3);
+
+    const tipifyRes = useSelector(state => state.main.execute);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+
+    useEffect(() => {
+        if (waitTipify) {
+            if (!tipifyRes.loading && !tipifyRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_tipify_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitTipify(false);
+                fetchData()
+            } else if (tipifyRes.error) {
+                const message = t(tipifyRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitTipify(false);
+            }
+        }
+    }, [tipifyRes, waitTipify])
+
+    useEffect(() => {
+        if (openModal) {
+            dispatch(resetGetTipificationLevel2())
+            dispatch(resetGetTipificationLevel3())
+            reset({
+                classificationid1: 0,
+                path1: '',
+                classificationid2: 0,
+                path2: '',
+                classificationid3: 0,
+                path3: '',
+            })
+            register('path1');
+            register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('path2');
+            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('path3');
+            register('classificationid3');
+
+        }
+    }, [openModal])
+
+    const onChangeTipificationLevel1 = (value: Dictionary) => {
+        setValue('classificationid1', value ? value.classificationid : '');
+        setValue('path1', value ? value.path : '');
+        setValue('classificationid2', 0);
+        setValue('path2', '');
+        setValue('classificationid3', 0);
+        setValue('path3', '');
+
+        if (value)
+            dispatch(getTipificationLevel2(value.classificationid))
+        else
+            dispatch(resetGetTipificationLevel2())
+    }
+
+    const onChangeTipificationLevel2 = (value: Dictionary) => {
+        setValue('classificationid2', value ? value.classificationid : '');
+        setValue('path2', value ? value.path : '');
+        setValue('classificationid3', 0);
+        setValue('path3', '');
+        if (value)
+            dispatch(getTipificationLevel3(value.classificationid))
+        else
+            dispatch(resetGetTipificationLevel3())
+    }
+
+    const onChangeTipificationLevel3 = (value: Dictionary) => {
+        setValue('classificationid2', value ? value.classificationid : '')
+        setValue('path2', value ? value.path : '')
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        dispatch(showBackdrop(true));
+        dispatch(execute(insConversationClassificationMassive(rowWithDataSelected.map(x => x.conversationid).join(), data.classificationid3 || data.classificationid2)))
+        setWaitTipify(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.tipify_ticket) + "s"}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 1`}
+                    className="col-12"
+                    valueDefault={getValues('classificationid1')}
+                    onChange={onChangeTipificationLevel1}
+                    error={errors?.classificationid1?.message}
+                    data={multiData?.data[2] && multiData?.data[4].data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 2`}
+                    className="col-12"
+                    valueDefault={getValues('classificationid2')}
+                    onChange={onChangeTipificationLevel2}
+                    loading={tipificationLevel2.loading}
+                    error={errors?.classificationid2?.message}
+                    data={tipificationLevel2.data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+                <FieldSelect
+                    label={`${t(langKeys.tipification)} ${t(langKeys.level)} 3`}
+                    className="col-12"
+                    valueDefault={getValues('classificationid3')}
+                    onChange={onChangeTipificationLevel3}
+                    loading={tipificationLevel3.loading}
+                    error={errors?.classificationid3?.message}
+                    data={tipificationLevel3.data}
+                    optionDesc="path"
+                    optionValue="classificationid"
+                />
+            </div>
+        </DialogZyx>)
+}
 
 const Tickets = () => {
     const { t } = useTranslation();
@@ -92,9 +444,15 @@ const Tickets = () => {
 
     const [allParameters, setAllParameters] = useState({});
     //const format = (date: Date) => date.toISOString().split('T')[0];
+
+    const [filterStatus, setFilterStatus] = useState('')
+
+    const [openDialogTipify, setOpenDialogTipify] = useState(false);
+    const [openDialogClose, setOpenDialogClose] = useState(false);
+    const [openDialogReassign, setOpenDialogReassign] = useState(false);
+
+    const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
-    const [openModalTicket, setOpenModalTicket] = useState(false);
-    const [action, setAction] = useState("");
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
@@ -108,6 +466,12 @@ const Tickets = () => {
         setAllParameters({ ...allParameters, [parameterName]: value });
     }
 
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && rowWithDataSelected.length === 0)) {
+            setRowWithDataSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.conversationid === parseInt(x)) || p.find(y => y.conversationid === parseInt(x)) || {}))
+        }
+    }, [selectedRows])
+
     const columns = React.useMemo(
         () => [
             {
@@ -119,7 +483,7 @@ const Tickets = () => {
                     return (
                         <label
                             className={classes.labellink}
-                            onClick={() => handleClickOpen(row)}
+                            onClick={() => openDialogInteractions(row)}
                         >
                             {row.numeroticket}
                         </label>
@@ -336,7 +700,7 @@ const Tickets = () => {
         []
     );
 
-    const handleClickOpen = useCallback((row: any) => {
+    const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
         setRowSelected({ ...row, displayname: row.name, ticketnum: row.numeroticket })
     }, [mainResult]);
@@ -361,25 +725,28 @@ const Tickets = () => {
             take: pageSize,
             skip: pageIndex * pageSize,
             sorts: sorts,
-            filters: filters,
+            filters: {
+                ...filters,
+                ...(filterStatus ? {
+                    estadoconversacion: {
+                        value: filterStatus,
+                        operator: "equals"
+                    }
+                } : {})
+            },
             ...allParameters
         })))
     };
 
-    const onClickTicket = () => {
-        if (Object.keys(selectedRows).length > 0) {
-            setOpenModalTicket(true);
-        } else {
-            const callback = () => {
-                setOpenModalTicket(false);
-            }
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
+    const fetchDataAux2 = () => {
+        fetchData(fetchDataAux);
+    };
+
+    useEffect(() => {
+        if (fetchDataAux.pageSize) {
+            fetchData(fetchDataAux);
         }
-    }
+    }, [filterStatus])
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -387,7 +754,8 @@ const Tickets = () => {
             getValuesFromDomain("GRUPOS"),
             getValuesFromDomain("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
-            getClassificationLevel1("TIPIFICACION")
+            getClassificationLevel1("TIPIFICACION"),
+            getListUsers(),
         ]));
 
         return () => {
@@ -420,72 +788,44 @@ const Tickets = () => {
 
     return (
         <div className={classes.container}>
-
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
                 <div>
                     <div className={classes.title}>
                         {t(langKeys.ticket_plural)}
                     </div>
-                    <div style={{display: 'flex', gap: 16}}>
-                        <div>
-                            All tickets
+                    <div style={{ display: 'flex', gap: 32 }}>
+                        <div
+                            className={clsx(classes.filterStatus, {
+                                [classes.filterStatusActive]: filterStatus === '',
+                            })}
+                            onClick={() => setFilterStatus('')}
+                        >{t(langKeys.all)}
                         </div>
-                        <div>
-                            Open
+                        <div
+                            className={clsx(classes.filterStatus, {
+                                [classes.filterStatusActive]: filterStatus === 'ASIGNADO',
+                            })}
+                            onClick={() => setFilterStatus('ASIGNADO')}
+                        >{t(langKeys.assigned)}
                         </div>
-                        <div>
-                            Clsoed
+                        <div
+                            className={clsx(classes.filterStatus, {
+                                [classes.filterStatusActive]: filterStatus === 'CERRADO',
+                            })}
+                            onClick={() => setFilterStatus('CERRADO')}
+                        >{t(langKeys.closed)}
+                        </div>
+                        <div
+                            className={clsx(classes.filterStatus, {
+                                [classes.filterStatusActive]: filterStatus === 'PENDIENTE',
+                            })}
+                            onClick={() => setFilterStatus('PENDIENTE')}
+                        >{t(langKeys.pending)}
                         </div>
                     </div>
                 </div>
                 <div>
-                    <div style={{textAlign: 'right'}}>
-                        {/* <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            size="small"
-                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                        // style={{ display: deleteFunction ? 'block' : 'none' }}
-                        >
-                            <MoreVertIcon style={{ color: '#B6B4BA' }} />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            getContentAnchorEl={null}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Reasignar
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Eliminar
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Tipificar
-                            </MenuItem>
-                        </Menu> */}
-                    </div>
-                    <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {mainResult?.multiData?.data[0]?.data &&
                             <FieldMultiSelect
                                 label={t(langKeys.channel_plural)}
@@ -513,16 +853,16 @@ const Tickets = () => {
                                 disabled={mainPaginated.loading}
                             />
                         }
-                         <IconButton
+                        <IconButton
                             aria-label="more"
                             aria-controls="long-menu"
                             aria-haspopup="true"
                             size="small"
+                            disabled={rowWithDataSelected.length === 0}
                             color="primary"
                             onClick={(e) => setAnchorEl(e.currentTarget)}
-                        // style={{ display: deleteFunction ? 'block' : 'none' }}
                         >
-                            <MoreVertIcon  />
+                            <MoreVertIcon />
                         </IconButton>
                         <Menu
                             id="menu-appbar"
@@ -541,99 +881,23 @@ const Tickets = () => {
                         >
                             <MenuItem onClick={(e) => {
                                 setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Reasignar
+                                setOpenDialogReassign(true)
+                            }}>{t(langKeys.reassign_ticket)}
                             </MenuItem>
                             <MenuItem onClick={(e) => {
                                 setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Eliminar
+                                setOpenDialogClose(true)
+                            }}>{t(langKeys.close_ticket)}
                             </MenuItem>
                             <MenuItem onClick={(e) => {
                                 setAnchorEl(null)
-                                // deleteFunction && deleteFunction(e)
-                            }}>
-                                Tipificar
+                                setOpenDialogTipify(true)
+                            }}>{t(langKeys.tipify_ticket)}
                             </MenuItem>
                         </Menu>
                     </div>
                 </div>
             </Box>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {/* {mainResult?.multiData?.data[0]?.data &&
-                        <FieldMultiSelect
-                            label={t(langKeys.channel_plural)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_channel"
-                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[0]?.data}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                            disabled={mainPaginated.loading}
-                        />
-                    }
-
-                    {mainResult?.multiData?.data[1]?.data &&
-                        <FieldMultiSelect
-                            label={t(langKeys.group_plural)}
-                            className={classes.filterComponent}
-                            key="fieldMultiSelect_group"
-                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
-                            variant="outlined"
-                            data={mainResult?.multiData?.data[1]?.data}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                            disabled={mainPaginated.loading}
-                        />
-                    } */}
-                </div>
-                <div style={{ display: 'none', gap: 8, flexWrap: 'wrap' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        style={{ backgroundColor: '#FB5F5F', width: 120 }}
-                        onClick={() => {
-                            setAction(actions.close);
-                            onClickTicket();
-                        }}
-                    //startIcon={<DownloadIcon />}
-                    >{t(langKeys.ticket_close)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-                        style={{ backgroundColor: '#55BD84', width: 120 }}
-                        onClick={() => {
-                            setAction(actions.typify);
-                            //setOpenModalTicket(true)
-                            onClickTicket();
-                        }}
-                    //startIcon={<DownloadIcon />}
-                    >{t(langKeys.ticket_typify)}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        disabled={mainPaginated.loading}
-
-                        style={{ width: 120 }}
-                        onClick={() => {
-                            setAction(actions.reasign);
-                            onClickTicket();
-                        }}
-                    //startIcon={<DownloadIcon />}
-                    >{t(langKeys.ticket_reasign)}
-                    </Button>
-                </div>
-            </div>
-
             <TablePaginated
                 columns={columns}
                 data={mainPaginated.data}
@@ -654,186 +918,27 @@ const Tickets = () => {
                 setOpenModal={setOpenModal}
                 ticket={rowSelected}
             />
-
-            <DialogTicket
-                setOpenModalTicket={setOpenModalTicket}
-                setSelectedRows={setSelectedRows}
-                openModalTicket={openModalTicket}
-                multiData={mainResult.multiData.data}
-                selectedRows={selectedRows}
-                action={action}
+            <DialogTipifications
+                fetchData={fetchDataAux2}
+                rowWithDataSelected={rowWithDataSelected}
+                openModal={openDialogTipify}
+                setOpenModal={setOpenDialogTipify}
             />
-
-        </div >
+            <DialogCloseticket
+                fetchData={fetchDataAux2}
+                rowWithDataSelected={rowWithDataSelected}
+                openModal={openDialogClose}
+                setOpenModal={setOpenDialogClose}
+            />
+            <DialogReassignticket
+                fetchData={fetchDataAux2}
+                rowWithDataSelected={rowWithDataSelected}
+                openModal={openDialogReassign}
+                setOpenModal={setOpenDialogReassign}
+            />
+        </div>
     )
 }
 
-const DialogTicket: FC<SelectedAction> = ({ setOpenModalTicket, setSelectedRows, multiData, selectedRows, openModalTicket, action }) => {
-    const { t } = useTranslation();
-    const dispatch = useDispatch();
-    const dataClasificationLevel2 = useSelector(state => state.main.mainData);
-    const dataClasificationLevel3 = useSelector(state => state.main.mainAux);
-    const user = useSelector(state => state.login.validateToken.user);
-    const dataClosingReasons = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataUser = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    const dataClasificationLevel1 = multiData[4] && multiData[4].success ? multiData[4].data : [];
-    const { handleSubmit, setValue, reset, getValues } = useForm();
-    const [waitSave, setWaitSave] = useState(false);
-    const [sizeComment, setSizeComment] = useState(0);
-    const [classificationidLevel1, setClassificationidLevel1] = useState(-1);
-    const [classificationidLevel2, setClassificationidLevel2] = useState(-1);
-    const [classificationidLevel3, setClassificationidLevel3] = useState(-1);
-    const [allClassificationid, setAllClassificationid] = useState<Dictionary>({});
-
-    const onSubmit = handleSubmit((data) => {
-        if (waitSave) {
-            const callback = () => {
-                const alldifnegative = (Object.values(allClassificationid).filter(x => x != '-1'));
-
-                switch (action) {
-                    case actions.close:
-
-                        break;
-                    case actions.typify:
-
-                        dispatch(execute(insConversationClassificationMassive(
-                            (Object.keys(selectedRows).map(x => x)).join(),
-                            alldifnegative[alldifnegative.length - 1],
-                            user?.usr,
-                            ""
-                        )));
-
-                        break;
-                    case actions.reasign:
-
-                        break;
-                }
-
-                setOpenModalTicket(false);
-                setWaitSave(false);
-                setAllClassificationid({});
-            }
-
-            dispatch(manageConfirmation({
-                visible: true,
-                question: t(langKeys.confirmation_save),
-                callback
-            }))
-        } else {
-            setOpenModalTicket(false);
-            setWaitSave(false);
-        }
-    });
-
-    useEffect(() => {
-        if (classificationidLevel1 > 0) {
-            dispatch(getCollection(
-                getClassificationLevel2("TIPIFICACION", classificationidLevel1)
-            ));
-        }
-    }, [classificationidLevel1]);
-
-    useEffect(() => {
-        if (classificationidLevel2 > 0) {
-            dispatch(getCollectionAux(
-                getClassificationLevel2("TIPIFICACION", classificationidLevel2)
-            ));
-        }
-    }, [classificationidLevel2]);
-
-    return (
-        <DialogZyx
-            title={t("ticket_" + action)}
-            open={openModalTicket}
-            buttonText1={t(langKeys.cancel)}
-            buttonText2={t(action === actions.reasign ? langKeys.submit : langKeys.save)}
-            handleClickButton1={() => setOpenModalTicket(false)}
-            handleClickButton2={onSubmit}
-            button2Type="submit"
-        >
-            {action === actions.typify ?
-                <>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.select)}
-                            variant="outlined"
-                            onChange={(value) => {
-                                setWaitSave(true);
-                                setClassificationidLevel1(value ? value.classificationid : -1);
-                                setClassificationidLevel2(-1);
-                                setClassificationidLevel3(-1);
-                                setAllClassificationid({ ...allClassificationid, level1: (value ? value.classificationid : -1), level2: -1, level3: -1 });
-                            }}
-                            data={dataClasificationLevel1}
-                            optionDesc="description"
-                            optionValue="classificationid"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.select)}
-                            variant="outlined"
-                            onChange={(value) => {
-                                setWaitSave(true);
-                                setClassificationidLevel2(value ? value.classificationid : -1);
-                                setClassificationidLevel3(-1);
-                                setAllClassificationid({ ...allClassificationid, level2: (value ? value.classificationid : -1), level3: -1 });
-                            }}
-                            data={dataClasificationLevel2.data}
-                            optionDesc="description"
-                            optionValue="classificationid"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.select)}
-                            variant="outlined"
-                            onChange={(value) => {
-                                setWaitSave(true);
-                                setClassificationidLevel3(value ? value.classificationid : -1);
-                                setAllClassificationid({ ...allClassificationid, level3: (value ? value.classificationid : -1) });
-                            }}
-                            data={dataClasificationLevel3.data}
-                            optionDesc="description"
-                            optionValue="classificationid"
-                        />
-                    </div>
-                </>
-                :
-                <>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(action === actions.close ? langKeys.ticket_reason : langKeys.ticket_user)}
-                            variant="outlined"
-                            onChange={(value) => {
-                                setValue(action === actions.close ? "domainvalue" : "userid", action === actions.close ? value.domainvalue : value.userid);
-                                setWaitSave(true);
-                            }}
-                            data={action === actions.close ? dataClosingReasons : dataUser}
-                            optionDesc={action === actions.close ? "domaindesc" : "displayname"}
-                            optionValue={action === actions.close ? "domainvalue" : "userid"}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <TextField
-                            label={t(langKeys.ticket_comment)}
-                            multiline
-                            variant="outlined"
-                            rows={10}
-                            onChange={(value) => {
-                                setValue('comment', value?.target?.value);
-                                setSizeComment(value?.target?.value?.length);
-                            }}
-                            inputProps={{ maxLength: 4000 }}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <label style={{ textAlign: 'right' }}>{sizeComment}/4000</label>
-                    </div>
-                </>
-            }
-        </DialogZyx>
-    );
-}
 
 export default Tickets;
