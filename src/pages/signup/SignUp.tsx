@@ -108,12 +108,20 @@ export const SignUp: FC = () => {
                     {/* //containerlogo tiene flex 1, para q se divida con el texto */}
                     <img src="./Laraigo-vertical-logo-name.svg" style={{ width: '50%' }} alt="logo" />
                 </div>
-                <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
-                    setSnackbar={setSnackbar}
-                    setBackdrop={setBackdrop}
-                    setStep={setStep}
-                    step={step}
-                />
+                <div style={{
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}>
+                    <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
+                        setSnackbar={setSnackbar}
+                        setBackdrop={setBackdrop}
+                        setStep={setStep}
+                        step={step}
+                    />
+                </div>
             </div>
         </div>
     );

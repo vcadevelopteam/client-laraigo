@@ -124,13 +124,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
     const handleClickShowPassword = () => setShowPassword(!showPassword);
     const handleMouseDownPassword = (event: any) => event.preventDefault();
     return (
-        <div style={{
-            display: 'flex',
-            flex: 1,
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-        }}>
+        <>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 }}>{t(langKeys.signupstep1title)}</div>
             <FacebookLogin
                 appId="1094526090706564"
@@ -238,19 +232,17 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                     }}
                 />
                 <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}</div>
-                <div >
-                    <Button
-                        onClick={() => { handlesubmit() }}
-                        className={classes.button}
-                        variant="contained"
-                        color="primary"
-                        disabled={disablebutton}
-                    >{t(langKeys.submit)}
-                    </Button>
-                </div>
+                <Button
+                    onClick={() => { handlesubmit() }}
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={disablebutton}
+                >{t(langKeys.submit)}
+                </Button>
 
             </div>
-        </div>
+        </>
     )
 }
 export default FirstStep
