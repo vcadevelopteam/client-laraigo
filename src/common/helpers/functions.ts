@@ -145,7 +145,7 @@ export function uploadExcel(file: any, owner: any = {}) {
 export const dateToLocalDate = (date: string): string => {
     if (!date) return new Date().toLocaleDateString();
     const nn = new Date(date)
-    return new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000)).toLocaleDateString();
+    return new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000)).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"});
 }
 
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {

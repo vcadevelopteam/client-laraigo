@@ -92,7 +92,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{convertLocalDate(row.createdate).toLocaleDateString()}</div>
+                        <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
                     )
                 }
             },
