@@ -375,7 +375,7 @@ const TableZyx = React.memo(({
     }
 
     return (
-        <Box width={1} style={{ height: '100%' }}>
+        <Box width={1}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={classes.containerButtons}>

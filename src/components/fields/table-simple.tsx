@@ -236,7 +236,6 @@ const TableZyx = React.memo(({
     const DefaultColumnFilter = ({
         column: { setFilter, type = "string" },
     }: any) => {
-        const { t } = useTranslation();
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -414,7 +413,7 @@ const TableZyx = React.memo(({
                             return !cellvalue.toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
-                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     }
             }
         });
@@ -527,6 +526,7 @@ const TableZyx = React.memo(({
                                 style: {
                                     minWidth: cell.column.minWidth,
                                     width: cell.column.width,
+                                    maxWidth: cell.column.maxWidth,
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
@@ -716,6 +716,7 @@ const TableZyx = React.memo(({
                                                             style: {
                                                                 minWidth: cell.column.minWidth,
                                                                 width: cell.column.width,
+                                                                maxWidth: cell.column.maxWidth,
                                                                 overflow: 'hidden',
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
@@ -725,7 +726,7 @@ const TableZyx = React.memo(({
                                                         {headerGroups[0].headers[i].isComponent ?
                                                             cell.render('Cell')
                                                             :
-                                                            (cell.value?.length > 50 ?
+                                                            (cell.value?.length > 20 ?
                                                                 <Tooltip TransitionComponent={Zoom} title={cell.value}>
                                                                     <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                         {cell.render('Cell')}

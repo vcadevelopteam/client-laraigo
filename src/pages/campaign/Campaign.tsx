@@ -72,11 +72,15 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
                 NoFilter: false,
+                width: 'auto',
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false
+                NoFilter: false,
+                width: 'auto',
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.startdate),
