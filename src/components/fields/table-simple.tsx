@@ -190,7 +190,7 @@ export const OptionsMenuComponent = (type: string, operator: string, handleClick
                     </MenuItem>
                 ))
             )
-        case "date":
+        case "date": case "datetime-local":
             return (
                 dateOptionsMenu.map((option) => (
                     <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
@@ -265,7 +265,7 @@ const TableZyx = React.memo(({
     
         useEffect(() => {
             switch (type) {
-                case "number": case "date":
+                case "number": case "date": case "datetime-local":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -360,7 +360,7 @@ const TableZyx = React.memo(({
                         default:
                             return cellvalue === Number(value);
                     }
-                case "date":
+                case "date": case "datetime-local":
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
