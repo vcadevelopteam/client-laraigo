@@ -201,7 +201,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));
@@ -217,7 +217,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));

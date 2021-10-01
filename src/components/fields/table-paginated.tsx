@@ -127,7 +127,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date":
+            case "number": case "date": case "datetime-local":
                 setoperator("equals");
                 break;
             case "boolean":
