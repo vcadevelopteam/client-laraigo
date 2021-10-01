@@ -151,7 +151,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                 <div className={classes.separator}></div>
             </div>
 
-            <div style={{ marginLeft: 40, marginRight: 40 }}>
+            <div>
                 <TextField
                     variant="outlined"
                     size="small"

@@ -111,6 +111,7 @@ export const SignUp: FC = () => {
                 <div style={{
                     display: 'flex',
                     flex: 1,
+                    margin: 40,
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',

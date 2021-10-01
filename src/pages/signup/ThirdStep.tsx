@@ -239,7 +239,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
     };
     return (
         <>
-            <div style={{marginLeft: 40, marginRight: 40}}>
+            <div>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setStep(2) }}>
                             {"<< Previous"}

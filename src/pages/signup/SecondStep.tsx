@@ -31,7 +31,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     return (
-        <div style={{ marginLeft: 40, marginRight: 40, }}>
+        <div >
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title2)}</div>
             <div >
                 <TextField
