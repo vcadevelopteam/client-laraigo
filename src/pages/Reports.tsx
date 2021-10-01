@@ -77,6 +77,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeader: {
         display: 'block',
+        marginBottom: 0,
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },

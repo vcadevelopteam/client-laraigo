@@ -107,6 +107,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
             {
                 Header: t(langKeys.rundate),
                 accessor: 'rundate',
+                type: 'date',
                 sortType: 'datetime',
                 Cell: cell
             },
@@ -200,7 +201,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));
@@ -216,7 +217,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));

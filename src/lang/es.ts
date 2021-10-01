@@ -2,6 +2,9 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    english: 'Inglés',
+    spanish: 'Español',
+
     dashboard: 'Panel',
     dashboard_plural: 'Paneles',
 
@@ -114,10 +117,16 @@ const translation: LangKeys = {
     registerCode: 'Código de registro',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
+    informationTMO: "Información TMO",
+    informationTME: "Información TME",
+    informationNPS: "Información NPS",
+    informationCSAT: "Información CSAT",
+    informationFIX: "Información FIX",
+    informationFCR: "Información FCR",
     doubleAuthentication: 'Doble autenticación',
     signup_with_facebook: "Registrate con Facebook",
     next: "Siguiente",
-    management: "Gerencial",
+    managerial: "Gerencial",
     emailverification: 'Debe insertar un correo valido',
     completedesc: 'Descripción completa',
     laststepsignup2: "Conocerte mejor nos ayuda a optimizar el servicio a lo que necesitan tus clientes",
@@ -125,6 +134,7 @@ const translation: LangKeys = {
     group: 'Grupo',
     group_plural: 'Grupos',
     hasactionplan: 'Tiene Plan de Acción',
+    operationalpush: "Operativo push",
     action: 'Acción',
     useralreadyregistered: "El usuario ya se encuentra registrado",
     laststepsignup: "Queremos ayudarte a crecer",

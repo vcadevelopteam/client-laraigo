@@ -40,6 +40,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     const classes = useChannelAddStyles();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [disablebutton, setDisablebutton] = useState(false);
     const mainResult = useSelector(state => state.signup.channelList)
     const executeResult = useSelector(state => state.signup.successinsert)
     
@@ -73,8 +74,9 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             channellist: requestchannels
         }
         setBackdrop(true)
-        dispatch(executeSubscription(majorfield))
         setWaitSave(true);
+        setDisablebutton(true);
+        dispatch(executeSubscription(majorfield))
     }
     useEffect(() => {
         if (waitSave) {
@@ -129,6 +131,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                         className={classes.button}
                         variant="contained"
                         color="primary"
+                        disabled={disablebutton}
                     >{t(langKeys.finishreg)}
                     </Button>
                 </div>

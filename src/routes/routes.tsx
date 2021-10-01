@@ -10,7 +10,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.dashboard} />,
         path: paths.DASHBOARD,
         subroute: true,
-        initialSubroute: paths.DASHBOARDMANAGEMENT,
+        initialSubroute: paths.DASHBOARDMANAGERIAL,
         icon: (className) => <DashboardIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
@@ -188,8 +188,13 @@ export const subroutes: RouteConfig[] = [
 
 export const subroutesDashboards: RouteConfig[] = [
     {
-        key: paths.DASHBOARDMANAGEMENT,
-        description: <Trans i18nKey={langKeys.management} />,
-        path: paths.DASHBOARDMANAGEMENT,
+        key: paths.DASHBOARDMANAGERIAL,
+        description: <Trans i18nKey={langKeys.managerial} />,
+        path: paths.DASHBOARDMANAGERIAL,
+    },
+    {
+        key: paths.DASHBOARDOPERATIONALPUSH,
+        description: <Trans i18nKey={langKeys.operationalpush} />,
+        path: paths.DASHBOARDOPERATIONALPUSH,
     },
 ];

@@ -5,7 +5,7 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagement
+	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial,DashboardOperationalPush
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
-		padding: theme.spacing(3),
+		padding: theme.spacing(2),
 		width: '100%'
 	},
 }));
@@ -69,8 +69,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels')) {
-		return <Redirect to={{ pathname: "/sign-in" }} />;
 	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
@@ -225,8 +223,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.EMOJIS}>
 					<ExtrasLayout><Emojis /></ExtrasLayout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARDMANAGEMENT}>
-					<DashboardsLayout><DashboardManagement /></DashboardsLayout>
+				<ProtectRoute exact path={paths.DASHBOARDMANAGERIAL}>
+					<DashboardsLayout><DashboardManagerial /></DashboardsLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARDOPERATIONALPUSH}>
+					<DashboardsLayout><DashboardOperationalPush /></DashboardsLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

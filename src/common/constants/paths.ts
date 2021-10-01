@@ -64,7 +64,8 @@ const paths = {
     FLOWDESIGNER: '/extras/flowdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
     EMOJIS: '/extras/emojis',
-    DASHBOARDMANAGEMENT: '/dashboard/management'
+    DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
+    DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
 };
 
 export default paths;

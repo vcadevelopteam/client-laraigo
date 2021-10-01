@@ -163,6 +163,53 @@ export const booleanOptionsMenu = [
     { key: 'isnotnull', value: 'isnotnull' },
 ];
 
+export const BooleanOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    const { t } = useTranslation();
+    return (
+        <Select
+            value={value || 'all'}
+            onChange={(e) => handleClickItemMenu(e.target.value)}
+            >
+            {booleanOptionsMenu.map((option) => (
+                <MenuItem key={option.key} value={option.key}>
+                    {t(option.value)}
+                </MenuItem>
+            ))}
+        </Select>
+    )
+}
+
+export const OptionsMenuComponent = (type: string, operator: string, handleClickItemMenu: (key: any) => void) => {
+    const { t } = useTranslation();
+    switch (type) {
+        case "number":
+            return (
+                numberOptionsMenu.map((option) => (
+                    <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                        {t(option.value)}
+                    </MenuItem>
+                ))
+            )
+        case "date": case "datetime-local":
+            return (
+                dateOptionsMenu.map((option) => (
+                    <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                        {t(option.value)}
+                    </MenuItem>
+                ))
+            )
+        case "string": case "color":
+        default:
+            return (
+                stringOptionsMenu.map((option) => (
+                    <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
+                        {t(option.value)}
+                    </MenuItem>
+                ))
+            )
+    }
+}
+
 const TableZyx = React.memo(({
     titlemodule,
     columns,
@@ -189,7 +236,6 @@ const TableZyx = React.memo(({
     const DefaultColumnFilter = ({
         column: { setFilter, type = "string" },
     }: any) => {
-        const { t } = useTranslation();
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -209,17 +255,17 @@ const TableZyx = React.memo(({
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
         };
-
+    
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
-
+    
         useEffect(() => {
             switch (type) {
-                case "number": case "date":
+                case "number": case "date": case "datetime-local":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -231,52 +277,12 @@ const TableZyx = React.memo(({
                     break;
             }
         }, [type]);
-
-        const optionsMenu = (type: string) => {
-            switch (type) {
-                case "number":
-                    return (
-                        numberOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-                case "date":
-                    return (
-                        dateOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-                case "string": case "color":
-                default:
-                    return (
-                        stringOptionsMenu.map((option) => (
-                            <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
-                                {t(option.value)}
-                            </MenuItem>
-                        ))
-                    )
-            }
-        }
-
+    
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                {type === 'boolean' ?
-                <Select
-                    value={value || 'all'}
-                    onChange={(e) => handleClickItemMenu(e.target.value)}
-                    >
-                    {booleanOptionsMenu.map((option) => (
-                        <MenuItem key={option.key} value={option.key}>
-                            {t(option.value)}
-                        </MenuItem>
-                    ))}
-                </Select>
-                :
-                <React.Fragment>
+                {type === 'boolean'
+                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
+                : <React.Fragment>
                     <Input
                         // disabled={loading}
                         type={type}
@@ -316,10 +322,9 @@ const TableZyx = React.memo(({
                             },
                         }}
                     >
-                        {optionsMenu(type)}
+                        {OptionsMenuComponent(type, operator, handleClickItemMenu)}
                     </Menu>
-                </React.Fragment>
-                }
+                </React.Fragment>}
             </div>
         );
     }
@@ -355,7 +360,7 @@ const TableZyx = React.memo(({
                         default:
                             return cellvalue === Number(value);
                     }
-                case "date":
+                case "date": case "datetime-local":
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
@@ -408,7 +413,7 @@ const TableZyx = React.memo(({
                             return !cellvalue.toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
-                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     }
             }
         });
@@ -521,6 +526,7 @@ const TableZyx = React.memo(({
                                 style: {
                                     minWidth: cell.column.minWidth,
                                     width: cell.column.width,
+                                    maxWidth: cell.column.maxWidth,
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
@@ -710,6 +716,7 @@ const TableZyx = React.memo(({
                                                             style: {
                                                                 minWidth: cell.column.minWidth,
                                                                 width: cell.column.width,
+                                                                maxWidth: cell.column.maxWidth,
                                                                 overflow: 'hidden',
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
@@ -719,7 +726,7 @@ const TableZyx = React.memo(({
                                                         {headerGroups[0].headers[i].isComponent ?
                                                             cell.render('Cell')
                                                             :
-                                                            (cell.value?.length > 50 ?
+                                                            (cell.value?.length > 20 ?
                                                                 <Tooltip TransitionComponent={Zoom} title={cell.value}>
                                                                     <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                         {cell.render('Cell')}

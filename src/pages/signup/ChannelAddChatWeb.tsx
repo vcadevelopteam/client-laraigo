@@ -1334,6 +1334,23 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
     },
+    rootextras: {
+        [theme.breakpoints.up('xs')]: {
+            paddingTop: "80%",
+        },
+        [theme.breakpoints.up('sm')]: {
+            paddingTop: "25%",
+        },
+        "@media (min-width: 960px)": {
+            paddingTop: "70%",
+        },
+        "@media (min-width: 1000px)": {
+            paddingTop: "40%",
+        },
+        [theme.breakpoints.up('lg')]: {
+            paddingTop: "25%",
+        },
+    },
     title: {
         fontWeight: 500,
         fontSize: 32,
@@ -1466,10 +1483,10 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
             },
             color: {
                 header: "#fff",
-                background: "#7721AD",
-                border: "#fff",
+                background: "#F9F9FA",
+                border: "#EBEAED",
                 client: "#fff",
-                bot: "#fff",
+                bot: "#aa53e0",
             },
             form: [],
             bubble: {
@@ -1513,7 +1530,10 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
     }
 
     return (
-        <div className={classes.root}>
+        <div className={clsx({
+            [classes.root] : true,
+            [classes.rootextras] : tabIndex==="4",
+        })}>
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
                 <h2 className={classes.title}>
                     <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />

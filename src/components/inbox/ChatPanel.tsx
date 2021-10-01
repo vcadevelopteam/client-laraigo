@@ -178,7 +178,8 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        if (data.newUserId === 0 || !data.newUserGroup) {
+        console.log(data)
+        if (data.newUserId === 0 && !data.newUserGroup) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
             return;
         }
@@ -399,7 +400,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
-                keepMounted
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',

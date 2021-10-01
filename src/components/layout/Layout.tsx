@@ -175,6 +175,7 @@ const useStyles = makeStyles((theme) => ({
     },
     mainContentBox: {
         flex: 1,
+        // padding: theme.spacing(2),
         display: 'flex',
         height: 'calc(100vh - 64px)',
         minHeight: 'calc(100vh - 64px)',

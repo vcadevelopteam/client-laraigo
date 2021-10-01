@@ -2,6 +2,9 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    english: 'English',
+    spanish: 'Spanish',
+
     dashboard: 'Dashboard',
     dashboard_plural: 'Dashboards',
 
@@ -250,6 +253,12 @@ const translation: LangKeys = {
     fields: 'Fields',
     addfield: 'Add field',
     order: 'Order',
+    informationTMO: "Information TMO",
+    informationTME: "Information TME",
+    informationNPS: "Information NPS",
+    informationCSAT: "Information CSAT",
+    informationFIX: "Information FIX",
+    informationFCR: "Information FCR",
     beautify: 'Beautify',
     invalidjson: 'Invalid json',
     test: 'Test',
@@ -261,7 +270,8 @@ const translation: LangKeys = {
     typify_ticket: 'Typify ticket',
     emailverification: 'The email must be valid',
     signup_with_facebook: "Sign up with Facebook",
-    management: "Management",
+    managerial: "Managerial",
+    operationalpush: "Operational Push",
     observation: 'Observation',
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",

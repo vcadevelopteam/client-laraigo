@@ -32,12 +32,12 @@ const useChannelAddStyles = makeStyles(theme => ({
             fontSize: '24px!important',
             justifyContent: 'center',
             fontFamily: "Helvetica,sans-serif!important",
-            width: "50%", 
-            marginLeft: "25%", 
+            width: "50%",
+            marginLeft: "25%",
             marginBottom: '20px'
         }
     },
-    separator:{
+    separator: {
         borderBottom: "grey solid 1px",
         width: "10vh",
         height: "1.6vh",
@@ -63,11 +63,12 @@ const useChannelAddStyles = makeStyles(theme => ({
     title: {
         fontWeight: 500,
         fontSize: 32,
-        margin: '20px 0',
+        textAlign: 'center',
+        // margin: '20px 0',
         color: theme.palette.primary.main,
     },
     subtitle: {
-        margin: '8px 0 8px 4px',
+        margin: '20px 0 8px 4px',
         fontSize: 20,
         fontWeight: 500,
     },
@@ -102,7 +103,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,setStep:(param:any)=>void,setsendchannels:(param:any)=>void}> = ({setlistchannels,listchannels,setStep,setsendchannels}) => {
+export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels: any, setStep: (param: any) => void, setsendchannels: (param: any) => void }> = ({ setlistchannels, listchannels, setStep, setsendchannels }) => {
 
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -112,7 +113,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Facebook',
             key: 'facebook',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,facebook:!p.facebook}))
+                setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
             },
             selected: listchannels.facebook
         },
@@ -121,7 +122,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Instagram',
             key: 'instagram',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,instagram:!p.instagram}))
+                setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
             },
             selected: listchannels.instagram
         },
@@ -130,7 +131,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Messenger',
             key: 'messenger',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,messenger:!p.messenger}))
+                setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
             },
             selected: listchannels.messenger
         },
@@ -139,7 +140,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Whatsapp',
             key: 'whatsapp',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,whatsapp:!p.whatsapp}))
+                setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
             },
             selected: listchannels.whatsapp
         },
@@ -148,7 +149,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Telegram',
             key: 'telegram',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,telegram:!p.telegram}))
+                setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
             },
             selected: listchannels.telegram
         },
@@ -157,7 +158,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Twitter',
             key: 'twitter',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,twitter:!p.twitter}))
+                setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
             },
             selected: listchannels.twitter
         },
@@ -166,7 +167,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Twitter DM',
             key: 'twitterDM',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,twitterDM:!p.twitterDM}))
+                setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
             },
             selected: listchannels.twitterDM
         },
@@ -177,7 +178,7 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Chat Web',
             key: 'chatWeb',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,chatWeb:!p.chatWeb}))
+                setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
             },
             selected: listchannels.chatWeb
         },
@@ -186,17 +187,17 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Email',
             key: 'email',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,email:!p.email}))
+                setlistchannels((p: any) => ({ ...p, email: !p.email }))
             },
             selected: listchannels.email
-            
+
         },
         {
             icon: <PhoneIcon color="inherit" />,
             label: 'Phone',
             key: 'phone',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,phone:!p.phone}))
+                setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
             },
             selected: listchannels.phone
         },
@@ -205,13 +206,13 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
             label: 'Sms',
             key: 'sms',
             onClick: () => {
-                setlistchannels((p:any)=>({...p,sms:!p.sms}))
+                setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
             },
             selected: listchannels.sms
         },
     ];
 
-    const Option: FC<{ option: ChannelOption, selected: Boolean }> = ({ option,selected }) => {
+    const Option: FC<{ option: ChannelOption, selected: Boolean }> = ({ option, selected }) => {
         const [color, setColor] = useState('#989898');
         return (
             <Paper
@@ -237,24 +238,21 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
         );
     };
     return (
-        <Fragment>
-            <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault();setStep(2) }}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
-            </div>
-            <div className={classes.content}>
-                <h2 className={classes.title}>{t(langKeys.channeladdtitle)}</h2>
-                <div style={{ height: 29 }} />
+        <>
+            <div>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setStep(2) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
+                <div className={classes.title}>{t(langKeys.channeladdtitle)}</div>
                 <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     {socialMediaOptions.map((e, i) =>
                         <Option
                             key={`social_media_option_${i}`}
                             option={e}
-                            selected={listchannels[e.key]} 
+                            selected={listchannels[e.key]}
                         />
                     )}
                 </div>
@@ -262,20 +260,18 @@ export const ThirdStep: FC<{setlistchannels:(param:any)=>void,listchannels:any,s
                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} selected={listchannels[e.key]} />)}
                 </div>
-            </div>
-            <div style={{ width: "100%" }}>
                 <Button
                     onClick={() => { setsendchannels(true) }}
                     className={classes.button}
-                    style={{ width: "80%",marginLeft:"10%" }}
+                    fullWidth
+                    style={{ marginTop: 30 }}
                     variant="contained"
                     color="primary"
-                    //disabled={nextbutton}
+                //disabled={nextbutton}
                 >{t(langKeys.next)}
                 </Button>
-
             </div>
-        </Fragment>
+        </>
     )
 }
 export default ThirdStep
