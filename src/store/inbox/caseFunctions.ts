@@ -88,12 +88,8 @@ const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
 }
 
 export const getAgents = (state: IState): IState => ({
-    ...state,
+    ...initialState,
     userType: "SUPERVISOR",
-    interactionList: initialState.interactionList,
-    ticketSelected: initialState.ticketSelected,
-    agentSelected: initialState.agentSelected,
-    triggerCloseTicket: initialState.triggerCloseTicket,
     agentList: { ...state.agentList, loading: true, error: false },
 
 });
@@ -208,7 +204,9 @@ export const setUserType = (state: IState, action: IAction): IState => ({
 export const selectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: action.payload,
-    showInfoPanel: false
+    showInfoPanel: false,
+    tipificationsLevel2: initialState.tipificationsLevel2,
+    tipificationsLevel3: initialState.tipificationsLevel3
 })
 
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
