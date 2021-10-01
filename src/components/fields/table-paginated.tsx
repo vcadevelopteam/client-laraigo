@@ -243,6 +243,7 @@ const TableZyx = React.memo(({
     autotrigger = false,
     useSelection,
     selectionKey,
+    selectionFilter,
     initialSelectedRows,
     setSelectedRows,
 }: TableConfig) => {
@@ -298,12 +299,14 @@ const TableZyx = React.memo(({
                     </div>
                     ),
                     Cell: ({ row }: any) => (
-                    <div>
-                        <Checkbox
-                            checked={row.isSelected}
-                            onChange={(e) => row.toggleRowSelected()}
-                        />
-                    </div>
+                        !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
+                        ? <div>
+                            <Checkbox
+                                checked={row.isSelected}
+                                onChange={(e) => row.toggleRowSelected()}
+                            />
+                        </div>
+                        : null
                     ),
                     NoFilter: true,
                     isComponent: true
