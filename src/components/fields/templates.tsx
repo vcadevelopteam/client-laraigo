@@ -359,7 +359,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                getOptionLabel={option => option ? (uset ? t(option[optionDesc]) : (option[optionDesc] || '')) : ''}
+                getOptionLabel={option => option ? (uset ? t(option[optionDesc]?.toLowerCase()) : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
                 size="small"

@@ -2,6 +2,9 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    english: 'Inglés',
+    spanish: 'Español',
+
     dashboard: 'Panel',
     dashboard_plural: 'Paneles',
 
