@@ -414,7 +414,7 @@ const TableZyx = React.memo(({
                             return !cellvalue.toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
-                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     }
             }
         });
