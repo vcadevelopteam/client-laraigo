@@ -909,6 +909,7 @@ const Tickets = () => {
                 fetchData={fetchData}
                 exportPersonalized={triggerExportData}
                 useSelection={true}
+                selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
             />
