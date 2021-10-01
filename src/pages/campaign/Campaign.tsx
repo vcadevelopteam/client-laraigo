@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart } from 'common/helpers';
+import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -86,13 +86,25 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.startdate),
                 accessor: 'startdate',
                 NoFilter: false,
-                type: 'date'
+                type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{dateToLocalDate(row.startdate)}</div>
+                    )
+                }
             },
             {
                 Header: t(langKeys.enddate),
                 accessor: 'enddate',
                 NoFilter: false,
-                type: 'date'
+                type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{dateToLocalDate(row.enddate)}</div>
+                    )
+                }
             },
             {
                 Header: t(langKeys.status),

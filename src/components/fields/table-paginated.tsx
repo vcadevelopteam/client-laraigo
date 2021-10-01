@@ -243,6 +243,7 @@ const TableZyx = React.memo(({
     autotrigger = false,
     useSelection,
     selectionKey,
+    selectionFilter,
     initialSelectedRows,
     setSelectedRows,
 }: TableConfig) => {
@@ -290,20 +291,39 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
-                    Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
-                    <div>
-                        <Checkbox
-                            {...getToggleAllPageRowsSelectedProps()}
-                        />
-                    </div>
+                    Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
+                        !selectionFilter
+                        ?
+                        <div>
+                            <Checkbox
+                                {...getToggleAllPageRowsSelectedProps()}
+                            />
+                        </div>
+                        :
+                        <div>
+                            <Checkbox
+                                checked={filteredRows
+                                    .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                    .every((p: any) => p.isSelected)
+                                }
+                                onChange={() => {filteredRows
+                                    .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                    .forEach((p: any) => {
+                                        p.toggleRowSelected();
+                                    })
+                                }}
+                            />
+                        </div>
                     ),
                     Cell: ({ row }: any) => (
-                    <div>
-                        <Checkbox
-                            checked={row.isSelected}
-                            onChange={(e) => row.toggleRowSelected()}
-                        />
-                    </div>
+                        !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
+                        ? <div>
+                            <Checkbox
+                                checked={row.isSelected}
+                                onChange={(e) => row.toggleRowSelected()}
+                            />
+                        </div>
+                        : null
                     ),
                     NoFilter: true,
                     isComponent: true
