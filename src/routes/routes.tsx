@@ -192,4 +192,9 @@ export const subroutesDashboards: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.managerial} />,
         path: paths.DASHBOARDMANAGERIAL,
     },
+    {
+        key: paths.DASHBOARDOPERATIONALPUSH,
+        description: <Trans i18nKey={langKeys.operationalpush} />,
+        path: paths.DASHBOARDOPERATIONALPUSH,
+    },
 ];
