@@ -358,11 +358,11 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     }
 });
 
-export const getEmojiGroupSel = (all: boolean): IRequestBody => ({
-    method: "UFN_EMOJI_GROUP_SEL",
-    key: "UFN_EMOJI_GROUP_SEL",
+export const getEmojiAllSel = (): IRequestBody => ({
+    method: "UFN_EMOJI_ALL_SEL",
+    key: "UFN_EMOJI_ALL_SEL",
     parameters: {
-        all
+        all: true
     }
 })
 
@@ -374,31 +374,14 @@ export const getEmojiSel = (emojidec: string): IRequestBody => ({
     }
 })
 
-export const getEmojiAllSel = (): IRequestBody => ({
-    method: "UFN_EMOJI_ALL_SEL",
-    key: "UFN_EMOJI_ALL_SEL",
+export const insEmoji = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_EMOJI_INS",
+    key: "UFN_EMOJI_INS",
     parameters: {
-        all: true
-    }
-})
-
-export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => ({
-    method: "UFN_EMOJI_UPDATE",
-    key: "UFN_EMOJI_UPDATE",
-    parameters: {
+        ...allParameters,
         favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
         restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
-        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
-        emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
-    }
-})
-
-export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IRequestBody => ({
-    method: "UFN_EMOJI_CHANNELS_UPD",
-    key: "UFN_EMOJI_CHANNELS_UPD",
-    parameters: {
-        emojidec,
-        isfavorite
+        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0
     }
 })
 
