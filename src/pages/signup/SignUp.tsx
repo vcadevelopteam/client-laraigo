@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, Fragment, useState } from 'react';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { RightSideMenu } from './RightSideMenu';
 import Backdrop from '@material-ui/core/Backdrop';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -28,14 +28,18 @@ const useSignUpStyles = makeStyles(theme => ({
         paddingTop: 16,
         paddingBottom: 16,
         marginBottom: 4,
-        backgroundColor: '#FFF'
+        backgroundColor: '#FFF',
+        
     },
     containerLogo: {
         flex: 1,
         backgroundColor: 'white',
         display: "flex",
         alignItems: "center",
-        justifyContent: "center"
+        justifyContent: "center",
+        [theme.breakpoints.down("sm")]: {
+            display: "none"
+        },
     },
     notthisstep: {
         background: "#e5e5e5",
@@ -52,7 +56,7 @@ const useSignUpStyles = makeStyles(theme => ({
     },
     separator: {
         borderBottom: "1px solid #D1CBCB",
-        width: 115,
+        width: "15%",
         height: 0,
         marginLeft: 4,
         marginRight: 4
@@ -61,6 +65,12 @@ const useSignUpStyles = makeStyles(theme => ({
         "& svg": {
             color: 'white'
         }
+    },
+    emptyspacenumber:{
+        flex: 1,
+        [theme.breakpoints.down("sm")]: {
+            display: "none"
+        },
     }
 }));
 
@@ -92,7 +102,7 @@ export const SignUp: FC = () => {
             </Backdrop>
 
             <div className={classes.containerHead}>
-                <div style={{ flex: 1 }}></div>
+                <div className={classes.emptyspacenumber}></div>
                 <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div className={step === 1 ? classes.purplecircle : classes.notthisstep}> 1 </div>
                     <div className={classes.separator}> </div>
