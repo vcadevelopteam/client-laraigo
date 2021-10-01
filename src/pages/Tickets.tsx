@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback, FC, useMemo } from 'react'
-import { exportExcel, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedPerson, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getMultiCollectionAux, getCollectionAux, getCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation, manageLightBox } from 'store/popus/actions';
+import React, { useState, useEffect, useCallback, FC } from 'react'
+import { exportExcel, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
+import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getCollectionAux, getCollection, execute } from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -12,12 +12,17 @@ import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import Button from '@material-ui/core/Button/Button';
-import { DateRangePicker, DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from 'components';
+import { DialogZyx, FieldMultiSelect, FieldSelect } from 'components';
 import { Range } from 'react-date-range';
 import Link from '@material-ui/core/Link';
 import { DialogInteractions } from 'components';
-import { Checkbox, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
+import Fab from '@material-ui/core/Fab';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const selectionKey = 'conversationid';
 
@@ -38,7 +43,10 @@ interface SelectedAction {
 
 const useStyles = makeStyles((theme) => ({
     container: {
-        width: '100%'
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        width: '100%',
     },
     title: {
         fontSize: '22px',
@@ -47,12 +55,7 @@ const useStyles = makeStyles((theme) => ({
         height: '48px',
         color: theme.palette.text.primary,
     },
-    containerHeader: {
-        display: 'block',
-        [theme.breakpoints.up('sm')]: {
-            display: 'flex',
-        },
-    },
+
     containerFilter: {
         width: '100%',
         marginBottom: theme.spacing(2),
@@ -61,7 +64,8 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     filterComponent: {
-        width: '220px'
+        width: '250px',
+        backgroundColor: '#FFF'
     },
     button: {
         padding: 12,
@@ -82,8 +86,10 @@ const Tickets = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const dispatch = useDispatch();
-    //const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
-    //const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = () => setAnchorEl(null);
+
     const [allParameters, setAllParameters] = useState({});
     //const format = (date: Date) => date.toISOString().split('T')[0];
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -107,7 +113,7 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: 'numeroticket',
-                NoFilter: false,
+                NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -122,230 +128,213 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fecha),
+                NoFilter: true,
                 accessor: 'fecha'
             },
             {
                 Header: t(langKeys.ticket_firstusergroup),
+                NoFilter: true,
                 accessor: 'firstusergroup'
             },
             {
                 Header: t(langKeys.ticket_ticketgroup),
+                NoFilter: true,
                 accessor: 'ticketgroup'
             },
             {
                 Header: t(langKeys.ticket_communicationchanneldescription),
+                NoFilter: true,
                 accessor: 'communicationchanneldescription'
             },
             {
                 Header: t(langKeys.ticket_name),
+                NoFilter: true,
                 accessor: 'name'
             },
             {
                 Header: t(langKeys.ticket_canalpersonareferencia),
+                NoFilter: true,
                 accessor: 'canalpersonareferencia'
             },
             {
                 Header: t(langKeys.ticket_fechainicio),
+                NoFilter: true,
                 accessor: 'fechainicio'
             },
             {
                 Header: t(langKeys.ticket_fechafin),
+                NoFilter: true,
                 accessor: 'fechafin'
             },
             {
                 Header: t(langKeys.ticket_fechaprimeraconversacion),
+                NoFilter: true,
                 accessor: 'fechaprimeraconversacion'
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
+                NoFilter: true,
                 accessor: 'fechaultimaconversacion'
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
+                NoFilter: true,
                 accessor: 'fechahandoff'
             },
             {
                 Header: t(langKeys.ticket_asesorinicial),
+                NoFilter: true,
                 accessor: 'asesorinicial'
             },
             {
                 Header: t(langKeys.ticket_asesorfinal),
+                NoFilter: true,
                 accessor: 'asesorfinal'
             },
             {
                 Header: t(langKeys.ticket_supervisor),
+                NoFilter: true,
                 accessor: 'supervisor'
             },
             {
                 Header: t(langKeys.ticket_empresa),
+                NoFilter: true,
                 accessor: 'empresa'
             },
             {
                 Header: t(langKeys.ticket_attentiongroup),
+                NoFilter: true,
                 accessor: 'attentiongroup'
             },
             {
                 Header: t(langKeys.ticket_classification),
+                NoFilter: true,
                 accessor: 'classification'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuesta),
+                NoFilter: true,
                 accessor: 'tiempopromediorespuesta'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                NoFilter: true,
                 accessor: 'tiempoprimerarespuestaasesor'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                NoFilter: true,
                 accessor: 'tiempopromediorespuestaasesor'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestapersona),
+                NoFilter: true,
                 accessor: 'tiempopromediorespuestapersona'
             },
             {
                 Header: t(langKeys.ticket_duraciontotal),
+                NoFilter: true,
                 accessor: 'duraciontotal'
             },
             {
                 Header: t(langKeys.ticket_duracionreal),
+                NoFilter: true,
                 accessor: 'duracionreal'
             },
             {
                 Header: t(langKeys.ticket_duracionpausa),
+                NoFilter: true,
                 accessor: 'duracionpausa'
             },
             {
                 Header: t(langKeys.ticket_tmoasesor),
+                NoFilter: true,
                 accessor: 'tmoasesor'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
+                NoFilter: true,
                 accessor: 'tiempoprimeraasignacion'
             },
             {
                 Header: t(langKeys.ticket_estadoconversacion),
+                NoFilter: true,
                 accessor: 'estadoconversacion'
             },
             {
                 Header: t(langKeys.ticket_tipocierre),
+                NoFilter: true,
                 accessor: 'tipocierre'
             },
             {
                 Header: t(langKeys.ticket_tipification),
+                NoFilter: true,
                 accessor: 'tipification'
             },
             {
                 Header: t(langKeys.ticket_firstname),
+                NoFilter: true,
                 accessor: 'firstname'
             },
             {
                 Header: t(langKeys.ticket_contact),
+                NoFilter: true,
                 accessor: 'contact'
             },
             {
                 Header: t(langKeys.ticket_lastname),
+                NoFilter: true,
                 accessor: 'lastname'
             },
             {
                 Header: t(langKeys.ticket_email),
+                NoFilter: true,
                 accessor: 'email'
             },
             {
                 Header: t(langKeys.ticket_phone),
+                NoFilter: true,
                 accessor: 'phone'
             },
             {
                 Header: t(langKeys.ticket_balancetimes),
+                NoFilter: true,
                 accessor: 'balancetimes'
             },
             {
                 Header: t(langKeys.ticket_documenttype),
+                NoFilter: true,
                 accessor: 'documenttype'
             }
             ,
             {
                 Header: t(langKeys.ticket_dni),
+                NoFilter: true,
                 accessor: 'dni'
             },
             {
                 Header: t(langKeys.ticket_abandoned),
+                NoFilter: true,
                 accessor: 'abandoned'
             },
             {
                 Header: t(langKeys.ticket_enquiries),
+                NoFilter: true,
                 accessor: 'enquiries'
             },
             {
                 Header: t(langKeys.ticket_labels),
+                NoFilter: true,
                 accessor: 'labels'
             },
             {
                 Header: t(langKeys.ticket_tdatime),
+                NoFilter: true,
                 accessor: 'tdatime'
             }
         ],
         []
     );
-
-    /*
-    const mainPaginated = useSelector(state => state.main.mainPaginated);
-    const resExportData = useSelector(state => state.main.exportData);
-    const [pageCount, setPageCount] = useState(0);
-    const [waitSave, setWaitSave] = useState(false);
-    const [totalrow, settotalrow] = useState(0);
-    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-
-    useEffect(() => {
-        if (!mainPaginated.loading && !mainPaginated.error) {
-            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
-            settotalrow(mainPaginated.count);
-        }
-    }, [mainPaginated])
-
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!resExportData.loading && !resExportData.error) {
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                window.open(resExportData.url, '_blank');
-            } else if (resExportData.error) {
-                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [resExportData, waitSave])
-
-    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
-        dispatch(exportData(getTicketExport({
-            filters,
-            sorts,
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!
-        })));
-        dispatch(showBackdrop(true));
-        setWaitSave(true);
-    };
-
-    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        
-        console.log('allParameters', allParameters);
-
-        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
-        dispatch(getCollectionPaginated(getPaginatedTicket({
-            startdate: daterange.startDate!,
-            enddate: daterange.endDate!,
-            take: pageSize,
-            skip: pageIndex * pageSize,
-            sorts: sorts,
-            filters: filters,
-        })))
-    };
-    */
 
     const handleClickOpen = useCallback((row: any) => {
         setOpenModal(true);
@@ -392,16 +381,6 @@ const Tickets = () => {
         }
     }
 
-    /*
-        useEffect(() => {
-            setAllParameters({
-                ...allParameters,
-                startdate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-                enddate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
-            });
-        }, [dateRange]);
-    */
-
     useEffect(() => {
         dispatch(getMultiCollection([
             getCommChannelLst(),
@@ -442,72 +421,71 @@ const Tickets = () => {
     return (
         <div className={classes.container}>
 
-            <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                <span className={classes.title}>
-                    {t(langKeys.ticket_plural)}
-                </span>
-            </Box>
-
-            <Box width={1} paddingBottom={2} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: "flex-start", justifyContent: "flex-end" }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading}
-                    style={{ backgroundColor: 'red', width: 120 }}
-                    onClick={() => {
-                        setAction(actions.close);
-                        onClickTicket();
-                    }}
-                //startIcon={<DownloadIcon />}
-                >{t(langKeys.ticket_close)}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading}
-                    style={{ backgroundColor: 'green', width: 120 }}
-                    onClick={() => {
-                        setAction(actions.typify);
-                        //setOpenModalTicket(true)
-                        onClickTicket();
-                    }}
-                //startIcon={<DownloadIcon />}
-                >{t(langKeys.ticket_typify)}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainPaginated.loading}
-                    style={{ backgroundColor: 'blue', width: 120 }}
-                    onClick={() => {
-                        setAction(actions.reasign);
-                        onClickTicket();
-                    }}
-                //startIcon={<DownloadIcon />}
-                >{t(langKeys.ticket_reasign)}
-                </Button>
-            </Box>
-
-            <Box width={1}>
-                <Box className={classes.containerHeader} justifyContent="space-between" mb={1} alignItems="flex-start">
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: "flex-start" }}>
-                        {/*<DateRangePicker
-                            open={openDateRangeModal}
-                            setOpen={setOpenDateRangeModal}
-                            range={dateRange}
-                            onSelect={setdateRange}
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <div>
+                    <div className={classes.title}>
+                        {t(langKeys.ticket_plural)}
+                    </div>
+                    <div style={{display: 'flex', gap: 16}}>
+                        <div>
+                            All tickets
+                        </div>
+                        <div>
+                            Open
+                        </div>
+                        <div>
+                            Clsoed
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div style={{textAlign: 'right'}}>
+                        {/* <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            size="small"
+                            onClick={(e) => setAnchorEl(e.currentTarget)}
+                        // style={{ display: deleteFunction ? 'block' : 'none' }}
                         >
-                            <Button
-                                disabled={mainPaginated.loading}
-                                style={{ border: '2px solid #EBEAED', borderRadius: 4 }}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                            >
-                                {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                            </Button>
-                        </DateRangePicker>
-                        */}
-
+                            <MoreVertIcon style={{ color: '#B6B4BA' }} />
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            getContentAnchorEl={null}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Reasignar
+                            </MenuItem>
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Eliminar
+                            </MenuItem>
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Tipificar
+                            </MenuItem>
+                        </Menu> */}
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
                         {mainResult?.multiData?.data[0]?.data &&
                             <FieldMultiSelect
                                 label={t(langKeys.channel_plural)}
@@ -535,36 +513,126 @@ const Tickets = () => {
                                 disabled={mainPaginated.loading}
                             />
                         }
-                        {/*
-                            <Button
-                                disabled={mainPaginated.loading}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ backgroundColor: '#55BD84', width: 120 }}
-                                onClick={() => {
-                                    fetchData(fetchDataAux)
-                                }}
-                            >{t(langKeys.search)}
-                            </Button>
-                        */}
-
-                    </div>
-
-                    {/*
-                        <Button
-                            className={classes.button}
-                            variant="contained"
+                         <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            size="small"
                             color="primary"
-                            disabled={mainPaginated.loading}
-                            onClick={() => exportExcel((new Date().toISOString()), mainPaginated.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                            startIcon={<DownloadIcon />}
-                        >{t(langKeys.download)}
-                        </Button>
-                    */}
-
-                </Box>
+                            onClick={(e) => setAnchorEl(e.currentTarget)}
+                        // style={{ display: deleteFunction ? 'block' : 'none' }}
+                        >
+                            <MoreVertIcon  />
+                        </IconButton>
+                        <Menu
+                            id="menu-appbar"
+                            anchorEl={anchorEl}
+                            getContentAnchorEl={null}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorEl)}
+                            onClose={handleClose}
+                        >
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Reasignar
+                            </MenuItem>
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Eliminar
+                            </MenuItem>
+                            <MenuItem onClick={(e) => {
+                                setAnchorEl(null)
+                                // deleteFunction && deleteFunction(e)
+                            }}>
+                                Tipificar
+                            </MenuItem>
+                        </Menu>
+                    </div>
+                </div>
             </Box>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {/* {mainResult?.multiData?.data[0]?.data &&
+                        <FieldMultiSelect
+                            label={t(langKeys.channel_plural)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_channel"
+                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[0]?.data}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                            disabled={mainPaginated.loading}
+                        />
+                    }
+
+                    {mainResult?.multiData?.data[1]?.data &&
+                        <FieldMultiSelect
+                            label={t(langKeys.group_plural)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_group"
+                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[1]?.data}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            disabled={mainPaginated.loading}
+                        />
+                    } */}
+                </div>
+                <div style={{ display: 'none', gap: 8, flexWrap: 'wrap' }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        style={{ backgroundColor: '#FB5F5F', width: 120 }}
+                        onClick={() => {
+                            setAction(actions.close);
+                            onClickTicket();
+                        }}
+                    //startIcon={<DownloadIcon />}
+                    >{t(langKeys.ticket_close)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+                        style={{ backgroundColor: '#55BD84', width: 120 }}
+                        onClick={() => {
+                            setAction(actions.typify);
+                            //setOpenModalTicket(true)
+                            onClickTicket();
+                        }}
+                    //startIcon={<DownloadIcon />}
+                    >{t(langKeys.ticket_typify)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainPaginated.loading}
+
+                        style={{ width: 120 }}
+                        onClick={() => {
+                            setAction(actions.reasign);
+                            onClickTicket();
+                        }}
+                    //startIcon={<DownloadIcon />}
+                    >{t(langKeys.ticket_reasign)}
+                    </Button>
+                </div>
+            </div>
 
             <TablePaginated
                 columns={columns}

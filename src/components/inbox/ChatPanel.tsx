@@ -400,7 +400,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
-                keepMounted
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',

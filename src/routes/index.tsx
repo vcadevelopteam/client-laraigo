@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
-		padding: theme.spacing(3),
+		padding: theme.spacing(2),
 		width: '100%'
 	},
 }));

@@ -26,9 +26,9 @@ const arrayBread = [
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
+        // marginTop: theme.spacing(2),
+        // padding: theme.spacing(2),
+        // background: '#fff',
     },
     button: {
         padding: 12,

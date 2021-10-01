@@ -109,6 +109,8 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeader: {
         display: 'block',
+        backgroundColor: '#FFF',
+        padding: theme.spacing(2),
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -389,7 +391,7 @@ const TableZyx = React.memo(({
                             >
                                 <Button
                                     disabled={loading}
-                                    style={{ border: '1px solid #bfbfc0', borderRadius: 4 }}
+                                    style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
@@ -412,20 +414,6 @@ const TableZyx = React.memo(({
                             </DateRangePicker>
                         </div>
                     )}
-                    {/* {fetchData && (
-                        <Tooltip title="Refrescar">
-                            <Fab
-                                size="small"
-                                aria-label="add"
-                                color="primary"
-                                disabled={loading}
-                                style={{ marginLeft: '1rem' }}
-                                onClick={() => fetchData && fetchData({})}
-                            >
-                                <RefreshIcon />
-                            </Fab>
-                        </Tooltip>
-                    )} */}
                     {ButtonsElement && <ButtonsElement />}
                     {importCSV && (
                         <>

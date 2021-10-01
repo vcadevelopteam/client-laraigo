@@ -59,7 +59,6 @@ const Popus: React.FC = () => {
 
             <Dialog
                 open={popus.question.visible}
-                keepMounted
                 fullWidth
                 maxWidth="sm"
                 style={{ zIndex: 99999 }}
