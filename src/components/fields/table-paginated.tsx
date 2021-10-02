@@ -139,11 +139,11 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                 break;
         }
     }, [type])
-    
+
     useEffect(() => {
         if (!type && typeof firstvalue === "number")
             setoperator("equals");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [firstvalue])
 
     const keyPress = (e: any) => {
@@ -182,44 +182,44 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             {type === 'boolean'
-            ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
-            : <React.Fragment>
-                <Input
-                    style={{ fontSize: '15px', minWidth: '100px' }}
-                    type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
-                    fullWidth
-                    value={value}
-                    onKeyDown={keyPress}
-                    onChange={e => setValue(e.target.value)}
-                />
-                <IconButton
-                    onClick={handleClickMenu}
-                    size="small"
-                >
-                    <MoreVertIcon
-                        style={{ cursor: 'pointer' }}
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        color="action"
-                        fontSize="small"
+                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
+                : <React.Fragment>
+                    <Input
+                        style={{ fontSize: '15px', minWidth: '100px' }}
+                        type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
+                        fullWidth
+                        value={value}
+                        onKeyDown={keyPress}
+                        onChange={e => setValue(e.target.value)}
                     />
-                </IconButton>
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                        },
-                    }}
-                >
-                    {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
-                </Menu>
-            </React.Fragment>}
+                    <IconButton
+                        onClick={handleClickMenu}
+                        size="small"
+                    >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: '20ch',
+                            },
+                        }}
+                    >
+                        {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
+                    </Menu>
+                </React.Fragment>}
         </div>
     )
 }
@@ -293,42 +293,46 @@ const TableZyx = React.memo(({
                     width: 80,
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
-                        ?
-                        <div>
-                            <Checkbox
-                                {...getToggleAllPageRowsSelectedProps()}
-                            />
-                        </div>
-                        :
-                        <div>
-                            <Checkbox
-                                checked={filteredRows
-                                    .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
-                                    .every((p: any) => p.isSelected)
-                                }
-                                onChange={() => {filteredRows
-                                    .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
-                                    .forEach((p: any) => {
-                                        p.toggleRowSelected();
-                                    })
-                                }}
-                            />
-                        </div>
+                            ?
+                            <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    {...getToggleAllPageRowsSelectedProps()}
+                                />
+                            </div>
+                            :
+                            <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    checked={filteredRows
+                                        .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                        .every((p: any) => p.isSelected)
+                                    }
+                                    onChange={() => {
+                                        filteredRows
+                                            .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                            .forEach((p: any) => {
+                                                p.toggleRowSelected();
+                                            })
+                                    }}
+                                />
+                            </div>
                     ),
                     Cell: ({ row }: any) => (
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
-                        ? <div>
-                            <Checkbox
-                                checked={row.isSelected}
-                                onChange={(e) => row.toggleRowSelected()}
-                            />
-                        </div>
-                        : null
+                            ? <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    checked={row.isSelected}
+                                    onChange={(e) => row.toggleRowSelected()}
+                                />
+                            </div>
+                            : null
                     ),
                     NoFilter: true,
                     isComponent: true
                 } as any,
-            ...columns,
+                ...columns,
             ])
         }
     )
@@ -383,7 +387,7 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
 
     const exportData = () => {
