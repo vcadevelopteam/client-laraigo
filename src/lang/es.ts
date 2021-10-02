@@ -430,6 +430,7 @@ const translation: LangKeys = {
     error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
     error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
     error_parameter_is_missing: "5004: Hubo un error, comuniquese con el administrador",
+    error_request_services: "50007: Hubo un error, comuniquese con el administrador",
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
     apply: 'Aplicar',

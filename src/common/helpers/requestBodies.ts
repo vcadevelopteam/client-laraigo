@@ -1103,3 +1103,12 @@ export const getBlocksUserFromChatfow = (communicationchannelid: number): IReque
     method: "UFN_CHATFLOW_ISSELFBLOCK_SEL",
     parameters: { communicationchannelid },
 });
+
+export const reassignMassiveTicket = (conversationid: string, newuserid: number, comment: string): IRequestBody => ({
+    method: "UFN_CONVERSATION_REASSIGNTICKET_MASSIVE",
+    parameters: {
+        conversationid,
+        newuserid,
+        comment
+    },
+});

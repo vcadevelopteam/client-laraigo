@@ -433,6 +433,7 @@ const translation: LangKeys = {
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
     error_parameter_is_missing: "5004: There was an error, contact the administrator",
+    error_request_services: '50007: There was an error, contact the administrator',
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
     successful_close_ticket: 'Ticket closed successfully',

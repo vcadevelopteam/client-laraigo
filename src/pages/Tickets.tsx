@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect, useCallback, FC } from 'react'
-import { exportExcel, getListUsers, getClassificationLevel1, getClassificationLevel2, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getPersonExport, getTicketExport, getValuesFromDomain, insConversationClassificationMassive } from 'common/helpers';
+import React, { useState, useEffect, useCallback } from 'react'
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getCollectionAux, getCollection, execute } from 'store/main/actions';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -11,17 +11,15 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
-import Button from '@material-ui/core/Button/Button';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
 import clsx from 'clsx';
 import { DialogInteractions } from 'components';
-import { TextField } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
+import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
 
 const selectionKey = 'conversationid';
 
@@ -86,10 +84,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
+    const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
@@ -98,16 +93,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-                dispatch(emitEvent({
-                    event: 'deleteTicket',
-                    data: {
-                        conversationid: ticketSelected?.conversationid,
-                        ticketnum: ticketSelected?.ticketnum,
-                        status: ticketSelected?.status,
-                        isanswered: ticketSelected?.isAnswered,
-                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                    }
-                }));
+                fetchData()
                 setWaitClose(false);
             } else if (closingRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
@@ -129,20 +115,23 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        // const dd: ICloseTicketsParams = {
-        //     conversationid: ticketSelected?.conversationid!!,
-        //     motive: data.motive,
-        //     observation: data.observation,
-        //     ticketnum: ticketSelected?.ticketnum!!,
-        //     personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-        //     communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-        //     communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-        //     status: 'CERRADO',
-        //     isAnswered: false,
-        // }
-        // dispatch(showBackdrop(true));
-        // dispatch(closeTicket(dd));
-        // setWaitClose(true)
+        // rowWithDataSelected
+        const listTicketsToClose = rowWithDataSelected.map(row => ({
+            conversationid: row.conversationid,
+            asesoridfinal: row.asesoridfinal,
+            numeroticket: row.numeroticket,
+            communicationchannelsite: row.communicationchannelsite,
+            personcommunicationchanneltype: row.personcommunicationchanneltype,
+            personcommunicationchannel: row.personcommunicationchannel,
+            communicationchannelid: row.communicationchannelid,
+        }));
+        dispatch(massiveCloseTicket({
+            motive: data.motive,
+            observation: data.observation,
+            listTickets: listTicketsToClose,
+        }))
+        dispatch(showBackdrop(true));
+        setWaitClose(true);
     });
 
     return (
@@ -184,14 +173,10 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
 
     const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
-    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         newUserId: number;
-        newUserGroup: string;
         observation: string;
     }>();
 
@@ -203,15 +188,38 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                 dispatch(showBackdrop(false));
                 setWaitReassign(false);
 
-                dispatch(emitEvent({
+                rowWithDataSelected.map(ticket => ({
+                    ticketnum: ticket.numeroticket,
+                    displayname: ticket.name,
+                    lastmessage: "",
+                    personcommunicationchannel: ticket.personcommunicationchannel,
+                    conversationid: ticket.conversationid,
+                    personid: ticket.personid,
+                    communicationchannelid: ticket.communicationchannelid,
+                    interactionid: 0,
+                    communicationchanneltype: ticket.personcommunicationchanneltype,
+                    imageurldef: ticket.imageurldef,
+                    communicationchannelsite: ticket.communicationchannelsite,
+                    lastuserid: ticket.asesoridfinal,
+                    firstconversationdate: ticket.fechainicio,
+                    userid: ticket.asesoridfinal,
+                    status: "ASIGNADO",
+                    countnewmessages: 0,
+                    channelicon: ticket.channelicon,
+                    coloricon: ticket.coloricon,
+                    newConversation: true,
+                    postexternalid: ticket.postexternalid,
+                    commentexternalid: ticket.commentexternalid,
+                    replyexternalid: ticket.replyexternalid,
+                    tdatime: ticket.tdatime,
+                    isAnswered: false,
+                })).forEach(ticket => dispatch(emitEvent({
                     event: 'reassignTicket',
                     data: {
-                        ...ticketSelected,
-                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                        newuserid: getValues('newUserId') || 3,
+                        ...ticket,
+                        newuserid: getValues('newUserId'),
                     }
-                }));
-
+                })))
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -229,31 +237,19 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
         if (openModal) {
             reset({
                 newUserId: 0,
-                newUserGroup: '',
                 observation: ''
             })
-            register('newUserId');
-            register('newUserGroup');
+            register('newUserId', { validate: (value) => ((value && value > 0) || (t(langKeys.field_required) + "")) });
             register('observation');
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        // console.log(data)
-        // if (data.newUserId === 0 && !data.newUserGroup) {
-        //     dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
-        //     return;
-        // }
-        // const dd: IReassignicketParams = {
-        //     ...ticketSelected!!,
-        //     ...data,
-        //     newUserId: 0,
-        //     newConversation: true,
-        //     wasanswered: true
-        // }
-        // dispatch(reassignTicket(dd));
-        // dispatch(showBackdrop(true));
-        // setWaitReassign(true)
+        const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
+
+        dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation)));
+        dispatch(showBackdrop(true));
+        setWaitReassign(true);
 
     });
 
@@ -277,16 +273,6 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     data={agentsConnected}
                     optionDesc="displayname"
                     optionValue="userid"
-                />
-                <FieldSelect
-                    label={t(langKeys.group_plural)}
-                    className="col-12"
-                    valueDefault={getValues('newUserGroup')}
-                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
-                    error={errors?.newUserGroup?.message}
-                    data={multiData?.data[1] && multiData?.data[1].data}
-                    optionDesc="domaindesc"
-                    optionValue="domainvalue"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -523,27 +509,47 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_fechainicio),
                 NoFilter: true,
-                accessor: 'fechainicio'
+                accessor: 'fechainicio',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.createdate).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.ticket_fechafin),
                 NoFilter: true,
-                accessor: 'fechafin'
+                accessor: 'fechafin',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fechafin).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.ticket_fechaprimeraconversacion),
                 NoFilter: true,
-                accessor: 'fechaprimeraconversacion'
+                accessor: 'fechaprimeraconversacion',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fechaprimeraconversacion).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
                 NoFilter: true,
-                accessor: 'fechaultimaconversacion'
+                accessor: 'fechaultimaconversacion',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fechaultimaconversacion).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
                 NoFilter: true,
-                accessor: 'fechahandoff'
+                accessor: 'fechahandoff',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fechahandoff).toLocaleString()
+                }
             },
             {
                 Header: t(langKeys.ticket_asesorinicial),
@@ -679,7 +685,11 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_abandoned),
                 NoFilter: true,
-                accessor: 'abandoned'
+                accessor: 'abandoned',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.abandoned ? t(langKeys.affirmative) : t(langKeys.negative)
+                }
             },
             {
                 Header: t(langKeys.ticket_enquiries),

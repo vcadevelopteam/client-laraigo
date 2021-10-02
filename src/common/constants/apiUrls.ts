@@ -27,6 +27,7 @@ export const apiUrls = {
     EXPORT_DATA: `${BASE_URL}/main/export`,
     
     CLOSE_TICKET: `${BASE_URL}/ticket/close`,
+    MASSIVE_CLOSE_TICKET: `${BASE_URL}/ticket/massiveclose`,
     REPLY_TICKET: `${BASE_URL}/ticket/reply`,
     REPLY_LIST_TICKET: `${BASE_URL}/ticket/reply/list`,
     REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,

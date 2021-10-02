@@ -178,7 +178,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
         if (data.newUserId === 0 && !data.newUserGroup) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
             return;
@@ -186,7 +185,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         const dd: IReassignicketParams = {
             ...ticketSelected!!,
             ...data,
-            newUserId: 0,
+            newUserId: data.newUserId || 3,
             newConversation: true,
             wasanswered: true
         }

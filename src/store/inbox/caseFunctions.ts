@@ -575,6 +575,39 @@ export const closeTicketReset = (state: IState): IState => ({
 });
 
 
+
+export const massiveCloseTicket = (state: IState): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: { ...state.triggerMassiveCloseTicket, loading: true, error: false },
+});
+
+export const massiveCloseTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const massiveCloseTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: {
+        ...state.triggerMassiveCloseTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const massiveCloseTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: initialState.triggerMassiveCloseTicket,
+});
+
+
+
+
 export const reassignTicket = (state: IState): IState => ({
     ...state,
     triggerReassignTicket: { ...state.triggerReassignTicket, loading: true, error: false },

@@ -35,6 +35,7 @@ export interface IState {
     person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
     triggerCloseTicket: IBaseState;
+    triggerMassiveCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
     triggerReassignTicket: IBaseState;
     showInfoPanel: boolean;
@@ -58,6 +59,7 @@ export const initialState: IState = {
     tipificationsLevel3: initialListPaginatedState,
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
+    triggerMassiveCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
     triggerConnectAgentGo: initialTransaction,
     triggerReassignTicket: initialTransaction,
@@ -120,7 +122,16 @@ export default createReducer<IState>(initialState, {
     [actionTypes.CLOSE_TICKET]: caseFunctions.closeTicket,
     [actionTypes.CLOSE_TICKET_SUCCESS]: caseFunctions.closeTicketSuccess,
     [actionTypes.CLOSE_TICKET_FAILURE]: caseFunctions.closeTicketFailure,
-    [actionTypes.CLOSE_TICKET_RESET]: caseFunctions.closeTicketReset,    
+    [actionTypes.CLOSE_TICKET_RESET]: caseFunctions.closeTicketReset,
+    
+    
+    
+    [actionTypes.MASSIVE_CLOSE_TICKET]: caseFunctions.massiveCloseTicket,
+    [actionTypes.MASSIVE_CLOSE_TICKET_SUCCESS]: caseFunctions.massiveCloseTicketSuccess,
+    [actionTypes.MASSIVE_CLOSE_TICKET_FAILURE]: caseFunctions.massiveCloseTicketFailure,
+    [actionTypes.MASSIVE_CLOSE_TICKET_RESET]: caseFunctions.massiveCloseTicketReset,
+
+
 
     [actionTypes.REPLY_TICKET]: caseFunctions.replyTicket,
     [actionTypes.REPLY_TICKET_SUCCESS]: caseFunctions.replyTicketSuccess,

@@ -419,6 +419,7 @@ export const langKeys = {
     signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
 
+    error_request_services: 'error_request_services',
     error_already_exists_record: 'error_already_exists_record',
     error_cos_unexpected: 'cos_unexpected',
     error_zero_records: 'error_zero_records',
