@@ -133,7 +133,7 @@ export const Campaign: FC = () => {
                             ><Trans i18nKey={langKeys.status} />
                             </Button>
                         }
-                        else {
+                        else if (status === 'ACTIVO') {
                             return <Button
                                 className={classes.button}
                                 variant="contained"
@@ -142,6 +142,9 @@ export const Campaign: FC = () => {
                                 style={{ backgroundColor: "#55bd84" }}
                             ><Trans i18nKey={langKeys.execute} />
                             </Button>
+                        }
+                        else {
+                            return null    
                         }
                     }
                     else {
