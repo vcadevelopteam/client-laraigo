@@ -250,7 +250,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const onSubmit = handleSubmit((data) => {
         //data.communicationchannelid = selected.key
-        console.log(data)
         const callback = () => {
             dispatch(execute(insQuickreplies(data))); //executeRes
             dispatch(showBackdrop(true));

@@ -656,7 +656,6 @@ interface ChannelItemProps {
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
 
-    console.log(channel);
     return (
         <div className={classes.root}>
             <Grid container direction="row">
@@ -1110,8 +1109,6 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
             dispatch(resetGetOpportunitiesByPerson());
         };
     }, [dispatch, person]);
-
-    // console.log(opportunityList);
 
     return (
         <div>

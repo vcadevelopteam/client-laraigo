@@ -201,7 +201,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
 interface InputProps {
     label?: string;
     className?: any;
-    valueDefault?: string;
+    valueDefault?: any;
     disabled?: boolean;
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
@@ -347,7 +347,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             }
             <Autocomplete
-
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
