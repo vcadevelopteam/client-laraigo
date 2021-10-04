@@ -88,12 +88,8 @@ const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
 }
 
 export const getAgents = (state: IState): IState => ({
-    ...state,
+    ...initialState,
     userType: "SUPERVISOR",
-    interactionList: initialState.interactionList,
-    ticketSelected: initialState.ticketSelected,
-    agentSelected: initialState.agentSelected,
-    triggerCloseTicket: initialState.triggerCloseTicket,
     agentList: { ...state.agentList, loading: true, error: false },
 
 });
@@ -208,7 +204,9 @@ export const setUserType = (state: IState, action: IAction): IState => ({
 export const selectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: action.payload,
-    showInfoPanel: false
+    showInfoPanel: false,
+    tipificationsLevel2: initialState.tipificationsLevel2,
+    tipificationsLevel3: initialState.tipificationsLevel3
 })
 
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
@@ -328,8 +326,8 @@ export const goToBottom = (state: IState, action: IAction): IState => {
 }
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
+    console.log("newMessageFromClient", action.payload)
     const data: INewMessageParams = action.payload;
-    console.log("newMessageFromClient", data)
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
@@ -408,6 +406,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 }
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
+    console.log("deleteTicket", action.payload)
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
@@ -575,6 +574,39 @@ export const closeTicketReset = (state: IState): IState => ({
     ...state,
     triggerCloseTicket: initialState.triggerCloseTicket,
 });
+
+
+
+export const massiveCloseTicket = (state: IState): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: { ...state.triggerMassiveCloseTicket, loading: true, error: false },
+});
+
+export const massiveCloseTicketSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const massiveCloseTicketFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: {
+        ...state.triggerMassiveCloseTicket,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const massiveCloseTicketReset = (state: IState): IState => ({
+    ...state,
+    triggerMassiveCloseTicket: initialState.triggerMassiveCloseTicket,
+});
+
+
 
 
 export const reassignTicket = (state: IState): IState => ({

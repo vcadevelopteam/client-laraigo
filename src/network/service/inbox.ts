@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams } from '@types';
+import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
@@ -17,6 +17,18 @@ export function closeTicket({ conversationid, motive, observation, ticketnum, pe
         isanswered: isAnswered,
     }
     return APIManager.post(apiUrls.CLOSE_TICKET, { data: { data } }, true);
+}
+
+export function massiveCloseTicket({ listTickets, motive, observation }: IMassiveCloseTicketsParams) {
+    const data = {
+        listTickets,
+        p_status: 'CERRADO',
+        p_obs: observation,
+        p_motivo: motive,
+        autoclosetime: 0,
+        closeby: "MASSIVEUI"
+    }
+    return APIManager.post(apiUrls.MASSIVE_CLOSE_TICKET, { data: { data } }, true);
 }
 
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {

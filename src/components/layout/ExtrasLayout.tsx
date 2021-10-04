@@ -55,7 +55,7 @@ const useStyles = makeStyles((theme) => ({
     content: {
         padding: theme.spacing(1),
         [theme.breakpoints.up('sm')]: {
-            padding: theme.spacing(3),
+            padding: theme.spacing(2),
         },
         flexGrow: 1,
         overflowY: 'overlay' as any,

@@ -61,9 +61,7 @@ interface TemplateIconsProps {
 
 export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    const handleClose = () => setAnchorEl(null);
 
     return (
         <div style={{ whiteSpace: 'nowrap', display: 'flex'}}>
@@ -90,7 +88,6 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
-                keepMounted
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',
@@ -342,7 +339,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
             setValue(null);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [valueDefault, data]);
+    }, [data]);
 
     return (
         <div className={className}>

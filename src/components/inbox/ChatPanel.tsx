@@ -178,7 +178,6 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
         if (data.newUserId === 0 && !data.newUserGroup) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
             return;
@@ -186,7 +185,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         const dd: IReassignicketParams = {
             ...ticketSelected!!,
             ...data,
-            newUserId: 0,
+            newUserId: data.newUserId || 3,
             newConversation: true,
             wasanswered: true
         }
@@ -223,7 +222,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[1] && multiData?.data[3].data}
+                    data={multiData?.data[3] && multiData?.data[3].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -400,7 +399,6 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
-                keepMounted
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',

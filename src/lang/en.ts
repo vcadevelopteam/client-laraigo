@@ -11,6 +11,26 @@ const translation: LangKeys = {
     organization: 'Organization',
     organization_plural: 'Organizations',
 
+    iaservices: 'IA Service',
+    iaservices_plural: 'IA Services',
+
+    model_type: 'Model Type',
+    model_type_plural: 'Models Type',
+
+    model: 'Model',
+    model_plural: 'Models',
+
+    analysis_type: 'Analysis Type',
+    analysis_type_plural: 'Analysis Types',
+
+    client_message: 'Client Messages',
+    bot_message: 'Bot Messages',
+    agent_message: 'Agent Messages',
+    translationservice: 'Translation Service',
+    channeltype: 'Channel Type',
+    channeldesc: 'Channel Description',
+    error_already_exists_channel: 'Already exist a configuration for this channel',
+
     ticket: 'Ticket',
     ticket_plural: 'Tickets',
 
@@ -128,6 +148,8 @@ const translation: LangKeys = {
     newwhitelist: "New whitelist",
     registervalue: "Register value",
     neworganization: "New organization",
+    newiaservice: "New IA Service",
+    services_plural: "Services",
     productivitybyhour: 'Productivity by hour',
     title: 'Title',
     action: 'Action',
@@ -444,6 +466,7 @@ const translation: LangKeys = {
     error_null_not_allowed: '23502: There was an error, contact the administrator ',
     error_function_not_exists: '42883: There was an error, contact the administrator ',
     error_parameter_is_missing: "5004: There was an error, contact the administrator",
+    error_request_services: '50007: There was an error, contact the administrator',
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
     successful_close_ticket: 'Ticket closed successfully',

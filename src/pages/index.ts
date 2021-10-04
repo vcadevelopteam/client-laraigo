@@ -18,6 +18,7 @@ export { default as IntegrationManager } from './IntegrationManager';
 export { default as VariableConfiguration } from './VariableConfiguration';
 export { default as ReportTemplate } from './ReportTemplate';
 export { default as Emojis } from './Emojis';
+export { default as Iaservices } from './Iaservices';
 export * from './campaign';
 
 export { default as NotFound } from './NotFound';

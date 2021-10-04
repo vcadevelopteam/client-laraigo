@@ -25,8 +25,11 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexWrap: 'wrap',
+        justifyContent: 'space-between',
         gap: theme.spacing(1),
-        marginTop: theme.spacing(1)
+        marginTop: theme.spacing(1),
+        backgroundColor: '#FFF',
+        padding: theme.spacing(2),
     },
     itemFilter: {
         flex: '0 0 220px',
@@ -37,6 +40,11 @@ const useStyles = makeStyles((theme) => ({
         border: '1px solid #bfbfc0',
         borderRadius: 4,
         color: 'rgb(143, 146, 161)'
+    },
+    itemFlex: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: theme.spacing(1),
     }
 }));
 
@@ -145,92 +153,95 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
                 handleClick={setViewSelected}
             />
             <div className={classes.containerFilters}>
-                {startdate &&
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            // disabled={loading}
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                <div className={classes.itemFlex}>
+                    {startdate &&
+                        <DateRangePicker
+                            open={openDateRangeCreateDateModal}
+                            setOpen={setOpenDateRangeCreateDateModal}
+                            range={dateRangeCreateDate}
+                            onSelect={setDateRangeCreateDate}
                         >
-                            {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                }
-                {finishdate &&
-                    <DateRangePicker
-                        open={openDateRangeFinishDateModal}
-                        setOpen={setOpenDateRangeFinishDateModal}
-                        range={dateRangeFinishDate}
-                        onSelect={setDateRangeFinishDate}
-                    >
-                        <Button
-                            disabled={mainDynamic.loading}
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeFinishDateModal(!openDateRangeFinishDateModal)}
+                            <Button
+                                className={classes.itemDate}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
+                            >
+                                {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+                    }
+                    {finishdate &&
+                        <DateRangePicker
+                            open={openDateRangeFinishDateModal}
+                            setOpen={setOpenDateRangeFinishDateModal}
+                            range={dateRangeFinishDate}
+                            onSelect={setDateRangeFinishDate}
                         >
-                            {format(dateRangeFinishDate.startDate!) + " - " + format(dateRangeFinishDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
-                }
-                {tags &&
-                    <FieldSelect
-                        label={t(langKeys.tag)}
-                        className={classes.itemFilter}
-                        onChange={(value) => setFilters(p => ({ ...p, tag: value.tag }))}
-                        data={dataTags}
-                        optionDesc="tag"
-                        variant="outlined"
-                        optionValue="tag"
-                    />
-                }
-                {channels &&
-                    <FieldMultiSelect
-                        label={t(langKeys.channel_plural)}
-                        className={classes.itemFilter}
-                        variant="outlined"
-                        onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
-                        data={dataChannels}
-                        optionDesc="communicationchanneldesc"
-                        optionValue="communicationchannelid"
-                    />
-                }
-                {usergroup &&
-                    <FieldMultiSelect
-                        label={t(langKeys.group_plural)}
-                        className={classes.itemFilter}
-                        variant="outlined"
-                        onChange={(value) => setFilters(p => ({ ...p, usergroup: value.map((o: Dictionary) => o.domainvalue).join() }))}
-                        data={dataGroups}
-                        optionDesc="domaindesc"
-                        optionValue="domainvalue"
-                    />
-                }
-                <Button
-                    disabled={mainDynamic.loading}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                    onClick={() => onSearch()}
-                >
-                    {t(langKeys.search)}
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={resExportDynamic.loading}
-                    onClick={() => onSearch(true)}
-                    // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                    startIcon={<DownloadIcon />}
-                >{t(langKeys.download)}
-                </Button>
+                            <Button
+                                disabled={mainDynamic.loading}
+                                className={classes.itemDate}
+                                startIcon={<CalendarIcon />}
+                                onClick={() => setOpenDateRangeFinishDateModal(!openDateRangeFinishDateModal)}
+                            >
+                                {format(dateRangeFinishDate.startDate!) + " - " + format(dateRangeFinishDate.endDate!)}
+                            </Button>
+                        </DateRangePicker>
+                    }
+                    {tags &&
+                        <FieldSelect
+                            label={t(langKeys.tag)}
+                            className={classes.itemFilter}
+                            onChange={(value) => setFilters(p => ({ ...p, tag: value.tag }))}
+                            data={dataTags}
+                            optionDesc="tag"
+                            variant="outlined"
+                            optionValue="tag"
+                        />
+                    }
+                    {channels &&
+                        <FieldMultiSelect
+                            label={t(langKeys.channel_plural)}
+                            className={classes.itemFilter}
+                            variant="outlined"
+                            onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
+                            data={dataChannels}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                        />
+                    }
+                    {usergroup &&
+                        <FieldMultiSelect
+                            label={t(langKeys.group_plural)}
+                            className={classes.itemFilter}
+                            variant="outlined"
+                            onChange={(value) => setFilters(p => ({ ...p, usergroup: value.map((o: Dictionary) => o.domainvalue).join() }))}
+                            data={dataGroups}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
+                    }
+                    <Button
+                        disabled={mainDynamic.loading}
+                        variant="contained"
+                        color="primary"
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ backgroundColor: '#55BD84', width: 120 }}
+                        onClick={() => onSearch()}
+                    >
+                        {t(langKeys.search)}
+                    </Button>
+                </div>
+                <div>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={resExportDynamic.loading}
+                        onClick={() => onSearch(true)}
+                        // onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                        startIcon={<DownloadIcon />}
+                    >{t(langKeys.download)}
+                    </Button>
+                </div>
             </div>
             <TableZyx
                 columns={columnsDynamic}
