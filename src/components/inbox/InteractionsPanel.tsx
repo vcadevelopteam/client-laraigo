@@ -26,8 +26,8 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
     useEffect(scrollToBottom, [loadingInteractions, isOnBottom]);
 
     const handleScroll = (e: any) => {
-        console.log(e.target.scrollHeight, e.target.scrollTop, Math.ceil(e.target.scrollHeight - e.target.scrollTop), Math.ceil(e.target.clientHeight))
-        const bottom = Math.ceil(e.target.scrollHeight - e.target.scrollTop) === Math.ceil(e.target.clientHeight);
+        console.log(e.target.scrollHeight, e.target.scrollTop, e.target.scrollHeight - e.target.scrollTop, e.target.clientHeight)
+        const bottom = Math.floor(e.target.scrollHeight - e.target.scrollTop) === Math.floor(e.target.clientHeight);
         console.log(bottom)
         if (isOnBottom === null) {
             if (bottom)

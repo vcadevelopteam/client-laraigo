@@ -1,3 +1,4 @@
+import { Dictionary } from '@types';
 import { ITicket } from './ticket'
 
 export interface ICloseTicketsParams {
@@ -10,6 +11,12 @@ export interface ICloseTicketsParams {
     communicationchanneltype: string;
     status: string;
     isAnswered: boolean;
+}
+
+export interface IMassiveCloseTicketsParams {
+    listTickets: Dictionary[];
+    motive: string;
+    observation: string;
 }
 
 export interface IReplyTicketParams extends ITicket {

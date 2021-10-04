@@ -190,7 +190,7 @@ export const OptionsMenuComponent = (type: string, operator: string, handleClick
                     </MenuItem>
                 ))
             )
-        case "date":
+        case "date": case "datetime-local":
             return (
                 dateOptionsMenu.map((option) => (
                     <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
@@ -236,7 +236,6 @@ const TableZyx = React.memo(({
     const DefaultColumnFilter = ({
         column: { setFilter, type = "string" },
     }: any) => {
-        const { t } = useTranslation();
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -266,7 +265,7 @@ const TableZyx = React.memo(({
     
         useEffect(() => {
             switch (type) {
-                case "number": case "date":
+                case "number": case "date": case "datetime-local":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -361,7 +360,7 @@ const TableZyx = React.memo(({
                         default:
                             return cellvalue === Number(value);
                     }
-                case "date":
+                case "date": case "datetime-local":
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
@@ -414,7 +413,7 @@ const TableZyx = React.memo(({
                             return !cellvalue.toLowerCase().includes(value.toLowerCase());
                         case 'contains':
                         default:
-                            return cellvalue.toLowerCase().includes(value.toLowerCase());
+                            return (cellvalue + "").toLowerCase().includes(value.toLowerCase());
                     }
             }
         });
@@ -470,6 +469,7 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                         <div>
                             <Checkbox
+                                style={{ padding: '0 24px 0 16px' }}
                                 {...getToggleAllPageRowsSelectedProps()}
                             />
                         </div>
@@ -477,6 +477,7 @@ const TableZyx = React.memo(({
                     Cell: ({ row }: any) => (
                         <div>
                             <Checkbox
+                                style={{ padding: '0 24px 0 16px' }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
                             />
@@ -511,7 +512,7 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            style = { ...style, display: 'flex' }
+            style = { ...style, display: 'flex', alignItems: 'flex-end' }
             const row = page[index]
             prepareRow(row);
             return (
@@ -527,6 +528,7 @@ const TableZyx = React.memo(({
                                 style: {
                                     minWidth: cell.column.minWidth,
                                     width: cell.column.width,
+                                    maxWidth: cell.column.maxWidth,
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
@@ -716,6 +718,7 @@ const TableZyx = React.memo(({
                                                             style: {
                                                                 minWidth: cell.column.minWidth,
                                                                 width: cell.column.width,
+                                                                maxWidth: cell.column.maxWidth,
                                                                 overflow: 'hidden',
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
@@ -725,7 +728,7 @@ const TableZyx = React.memo(({
                                                         {headerGroups[0].headers[i].isComponent ?
                                                             cell.render('Cell')
                                                             :
-                                                            (cell.value?.length > 50 ?
+                                                            (cell.value?.length > 20 ?
                                                                 <Tooltip TransitionComponent={Zoom} title={cell.value}>
                                                                     <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                                         {cell.render('Cell')}

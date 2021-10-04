@@ -76,7 +76,14 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 setOpenModal(true);
             }}>
                 {column.sortType === "datetime"
-                ? convertLocalDate(row[column.id]).toLocaleString()
+                ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric"
+                })
                 : row[column.id]}
             </div>
         )
@@ -201,7 +208,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));
@@ -217,7 +224,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                     })
                     return ad;
                 }, [])),
-                `${t(langKeys.report)}.xlsx`,
+                `${t(langKeys.report)}`,
                 'excel',
                 true
             ));

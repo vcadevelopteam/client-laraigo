@@ -5,7 +5,7 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial
+	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial,DashboardOperationalPush, Iaservices
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) => ({
 	main: {
-		padding: theme.spacing(3),
+		padding: theme.spacing(2),
 		width: '100%'
 	},
 }));
@@ -159,6 +159,11 @@ const RouterApp: FC = () => {
 						<Organizations />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.IASERVICES}>
+					<Layout mainClasses={classes.main}>
+						<Iaservices />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.SUPERVISOR}>
 					<Layout >
 						<Supervisor />
@@ -225,6 +230,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DASHBOARDMANAGERIAL}>
 					<DashboardsLayout><DashboardManagerial /></DashboardsLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARDOPERATIONALPUSH}>
+					<DashboardsLayout><DashboardOperationalPush /></DashboardsLayout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

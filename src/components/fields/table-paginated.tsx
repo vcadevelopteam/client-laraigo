@@ -109,6 +109,8 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeader: {
         display: 'block',
+        backgroundColor: '#FFF',
+        padding: theme.spacing(2),
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -125,7 +127,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date":
+            case "number": case "date": case "datetime-local":
                 setoperator("equals");
                 break;
             case "boolean":
@@ -137,11 +139,11 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                 break;
         }
     }, [type])
-    
+
     useEffect(() => {
         if (!type && typeof firstvalue === "number")
             setoperator("equals");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [firstvalue])
 
     const keyPress = (e: any) => {
@@ -180,44 +182,44 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
             {type === 'boolean'
-            ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
-            : <React.Fragment>
-                <Input
-                    style={{ fontSize: '15px', minWidth: '100px' }}
-                    type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
-                    fullWidth
-                    value={value}
-                    onKeyDown={keyPress}
-                    onChange={e => setValue(e.target.value)}
-                />
-                <IconButton
-                    onClick={handleClickMenu}
-                    size="small"
-                >
-                    <MoreVertIcon
-                        style={{ cursor: 'pointer' }}
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        color="action"
-                        fontSize="small"
+                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
+                : <React.Fragment>
+                    <Input
+                        style={{ fontSize: '15px', minWidth: '100px' }}
+                        type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
+                        fullWidth
+                        value={value}
+                        onKeyDown={keyPress}
+                        onChange={e => setValue(e.target.value)}
                     />
-                </IconButton>
-                <Menu
-                    id="long-menu"
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        style: {
-                            maxHeight: 48 * 4.5,
-                            width: '20ch',
-                        },
-                    }}
-                >
-                    {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
-                </Menu>
-            </React.Fragment>}
+                    <IconButton
+                        onClick={handleClickMenu}
+                        size="small"
+                    >
+                        <MoreVertIcon
+                            style={{ cursor: 'pointer' }}
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            color="action"
+                            fontSize="small"
+                        />
+                    </IconButton>
+                    <Menu
+                        id="long-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            style: {
+                                maxHeight: 48 * 4.5,
+                                width: '20ch',
+                            },
+                        }}
+                    >
+                        {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
+                    </Menu>
+                </React.Fragment>}
         </div>
     )
 }
@@ -241,6 +243,7 @@ const TableZyx = React.memo(({
     autotrigger = false,
     useSelection,
     selectionKey,
+    selectionFilter,
     initialSelectedRows,
     setSelectedRows,
 }: TableConfig) => {
@@ -288,25 +291,48 @@ const TableZyx = React.memo(({
                 {
                     id: 'selection',
                     width: 80,
-                    Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
-                    <div>
-                        <Checkbox
-                            {...getToggleAllPageRowsSelectedProps()}
-                        />
-                    </div>
+                    Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
+                        !selectionFilter
+                            ?
+                            <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    {...getToggleAllPageRowsSelectedProps()}
+                                />
+                            </div>
+                            :
+                            <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    checked={filteredRows
+                                        .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                        .every((p: any) => p.isSelected)
+                                    }
+                                    onChange={() => {
+                                        filteredRows
+                                            .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
+                                            .forEach((p: any) => {
+                                                p.toggleRowSelected();
+                                            })
+                                    }}
+                                />
+                            </div>
                     ),
                     Cell: ({ row }: any) => (
-                    <div>
-                        <Checkbox
-                            checked={row.isSelected}
-                            onChange={(e) => row.toggleRowSelected()}
-                        />
-                    </div>
+                        !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
+                            ? <div>
+                                <Checkbox
+                                    style={{ padding: '0 24px 0 16px' }}
+                                    checked={row.isSelected}
+                                    onChange={(e) => row.toggleRowSelected()}
+                                />
+                            </div>
+                            : null
                     ),
                     NoFilter: true,
                     isComponent: true
                 } as any,
-            ...columns,
+                ...columns,
             ])
         }
     )
@@ -361,7 +387,7 @@ const TableZyx = React.memo(({
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
 
     const exportData = () => {
@@ -375,7 +401,7 @@ const TableZyx = React.memo(({
     }
 
     return (
-        <Box width={1} style={{ height: '100%' }}>
+        <Box width={1}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                 <div className={classes.containerButtons}>
@@ -389,7 +415,7 @@ const TableZyx = React.memo(({
                             >
                                 <Button
                                     disabled={loading}
-                                    style={{ border: '1px solid #bfbfc0', borderRadius: 4 }}
+                                    style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
@@ -412,20 +438,6 @@ const TableZyx = React.memo(({
                             </DateRangePicker>
                         </div>
                     )}
-                    {/* {fetchData && (
-                        <Tooltip title="Refrescar">
-                            <Fab
-                                size="small"
-                                aria-label="add"
-                                color="primary"
-                                disabled={loading}
-                                style={{ marginLeft: '1rem' }}
-                                onClick={() => fetchData && fetchData({})}
-                            >
-                                <RefreshIcon />
-                            </Fab>
-                        </Tooltip>
-                    )} */}
                     {ButtonsElement && <ButtonsElement />}
                     {importCSV && (
                         <>

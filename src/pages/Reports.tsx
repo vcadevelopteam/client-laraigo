@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -25,6 +25,7 @@ import { SkeletonReport } from 'components';
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
+    setSearchValue: (searchValue: string) => void;
     row: Dictionary | null;
     multiData: MultiData[];
     allFilters: Dictionary[];
@@ -77,6 +78,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeader: {
         display: 'block',
+        marginBottom: 0,
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -86,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allFilters, customReport }) => {
+const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row, multiData, allFilters, customReport }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -167,6 +169,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, row, multiData, allF
         dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
+        setSearchValue('');
         setViewSelected("view-1");
     }
 
@@ -255,11 +258,21 @@ const Reports: FC = () => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const reportsResult = useSelector(state => state.main);
+    const [rowSelected, setRowSelected] = useState<Dictionary>([]);
+    const [searchValue, setSearchValue] = useState('');
     const [viewSelected, setViewSelected] = useState("view-1");
     const [customReport, setCustomReport] = useState(false);
-    const [reports, setReports] = useState<Dictionary[]>([]);
-    const [rowSelected, setRowSelected] = useState<Dictionary>([]);
+
     const fetchData = () => dispatch(getCollection(getReportSel('')));
+
+    const allReports = useMemo(() =>
+        reportsResult.mainData.data.filter(report => {
+            if (searchValue === null || searchValue.trim().length === 0) {
+                return reportsResult;
+            } else {
+                return t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase());
+            }
+        }), [searchValue, reportsResult]);
 
     useEffect(() => {
         dispatch(resetMainAux());
@@ -277,8 +290,7 @@ const Reports: FC = () => {
     }, []);
 
     const handleFiend = (valor: string) => {
-        const filteredReports = reportsResult.mainData.data.filter(report => (`${t('report_' + report?.origin)}`.toLowerCase().includes(valor.toLowerCase())))
-        setReports(filteredReports);
+        setSearchValue(valor);
     }
 
     const handleSelected = (row: Dictionary, allFilters: Dictionary[]) => {
@@ -288,6 +300,7 @@ const Reports: FC = () => {
         setRowSelected(row);
 
         let allRequestBody: IRequestBody[] = [];
+
         allRequestBody.push(getReportColumnSel(row?.methodcollection || ""));
 
         if (allFilters) {
@@ -327,8 +340,8 @@ const Reports: FC = () => {
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3} style={{ justifyContent: 'center' }}>
                         {
-                            (reports.length > 0 ? reports : reportsResult.mainData.data).map((report, index) => (
-                                <Grid item key={report.reportid + " " + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            allReports.map((report, index) => (
+                                <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                     <Card >
                                         <CardActionArea onClick={() => handleSelected(report, report.filters)}>
                                             <CardMedia
@@ -360,6 +373,7 @@ const Reports: FC = () => {
                 multiData={reportsResult.multiData.data}
                 allFilters={rowSelected.filters}
                 customReport={customReport}
+                setSearchValue={setSearchValue}
             />
         )
     }

@@ -152,7 +152,12 @@ const IntegrationManager: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const column = props.cell.column;
+                    return t(`${row[column.id]?.toLowerCase()}`).toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.status),

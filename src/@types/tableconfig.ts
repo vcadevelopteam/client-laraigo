@@ -33,6 +33,7 @@ export interface TableConfig {
     skipAutoReset?: boolean;
     useSelection?: boolean;
     selectionKey?: string;
+    selectionFilter?: {key: string, value: string};
     initialSelectedRows?: any;
     setSelectedRows?: (param?: any) => void;
     allRowsSelected?: boolean;

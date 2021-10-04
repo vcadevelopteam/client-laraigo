@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart } from 'common/helpers';
+import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -72,23 +72,39 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.campaign),
                 accessor: 'title',
                 NoFilter: false,
+                width: 'auto',
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.description),
                 accessor: 'description',
-                NoFilter: false
+                NoFilter: false,
+                width: 'auto',
+                maxWidth: '200px'
             },
             {
                 Header: t(langKeys.startdate),
                 accessor: 'startdate',
                 NoFilter: false,
-                type: 'date'
+                type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{dateToLocalDate(row.startdate)}</div>
+                    )
+                }
             },
             {
                 Header: t(langKeys.enddate),
                 accessor: 'enddate',
                 NoFilter: false,
-                type: 'date'
+                type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <div>{dateToLocalDate(row.enddate)}</div>
+                    )
+                }
             },
             {
                 Header: t(langKeys.status),
@@ -103,26 +119,36 @@ export const Campaign: FC = () => {
                 accessor: 'execute',
                 isComponent: true,
                 Cell: (props: any) => {
-                    const { status, id } = props.cell.row.original;
-                    if (status === 'EJECUTANDO') {
-                        return <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleStatus(id)}
-                            style={{ backgroundColor: "#55bd84" }}
-                        ><Trans i18nKey={langKeys.status} />
-                        </Button>
+                    const { id, status, startdate, enddate } = props.cell.row.original;
+                    if (dateToLocalDate(startdate, 'date') <= new Date()
+                    && new Date() <= dateToLocalDate(enddate, 'date'))
+                    {
+                        if (status === 'EJECUTANDO') {
+                            return <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleStatus(id)}
+                                style={{ backgroundColor: "#55bd84" }}
+                            ><Trans i18nKey={langKeys.status} />
+                            </Button>
+                        }
+                        else if (status === 'ACTIVO') {
+                            return <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleStart(id)}
+                                style={{ backgroundColor: "#55bd84" }}
+                            ><Trans i18nKey={langKeys.execute} />
+                            </Button>
+                        }
+                        else {
+                            return null    
+                        }
                     }
                     else {
-                        return <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleStart(id)}
-                            style={{ backgroundColor: "#55bd84" }}
-                        ><Trans i18nKey={langKeys.execute} />
-                        </Button>
+                        return null
                     }
                 }
             },

@@ -142,6 +142,16 @@ export function uploadExcel(file: any, owner: any = {}) {
     });
 }
 
+export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
+    if (!date) return new Date().toLocaleDateString();
+    const nn = new Date(date)
+    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000));
+    if (returnType === 'string')
+        return dateCleaned.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"});
+    else
+        return dateCleaned;
+}
+
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {
     if (!date) return new Date()
     const nn = new Date(date)
@@ -196,4 +206,9 @@ export const cleanedRichResponse = (data: Dictionary[], variablesContext: Dictio
             content,
         }
     });
+}
+
+export const capitalize = (text: string) => {
+    const lower = text.toLowerCase();
+    return text.charAt(0).toUpperCase() + lower.slice(1);
 }

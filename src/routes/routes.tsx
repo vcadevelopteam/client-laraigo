@@ -60,6 +60,12 @@ export const routes: RouteConfig[] = [
         icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
+        key: paths.IASERVICES,
+        description: <Trans i18nKey={langKeys.iaservices} count={2} />,
+        path: paths.IASERVICES,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
         key: paths.CHANNELS,
         description: <Trans i18nKey={langKeys.channel} count={2} />,
         path: paths.CHANNELS,
@@ -191,5 +197,10 @@ export const subroutesDashboards: RouteConfig[] = [
         key: paths.DASHBOARDMANAGERIAL,
         description: <Trans i18nKey={langKeys.managerial} />,
         path: paths.DASHBOARDMANAGERIAL,
+    },
+    {
+        key: paths.DASHBOARDOPERATIONALPUSH,
+        description: <Trans i18nKey={langKeys.operationalpush} />,
+        path: paths.DASHBOARDOPERATIONALPUSH,
     },
 ];

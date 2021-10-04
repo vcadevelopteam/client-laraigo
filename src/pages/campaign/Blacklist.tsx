@@ -26,9 +26,9 @@ const arrayBread = [
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
+        // marginTop: theme.spacing(2),
+        // padding: theme.spacing(2),
+        // background: '#fff',
     },
     button: {
         padding: 12,
@@ -92,7 +92,7 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
-                        <div>{convertLocalDate(row.createdate).toLocaleDateString()}</div>
+                        <div>{convertLocalDate(row.createdate).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"})}</div>
                     )
                 }
             },

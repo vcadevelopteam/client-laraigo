@@ -2,11 +2,34 @@ import { ResourceLanguage } from 'i18next';
 import { LangKeys } from './keys';
 
 const translation: LangKeys = {
+    english: 'Inglés',
+    spanish: 'Español',
+
     dashboard: 'Panel',
     dashboard_plural: 'Paneles',
 
     organization: "Organización",
     organization_plural: 'Organizaciones',
+
+    iaservices: 'Servicio IA',
+    iaservices_plural: 'Servicios IA',
+
+    model_type: 'Tipo de Modelo',
+    model_type_plural: 'Tipos de Modelos',
+
+    model: 'Modelo',
+    model_plural: 'Modelos',
+
+    analysis_type: 'Tipos de Analisis',
+    analysis_type_plural: 'Tipos de Analisiss',
+
+    client_message: 'Mensajes del Cliente',
+    bot_message: 'Mensajes del Bot',
+    agent_message: 'Mensajes del Asesor',
+    translationservice: 'Servicio de Traduccion',
+    channeltype: 'Tipo Canal',
+    channeldesc: 'Descripcion Canal',
+    error_already_exists_channel: 'Ya existe una configuracion para este canal',
 
     ticket: "Ticket",
     ticket_plural: 'Tickets',
@@ -101,6 +124,8 @@ const translation: LangKeys = {
     email: 'Correo',
     address: 'Dirección',
     department: 'Departamento',
+    closedbyadviser: "Cerrado por asesor",
+    closedbybot: "Cerrado por bot",
     phone: 'Teléfono',
     title: 'Título',
     lastConnection: 'Última Conexión',
@@ -114,6 +139,21 @@ const translation: LangKeys = {
     registerCode: 'Código de registro',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
+    objective: "Objetivo",
+    variation: "Variación",
+    highestTMO: "TMO más alto",
+    lowestTMO: "TMO más bajo",
+    highestTME: "TME más alto",
+    lowestTME: "TME más bajo",
+    quantitymeets: "Cantidad cumple",
+    quantitymeetsnot: "Cantidad no cumple",
+    totalconversation: "Total conversaciones",
+    informationTMO: "Información TMO",
+    informationTME: "Información TME",
+    informationNPS: "Información NPS",
+    informationCSAT: "Información CSAT",
+    informationFIX: "Información FIX",
+    informationFCR: "Información FCR",
     doubleAuthentication: 'Doble autenticación',
     signup_with_facebook: "Registrate con Facebook",
     next: "Siguiente",
@@ -125,6 +165,7 @@ const translation: LangKeys = {
     group: 'Grupo',
     group_plural: 'Grupos',
     hasactionplan: 'Tiene Plan de Acción',
+    operationalpush: "Operativo push",
     action: 'Acción',
     useralreadyregistered: "El usuario ya se encuentra registrado",
     laststepsignup: "Queremos ayudarte a crecer",
@@ -248,6 +289,8 @@ const translation: LangKeys = {
     newwhitelist: "Nueva whitelist",
     registervalue: "Registrar valor",
     neworganization: "Nueva organización",
+    newiaservice: "Nuevo Servicio IA",
+    services_plural: "Servicios",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
     least_user_or_group: 'Debe elegir al menos usuario o grupo',
@@ -420,6 +463,7 @@ const translation: LangKeys = {
     error_null_not_allowed: '23502: Hubo un error, comuniquese con el administrador',
     error_function_not_exists: '42883: Hubo un error, comuniquese con el administrador',
     error_parameter_is_missing: "5004: Hubo un error, comuniquese con el administrador",
+    error_request_services: "50007: Hubo un error, comuniquese con el administrador",
     dateRangeFilterTitle: 'Filtrar por rango de fechas',
 
     apply: 'Aplicar',

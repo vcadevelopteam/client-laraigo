@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -149,6 +149,21 @@ export const reassignTicket = (params: IReassignicketParams): IActionCall => ({
     },
     type: null,
 });
+
+
+export const massiveCloseTicket = (params: IMassiveCloseTicketsParams): IActionCall => ({
+    callAPI: () => InboxService.massiveCloseTicket(params),
+    types: {
+        loading: actionTypes.MASSIVE_CLOSE_TICKET,
+        success: actionTypes.MASSIVE_CLOSE_TICKET_SUCCESS,
+        failure: actionTypes.MASSIVE_CLOSE_TICKET_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMassiveCloseTicket = (): IActionCall => ({ type: actionTypes.MASSIVE_CLOSE_TICKET_RESET });
+
+
 
 export const resetReassignTicket = (): IActionCall => ({ type: actionTypes.REASSIGN_TICKET_RESET });
 

@@ -493,7 +493,6 @@ export const TemplateIcons: React.FC<{
                 id="menu-appbar"
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
-                keepMounted
                 anchorOrigin={{
                     vertical: 'bottom',
                     horizontal: 'right',

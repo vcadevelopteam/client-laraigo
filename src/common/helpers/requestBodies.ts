@@ -358,11 +358,11 @@ export const getUserProductivitySel = ({ ...allParameters }: Dictionary): IReque
     }
 });
 
-export const getEmojiGroupSel = (all: boolean): IRequestBody => ({
-    method: "UFN_EMOJI_GROUP_SEL",
-    key: "UFN_EMOJI_GROUP_SEL",
+export const getEmojiAllSel = (): IRequestBody => ({
+    method: "UFN_EMOJI_ALL_SEL",
+    key: "UFN_EMOJI_ALL_SEL",
     parameters: {
-        all
+        all: true
     }
 })
 
@@ -374,31 +374,14 @@ export const getEmojiSel = (emojidec: string): IRequestBody => ({
     }
 })
 
-export const getEmojiAllSel = (): IRequestBody => ({
-    method: "UFN_EMOJI_ALL_SEL",
-    key: "UFN_EMOJI_ALL_SEL",
+export const insEmoji = ({ ...allParameters }: Dictionary): IRequestBody => ({
+    method: "UFN_EMOJI_INS",
+    key: "UFN_EMOJI_INS",
     parameters: {
-        all: true
-    }
-})
-
-export const updateEmojiOrganization = ({ ...allParameters }: Dictionary): IRequestBody => ({
-    method: "UFN_EMOJI_UPDATE",
-    key: "UFN_EMOJI_UPDATE",
-    parameters: {
+        ...allParameters,
         favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
         restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
-        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0,
-        emojidec: allParameters['emojidec'] ? allParameters['emojidec'] : "",
-    }
-})
-
-export const updateEmojiChannels = (emojidec: string, isfavorite: boolean): IRequestBody => ({
-    method: "UFN_EMOJI_CHANNELS_UPD",
-    key: "UFN_EMOJI_CHANNELS_UPD",
-    parameters: {
-        emojidec,
-        isfavorite
+        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0
     }
 })
 
@@ -442,14 +425,12 @@ export const getComunicationChannelDelegate = (communicationchannelid: string): 
     }
 })
 
-export const insConversationClassificationMassive = (conversationid: string, classificationid: number, username: any, result: string): IRequestBody => ({
+export const insConversationClassificationMassive = (conversationid: string, classificationid: number): IRequestBody => ({
     method: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
     key: "UFN_CONVERSATIONCLASSIFICATION_INS_MASSIVE",
     parameters: {
         conversationid,
         classificationid,
-        username,
-        result
     }
 });
 
@@ -1121,4 +1102,39 @@ export const getCampaignStatus = (id: number): IRequestBody => ({
 export const getBlocksUserFromChatfow = (communicationchannelid: number): IRequestBody => ({
     method: "UFN_CHATFLOW_ISSELFBLOCK_SEL",
     parameters: { communicationchannelid },
+});
+
+export const reassignMassiveTicket = (conversationid: string, newuserid: number, comment: string): IRequestBody => ({
+    method: "UFN_CONVERSATION_REASSIGNTICKET_MASSIVE",
+    parameters: {
+        conversationid,
+        newuserid,
+        comment
+    },
+});
+
+export const getIntelligentModelsConfigurations = (): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELSCONFIGURATION_LST",
+    parameters: {}
+});
+
+export const getIntelligentModels = (): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELS_LST",
+    parameters: {}
+});
+
+export const insInteligentModelConfiguration = ({channels, id, operation, description, type, status, color, icontype, services}: Dictionary): IRequestBody => ({
+    method: 'UFN_INTELLIGENTMODELSCONFIGURATION_INS',
+    key: "UFN_INTELLIGENTMODELSCONFIGURATION_INS",
+    parameters: { 
+        communicationchannelid: channels,
+        intelligentmodelsconfigurationid: id,
+        operation,
+        description,
+        type,
+        status,
+        color,
+        icontype,
+        parameters: services
+     }
 });

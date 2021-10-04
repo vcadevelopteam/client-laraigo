@@ -179,7 +179,7 @@ const TableZyxEditable = React.memo(({
         }, [value])
         useEffect(() => {
             switch (type) {
-                case "number": case "date":
+                case "number": case "date": case "datetime-local":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -410,7 +410,7 @@ const TableZyxEditable = React.memo(({
                         default:
                             return cellvalue === Number(value);
                     }
-                case "date":
+                case "date": case "datetime-local":
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
