@@ -122,10 +122,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
                 if (allOk) {
-
-                    // { ...data, operation: "INSERT" }
                     if (!row)
-                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => p.map(x => itmp === index ? { ...data, operation: "INSERT" } : x))
+                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                            p[index] = { ...data, operation: "INSERT" }
+                            return p;
+                        })
                     else
                         updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
                 }
@@ -133,6 +134,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             })()
         }
     }, [triggerSave])
+
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
         const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_COMMUNICATIONCHANNELBYORG_LST" + (index + 1)));
@@ -232,7 +234,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={!row} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}

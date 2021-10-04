@@ -108,7 +108,7 @@ export const changeOrganizationSuccess = (state: IState, action: IAction): IStat
 };
 
 export const changeOrganizationFailure = (state: IState, action: IAction): IState => {
-    removeAuthorizationToken()
+    // removeAuthorizationToken()
     return {
         ...state,
         triggerChangeOrganization: {

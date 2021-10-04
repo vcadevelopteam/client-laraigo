@@ -26,8 +26,8 @@ export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
 }
 
-export function changeOrganization(neworgid: number) {
-    return APIManager.post(apiUrls.CHANGE_ORGANIZATION, { data: { parameters: { neworgid } } }, true);
+export function changeOrganization(newcorpid: number, neworgid: number) {
+    return APIManager.post(apiUrls.CHANGE_ORGANIZATION, { data: { parameters: { newcorpid, neworgid } } }, true);
 }
 
 export function main(requestBody: IRequestBody | ITransaction, transaction: boolean = false) {

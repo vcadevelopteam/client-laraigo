@@ -12,20 +12,17 @@ import { useDispatch } from 'react-redux';
 
 const ManageOrganization: FC = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
 
     const { t } = useTranslation();
 
     const user = useSelector(state => state.login.validateToken.user);
 
     const resChangeOrganization = useSelector(state => state.login.triggerChangeOrganization);
-    const [redirect, setRedirect] = React.useState('');
     const [triggerSave, setTriggerSave] = React.useState(false)
 
     const handleChangeOrganization = (value: any) => {
         if (value) {
-            setRedirect(value.redirect)
-            dispatch(changeOrganization(value.orgid));
+            dispatch(changeOrganization(value.corpid, value.orgid));
             dispatch(showBackdrop(true));
             setTriggerSave(true)
         }
@@ -35,11 +32,12 @@ const ManageOrganization: FC = () => {
         if (triggerSave) {
             if (!resChangeOrganization.loading && !resChangeOrganization.error) {
                 dispatch(showBackdrop(false));
-                dispatch(wsConnect({ userid: user?.userid, orgid: user?.orgid, usertype: 'PLATFORM' }));
-                // history.replace(`/`);
-                setTimeout(() => {
-                    history.push(redirect);
-                });
+                window.location.reload()
+                // dispatch(wsConnect({ userid: user?.userid, orgid: user?.orgid, usertype: 'PLATFORM' }));
+                // // history.replace(`/`);
+                // setTimeout(() => {
+                //     history.push(redirect);
+                // });
             } else if (resChangeOrganization.error) {
                 const errormessage = t(resChangeOrganization.code || "error_unexpected_error")
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))

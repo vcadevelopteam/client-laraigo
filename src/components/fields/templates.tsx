@@ -889,7 +889,6 @@ const sxImageBox = {
 
 export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, valueDefault, label}) => {
     const { t } = useTranslation();
-    const [file, setFile] = useState<any>(null);
     const [url, setUrl] = useState<string>("");
 
     useEffect(() => {
@@ -926,7 +925,6 @@ export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, val
                             style={{display: 'none'}}
                             onChange={(e) => {
                                 if ((e.target.files?.length || 0) > 0) {
-                                    setFile(e.target?.files?.item(0));
                                     setUrl(getUrl(e.target?.files?.item(0)));
                                     onChange && onChange(e.target?.files?.item(0));
                                 }
