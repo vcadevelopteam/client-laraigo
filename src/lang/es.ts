@@ -367,7 +367,7 @@ const translation: LangKeys = {
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
     observation: 'Observación',
-    flowdesigner: 'Diseñador de flujos',
+    botdesigner: 'Diseñador de bots',
 
     variableconfiguration: 'Configuración de variables',
     variableconfiguration_plural: 'Configuración de variables',
@@ -441,7 +441,7 @@ const translation: LangKeys = {
     field_afterstart: 'El campo debe ser posterio al inicio.',
     affirmative: 'Si',
     negative: 'No',
-    organization_by_default: 'Debe seleccionar una organización por defecto',
+    organization_by_default: 'Debe seleccionar solo una organización por defecto',
     attention_group: 'Grupo de atención',
     register: 'Registrar',
     download: 'Descargar',

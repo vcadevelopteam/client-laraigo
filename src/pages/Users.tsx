@@ -434,6 +434,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const [allIndex, setAllIndex] = useState([])
     const [getOrganizations, setGetOrganizations] = useState(false);
+
     useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
         if (!detailRes.loading && !detailRes.error && getOrganizations) {
             setDataOrganizations(detailRes.data);
@@ -513,6 +514,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             setDataOrganizations(p => [...p, null]);
     }, [register]);
 
+    console.log(dataOrganizations)
+
     useEffect(() => {
         if (allIndex.length === dataOrganizations.length && triggerSave) {
             setTriggerSave(false);
@@ -521,6 +524,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 return
             }
             if (!dataOrganizations.some(x => x?.bydefault)) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                return;
+            } else if (dataOrganizations.filter(x => x?.bydefault).length > 1) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
                 return;
             }

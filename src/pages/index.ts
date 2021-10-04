@@ -31,6 +31,6 @@ export { default as Tickets } from './Tickets';
 export * from './channels';
 export * from './signup';
 
-export { default as FlowDesigner } from './FlowDesigner';
+export { default as BotDesigner } from './BotDesigner';
 export { default as DashboardManagerial } from './DashboardManagerial';
 export { default as DashboardOperationalPush } from './DashboardOperationalPush';

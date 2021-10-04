@@ -62,7 +62,7 @@ const paths = {
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
     CAMPAIGN: '/extras/campaign',
-    FLOWDESIGNER: '/extras/flowdesigner',
+    BOTDESIGNER: '/extras/botdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
     EMOJIS: '/extras/emojis',
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
