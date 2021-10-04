@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
 import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, getCollectionAux, getCollection, execute } from 'store/main/actions';
+import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { Dictionary, IFetchData, MultiData } from '@types'
+import { Dictionary, IFetchData } from '@types'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -22,15 +22,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { massiveCloseTicket, getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, emitEvent } from 'store/inbox/actions';
 
 const selectionKey = 'conversationid';
-
-interface SelectedAction {
-    setOpenModalTicket: (value: boolean) => void,
-    setSelectedRows: (value: any) => void,
-    multiData: MultiData[],
-    selectedRows: any,
-    openModalTicket: boolean,
-    action: String
-}
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -950,6 +941,5 @@ const Tickets = () => {
         </div>
     )
 }
-
 
 export default Tickets;

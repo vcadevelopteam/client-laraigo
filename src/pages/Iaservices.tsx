@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitchArray, TemplateSwitch, DialogZyx } from 'components';
-import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getOrgSel, getValuesFromDomain, insInteligentModelConfiguration, insOrg } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
+import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getValuesFromDomain, insInteligentModelConfiguration, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,7 +16,7 @@ import { getCollection, resetMain, getMultiCollection, execute } from 'store/mai
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
-import { Accordion, AccordionDetails, AccordionSummary, FormControlLabel, Switch } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -77,7 +77,6 @@ const nlu_fields = [
         description: 'Sentimiento'
     }
 ]
-
 interface servicesData {
     service: string,
     intelligentmodelsid: number,
@@ -234,7 +233,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
             return
         }
 
-        data.services.map((item:servicesData) => {
+        data.services.forEach((item:servicesData) => {
             delete item.id
             if (item.service !== 'NATURAL LANGUAGE UNDERSTANDING') {
                 delete item.categories
