@@ -399,7 +399,7 @@ const translation: LangKeys = {
     affirmative: 'Yes',
     negative: 'No',
     opendrilldown: "Open Drilldown",
-    organization_by_default: 'You must select a default organization',
+    organization_by_default: 'You must select only a default organization',
     attention_group: 'Attention group',
     register: 'Register',
     tmototalobj: "Objective Total TMO",
