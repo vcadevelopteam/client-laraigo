@@ -43,7 +43,7 @@ import {
     usePagination
 } from 'react-table'
 import { FixedSizeList } from 'react-window';
-import { Trans, useTranslation } from 'react-i18next';
+import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
