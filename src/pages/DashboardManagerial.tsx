@@ -10,18 +10,23 @@ const useStyles = makeStyles((theme: Theme) =>
             margin: "0 1% 2% 0",
             backgroundColor: 'white',
         },
-        quarterbox: {            
-            textAlign: "center",
+        quarterbox: {
             width: "24%",
             margin: "0 1% 2% 0",
             backgroundColor: 'white',
-            border: "solid black 1px",
             padding: "15px"
         },
         boxtitle:{
             fontWeight: "bold",
-            fontSize: "1.5em",
-            padding: "15px"
+            fontSize: "1.6em",
+            paddingTop: "15px",
+            width: "50%"
+        },
+        boxtitledata:{
+            fontSize: "1.6em",
+            width: "50%",
+            paddingTop: "15px",
+            textAlign: "end"
         },
         boxtitlequarter:{
             fontWeight: "bold",
@@ -36,24 +41,43 @@ const useStyles = makeStyles((theme: Theme) =>
             margin:"0!important"
         },
         containerFields:{
-            border: "black 1px solid",
             margin: "0!important",
             display: "flex",
-            padding: "0 15px"
+            width: "100%",
+            padding: "0 20px 10px 20px"
+        },
+        containerFieldsTitle:{
+            margin: "0!important",
+            display: "flex",
+            width: "100%",
+            padding: "0 20px 30px 20px"
+        },
+        containerFieldsQuarter:{
+            margin: "0!important",
+            display: "flex",
+            width: "100%",
+            color: "white"
         },
         label:{
             width: "60%",
             fontSize: "1.2em",
-            padding: "5px"
         },
         datafield:{
             fontSize: "1.2em",
-            padding: "5px"
+            width: "40%",
+            textAlign: "end"
         },
         datafieldquarter:{
             fontSize: "1.2em",
             padding: "5px"
         },
+        widthhalf:{
+            width: "50%"
+        },
+        widthsecondhalf:{
+            width: "50%",
+            paddingTop: "5%"
+        }
     }),
 );
 
@@ -67,200 +91,342 @@ const DashboardManagerial: FC = () => {
                 <Box
                     className={classes.halfbox}
                 >
-                    <div className={classes.boxtitle}> {t(langKeys.informationTMO)}</div>
                     <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Objective: </div>
-                            <div className={classes.datafield}> &lt;0min </div>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>TMO</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
                         </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Service Level Agrement: </div>
-                            <div className={classes.datafield}> NaN% </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Variation: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Variation: </div>
-                            <div className={classes.datafield}> NaN% </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>TMO higher: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Quantity meets:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>TMO lower: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Quantity does not meets:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Total conversation:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-
-                    
-                </Box>
-                <Box
-                    className={classes.halfbox}
-                >
-                    <div className={classes.boxtitle}> {t(langKeys.informationTME)}</div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Objective: </div>
-                            <div className={classes.datafield}> &lt;0min </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Service Level Agrement: </div>
-                            <div className={classes.datafield}> NaN% </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Variation: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Variation: </div>
-                            <div className={classes.datafield}> NaN% </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>TMO higher: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Quantity meets:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>TMO lower: </div>
-                            <div className={classes.datafield}> HH:MM:SS </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Quantity does not meets:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>Total conversation:</div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                    </div>
-
-                    
-                </Box>
-            </div>
-            <div className="row-zyx ">
-                <Box
-                    className={classes.quarterbox}
-                >
-                    <div className={classes.boxtitlequarter}>TMR</div>
-                    <div className={classes.datafieldquarter}> &lt;0min </div>                    
-                </Box>
-                <Box
-                    className={classes.quarterbox}
-                >
-                    <div className={classes.boxtitlequarter}>TMR Asesor</div>
-                    <div className={classes.datafieldquarter}> &lt;0min </div>                    
-                </Box>
-                <Box
-                    className={classes.quarterbox}
-                >
-                    <div className={classes.boxtitlequarter}>TMR Bot</div>
-                    <div className={classes.datafieldquarter}> &lt;0min </div>                    
-                </Box>
-                <Box
-                    className={classes.quarterbox}
-                >
-                    <div className={classes.boxtitlequarter}>TMR Client</div>
-                    <div className={classes.datafieldquarter}> &lt;0min </div>                    
-                </Box>
-            </div>
-            <div className="row-zyx ">
-                <Box
-                    className={classes.halfbox}
-                >
-                    <div className={classes.boxtitle}> {t(langKeys.informationNPS)}</div>
-                    <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>NPS: </div>
-                            <div className={classes.datafield}> 0 </div>
-                        </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>download</div>
-                            <div className={classes.datafield}> filter </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
                         </div>
                     </div>
                 </Box>
                 <Box
                     className={classes.halfbox}
                 >
-                    <div className={classes.boxtitle}> {t(langKeys.informationCSAT)}</div>
                     <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>CSAT: </div>
-                            <div className={classes.datafield}> 0 </div>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>TMO</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
                         </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>download</div>
-                            <div className={classes.datafield}> filter </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
                         </div>
                     </div>
                 </Box>
             </div>
             <div className="row-zyx ">
                 <Box
+                    className={classes.quarterbox}
+                    style={{backgroundColor:"#53a6fa"}}
+                >
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>TMR</div>
+                        <div className={classes.boxtitledata}>00:00:00</div>    
+                    </div>            
+                </Box>
+                <Box
+                    className={classes.quarterbox}
+                    style={{backgroundColor:"#22b66e"}}
+                >
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>TMR Asesor</div>
+                        <div className={classes.boxtitledata}>00:00:00</div>    
+                    </div>                  
+                </Box>
+                <Box
+                    className={classes.quarterbox}
+                    style={{backgroundColor:"#fdab29"}}
+                >
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>TMR Bot</div>
+                        <div className={classes.boxtitledata}>00:00:00</div>    
+                    </div>                  
+                </Box>
+                <Box
+                    className={classes.quarterbox}
+                    style={{backgroundColor:"#907eec"}}
+                >
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>TMR Client</div>
+                        <div className={classes.boxtitledata}>00:00:00</div>    
+                    </div>                  
+                </Box>
+            </div>
+            <div className="row-zyx ">
+                <Box
                     className={classes.halfbox}
                 >
-                    <div className={classes.boxtitle}> {t(langKeys.informationFIX)}</div>
                     <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>FIX: </div>
-                            <div className={classes.datafield}> 0 </div>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>NPS</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
                         </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>download</div>
-                            <div className={classes.datafield}> filter </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
                         </div>
                     </div>
                 </Box>
                 <Box
                     className={classes.halfbox}
                 >
-                    <div className={classes.boxtitle}> {t(langKeys.informationFCR)}</div>
                     <div className={"row-zyx  " + classes.rowstyles}>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>FCR: </div>
-                            <div className={classes.datafield}> 0 </div>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>CSAT</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
                         </div>
-                        <div className={"col-6 " + classes.containerFields}>
-                            <div className={classes.label}>download</div>
-                            <div className={classes.datafield}> filter </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                        </div>
+                    </div>
+                </Box>
+            </div>
+            <div className="row-zyx ">
+                <Box
+                    className={classes.halfbox}
+                >
+                    <div className={"row-zyx  " + classes.rowstyles}>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>FCR</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTMO)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                        </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                        </div>
+                    </div>
+                </Box>
+                <Box
+                    className={classes.halfbox}
+                >
+                    <div className={"row-zyx  " + classes.rowstyles}>
+                        <div className={classes.widthhalf}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>FIX</div>
+                                <div className={classes.boxtitledata}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>&lt; 0min</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTME)}</div>
+                                <div className={classes.datafield}>00:00:00</div>
+                            </div>
+                        </div>
+                        <div className={classes.widthsecondhalf}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>0%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>0</div>
+                            </div>
                         </div>
                     </div>
                 </Box>
