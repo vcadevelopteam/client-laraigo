@@ -19,7 +19,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import PublishIcon from '@material-ui/icons/Publish';
 import SaveIcon from '@material-ui/icons/Save';
 import ClearIcon from '@material-ui/icons/Clear';
-import { chatblock_reset } from 'store/flowdesigner/actions';
+import { chatblock_reset } from 'store/botdesigner/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -59,7 +59,7 @@ const VariableConfiguration: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const detailResult = useSelector(state => state.main.mainAux);
-    const flowdesignerResult = useSelector(state => state.flowdesigner.chatblock);
+    const botdesignerResult = useSelector(state => state.botdesigner.chatblock);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -167,11 +167,11 @@ const VariableConfiguration: FC = () => {
     }
 
     useEffect(() => {
-        if (flowdesignerResult) {
-            handleEdit(flowdesignerResult);
+        if (botdesignerResult) {
+            handleEdit(botdesignerResult);
             dispatch(chatblock_reset());
         }
-    }, [flowdesignerResult])
+    }, [botdesignerResult])
 
     const handleDownload = (row: Dictionary) => {
         setWaitDownload(true);

@@ -179,9 +179,9 @@ export const subroutes: RouteConfig[] = [
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {
-        key: paths.FLOWDESIGNER,
-        description: <Trans i18nKey={langKeys.flowdesigner} count={2} />,
-        path: paths.FLOWDESIGNER,
+        key: paths.BOTDESIGNER,
+        description: <Trans i18nKey={langKeys.botdesigner} count={2} />,
+        path: paths.BOTDESIGNER,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {

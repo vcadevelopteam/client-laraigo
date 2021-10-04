@@ -361,7 +361,7 @@ export const langKeys = {
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
-    flowdesigner: 'flowdesigner',
+    botdesigner: 'botdesigner',
     least_user_or_group: 'least_user_or_group',
 
     variableconfiguration: 'variableconfiguration',

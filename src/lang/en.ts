@@ -311,7 +311,7 @@ const translation: LangKeys = {
     observation: 'Observation',
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",
-    flowdesigner: 'Flow designer',
+    botdesigner: 'Bot designer',
     passwordsmustbeequal:"The passwords must be equal",
     useralreadyregistered: "The user is already registered",
     industry: "Industry",
