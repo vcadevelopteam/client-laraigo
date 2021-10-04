@@ -578,7 +578,6 @@ const Tipifications: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            debugger
             dispatch(execute(insClassification({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.classificationid, parent: row.parentid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);

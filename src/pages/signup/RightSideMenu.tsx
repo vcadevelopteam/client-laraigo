@@ -89,7 +89,6 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         if(listchannels.sms) return <div>sms</div>
         else {
             setStep(4)
-            console.log(requestchannels)
             return(<div>error no more channels</div>)
         }
     }

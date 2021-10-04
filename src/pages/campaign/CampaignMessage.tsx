@@ -191,7 +191,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             });
             setVariableHandler(new VariableHandler());
         }
-        console.log(e)
     }
 
     const formatMessage = () => {

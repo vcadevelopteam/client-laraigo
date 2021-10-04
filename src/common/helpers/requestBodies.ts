@@ -242,6 +242,13 @@ export const getSLASel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+export const getCorpSel = (id: number): IRequestBody => ({
+    method: "UFN_CORP_SEL",
+    parameters: {
+        id: id,
+        all: id === 0,
+    }
+});
 export const getOrgSel = (id: number): IRequestBody => ({
     method: "UFN_ORG_SEL",
     parameters: {
@@ -472,6 +479,11 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
+export const insCorp = ({ id, description, type, status, logo, logotype, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_CORP_INS",
+    key: "UFN_CORP_INS",
+    parameters: { id, description, type, status, logo, logotype, operation }
+});
 export const insOrg = ({ description, status, type, id, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",

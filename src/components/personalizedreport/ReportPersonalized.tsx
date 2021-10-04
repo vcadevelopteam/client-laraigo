@@ -109,7 +109,6 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     }, [resExportDynamic])
 
     const onSearch = (isExport: Boolean = false) => {
-        console.log(isExport)
         const body = {
             columns,
             parameters: {

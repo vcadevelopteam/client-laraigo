@@ -1463,7 +1463,6 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
                 success: false,
             }));
         } else if (insertChannel.value) {
-            console.log(insertChannel.value);
             dispatch(showSnackbar({
                 message: "El canal se inserto con éxito",
                 show: true,
@@ -1523,7 +1522,6 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
     }
 
     const handleSubmit = (name: string, auto: boolean) => {
-        // return console.log(form.getValues());
         const body = getInsertChatwebChannel(name, auto, form.getValues());
         setrequestchannels((p:any)=>([...p,body]))
         setlistchannels((p:any)=>({...p,chatWeb:false}))
@@ -1607,8 +1605,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
-
-    console.log(loading, integrationId);
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
