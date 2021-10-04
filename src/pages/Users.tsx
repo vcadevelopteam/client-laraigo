@@ -122,8 +122,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const allOk = await trigger(); //para q valide el formulario
                 const data = getValues();
                 if (allOk) {
+
+                    // { ...data, operation: "INSERT" }
                     if (!row)
-                        updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
+                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => p.map(x => itmp === index ? { ...data, operation: "INSERT" } : x))
                     else
                         updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
                 }
