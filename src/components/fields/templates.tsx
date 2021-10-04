@@ -33,6 +33,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
+import CameraAltIcon from '@material-ui/icons/CameraAlt';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
     WebMessengerIcon,
@@ -875,4 +877,88 @@ export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ classN
             }} />
         </div>
     );
+}
+
+const sxImageBox = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    p: 2,
+    border: '1px dashed grey',
+    textAlign: 'center',
+}
+
+export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, valueDefault, label}) => {
+    const { t } = useTranslation();
+    const [file, setFile] = useState<any>(null);
+    const [url, setUrl] = useState<string>("");
+
+    useEffect(() => {
+        setUrl(valueDefault || "");
+    }, [valueDefault])
+    
+
+    const getUrl = (file: File | any): string => {
+        if (!file) return "";
+        try {
+            const url = URL.createObjectURL(file);
+            return url;
+        } catch (ex) {
+            console.error(ex);
+            return "";
+        }
+    }
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {
+                url === ""
+                ?
+                <Box
+                    component="label"
+                    sx={sxImageBox}
+                    style={{cursor: 'pointer'}}
+                >
+                    <React.Fragment>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{display: 'none'}}
+                            onChange={(e) => {
+                                if ((e.target.files?.length || 0) > 0) {
+                                    setFile(e.target?.files?.item(0));
+                                    setUrl(getUrl(e.target?.files?.item(0)));
+                                    onChange && onChange(e.target?.files?.item(0));
+                                }
+                            }}
+                        />
+                        <CameraAltIcon />
+                        <span>{t(langKeys.uploadImage)}</span>
+                    </React.Fragment>
+                </Box>
+                :
+                <React.Fragment>
+                    <Box
+                        sx={sxImageBox}
+                        style={{cursor: 'pointer'}}
+                        onClick={() => {
+                            setUrl("");
+                            onChange && onChange("")
+                        }}
+                    >
+                        <DeleteIcon />
+                        <span>{t(langKeys.delete)}</span>
+                    </Box>
+                    <Box sx={{...sxImageBox, borderTop: '0px' }}>
+                        <img
+                            src={url}
+                            alt={url}
+                            style={{maxWidth: '300px'}}
+                        />
+                    </Box>
+                </React.Fragment>
+            }
+        </div>
+    )
 }

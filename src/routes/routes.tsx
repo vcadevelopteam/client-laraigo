@@ -54,6 +54,12 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.system} />,
     },
     {
+        key: paths.CORPORATIONS,
+        description: <Trans i18nKey={langKeys.corporation} count={2} />,
+        path: paths.CORPORATIONS,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
         key: paths.ORGANIZATIONS,
         description: <Trans i18nKey={langKeys.organization} count={2} />,
         path: paths.ORGANIZATIONS,

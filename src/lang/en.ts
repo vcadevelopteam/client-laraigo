@@ -147,6 +147,7 @@ const translation: LangKeys = {
     newsla: "New service level agreement",
     newwhitelist: "New whitelist",
     registervalue: "Register value",
+    newcorporation: "New Corporation",
     neworganization: "New organization",
     newiaservice: "New IA Service",
     services_plural: "Services",
@@ -172,6 +173,8 @@ const translation: LangKeys = {
 
     corporation: 'Corporation',
     corporation_plural: 'Corporations',
+    logo: 'Logo',
+    logotype: 'Logotype',
 
     name: 'Name',
     name_plural: 'Names',
