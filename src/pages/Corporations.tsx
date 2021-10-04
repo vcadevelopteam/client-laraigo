@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Corporations: FC = () => {
+    const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -163,9 +164,8 @@ const Corporations: FC = () => {
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
-                register={true}
+                register={['SUPERADMIN', 'ADMINISTRADOR'].includes(user?.roledesc || "")}
                 handleRegister={handleRegister}
-                // fetchData={fetchData}
             />
         )
     }
@@ -191,7 +191,6 @@ interface DetailCorporationProps {
 }
 
 const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
-    const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -234,8 +233,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             }
         }
     }, [executeRes, waitSave])
-
-    
 
     const onSubmit = handleSubmit((data) => {
         const callback = async () => {
