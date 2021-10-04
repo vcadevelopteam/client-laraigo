@@ -206,7 +206,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
         register('channelsdesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [register]);
 
-    
+
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -233,7 +233,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
             return
         }
 
-        data.services.forEach((item:servicesData) => {
+        data.services.forEach((item: servicesData) => {
             delete item.id
             if (item.service !== 'NATURAL LANGUAGE UNDERSTANDING') {
                 delete item.categories
@@ -246,7 +246,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                 delete item.translationservice
             }
         })
-         
+
         data.services = JSON.stringify(data.services)
         const callback = () => {
             dispatch(execute(insInteligentModelConfiguration(data)));
@@ -375,7 +375,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
-                                    <Typography style={{fontSize: '24px'}}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
+                                    <Typography style={{ fontSize: '24px' }}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <form onSubmit={onSubmit} style={{ width: '100%' }}>
@@ -389,15 +389,15 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     }}
                                                     onChange={(value) => {
                                                         if (value) {
-                                                            if (fields.some((x:any) => x.service === value.domainvalue) && !row) {
-                                                                fieldUpdate(i, {...fields[i], service: ''})
+                                                            if (fields.some((x: any) => x.service === value.domainvalue) && !row) {
+                                                                fieldUpdate(i, { ...fields[i], service: '' })
                                                                 dispatch(showSnackbar({ show: true, success: false, message: 'This service is already selected' }))
                                                                 return
                                                             } else {
                                                                 setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
                                                             }
                                                         }
-                                                        fieldUpdate(i, {...fields[i], service: value ? value.domainvalue : ''})
+                                                        fieldUpdate(i, { ...fields[i], service: value ? value.domainvalue : '' })
                                                     }}
                                                     triggerOnChangeOnFirst={true}
                                                     label={t(langKeys.model_type)}
@@ -416,8 +416,8 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                             })
                                                         }}
                                                         onChange={(value) => {
-                                                            fieldUpdate(i, {...fields[i], intelligentmodelsid: value.intelligentmodelsid})
-                                                            }
+                                                            fieldUpdate(i, { ...fields[i], intelligentmodelsid: value.intelligentmodelsid })
+                                                        }
                                                         }
                                                         label={t(langKeys.model)}
                                                         className={classes.mb2}
@@ -437,8 +437,8 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                                 })
                                                             }}
                                                             onChange={(value) => {
-                                                                fieldUpdate(i, {...fields[i], translationservice: value.value})
-                                                                }
+                                                                fieldUpdate(i, { ...fields[i], translationservice: value.value })
+                                                            }
                                                             }
                                                             label={t(langKeys.translationservice)}
                                                             className={classes.mb2}
@@ -450,7 +450,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         />
 
                                                         <div style={{ display: 'flex', flexWrap: 'wrap' }} className={classes.mb2}>
-                                                            {nlu_fields.map((item,index) => 
+                                                            {nlu_fields.map((item, index) =>
                                                                 <TemplateSwitch
                                                                     key={index}
                                                                     fregister={{
@@ -458,7 +458,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                                     }}
                                                                     label={item.description}
                                                                     className={classes.switches}
-                                                                    style={{ flex: '0 0 170px', paddingBottom: '10px'}}
+                                                                    style={{ flex: '0 0 170px', paddingBottom: '10px' }}
                                                                     onChange={(value) => setValue(`services.${i}.${item.value}`, value)}
                                                                 />
                                                             )}
@@ -476,10 +476,8 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     error={errors?.services?.[i]?.analyzemode?.message}
                                                     valueDefault={(item.analyzemode) ? item.analyzemode : analysis_type[0].value}
                                                     onChange={(value) => {
-                                                        fieldUpdate(i, {...fields[i], analyzemode: value.value})
-                                                        console.log(fields)
-                                                        }
-                                                    }
+                                                        fieldUpdate(i, { ...fields[i], analyzemode: value.value })
+                                                    }}
                                                     // onChange={(value) => setValue(`services.${i}.analysis_type`, value.value)}
                                                     data={analysis_type}
                                                     optionDesc="description"

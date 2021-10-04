@@ -26,9 +26,11 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.connect();
 
         eventsListeners.forEach(({ event, type, extra = {} }) => {
-            socket.on(event, (datatmp) =>
+            console.log("load eventsListeners")
+            socket.on(event, (datatmp) => {
+                console.log("event ", event)
                 dispatch({ type, payload: { ...datatmp, ...extra } })
-            );
+            });
         });
 
         socket?.on("connect", () => {
