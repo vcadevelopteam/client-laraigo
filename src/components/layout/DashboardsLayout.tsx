@@ -97,7 +97,7 @@ const DashboardsLayout: FC = ({children}) => {
         <Layout>
             <div className={classes.root}>
                 <List component="nav" className={classes.list}>
-                    <label className={classes.subtitle}><Trans i18nKey={langKeys.extra} count={2} /></label>
+                    <label className={classes.subtitle}><Trans i18nKey={langKeys.dashboard} count={2} /></label>
                     {subroutesDashboards.map((e) => (applications && applications[e.key] && applications[e.key][0]) ? <ListLink config={e} key={e.key} /> : null)}
                     <div style={{flexGrow: 1}} />
                 </List>
