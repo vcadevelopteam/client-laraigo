@@ -469,6 +469,7 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                         <div>
                             <Checkbox
+                                style={{ padding: '0 24px 0 16px' }}
                                 {...getToggleAllPageRowsSelectedProps()}
                             />
                         </div>
@@ -476,6 +477,7 @@ const TableZyx = React.memo(({
                     Cell: ({ row }: any) => (
                         <div>
                             <Checkbox
+                                style={{ padding: '0 24px 0 16px' }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
                             />
@@ -510,7 +512,7 @@ const TableZyx = React.memo(({
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
-            style = { ...style, display: 'flex' }
+            style = { ...style, display: 'flex', alignItems: 'flex-end' }
             const row = page[index]
             prepareRow(row);
             return (
