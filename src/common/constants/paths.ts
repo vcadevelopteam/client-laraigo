@@ -66,7 +66,9 @@ const paths = {
     EMOJIS: '/extras/emojis',
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
     DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
-    IASERVICES: '/iaservices'
+    IASERVICES: '/iaservices',
+
+    SETTINGS: '/settings',
 };
 
 export default paths;
