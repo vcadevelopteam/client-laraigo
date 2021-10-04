@@ -20,13 +20,25 @@ const useStyles = makeStyles((theme: Theme) =>
             width: "24%",
             margin: "0 1% 2% 0",
             backgroundColor: 'white',
-            border: "solid black 1px",
+            padding: "15px"
+        },
+        quarterbox2: {
+            width: "24%",
+            margin: "0 1% 2% 0",
+            backgroundColor: 'white',
             padding: "15px"
         },
         boxtitle:{
             fontWeight: "bold",
-            fontSize: "1.5em",
-            padding: "15px"
+            fontSize: "1.6em",
+            paddingTop: "15px",
+            width: "50%"
+        },
+        boxtitledata:{
+            fontSize: "1.6em",
+            width: "50%",
+            paddingTop: "15px",
+            textAlign: "end"
         },
         boxtitlequarter:{
             fontWeight: "bold",
@@ -58,6 +70,12 @@ const useStyles = makeStyles((theme: Theme) =>
         datafieldquarter:{
             fontSize: "1.2em",
             padding: "5px"
+        },
+        containerFieldsQuarter:{
+            margin: "0!important",
+            display: "flex",
+            width: "100%",
+            color: "white"
         },
     }),
 );
@@ -94,16 +112,22 @@ const DashboardOperationalPush: FC = () => {
                     <div className={classes.datafieldquarter}>0</div>                    
                 </Box>
                 <Box
-                    className={classes.quarterbox}
+                    className={classes.quarterbox2}
+                    style={{backgroundColor:"#53a6fa"}}
                 >
-                    <div className={classes.boxtitlequarter}>Closed by adviser </div>
-                    <div className={classes.datafieldquarter}>0</div>                    
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}</div>
+                        <div className={classes.boxtitledata}>0</div>    
+                    </div>            
                 </Box>
                 <Box
-                    className={classes.quarterbox}
+                    className={classes.quarterbox2}
+                    style={{backgroundColor:"#fdab29"}}
                 >
-                    <div className={classes.boxtitlequarter}>Closed by bot </div>
-                    <div className={classes.datafieldquarter}>0</div>                    
+                    <div className={classes.containerFieldsQuarter}>
+                        <div className={classes.boxtitle}>{t(langKeys.closedbybot)}</div>
+                        <div className={classes.boxtitledata}>0</div>    
+                    </div>            
                 </Box>
             </div>
             <div className="row-zyx ">
