@@ -12,20 +12,17 @@ import { useDispatch } from 'react-redux';
 
 const ManageOrganization: FC = () => {
     const dispatch = useDispatch();
-    const history = useHistory();
 
     const { t } = useTranslation();
 
     const user = useSelector(state => state.login.validateToken.user);
 
     const resChangeOrganization = useSelector(state => state.login.triggerChangeOrganization);
-    const [redirect, setRedirect] = React.useState('');
     const [triggerSave, setTriggerSave] = React.useState(false)
 
     const handleChangeOrganization = (value: any) => {
         if (value) {
-            setRedirect(value.redirect)
-            dispatch(changeOrganization(value.orgid));
+            dispatch(changeOrganization(value.corpid, value.orgid));
             dispatch(showBackdrop(true));
             setTriggerSave(true)
         }
