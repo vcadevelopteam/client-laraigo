@@ -10,6 +10,7 @@ export const langKeys = {
     organization: 'organization',
     iaservices: 'iaservices',
     iaservices_plural: 'iaservices_plural',
+    error_already_exists_channel:'error_already_exists_channel',
     services_plural: 'services_plural',
     organization_plural: 'organization_plural',
     completedesc: 'completedesc',

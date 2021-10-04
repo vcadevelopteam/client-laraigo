@@ -29,6 +29,7 @@ const translation: LangKeys = {
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',
+    error_already_exists_channel: 'Ya existe una configuracion para este canal',
 
     ticket: "Ticket",
     ticket_plural: 'Tickets',

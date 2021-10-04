@@ -106,7 +106,7 @@ interface MultiData {
     success: boolean;
 }
 
-interface DetailOrganizationProps {
+interface DetailIaServiceProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
@@ -149,8 +149,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
-    console.log(row);
+const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -206,7 +205,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channels', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('channelsdesc', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-    }, [edit, register]);
+    }, [register]);
 
     
     useEffect(() => {
@@ -230,8 +229,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     };
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
-        console.log('aca')
         if (data.services.length === 0) {
             dispatch(showSnackbar({ show: true, success: false, message: 'You must configure at least one service' }))
             return
@@ -584,10 +581,6 @@ const Iaservices: FC = () => {
                 Header: t(langKeys.channeldesc),
                 accessor: 'channeldesc',
                 NoFilter: true,
-                // Cell: (props: any) => {
-                //     const { status } = props.cell.row.original;
-                //     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                // }
             },
             {
                 Header: t(langKeys.status),
@@ -673,13 +666,12 @@ const Iaservices: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
-                // fetchData={fetchData}
             />
         )
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailOrganization
+            <DetailIaService
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
