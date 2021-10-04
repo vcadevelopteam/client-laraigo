@@ -1465,7 +1465,6 @@ export const ChannelAddChatWeb: FC = () => {
                 success: false,
             }));
         } else if (insertChannel.value) {
-            console.log(insertChannel.value);
             dispatch(showSnackbar({
                 message: "El canal se inserto con éxito",
                 show: true,

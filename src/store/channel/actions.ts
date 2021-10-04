@@ -84,8 +84,6 @@ export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall 
         payload.service!.interface.iconbot = botIcon;
         payload.service!.bubble.iconbubble = bubbleIcon;
 
-        console.log("antes de insertchnl", payload);
-
         return ChannelsService.insertchnl(payload);
     },
     types: {

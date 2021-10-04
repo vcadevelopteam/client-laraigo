@@ -15,6 +15,7 @@ export const apiUrls = {
     TICKET_URL: `${BASE_URL}/main`,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
+    CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,

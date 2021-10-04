@@ -11,12 +11,14 @@ export interface IUserTmp extends ITemplate {
 
 export interface IState {
     login: IUserTmp;
+    triggerChangeOrganization: ITemplate;
     validateToken: IUserTmp;
     logout: ITemplate;
 }
 
 export const initialState: IState = {
     login: { ...initialCommon, user: null },
+    triggerChangeOrganization: initialCommon,
     validateToken: { ...initialCommon, user: null, loading: true },
     logout: initialCommon
 };
@@ -31,6 +33,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.VALIDATE_TOKEN_SUCCESS]: caseFUnctions.validateTokenSuccess,
     [actionTypes.VALIDATE_TOKEN_FAILURE]: caseFUnctions.validateTokenFailure,
     [actionTypes.VALIDATE_TOKEN_RESET]: caseFUnctions.validateTokenReset,
+
+    [actionTypes.CHANGE_ORGANIZATION]: caseFUnctions.changeOrganization,
+    [actionTypes.CHANGE_ORGANIZATION_SUCCESS]: caseFUnctions.changeOrganizationSuccess,
+    [actionTypes.CHANGE_ORGANIZATION_FAILURE]: caseFUnctions.changeOrganizationFailure,
+    [actionTypes.CHANGE_ORGANIZATION_RESET]: caseFUnctions.changeOrganizationReset,
 
     [actionTypes.LOGOUT]: caseFUnctions.logout,
     [actionTypes.LOGOUT_SUCCESS]: caseFUnctions.logoutSuccess,

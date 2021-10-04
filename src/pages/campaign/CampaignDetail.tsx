@@ -55,10 +55,6 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
         }
     }, [auxResult, waitView]);
 
-    useEffect(() => {
-        console.log(detailData);
-    }, [step])
-
     return (
         <div style={{ width: '100%' }}>
             {step === "step-1" ?
