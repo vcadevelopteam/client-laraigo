@@ -1523,7 +1523,6 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
     }
 
     const handleSubmit = (name: string, auto: boolean) => {
-        // return console.log(form.getValues());
         const body = getInsertChatwebChannel(name, auto, form.getValues());
         setrequestchannels((p:any)=>([...p,body]))
         setlistchannels((p:any)=>({...p,chatWeb:false}))
