@@ -367,7 +367,7 @@ const translation: LangKeys = {
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
     observation: 'Observación',
-    flowdesigner: 'Diseñador de flujos',
+    botdesigner: 'Diseñador de bots',
 
     variableconfiguration: 'Configuración de variables',
     variableconfiguration_plural: 'Configuración de variables',
