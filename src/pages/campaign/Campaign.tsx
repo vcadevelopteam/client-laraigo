@@ -119,26 +119,33 @@ export const Campaign: FC = () => {
                 accessor: 'execute',
                 isComponent: true,
                 Cell: (props: any) => {
-                    const { status, id } = props.cell.row.original;
-                    if (status === 'EJECUTANDO') {
-                        return <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleStatus(id)}
-                            style={{ backgroundColor: "#55bd84" }}
-                        ><Trans i18nKey={langKeys.status} />
-                        </Button>
+                    const { id, status, startdate, enddate } = props.cell.row.original;
+                    if (dateToLocalDate(startdate, 'date') <= new Date()
+                    && new Date() <= dateToLocalDate(enddate, 'date'))
+                    {
+                        if (status === 'EJECUTANDO') {
+                            return <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleStatus(id)}
+                                style={{ backgroundColor: "#55bd84" }}
+                            ><Trans i18nKey={langKeys.status} />
+                            </Button>
+                        }
+                        else {
+                            return <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                onClick={() => handleStart(id)}
+                                style={{ backgroundColor: "#55bd84" }}
+                            ><Trans i18nKey={langKeys.execute} />
+                            </Button>
+                        }
                     }
                     else {
-                        return <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            onClick={() => handleStart(id)}
-                            style={{ backgroundColor: "#55bd84" }}
-                        ><Trans i18nKey={langKeys.execute} />
-                        </Button>
+                        return null
                     }
                 }
             },
