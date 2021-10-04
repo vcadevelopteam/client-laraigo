@@ -1112,3 +1112,29 @@ export const reassignMassiveTicket = (conversationid: string, newuserid: number,
         comment
     },
 });
+
+export const getIntelligentModelsConfigurations = (): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELSCONFIGURATION_LST",
+    parameters: {}
+});
+
+export const getIntelligentModels = (): IRequestBody => ({
+    method: "UFN_INTELLIGENTMODELS_LST",
+    parameters: {}
+});
+
+export const insInteligentModelConfiguration = ({channels, id, operation, description, type, status, color, icontype, services}: Dictionary): IRequestBody => ({
+    method: 'UFN_INTELLIGENTMODELSCONFIGURATION_INS',
+    key: "UFN_INTELLIGENTMODELSCONFIGURATION_INS",
+    parameters: { 
+        communicationchannelid: channels,
+        intelligentmodelsconfigurationid: id,
+        operation,
+        description,
+        type,
+        status,
+        color,
+        icontype,
+        parameters: services
+     }
+});

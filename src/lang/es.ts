@@ -11,6 +11,25 @@ const translation: LangKeys = {
     organization: "Organización",
     organization_plural: 'Organizaciones',
 
+    iaservices: 'Servicio IA',
+    iaservices_plural: 'Servicios IA',
+
+    model_type: 'Tipo de Modelo',
+    model_type_plural: 'Tipos de Modelos',
+
+    model: 'Modelo',
+    model_plural: 'Modelos',
+
+    analysis_type: 'Tipos de Analisis',
+    analysis_type_plural: 'Tipos de Analisiss',
+
+    client_message: 'Mensajes del Cliente',
+    bot_message: 'Mensajes del Bot',
+    agent_message: 'Mensajes del Asesor',
+    translationservice: 'Servicio de Traduccion',
+    channeltype: 'Tipo Canal',
+    channeldesc: 'Descripcion Canal',
+
     ticket: "Ticket",
     ticket_plural: 'Tickets',
 
@@ -258,6 +277,8 @@ const translation: LangKeys = {
     newwhitelist: "Nueva whitelist",
     registervalue: "Registrar valor",
     neworganization: "Nueva organización",
+    newiaservice: "Nuevo Servicio IA",
+    services_plural: "Servicios",
     tablePageOf: 'Página <0>{{currentPage}}</0> de <1>{{totalPages}}</1>',
     tableShowingRecordOf: 'Mostrando {{itemCount}} registros de {{totalItems}}',
     least_user_or_group: 'Debe elegir al menos usuario o grupo',

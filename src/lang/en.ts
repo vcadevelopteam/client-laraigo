@@ -11,6 +11,25 @@ const translation: LangKeys = {
     organization: 'Organization',
     organization_plural: 'Organizations',
 
+    iaservices: 'IA Service',
+    iaservices_plural: 'IA Services',
+
+    model_type: 'Model Type',
+    model_type_plural: 'Models Type',
+
+    model: 'Model',
+    model_plural: 'Models',
+
+    analysis_type: 'Analysis Type',
+    analysis_type_plural: 'Analysis Types',
+
+    client_message: 'Client Messages',
+    bot_message: 'Bot Messages',
+    agent_message: 'Agent Messages',
+    translationservice: 'Translation Service',
+    channeltype: 'Channel Type',
+    channeldesc: 'Channel Description',
+
     ticket: 'Ticket',
     ticket_plural: 'Tickets',
 
@@ -128,6 +147,8 @@ const translation: LangKeys = {
     newwhitelist: "New whitelist",
     registervalue: "Register value",
     neworganization: "New organization",
+    newiaservice: "New IA Service",
+    services_plural: "Services",
     productivitybyhour: 'Productivity by hour',
     title: 'Title',
     action: 'Action',

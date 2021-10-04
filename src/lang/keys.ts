@@ -8,6 +8,9 @@ export const langKeys = {
     dashboard_plural: 'dashboard_plural',
     actionplan: 'actionplan',
     organization: 'organization',
+    iaservices: 'iaservices',
+    iaservices_plural: 'iaservices_plural',
+    services_plural: 'services_plural',
     organization_plural: 'organization_plural',
     completedesc: 'completedesc',
     report: 'report',
@@ -129,6 +132,7 @@ export const langKeys = {
     newquickreply: "newquickreply",
     newsla: "newsla",
     neworganization: "neworganization",
+    newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",
     registervalue: "registervalue",
     defaultanswer: "defaultanswer",
@@ -219,6 +223,22 @@ export const langKeys = {
 
     type: 'type',
     type_plural: 'type_plural',
+
+    model_type: 'model_type',
+    model_type_plural: 'model_type_plural',
+
+    model: 'model',
+    model_plural: 'model_plural',
+
+    analysis_type: 'analysis_type',
+    analysis_type_plural: 'analysis_type_plural',
+
+    client_message: 'client_message',
+    bot_message: 'bot_message',
+    agent_message: 'agent_message',
+    translationservice: 'translationservice',
+    channeltype: 'channeltype',
+    channeldesc: 'channeldesc',
 
     action: 'action',
     action_plural: 'action_plural',
