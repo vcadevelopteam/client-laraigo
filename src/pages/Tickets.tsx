@@ -530,7 +530,7 @@ const Tickets = () => {
                 accessor: 'fechaprimeraconversacion',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.fechaprimeraconversacion).toLocaleString()
+                    return row.fechaprimeraconversacion ? convertLocalDate(row.fechaprimeraconversacion).toLocaleString() : ''
                 }
             },
             {
@@ -539,7 +539,7 @@ const Tickets = () => {
                 accessor: 'fechaultimaconversacion',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.fechaultimaconversacion).toLocaleString()
+                    return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
                 }
             },
             {
@@ -548,7 +548,7 @@ const Tickets = () => {
                 accessor: 'fechahandoff',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.fechahandoff).toLocaleString()
+                    return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
                 }
             },
             {
