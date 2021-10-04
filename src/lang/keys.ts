@@ -143,6 +143,7 @@ export const langKeys = {
     newproperty: "newproperty",
     newquickreply: "newquickreply",
     newsla: "newsla",
+    newcorporation: "newcorporation",
     neworganization: "neworganization",
     newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",
@@ -257,6 +258,8 @@ export const langKeys = {
 
     corporation: 'corporation',
     corporation_plural: 'corporation_plural',
+    logo: 'logo',
+    logotype: 'logotype',
 
     name: 'name',
     name_plural: 'name_plural',

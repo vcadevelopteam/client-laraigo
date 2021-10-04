@@ -24,6 +24,7 @@ export * from './campaign';
 export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';
 export { default as InternalServererror } from './InternalServerError';
+export { default as Corporations } from './Corporations';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 
