@@ -250,6 +250,8 @@ const translation: LangKeys = {
     opendrilldown: "Abrir árbol",
     corporation: 'Corporación',
     corporation_plural: 'Corporaciones',
+    logo: 'Logo',
+    logotype: 'Logotipo',
     insults: "Lisuras",
     entities: "Entidades",
     links: "Links",
@@ -275,6 +277,10 @@ const translation: LangKeys = {
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
+
+    type_corp_ninguno: 'Ninguno',
+    type_corp_natural: 'Persona natural',
+    type_corp_juridico: 'Persona jurídica',
 
     attending: 'En atención',
 
@@ -302,6 +308,7 @@ const translation: LangKeys = {
     newsla: "Nuevo acuerdo de nivel de servicio",
     newwhitelist: "Nueva whitelist",
     registervalue: "Registrar valor",
+    newcorporation: "Nueva Corporación",
     neworganization: "Nueva organización",
     newiaservice: "Nuevo Servicio IA",
     services_plural: "Servicios",
@@ -378,7 +385,7 @@ const translation: LangKeys = {
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
     observation: 'Observación',
-    flowdesigner: 'Diseñador de flujos',
+    botdesigner: 'Diseñador de bots',
 
     variableconfiguration: 'Configuración de variables',
     variableconfiguration_plural: 'Configuración de variables',
@@ -452,7 +459,7 @@ const translation: LangKeys = {
     field_afterstart: 'El campo debe ser posterio al inicio.',
     affirmative: 'Si',
     negative: 'No',
-    organization_by_default: 'Debe seleccionar una organización por defecto',
+    organization_by_default: 'Debe seleccionar solo una organización por defecto',
     attention_group: 'Grupo de atención',
     register: 'Registrar',
     download: 'Descargar',

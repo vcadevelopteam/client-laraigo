@@ -24,12 +24,15 @@ export * from './campaign';
 export { default as NotFound } from './NotFound';
 export { default as Forbidden } from './Forbidden';
 export { default as InternalServererror } from './InternalServerError';
+export { default as Corporations } from './Corporations';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 
 export * from './channels';
 export * from './signup';
 
-export { default as FlowDesigner } from './FlowDesigner';
+export { default as BotDesigner } from './BotDesigner';
 export { default as DashboardManagerial } from './DashboardManagerial';
 export { default as DashboardOperationalPush } from './DashboardOperationalPush';
+
+export { default as Settings } from './settings';

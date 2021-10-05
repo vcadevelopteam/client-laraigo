@@ -68,7 +68,7 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
             type: 'NINGUNO',
             id: row ? row.groupconfigurationid : 0,
             description: row ? (row.description || '') : '',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             quantity: row ? row.quantity : 0,
             domainid: row ? row.domainid : 0,
             validationtext: row ? row.validationtext : '',
@@ -188,10 +188,12 @@ const DetailGroupConfig: React.FC<DetailGroupConfigProps> = ({ data: { row, edit
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={(value) => setValue('status', (value?value.domainvalue:""))}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />

@@ -5,7 +5,7 @@ import actionTypes from "./actionTypes";
 
 export interface IState {
     personList: IListStatePaginated<IPerson>;
-    personTicketList: IListState<IPersonConversation>;
+    personTicketList: IListStatePaginated<IPersonConversation>;
     personChannelList: IListState<IPersonChannel>;
     personAdditionInfo: IListState<IPersonAdditionalInfo>;
     person: IObjectState<IPerson>;
@@ -14,7 +14,7 @@ export interface IState {
 
 export const initialState: IState = {
     personList: initialListPaginatedState,
-    personTicketList: initialListState,
+    personTicketList: initialListPaginatedState,
     personChannelList: initialListState,
     personAdditionInfo: initialListState,
     person: initialObjectState,

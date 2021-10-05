@@ -54,6 +54,12 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.system} />,
     },
     {
+        key: paths.CORPORATIONS,
+        description: <Trans i18nKey={langKeys.corporation} count={2} />,
+        path: paths.CORPORATIONS,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
         key: paths.ORGANIZATIONS,
         description: <Trans i18nKey={langKeys.organization} count={2} />,
         path: paths.ORGANIZATIONS,
@@ -173,9 +179,9 @@ export const subroutes: RouteConfig[] = [
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {
-        key: paths.FLOWDESIGNER,
-        description: <Trans i18nKey={langKeys.flowdesigner} count={2} />,
-        path: paths.FLOWDESIGNER,
+        key: paths.BOTDESIGNER,
+        description: <Trans i18nKey={langKeys.botdesigner} count={2} />,
+        path: paths.BOTDESIGNER,
         icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
     {

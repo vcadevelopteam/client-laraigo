@@ -51,15 +51,15 @@ export function filterPipe(items: Dictionary[], field: string, value: any, inv?:
     }
     // If '%' contains wildcard is a string contains//
     else if (inv === '%') {
-        return items.filter(it => it[field].toLowerCase().includes(value.toLowerCase()));
+        return items.filter(it => it[field]?.toLowerCase().includes(value.toLowerCase()));
     }
     // If '!' inverter filter is a string not equals//
     else if (inv === '!') {
-        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) === -1);
+        return items.filter(it => it[field]?.toLowerCase().indexOf(value.toLowerCase()) === -1);
     }
     // If the filter value is a string is a string equals//
     else {
-        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) !== -1);
+        return items.filter(it => it[field]?.toLowerCase().indexOf(value.toLowerCase()) !== -1);
     }
 }
 
@@ -142,10 +142,14 @@ export function uploadExcel(file: any, owner: any = {}) {
     });
 }
 
-export const dateToLocalDate = (date: string): string => {
+export const dateToLocalDate = (date: string, returnType = 'string'): string | Date => {
     if (!date) return new Date().toLocaleDateString();
     const nn = new Date(date)
-    return new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000)).toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"});
+    const dateCleaned = new Date(nn.getTime() + (nn.getTimezoneOffset() * 60 * 1000));
+    if (returnType === 'string')
+        return dateCleaned.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"});
+    else
+        return dateCleaned;
 }
 
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {

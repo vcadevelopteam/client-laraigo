@@ -123,7 +123,10 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                 const data = getValues();
                 if (allOk) {
                     if (!row)
-                        updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, operation: "INSERT" }])
+                        updateRecords && updateRecords((p: Dictionary[], itmp: number) => {
+                            p[index] = { ...data, operation: "INSERT" }
+                            return p;
+                        })
                     else
                         updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x?.orgid === row.orgid ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x))
                 }
@@ -131,6 +134,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             })()
         }
     }, [triggerSave])
+
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
         const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_COMMUNICATIONCHANNELBYORG_LST" + (index + 1)));
@@ -230,7 +234,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     }
 
     return (
-        <Accordion expanded={!row ? true : undefined} style={{ marginBottom: '8px' }}>
+        <Accordion defaultExpanded={!row} style={{ marginBottom: '8px' }}>
 
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -434,6 +438,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const [allIndex, setAllIndex] = useState([])
     const [getOrganizations, setGetOrganizations] = useState(false);
+
     useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
         if (!detailRes.loading && !detailRes.error && getOrganizations) {
             setDataOrganizations(detailRes.data);
@@ -513,6 +518,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             setDataOrganizations(p => [...p, null]);
     }, [register]);
 
+    console.log(dataOrganizations)
+
     useEffect(() => {
         if (allIndex.length === dataOrganizations.length && triggerSave) {
             setTriggerSave(false);
@@ -521,6 +528,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 return
             }
             if (!dataOrganizations.some(x => x?.bydefault)) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
+                return;
+            } else if (dataOrganizations.filter(x => x?.bydefault).length > 1) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.organization_by_default) }));
                 return;
             }
@@ -739,6 +749,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue : ''))}
                                 error={errors?.twofactorauthentication?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             /> :
@@ -753,8 +765,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 className="col-6"
                                 valueDefault={row?.status || "ACTIVO"}
                                 onChange={onChangeStatus}
+                                uset={true}
                                 error={errors?.status?.message}
                                 data={dataStatusUsers}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             /> :
@@ -911,6 +925,7 @@ const Users: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

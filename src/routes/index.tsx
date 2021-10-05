@@ -5,7 +5,8 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, FlowDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial,DashboardOperationalPush, Iaservices
+	Reports, ReportTemplate, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial,DashboardOperationalPush, Iaservices,
+	Corporations, Settings
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -154,6 +155,11 @@ const RouterApp: FC = () => {
 						<ChannelAddTwitterDM />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.CORPORATIONS}>
+					<Layout mainClasses={classes.main}>
+						<Corporations />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.ORGANIZATIONS}>
 					<Layout mainClasses={classes.main}>
 						<Organizations />
@@ -219,8 +225,8 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CAMPAIGN}>
 					<ExtrasLayout><Campaign /></ExtrasLayout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.FLOWDESIGNER}>
-					<ExtrasLayout><FlowDesigner /></ExtrasLayout>
+				<ProtectRoute exact path={paths.BOTDESIGNER}>
+					<ExtrasLayout><BotDesigner /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
 					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
@@ -233,6 +239,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DASHBOARDOPERATIONALPUSH}>
 					<DashboardsLayout><DashboardOperationalPush /></DashboardsLayout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CONFIGURATION}>
+					<Layout mainClasses={classes.main}><Settings /></Layout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

@@ -191,7 +191,6 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
             });
             setVariableHandler(new VariableHandler());
         }
-        console.log(e)
     }
 
     const formatMessage = () => {
@@ -401,7 +400,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     setSave('MEMBERS');
                     saveCampaignMembers(campaignMembers, executeRes.data[0]?.p_campaignid);
                 } else if (executeRes.error) {
-                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                     dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     dispatch(showBackdrop(false));
                     setSave('');
@@ -415,7 +414,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                     dispatch(showBackdrop(false));
                     setViewSelected("view-1");
                 } else if (executeRes.error) {
-                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                    const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                     dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                     dispatch(showBackdrop(false));
                     setSave('');

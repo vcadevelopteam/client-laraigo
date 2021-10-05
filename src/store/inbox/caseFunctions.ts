@@ -326,7 +326,6 @@ export const goToBottom = (state: IState, action: IAction): IState => {
 }
 
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
-    console.log("newMessageFromClient", action.payload)
     const data: INewMessageParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newInteractionList = [...state.interactionList.data];
@@ -406,7 +405,6 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 }
 
 export const deleteTicket = (state: IState, action: IAction): IState => {
-    console.log("deleteTicket", action.payload)
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
     let newAgentList = [...state.agentList.data];
@@ -465,7 +463,7 @@ export const getDataTicketSuccess = (state: IState, action: IAction): IState => 
     },
     isOnBottom: null,
     configurationVariables: {
-        data: action.payload.data[2].data.filter((x: any) => !x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
+        data: action.payload.data[2].data.filter((x: any) => !!x.visible).sort((a: any, b: any) => (a.priority < b.priority) ? 1 : ((b.priority < a.priority) ? -1 : 0)) || [],
         count: action.payload.count,
         loading: false,
         error: false,

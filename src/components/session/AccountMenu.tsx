@@ -42,7 +42,6 @@ const AccountMenu: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
 
-
     const user = useSelector(state => state.login.validateToken.user);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);

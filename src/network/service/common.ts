@@ -7,6 +7,7 @@ export function login(usr: string, password: string, facebookid: string, googlei
     const data = { usr, password, facebookid, googleid };
     return APIManager.post(apiUrls.LOGIN_URL, { data: { data } }, false);
 }
+
 export function logout() {
     const tmp = APIManager.post(apiUrls.LOGOUT_URL, {}, true);
     removeAuthorizationToken()
@@ -23,6 +24,10 @@ export function exportData(requestBody: IRequestBody) {
 
 export function validateToken() {
     return APIManager.get(apiUrls.LOGIN_URL, {}, true);
+}
+
+export function changeOrganization(newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string) {
+    return APIManager.post(apiUrls.CHANGE_ORGANIZATION, { data: { parameters: { newcorpid, neworgid, corpdesc, orgdesc } } }, true);
 }
 
 export function main(requestBody: IRequestBody | ITransaction, transaction: boolean = false) {
@@ -52,8 +57,8 @@ export function getTickets(page: number, pageSize: number) {
 
 export function request_send(request: any) {
     const { method, url, authorization, headers, bodytype, body, parameters } = request;
-    let headersjson = headers.reduce((a: any, x:any) => ({...a, [x.key]: x.value}), {});
-    let parametersjson = parameters.reduce((a: any, x:any) => ({...a, [x.key]: x.value}), {});
+    let headersjson = headers.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
+    let parametersjson = parameters.reduce((a: any, x: any) => ({ ...a, [x.key]: x.value }), {});
     if (method === 'POST') {
         if (bodytype === 'URLENCODED') {
             return ExternalRequestManager.postForm(url, { auth: authorization, headers: headersjson, data: parametersjson })

@@ -4,7 +4,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 // import { useSelector } from 'hooks';
 import { useSelector } from 'hooks';
-import { StatusConnection, AccountMenu, NotificationMenu } from 'components';
+import { StatusConnection, AccountMenu, NotificationMenu, ManageOrganization } from 'components';
 
 type IProps = {
     classes: any;
@@ -13,7 +13,7 @@ type IProps = {
 }
 
 const Header = ({ classes, drawerWidth }: IProps) => {
-    const openDrawer = useSelector(state =>  state.popus.openDrawer);
+    const openDrawer = useSelector(state => state.popus.openDrawer);
 
     return (
         <AppBar
@@ -23,19 +23,12 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 [classes.appBarShift]: openDrawer,
             })}
         >
-            <Toolbar style={{borderBottom: '1px solid #EBEAED',}}>
+            <Toolbar style={{ borderBottom: '1px solid #EBEAED', }}>
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
-                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
-                    <div className={classes.title} style={{ width: '400px' }}>
-                        {/* <SearchField
-                            colorPlaceHolder='#F9F9FA'
-                        /> */}
-                    </div>
-                    <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                         <StatusConnection />
-                        <div style={{ width: 22 }} />
-                        <NotificationMenu />
-                        <div style={{ width: 24 }} />
+                        <ManageOrganization />
                         <AccountMenu />
                     </div>
                 </div>

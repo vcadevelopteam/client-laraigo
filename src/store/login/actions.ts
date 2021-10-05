@@ -27,6 +27,19 @@ export const validateToken = (): IActionCall => ({
 export const resetValidateToken = (): IActionCall => ({type: actionTypes.VALIDATE_TOKEN_RESET});
 
 
+export const changeOrganization = (newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string): IActionCall => ({
+    callAPI: () => CommonService.changeOrganization(newcorpid, neworgid, corpdesc, orgdesc),
+    types: {
+        loading: actionTypes.CHANGE_ORGANIZATION,
+        success: actionTypes.CHANGE_ORGANIZATION_SUCCESS,
+        failure: actionTypes.CHANGE_ORGANIZATION_FAILURE,
+    },
+    type: null,
+});
+
+export const resetChangeOrganization = (): IActionCall => ({type: actionTypes.CHANGE_ORGANIZATION_RESET});
+
+
 
 export const logout = (): IActionCall => ({
     callAPI: () => CommonService.logout(),

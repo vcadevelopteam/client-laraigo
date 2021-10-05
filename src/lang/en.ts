@@ -147,6 +147,7 @@ const translation: LangKeys = {
     newsla: "New service level agreement",
     newwhitelist: "New whitelist",
     registervalue: "Register value",
+    newcorporation: "New Corporation",
     neworganization: "New organization",
     newiaservice: "New IA Service",
     services_plural: "Services",
@@ -172,6 +173,8 @@ const translation: LangKeys = {
 
     corporation: 'Corporation',
     corporation_plural: 'Corporations',
+    logo: 'Logo',
+    logotype: 'Logotype',
 
     name: 'Name',
     name_plural: 'Names',
@@ -193,6 +196,10 @@ const translation: LangKeys = {
     status_inactivo: 'inactive',
     status_bloqueado: 'locked',
     status_ejecutando: 'executing',
+
+    type_corp_ninguno: 'none',
+    type_corp_natural: 'Natural person',
+    type_corp_juridico: 'Legal person',
 
     attending: 'Attending',
 
@@ -322,7 +329,7 @@ const translation: LangKeys = {
     observation: 'Observation',
     laststepsignup: "We want to help you grow",
     laststepsignup2: "Knowing you better helps us to optimize the service to what your clients need.",
-    flowdesigner: 'Flow designer',
+    botdesigner: 'Bot designer',
     passwordsmustbeequal:"The passwords must be equal",
     useralreadyregistered: "The user is already registered",
     industry: "Industry",
@@ -410,7 +417,7 @@ const translation: LangKeys = {
     affirmative: 'Yes',
     negative: 'No',
     opendrilldown: "Open Drilldown",
-    organization_by_default: 'You must select a default organization',
+    organization_by_default: 'You must select only a default organization',
     attention_group: 'Attention group',
     register: 'Register',
     tmototalobj: "Objective Total TMO",

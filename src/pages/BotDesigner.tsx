@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useDispatch } from 'react-redux';
-import { chatblock_set } from 'store/flowdesigner/actions';
+import { chatblock_set } from 'store/botdesigner/actions';
 import { useHistory } from 'react-router-dom'
 import paths from 'common/constants/paths';
 import { apiUrls } from 'common/constants';
 
-const FlowDesigner: FC = () => {
+const BotDesigner: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     
@@ -42,7 +42,7 @@ const FlowDesigner: FC = () => {
         <div style={{height: '100%'}}>
             <iframe
                 id="ifr"
-                title='flowdesigner'    
+                title='botdesigner'    
                 src={url}
                 style={{height: '100%', width: '100%', border: 'none'}}
                 onLoad={() => setFrame(true)}
@@ -52,4 +52,4 @@ const FlowDesigner: FC = () => {
     )
 }
 
-export default FlowDesigner;
+export default BotDesigner;

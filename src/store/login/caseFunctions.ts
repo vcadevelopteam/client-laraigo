@@ -70,7 +70,7 @@ export const validateTokenFailure = (state: IState, action: IAction): IState => 
             ...state.validateToken,
             loading: false,
             error: true,
-            code: action.payload.code || 'validateTokenFailure:error',
+            code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         }
     }
 };
@@ -79,6 +79,57 @@ export const validateTokenReset = (state: IState): IState => ({
     ...state,
     validateToken: initialState.validateToken,
 });
+
+
+
+
+
+
+
+export const changeOrganization = (state: IState): IState => ({
+    ...state,
+    triggerChangeOrganization: {
+        ...state.triggerChangeOrganization,
+        loading: true,
+        error: false
+    }
+});
+
+export const changeOrganizationSuccess = (state: IState, action: IAction): IState => {
+    saveAuthorizationToken(action.payload.data.token);
+    return {
+        ...state,
+        triggerChangeOrganization: {
+            ...state.triggerChangeOrganization,
+            loading: false,
+            error: false,
+        }
+    }
+};
+
+export const changeOrganizationFailure = (state: IState, action: IAction): IState => {
+    // removeAuthorizationToken()
+    return {
+        ...state,
+        triggerChangeOrganization: {
+            ...state.triggerChangeOrganization,
+            loading: false,
+            error: true,
+            code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        }
+    }
+};
+
+export const changeOrganizationReset = (state: IState): IState => ({
+    ...state,
+    triggerChangeOrganization: initialState.triggerChangeOrganization,
+});
+
+
+
+
+
+
 
 export const logout = (state: IState): IState => {
     return {

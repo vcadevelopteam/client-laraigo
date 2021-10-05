@@ -157,6 +157,7 @@ export const langKeys = {
     newproperty: "newproperty",
     newquickreply: "newquickreply",
     newsla: "newsla",
+    newcorporation: "newcorporation",
     neworganization: "neworganization",
     newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",
@@ -271,6 +272,8 @@ export const langKeys = {
 
     corporation: 'corporation',
     corporation_plural: 'corporation_plural',
+    logo: 'logo',
+    logotype: 'logotype',
 
     name: 'name',
     name_plural: 'name_plural',
@@ -293,6 +296,10 @@ export const langKeys = {
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
     status_ejecutando: 'status_ejecutando',
+
+    type_corp_ninguno: 'type_corp_ninguno',
+    type_corp_natural: 'type_corp_natural',
+    type_corp_juridico: 'type_corp_juridico',
 
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
@@ -372,7 +379,7 @@ export const langKeys = {
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
-    flowdesigner: 'flowdesigner',
+    botdesigner: 'botdesigner',
     least_user_or_group: 'least_user_or_group',
 
     variableconfiguration: 'variableconfiguration',

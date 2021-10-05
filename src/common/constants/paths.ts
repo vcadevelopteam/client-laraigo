@@ -6,6 +6,7 @@ const paths = {
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
     SUPERVISOR: '/supervisor',
+    CORPORATIONS: '/corporations',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
@@ -61,12 +62,14 @@ const paths = {
     TIPIFICATIONS: '/extras/tipifications',
     INTEGRATIONMANAGER: '/extras/integrationmanager',
     CAMPAIGN: '/extras/campaign',
-    FLOWDESIGNER: '/extras/flowdesigner',
+    BOTDESIGNER: '/extras/botdesigner',
     VARIABLECONFIGURATION: '/extras/variableconfiguration',
     EMOJIS: '/extras/emojis',
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
     DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
-    IASERVICES: '/iaservices'
+    IASERVICES: '/iaservices',
+
+    SETTINGS: '/settings',
 };
 
 export default paths;

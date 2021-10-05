@@ -56,9 +56,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
     const [showPassword, setShowPassword] = useState(false);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
-    useEffect(() => {
-        console.log(resLogin)
-    }, [resLogin])
+
     useEffect(() => {
         if (!rescheckuser.loading) {
             if (rescheckuser.isvalid) {
@@ -74,7 +72,6 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
     }, [rescheckuser])
 
     const onGoogleLoginSucess = (r: any) => {
-        console.log(r)
         if (r && r.googleId) {
             const content = {
                 "method": "UFN_USERIDBYUSER",

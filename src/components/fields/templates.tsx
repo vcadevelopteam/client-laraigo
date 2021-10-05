@@ -33,6 +33,8 @@ import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
 import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
+import CameraAltIcon from '@material-ui/icons/CameraAlt';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
     WebMessengerIcon,
@@ -201,7 +203,7 @@ export const DialogZyx: React.FC<TemplateDialogProps> = ({ children, open, butto
 interface InputProps {
     label?: string;
     className?: any;
-    valueDefault?: string;
+    valueDefault?: any;
     disabled?: boolean;
     onChange?: (param: any, param2?: any | null) => void;
     onBlur?: (param: any, param2?: any | null) => void;
@@ -212,6 +214,7 @@ interface InputProps {
     maxLength?: number;
     fregister?: Dictionary;
     uset?: boolean;
+    prefixTranslation?: string;
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
 }
@@ -323,7 +326,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -347,7 +350,6 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             }
             <Autocomplete
-
                 filterSelectedOptions
                 style={style}
                 disabled={disabled}
@@ -356,7 +358,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                getOptionLabel={option => option ? (uset ? t(option[optionDesc]?.toLowerCase()) : (option[optionDesc] || '')) : ''}
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
                 size="small"
@@ -875,4 +877,86 @@ export const TemplateSwitchArray: React.FC<TemplateSwitchArrayProps> = ({ classN
             }} />
         </div>
     );
+}
+
+const sxImageBox = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    p: 2,
+    border: '1px dashed grey',
+    textAlign: 'center',
+}
+
+export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, valueDefault, label}) => {
+    const { t } = useTranslation();
+    const [url, setUrl] = useState<string>("");
+
+    useEffect(() => {
+        setUrl(valueDefault || "");
+    }, [valueDefault])
+    
+
+    const getUrl = (file: File | any): string => {
+        if (!file) return "";
+        try {
+            const url = URL.createObjectURL(file);
+            return url;
+        } catch (ex) {
+            console.error(ex);
+            return "";
+        }
+    }
+
+    return (
+        <div className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {
+                url === ""
+                ?
+                <Box
+                    component="label"
+                    sx={sxImageBox}
+                    style={{cursor: 'pointer'}}
+                >
+                    <React.Fragment>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            style={{display: 'none'}}
+                            onChange={(e) => {
+                                if ((e.target.files?.length || 0) > 0) {
+                                    setUrl(getUrl(e.target?.files?.item(0)));
+                                    onChange && onChange(e.target?.files?.item(0));
+                                }
+                            }}
+                        />
+                        <CameraAltIcon />
+                        <span>{t(langKeys.uploadImage)}</span>
+                    </React.Fragment>
+                </Box>
+                :
+                <React.Fragment>
+                    <Box
+                        sx={sxImageBox}
+                        style={{cursor: 'pointer'}}
+                        onClick={() => {
+                            setUrl("");
+                            onChange && onChange("")
+                        }}
+                    >
+                        <DeleteIcon />
+                        <span>{t(langKeys.delete)}</span>
+                    </Box>
+                    <Box sx={{...sxImageBox, borderTop: '0px' }}>
+                        <img
+                            src={url}
+                            alt={url}
+                            style={{maxWidth: '300px'}}
+                        />
+                    </Box>
+                </React.Fragment>
+            }
+        </div>
+    )
 }

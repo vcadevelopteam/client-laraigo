@@ -206,10 +206,12 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-12"
-                            valueDefault={row ? (row.status || "") : ""}
+                            valueDefault={row?.status || "ACTIVO"}
                             onChange={(value) => setValue('status', (value?value.domainvalue:""))}
                             error={errors?.status?.message}
                             data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
@@ -274,6 +276,7 @@ const InappropriateWords: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

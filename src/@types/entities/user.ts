@@ -11,6 +11,13 @@ interface ObjectApps {
     [key: string]: boolean[]
 }
 
+interface Organization {
+    orgid: number;
+    corpid: number;
+    orgdesc: string;
+    corpdesc: string;
+}
+
 export interface IUser {
     email: string;
     firstname: string;
@@ -23,6 +30,8 @@ export interface IUser {
     orgdesc: string;
     redirect: string;
     userid: number;
+    corpid: number;
     orgid: number;
-    menu: ObjectApps
+    menu: ObjectApps;
+    organizations: Organization[];
 }

@@ -18,27 +18,37 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
     const { type, payload } = action;
 
     if (type === typesInbox.WS_CONNECT) {
-        const loginData = { data: payload }
-        if (!socket.connected) {
+        const loginData = { data: payload };
+        let wasconnected = false;
+        if (socket.connected) {
+            console.log("vamos a desconectar")
+            wasconnected = true;
             socket.disconnect();
         }
         socket.auth = loginData;
         socket.connect();
-
-        eventsListeners.forEach(({ event, type, extra = {} }) => {
-            socket.on(event, (datatmp) =>
-                dispatch({ type, payload: { ...datatmp, ...extra } })
-            );
-        });
+        if (!wasconnected) {
+            eventsListeners.forEach(({ event, type, extra = {} }) => {
+                console.log("load eventsListeners")
+                socket.on(event, (datatmp) => {
+                    console.log("event ", event, datatmp)
+                    dispatch({ type, payload: { ...datatmp, ...extra } })
+                });
+            });
+        }
 
         socket?.on("connect", () => {
-            console.log("connect", socket.id);
-            dispatch({ type: typesInbox.WS_CONNECTED, payload: true })
+            console.log("connect connected", socket.connected, socket.id)
+            if (socket.connected) {
+                dispatch({ type: typesInbox.WS_CONNECTED, payload: true })
+            } else {
+                dispatch({ type: typesInbox.WS_CONNECTED, payload: false })
+            }
         });
 
         socket?.on("disconnect", () => {
+            console.log("from event disconnect", socket.id);
             dispatch({ type: typesInbox.WS_CONNECTED, payload: false })
-            console.log("connect", socket.id);
         });
 
         return;

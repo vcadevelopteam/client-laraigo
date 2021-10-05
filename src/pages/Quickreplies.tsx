@@ -250,7 +250,6 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
 
     const onSubmit = handleSubmit((data) => {
         //data.communicationchannelid = selected.key
-        console.log(data)
         const callback = () => {
             dispatch(execute(insQuickreplies(data))); //executeRes
             dispatch(showBackdrop(true));
@@ -386,10 +385,12 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-12"
-                                valueDefault={row ? (row.status || "") : ""}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -480,6 +481,7 @@ const Quickreplies: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

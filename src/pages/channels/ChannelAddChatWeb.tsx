@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
 import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
@@ -1465,7 +1464,6 @@ export const ChannelAddChatWeb: FC = () => {
                 success: false,
             }));
         } else if (insertChannel.value) {
-            console.log(insertChannel.value);
             dispatch(showSnackbar({
                 message: "El canal se inserto con éxito",
                 show: true,
