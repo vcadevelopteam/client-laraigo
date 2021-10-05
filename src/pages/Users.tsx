@@ -749,6 +749,8 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 onChange={(value) => setValue('twofactorauthentication', (value ? value.domainvalue : ''))}
                                 error={errors?.twofactorauthentication?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             /> :
@@ -763,8 +765,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 className="col-6"
                                 valueDefault={row?.status || "ACTIVO"}
                                 onChange={onChangeStatus}
+                                uset={true}
                                 error={errors?.status?.message}
                                 data={dataStatusUsers}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             /> :
@@ -921,6 +925,7 @@ const Users: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

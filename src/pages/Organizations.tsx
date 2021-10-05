@@ -211,6 +211,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -269,6 +271,7 @@ const Organizations: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

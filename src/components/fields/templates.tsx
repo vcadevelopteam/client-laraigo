@@ -214,6 +214,7 @@ interface InputProps {
     maxLength?: number;
     fregister?: Dictionary;
     uset?: boolean;
+    prefixTranslation?: string;
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
 }
@@ -325,7 +326,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, variant = "standard" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard" }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -357,7 +358,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
-                getOptionLabel={option => option ? (uset ? t(option[optionDesc]?.toLowerCase()) : (option[optionDesc] || '')) : ''}
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 loading={loading}
                 size="small"

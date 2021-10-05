@@ -79,7 +79,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
-                status: row?.status || '',
+                status: row?.status || 'ACTIVO',
                 organization: user?.orgdesc || ''
             })
 
@@ -206,6 +206,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
             },
             {
                 Header: t(langKeys.status),
+                prefixTranslation: 'status_',
                 accessor: 'status',
                 NoFilter: true
             }
@@ -387,7 +388,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                             onChange={(value) => setValue('type', value ? value.domainvalue : '')}
                                             error={errors?.type?.message}
                                             data={dataDomainType}
-                                            optionDesc="domaindesc"
+                                            uset={true}
+                                            prefixTranslation="type_domain_"
+                                            optionDesc="domainvalue"
                                             optionValue="domainvalue"
                                         /> :
                                         <FieldView
@@ -400,11 +403,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         <FieldSelect
                                             label={t(langKeys.status)}
                                             className="col-6"
-                                            valueDefault={row?.status || ""}
+                                            valueDefault={row?.status || "ACTIVO"}
                                             onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                             error={errors?.status?.message}
                                             data={dataDomainStatus}
                                             optionDesc="domaindesc"
+                                            uset={true}
+                                            prefixTranslation="status_"
                                             optionValue="domainvalue"
                                         /> :
                                         <FieldView
@@ -504,6 +509,7 @@ const Domains: FC = () => {
                 Header: t(langKeys.type),
                 accessor: 'type',
                 NoFilter: true,
+                prefixTranslation: 'type_domain_',
                 Cell: (props: any) => {
                     const { type } = props.cell.row.original;
                     return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase()
@@ -513,6 +519,7 @@ const Domains: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()

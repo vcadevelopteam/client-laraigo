@@ -1,10 +1,12 @@
 import FileSaver from 'file-saver';
 import * as XLSX from 'xlsx';
 import { Dictionary } from "@types";
+import i18n from 'i18next';
 
 type ColumnTmp = {
     Header: string;
     accessor: string;
+    prefixTranslation?: string;
 }
 
 export function exportExcel(filename: string, csvData: Dictionary[], columnsexport: ColumnTmp[]): void {
@@ -15,7 +17,7 @@ export function exportExcel(filename: string, csvData: Dictionary[], columnsexpo
     if(columnsexport) {
         datafromtable = csvData.map((x: any) => {
             const newx: Dictionary = {};
-            columnsexport.forEach((y: ColumnTmp) => newx[y.Header] = x[y.accessor]);
+            columnsexport.forEach((y: ColumnTmp) => newx[y.Header] = y.prefixTranslation ? i18n.t(`${y.prefixTranslation}${x[y.accessor]?.toLowerCase()}`).toUpperCase() : x[y.accessor]);
             return newx;
         });
     }

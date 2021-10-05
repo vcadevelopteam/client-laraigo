@@ -82,12 +82,17 @@ const Corporations: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
@@ -205,7 +210,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             id: row ? row.corpid : 0,
             description: row ? (row.description || '') : '',
             type: row ? row.type : 'NINGUNO',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             logo: row ? row.logo : '',
             logotype: row ? row.logotype : '',
             operation: row ? "UPDATE" : "INSERT"
@@ -324,6 +329,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('type', value?.domainvalue)}
                                 error={errors?.type?.message}
                                 data={dataType}
+                                uset={true}
+                                prefixTranslation="type_corp_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -342,7 +349,9 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('status', value?.domainvalue)}
                                 error={errors?.status?.message}
                                 data={dataStatus}
-                                optionDesc="domaindesc"
+                                uset={true}
+                                prefixTranslation="status_"
+                                optionDesc="domainvalue"
                                 optionValue="domainvalue"
                             />
                             : <FieldView

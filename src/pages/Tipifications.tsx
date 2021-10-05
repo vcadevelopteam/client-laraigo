@@ -157,7 +157,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             title: row?.title || '',
             parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannelid || '',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
             tags: row?.tags || ''
@@ -168,7 +168,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         register('id');
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('parent', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('parent');
         register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
@@ -333,10 +333,12 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : "ACTIVO"}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -521,6 +523,7 @@ const Tipifications: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'statusdesc',
                 NoFilter: true,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
