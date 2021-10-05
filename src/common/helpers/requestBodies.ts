@@ -1138,3 +1138,118 @@ export const insInteligentModelConfiguration = ({channels, id, operation, descri
         parameters: services
      }
 });
+export const gerencialTMOsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        level: 0,
+        closedby: "ASESOR,BOT",
+        min:0,
+        max:0,
+        target:0,
+        skipdown:0,
+        skipup:0,
+        bd: true,
+        offset: -5.00
+     }
+});
+export const gerencialTMEsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        level: 0,
+        closedby: "ASESOR,BOT",
+        min:0,
+        max:0,
+        target:0,
+        skipdown:0,
+        skipup:0,
+        bd: true,
+        offset: -5.00
+     }
+});
+export const gerencialsummarysel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: -5.00
+     }
+});
+export const gerencialencuestasel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_ENCUESTA_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ENCUESTA_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        closedby: "",
+        offset: -5.00
+     }
+
+});
+export const gerencialconversationsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_CONVERSATION_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_CONVERSATION_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: -5.00
+     }
+});
+export const gerencialinteractionsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_INTERACTION_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_INTERACTION_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: -5.00
+     }
+});
+export const gerencialetiquetassel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        limit: 5,
+        group,
+        company,
+        offset: -5.00
+     }
+});
+export const gerencialasesoresconectadosbarsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL",
+    parameters: { 
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: -5.00
+     }
+});
