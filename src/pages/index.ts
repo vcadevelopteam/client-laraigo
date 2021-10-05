@@ -34,3 +34,5 @@ export * from './signup';
 export { default as BotDesigner } from './BotDesigner';
 export { default as DashboardManagerial } from './DashboardManagerial';
 export { default as DashboardOperationalPush } from './DashboardOperationalPush';
+
+export { default as Settings } from './settings';

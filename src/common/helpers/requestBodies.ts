@@ -956,10 +956,17 @@ export const insCampaignMember = ({
         operation,
     }
 });
-export const getTicketListByPersonBody = (personId: ID, offset = 0) => ({
-    method: "UFN_CONVERSATION_SEL_PERSON",
+
+export const getTicketListByPersonBody = (personId: ID, { filters, sorts, take, skip, offset = 0 }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CONVERSATION_SEL_PERSON",
+    methodCount: "UFN_CONVERSATION_SEL_PERSON_TOTALRECORDS",
     parameters: {
+        origin: "person",
         personid: personId,
+        filters,
+        sorts,
+        take,
+        skip,
         offset,
     },
 });
@@ -1149,4 +1156,9 @@ export const insInteligentModelConfiguration = ({channels, id, operation, descri
         icontype,
         parameters: services
      }
+});
+
+export const getCountConfigurationsBody = (): IRequestBody => ({
+    method: "ufn_count_configuration",
+    parameters: {}
 });
