@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, ListPaginated, TemplateIcons, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody } from 'common/helpers';
 import { IPerson, IPersonChannel, IPersonConversation } from "@types";
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, List } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -19,11 +19,6 @@ import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPagin
 
 interface PersonItemProps {
     person: IPerson;
-}
-
-interface TabPanelProps {
-    value: string;
-    index: string;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -365,13 +360,18 @@ export const Person: FC = () => {
     );
 }
 
+interface TabPanelProps {
+    value: string;
+    index: string;
+}
+
 const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
     return (
         <div
             role="tabpanel"
             hidden={value !== index}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
+            id={`wrapped-tabpanel-${value}`}
+            aria-labelledby={`wrapped-tab-${value}`}
             style={{ display: value === index ? 'block' : 'none', overflowY: 'auto' }}
         >
             <Box p={3}>
@@ -865,44 +865,56 @@ interface ConversationsTabProps {
     person: IPerson;
 }
 
+const useConversationsTabStyles = makeStyles(theme => ({
+    root: {
+        height: '100%',
+    },
+}));
+
 const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
+    const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
+    const [page, setPage] = useState(0);
     const conversations = useSelector(state => state.person.personTicketList);
 
     useEffect(() => {
-        dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid)));
+        const params = {
+            filters: {},
+            sorts: {},
+            take: 20,
+            skip: 20 * page,
+            offset: 0,
+        };
+        dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid, params)));
+
+        const myDiv = document.getElementById("wrapped-tabpanel-2");
+        if (myDiv) {
+            myDiv.onscroll = () => {
+                if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
+                    console.log("Scroll finalizó");
+                }
+            };
+        }
+
         return () => {
             dispatch(resetGetTicketListByPerson());
         };
     }, [dispatch, person]);
 
+    const onScroll: React.UIEventHandler<HTMLUListElement> = (e) => {
+        console.log("1111");
+        if (e.currentTarget.offsetHeight + e.currentTarget.scrollTop >= e.currentTarget.scrollHeight) {
+            console.log("sss");
+        }
+    }
+
     return (
-        <div>
+        <div className={classes.root}>
             {conversations.data.map((e, i) => (
                 <ConversationItem conversation={e} key={`conversation_item_${i}`} />
             ))}
         </div>
     );
-    // return (
-    //     <List
-    //         direction="vertical"
-    //         width="100%"
-    //         height={600}
-    //         itemCount={conversations.data.length}
-    //         itemSize={82}
-    //     >
-    //         {({ index, style }) => {
-    //             return (
-    //                 <div style={style}>
-    //                     <ConversationItem
-    //                         conversation={conversations.data[index]}
-    //                         key={`conversation_item_${index}`}
-    //                     />
-    //                 </div>
-    //             );
-    //         }}
-    //     </List>
-    // );
 }
 
 const useConversationsItemStyles = makeStyles(theme => ({

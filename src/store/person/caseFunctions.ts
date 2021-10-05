@@ -72,6 +72,7 @@ export const getTicketListByPersonSuccess = (state: IState, action: IAction): IS
     personTicketList: {
         ...state.personTicketList,
         data: action.payload.data || [],
+        count: action.payload.count || 0,
         loading: false,
         error: false,
     },
