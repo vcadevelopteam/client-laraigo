@@ -168,7 +168,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         register('id');
         register('title', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('parent', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('parent');
         register('communicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type');
