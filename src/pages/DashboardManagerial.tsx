@@ -623,18 +623,20 @@ const DashboardManagerial: FC = () => {
         }
     }, [resInteraction]);
     useEffect(() => {
-        setDataAsesoreconectadosbar({
-            avgasesoresconectados: "0"
-        })
-        if (resAsesoreconectadosbar && resAsesoreconectadosbar.length > 0) {
-            setDataAsesoreconectadosbar({
-                avgasesoresconectados: resAsesoreconectadosbar[0].avgasesoresconectados
-            })
-            resAsesoreconectadosbar.forEach((x:any)=>{
-                setResAsesoreconectados((p)=>[...p])
-            })
-        }
+        console.log(resAsesoreconectadosbar)
+        // setDataAsesoreconectadosbar({
+        //     avgasesoresconectados: "0"
+        // })
+        // if (resAsesoreconectadosbar && resAsesoreconectadosbar.length > 0) {
+        //     setDataAsesoreconectadosbar({
+        //         avgasesoresconectados: resAsesoreconectadosbar[0].avgasesoresconectados
+        //     })
+        //     resAsesoreconectadosbar.forEach((x:any)=>{
+        //         setResAsesoreconectados((p)=>[...p])
+        //     })
+        // }
     }, [resAsesoreconectadosbar]);
+
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
@@ -645,7 +647,21 @@ const DashboardManagerial: FC = () => {
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
                 setResEtiquetas(remultiaux.data[6].data)
-                setResAsesoreconectadosbar(remultiaux.data[7].data)
+                
+                
+                
+                const asesoretmp = [...remultiaux.data[7].data];
+                
+                setResAsesoreconectadosbar([...Array(24)].map((_, i) => {
+                    const hourFound = asesoretmp.find((x: Dictionary) => x.hora === i);
+                    if (hourFound)
+                        return hourFound
+                    else 
+                        return { hora: i, asesoresconectados: "0", avgasesoresconectados: "0" }
+                }))
+
+
+
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {
