@@ -51,15 +51,15 @@ export function filterPipe(items: Dictionary[], field: string, value: any, inv?:
     }
     // If '%' contains wildcard is a string contains//
     else if (inv === '%') {
-        return items.filter(it => it[field].toLowerCase().includes(value.toLowerCase()));
+        return items.filter(it => it[field]?.toLowerCase().includes(value.toLowerCase()));
     }
     // If '!' inverter filter is a string not equals//
     else if (inv === '!') {
-        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) === -1);
+        return items.filter(it => it[field]?.toLowerCase().indexOf(value.toLowerCase()) === -1);
     }
     // If the filter value is a string is a string equals//
     else {
-        return items.filter(it => it[field].toLowerCase().indexOf(value.toLowerCase()) !== -1);
+        return items.filter(it => it[field]?.toLowerCase().indexOf(value.toLowerCase()) !== -1);
     }
 }
 
