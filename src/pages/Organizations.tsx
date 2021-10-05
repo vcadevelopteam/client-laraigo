@@ -211,6 +211,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />

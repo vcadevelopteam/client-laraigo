@@ -266,7 +266,7 @@ const translation: LangKeys = {
 
     type_corp_ninguno: 'Ninguno',
     type_corp_natural: 'Persona natural',
-    type_corp_juridico: 'Persona jurídica',
+    type_corp_juridica: 'Persona jurídica',
 
     attending: 'En atención',
 

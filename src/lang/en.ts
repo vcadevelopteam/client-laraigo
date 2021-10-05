@@ -199,7 +199,7 @@ const translation: LangKeys = {
 
     type_corp_ninguno: 'none',
     type_corp_natural: 'Natural person',
-    type_corp_juridico: 'Legal person',
+    type_corp_juridica: 'Legal person',
 
     attending: 'Attending',
 
