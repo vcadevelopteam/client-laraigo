@@ -340,9 +340,11 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-6"
-                            valueDefault={row ? (row.status || "") : "ACTIVO"}
+                            valueDefault={row?.status || "ACTIVO"}
                             onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                             error={errors?.status?.message}
+                            uset={true}
+                            prefixTranslation="status_"
                             data={dataStatus}
                             optionDesc="domaindesc"
                             optionValue="domainvalue"

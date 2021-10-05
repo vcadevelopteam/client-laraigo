@@ -264,6 +264,10 @@ const translation: LangKeys = {
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
 
+    type_corp_ninguno: 'Ninguno',
+    type_corp_natural: 'Persona natural',
+    type_corp_juridico: 'Persona jurídica',
+
     attending: 'En atención',
 
     type_domain_bot: 'Dominio de bot',

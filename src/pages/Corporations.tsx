@@ -82,7 +82,11 @@ const Corporations: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.status),
@@ -205,7 +209,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             id: row ? row.corpid : 0,
             description: row ? (row.description || '') : '',
             type: row ? row.type : 'NINGUNO',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             logo: row ? row.logo : '',
             logotype: row ? row.logotype : '',
             operation: row ? "UPDATE" : "INSERT"
@@ -324,6 +328,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('type', value?.domainvalue)}
                                 error={errors?.type?.message}
                                 data={dataType}
+                                uset={true}
+                                prefixTranslation="type_corp_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
@@ -342,6 +348,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={(value) => setValue('status', value?.domainvalue)}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />

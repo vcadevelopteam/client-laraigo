@@ -283,6 +283,10 @@ export const langKeys = {
     status_bloqueado: 'status_bloqueado',
     status_ejecutando: 'status_ejecutando',
 
+    type_corp_ninguno: 'type_corp_ninguno',
+    type_corp_natural: 'type_corp_natural',
+    type_corp_juridico: 'type_corp_juridico',
+
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',
