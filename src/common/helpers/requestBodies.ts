@@ -484,10 +484,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { id, description, type, status, logo, logotype, operation }
 });
-export const insOrg = ({ description, status, type, id, operation }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { id, description, status, type, operation }
+    parameters: { corpid, id, description, status, type, operation }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -956,10 +956,17 @@ export const insCampaignMember = ({
         operation,
     }
 });
-export const getTicketListByPersonBody = (personId: ID, offset = 0) => ({
-    method: "UFN_CONVERSATION_SEL_PERSON",
+
+export const getTicketListByPersonBody = (personId: ID, { filters, sorts, take, skip, offset = 0 }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_CONVERSATION_SEL_PERSON",
+    methodCount: "UFN_CONVERSATION_SEL_PERSON_TOTALRECORDS",
     parameters: {
+        origin: "person",
         personid: personId,
+        filters,
+        sorts,
+        take,
+        skip,
         offset,
     },
 });
@@ -1149,4 +1156,9 @@ export const insInteligentModelConfiguration = ({channels, id, operation, descri
         icontype,
         parameters: services
      }
+});
+
+export const getCountConfigurationsBody = (): IRequestBody => ({
+    method: "ufn_count_configuration",
+    parameters: {}
 });

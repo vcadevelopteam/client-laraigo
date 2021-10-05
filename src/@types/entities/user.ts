@@ -30,6 +30,7 @@ export interface IUser {
     orgdesc: string;
     redirect: string;
     userid: number;
+    corpid: number;
     orgid: number;
     menu: ObjectApps;
     organizations: Organization[];

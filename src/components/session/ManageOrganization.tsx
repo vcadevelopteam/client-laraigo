@@ -22,7 +22,7 @@ const ManageOrganization: FC = () => {
 
     const handleChangeOrganization = (value: any) => {
         if (value) {
-            dispatch(changeOrganization(value.corpid, value.orgid));
+            dispatch(changeOrganization(value.corpid, value.orgid, value.corpdesc, value.orgdesc));
             dispatch(showBackdrop(true));
             setTriggerSave(true)
         }

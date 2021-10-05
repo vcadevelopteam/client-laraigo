@@ -27,8 +27,8 @@ export const validateToken = (): IActionCall => ({
 export const resetValidateToken = (): IActionCall => ({type: actionTypes.VALIDATE_TOKEN_RESET});
 
 
-export const changeOrganization = (newcorpid: number, neworgid: number): IActionCall => ({
-    callAPI: () => CommonService.changeOrganization(newcorpid, neworgid),
+export const changeOrganization = (newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string): IActionCall => ({
+    callAPI: () => CommonService.changeOrganization(newcorpid, neworgid, corpdesc, orgdesc),
     types: {
         loading: actionTypes.CHANGE_ORGANIZATION,
         success: actionTypes.CHANGE_ORGANIZATION_SUCCESS,
