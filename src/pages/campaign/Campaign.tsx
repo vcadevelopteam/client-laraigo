@@ -110,6 +110,7 @@ export const Campaign: FC = () => {
                 Header: t(langKeys.status),
                 accessor: 'status',
                 NoFilter: false,
+                prefixTranslation: 'status_',
                 Cell: (props: any) => {
                     const { status } = props.cell.row.original;
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
