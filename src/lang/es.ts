@@ -270,6 +270,7 @@ const translation: LangKeys = {
 
     attending: 'En atención',
 
+    type_domain_ninguno: 'None',
     type_domain_bot: 'Dominio de bot',
     type_domain_cliente: 'Dominio de cliente',
     type_domain_sistema: 'Dominio de sistema',

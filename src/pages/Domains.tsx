@@ -206,6 +206,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
             },
             {
                 Header: t(langKeys.status),
+                prefixTranslation: 'status_',
                 accessor: 'status',
                 NoFilter: true
             }
@@ -387,7 +388,9 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                             onChange={(value) => setValue('type', value ? value.domainvalue : '')}
                                             error={errors?.type?.message}
                                             data={dataDomainType}
-                                            optionDesc="domaindesc"
+                                            uset={true}
+                                            prefixTranslation="type_domain_"
+                                            optionDesc="domainvalue"
                                             optionValue="domainvalue"
                                         /> :
                                         <FieldView
@@ -506,6 +509,7 @@ const Domains: FC = () => {
                 Header: t(langKeys.type),
                 accessor: 'type',
                 NoFilter: true,
+                prefixTranslation: 'type_domain_',
                 Cell: (props: any) => {
                     const { type } = props.cell.row.original;
                     return (t(`type_domain_${type}`.toLowerCase()) || "").toUpperCase()

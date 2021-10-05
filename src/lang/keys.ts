@@ -287,6 +287,7 @@ export const langKeys = {
     type_corp_natural: 'type_corp_natural',
     type_corp_juridica: 'type_corp_juridico',
 
+    type_domain_ninguno: 'type_domain_ninguno',
     type_domain_bot: 'type_domain_bot',
     type_domain_cliente: 'type_domain_client',
     type_domain_sistema: 'type_domain_sistema',

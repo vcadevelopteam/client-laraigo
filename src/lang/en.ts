@@ -203,6 +203,7 @@ const translation: LangKeys = {
 
     attending: 'Attending',
 
+    type_domain_ninguno: 'None',
     type_domain_bot: 'Bot domain',
     type_domain_cliente: 'Client domain',
     type_domain_sistema: 'System domain',
