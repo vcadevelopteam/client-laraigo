@@ -79,7 +79,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 domaindesc: row?.domaindesc || '',
                 domainvalue: row?.domainvalue || '',
                 bydefault: row?.bydefault || false,
-                status: row?.status || '',
+                status: row?.status || 'ACTIVO',
                 organization: user?.orgdesc || ''
             })
 
@@ -400,11 +400,13 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
                                         <FieldSelect
                                             label={t(langKeys.status)}
                                             className="col-6"
-                                            valueDefault={row?.status || ""}
+                                            valueDefault={row?.status || "ACTIVO"}
                                             onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                             error={errors?.status?.message}
                                             data={dataDomainStatus}
                                             optionDesc="domaindesc"
+                                            uset={true}
+                                            prefixTranslation="status_"
                                             optionValue="domainvalue"
                                         /> :
                                         <FieldView

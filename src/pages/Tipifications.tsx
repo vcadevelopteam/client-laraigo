@@ -157,7 +157,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
             title: row?.title || '',
             parent: row?.parentid || 0,
             communicationchannel: row?.communicationchannelid || '',
-            status: row ? row.status : 'ACTIVO',
+            status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
             tags: row?.tags || ''
@@ -333,10 +333,12 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : "ACTIVO"}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
+                                uset={true}
+                                prefixTranslation="status_"
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />

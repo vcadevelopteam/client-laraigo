@@ -266,9 +266,11 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
+                                valueDefault={row?.status || "ACTIVO"}
                                 onChange={(value) => setValue('status', value? value.domainvalue: '')}
                                 error={errors?.status?.message}
+                                uset={true}
+                                prefixTranslation="status_"
                                 data={dataStatus}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
