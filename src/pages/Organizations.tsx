@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
+import { filterPipe, getCorpSel, getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -59,12 +59,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
+            corpid: !row && ['SUPERADMIN'].includes(user?.roledesc || "") ? filterPipe(dataCorp, 'description', user?.corpdesc)[0]?.corpid : null,
             description: row ? (row.orgdesc || '') : '',
             status: row ? row.status : 'ACTIVO',
-            type: row ? row.type : 'ACTIVO',
+            type: row ? row.type : '',
             id: row ? row.orgid : 0,
             operation: row ? "EDIT" : "INSERT"
         }
@@ -144,12 +146,27 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.corporation)} // "Corporation"
-                                className="col-6"
-                                valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
-                                disabled={true}
-                            />
+                            (
+                                !row && ['SUPERADMIN'].includes(user?.roledesc || "") ?
+                                <FieldSelect
+                                    label={t(langKeys.corporation)}
+                                    className="col-6"
+                                    valueDefault={getValues('corpid')}
+                                    onChange={(value) => setValue('corpid', value?.corpid)}
+                                    error={errors?.corpid?.message}
+                                    data={dataCorp}
+                                    disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
+                                    optionDesc="description"
+                                    optionValue="corpid"
+                                />
+                                :
+                                <FieldEdit
+                                    label={t(langKeys.corporation)} // "Corporation"
+                                    className="col-6"
+                                    valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
+                                    disabled={true}
+                                />
+                            )
                             : <FieldView
                                 label={t(langKeys.corporation)}
                                 value={user?.corpdesc}
@@ -174,7 +191,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.type)}
                                 className="col-6"
-                                valueDefault={row ? (row.type || "") : ""}
+                                valueDefault={getValues('type')}
                                 onChange={(value) => setValue('type', value.domainvalue)}
                                 error={errors?.type?.message}
                                 data={dataType}
@@ -190,7 +207,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
-                                valueDefault={row ? (row.status || "") : ""}
+                                valueDefault={getValues('status')}
                                 onChange={(value) => setValue('status', value ? value.domainvalue : '')}
                                 error={errors?.status?.message}
                                 data={dataStatus}
@@ -210,7 +227,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 }
 
 const Organizations: FC = () => {
-    // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -268,7 +284,8 @@ const Organizations: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPOORG")
+            getValuesFromDomain("TIPOORG"),
+            getCorpSel(0)
         ]));
         return () => {
             dispatch(resetMain());
@@ -331,7 +348,6 @@ const Organizations: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
             />
         )
     }
