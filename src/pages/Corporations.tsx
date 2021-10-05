@@ -164,7 +164,7 @@ const Corporations: FC = () => {
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
-                register={['SUPERADMIN', 'ADMINISTRADOR'].includes(user?.roledesc || "")}
+                register={['SUPERADMIN'].includes(user?.roledesc || "")}
                 handleRegister={handleRegister}
             />
         )

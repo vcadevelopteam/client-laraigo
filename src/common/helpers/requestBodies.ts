@@ -484,10 +484,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { id, description, type, status, logo, logotype, operation }
 });
-export const insOrg = ({ description, status, type, id, operation }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { id, description, status, type, operation }
+    parameters: { corpid, id, description, status, type, operation }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
