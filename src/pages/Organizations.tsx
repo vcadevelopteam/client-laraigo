@@ -63,7 +63,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            corpid: !row && ['SUPERADMIN'].includes(user?.roledesc || "") ? filterPipe(dataCorp, 'description', user?.corpdesc)[0]?.corpid : null,
+            corpid: !row && ['SUPERADMIN'].includes(user?.roledesc || "") ? user?.corpid : null,
             description: row ? (row.orgdesc || '') : '',
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
