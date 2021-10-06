@@ -358,11 +358,11 @@ const DashboardManagerial: FC = () => {
     }, [mainResult])
     useEffect(() => {
         if (resTMO.length) {
-            const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax, closedby, slaid } = resTMO[0];
-            const promtt = tickets_total ? (tickets_comply * 100 / tickets_total) : 0;
+            const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
                 let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) == 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) == 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
@@ -397,8 +397,8 @@ const DashboardManagerial: FC = () => {
                 ss = secondsmin % 60 + "s"
                 let timeMin = `${hh}${mm}${ss}`
                 setData(p => ({ ...p, timeMin: timeMin }))
-
-                setData(p => ({ ...p, sla: `${(parseFloat(target_percmax) * 100).toFixed(2)}%` }))
+                let sla = target_percmax?`${(parseFloat(target_percmax) * 100).toFixed(2)}%`:"0%"
+                setData(p => ({ ...p, sla: sla }))
 
                 let variacionperccolor = variacionperc >= 0;
                 setData(p => ({ ...p, variacionperc: variacionperc }))
@@ -416,11 +416,11 @@ const DashboardManagerial: FC = () => {
     }, [resTMO])
     useEffect(() => {
         if (resTME.length) {
-            const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax, closedby, slaid } = resTME[0];
-            const promtt = tickets_total ? (tickets_comply * 100 / tickets_total) : 0;
+            const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTME[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
                 let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) == 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) == 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
@@ -456,7 +456,8 @@ const DashboardManagerial: FC = () => {
                 let timeMin = `${hh}${mm}${ss}`
                 setDataTME(p => ({ ...p, timeMin: timeMin }))
 
-                setDataTME(p => ({ ...p, sla: `${(parseFloat(target_percmax) * 100).toFixed(2)}%` }))
+                let sla = target_percmax?`${(parseFloat(target_percmax) * 100).toFixed(2)}%`:"0%"
+                setDataTME(p => ({ ...p, sla: sla }))
 
                 let variacionperccolor = variacionperc >= 0;
                 setDataTME(p => ({ ...p, variacionperc: variacionperc }))
@@ -496,7 +497,6 @@ const DashboardManagerial: FC = () => {
         })
         if (resSummary.length) {
             if (resSummary[0] && resSummary[0].ticketstotal != 0) {
-                const attendedconversations = (resSummary[0].ticketscerrados / resSummary[0].ticketstotal) * 100;
                 let txtmaxavgticketusername = formatname(resSummary[0].maxavgticketusername)
                 let txtminavgticketusername = formatname(resSummary[0].minavgticketusername)
                 let txtmaxavgticketasesorusername = formatname(resSummary[0].maxavgticketasesorusername)
@@ -842,12 +842,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{data.timeMin}</div>
                             </div>
                         </div>
-                        <div style={{ flex: '0 0 200px', height: 250 }}>
-                            <ResponsiveContainer className={clsx({
-                                [classes.itemGraphic]: data.tickets_total,
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
                                 [classes.dontshow]: !data.tickets_total,
 
                             })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -884,33 +883,35 @@ const DashboardManagerial: FC = () => {
 
 
                     <Box
-                        className={classes.replacerowzyx}
-                        style={{ backgroundColor: "white" }}
+                        className={classes.itemCard}
                     >
-                        <div style={{ display: 'flex', flex: 1, gap: "8px" }}>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>TME</div>
-                                    <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{dataTME.obj_max}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataTME.variacioncolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataTME.variaciontxt}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.highestTME)}</div>
-                                    <div className={classes.datafield}>{dataTME.timeMax}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.lowestTME)}</div>
-                                    <div className={classes.datafield}>{dataTME.timeMin}</div>
-                                </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>TME</div>
+                                <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
                             </div>
-                            <ResponsiveContainer className={clsx(dataTME.tickets_total ? classes.widthhalf : classes.dontshow)}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>{dataTME.obj_max}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataTME.variacioncolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataTME.variaciontxt}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.highestTME)}</div>
+                                <div className={classes.datafield}>{dataTME.timeMax}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.lowestTME)}</div>
+                                <div className={classes.datafield}>{dataTME.timeMin}</div>
+                            </div>
+                        </div>
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                [classes.dontshow]: !dataTME.tickets_total,
+
+                            })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -920,27 +921,27 @@ const DashboardManagerial: FC = () => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.sla)}</div>
-                                    <div className={classes.datafield}>{dataTME.sla}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataTME.variacionperc}%</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
-                                    <div className={classes.datafield}>{dataTME.tickets_comply}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
-                                    <div className={classes.datafield}>{dataTME.tickets_analyzed - dataTME.tickets_comply}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalconversation)}</div>
-                                    <div className={classes.datafield}>{dataTME.tickets_total}</div>
-                                </div>
+                        </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.sla)}</div>
+                                <div className={classes.datafield}>{dataTME.sla}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataTME.variacionperc}%</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                <div className={classes.datafield}>{dataTME.tickets_comply}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                <div className={classes.datafield}>{dataTME.tickets_analyzed - dataTME.tickets_comply}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                <div className={classes.datafield}>{dataTME.tickets_total}</div>
                             </div>
                         </div>
                     </Box>
@@ -948,7 +949,7 @@ const DashboardManagerial: FC = () => {
                 </div>
                 <div className={classes.replacerowzyx}>
                     <Box
-                        className={classes.quarterbox}
+                        className={classes.itemCard}
                         style={{ backgroundColor: "#53a6fa", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
@@ -957,7 +958,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </Box>
                     <Box
-                        className={classes.quarterbox}
+                        className={classes.itemCard}
                         style={{ backgroundColor: "#22b66e", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
@@ -966,7 +967,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </Box>
                     <Box
-                        className={classes.quarterbox}
+                        className={classes.itemCard}
                         style={{ backgroundColor: "#fdab29", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
@@ -975,7 +976,7 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </Box>
                     <Box
-                        className={classes.quarterbox}
+                        className={classes.itemCard}
                         style={{ backgroundColor: "#907eec", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
@@ -986,33 +987,35 @@ const DashboardManagerial: FC = () => {
                 </div>
                 <div className={classes.replacerowzyx}>
                     <Box
-                        className={classes.replacerowzyx}
-                        style={{ backgroundColor: "white" }}
+                        className={classes.itemCard}
                     >
-                        <div style={{ display: 'flex', flex: 1, gap: 8 }}>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>NPS</div>
-                                    <div className={classes.boxtitledata}>{dataEncuesta.dataNPS}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.nps_green}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataEncuesta.npsvariacioncolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npsvariation}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollssent)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
-                                </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>NPS</div>
+                                <div className={classes.boxtitledata}>{dataEncuesta.dataNPS}</div>
                             </div>
-                            <ResponsiveContainer className={clsx(dataEncuesta.npspollssent ? classes.widthhalf : classes.dontshow)}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.nps_green}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataEncuesta.npsvariacioncolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npsvariation}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npspollssent}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
+                            </div>
+                        </div>
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                [classes.dontshow]: dataEncuesta.npspollsanswered==="0",
+
+                            })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -1022,54 +1025,56 @@ const DashboardManagerial: FC = () => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npstotalpromoters}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totaldetractors)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npstotaldetractors}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalneutral)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npstotalneutral}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalconversations)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.npstotalconversations}</div>
-                                </div>
+                        </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npstotalpromoters}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totaldetractors)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npstotaldetractors}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalneutral)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npstotalneutral}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversations)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.npstotalconversations}</div>
                             </div>
                         </div>
                     </Box>
                     <Box
-                        className={classes.replacerowzyx}
-                        style={{ backgroundColor: "white" }}
+                        className={classes.itemCard}
                     >
-                        <div style={{ display: 'flex', flex: 1, gap: 8 }}>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>CSAT</div>
-                                    <div className={classes.boxtitledata}>{dataEncuesta.dataCSAT}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csat_green}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataEncuesta.csatvariacioncolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csatvariation}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollssent)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
-                                </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>CSAT</div>
+                                <div className={classes.boxtitledata}>{dataEncuesta.dataCSAT}</div>
                             </div>
-                            <ResponsiveContainer className={clsx(dataEncuesta.csatpollssent ? classes.widthhalf : classes.dontshow)}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csat_green}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataEncuesta.csatvariacioncolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatvariation}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatpollssent}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
+                            </div>
+                        </div>
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                [classes.dontshow]: dataEncuesta.csatpollsanswered==="0",
+
+                            })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -1079,56 +1084,58 @@ const DashboardManagerial: FC = () => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csattotalpromoters}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totaldetractors)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csattotaldetractors}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalneutral)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csattotalneutral}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalconversations)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.csattotalconversations}</div>
-                                </div>
+                        </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csattotalpromoters}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totaldetractors)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csattotaldetractors}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalneutral)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csattotalneutral}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversations)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.csattotalconversations}</div>
                             </div>
                         </div>
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx} >
                     <Box
-                        className={classes.replacerowzyx}
-                        style={{ backgroundColor: "white" }}
+                        className={classes.itemCard}
                     >
-                        <div style={{ display: 'flex', flex: 1, gap: 8 }}>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>FCR</div>
-                                    <div className={classes.boxtitledata}>{dataEncuesta.dataFCR}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcr_green}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataEncuesta.fcrvariacioncolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrvariation}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollssent)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
-                                </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>FCR</div>
+                                <div className={classes.boxtitledata}>{dataEncuesta.dataFCR}</div>
                             </div>
-                            <ResponsiveContainer className={clsx(dataEncuesta.fcrpollssent !== "0" ? classes.widthhalf : classes.dontshow)}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcr_green}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataEncuesta.fcrvariacioncolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrvariation}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrpollssent}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
+                            </div>
+                        </div>
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                [classes.dontshow]: dataEncuesta.fcrpollsanswered==="0",
+
+                            })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -1138,50 +1145,52 @@ const DashboardManagerial: FC = () => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalresolved)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrtotalpromoters}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalnotresolved)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrtotaldetractors}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalconversations)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fcrtotalconversations}</div>
-                                </div>
+                        </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalresolved)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrtotalpromoters}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalnotresolved)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrtotaldetractors}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversations)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fcrtotalconversations}</div>
                             </div>
                         </div>
                     </Box>
                     <Box
-                        className={classes.replacerowzyx}
-                        style={{ backgroundColor: "white" }}
+                        className={classes.itemCard}
                     >
-                        <div style={{ display: 'flex', flex: 1, gap: 8 }}>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFieldsTitle}>
-                                    <div className={classes.boxtitle}>FIX</div>
-                                    <div className={classes.boxtitledata}>{dataEncuesta.dataFIX}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.objective)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fix_green}</div>
-                                </div>
-                                <div className={clsx(classes.containerFields, dataEncuesta.fixvariacioncolor ? classes.colorgreen : classes.colorred)}>
-                                    <div className={classes.label}>{t(langKeys.variation)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixvariation}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollssent)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
-                                </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFieldsTitle}>
+                                <div className={classes.boxtitle}>FIX</div>
+                                <div className={classes.boxtitledata}>{dataEncuesta.dataFIX}</div>
                             </div>
-                            <ResponsiveContainer className={clsx(dataEncuesta.fixpollssent ? classes.widthhalf : classes.dontshow)}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.objective)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fix_green}</div>
+                            </div>
+                            <div className={clsx(classes.containerFields, dataEncuesta.fixvariacioncolor ? classes.colorgreen : classes.colorred)}>
+                                <div className={classes.label}>{t(langKeys.variation)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixvariation}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollssent)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixpollssent}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.pollsanswered)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
+                            </div>
+                        </div>
+                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                [classes.dontshow]: dataEncuesta.fixpollsanswered==="0",
+
+                            })}>
+                            <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
                                     <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
@@ -1191,19 +1200,19 @@ const DashboardManagerial: FC = () => {
                                     </Pie>
                                 </PieChart>
                             </ResponsiveContainer>
-                            <div className={classes.widthhalf}>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalresolved)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixtotalpromoters}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalnotresolved)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixtotaldetractors}</div>
-                                </div>
-                                <div className={classes.containerFields}>
-                                    <div className={classes.label}>{t(langKeys.totalconversations)}</div>
-                                    <div className={classes.datafield}>{dataEncuesta.fixtotalconversations}</div>
-                                </div>
+                        </div>
+                        <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalresolved)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixtotalpromoters}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalnotresolved)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixtotaldetractors}</div>
+                            </div>
+                            <div className={classes.containerFields}>
+                                <div className={classes.label}>{t(langKeys.totalconversations)}</div>
+                                <div className={classes.datafield}>{dataEncuesta.fixtotalconversations}</div>
                             </div>
                         </div>
                     </Box>
