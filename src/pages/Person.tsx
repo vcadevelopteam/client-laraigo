@@ -1,10 +1,10 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, ListPaginated, TemplateIcons, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody } from 'common/helpers';
 import { IPerson, IPersonChannel, IPersonConversation } from "@types";
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, List } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -16,6 +16,7 @@ import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson } from 'store/person/actions';
+import { showSnackbar } from 'store/popus/actions';
 
 interface PersonItemProps {
     person: IPerson;
@@ -875,10 +876,12 @@ const useConversationsTabStyles = makeStyles(theme => ({
 const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
     const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
+    const firstCall = useRef(true);
     const [page, setPage] = useState(0);
+    const [list, setList] = useState<IPersonConversation[]>([]);
     const conversations = useSelector(state => state.person.personTicketList);
 
-    useEffect(() => {
+    const fetchTickets = useCallback(() => {
         const params = {
             filters: {},
             sorts: {},
@@ -886,34 +889,64 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             skip: 20 * page,
             offset: 0,
         };
-        dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid, params)));
+        dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid, params)))
+    }, [page, person, dispatch]);
 
-        const myDiv = document.getElementById("wrapped-tabpanel-2");
-        if (myDiv) {
-            myDiv.onscroll = () => {
-                if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
-                    console.log("Scroll finalizó");
-                }
-            };
-        }
-
+    useEffect(() => {
         return () => {
             dispatch(resetGetTicketListByPerson());
         };
-    }, [dispatch, person]);
+    }, [dispatch]);
 
-    const onScroll: React.UIEventHandler<HTMLUListElement> = (e) => {
-        console.log("1111");
-        if (e.currentTarget.offsetHeight + e.currentTarget.scrollTop >= e.currentTarget.scrollHeight) {
-            console.log("sss");
+    useEffect(() => {
+        const myDiv = document.getElementById("wrapped-tabpanel-2");
+        if (myDiv) {
+            myDiv.onscroll = () => {
+                if (!firstCall.current && list.length >= conversations.count) return;
+                if (conversations.loading) return;
+                if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
+                    console.log("Scroll finalizó");
+                    setPage(page + 1);
+                }
+            };
         }
-    }
+    }, [page, firstCall.current, list, conversations, setPage]);
 
+    useEffect(() => {
+        fetchTickets();
+    }, [fetchTickets]);
+
+    useEffect(() => {
+        if (firstCall.current) firstCall.current = false;
+        if (conversations.loading) return;
+        if (conversations.error === true) {
+            dispatch(showSnackbar({
+                message: conversations.message || 'Error',
+                show: true,
+                success: false,
+            }));
+        } else {
+            setList([...list, ...conversations.data]);
+        }
+    }, [conversations, setList, dispatch]);
+
+    // console.log('calling fetchTickets', list.length, conversations.count, page);
     return (
         <div className={classes.root}>
-            {conversations.data.map((e, i) => (
-                <ConversationItem conversation={e} key={`conversation_item_${i}`} />
-            ))}
+            {list.map((e, i) => {
+                if (list.length < conversations.count && i === list.length - 1) {
+                    return [
+                        <ConversationItem conversation={e} key={`conversation_item_${i}`} />,
+                        <div
+                            style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
+                            key={`conversation_item_${i}_loader`}
+                        >
+                            <CircularProgress />
+                        </div>
+                    ];
+                }
+                return <ConversationItem conversation={e} key={`conversation_item_${i}`} />;
+            })}
         </div>
     );
 }
@@ -1114,7 +1147,7 @@ interface OpportunitiesTabProps {
 
 const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
-    const opportunityList = useSelector(state => state.person.personOpportunityList);
+    // const opportunityList = useSelector(state => state.person.personOpportunityList);
 
     useEffect(() => {
         dispatch(getOpportunitiesByPerson(getOpportunitiesByPersonBody(person.personid)));

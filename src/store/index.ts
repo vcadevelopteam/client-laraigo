@@ -12,6 +12,7 @@ import integrationManagerReducer, { IState as IIntegrationManager } from './inte
 import flowdesignerReducer, { IState as IFlowDesigner } from './flowdesigner/reducer';
 import signupReducer, { IState as ISignUp} from './signup/reducer';
 import personReducer, { IState as IPerson } from './person/reducer';
+import settingReducer, { IState as ISetting } from './setting/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -24,6 +25,7 @@ export interface IRootState {
     flowdesigner: IFlowDesigner;
     signup: ISignUp;
     person: IPerson;
+    setting: ISetting;
 }
 
 declare global {
@@ -43,6 +45,7 @@ const rootReducer = combineReducers<IRootState>({
     flowdesigner: flowdesignerReducer,
     signup: signupReducer,
     person: personReducer,
+    setting: settingReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

@@ -34,4 +34,4 @@ export { default as FlowDesigner } from './FlowDesigner';
 export { default as DashboardManagerial } from './DashboardManagerial';
 export { default as DashboardOperationalPush } from './DashboardOperationalPush';
 
-export { default as Settings } from './settings';
+export { default as Settings } from './Settings';

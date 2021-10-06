@@ -1146,7 +1146,48 @@ export const insInteligentModelConfiguration = ({channels, id, operation, descri
      }
 });
 
+/// Settings tab (drawer)
 export const getCountConfigurationsBody = (): IRequestBody => ({
-    method: "ufn_count_configuration",
+    method: "UFN_COUNT_CONFIGURATION",
     parameters: {}
 });
+
+/// Settings tab (drawer)
+export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'MAXIMONUMEROTICKETS' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONASESOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONADMINISTRADOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'CIERREAUTOMATICO' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONSUPERVISOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'ACCIONFUERAHORARIO' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONENCUESTA' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'WAITINGMESSAGE' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
+    },
+]);

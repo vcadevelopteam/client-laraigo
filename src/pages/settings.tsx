@@ -1,10 +1,15 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { BoxProps, makeStyles, Box, Grid, IconButton } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Facebook } from '@material-ui/icons';
 import { EditPencilIcon, InfoRoundedIcon } from 'icons';
+import { useDispatch } from 'react-redux';
+import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
+import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
+import { useSelector } from 'hooks';
+import { showSnackbar } from 'store/popus/actions';
 
 interface ItemTileProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
@@ -28,6 +33,7 @@ const useItemTileStyles = makeStyles(theme => ({
     },
     headerLeading: {
         minWidth: 250,
+        maxWidth: '50%',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -83,6 +89,7 @@ const ItemTile: FC<ItemTileProps> = ({ title, subtitle, icon, helpText, ...boxPr
                 <div className={classes.header}>
                     <div className={classes.headerLeading}>
                         <span>{title}</span>
+                        <div style={{ width: 10 }} />
                         <span className={classes.headerIcon}>{icon}</span>
                     </div>
                     <span className={classes.headerHelpText}>{helpText}</span>
@@ -105,6 +112,11 @@ const usePropertyItemStyles = makeStyles(theme => ({
         width: 'inherit',
         fontSize: 16,
         fontWeight: 400,
+    },
+    title: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     subtitle: {
         display: 'flex',
@@ -135,8 +147,10 @@ const PropertyItem: FC<PropertyItemProps> = ({ title, subtitle, ...boxProps }) =
 
     return (
         <Box className={classes.root} {...boxProps}>
-            <span>
-                {title} <InfoRoundedIcon className={classes.infoIcon} />
+            <span className={classes.title}>
+                {title}
+                <div style={{ width: 4 }} />
+                <InfoRoundedIcon className={classes.infoIcon} />
             </span>
             <div className={classes.subtitle}>
                 <span>{subtitle}</span>
@@ -156,46 +170,35 @@ const PropertiesTileBody: FC = () => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={<Trans i18nKey={langKeys.maxNumOfTicketsperAdvisor} count={2} />}
                             subtitle="10"
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={(
+                                <>
+                                    <Trans i18nKey={langKeys.holdOnHolding} />
+                                    {' ('}
+                                    <Trans i18nKey={langKeys.message} />
+                                    {')'}
+                                </>
+                            )}
                             subtitle="10"
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                </Grid>
-            </Grid>
-            <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
-                <Grid container direction="column">
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title="Maximum number of tickets per advisor"
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title="Maximum number of tickets per advisor"
-                            subtitle="10"
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={(
+                                <>
+                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
+                                    {' ('}
+                                    <Trans i18nKey={langKeys.advisor} />
+                                    {')'}
+                                </>
+                            )}
                             subtitle="10"
                             m={1}
                         />
@@ -206,21 +209,67 @@ const PropertiesTileBody: FC = () => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={<Trans i18nKey={langKeys.automaticClosingTime} />}
                             subtitle="10"
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={(
+                                <>
+                                    <Trans i18nKey={langKeys.holdOnHolding} />
+                                    {' ('}
+                                    <Trans i18nKey={langKeys.sendingFrequency} />
+                                    {')'}
+                                </>
+                            )}
                             subtitle="10"
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <PropertyItem
-                            title="Maximum number of tickets per advisor"
+                            title={(
+                                <>
+                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
+                                    {' ('}
+                                    <Trans i18nKey={langKeys.supervisor} />
+                                    {')'}
+                                </>
+                            )}
+                            subtitle="10"
+                            m={1}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+            <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                <Grid container direction="column">
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <PropertyItem
+                            title={<Trans i18nKey={langKeys.outOfHoursAction} />}
+                            subtitle="10"
+                            m={1}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <PropertyItem
+                            title={<Trans i18nKey={langKeys.surveyExpirationTime} />}
+                            subtitle="10"
+                            m={1}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <PropertyItem
+                            title={(
+                                <>
+                                    <Trans i18nKey={langKeys.sessionExpirationTIme} />
+                                    {' ('}
+                                    <Trans i18nKey={langKeys.administrator} />
+                                    {')'}
+                                </>
+                            )}
                             subtitle="10"
                             m={1}
                         />
@@ -239,14 +288,67 @@ const useSettingsStyles = makeStyles(theme => ({
     },
 }));
 
+const HelpText: FC<{ i18nKey: string, count: number }> = ({ count, i18nKey }) => {
+    return (
+        <>
+            {'> '}<Trans i18nKey={i18nKey} count={count} />
+        </>
+    );
+}
+
+const SubtitleText: FC<{ i18nKey: string, value?: number | null }> = ({ i18nKey, value }) => {
+    return (
+        <>
+            <span style={{ fontWeight: 700 }}>{`${value || 0} `}</span><Trans i18nKey={i18nKey} count={value || 0} />
+        </>
+    );
+}
+
 const Settings: FC = () => {
     const classes = useSettingsStyles();
+    const dispatch = useDispatch();
+    const setting = useSelector(state => state.setting.setting);
+    const propertySettings = useSelector(state => state.setting.propertySettings);
 
+    useEffect(() => {
+        dispatch(getSetting(getCountConfigurationsBody()));
+        dispatch(getPropertySettings(getPropertyConfigurationsBody()));
+
+        return () => {
+            dispatch(resetGetSetting());
+            dispatch(resetGetPropertySettings());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (propertySettings.loading) return;
+        if (propertySettings.error === true) {
+            dispatch(showSnackbar({
+                message: propertySettings.message || 'Error',
+                show: true,
+                success: false,
+            }));
+        }
+    }, [propertySettings, dispatch]);
+
+    useEffect(() => {
+        if (setting.loading) return;
+        if (setting.error === true) {
+            dispatch(showSnackbar({
+                message: setting.message || 'Error',
+                show: true,
+                success: false,
+            }));
+        }
+    }, [setting, dispatch]);
+
+    console.log(propertySettings);
+    const { value } = setting;
     return (
         <div className={classes.root}>
             <Box ml={2}>
                 <Title>
-                    <Trans i18nKey={langKeys.configuration} count={2} />
+                    <Trans i18nKey={langKeys.setting} count={2} />
                 </Title>
             </Box>
             <div style={{ height: 23 }} />
@@ -255,37 +357,55 @@ const Settings: FC = () => {
                     <Grid container direction="column">
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.organization} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_org} i18nKey={langKeys.activeOrganization} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageOrganization} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.user} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageUser} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.classification} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageClassification} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageRestrictedEmoji} count={2} />}
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
+                                title={<Trans i18nKey={langKeys.corporation} count={2} />}
+                                subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
+                                icon={<Facebook />}
+                                helpText={<HelpText i18nKey={langKeys.manageCorporation} count={2} />}
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
+                                title={<Trans i18nKey={langKeys.integration} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
+                                icon={<Facebook />}
+                                helpText={<HelpText i18nKey={langKeys.manageIntegration} count={2} />}
                                 m={2}
                             />
                         </Grid>
@@ -295,37 +415,46 @@ const Settings: FC = () => {
                     <Grid container direction="column">
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.channel} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_channels} i18nKey={langKeys.activeChannel} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageChannel} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.quickreply} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageQuickReply} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.domain} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageDomain} count={2} />}
                                 m={2}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title="Organizations"
-                                subtitle="1 Active Organizations"
+                                title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
                                 icon={<Facebook />}
-                                helpText="> Manage Organizations"
+                                helpText={<HelpText i18nKey={langKeys.manageForbiddenWord} count={2} />}
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
+                                title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
+                                icon={<Facebook />}
+                                helpText={<HelpText i18nKey={langKeys.manageAgreement} count={2} />}
                                 m={2}
                             />
                         </Grid>
@@ -333,10 +462,10 @@ const Settings: FC = () => {
                 </Grid>
             </Grid>
             <ItemTile
-                title="Properties"
+                title={<Trans i18nKey={langKeys.property} count={2} />}
                 subtitle={<PropertiesTileBody />}
                 icon={<Facebook />}
-                helpText="> Manage Properties"
+                helpText={<HelpText i18nKey={langKeys.manageproperty} count={2} />}
                 m={2}
             />
         </div>
