@@ -380,7 +380,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
                     valueDefault={getValues('classificationid1')}
                     onChange={onChangeTipificationLevel1}
                     error={errors?.classificationid1?.message}
-                    data={multiData?.data[2] && multiData?.data[4].data}
+                    data={multiData?.data[4] && multiData?.data[4].data}
                     optionDesc="path"
                     optionValue="classificationid"
                 />
