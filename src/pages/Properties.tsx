@@ -531,13 +531,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         <TemplateSwitchArray
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
-                            fregister={{
+                            /*fregister={{
                                 ...register(`table.${index}.propertyvalue`, {
                                     validate: {
                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     }
                                 })
-                            }}
+                            }}*/
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, (value ? '1' : '0'))}
                             defaultValue={row ? (row.propertyvalue === '1' ? row.propertyvalue : false) : false}
@@ -560,13 +560,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                             className={classes.mb2}
                             data={domainTable.data}
                             error={errors?.table?.[index]?.propertyvalue?.message}
-                            fregister={{
+                            /*fregister={{
                                 ...register(`table.${index}.propertyvalue`, {
                                     validate: {
                                         validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     }
                                 })
-                            }}
+                            }}*/
                             label={t(langKeys.value)}
                             loading={domainTable.loading}
                             onChange={(value) => onChangeSelectValue(index, 'propertyvalue', value ? value.domainvalue : '')}
@@ -591,13 +591,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         <FieldEditArray
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
-                            fregister={{
+                            /*fregister={{
                                 ...register(`table.${index}.propertyvalue`, {
                                     validate: {
                                         value: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     }
                                 })
-                            }}
+                            }}*/
                             inputProps={{ step: 0.1 }}
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
@@ -624,13 +624,13 @@ const DetailNivelProperty: React.FC<ModalProps> = ({ data: { row, edit }, index,
                         <FieldEdit
                             className={classes.mb2}
                             error={errors?.table?.[index]?.propertyvalue?.message}
-                            fregister={{
+                            /*fregister={{
                                 ...register(`table.${index}.propertyvalue`, {
                                     validate: {
                                         value: (value: any) => (value && value.length) || t(langKeys.field_required)
                                     }
                                 })
-                            }}
+                            }}*/
                             label={t(langKeys.value)}
                             onChange={(value) => setValue(`table.${index}.propertyvalue`, value)}
                             valueDefault={row ? (row.propertyvalue || '') : ''}
