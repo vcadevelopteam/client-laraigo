@@ -8,6 +8,7 @@ import { useSelector } from 'hooks';
 import { logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -62,7 +63,7 @@ const AccountMenu: FC = () => {
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
-                startIcon={<AccountCircle className={classes.icon} />}
+                startIcon={<Avatar className={classes.icon} src={user?.image + "" || undefined} />}
                 endIcon={<ArrowDropDownIcon />}
             >
                 <div className={classes.infoContainer}>

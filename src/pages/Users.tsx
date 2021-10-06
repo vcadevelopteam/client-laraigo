@@ -12,6 +12,8 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
+import Avatar from '@material-ui/core/Avatar';
+import { uploadFile } from 'store/main/actions';
 import {
     getCollection, resetMain, getMultiCollection,
     execute, getCollectionAux, resetMainAux, getMultiCollectionAux
@@ -19,6 +21,7 @@ import {
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import AddIcon from '@material-ui/icons/Add';
+import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import ClearIcon from '@material-ui/icons/Clear';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -438,6 +441,10 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const dataStatusUsers = multiData[4] && multiData[4].success ? multiData[4].data : [];
     const [allIndex, setAllIndex] = useState([])
     const [getOrganizations, setGetOrganizations] = useState(false);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    
+
+    const uploadResult = useSelector(state => state.main.uploadFile);
 
     useEffect(() => { //RECIBE LA DATA DE LAS ORGANIZACIONES 
         if (!detailRes.loading && !detailRes.error && getOrganizations) {
@@ -458,6 +465,28 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             setDataOrganizations(p => p.filter((x, i) => i !== index));
     }
 
+
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('image', uploadResult.url)
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
+
+
+    const onSelectImage = (files: any) => {
+        const selectedFile = files[0];
+        var fd = new FormData();
+        fd.append('file', selectedFile, selectedFile.name);
+        dispatch(uploadFile(fd));
+        setWaitUploadFile(true);
+    }
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
@@ -476,6 +505,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
             status: row?.status || 'ACTIVO',
+            image: row?.image || null
         }
     });
 
@@ -508,6 +538,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         register('billinggroupid');
         register('description');
         register('twofactorauthentication');
+        register('image');
 
         dispatch(resetMainAux())
         if (row) {
@@ -619,20 +650,14 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
+                        <div className="col-6" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                             <FieldEdit
                                 label={t(langKeys.firstname)}
-                                className="col-6"
+                                style={{ marginBottom: 8 }}
                                 valueDefault={row?.firstname || ""}
                                 onChange={(value) => setValue('firstname', value)}
                                 error={errors?.firstname?.message}
                             />
-                            : <FieldView
-                                label={t(langKeys.firstname)}
-                                value={row?.firstname || ""}
-                                className="col-6"
-                            />}
-                        {edit ?
                             <FieldEdit
                                 label={t(langKeys.lastname)}
                                 className="col-6"
@@ -640,42 +665,44 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                                 onChange={(value) => setValue('lastname', value)}
                                 error={errors?.lastname?.message}
                             />
-                            : <FieldView
-                                label={t(langKeys.lastname)}
-                                value={row?.lastname || ""}
-                                className="col-6"
-                            />}
+                        </div>
+                        <div className="col-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ position: 'relative' }}>
+                                <Avatar style={{ width: 120, height: 120 }} src={getValues('image')} />
+                                <input
+                                    name="file"
+                                    accept="image/*"
+                                    id="laraigo-upload-csv-file"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => onSelectImage(e.target.files)}
+                                />
+                                <label htmlFor="laraigo-upload-csv-file">
+                                    <Avatar style={{ position: 'absolute', bottom: 0, right: 0, backgroundColor: '#7721ad', cursor: 'pointer' }}>
+                                        <CameraAltIcon style={{ color: '#FFF' }} />
+                                    </Avatar>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={`${t(langKeys.email)} (${t(langKeys.user)})`}
-                                className="col-6"
-                                valueDefault={row?.email || ""}
-                                onChange={(value) => setValue('email', value)}
-                                error={errors?.email?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.email)}
-                                value={row ? row.email : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.company)}
-                                className="col-6"
-                                valueDefault={row?.company || ""}
-                                onChange={(value) => setValue('company', value ? value.domainvalue : '')}
-                                error={errors?.company?.message}
-                                data={dataCompanies}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            /> :
-                            <FieldView
-                                label={t(langKeys.company)}
-                                value={row ? row.company : ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={`${t(langKeys.email)} (${t(langKeys.user)})`}
+                            className="col-6"
+                            valueDefault={row?.email || ""}
+                            onChange={(value) => setValue('email', value)}
+                            error={errors?.email?.message}
+                        />
+                        <FieldSelect
+                            label={t(langKeys.company)}
+                            className="col-6"
+                            valueDefault={row?.company || ""}
+                            onChange={(value) => setValue('company', value ? value.domainvalue : '')}
+                            error={errors?.company?.message}
+                            data={dataCompanies}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
                     <div className="row-zyx">
                         {edit ?
