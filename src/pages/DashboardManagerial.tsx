@@ -815,7 +815,6 @@ const DashboardManagerial: FC = () => {
                 </Button>
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                {/* Coloqué ese div para agregar gap: 16px */}
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.itemCard}

@@ -561,8 +561,11 @@ const Quickreplies: FC = () => {
                 header: null,
                 detail: data.map((x: any) => insQuickreplies({
                     ...x,
-                    quickreply:x.detail,
-                    classificationid:0,
+                    description: x.summarize, 
+                    quickreply: x.detail, 
+                    status: x.status, 
+                    favorite: x.favorite,
+                    classificationid:1668,
                     operation:"INSERT",
                     type: 'NINGUNO',
                     id:0,

@@ -611,6 +611,7 @@ const Tipifications: FC = () => {
                     parent:0,
                     operation:"INSERT",
                     type: 'TIPIFICACION',
+                    status: "ACTIVO",
                     id:0,
                 }))
             }, true));

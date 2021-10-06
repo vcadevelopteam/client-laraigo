@@ -30,7 +30,7 @@ const translation: LangKeys = {
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',
     error_already_exists_channel: 'Ya existe una configuracion para este canal',
-
+    categoriaHSM: "Categoría HSM",
     ticket: "Ticket",
     ticket_plural: 'Tickets',
 

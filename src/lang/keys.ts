@@ -30,6 +30,7 @@ export const langKeys = {
     attendedbyasesor: "attendedbyasesor",
     attendedbybot: "attendedbybot",
     totalneutral: "totalneutral",
+    categoriaHSM: "categoriaHSM",
     totalconversations: "totalconversations",
     lowestvalue: "lowestvalue",
     queue: "queue",
