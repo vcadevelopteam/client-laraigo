@@ -12,7 +12,9 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerenciale
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell } from 'recharts';
+
+const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
 const arraymonth = [
     "ene",
@@ -73,15 +75,11 @@ function formatname(cc:any) {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         halfbox: {
-            width: "49%",
-            margin: "0 1% 2% 0",
             backgroundColor: 'white',
         },
         quarterbox: {
-            width: "24%",
-            margin: "0 1% 2% 0",
             backgroundColor: 'white',
-            padding: "15px"
+            padding: "10px"
         },
         boxtitle:{
             fontWeight: "bold",
@@ -139,7 +137,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: "5px"
         },
         widthhalf:{
-            width: "50%"
+            flex:1
         },
         widthsecondhalf:{
             width: "50%",
@@ -161,6 +159,12 @@ const useStyles = makeStyles((theme: Theme) =>
         colorred: {
             color: "rgb(180, 26, 26)"
         },
+        replacerowzyx: {
+            display: 'flex' ,flex:1,gap:"8px", flexWrap: "wrap",minWidth: "250px"
+        },
+        dontshow: {
+            display: "none"
+        }
     }),
 );
 const initialRange = {
@@ -269,6 +273,32 @@ const DashboardManagerial: FC = () => {
         maxavgconversationsattendedasesor:  "0%",
         minvgconversationsattendedbot:  "0%",
     });
+    const [dataTMOgraph, setDataTMOgraph] = useState([
+        {label: t(langKeys.quantitymeets), quantity: 0},
+        {label: t(langKeys.quantitymeetsnot), quantity: 0}
+    ]);
+    const [dataTMEgraph, setDataTMEgraph] = useState([
+        {label: t(langKeys.quantitymeets), quantity: 0},
+        {label: t(langKeys.quantitymeetsnot), quantity: 0}
+    ]);
+    const [dataNPSgraph, setDataNPSgraph] = useState([
+        {label: t(langKeys.totalpromoters), quantity: 0},
+        {label: t(langKeys.totaldetractors), quantity: 0},
+        {label: t(langKeys.totalneutral), quantity: 0}
+    ]);
+    const [dataCSATgraph, setDataCSATgraph] = useState([
+        {label: t(langKeys.totalpromoters), quantity: 0},
+        {label: t(langKeys.totaldetractors), quantity: 0},
+        {label: t(langKeys.totalneutral), quantity: 0}
+    ]);
+    const [dataFCRgraph, setDataFCRgraph] = useState([
+        {label: t(langKeys.totalresolved), quantity: 0},
+        {label: t(langKeys.totalnotresolved), quantity: 0},
+    ]);
+    const [dataFIXgraph, setDataFIXgraph] = useState([
+        {label: t(langKeys.totalresolved), quantity: 0},
+        {label: t(langKeys.totalnotresolved), quantity: 0},
+    ]);
     const [dataInteraction, setDataInteraction] = useState({
         avginteractionsxconversations: "0",
         maxavginteractionsxconversations: "0",
@@ -284,34 +314,8 @@ const DashboardManagerial: FC = () => {
     const [resEncuesta, setResEncuesta] = useState<any>([]);
     const [resDashboard, setResDashboard] = useState<any>([]);
     const [resInteraction, setResInteraction] = useState<any>([]);
-    const [resEtiquetas, setResEtiquetas] = useState<any>([]);
     const [resAsesoreconectadosbar, setResAsesoreconectadosbar] = useState<any>([]);
-    const [resAsesoreconectados, setResAsesoreconectados] = useState([
-        {hora: 0, asesoresconectados: "0"},
-        {hora: 1, asesoresconectados: "0"},
-        {hora: 2, asesoresconectados: "0"},
-        {hora: 3, asesoresconectados: "0"},
-        {hora: 4, asesoresconectados: "0"},
-        {hora: 5, asesoresconectados: "0"},
-        {hora: 6, asesoresconectados: "0"},
-        {hora: 7, asesoresconectados: "0"},
-        {hora: 8, asesoresconectados: "0"},
-        {hora: 9, asesoresconectados: "0"},
-        {hora: 10, asesoresconectados: "0"},
-        {hora: 11, asesoresconectados: "0"},
-        {hora: 12, asesoresconectados: "0"},
-        {hora: 13, asesoresconectados: "0"},
-        {hora: 14, asesoresconectados: "0"},
-        {hora: 15, asesoresconectados: "0"},
-        {hora: 16, asesoresconectados: "0"},
-        {hora: 17, asesoresconectados: "0"},
-        {hora: 18, asesoresconectados: "0"},
-        {hora: 19, asesoresconectados: "0"},
-        {hora: 20, asesoresconectados: "0"},
-        {hora: 21, asesoresconectados: "0"},
-        {hora: 22, asesoresconectados: "0"},
-        {hora: 23, asesoresconectados: "0"},
-    ]);
+    const [resLabels, setResLabels] = useState<any>([]);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [dataqueue, setdataqueue] = useState<any>([]);
@@ -382,7 +386,10 @@ const DashboardManagerial: FC = () => {
                 setData(p=>({...p,tickets_analyzed: tickets_analyzed}))
                 setData(p=>({...p,tickets_total: tickets_total}))
 
-                
+                setDataTMOgraph([
+                    {label: t(langKeys.quantitymeets), quantity: tickets_comply},
+                    {label: t(langKeys.quantitymeetsnot), quantity: tickets_analyzed-tickets_comply}
+                ]);
             }
         }
     }, [resTMO])
@@ -436,6 +443,10 @@ const DashboardManagerial: FC = () => {
                 setDataTME(p=>({...p,tickets_comply: tickets_comply}))
                 setDataTME(p=>({...p,tickets_analyzed: tickets_analyzed}))
                 setDataTME(p=>({...p,tickets_total: tickets_total}))
+                setDataTMEgraph([
+                    {label: t(langKeys.quantitymeets), quantity: tickets_comply},
+                    {label: t(langKeys.quantitymeetsnot), quantity: tickets_analyzed-tickets_comply}
+                ]);
 
                 
             }
@@ -587,6 +598,24 @@ const DashboardManagerial: FC = () => {
                 fixtotaldetractors:fix_no,
                 fixtotalconversations:total,
             })
+            setDataNPSgraph([
+                {label: t(langKeys.totalpromoters), quantity: nps_high},
+                {label: t(langKeys.totaldetractors), quantity: nps_low},
+                {label: t(langKeys.totalneutral), quantity: nps_medium}
+            ]);
+            setDataCSATgraph([
+                {label: t(langKeys.totalpromoters), quantity: csat_high},
+                {label: t(langKeys.totaldetractors), quantity: csat_low},
+                {label: t(langKeys.totalneutral), quantity: csat_medium}
+            ]);
+            setDataFCRgraph([
+                {label: t(langKeys.totalresolved), quantity: fcr_yes},
+                {label: t(langKeys.totalnotresolved), quantity: fcr_no},
+            ]);
+            setDataFIXgraph([
+                {label: t(langKeys.totalresolved), quantity: fix_yes},
+                {label: t(langKeys.totalnotresolved), quantity: fix_no},
+            ]);
 
         }
     }, [resEncuesta]);
@@ -623,18 +652,9 @@ const DashboardManagerial: FC = () => {
         }
     }, [resInteraction]);
     useEffect(() => {
-        console.log(resAsesoreconectadosbar)
-        // setDataAsesoreconectadosbar({
-        //     avgasesoresconectados: "0"
-        // })
-        // if (resAsesoreconectadosbar && resAsesoreconectadosbar.length > 0) {
-        //     setDataAsesoreconectadosbar({
-        //         avgasesoresconectados: resAsesoreconectadosbar[0].avgasesoresconectados
-        //     })
-        //     resAsesoreconectadosbar.forEach((x:any)=>{
-        //         setResAsesoreconectados((p)=>[...p])
-        //     })
-        // }
+         setDataAsesoreconectadosbar({
+             avgasesoresconectados: "0"
+         })
     }, [resAsesoreconectadosbar]);
 
     useEffect(() => {
@@ -646,7 +666,7 @@ const DashboardManagerial: FC = () => {
                 setResEncuesta(remultiaux.data[3].data)
                 setResDashboard(remultiaux.data[4].data)
                 setResInteraction(remultiaux.data[5].data)
-                setResEtiquetas(remultiaux.data[6].data)
+                setResLabels(remultiaux.data[6].data)
                 
                 
                 
@@ -773,11 +793,12 @@ const DashboardManagerial: FC = () => {
                 >{t(langKeys.stablishfilters)}
                 </Button>
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx} style={{paddingBottom: "8px"}}>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -800,7 +821,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{data.timeMin}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(data.tickets_total? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataTMOgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.sla)}</div>
                                 <div className={classes.datafield}>{data.sla}</div>
@@ -825,9 +856,10 @@ const DashboardManagerial: FC = () => {
                     </div>
                 </Box>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
@@ -850,7 +882,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataTME.timeMin}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(dataTME.tickets_total? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataTMEgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.sla)}</div>
                                 <div className={classes.datafield}>{dataTME.sla}</div>
@@ -874,50 +916,52 @@ const DashboardManagerial: FC = () => {
                         </div>
                     </div>
                 </Box>
+                
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx} style={{paddingBottom: "8px"}}>
                 <Box
                     className={classes.quarterbox}
-                    style={{backgroundColor:"#53a6fa"}}
+                    style={{backgroundColor:"#53a6fa",display: 'flex' ,flex:1,gap:"8px"}}
                 >
                     <div className={classes.containerFieldsQuarter}>
-                        <div className={classes.boxtitle}>TMR</div>
-                        <div className={classes.boxtitledata}>{dataSummary.tmrglobal}</div>    
+                        <div className={classes.boxtitle} style={{padding:0}}>TMR</div>
+                        <div className={classes.boxtitledata} style={{padding:0}}>{dataSummary.tmrglobal}</div>    
                     </div>            
                 </Box>
                 <Box
                     className={classes.quarterbox}
-                    style={{backgroundColor:"#22b66e"}}
+                    style={{backgroundColor:"#22b66e",display: 'flex' ,flex:1,gap:"8px"}}
                 >
                     <div className={classes.containerFieldsQuarter}>
-                        <div className={classes.boxtitle}>TMR Asesor</div>
-                        <div className={classes.boxtitledata}>{dataSummary.dataTMRAsesor}</div>    
+                        <div className={classes.boxtitle} style={{padding:0}}>TMR Asesor</div>
+                        <div className={classes.boxtitledata} style={{padding:0}}>{dataSummary.dataTMRAsesor}</div>    
                     </div>                  
                 </Box>
                 <Box
                     className={classes.quarterbox}
-                    style={{backgroundColor:"#fdab29"}}
+                    style={{backgroundColor:"#fdab29",display: 'flex' ,flex:1,gap:"8px"}}
                 >
                     <div className={classes.containerFieldsQuarter}>
-                        <div className={classes.boxtitle}>TMR Bot</div>
-                        <div className={classes.boxtitledata}>{dataSummary.dataTMRBot}</div>    
+                        <div className={classes.boxtitle} style={{padding:0}}>TMR Bot</div>
+                        <div className={classes.boxtitledata} style={{padding:0}}>{dataSummary.dataTMRBot}</div>    
                     </div>                  
                 </Box>
                 <Box
                     className={classes.quarterbox}
-                    style={{backgroundColor:"#907eec"}}
+                    style={{backgroundColor:"#907eec",display: 'flex' ,flex:1,gap:"8px"}}
                 >
                     <div className={classes.containerFieldsQuarter}>
-                        <div className={classes.boxtitle}>TMR Client</div>
-                        <div className={classes.boxtitledata}>{dataSummary.dataTMRCliente}</div>    
+                        <div className={classes.boxtitle} style={{padding:0}}>TMR Client</div>
+                        <div className={classes.boxtitledata} style={{padding:0}}>{dataSummary.dataTMRCliente}</div>    
                     </div>                  
                 </Box>
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx} style={{paddingBottom: "8px"}}>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -940,7 +984,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.npspollsanswered}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(dataEncuesta.npspollssent? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataNPSgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.npstotalpromoters}</div>
@@ -961,9 +1015,10 @@ const DashboardManagerial: FC = () => {
                     </div>
                 </Box>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -986,7 +1041,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.csatpollsanswered}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(dataEncuesta.csatpollssent? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataCSATgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csattotalpromoters}</div>
@@ -1007,11 +1072,12 @@ const DashboardManagerial: FC = () => {
                     </div>
                 </Box>
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx} style={{paddingBottom: "8px"}}>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1034,7 +1100,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fcrpollsanswered}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(dataEncuesta.fcrpollssent!=="0"? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataFCRgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalresolved)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotalpromoters}</div>
@@ -1051,9 +1127,10 @@ const DashboardManagerial: FC = () => {
                     </div>
                 </Box>
                 <Box
-                    className={classes.halfbox}
+                    className={classes.replacerowzyx}
+                    style={{backgroundColor: "white"}}
                 >
-                    <div className={"row-zyx  " + classes.rowstyles}>
+                    <div style={{ display: 'flex' ,flex:1,gap:"8px"}}>
                         <div className={classes.widthhalf}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>
@@ -1076,7 +1153,17 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fixpollsanswered}</div>
                             </div>
                         </div>
-                        <div className={classes.widthsecondhalf}>
+                        <ResponsiveContainer className={clsx(dataEncuesta.fixpollssent? classes.widthhalf:classes.dontshow)}>
+                            <PieChart>
+                                <Tooltip />
+                                <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    {dataFIXgraph.map((entry:any, index:number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Pie>
+                            </PieChart>
+                        </ResponsiveContainer>
+                        <div className={classes.widthhalf}>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalresolved)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fixtotalpromoters}</div>
@@ -1093,9 +1180,9 @@ const DashboardManagerial: FC = () => {
                     </div>
                 </Box>
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx}>
                 <Box
-                    className={classes.quarterbox}
+                    style={{backgroundColor: "white",padding:"10px",flex:1.91}}
                 >
                     <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
                     <div className={classes.boxtitlequarter}>Average conversations attended by hour</div>
@@ -1117,7 +1204,7 @@ const DashboardManagerial: FC = () => {
                     </div>              
                 </Box>
                 <Box
-                    className={classes.quarterbox}
+                    style={{backgroundColor: "white",padding:"10px",flex:1.91}}
                 >
                     <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
                     <div className={classes.boxtitlequarter}>Average conversations attended by the advisor by hour</div>
@@ -1139,14 +1226,13 @@ const DashboardManagerial: FC = () => {
                     </div>                
                 </Box>
                 <Box
-                    className={classes.halfbox}
-                    style={{padding: "15px"}}
+                    style={{backgroundColor: "white",padding:"10px",flex:4}}
                 >
                     <div className={classes.boxtitlequarter}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
                     <div className={classes.boxtitlequarter}>Average number of advisers connected by hour</div> 
                     <div style={{paddingTop:"20px"}}>
-                        <ResponsiveContainer width="100%" aspect={4.0/2.0}>
-                            <LineChart data={resAsesoreconectados}>
+                        <ResponsiveContainer width="100%" aspect={4.0/1.0}>
+                            <LineChart data={resAsesoreconectadosbar}>
                                 <Line type="monotone" dataKey="asesoresconectados" stroke="#8884d8" />
                                 <CartesianGrid stroke="#ccc" />
                                 <XAxis dataKey="hora" />
@@ -1159,9 +1245,9 @@ const DashboardManagerial: FC = () => {
                     
                 </Box>
             </div>
-            <div className="row-zyx ">
+            <div className={classes.replacerowzyx}>
                 <Box
-                    className={classes.quarterbox}
+                    style={{backgroundColor: "white",padding:"10px",flex:1.91}}
                 >
                     
                     <div className={classes.boxtitlequarter}>{dataDASHBOARD.avgconversationsattended}</div>
@@ -1172,7 +1258,7 @@ const DashboardManagerial: FC = () => {
                     <div className="row-zyx" style={{paddingTop:"0"}}>{t(langKeys.attendedbybot)}</div>
                 </Box>
                 <Box
-                    className={classes.quarterbox}
+                    style={{backgroundColor: "white",padding:"10px",flex:1.91}}
                 >
                     <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                     <div className={classes.boxtitlequarter}>Average Interaction by conversation</div>
@@ -1182,10 +1268,20 @@ const DashboardManagerial: FC = () => {
                     <div className="row-zyx" style={{paddingTop:"0"}}>Bot</div>               
                 </Box>
                 <Box
-                    className={classes.halfbox}
+                    style={{backgroundColor: "white",padding:"10px",flex:4}}
                 >
-                    <div className={classes.boxtitlequarter}>Ranking 5 top labels</div>
-                    <div className={classes.datafieldquarter}> &lt;0min </div>    
+                    <div className={classes.boxtitlequarter}>Top 5 labels</div>
+                    <div style={{paddingTop:"20px"}}>
+                        <ResponsiveContainer width="100%" aspect={4.0/1.0}>
+                            <BarChart data={resLabels}>
+                                <XAxis dataKey="label" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="quantity" fill="#8884d8" />
+                            </BarChart>
+                        </ResponsiveContainer>
+
+                    </div>   
                 </Box>
             </div>
             
