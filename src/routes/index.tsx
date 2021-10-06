@@ -175,58 +175,58 @@ const RouterApp: FC = () => {
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PROPERTIES}>
-					<ExtrasLayout><Properties /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Properties /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.USERS}>
-					<ExtrasLayout><Users /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Users /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.QUICKREPLIES}>
-					<ExtrasLayout><Quickreplies /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Quickreplies /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.GROUPCONFIG}>
-					<ExtrasLayout><Groupconfig /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.WHITELIST}>
-					<ExtrasLayout><Whitelist /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Whitelist /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
-					<ExtrasLayout><InappropriateWords /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INTELLIGENTMODELS}>
-					<ExtrasLayout><IntelligentModels /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><IntelligentModels /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.SLA}>
-					<ExtrasLayout><SLA /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><SLA /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.TIPIFICATIONS}>
-					<ExtrasLayout><Tipifications /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Tipifications /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DOMAINS}>
-					<ExtrasLayout><Domains /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Domains /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON}>
-					<ExtrasLayout><Person /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Person /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON_DETAIL.path}>
-					<ExtrasLayout><PersonDetail /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><PersonDetail /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
-					<ExtrasLayout><MessageTemplates /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><MessageTemplates /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INTEGRATIONMANAGER}>
-					<ExtrasLayout><IntegrationManager /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><IntegrationManager /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CAMPAIGN}>
-					<ExtrasLayout><Campaign /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Campaign /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.FLOWDESIGNER}>
-					<ExtrasLayout><FlowDesigner /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><FlowDesigner /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
-					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><VariableConfiguration /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.EMOJIS}>
-					<ExtrasLayout><Emojis /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Emojis /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DASHBOARDMANAGERIAL}>
 					<DashboardsLayout><DashboardManagerial /></DashboardsLayout>

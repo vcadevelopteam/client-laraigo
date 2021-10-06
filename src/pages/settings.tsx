@@ -10,6 +10,8 @@ import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSett
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
+import { useHistory } from 'react-router';
+import paths from 'common/constants/paths';
 
 interface ItemTileProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
@@ -288,11 +290,11 @@ const useSettingsStyles = makeStyles(theme => ({
     },
 }));
 
-const HelpText: FC<{ i18nKey: string, count: number }> = ({ count, i18nKey }) => {
+const HelpText: FC<{ i18nKey: string, count: number, onClick?: () => void }> = ({ count, i18nKey, onClick }) => {
     return (
-        <>
+        <span onClick={onClick}>
             {'> '}<Trans i18nKey={i18nKey} count={count} />
-        </>
+        </span>
     );
 }
 
@@ -306,7 +308,9 @@ const SubtitleText: FC<{ i18nKey: string, value?: number | null }> = ({ i18nKey,
 
 const Settings: FC = () => {
     const classes = useSettingsStyles();
+    const history = useHistory();
     const dispatch = useDispatch();
+    const user = useSelector(state => state.login.validateToken.user);
     const setting = useSelector(state => state.setting.setting);
     const propertySettings = useSelector(state => state.setting.propertySettings);
 
@@ -342,7 +346,6 @@ const Settings: FC = () => {
         }
     }, [setting, dispatch]);
 
-    console.log(propertySettings);
     const { value } = setting;
     return (
         <div className={classes.root}>
@@ -360,7 +363,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.organization} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_org} i18nKey={langKeys.activeOrganization} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageOrganization} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageOrganization}
+                                        count={2}
+                                        onClick={() => history.push(paths.ORGANIZATIONS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -369,7 +378,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.user} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageUser} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageUser}
+                                        count={2}
+                                        onClick={() => history.push(paths.USERS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -378,7 +393,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.classification} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageClassification} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageClassification}
+                                        count={2}
+                                        onClick={() => history.push(paths.TIPIFICATIONS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -387,16 +408,32 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageRestrictedEmoji} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageRestrictedEmoji}
+                                        count={2}
+                                        onClick={() => history.push(paths.EMOJIS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid
+                            item
+                            xs={12} sm={12} md={12} lg={12} xl={12}
+                            style={{ display: user?.roledesc === "SUPERADMIN" ? 'block' : 'none' }}
+                        >
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.corporation} count={2} />}
                                 subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageCorporation} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageCorporation}
+                                        count={2}
+                                        onClick={() => history.push('/corporations')}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -405,7 +442,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.integration} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageIntegration} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageIntegration}
+                                        count={2}
+                                        onClick={() => history.push(paths.INTEGRATIONMANAGER)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -418,7 +461,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.channel} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_channels} i18nKey={langKeys.activeChannel} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageChannel} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageChannel}
+                                        count={2}
+                                        onClick={() => history.push(paths.CHANNELS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -427,7 +476,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.quickreply} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageQuickReply} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageQuickReply}
+                                        count={2}
+                                        onClick={() => history.push(paths.QUICKREPLIES)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -436,7 +491,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.domain} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageDomain} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageDomain}
+                                        count={2}
+                                        onClick={() => history.push(paths.DOMAINS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -445,7 +506,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageForbiddenWord} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageForbiddenWord}
+                                        count={2}
+                                        onClick={() => history.push(paths.INAPPROPRIATEWORDS)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -454,7 +521,13 @@ const Settings: FC = () => {
                                 title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
                                 icon={<Facebook />}
-                                helpText={<HelpText i18nKey={langKeys.manageAgreement} count={2} />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageAgreement}
+                                        count={2}
+                                        onClick={() => history.push(paths.SLA)}
+                                    />
+                                }
                                 m={2}
                             />
                         </Grid>
@@ -465,7 +538,13 @@ const Settings: FC = () => {
                 title={<Trans i18nKey={langKeys.property} count={2} />}
                 subtitle={<PropertiesTileBody />}
                 icon={<Facebook />}
-                helpText={<HelpText i18nKey={langKeys.manageproperty} count={2} />}
+                helpText={
+                    <HelpText
+                        i18nKey={langKeys.manageproperty}
+                        count={2}
+                        onClick={() => history.push(paths.PROPERTIES)}
+                    />
+                }
                 m={2}
             />
         </div>
