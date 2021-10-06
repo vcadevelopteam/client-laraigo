@@ -33,5 +33,6 @@ export interface IUser {
     corpid: number;
     orgid: number;
     menu: ObjectApps;
+    image: string | null;
     organizations: Organization[];
 }
