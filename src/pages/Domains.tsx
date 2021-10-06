@@ -254,7 +254,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
             organization: row?.orgdesc || '',
             domainname: row?.domainname || '',
             type: row?.type || '',
-            status: row?.status || ''
+            status: row?.status || 'ACTIVO'
         }
     });
 
