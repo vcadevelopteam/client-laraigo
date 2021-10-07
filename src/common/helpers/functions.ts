@@ -64,7 +64,7 @@ export function filterPipe(items: Dictionary[], field: string, value: any, inv?:
 }
 
 export function filterIf(data: Dictionary[], rif?: string, rifvalue?: string) {
-    return data.filter(d => d.rif === null || (d.rif === rif && d.rifvalue === rifvalue));
+    return data.filter(d => [null, undefined].includes(d.rif) || (d.rif === rif && d.rifvalue === rifvalue));
 }
 
 export function downloadCSV(filename: string, data: Dictionary[]) {
