@@ -20,10 +20,9 @@ export interface IMassiveCloseTicketsParams {
 }
 
 interface IMember {
-    hsmtemplateid: number;
     phone: string;
-    firstname: string;
-    lastname: string;
+    firstname?: string | undefined;
+    lastname?: string | undefined;
     parameters: Dictionary[];
 }
 export interface ISendHSM {

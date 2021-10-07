@@ -9,7 +9,7 @@ import { CloseTicketIcon } from 'icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -30,11 +30,11 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
+    const person = useSelector(state => state.inbox.person);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
+    const [bodyCleaned, setBodyCleaned] = useState('');
 
     const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -44,35 +44,43 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         }
     });
 
-    const { fields, append: fieldsAppend, update: fieldsUpdate, remove: fieldRemove } = useFieldArray({
+    const { fields } = useFieldArray({
         control,
         name: 'variables',
     });
 
     useEffect(() => {
         if (waitClose) {
-            if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+            if (!sendingRes.loading && !sendingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
+                
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: "text",
+                    typeinteraction: null,
+                    lastmessage: bodyCleaned,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !ticketSelected!!.isAnswered,
+                }
                 dispatch(emitEvent({
-                    event: 'deleteTicket',
-                    data: {
-                        conversationid: ticketSelected?.conversationid,
-                        ticketnum: ticketSelected?.ticketnum,
-                        status: ticketSelected?.status,
-                        isanswered: ticketSelected?.isAnswered,
-                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                    }
+                    event: 'newMessageFromAgent',
+                    data: newInteractionSocket
                 }));
+
                 setWaitClose(false);
-            } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+            } else if (sendingRes.error) {
+                
+                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
         }
-    }, [closingRes, waitClose])
+    }, [sendingRes, waitClose])
 
     useEffect(() => {
         setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
@@ -91,10 +99,12 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
+            
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
 
             const wordList = value.body?.split(" ");
+            setBodyCleaned(value.body);
             const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
 
@@ -107,34 +117,27 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }
 
     const onSubmit = handleSubmit((data) => {
-        
+        setBodyCleaned(body => {
+            data.variables.forEach((x: Dictionary) => {
+                body = body.replace(`{{${x.name}}}`, x.text)
+            })
+            return body
+        })
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
-            communicationchannelid: ticketSelected?.communicationchannelid,
-            platformtype: ticketSelected?.communicationchannelsite,
-            communicationchanneltype: ticketSelected?.communicationchanneltype,
+            communicationchannelid: ticketSelected?.communicationchannelid!!,
+            platformtype: ticketSelected?.communicationchannelsite!!,
+            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
             listmembers: [{
-                phone: '',
-                firstname: '',
-                lastname: '',
+                phone: person.data?.phone!! + "",
+                firstname: person.data?.firstname + "",
+                lastname: person.data?.lastname + "",
                 parameters: data.variables
             }]
         }
-        console.log(bb)
-        // const dd: ICloseTicketsParams = {
-        //     conversationid: ticketSelected?.conversationid!!,
-        //     motive: data.motive,
-        //     observation: data.observation,
-        //     ticketnum: ticketSelected?.ticketnum!!,
-        //     personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-        //     communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-        //     communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-        //     status: 'CERRADO',
-        //     isAnswered: false,
-        // }
-        // dispatch(showBackdrop(true));
-        // dispatch(closeTicket(dd));
-        // setWaitClose(true)
+        dispatch(sendHSM(bb))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
     });
 
     return (
@@ -216,7 +219,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                 }));
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }

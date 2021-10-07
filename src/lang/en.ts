@@ -548,6 +548,7 @@ const translation: LangKeys = {
     tipify_ticket: 'Tipify ticket',
     send_hsm: 'Send HSM',
     successful_close_ticket: 'Ticket closed successfully',
+    successful_send_hsm: 'HSM sent successfully',
     successful_tipify_ticket: 'Ticket tipified successfully',
     successful_reasign_ticket: 'Ticket reasigned successfully',
     confirmation_reasign_with_reply: 'If you confirm sending the message the ticket will be assigned to your tray.',

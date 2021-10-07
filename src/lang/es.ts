@@ -28,7 +28,10 @@ const translation: LangKeys = {
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",
     answeredmessages: "Mensajes respondidos",
-    messagessuccesfullydelivered: "Mensajes Entregados Satisfactoriamente",
+    messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
+
+    successful_send_hsm: 'HSM enviado satisfactoriamente',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',

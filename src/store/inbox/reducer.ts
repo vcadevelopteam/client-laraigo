@@ -140,6 +140,13 @@ export default createReducer<IState>(initialState, {
     [actionTypes.REPLY_TICKET_FAILURE]: caseFunctions.replyTicketFailure,
     [actionTypes.REPLY_TICKET_RESET]: caseFunctions.replyTicketReset,
 
+
+    [actionTypes.SEND_HSM]: caseFunctions.sendHSM,
+    [actionTypes.SEND_HSM_SUCCESS]: caseFunctions.sendHSMSuccess,
+    [actionTypes.SEND_HSM_FAILURE]: caseFunctions.sendHSMFailure,
+    [actionTypes.SEND_HSM_RESET]: caseFunctions.sendHSMReset,
+
+
     [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,
     [actionTypes.REASSIGN_TICKET_SUCCESS]: caseFunctions.reassignTicketSuccess,
     [actionTypes.REASSIGN_TICKET_FAILURE]: caseFunctions.reassignTicketFailure,
