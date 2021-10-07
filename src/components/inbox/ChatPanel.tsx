@@ -379,19 +379,16 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [openModalHSM, setOpenModalHSM] = useState(false);
     const closeTicket = () => setOpenModalCloseticket(true);
 
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <IconButton
-                    onClick={closeTicket}
-                >
+                <IconButton onClick={closeTicket}>
                     <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
                 </IconButton>
-                <IconButton
-                    onClick={(e) => setAnchorEl(e.currentTarget)}
-                >
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon />
                 </IconButton>
             </div>
@@ -410,14 +407,18 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {
+                <MenuItem onClick={() => {
                     setOpenModalReassignticket(true)
                     setAnchorEl(null)
                 }}>{t(langKeys.reassign)}</MenuItem>
-                <MenuItem onClick={(e) => {
+                <MenuItem onClick={() => {
                     setAnchorEl(null)
                     setOpenModalTipification(true)
                 }}>{t(langKeys.typify)}</MenuItem>
+                <MenuItem onClick={() => {
+                    setAnchorEl(null)
+                    setOpenModalHSM(true)
+                }}>{t(langKeys.send_hsm)}</MenuItem>
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}

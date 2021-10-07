@@ -5,13 +5,13 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail,DashboardManagerial,DashboardOperationalPush, Iaservices,
-	Corporations, Settings
+	Reports, ReportTemplate, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,
+	Corporations, Settings, Dashboard
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
-import { ExtrasLayout,DashboardsLayout } from "components";
+import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -181,64 +181,63 @@ const RouterApp: FC = () => {
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PROPERTIES}>
-					<ExtrasLayout><Properties /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Properties /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.USERS}>
-					<ExtrasLayout><Users /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Users /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.QUICKREPLIES}>
-					<ExtrasLayout><Quickreplies /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Quickreplies /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.GROUPCONFIG}>
-					<ExtrasLayout><Groupconfig /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Groupconfig /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.WHITELIST}>
-					<ExtrasLayout><Whitelist /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Whitelist /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
-					<ExtrasLayout><InappropriateWords /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INTELLIGENTMODELS}>
-					<ExtrasLayout><IntelligentModels /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><IntelligentModels /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.SLA}>
-					<ExtrasLayout><SLA /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><SLA /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.TIPIFICATIONS}>
-					<ExtrasLayout><Tipifications /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Tipifications /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DOMAINS}>
-					<ExtrasLayout><Domains /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Domains /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON}>
-					<ExtrasLayout><Person /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Person /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.PERSON_DETAIL.path}>
-					<ExtrasLayout><PersonDetail /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><PersonDetail /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.MESSAGETEMPLATE}>
-					<ExtrasLayout><MessageTemplates /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><MessageTemplates /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INTEGRATIONMANAGER}>
-					<ExtrasLayout><IntegrationManager /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><IntegrationManager /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CAMPAIGN}>
-					<ExtrasLayout><Campaign /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Campaign /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.BOTDESIGNER}>
 					<ExtrasLayout><BotDesigner /></ExtrasLayout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
-					<ExtrasLayout><VariableConfiguration /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><VariableConfiguration /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.EMOJIS}>
-					<ExtrasLayout><Emojis /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><Emojis /></Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARDMANAGERIAL}>
-					<DashboardsLayout><DashboardManagerial /></DashboardsLayout>
-				</ProtectRoute>
-				<ProtectRoute exact path={paths.DASHBOARDOPERATIONALPUSH}>
-					<DashboardsLayout><DashboardOperationalPush /></DashboardsLayout>
+				<ProtectRoute exact path={paths.DASHBOARD}>
+					<Layout mainClasses={classes.main}>
+						<Dashboard />
+					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CONFIGURATION}>
 					<Layout mainClasses={classes.main}><Settings /></Layout>

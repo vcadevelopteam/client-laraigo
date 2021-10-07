@@ -212,3 +212,30 @@ export const capitalize = (text: string) => {
     const lower = text.toLowerCase();
     return text.charAt(0).toUpperCase() + lower.slice(1);
 }
+
+export const randomInterval = (min: number, max: number) => { // min and max included 
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
+export const randomText = (length = 8, use_upper = false, use_number = false, use_especial = false) => {
+    const lower = 'abcdefghijklmnopqrstuvwxyz';
+    const upper = 'ABCDEFGHIJkLMNOPQRSTUVWXYZ';
+    const number = '0123456789';
+    const especial = String.raw`!"#$%&'()*+,-./\\:;<=>?@[]\`^_{|}~`;
+    let chars = lower.split('');
+    if (use_upper)
+        chars = [...chars, ...upper.split('')];
+    if (use_number)
+        chars = [...chars, ...number.split('')];
+    if (use_especial)
+        chars = [...chars, ...especial.split('')];
+    return Array(length).fill(null).reduce((r, e, i) => {
+        let c = '';
+        if (i > 0)
+            c = chars.filter(c => c !== r[i - 1])[randomInterval(0, chars.filter(c => c !== r[i - 1]).length - 1)]
+        else
+            c = chars[randomInterval(0, chars.length - 1)]
+        r.push(c);
+        return r;
+    }, []).join('');
+}

@@ -1273,7 +1273,78 @@ export const gerencialasesoresconectadosbarsel = ({startdate, enddate, channel, 
      }
 });
 
+/// Settings tab (drawer)
 export const getCountConfigurationsBody = (): IRequestBody => ({
-    method: "ufn_count_configuration",
+    method: "UFN_COUNT_CONFIGURATION",
     parameters: {}
 });
+export const getSupervisorsSel = (): IRequestBody => ({
+    method: 'UFN_USER_SUPERVISORBYORGID_LST',
+    key: "UFN_USER_SUPERVISORBYORGID_LST",
+    parameters: {}
+});
+export const getLabelsSel = (): IRequestBody => ({
+    method: 'UFN_LABEL_LST',
+    key: "UFN_LABEL_LST",
+    parameters: {}
+});
+export const getdashboardPushHSMCATEGORYRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushSUMMARYSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_PUSH_SUMMARY_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushHSMRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMRANK_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMRANK_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
+    key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+
+/// Settings tab (drawer)
+export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'MAXIMONUMEROTICKETS' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONASESOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONADMINISTRADOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'CIERREAUTOMATICO' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONSESIONSUPERVISOR' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'ACCIONFUERAHORARIO' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'EXPIRACIONENCUESTA' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'WAITINGMESSAGE' },
+    },
+    {
+        method: "UFN_PROPERTY_SELBYNAME",
+        parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
+    },
+]);
