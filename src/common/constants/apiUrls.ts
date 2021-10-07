@@ -1,5 +1,5 @@
 //const BASE_URL = 'http://localhost:6065/api'; //local
-
+console.log("env var:", process.env.REACT_APP_SSS);
 const BASE_URL = 'https://apix.laraigo.com/api'; //dev
 const WS_URL = 'https://socket.laraigo.com'; //dev
 
