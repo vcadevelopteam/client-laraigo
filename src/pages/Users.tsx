@@ -455,7 +455,7 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('password', data?.password);
         setValue('confirmpassword', data?.password);
         setValue('send_password_by_email', data?.send_password_by_email);
-        setValue('change_password_on_login', data?.change_password_on_login);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
     }, [data]);
 
     const validateSamePassword = (value: string): any => {
@@ -486,14 +486,14 @@ const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, 
         setValue('password', data?.password);
         setValue('confirmpassword', data?.password);
         setValue('send_password_by_email', data?.send_password_by_email);
-        setValue('change_password_on_login', data?.change_password_on_login);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
         clearErrors();
     }
 
     const onSubmitPassword = handleSubmit((data) => {
         parentSetValue('password', data.password);
         parentSetValue('send_password_by_email', data.send_password_by_email);
-        parentSetValue('change_password_on_login', data.change_password_on_login);
+        parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
         setOpenModal(false);
     });
 
@@ -662,7 +662,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             status: row?.status || 'ACTIVO',
             image: row?.image || null,
             send_password_by_email: false,
-            change_password_on_login: false
+            pwdchangefirstlogin: false
         }
     });
 
