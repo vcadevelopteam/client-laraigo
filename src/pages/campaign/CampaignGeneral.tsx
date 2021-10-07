@@ -63,8 +63,8 @@ const dataSource: Dictionary = {
 
 const dataCampaignType = [
     { key: 'TEXTO', value: 'text'},
-    { key: 'HSM', value: 'hsm'}, // rif: 'startsWith', rifvalue: 'WHA' },
-    { key: 'SMS', value: 'sms'}, // rif: 'startsWith', rifvalue: 'SMS'},
+    { key: 'HSM', value: 'hsm', rif: 'startsWith', rifvalue: 'WHA' },
+    { key: 'SMS', value: 'sms', rif: 'startsWith', rifvalue: 'SMS'},
 ];
 
 type FormFields = {
@@ -247,11 +247,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     }
 
     const filterDataCampaignType = () => {
-        if (getValues('communicationchanneltype').startsWith('WHA')) {
-            return filterIf(dataCampaignType, 'startWith', 'WHA');
+        if (getValues('communicationchanneltype')?.startsWith('WHA')) {
+            return filterIf(dataCampaignType, 'startsWith', 'WHA');
         }
-        else if (getValues('communicationchanneltype').startsWith('SMS')) {
-            return filterIf(dataCampaignType, 'startWith', 'SMS');
+        else if (getValues('communicationchanneltype')?.startsWith('SMS')) {
+            return filterIf(dataCampaignType, 'startsWith', 'SMS');
         }
         else {
             return filterIf(dataCampaignType);

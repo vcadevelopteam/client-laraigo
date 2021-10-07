@@ -9,8 +9,11 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Scatter, Tooltip, XAxis, YAxis } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMain } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
+
+const COLORS = ["#0f8fe5", "#067713", "#296680", "#fc3617", "#e8187a", "#7cfa57", "#cfbace", "#4cd45f", "#fd5055", "#7e1be4", "#bf1490", "#66c6cf", "#011c3d", "#1a9595", "#4ae2c7", "#515496", "#a2aa65", "#df909c", "#3aa343", "#e0606e"];
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -123,6 +126,12 @@ const useStyles = makeStyles((theme: Theme) =>
             flexDirection: 'column',
             gap: theme.spacing(1)
         },
+        itemGraphic: {
+            width: 200
+        },
+        dontshow: {
+            display: "none"
+        }
     })
 );
 
@@ -149,6 +158,21 @@ const DashboardOperationalPush: FC = () => {
     const [datasupervisors, setdatasupervisors] = useState<any>([]);
     const [dataLabel, setdataLabel] = useState<any>([]);
     const [datacategoriaHSM, setdatacategoriaHSM] = useState<any>([]);
+    const [dataHSMCATEGORYRANK, setdataHSMCATEGORYRANK] = useState<any>([]);
+    const [dataHSMRANK, setdataHSMRANK] = useState<any>([]);
+    const [dataPushSUMMARYSel, setdataPushSUMMARYSel] = useState<any>([]);
+    const [dataMENSAJEXDIA, setdataMENSAJEXDIA] = useState<any>([]);
+    const [dataSummary, setdataSummary] = useState({
+        failMns: "0",
+        dataSuccessMns: "0",
+        totalMns: "0",
+        successMns: "0",
+        dataFailMns: "0",
+        attendedMns: "0",
+        dataAttendedMns: "0",
+        dataBot: "0",
+        dataAsesor: "0"
+    });
     const [searchfields, setsearchfields] = useState({
         queue: "",
         provider: "",
@@ -165,7 +189,8 @@ const DashboardOperationalPush: FC = () => {
             group: searchfields.queue, 
             company: searchfields.provider,
             label: searchfields.label,
-            category: searchfields.categoriaHSM
+            category: searchfields.categoriaHSM,
+            supervisor: searchfields.supervisor
         }
         dispatch(showBackdrop(true));
         setOpenDialog(false)
@@ -178,9 +203,40 @@ const DashboardOperationalPush: FC = () => {
         setWaitSave(true)
     }
     useEffect(() => {
+        setdataSummary({
+            failMns: "0",
+            dataSuccessMns: "0",
+            totalMns: "0",
+            successMns: "0",
+            dataFailMns: "0",
+            attendedMns: "0",
+            dataAttendedMns: "0",
+            dataBot: "0",
+            dataAsesor: "0"
+        });
+        if(dataPushSUMMARYSel && dataPushSUMMARYSel.length){
+            const {fail,success,total,attended,bot,asesor} = dataPushSUMMARYSel[0];
+            setdataSummary({
+                failMns: fail,
+                dataSuccessMns: (success * 100 / total).toFixed() + " %",
+                totalMns: total,
+                successMns: success,
+                dataFailMns: (fail * 100 / total).toFixed() + " %",
+                attendedMns: attended,
+                dataAttendedMns: (attended * 100 / total).toFixed() + " %",
+                dataBot: bot,
+                dataAsesor: asesor
+            });
+        }
+
+    }, [dataPushSUMMARYSel])
+    useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
-
+                setdataHSMCATEGORYRANK(remultiaux.data[0].data)
+                setdataPushSUMMARYSel(remultiaux.data[1].data)
+                setdataHSMRANK(remultiaux.data[2].data)
+                setdataMENSAJEXDIA(remultiaux.data[3].data)
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (remultiaux.error) {
@@ -330,26 +386,26 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>Sent Messages</div>
-                        <div className={classes.datafieldquarter}> 0 </div>                    
+                        <div className={classes.boxtitlequarter}>{t(langKeys.sentmessages)}</div>
+                        <div className={classes.datafieldquarter}>{dataSummary.totalMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>Messages successfully delivered </div>
-                        <div className={classes.datafieldquarter}>0</div>                    
+                        <div className={classes.boxtitlequarter}>{t(langKeys.messagessuccesfullydelivered)}</div>
+                        <div className={classes.datafieldquarter}>{dataSummary.successMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>Failed messages </div>
-                        <div className={classes.datafieldquarter}>0</div>                    
+                        <div className={classes.boxtitlequarter}>{t(langKeys.failedmessages)}</div>
+                        <div className={classes.datafieldquarter}>{dataSummary.failMns}</div>                    
                     </Box>
                     <Box
                         className={classes.columnCard}
                     >
-                        <div className={classes.boxtitlequarter}>Answered messages </div>
-                        <div className={classes.datafieldquarter}>0</div>                    
+                        <div className={classes.boxtitlequarter}>{t(langKeys.answeredmessages)}</div>
+                        <div className={classes.datafieldquarter}>{dataSummary.attendedMns}</div>                    
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
@@ -359,7 +415,7 @@ const DashboardOperationalPush: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}</div>
-                            <div className={classes.boxtitledata}>0</div>    
+                            <div className={classes.boxtitledata}>{dataSummary.dataAsesor}</div>    
                         </div>            
                     </Box>
                     <Box
@@ -368,7 +424,7 @@ const DashboardOperationalPush: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <div className={classes.boxtitle}>{t(langKeys.closedbybot)}</div>
-                            <div className={classes.boxtitledata}>0</div>    
+                            <div className={classes.boxtitledata}>{dataSummary.dataBot}</div>    
                         </div>            
                     </Box>
                 </div>
@@ -376,12 +432,37 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle}> Distribution by category HSM</div>
+                        <div className={classes.boxtitle}  style={{ width:"100%"}}> Distribution by category HSM</div>
+                        <div style={{ width: "100%", height: 240 }} >
+                            <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
+                                <PieChart>
+                                    <Tooltip />
+                                    <Pie data={dataHSMCATEGORYRANK} dataKey="quantity" nameKey="categoria" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                        {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
                     </Box>
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle}> Ranking HSM </div>
+                        <div className={classes.boxtitle} style={{ width:"100%"}}> Ranking HSM </div>
+                        <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                            <BarChart data={dataHSMRANK}>
+                                <XAxis dataKey="templatename" />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="quantity" fill="#8884d8" >
+                                    {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
+                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    ))}
+                                </Bar>
+                            </BarChart>
+                        </ResponsiveContainer>
+                        
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
@@ -389,6 +470,19 @@ const DashboardOperationalPush: FC = () => {
                         className={classes.itemCard}
                     >
                         <div className={classes.boxtitle}>Messages by day </div>
+                        <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
+                            <ComposedChart
+                                data={dataMENSAJEXDIA}
+                                >
+                                <CartesianGrid stroke="#f5f5f5" />
+                                <XAxis dataKey="fecha" scale="band" />
+                                <YAxis />
+                                <Tooltip />
+                                <Legend />
+                                <Bar dataKey="total" barSize={20} fill="#2499ee" />
+                                <Line type="monotone" dataKey="attended" stroke="#52307c" />
+                                </ComposedChart>
+                        </ResponsiveContainer>
                     </Box>
                 </div>
             </div>

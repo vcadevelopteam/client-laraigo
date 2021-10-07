@@ -19,7 +19,6 @@ import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { Skeleton } from '@material-ui/lab';
 import {
     FirstPage,
