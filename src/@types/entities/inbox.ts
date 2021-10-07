@@ -19,6 +19,20 @@ export interface IMassiveCloseTicketsParams {
     observation: string;
 }
 
+interface IMember {
+    phone: string;
+    firstname?: string | undefined;
+    lastname?: string | undefined;
+    parameters: Dictionary[];
+}
+export interface ISendHSM {
+    hsmtemplateid: number;
+    communicationchannelid: number;
+    platformtype: string;
+    communicationchanneltype: string;
+    listmembers: IMember[]
+}
+
 export interface IReplyTicketParams extends ITicket {
     interactiontype: string;
     interactiontext: string;

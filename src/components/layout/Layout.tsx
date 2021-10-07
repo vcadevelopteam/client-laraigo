@@ -53,6 +53,7 @@ const useStyles = makeStyles((theme) => ({
         margin: '8px 20px;',
         fontWeight: 400,
         fontSize: 14,
+        color: '#8F92A1',
     },
     drawerCloseLabel: {
         fontWeight: 400,

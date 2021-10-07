@@ -294,6 +294,7 @@ export const langKeys = {
     description: 'description',
     description_plural: 'description_plural',
     hsm_template: 'hsm_template',
+    hsm_template_plural: 'hsm_template_plural',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 
@@ -434,6 +435,7 @@ export const langKeys = {
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
+    successful_send_hsm: 'successful_send_hsm',
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
@@ -947,6 +949,8 @@ export const langKeys = {
     sendingFrequency: 'sendingFrequency',
     administrator: 'administrator',
     administrator_plural: 'administrator_plural',
+    outboundMessage: 'outboundMessage',
+    outboundMessage_plural: 'outboundMessage_plural',
 };
 
 export type LangKeys = typeof langKeys;

@@ -28,7 +28,10 @@ const translation: LangKeys = {
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",
     answeredmessages: "Mensajes respondidos",
-    messagessuccesfullydelivered: "Mensajes Entregados Satisfactoriamente",
+    messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
+
+    successful_send_hsm: 'HSM enviado satisfactoriamente',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
@@ -380,6 +383,7 @@ const translation: LangKeys = {
     filters: 'Filtros',
 
     hsm_template: 'Plantilla HSM',
+    hsm_template_plural: 'Plantillas HSM',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
@@ -946,6 +950,8 @@ const translation: LangKeys = {
     sendingFrequency: 'Frecuencia de envío',
     administrator: 'Administrador',
     administrator_plural: 'Administradores',
+    outboundMessage: 'Mensaje saliente',
+    outboundMessage_plural: 'Mensajes salientes',
 };
 
 const esResource: ResourceLanguage = {

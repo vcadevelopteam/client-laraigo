@@ -288,6 +288,7 @@ const translation: LangKeys = {
     recordPerPage_plural: 'Records per page',
     return: "Return",
     hsm_template: 'HSM template',
+    hsm_template_plural: 'HSM templates',
 
     supplier: "Supplier",
     id: 'Id',
@@ -314,7 +315,7 @@ const translation: LangKeys = {
     footer: 'Footer',
     buttons: 'Buttons',
     payload: 'Payload',
-    message: 'Mensaje',
+    message: 'Message',
     addbutton: 'Add button',
     removebutton: 'Remove button',
     import: 'Import',
@@ -550,6 +551,7 @@ const translation: LangKeys = {
     tipify_ticket: 'Tipify ticket',
     send_hsm: 'Send HSM',
     successful_close_ticket: 'Ticket closed successfully',
+    successful_send_hsm: 'HSM sent successfully',
     successful_tipify_ticket: 'Ticket tipified successfully',
     successful_reasign_ticket: 'Ticket reasigned successfully',
     confirmation_reasign_with_reply: 'If you confirm sending the message the ticket will be assigned to your tray.',
@@ -955,6 +957,8 @@ const translation: LangKeys = {
     sendingFrequency: 'Sending frequency',
     administrator: 'Administrator',
     administrator_plural: 'Administrators',
+    outboundMessage: 'Outbound message',
+    outboundMessage_plural: 'Outbound messages',
 };
 
 const enResource: ResourceLanguage = {
