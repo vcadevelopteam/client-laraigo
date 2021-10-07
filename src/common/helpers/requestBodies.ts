@@ -1277,3 +1277,33 @@ export const getCountConfigurationsBody = (): IRequestBody => ({
     method: "ufn_count_configuration",
     parameters: {}
 });
+export const getSupervisorsSel = (): IRequestBody => ({
+    method: 'UFN_USER_SUPERVISORBYORGID_LST',
+    key: "UFN_USER_SUPERVISORBYORGID_LST",
+    parameters: {}
+});
+export const getLabelsSel = (): IRequestBody => ({
+    method: 'UFN_LABEL_LST',
+    key: "UFN_LABEL_LST",
+    parameters: {}
+});
+export const getdashboardPushHSMCATEGORYRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushSUMMARYSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_PUSH_SUMMARY_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushHSMRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_HSMRANK_SEL',
+    key: "UFN_DASHBOARD_PUSH_HSMRANK_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});
+export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
+    key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+});

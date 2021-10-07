@@ -189,13 +189,15 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}
                                 label={t(langKeys.type)}
                                 className="col-6"
                                 valueDefault={getValues('type')}
                                 onChange={(value) => setValue('type', value.domainvalue)}
                                 error={errors?.type?.message}
                                 data={dataType}
-                                optionDesc="domaindesc"
+                                prefixTranslation="type_org_"
+                                optionDesc="domainvalue"
                                 optionValue="domainvalue"
                             />
                             : <FieldView
@@ -265,7 +267,12 @@ const Organizations: FC = () => {
             {
                 Header: t(langKeys.type),
                 accessor: 'type',
-                NoFilter: true
+                prefixTranslation: 'type_org_',
+                NoFilter: true,
+                Cell: (props: any) => {
+                    const { type } = props.cell.row.original;
+                    return (t(`type_org_${type}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.status),

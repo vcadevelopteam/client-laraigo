@@ -717,14 +717,14 @@ const DashboardManagerial: FC = () => {
         dispatch(showBackdrop(true));
         setOpenDialog(false)
         dispatch(getMultiCollectionAux([
-            gerencialTMOsel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialTMEsel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialsummarysel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialencuestasel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialconversationsel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialinteractionsel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialetiquetassel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
-            gerencialasesoresconectadosbarsel({ startdate: initialRange.startDate, enddate: initialRange.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialTMOsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialTMEsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialsummarysel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialencuestasel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialconversationsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialinteractionsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialetiquetassel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
+            gerencialasesoresconectadosbarsel({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider }),
         ]))
         setWaitSave(true)
     }
@@ -815,7 +815,6 @@ const DashboardManagerial: FC = () => {
                 </Button>
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
-                {/* Coloqué ese div para agregar gap: 16px */}
                 <div className={classes.replacerowzyx}>
                     <Box
                         className={classes.itemCard}
