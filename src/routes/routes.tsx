@@ -87,14 +87,14 @@ export const routes: RouteConfig[] = [
         path: paths.CONFIGURATION,
         icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
     },
-    {
-        key: paths.EXTRAS,
-        description: <Trans i18nKey={langKeys.extra} count={2} />,
-        path: paths.EXTRAS,
-        subroute: true,
-        initialSubroute: paths.USERS,
-        icon: (className) => <ExtrasIcon style={{width: 22, height: 22}} className={className} />,
-    },
+    // {
+    //     key: paths.EXTRAS,
+    //     description: <Trans i18nKey={langKeys.extra} count={2} />,
+    //     path: paths.EXTRAS,
+    //     subroute: true,
+    //     initialSubroute: paths.USERS,
+    //     icon: (className) => <ExtrasIcon style={{width: 22, height: 22}} className={className} />,
+    // },
 ];
 
 export const subroutes: RouteConfig[] = [

@@ -34,4 +34,4 @@ export * from './signup';
 export { default as BotDesigner } from './BotDesigner';
 export { default as Dashboard } from './Dashboard';
 
-export { default as Settings } from './settings';
+export { default as Settings } from './Settings';
