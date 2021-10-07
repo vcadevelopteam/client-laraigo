@@ -52,28 +52,10 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.system} />,
     },
     {
-        key: paths.CORPORATIONS,
-        description: <Trans i18nKey={langKeys.corporation} count={2} />,
-        path: paths.CORPORATIONS,
-        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
-    },
-    {
-        key: paths.ORGANIZATIONS,
-        description: <Trans i18nKey={langKeys.organization} count={2} />,
-        path: paths.ORGANIZATIONS,
-        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
-    },
-    {
         key: paths.IASERVICES,
         description: <Trans i18nKey={langKeys.iaservices} count={2} />,
         path: paths.IASERVICES,
         icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
-    },
-    {
-        key: paths.CHANNELS,
-        description: <Trans i18nKey={langKeys.channel} count={2} />,
-        path: paths.CHANNELS,
-        icon: (className) => <ChannelIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.BILLING_SETUPS,
