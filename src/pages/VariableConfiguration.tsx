@@ -332,6 +332,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 NoFilter: false,
                 type: 'color',
                 editable: true,
+                width: 150,
+                maxWidth: 150
             },
             {
                 Header: t(langKeys.bold),
@@ -340,6 +342,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 type: 'boolean',
                 sortType: 'basic',
                 editable: true,
+                width: 180,
+                maxWidth: 180
             },
             {
                 Header: t(langKeys.order),
@@ -348,6 +352,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 type: 'number',
                 sortType: 'number',
                 editable: true,
+                width: 150,
+                maxWidth: 150,
             },
             {
                 Header: t(langKeys.show),
@@ -356,6 +362,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 type: 'boolean',
                 sortType: 'basic',
                 editable: true,
+                width: 180,
+                maxWidth: 180
             }
         ],
         []
