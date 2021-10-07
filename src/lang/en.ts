@@ -288,6 +288,7 @@ const translation: LangKeys = {
     recordPerPage_plural: 'Records per page',
     return: "Return",
     hsm_template: 'HSM template',
+    hsm_template_plural: 'HSM templates',
 
     supplier: "Supplier",
     id: 'Id',
@@ -955,6 +956,8 @@ const translation: LangKeys = {
     sendingFrequency: 'Sending frequency',
     administrator: 'Administrator',
     administrator_plural: 'Administrators',
+    outboundMessage: 'Outbound message',
+    outboundMessage_plural: 'Outbound messages',
 };
 
 const enResource: ResourceLanguage = {

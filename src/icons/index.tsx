@@ -99,3 +99,13 @@ export { ReactComponent as GenderIcon } from './gender.svg';
 export { ReactComponent as BuildingIcon } from './building-city-town.svg';
 export { ReactComponent as EditPencilIcon } from './edit-pencil.svg';
 export { ReactComponent as InfoRoundedIcon } from './info-rounded.svg';
+
+export { ReactComponent as ClassificationIcon } from './classification.svg';
+export { ReactComponent as UserGroupIcon } from './user-group.svg';
+export { ReactComponent as EmojiSadFaceIcon } from './emoji-sad-face.svg';
+export { ReactComponent as ChannelsIcon } from './channels.svg';
+export { ReactComponent as DomainsIcon } from './domains.svg';
+export { ReactComponent as ForbiddenWordsIcon } from './forbidden-words.svg';
+export { ReactComponent as OrganizationsIcon } from './organization.svg';
+export { ReactComponent as QuickReplyIcon } from './quick-reply.svg';
+export { ReactComponent as ConfigPropertiesIcon } from './properties.svg';

@@ -383,6 +383,7 @@ const translation: LangKeys = {
     filters: 'Filtros',
 
     hsm_template: 'Plantilla HSM',
+    hsm_template_plural: 'Plantillas HSM',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
@@ -948,6 +949,8 @@ const translation: LangKeys = {
     sendingFrequency: 'Frecuencia de envío',
     administrator: 'Administrador',
     administrator_plural: 'Administradores',
+    outboundMessage: 'Mensaje saliente',
+    outboundMessage_plural: 'Mensajes salientes',
 };
 
 const esResource: ResourceLanguage = {
