@@ -1287,23 +1287,23 @@ export const getLabelsSel = (): IRequestBody => ({
     key: "UFN_LABEL_LST",
     parameters: {}
 });
-export const getdashboardPushHSMCATEGORYRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+export const getdashboardPushHSMCATEGORYRANKSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL',
     key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
 });
-export const getdashboardPushSUMMARYSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+export const getdashboardPushSUMMARYSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_SUMMARY_SEL',
     key: "UFN_DASHBOARD_PUSH_SUMMARY_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
 });
-export const getdashboardPushHSMRANKSel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+export const getdashboardPushHSMRANKSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_HSMRANK_SEL',
     key: "UFN_DASHBOARD_PUSH_HSMRANK_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
 });
-export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,company,label,category}: Dictionary): IRequestBody => ({
+export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00}
+    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
 });

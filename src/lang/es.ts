@@ -25,6 +25,10 @@ const translation: LangKeys = {
 
     client_message: 'Mensajes del Cliente',
     bot_message: 'Mensajes del Bot',
+    sentmessages: "Mensajes Enviados",
+    failedmessages: "Mensajes fallidos",
+    answeredmessages: "Mensajes respondidos",
+    messagessuccesfullydelivered: "Mensajes Entregados Satisfactoriamente",
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',

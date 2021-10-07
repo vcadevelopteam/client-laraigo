@@ -20,7 +20,7 @@ import { TemplateBreadcrumbs } from 'components';
 
 const arrayBread = [
     { id: "view-1", name: "Dashboard" },
-    { id: "dashboardgerencial", name: "Dashboard managerial" }
+    { id: "dashboardgerencial", name: "Dashboard managerial" },
 ];
 
 const useStyles = makeStyles((theme) => ({
