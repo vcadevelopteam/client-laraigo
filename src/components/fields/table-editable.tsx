@@ -557,12 +557,14 @@ const TableZyxEditable = React.memo(({
                                 :
                                 (cell.value?.length > 20 ?
                                     <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {cell.render('Cell')}
                                         </div>
                                     </Tooltip>
                                     :
-                                    cell.render('Cell')
+                                    <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {cell.render('Cell')}
+                                    </div>
                                 )
                             }
                         </TableCell>
