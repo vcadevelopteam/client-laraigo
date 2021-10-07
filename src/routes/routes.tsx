@@ -30,6 +30,12 @@ export const routes: RouteConfig[] = [
         icon: (className) => <TicketIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
+        key: paths.PERSON,
+        description: <Trans i18nKey={langKeys.person_plural} count={2} />,
+        path: paths.PERSON,
+        icon: (className) => <ExtrasIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
         key: paths.EMAIL_INBOX,
         description: <Trans i18nKey={langKeys.eMailInbox} />,
         path: paths.EMAIL_INBOX,
