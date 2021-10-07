@@ -4,7 +4,7 @@ import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Facebook } from '@material-ui/icons';
-import { ChannelIcon, ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, QuickresponseIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -346,6 +346,7 @@ const Settings: FC = () => {
         }
     }, [setting, dispatch]);
 
+    console.log(setting);
     const { value } = setting;
     return (
         <div className={classes.root}>
@@ -450,6 +451,10 @@ const Settings: FC = () => {
                                 m={2}
                             />
                         </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Grid container direction="column">
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.domain} count={2} />}
@@ -465,10 +470,6 @@ const Settings: FC = () => {
                                 m={2}
                             />
                         </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
@@ -531,38 +532,8 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title={<Trans i18nKey={langKeys.messagetemplate} count={2} />}
-                                subtitle={<SubtitleText value={3333} i18nKey={langKeys.messagetemplate} />}
-                                icon={<Facebook fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.messagetemplate}
-                                        count={2}
-                                        onClick={() => history.push(paths.MESSAGETEMPLATE)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.campaign} count={2} />}
-                                subtitle={<SubtitleText value={3333} i18nKey={langKeys.campaign} />}
-                                icon={<Facebook fill="inherit" stroke="inherit" />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.campaign}
-                                        count={2}
-                                        onClick={() => history.push(paths.CAMPAIGN)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
                                 title={<Trans i18nKey={langKeys.whitelist} />}
-                                subtitle={<SubtitleText value={3333} i18nKey={langKeys.whitelist} />}
+                                subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
                                 icon={<Facebook fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText

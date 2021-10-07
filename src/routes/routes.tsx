@@ -1,6 +1,6 @@
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
-import { DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ChannelIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
+import { DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 
@@ -67,6 +67,22 @@ export const routes: RouteConfig[] = [
         key: paths.CONFIGURATION,
         description: <Trans i18nKey={langKeys.configuration} />,
         path: paths.CONFIGURATION,
+        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: 'outbound-messages-label',
+        description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
+    },
+    {
+        key: paths.MESSAGETEMPLATE,
+        description: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
+        path: paths.MESSAGETEMPLATE,
+        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: paths.CAMPAIGN,
+        description: <Trans i18nKey={langKeys.campaign} count={2} />,
+        path: paths.CAMPAIGN,
         icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
     },
     // {

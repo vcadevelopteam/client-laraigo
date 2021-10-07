@@ -942,6 +942,8 @@ export const langKeys = {
     sendingFrequency: 'sendingFrequency',
     administrator: 'administrator',
     administrator_plural: 'administrator_plural',
+    outboundMessage: 'outboundMessage',
+    outboundMessage_plural: 'outboundMessage_plural',
 };
 
 export type LangKeys = typeof langKeys;

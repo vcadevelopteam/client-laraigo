@@ -941,6 +941,8 @@ const translation: LangKeys = {
     sendingFrequency: 'Frecuencia de envío',
     administrator: 'Administrador',
     administrator_plural: 'Administradores',
+    outboundMessage: 'Mensaje saliente',
+    outboundMessage_plural: 'Mensajes salientes',
 };
 
 const esResource: ResourceLanguage = {
