@@ -944,6 +944,9 @@ export const langKeys = {
     administrator_plural: 'administrator_plural',
     outboundMessage: 'outboundMessage',
     outboundMessage_plural: 'outboundMessage_plural',
+    iaModel: 'iaModel',
+    iaModel_plural: 'iaModel_plural',
+    ia: 'ia',
 };
 
 export type LangKeys = typeof langKeys;

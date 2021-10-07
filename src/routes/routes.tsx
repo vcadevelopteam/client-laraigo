@@ -53,16 +53,10 @@ export const routes: RouteConfig[] = [
         path: paths.SUPERVISOR,
         icon: (className) => <SupervisorIcon style={{width: 22, height: 22}} className={className} />,
     },
-    {
-        key: 'system-label',
-        description: <Trans i18nKey={langKeys.system} />,
-    },
-    {
-        key: paths.IASERVICES,
-        description: <Trans i18nKey={langKeys.iaservices} count={2} />,
-        path: paths.IASERVICES,
-        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
-    },
+    // {
+    //     key: 'system-label',
+    //     description: <Trans i18nKey={langKeys.system} />,
+    // },
     {
         key: paths.BILLING_SETUPS,
         description: <Trans i18nKey={langKeys.billingSetup} />,
@@ -90,6 +84,28 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.campaign} count={2} />,
         path: paths.CAMPAIGN,
         icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: paths.BOTDESIGNER,
+        description: <Trans i18nKey={langKeys.botdesigner} />,
+        path: paths.BOTDESIGNER,
+        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: 'ia-services-label',
+        description: <Trans i18nKey={langKeys.iaservices} count={2} />,
+    },
+    {
+        key: paths.IAMODELS,
+        description: <Trans i18nKey={langKeys.iaModel} count={2} />,
+        path: paths.IAMODELS,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
+    },
+    {
+        key: paths.IA,
+        description: <Trans i18nKey={langKeys.ia}/>,
+        path: paths.IAMODELS,
+        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,

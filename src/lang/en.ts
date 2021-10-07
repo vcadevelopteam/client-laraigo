@@ -952,6 +952,9 @@ const translation: LangKeys = {
     administrator_plural: 'Administrators',
     outboundMessage: 'Outbound message',
     outboundMessage_plural: 'Outbound messages',
+    iaModel: 'IA Model',
+    iaModel_plural: 'IA Models',
+    ia: 'Artificial intelligence',
 };
 
 const enResource: ResourceLanguage = {

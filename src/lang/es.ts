@@ -943,6 +943,9 @@ const translation: LangKeys = {
     administrator_plural: 'Administradores',
     outboundMessage: 'Mensaje saliente',
     outboundMessage_plural: 'Mensajes salientes',
+    iaModel: 'Modelo IA',
+    iaModel_plural: 'Modelos IA',
+    ia: 'Inteligencia artificial',
 };
 
 const esResource: ResourceLanguage = {
