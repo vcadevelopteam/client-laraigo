@@ -515,6 +515,7 @@ export const langKeys = {
     organization_by_default: 'organization_by_default',
     field_required: 'field_required',
     emailverification: 'emailverification',
+    code_duplicate: 'code_duplicate',
     field_duplicate: 'field_duplicate',
     field_startwithchar: 'field_startwithchar',
     field_basiclatinlowercase: 'field_basiclatinlowercase',

@@ -324,6 +324,7 @@ const TableZyxEditable = React.memo(({
                                 value={value}
                                 onChange={onChange}
                                 onBlur={onBlurColor}
+                                inputProps={{ style: {fontSize: '14px'} }}
                             >
                             </TextField>
                             <div
@@ -342,10 +343,11 @@ const TableZyxEditable = React.memo(({
                 case 'number':
                     return <TextField
                         type="number"
+                        style={{fontSize: '14px'}}
                         value={value}
                         onChange={onChange}
                         onBlur={onBlur}
-                        inputProps={{ min: 0, step: 1 }}
+                        inputProps={{ style: {fontSize: '14px'}, min: 0, step: 1 }}
                     />
                 case 'boolean':
                     return <OnlyCheckbox
@@ -356,9 +358,11 @@ const TableZyxEditable = React.memo(({
                     />
                 default:
                     return <TextField
+                        fullWidth
                         value={value}
                         onChange={onChange}
                         onBlur={onBlur}
+                        inputProps={{ style: {fontSize: '14px'} }}
                     >
                     </TextField>
             }
@@ -541,22 +545,24 @@ const TableZyxEditable = React.memo(({
                         <TableCell
                             component="div"
                             {...cell.getCellProps({
-                                style: { minWidth: cell.column.minWidth, width: cell.column.width },
+                                style: {
+                                    minWidth: cell.column.minWidth,
+                                    width: cell.column.width,
+                                    maxWidth: cell.column.maxWidth,
+                                },
                             })}
                         >
                             {headerGroups[0].headers[i].isComponent ?
                                 cell.render('Cell')
                                 :
-                                (cell.value?.length > 100 ?
+                                (cell.value?.length > 20 ?
                                     <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                        <Box m={0} whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis" width={200}>
+                                        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                             {cell.render('Cell')}
-                                        </Box>
+                                        </div>
                                     </Tooltip>
                                     :
-                                    <Box m={0} overflow="hidden" textOverflow="ellipsis" width={1}>
-                                        {cell.render('Cell')}
-                                    </Box>
+                                    cell.render('Cell')
                                 )
                             }
                         </TableCell>
@@ -630,14 +636,14 @@ const TableZyxEditable = React.memo(({
 
             <TableContainer component="div" style={{ position: "relative" }}>
                 <Box overflow="auto" style={{height: 'calc(100vh - 365px)', overflowY: 'hidden'}}>
-                    <Table component="div" stickyHeader size={isBigScreen ? "medium" : "small"} {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
+                    <Table component="div" stickyHeader size="small" {...getTableProps()} aria-label="enhanced table" aria-labelledby="tableTitle">
                         <TableHead component="div">
                             {headerGroups.map((headerGroup) => (
                                 <TableRow component="div" {...headerGroup.getHeaderGroupProps()}>
                                     {headerGroup.headers.map((column, ii) => (
                                         column.activeOnHover ?
                                             <th style={{ width: "0px" }} key="header-floating"></th> :
-                                            <TableCell component="div" key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`}}>
+                                            <TableCell component="div" key={ii} style={{flex: `${column.width} 0 auto`, minWidth: 0, width: `${column.width}px`, maxWidth: `${column.maxWidth}px`}}>
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
@@ -685,7 +691,7 @@ const TableZyxEditable = React.memo(({
                                 width="auto"
                                 height={window.innerHeight - 470}
                                 itemCount={page.length}
-                                itemSize={63.2}
+                                itemSize={43}
                                 >
                                 {RenderRow}
                             </FixedSizeList>

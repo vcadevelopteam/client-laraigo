@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate } from 'common/helpers';
+import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -121,8 +121,8 @@ export const Campaign: FC = () => {
                 isComponent: true,
                 Cell: (props: any) => {
                     const { id, status, startdate, enddate } = props.cell.row.original;
-                    if (dateToLocalDate(startdate, 'date') <= new Date()
-                    && new Date() <= dateToLocalDate(enddate, 'date'))
+                    if (dateToLocalDate(startdate, 'date') <= todayDate()
+                    && todayDate() <= dateToLocalDate(enddate, 'date'))
                     {
                         if (status === 'EJECUTANDO') {
                             return <Button

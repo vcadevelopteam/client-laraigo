@@ -152,6 +152,10 @@ export const dateToLocalDate = (date: string, returnType = 'string'): string | D
         return dateCleaned;
 }
 
+export const todayDate = (): Date => {
+    return new Date(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().substring(0,10) + "T00:00:00");
+}
+
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {
     if (!date) return new Date()
     const nn = new Date(date)

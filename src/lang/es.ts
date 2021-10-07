@@ -514,6 +514,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    code_duplicate: 'Código duplicado',
     field_duplicate: 'Campo duplicado',
     field_startwithchar: 'El campo debe comenzar con una letra',
     field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',
