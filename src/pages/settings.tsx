@@ -4,7 +4,7 @@ import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Facebook } from '@material-ui/icons';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, Corporation2Icon, IntegrationIcon, SLAIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -504,7 +504,7 @@ const Settings: FC = () => {
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.integration} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
-                                icon={<Facebook fill="inherit" stroke="inherit" />}
+                                icon={<IntegrationIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageIntegration}
@@ -519,7 +519,7 @@ const Settings: FC = () => {
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
-                                icon={<Facebook fill="inherit" stroke="inherit" />}
+                                icon={<SLAIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageAgreement}

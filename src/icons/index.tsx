@@ -109,3 +109,10 @@ export { ReactComponent as ForbiddenWordsIcon } from './forbidden-words.svg';
 export { ReactComponent as OrganizationsIcon } from './organization.svg';
 export { ReactComponent as QuickReplyIcon } from './quick-reply.svg';
 export { ReactComponent as ConfigPropertiesIcon } from './properties.svg';
+
+export { ReactComponent as BotDesignerIcon } from './bot-designer.svg';
+export { ReactComponent as Corporation2Icon } from './corporation.svg';
+export { ReactComponent as IAServicesIcon } from './iaservices.svg';
+export { ReactComponent as IntegrationIcon } from './integrations.svg';
+export { ReactComponent as OutboundIcon } from './outbound.svg';
+export { ReactComponent as SLAIcon } from './sla.svg';
