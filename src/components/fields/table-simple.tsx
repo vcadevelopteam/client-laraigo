@@ -580,7 +580,7 @@ const TableZyx = React.memo(({
                         <>
                             <input
                                 name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
                                 id="laraigo-upload-csv-file"
                                 type="file"
                                 style={{ display: 'none' }}
@@ -596,6 +596,18 @@ const TableZyx = React.memo(({
                                     startIcon={<BackupIcon color="secondary" />}
                                     style={{ backgroundColor: "#55BD84" }}
                                 ><Trans i18nKey={langKeys.import} />
+                                </Button>
+                            </label>
+                            <label htmlFor="download-template">
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    disabled={loading}
+                                    //startIcon={<BackupIcon color="secondary" />}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                ><Trans i18nKey={langKeys.templatedownload} />
                                 </Button>
                             </label>
                         </>

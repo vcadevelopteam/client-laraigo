@@ -26,6 +26,10 @@ const translation: LangKeys = {
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
     agent_message: 'Agent Messages',
+    messagessuccesfullydelivered: "Successfully Delivered Messages",
+    failedmessages: "Failed messages",
+    answeredmessages: "Responded messages",
+    sentmessages: "Sent Messages",
     translationservice: 'Translation Service',
     channeltype: 'Channel Type',
     channeldesc: 'Channel Description',
@@ -41,6 +45,7 @@ const translation: LangKeys = {
     channel_plural: 'Channels',
 
     configuration: 'Configuration',
+    templatedownload: "Download template",
     configuration_plural: 'Configurations',
 
     eMailInbox: 'E-Mail inbox',
