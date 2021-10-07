@@ -1,6 +1,14 @@
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
-import { DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ConfigurationIcon, ExtrasIcon } from 'icons';
+import { DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ConfigurationIcon, ExtrasIcon,
+    BotDesignerIcon,
+    Corporation2Icon,
+    IAServicesIcon,
+    IntegrationIcon,
+    OutboundIcon,
+    SLAIcon
+
+} from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
 
@@ -83,29 +91,29 @@ export const routes: RouteConfig[] = [
         key: paths.CAMPAIGN,
         description: <Trans i18nKey={langKeys.campaign} count={2} />,
         path: paths.CAMPAIGN,
-        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <OutboundIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: paths.BOTDESIGNER,
         description: <Trans i18nKey={langKeys.botdesigner} />,
         path: paths.BOTDESIGNER,
-        icon: (className) => <ConfigurationIcon style={{width: 22, height: 22}} className={className} />,
+        icon: (className) => <BotDesignerIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
         key: 'ia-services-label',
         description: <Trans i18nKey={langKeys.iaservices} count={2} />,
     },
     {
-        key: paths.IAMODELS,
+        key: paths.INTELLIGENTMODELS,
         description: <Trans i18nKey={langKeys.iaModel} count={2} />,
-        path: paths.IAMODELS,
+        path: paths.INTELLIGENTMODELS,
         icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
     },
     {
-        key: paths.IA,
+        key: paths.IASERVICES,
         description: <Trans i18nKey={langKeys.ia}/>,
-        path: paths.IAMODELS,
-        icon: (className) => <OrganizationIcon style={{width: 22, height: 22}} className={className} />,
+        path: paths.IASERVICES,
+        icon: (className) => <IAServicesIcon style={{width: 22, height: 22}} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,
