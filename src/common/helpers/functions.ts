@@ -158,8 +158,8 @@ export const todayDate = (): Date => {
 
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {
     if (!date) return new Date()
-    const nn = new Date(date)
-    const dateCleaned = new Date(nn.getTime() + (subtractHours ? (nn.getTimezoneOffset() * 60 * 1000 * -1) : 0));
+    const dateCleaned = new Date(date)
+    // const dateCleaned = new Date(nn.getTime() + (subtractHours ? (nn.getTimezoneOffset() * 60 * 1000 * -1) : 0));
     return validateWithToday ? (dateCleaned > new Date() ? new Date() : dateCleaned) : dateCleaned;
 }
 
