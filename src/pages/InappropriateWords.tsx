@@ -157,10 +157,10 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                                 onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                                 error={errors?.classification?.message}
                                 data={[
-                                    {domaindesc:t(langKeys.insults), domainvalue: "Insults"},
-                                    {domaindesc:t(langKeys.entities), domainvalue: "Entities"},
-                                    {domaindesc:t(langKeys.links), domainvalue: "Links"},
-                                    {domaindesc:t(langKeys.emotions), domainvalue: "Emotions"},
+                                    {domaindesc:t(langKeys.insults)?.toUpperCase(), domainvalue: "Insults"},
+                                    {domaindesc:t(langKeys.entities)?.toUpperCase(), domainvalue: "Entities"},
+                                    {domaindesc:t(langKeys.links)?.toUpperCase(), domainvalue: "Links"},
+                                    {domaindesc:t(langKeys.emotions)?.toUpperCase(), domainvalue: "Emotions"},
                                 ]}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
@@ -260,7 +260,12 @@ const InappropriateWords: FC = () => {
             {
                 Header: t(langKeys.classification),
                 accessor: 'classification',
-                NoFilter: true
+                NoFilter: true,
+                prefixTranslation: '',
+                Cell: (props: any) => {
+                    const { classification } = props.cell.row.original;
+                    return (t(`${classification}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.description),
