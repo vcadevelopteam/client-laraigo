@@ -226,7 +226,7 @@ const RouterApp: FC = () => {
 					<Layout mainClasses={classes.main}><Campaign /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.BOTDESIGNER}>
-					<ExtrasLayout><BotDesigner /></ExtrasLayout>
+					<Layout mainClasses={classes.main}><BotDesigner /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.VARIABLECONFIGURATION}>
 					<Layout mainClasses={classes.main}><VariableConfiguration /></Layout>
