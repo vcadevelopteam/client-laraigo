@@ -332,8 +332,8 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
                 NoFilter: false,
                 type: 'color',
                 editable: true,
-                width: 150,
-                maxWidth: 150
+                width: 160,
+                maxWidth: 160
             },
             {
                 Header: t(langKeys.bold),
