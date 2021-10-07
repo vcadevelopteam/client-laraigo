@@ -108,13 +108,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const resFromOrg = useSelector(state => state.main.multiDataAux);
 
     // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
+    // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
 
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] })
     const [dataSupervisors, setDataSupervisors] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [dataChannels, setDataChannels] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [dataGroups, setDataGroups] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [dataApplications, setDataApplications] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors }, reset } = useForm();
@@ -141,6 +142,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
         const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_COMMUNICATIONCHANNELBYORG_LST" + (index + 1)));
+        const indexGroups = resFromOrg.data.findIndex((x: MultiData) => x.key === (`UFN_DOMAIN_LST_VALORES_GRUPOS${(index + 1)}`));
         const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_APPS_DATA_SEL" + (index + 1)));
 
         if (indexSupervisor > -1)
@@ -149,6 +151,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (indexChannels > -1)
             setDataChannels({ loading: false, data: resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : [] });
 
+        if (indexGroups > -1)
+            setDataGroups({ loading: false, data: resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success ? resFromOrg.data[indexGroups].data : [] });
+
         if (indexApplications > -1)
             setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
     }, [resFromOrg])
@@ -156,7 +161,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     useEffect(() => {
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
-            orgid: row ? row.orgid : 0,
+            orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
             roleid: row ? row.roleid : 0,
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
@@ -212,13 +217,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (value) {
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
+            setDataGroups({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getSupervisors(value.orgid, 0, index + 1),
-                getChannelsByOrg(value.orgid, index + 1)
+                getChannelsByOrg(value.orgid, index + 1),
+                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid)
             ]))
         } else {
             setDataSupervisors({ loading: false, data: [] });
             setDataChannels({ loading: false, data: [] });
+            setDataGroups({ loading: false, data: [] });
         }
     }
 
@@ -254,7 +262,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 <FieldSelect
                                     label={t(langKeys.organization)}
                                     className={classes.mb2}
-                                    valueDefault={row?.orgid || ""}
+                                    valueDefault={getValues('orgid')}
                                     onChange={onChangeOrganization}
                                     triggerOnChangeOnFirst={true}
                                     error={errors?.orgid?.message}
@@ -389,7 +397,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     valueDefault={row?.groups || ""}
                                     onChange={(value) => setValue('groups', value.map((o: Dictionary) => o.domainvalue).join())}
                                     error={errors?.groups?.message}
-                                    data={dataGroups}
+                                    loading={dataGroups.loading}
+                                    data={dataGroups.data}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 /> :
@@ -813,7 +822,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 {detailRes.error ? <h1>ERROR</h1> :
                     <div>
                         <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={classes.title}>{t(langKeys.organization_plural)}</div>
+                            <div className={classes.title}>{t(langKeys.organization_permissions)}</div>
                             <div>
                                 <Button
                                     className={classes.button}

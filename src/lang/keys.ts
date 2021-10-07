@@ -226,6 +226,8 @@ export const langKeys = {
     user: 'user',
     user_plural: 'user_plural',
 
+    organization_permissions: 'organization_permissions',
+
     property: 'property',
     property_plural: 'property_plural',
 
