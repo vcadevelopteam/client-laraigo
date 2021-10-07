@@ -9,6 +9,7 @@ import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import clsx from 'clsx';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
+import { convertLocalDate } from 'common/helpers';
 
 const useStylesCarousel = makeStyles((theme) => ({
     containerCarousel: {
@@ -94,7 +95,6 @@ const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ ti
     <span style={{
         visibility: 'hidden',
         fontSize: 12,
-        display: 'inline-flex',
         float: 'right',
         marginLeft: 4,
         paddingRight: 6,
@@ -104,7 +104,7 @@ const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ ti
         {!background ?
             <div style={{
                 position: 'absolute',
-                bottom: 0,
+                bottom: -1,
                 height: 16,
                 right: 0,
                 visibility: 'visible',
@@ -116,8 +116,10 @@ const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ ti
             </div> :
             <div style={{
                 position: 'absolute',
-                bottom: 4,
-                height: 15,
+                bottom: 3,
+                display: 'flex',
+                alignItems: 'center',
+                height: 13,
                 right: 0,
                 visibility: 'visible',
                 backgroundColor: '#00000059',
@@ -153,7 +155,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 
     if (interactiontype === "text")
         return (
-            <div className={clsx(classes.interactionText, {
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })}>
                 {interactiontext}
@@ -163,7 +165,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         );
     else if (interactiontype === "image")
         return (
-            <div className={classes.interactionImage}>
+            <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
                 <img
                     className={classes.imageCard}
                     src={interactiontext} alt=""
@@ -210,7 +212,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         )
     } else if (interactiontype === "LOG") {
         return (
-            <div className={clsx(classes.interactionText, {
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
                 {interactiontext}

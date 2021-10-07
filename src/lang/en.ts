@@ -165,6 +165,8 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
 
+    no_reply_use_hsm: 'Conversation blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
+
     status: 'Status',
     status_plural: 'States',
 
@@ -491,6 +493,7 @@ const translation: LangKeys = {
     error_request_services: '50007: There was an error, contact the administrator',
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
+    send_hsm: 'Send HSM',
     successful_close_ticket: 'Ticket closed successfully',
     successful_tipify_ticket: 'Ticket tipified successfully',
     successful_reasign_ticket: 'Ticket reasigned successfully',

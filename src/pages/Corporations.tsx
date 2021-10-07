@@ -331,7 +331,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 data={dataType}
                                 uset={true}
                                 prefixTranslation="type_corp_"
-                                optionDesc="domaindesc"
+                                optionDesc="domainvalue"
                                 optionValue="domainvalue"
                             />
                             : <FieldView

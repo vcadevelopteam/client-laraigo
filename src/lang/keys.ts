@@ -287,6 +287,8 @@ export const langKeys = {
     description: 'description',
     description_plural: 'description_plural',
 
+    no_reply_use_hsm: 'no_reply_use_hsm',
+
     active: 'active',
     inactive: 'inactive',
 
@@ -374,6 +376,7 @@ export const langKeys = {
     reassign_ticket: 'reassign_ticket',
     typify: 'typify',
     typify_ticket: 'typify_ticket',
+    send_hsm: 'send_hsm',
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',

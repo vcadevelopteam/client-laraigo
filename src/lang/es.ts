@@ -274,6 +274,7 @@ const translation: LangKeys = {
     inactive: 'Inactivo',
 
     status_activo: 'activo',
+    no_reply_use_hsm: 'Conversación bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
@@ -385,6 +386,7 @@ const translation: LangKeys = {
     reassign_ticket: 'Reasignar ticket',
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
+    send_hsm: 'Enviar HSM',
     observation: 'Observación',
     botdesigner: 'Diseñador de bots',
 
