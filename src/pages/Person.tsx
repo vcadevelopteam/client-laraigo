@@ -443,6 +443,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         height: "100%",
+        width: 'inherit',
         // overflowY: 'hidden',
     },
     rootContent: {
@@ -1168,6 +1169,7 @@ const useOpportunityItemStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         justifyContent: 'stretch',
+        width: 'inherit',
     },
     rootItem: {  
         border: '#EBEAED solid 1px',
