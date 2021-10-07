@@ -1,6 +1,6 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
-import { getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMRANKSel, getdashboardPushMENSAJEXDIASel, getdashboardPushSUMMARYSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -9,7 +9,8 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { getMultiCollection, resetMain } from "store/main/actions";
+import { getMultiCollection, getMultiCollectionAux, resetMain } from "store/main/actions";
+import { showBackdrop, showSnackbar } from "store/popus/actions";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -135,7 +136,9 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardOperationalPush: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const remultiaux = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
     const { t } = useTranslation();
     const [openDialog, setOpenDialog] = useState(false);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -143,23 +146,60 @@ const DashboardOperationalPush: FC = () => {
     const [dataqueue, setdataqueue] = useState<any>([]);
     const [dataprovider, setdataprovider] = useState<any>([]);
     const [datachannels, setdatachannels] = useState<any>([]);
+    const [datasupervisors, setdatasupervisors] = useState<any>([]);
+    const [dataLabel, setdataLabel] = useState<any>([]);
     const [datacategoriaHSM, setdatacategoriaHSM] = useState<any>([]);
     const [searchfields, setsearchfields] = useState({
         queue: "",
         provider: "",
         channels: "",
+        supervisor: "",
+        label: "",
         categoriaHSM: ""
     });
-    function funcsearch(){
-        
+    async function funcsearch() {
+        let tosend = { 
+            startdate: dateRangeCreateDate.startDate, 
+            enddate: dateRangeCreateDate.endDate, 
+            channel: searchfields.channels, 
+            group: searchfields.queue, 
+            company: searchfields.provider,
+            label: searchfields.label,
+            category: searchfields.categoriaHSM
+        }
+        dispatch(showBackdrop(true));
+        setOpenDialog(false)
+        dispatch(getMultiCollectionAux([
+            getdashboardPushHSMCATEGORYRANKSel(tosend),
+            getdashboardPushSUMMARYSel(tosend),
+            getdashboardPushHSMRANKSel(tosend),
+            getdashboardPushMENSAJEXDIASel(tosend),
+        ]))
+        setWaitSave(true)
     }
+    useEffect(() => {
+        if (waitSave) {
+            if (!remultiaux.loading && !remultiaux.error) {
+
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (remultiaux.error) {
+                const errormessage = t(remultiaux.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [remultiaux, waitSave])
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
             let multiData = mainResult.multiData.data;
             setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
             setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
             setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
-            setdatacategoriaHSM(multiData[3] && multiData[3].success ? multiData[3].data : []);
+            setdatasupervisors(multiData[3] && multiData[3].success ? multiData[3].data : []);
+            setdataLabel(multiData[4] && multiData[4].success ? multiData[4].data : []);
+            setdatacategoriaHSM(multiData[5] && multiData[5].success ? multiData[5].data : []);
         }
     }, [mainResult])
     useEffect(() => {
@@ -167,7 +207,9 @@ const DashboardOperationalPush: FC = () => {
             getValuesFromDomain("GRUPOS"),
             getValuesFromDomain("EMPRESA"),
             getCommChannelLst(),
-            getValuesFromDomain("CATEGORIAHSM")
+            getSupervisorsSel(),
+            getLabelsSel(),
+            getValuesFromDomain("CATEGORIAHSM"),
         ]));
         funcsearch()
         return () => {
@@ -236,12 +278,36 @@ const DashboardOperationalPush: FC = () => {
                 </div>
                 <div className="row-zyx" style={{ marginTop: "15px" }}>
                     <FieldMultiSelect
+                        label={t(langKeys.supervisor)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setsearchfields((p) => ({ ...p, supervisor: value.map((o: Dictionary) => o.userid).join() })) }}
+                        valueDefault={searchfields.supervisor}
+                        data={datasupervisors}
+                        optionDesc="userdesc"
+                        optionValue="userid"
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
+                        label={t(langKeys.labels)}
+                        className={classes.fieldsfilter}
+                        variant="outlined"
+                        onChange={(value) => { setsearchfields((p) => ({ ...p, label: value.map((o: Dictionary) => o.userid).join() })) }}
+                        valueDefault={searchfields.label}
+                        data={dataLabel}
+                        optionDesc="description"
+                        optionValue="labelid"
+                    />
+                </div>
+                <div className="row-zyx" style={{ marginTop: "15px" }}>
+                    <FieldMultiSelect
                         label={t(langKeys.categoriaHSM)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => { setsearchfields((p) => ({ ...p, categoriaHSM: value.map((o: Dictionary) => o.domainvalue).join() })) }}
                         valueDefault={searchfields.categoriaHSM}
-                        data={datachannels}
+                        data={datacategoriaHSM}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
                     />

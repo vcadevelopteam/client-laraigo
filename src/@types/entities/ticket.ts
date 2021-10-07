@@ -17,6 +17,7 @@ export interface ITicket {
     postexternalid?: string | null;
     commentexternalid?: string | null;
     replyexternalid?: string | null;
+    personlastreplydate?: string | null;
     channelicon: string;
     coloricon: string;
     lastseendate?: string | null;
