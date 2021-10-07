@@ -78,6 +78,8 @@ const translation: LangKeys = {
     user: 'Usuario',
     user_plural: 'Usuarios',
 
+    organization_permissions: 'Permisos de la organización',
+
     property: 'Propiedad',
     property_plural: 'Propiedades',
 
