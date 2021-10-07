@@ -13,7 +13,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
+import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
@@ -308,7 +308,8 @@ const Supervisor: FC = () => {
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
-            getListQuickReply()
+            getListQuickReply(),
+            getMessageTemplateSel(0)
         ]))
     }, [])
 

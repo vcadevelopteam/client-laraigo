@@ -374,6 +374,7 @@ const translation: LangKeys = {
     designed_reports: 'Reportes personalizados',
     filters: 'Filtros',
 
+    hsm_template: 'Plantilla HSM',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
