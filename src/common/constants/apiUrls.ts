@@ -1,6 +1,6 @@
-const BASE_URL = 'http://localhost:6065/api'; //local
+//const BASE_URL = 'http://localhost:6065/api'; //local
 
-//const BASE_URL = 'https://apix.laraigo.com/api'; //dev
+const BASE_URL = 'https://apix.laraigo.com/api'; //dev
 const WS_URL = 'https://socket.laraigo.com'; //dev
 
 // const BASE_URL = 'https://testapix.laraigo.com/api'; //testing
