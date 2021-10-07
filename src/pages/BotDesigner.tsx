@@ -9,7 +9,7 @@ import { apiUrls } from 'common/constants';
 const BotDesigner: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    
+
     const origin = new URL(apiUrls.CHATFLOW).origin;
     const pathname = new URL(apiUrls.CHATFLOW).pathname
 
@@ -26,25 +26,25 @@ const BotDesigner: FC = () => {
 
     const postCrossDomainMessage = (msg: any) => {
         var win: any = document?.getElementById('ifr');
-        win?.contentWindow.postMessage({'jwt': msg}, origin);
+        win?.contentWindow.postMessage({ 'jwt': msg }, origin);
         return undefined;
     }
-    
+
     const [frame, setFrame] = useState(false);
     const [url, setUrl] = useState('');
-    
+
     useEffect(() => {
         postCrossDomainMessage(localStorage.getItem('accessToken'));
         setUrl(`${origin}${pathname}`);
-    },[frame])
+    }, [frame])
 
     return (
-        <div style={{height: '100%'}}>
+        <div style={{ width: '100%', height: '100%' }}>
             <iframe
                 id="ifr"
-                title='botdesigner'    
+                title='botdesigner'
                 src={url}
-                style={{height: '100%', width: '100%', border: 'none'}}
+                style={{ height: '100%', width: '100%', border: 'none' }}
                 onLoad={() => setFrame(true)}
             >
             </iframe>
