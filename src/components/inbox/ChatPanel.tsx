@@ -13,10 +13,10 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -33,9 +33,21 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const userType = useSelector(state => state.inbox.userType);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
+
+    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            variables: []
+        }
+    });
+
+    const { fields, append: fieldsAppend, update: fieldsUpdate, remove: fieldRemove } = useFieldArray({
+        control,
+        name: 'variables',
+    });
 
     useEffect(() => {
         if (waitClose) {
@@ -71,33 +83,58 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
-                observation: ''
+                variables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
-        console.log(value);
-        setBodyMessage(value.body);
-        setValue('hsmtemplateid', value ? value.id : 0);
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+
+            const wordList = value.body?.split(" ");
+            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
     }
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
+        
+        const bb = {
+            hsmtemplateid: data.hsmtemplateid,
+            communicationchannelid: ticketSelected?.communicationchannelid,
+            platformtype: ticketSelected?.communicationchannelsite,
+            communicationchanneltype: ticketSelected?.communicationchanneltype,
+            listmembers: [{
+                phone: '',
+                firstname: '',
+                lastname: '',
+                parameters: data.variables
+            }]
         }
-        dispatch(showBackdrop(true));
-        dispatch(closeTicket(dd));
-        setWaitClose(true)
+        console.log(bb)
+        // const dd: ICloseTicketsParams = {
+        //     conversationid: ticketSelected?.conversationid!!,
+        //     motive: data.motive,
+        //     observation: data.observation,
+        //     ticketnum: ticketSelected?.ticketnum!!,
+        //     personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+        //     communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+        //     communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+        //     status: 'CERRADO',
+        //     isAnswered: false,
+        // }
+        // dispatch(showBackdrop(true));
+        // dispatch(closeTicket(dd));
+        // setWaitClose(true)
     });
 
     return (
@@ -125,10 +162,23 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             <FieldView
                 label={t(langKeys.message)}
                 value={bodyMessage}
-            // valueDefault={getValues('observation')}
-            // onChange={(value) => setValue('observation', value)}
-            // maxLength={1024}
             />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <FieldEditArray
+                        key={item.id}
+                        label={item.name}
+                        fregister={{
+                            ...register(`variables.${i}.text`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
+                        valueDefault={item.value}
+                        error={errors?.variables?.[i]?.text?.message}
+                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                    />
+                ))}
+            </div>
         </DialogZyx>)
 }
 

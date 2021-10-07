@@ -35,6 +35,7 @@ export interface IState {
     person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
     triggerCloseTicket: IBaseState;
+    triggerSendHSM: IBaseState;
     triggerMassiveCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
     triggerReassignTicket: IBaseState;
@@ -59,6 +60,7 @@ export const initialState: IState = {
     tipificationsLevel3: initialListPaginatedState,
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
+    triggerSendHSM: initialTransaction,
     triggerMassiveCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
     triggerConnectAgentGo: initialTransaction,
