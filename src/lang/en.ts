@@ -75,6 +75,8 @@ const translation: LangKeys = {
     user: 'User',
     user_plural: 'Users',
 
+    organization_permissions: 'Organization permissions',
+
     personinformation: 'Person',
     ticketinformation: 'Ticket',
     AIservices: 'AI Services',
