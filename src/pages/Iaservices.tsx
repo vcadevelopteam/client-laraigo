@@ -395,9 +395,10 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                                 fieldUpdate(i, { ...fields[i], service: '' })
                                                                 dispatch(showSnackbar({ show: true, success: false, message: 'This service is already selected' }))
                                                                 return
-                                                            } else {
-                                                                setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
-                                                            }
+                                                            } 
+                                                            // else {
+                                                            //     setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
+                                                            // }
                                                         }
                                                         fieldUpdate(i, { ...fields[i], service: value ? value.domainvalue : '' })
                                                     }}
@@ -424,7 +425,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         label={t(langKeys.model)}
                                                         className={classes.mb2}
                                                         error={errors?.services?.[i]?.intelligentmodelsid?.message}
-                                                        data={dataToModel}
+                                                        data={dataModels.filter((y: any) => y.type === getValues(`services.${i}.service`))}
                                                         valueDefault={(item.intelligentmodelsid) ? item.intelligentmodelsid : ''}
                                                         optionDesc="description"
                                                         optionValue="intelligentmodelsid"
