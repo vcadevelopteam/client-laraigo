@@ -282,6 +282,7 @@ const translation: LangKeys = {
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
     return: "Return",
+    hsm_template: 'HSM template',
 
     supplier: "Supplier",
     id: 'Id',

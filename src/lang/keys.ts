@@ -288,6 +288,7 @@ export const langKeys = {
 
     description: 'description',
     description_plural: 'description_plural',
+    hsm_template: 'hsm_template',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 
