@@ -45,6 +45,7 @@ const translation: LangKeys = {
     channel_plural: 'Canales',
 
     configuration: 'Configuración',
+    templatedownload: "descargar Template",
     configuration_plural: 'Configuraciones',
 
     eMailInbox: 'Bandeja de correo',
