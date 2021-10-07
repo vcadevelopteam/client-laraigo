@@ -118,7 +118,7 @@ const Dashboard: FC = () => {
                                             component="img"
                                             height="140"
                                             className={classes.media}
-                                            image={'no_data.png'}
+                                            image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
                                             title={t(langKeys.managerial)}
                                         />
                                         <CardContent>
@@ -136,7 +136,7 @@ const Dashboard: FC = () => {
                                             component="img"
                                             height="140"
                                             className={classes.media}
-                                            image={'no_data.png'}
+                                            image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
                                             title={t(langKeys.operationalpush)}
                                         />
                                         <CardContent>

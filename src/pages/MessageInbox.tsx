@@ -5,7 +5,7 @@ import { setUserType, emitEvent } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
+import { getMessageTemplateSel, getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
@@ -18,7 +18,8 @@ const MessageInbox: React.FC = () => {
             getListUsers(),
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
-            getListQuickReply()
+            getListQuickReply(),
+            getMessageTemplateSel(0)
         ]))
     }, [])
 

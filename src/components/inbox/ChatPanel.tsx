@@ -13,12 +13,129 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
+
+
+
+
+
+const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!closingRes.loading && !closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                dispatch(emitEvent({
+                    event: 'deleteTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        ticketnum: ticketSelected?.ticketnum,
+                        status: ticketSelected?.status,
+                        isanswered: ticketSelected?.isAnswered,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    }
+                }));
+                setWaitClose(false);
+            } else if (closingRes.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [closingRes, waitClose])
+
+    useEffect(() => {
+        setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+    }, [])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                observation: ''
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        console.log(value);
+        setBodyMessage(value.body);
+        setValue('hsmtemplateid', value ? value.id : 0);
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        const dd: ICloseTicketsParams = {
+            conversationid: ticketSelected?.conversationid!!,
+            motive: data.motive,
+            observation: data.observation,
+            ticketnum: ticketSelected?.ticketnum!!,
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            status: 'CERRADO',
+            isAnswered: false,
+        }
+        dispatch(showBackdrop(true));
+        dispatch(closeTicket(dd));
+        setWaitClose(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.send_hsm)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.hsm_template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            <FieldView
+                label={t(langKeys.message)}
+                value={bodyMessage}
+            // valueDefault={getValues('observation')}
+            // onChange={(value) => setValue('observation', value)}
+            // maxLength={1024}
+            />
+        </DialogZyx>)
+}
+
+
+
+
+
 
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -379,19 +496,16 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [openModalHSM, setOpenModalHSM] = useState(false);
     const closeTicket = () => setOpenModalCloseticket(true);
 
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <IconButton
-                    onClick={closeTicket}
-                >
+                <IconButton onClick={closeTicket}>
                     <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
                 </IconButton>
-                <IconButton
-                    onClick={(e) => setAnchorEl(e.currentTarget)}
-                >
+                <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon />
                 </IconButton>
             </div>
@@ -410,14 +524,18 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {
+                <MenuItem onClick={() => {
                     setOpenModalReassignticket(true)
                     setAnchorEl(null)
                 }}>{t(langKeys.reassign)}</MenuItem>
-                <MenuItem onClick={(e) => {
+                <MenuItem onClick={() => {
                     setAnchorEl(null)
                     setOpenModalTipification(true)
                 }}>{t(langKeys.typify)}</MenuItem>
+                <MenuItem onClick={() => {
+                    setAnchorEl(null)
+                    setOpenModalHSM(true)
+                }}>{t(langKeys.send_hsm)}</MenuItem>
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}
@@ -426,6 +544,10 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
             <DialogReassignticket
                 openModal={openModalReassignticket}
                 setOpenModal={setOpenModalReassignticket}
+            />
+            <DialogSendHSM
+                openModal={openModalHSM}
+                setOpenModal={setOpenModalHSM}
             />
             <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
         </>
@@ -439,7 +561,7 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
-        <div  style={{ position: 'relative' }}>
+        <div style={{ position: 'relative' }}>
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

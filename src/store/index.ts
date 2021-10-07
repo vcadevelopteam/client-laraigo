@@ -12,6 +12,7 @@ import integrationManagerReducer, { IState as IIntegrationManager } from './inte
 import botdesignerReducer, { IState as IBotDesigner } from './botdesigner/reducer';
 import signupReducer, { IState as ISignUp} from './signup/reducer';
 import personReducer, { IState as IPerson } from './person/reducer';
+import settingReducer, { IState as ISetting } from './setting/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -24,6 +25,7 @@ export interface IRootState {
     botdesigner: IBotDesigner;
     signup: ISignUp;
     person: IPerson;
+    setting: ISetting;
 }
 
 declare global {
@@ -43,6 +45,7 @@ const rootReducer = combineReducers<IRootState>({
     botdesigner: botdesignerReducer,
     signup: signupReducer,
     person: personReducer,
+    setting: settingReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

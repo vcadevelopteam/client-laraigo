@@ -31,7 +31,10 @@ interface DetailTipificationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void;
+    externalUse?: boolean;
+    externalSaveHandler?: ({...param}?: any) => void;
+    externalCancelHandler?: ({...param}?: any) => void;
 }
 const arrayBread = [
     { id: "view-1", name: "Tipifications" },
@@ -130,7 +133,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
     )
 };
 
-const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalSaveHandler, externalCancelHandler }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
@@ -148,7 +151,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
 
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
-
+    
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'TIPIFICACION',
@@ -179,10 +182,17 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
+                if (externalUse) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    dispatch(showBackdrop(false));
+                    externalSaveHandler && externalSaveHandler();
+                }
+                else {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(row ? langKeys.successful_edit : langKeys.successful_register) }))
+                    fetchData();
+                    dispatch(showBackdrop(false));
+                    setViewSelected("view-1")
+                }
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -219,6 +229,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    {!externalUse ?
                     <div>
                         <TemplateBreadcrumbs
                             breadcrumbs={arrayBread}
@@ -228,6 +239,7 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             title={row ? `${row.title}` : t(langKeys.tipification)}
                         />
                     </div>
+                    : <div></div>}
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
                             variant="contained"
@@ -235,7 +247,12 @@ const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, ed
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
+                            onClick={() => {
+                                if (externalUse)
+                                    externalCancelHandler && externalCancelHandler();
+                                else
+                                    setViewSelected("view-1")
+                            }}
                         >{t(langKeys.back)}</Button>
                         {edit &&
                             <Button

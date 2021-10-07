@@ -3,11 +3,11 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti, TemplateSwitch } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, DialogZyx, FieldEditMulti, TemplateSwitch, DialogZyxDiv } from 'components';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { Dictionary } from "@types";
@@ -17,13 +17,14 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import { TreeItem, TreeView } from '@material-ui/lab';
 import { IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
 import ZoomInIcon from '@material-ui/icons/ZoomIn';
+import { DetailTipification } from './Tipifications';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -38,6 +39,7 @@ interface DetailQuickreplyProps {
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
     fetchData: () => void
+    fetchMultiData: () => void;
 }
 const arrayBread = [
     { id: "view-1", name: "Quickreplies" },
@@ -186,23 +188,25 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary, setValueTmp: (p1
     )
 };
 
-const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, fetchMultiData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [selectedlabel, setselectedlabel] = useState(row ? row.classificationdesc : "")
     const [quickreply, setQuickreply] = useState(row ? row.quickreply : "")
     const executeRes = useSelector(state => state.main.execute);
+    const multiDataAuxRes = useSelector(state => state.main.multiDataAux)
 
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(false);
+    const [openClassificationModal, setOpenClassificationModal] = useState(false);
 
     const { t } = useTranslation();
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataClassTotal = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
-
+    
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
@@ -247,7 +251,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
         }
     }, [executeRes, waitSave])
 
-
+    
     const onSubmit = handleSubmit((data) => {
         //data.communicationchannelid = selected.key
         const callback = () => {
@@ -261,6 +265,33 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
             callback
         }))
     });
+
+    const handleClassificationModal = () => {
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getParentSel(),
+            getValuesFromDomain("TIPOCANAL"),
+            getValuesForTree()
+        ]));
+        setOpenDialog(false);
+        setOpenClassificationModal(true);
+    }
+
+    const handleClassificationSave = () => {
+        fetchMultiData();
+    }
+
+    const handleClassificationCancel = () => {
+        setOpenClassificationModal(false);
+        setOpenDialog(true);
+    }
+
+    useEffect(() => {
+        if (openClassificationModal) {
+            setOpenClassificationModal(false);
+            setOpenDialog(true);
+        }
+    }, [multiData])
 
     return (
         <div style={{ width: '100%' }}>
@@ -407,14 +438,15 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 open={openDialog}
                 title={t(langKeys.organizationclass)}
                 buttonText1={t(langKeys.select)}
-                //buttonText2={t(langKeys.select)}
+                buttonText2={t(langKeys.register)}
                 handleClickButton1={() => setOpenDialog(false)}
-                handleClickButton2={() => setOpenDialog(false)}
-            >   <TreeView
-                className={classes.treeviewroot}
-                defaultCollapseIcon={<ExpandMoreIcon />}
-                defaultExpandIcon={<ChevronRightIcon />}
-            >
+                handleClickButton2={handleClassificationModal}
+                >
+                <TreeView
+                    className={classes.treeviewroot}
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
                     <TreeItemsFromData
                         dataClassTotal={dataClassTotal}
                         setValueTmp={(e) => setValue('classificationid', e)}
@@ -424,6 +456,21 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                 <div className="row-zyx">
                 </div>
             </DialogZyx>
+            <DialogZyxDiv
+                open={openClassificationModal}
+                title={t(langKeys.tipification)}
+                maxWidth="md"
+            >
+                <DetailTipification
+                    data={{row: null, edit: true}}
+                    setViewSelected={() => ("")}
+                    multiData={multiDataAuxRes.data}
+                    fetchData={() => null}
+                    externalUse={true}
+                    externalSaveHandler={handleClassificationSave}
+                    externalCancelHandler={handleClassificationCancel}
+                />
+            </DialogZyxDiv>
         </div>
     );
 }
@@ -494,12 +541,14 @@ const Quickreplies: FC = () => {
 
     const fetchData = () => dispatch(getCollection(getQuickrepliesSel(0))); //mainResult.mainData.data
 
+    const fetchMultiData = () => dispatch(getMultiCollection([
+        getValuesFromDomain("ESTADOGENERICO"),
+        getValuesForTree()
+    ]));
+
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesForTree()
-        ])); //mainResult.multiData.data
+        fetchMultiData();
         return () => {
             dispatch(resetMain());
         };
@@ -588,7 +637,7 @@ const Quickreplies: FC = () => {
                     register={true}
                     importCSV={importCSV}
                     handleRegister={handleRegister}
-                // fetchData={fetchData}
+                    // fetchData={fetchData}
                     ButtonsElement={()=>
                         <Button
                             variant="contained"
@@ -609,11 +658,11 @@ const Quickreplies: FC = () => {
                     handleClickButton1={() => setOpenDialog(false)}
                     handleClickButton2={() => setOpenDialog(false)}
                 >   
-                <TreeView
-                    className={classes.treeviewroot}
-                    defaultCollapseIcon={<ExpandMoreIcon />}
-                    defaultExpandIcon={<ChevronRightIcon />}
-                >
+                    <TreeView
+                        className={classes.treeviewroot}
+                        defaultCollapseIcon={<ExpandMoreIcon />}
+                        defaultExpandIcon={<ChevronRightIcon />}
+                    >
                         <TreeItemsFromData2
                             dataClassTotal={mainResult.multiData.data[1] && mainResult.multiData.data[1].success ? mainResult.multiData.data[1].data : []}
                         />
@@ -631,6 +680,7 @@ const Quickreplies: FC = () => {
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                fetchMultiData={fetchMultiData}
             />
         )
     } else
