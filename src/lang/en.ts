@@ -461,6 +461,7 @@ const translation: LangKeys = {
     default_application: 'Default application',
     default_organization: 'Default organization',
     password_required: 'Password is required',
+    code_duplicate: 'Code duplicated',
     field_required: 'Field is required',
     field_duplicate: 'Field duplicate',
     field_startwithchar: 'Field must start with a letter',
