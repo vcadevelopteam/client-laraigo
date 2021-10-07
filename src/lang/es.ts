@@ -25,6 +25,13 @@ const translation: LangKeys = {
 
     client_message: 'Mensajes del Cliente',
     bot_message: 'Mensajes del Bot',
+    sentmessages: "Mensajes Enviados",
+    failedmessages: "Mensajes fallidos",
+    answeredmessages: "Mensajes respondidos",
+    messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
+
+    successful_send_hsm: 'HSM enviado satisfactoriamente',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
@@ -41,6 +48,7 @@ const translation: LangKeys = {
     channel_plural: 'Canales',
 
     configuration: 'Configuración',
+    templatedownload: "descargar Template",
     configuration_plural: 'Configuraciones',
 
     eMailInbox: 'Bandeja de correo',
@@ -506,6 +514,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    code_duplicate: 'Código duplicado',
     field_duplicate: 'Campo duplicado',
     field_startwithchar: 'El campo debe comenzar con una letra',
     field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',

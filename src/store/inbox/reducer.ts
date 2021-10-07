@@ -35,6 +35,7 @@ export interface IState {
     person: IPesonState;
     agentList: IListStatePaginated<IAgent>;
     triggerCloseTicket: IBaseState;
+    triggerSendHSM: IBaseState;
     triggerMassiveCloseTicket: IBaseState;
     triggerReplyTicket: IBaseState;
     triggerReassignTicket: IBaseState;
@@ -59,6 +60,7 @@ export const initialState: IState = {
     tipificationsLevel3: initialListPaginatedState,
     person: initialTransaction,
     triggerCloseTicket: initialTransaction,
+    triggerSendHSM: initialTransaction,
     triggerMassiveCloseTicket: initialTransaction,
     triggerReplyTicket: initialTransaction,
     triggerConnectAgentGo: initialTransaction,
@@ -137,6 +139,13 @@ export default createReducer<IState>(initialState, {
     [actionTypes.REPLY_TICKET_SUCCESS]: caseFunctions.replyTicketSuccess,
     [actionTypes.REPLY_TICKET_FAILURE]: caseFunctions.replyTicketFailure,
     [actionTypes.REPLY_TICKET_RESET]: caseFunctions.replyTicketReset,
+
+
+    [actionTypes.SEND_HSM]: caseFunctions.sendHSM,
+    [actionTypes.SEND_HSM_SUCCESS]: caseFunctions.sendHSMSuccess,
+    [actionTypes.SEND_HSM_FAILURE]: caseFunctions.sendHSMFailure,
+    [actionTypes.SEND_HSM_RESET]: caseFunctions.sendHSMReset,
+
 
     [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,
     [actionTypes.REASSIGN_TICKET_SUCCESS]: caseFunctions.reassignTicketSuccess,

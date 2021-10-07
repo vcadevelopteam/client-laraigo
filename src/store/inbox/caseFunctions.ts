@@ -705,6 +705,42 @@ export const replyTicketReset = (state: IState): IState => ({
 
 
 
+
+
+export const sendHSM = (state: IState): IState => ({
+    ...state,
+    triggerSendHSM: { ...state.triggerSendHSM, loading: true, error: false },
+});
+
+export const sendHSMSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerSendHSM: {
+        loading: false,
+        error: false,
+    },
+});
+
+export const sendHSMFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    triggerSendHSM: {
+        ...state.triggerSendHSM,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const sendHSMReset = (state: IState): IState => ({
+    ...state,
+    triggerSendHSM: initialState.triggerSendHSM,
+});
+
+
+
+
+
+
 export const getTipificationLevel2 = (state: IState): IState => ({
     ...state,
     tipificationsLevel2: { ...state.tipificationsLevel2, loading: true, error: false },
