@@ -22,7 +22,11 @@ export const langKeys = {
     highestTMO: "highestTMO",
     lowestTMO: "lowestTMO",
     highestTME: "highestTME",
+    sentmessages: "sentmessages",
+    messagessuccesfullydelivered: "messagessuccesfullydelivered",
+    failedmessages: "failedmessages",
     totalresolved: "totalresolved",
+    answeredmessages: "answeredmessages",
     totalnotresolved: "totalnotresolved",
     pollsanswered: "pollsanswered",
     totalpromoters: "totalpromoters",
@@ -43,6 +47,7 @@ export const langKeys = {
     informationCSAT: "informationCSAT",
     informationFIX: "informationFIX",
     closedbyadviser: "closedbyadviser",
+    templatedownload: "templatedownload",
     closedbybot: "closedbybot",
     informationFCR: "informationFCR",
     highestvalue: "highestvalue",
@@ -289,6 +294,7 @@ export const langKeys = {
     description: 'description',
     description_plural: 'description_plural',
     hsm_template: 'hsm_template',
+    hsm_template_plural: 'hsm_template_plural',
 
     no_reply_use_hsm: 'no_reply_use_hsm',
 
@@ -429,6 +435,7 @@ export const langKeys = {
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
+    successful_send_hsm: 'successful_send_hsm',
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
@@ -508,6 +515,7 @@ export const langKeys = {
     organization_by_default: 'organization_by_default',
     field_required: 'field_required',
     emailverification: 'emailverification',
+    code_duplicate: 'code_duplicate',
     field_duplicate: 'field_duplicate',
     field_startwithchar: 'field_startwithchar',
     field_basiclatinlowercase: 'field_basiclatinlowercase',
@@ -941,6 +949,11 @@ export const langKeys = {
     sendingFrequency: 'sendingFrequency',
     administrator: 'administrator',
     administrator_plural: 'administrator_plural',
+    outboundMessage: 'outboundMessage',
+    outboundMessage_plural: 'outboundMessage_plural',
+    iaModel: 'iaModel',
+    iaModel_plural: 'iaModel_plural',
+    ia: 'ia',
 };
 
 export type LangKeys = typeof langKeys;

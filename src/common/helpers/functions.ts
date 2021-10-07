@@ -64,7 +64,7 @@ export function filterPipe(items: Dictionary[], field: string, value: any, inv?:
 }
 
 export function filterIf(data: Dictionary[], rif?: string, rifvalue?: string) {
-    return data.filter(d => d.rif === null || (d.rif === rif && d.rifvalue === rifvalue));
+    return data.filter(d => [null, undefined].includes(d.rif) || (d.rif === rif && d.rifvalue === rifvalue));
 }
 
 export function downloadCSV(filename: string, data: Dictionary[]) {
@@ -150,6 +150,10 @@ export const dateToLocalDate = (date: string, returnType = 'string'): string | D
         return dateCleaned.toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit"});
     else
         return dateCleaned;
+}
+
+export const todayDate = (): Date => {
+    return new Date(new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().substring(0,10) + "T00:00:00");
 }
 
 export const convertLocalDate = (date: string | null | undefined, validateWithToday: boolean = false, subtractHours: boolean = true): Date => {

@@ -26,6 +26,10 @@ const translation: LangKeys = {
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
     agent_message: 'Agent Messages',
+    messagessuccesfullydelivered: "Successfully Delivered Messages",
+    failedmessages: "Failed messages",
+    answeredmessages: "Responded messages",
+    sentmessages: "Sent Messages",
     translationservice: 'Translation Service',
     channeltype: 'Channel Type',
     channeldesc: 'Channel Description',
@@ -41,6 +45,7 @@ const translation: LangKeys = {
     channel_plural: 'Channels',
 
     configuration: 'Configuration',
+    templatedownload: "Download template",
     configuration_plural: 'Configurations',
 
     eMailInbox: 'E-Mail inbox',
@@ -283,6 +288,7 @@ const translation: LangKeys = {
     recordPerPage_plural: 'Records per page',
     return: "Return",
     hsm_template: 'HSM template',
+    hsm_template_plural: 'HSM templates',
 
     supplier: "Supplier",
     id: 'Id',
@@ -309,7 +315,7 @@ const translation: LangKeys = {
     footer: 'Footer',
     buttons: 'Buttons',
     payload: 'Payload',
-    message: 'Mensaje',
+    message: 'Message',
     addbutton: 'Add button',
     removebutton: 'Remove button',
     import: 'Import',
@@ -461,6 +467,7 @@ const translation: LangKeys = {
     default_application: 'Default application',
     default_organization: 'Default organization',
     password_required: 'Password is required',
+    code_duplicate: 'Code duplicated',
     field_required: 'Field is required',
     field_duplicate: 'Field duplicate',
     field_startwithchar: 'Field must start with a letter',
@@ -544,6 +551,7 @@ const translation: LangKeys = {
     tipify_ticket: 'Tipify ticket',
     send_hsm: 'Send HSM',
     successful_close_ticket: 'Ticket closed successfully',
+    successful_send_hsm: 'HSM sent successfully',
     successful_tipify_ticket: 'Ticket tipified successfully',
     successful_reasign_ticket: 'Ticket reasigned successfully',
     confirmation_reasign_with_reply: 'If you confirm sending the message the ticket will be assigned to your tray.',
@@ -949,6 +957,11 @@ const translation: LangKeys = {
     sendingFrequency: 'Sending frequency',
     administrator: 'Administrator',
     administrator_plural: 'Administrators',
+    outboundMessage: 'Outbound message',
+    outboundMessage_plural: 'Outbound messages',
+    iaModel: 'IA Model',
+    iaModel_plural: 'IA Models',
+    ia: 'Artificial intelligence',
 };
 
 const enResource: ResourceLanguage = {

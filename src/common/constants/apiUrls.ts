@@ -36,6 +36,7 @@ export const apiUrls = {
     REPLY_TICKET: `${BASE_URL}/ticket/reply`,
     REPLY_LIST_TICKET: `${BASE_URL}/ticket/reply/list`,
     REASSIGN_TICKET: `${BASE_URL}/ticket/reassign`,
+    SEND_HSM: `${BASE_URL}/ticket/send/hsm`,
 
 
     INTEGRATION_URL: `${BASE_URL}/load`,

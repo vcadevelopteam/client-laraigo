@@ -4,7 +4,7 @@ import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Facebook } from '@material-ui/icons';
-import { EditPencilIcon, InfoRoundedIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -43,8 +43,6 @@ const useItemTileStyles = makeStyles(theme => ({
         padding: '12px 20px',
         backgroundColor: theme.palette.primary.dark,
         color: 'white',
-        fill: 'white',
-        stroke: 'white',
         border: `1px solid ${theme.palette.primary.dark}`,
         borderRadius: 4,
         fontSize: 18,
@@ -53,6 +51,8 @@ const useItemTileStyles = makeStyles(theme => ({
     headerIcon: {
         width: 25,
         height: 25,
+        fill: 'white',
+        stroke: 'white',
     },
     headerHelpText: {
         fontSize: 14,
@@ -290,7 +290,7 @@ const useSettingsStyles = makeStyles(theme => ({
     },
 }));
 
-const HelpText: FC<{ i18nKey: string, count: number, onClick?: () => void }> = ({ count, i18nKey, onClick }) => {
+const HelpText: FC<{ i18nKey: string, count?: number, onClick?: () => void }> = ({ count, i18nKey, onClick }) => {
     return (
         <span onClick={onClick}>
             {'> '}<Trans i18nKey={i18nKey} count={count} />
@@ -346,6 +346,7 @@ const Settings: FC = () => {
         }
     }, [setting, dispatch]);
 
+    console.log(setting);
     const { value } = setting;
     return (
         <div className={classes.root}>
@@ -358,11 +359,28 @@ const Settings: FC = () => {
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        {user?.roledesc === "SUPERADMIN" && (
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <ItemTile
+                                    title={<Trans i18nKey={langKeys.corporation} count={2} />}
+                                    subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
+                                    icon={<OrganizationIcon />}
+                                    helpText={
+                                        <HelpText
+                                            i18nKey={langKeys.manageCorporation}
+                                            count={2}
+                                            onClick={() => history.push(paths.CORPORATIONS)}
+                                        />
+                                    }
+                                    m={2}
+                                />
+                            </Grid>
+                        )}
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.organization} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_org} i18nKey={langKeys.activeOrganization} />}
-                                icon={<Facebook />}
+                                icon={<OrganizationsIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageOrganization}
@@ -375,92 +393,9 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
-                                title={<Trans i18nKey={langKeys.user} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
-                                icon={<Facebook />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageUser}
-                                        count={2}
-                                        onClick={() => history.push(paths.USERS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.classification} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
-                                icon={<Facebook />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageClassification}
-                                        count={2}
-                                        onClick={() => history.push(paths.TIPIFICATIONS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
-                                icon={<Facebook />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageRestrictedEmoji}
-                                        count={2}
-                                        onClick={() => history.push(paths.EMOJIS)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12} sm={12} md={12} lg={12} xl={12}
-                            style={{ display: user?.roledesc === "SUPERADMIN" ? 'block' : 'none' }}
-                        >
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.corporation} count={2} />}
-                                subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
-                                icon={<Facebook />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageCorporation}
-                                        count={2}
-                                        onClick={() => history.push('/corporations')}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
-                                title={<Trans i18nKey={langKeys.integration} count={2} />}
-                                subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
-                                icon={<Facebook />}
-                                helpText={
-                                    <HelpText
-                                        i18nKey={langKeys.manageIntegration}
-                                        count={2}
-                                        onClick={() => history.push(paths.INTEGRATIONMANAGER)}
-                                    />
-                                }
-                                m={2}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <ItemTile
                                 title={<Trans i18nKey={langKeys.channel} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_channels} i18nKey={langKeys.activeChannel} />}
-                                icon={<Facebook />}
+                                icon={<ChannelsIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageChannel}
@@ -473,9 +408,24 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
+                                title={<Trans i18nKey={langKeys.user} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_users} i18nKey={langKeys.activeUser} />}
+                                icon={<UserGroupIcon fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageUser}
+                                        count={2}
+                                        onClick={() => history.push(paths.USERS)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
                                 title={<Trans i18nKey={langKeys.quickreply} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_quickreply} i18nKey={langKeys.quickreply} />}
-                                icon={<Facebook />}
+                                icon={<QuickReplyIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageQuickReply}
@@ -488,9 +438,28 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
+                                title={<Trans i18nKey={langKeys.classification} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_classification} i18nKey={langKeys.classification} />}
+                                icon={<ClassificationIcon fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageClassification}
+                                        count={2}
+                                        onClick={() => history.push(paths.TIPIFICATIONS)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Grid container direction="column">
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
                                 title={<Trans i18nKey={langKeys.domain} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_domain} i18nKey={langKeys.domain} />}
-                                icon={<Facebook />}
+                                icon={<DomainsIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageDomain}
@@ -503,9 +472,24 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
+                                title={<Trans i18nKey={langKeys.restrictedEmoji} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_restricted_emojis} i18nKey={langKeys.restrictedEmoji} />}
+                                icon={<EmojiSadFaceIcon fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageRestrictedEmoji}
+                                        count={2}
+                                        onClick={() => history.push(paths.EMOJIS)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
                                 title={<Trans i18nKey={langKeys.forbiddenWord} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_forbidden_words} i18nKey={langKeys.forbiddenWord} />}
-                                icon={<Facebook />}
+                                icon={<ForbiddenWordsIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageForbiddenWord}
@@ -518,14 +502,43 @@ const Settings: FC = () => {
                         </Grid>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <ItemTile
+                                title={<Trans i18nKey={langKeys.integration} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_integrations} i18nKey={langKeys.integration} />}
+                                icon={<Facebook fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageIntegration}
+                                        count={2}
+                                        onClick={() => history.push(paths.INTEGRATIONMANAGER)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
                                 title={<Trans i18nKey={langKeys.serviceLevelAgreement} count={2} />}
                                 subtitle={<SubtitleText value={value?.num_sla} i18nKey={langKeys.agreement} />}
-                                icon={<Facebook />}
+                                icon={<Facebook fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.manageAgreement}
                                         count={2}
                                         onClick={() => history.push(paths.SLA)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
+                                title={<Trans i18nKey={langKeys.whitelist} />}
+                                subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
+                                icon={<Facebook fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.whitelist}
+                                        onClick={() => history.push(paths.WHITELIST)}
                                     />
                                 }
                                 m={2}
@@ -537,7 +550,7 @@ const Settings: FC = () => {
             <ItemTile
                 title={<Trans i18nKey={langKeys.property} count={2} />}
                 subtitle={<PropertiesTileBody />}
-                icon={<Facebook />}
+                icon={<ConfigPropertiesIcon fill="inherit" stroke="inherit" />}
                 helpText={
                     <HelpText
                         i18nKey={langKeys.manageproperty}

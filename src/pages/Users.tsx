@@ -442,7 +442,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const [allIndex, setAllIndex] = useState([])
     const [getOrganizations, setGetOrganizations] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-    
+
 
     const uploadResult = useSelector(state => state.main.uploadFile);
 
@@ -472,7 +472,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 setValue('image', uploadResult.url)
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
-                
+
                 setWaitUploadFile(false);
             }
         }
@@ -607,7 +607,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     }
 
     return (
-        <div>
+        <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>

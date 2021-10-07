@@ -1,5 +1,5 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams } from '@types';
+import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
@@ -29,6 +29,10 @@ export function massiveCloseTicket({ listTickets, motive, observation }: IMassiv
         closeby: "MASSIVEUI"
     }
     return APIManager.post(apiUrls.MASSIVE_CLOSE_TICKET, { data: { data } }, true);
+}
+
+export function sendHSM(data: ISendHSM) {
+    return APIManager.post(apiUrls.SEND_HSM, { data: { data } }, true);
 }
 
 export function replyTicket(params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false) {

@@ -679,6 +679,7 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
                     }}>
                         <Picker
                             onSelect={onSelect}
+                            sheetSize={32}
                             emojisToShowFilter={emojisNoShow && emojisNoShow.length > 0 ? (emoji: any) => emojisNoShow.indexOf(emoji.unified) === -1 : undefined}
                         />
                     </div>
