@@ -467,6 +467,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     multiData={multiDataAuxRes.data}
                     fetchData={() => null}
                     externalUse={true}
+                    externalType="QUICKREPLY"
                     externalSaveHandler={handleClassificationSave}
                     externalCancelHandler={handleClassificationCancel}
                 />
