@@ -76,6 +76,9 @@ const translation: LangKeys = {
     user_plural: 'Users',
 
     organization_permissions: 'Organization permissions',
+    generate_password: 'Generate password',
+    send_password_by_email: 'Send password by email',
+    change_password_on_login: 'Change password on login',
 
     personinformation: 'Person',
     ticketinformation: 'Ticket',

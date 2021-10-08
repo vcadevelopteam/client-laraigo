@@ -227,6 +227,9 @@ export const langKeys = {
     user_plural: 'user_plural',
 
     organization_permissions: 'organization_permissions',
+    generate_password: 'generate_password',
+    send_password_by_email: 'send_password_by_email',
+    change_password_on_login: 'change_password_on_login',
 
     property: 'property',
     property_plural: 'property_plural',

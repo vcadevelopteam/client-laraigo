@@ -32,7 +32,7 @@ const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
     fontSize: 11,
   }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     return (
         <div
@@ -70,7 +70,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
-                            timer={getSecondsUntelNow(convertLocalDate(lastconversationdate, true))}
+                            timer={getSecondsUntelNow(convertLocalDate(personlastreplydate, false))}
                             color="#FB5F5F"
                         />
                     }

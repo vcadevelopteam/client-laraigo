@@ -169,10 +169,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
 });
 
 
-export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid, image }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid, image }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key: "UFN_USER_INS",
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin: false, type, status, description, operation, company, twofactorauthentication, registercode, billinggroup: billinggroupid, image }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, registercode, billinggroup: billinggroupid, image }
 });
 
 export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor, operation, redirect }: Dictionary): IRequestBody => ({

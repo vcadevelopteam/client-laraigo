@@ -503,7 +503,7 @@ const Tickets = () => {
                 accessor: 'fechainicio',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.createdate).toLocaleString()
+                    return convertLocalDate(row.fechainicio).toLocaleString()
                 }
             },
             {

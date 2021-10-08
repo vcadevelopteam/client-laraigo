@@ -4,7 +4,7 @@ import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Facebook } from '@material-ui/icons';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, Corporation2Icon, IntegrationIcon, SLAIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -534,7 +534,7 @@ const Settings: FC = () => {
                             <ItemTile
                                 title={<Trans i18nKey={langKeys.whitelist} />}
                                 subtitle={<SubtitleText value={value?.num_whitelist} i18nKey={langKeys.whitelist} />}
-                                icon={<Facebook fill="inherit" stroke="inherit" />}
+                                icon={<WhitelistIcon fill="inherit" stroke="inherit" />}
                                 helpText={
                                     <HelpText
                                         i18nKey={langKeys.whitelist}

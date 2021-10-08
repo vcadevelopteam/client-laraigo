@@ -37,9 +37,9 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
     interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
-    
+
     interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false, false).toLocaleTimeString())
-    
+
     interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
@@ -102,7 +102,7 @@ export const getAgentsSuccess = (state: IState, action: IAction): IState => ({
             channels: x.channels?.split(",") || [],
             countNotAnwsered: x.countActive - x.countAnwsered,
             isConnected: x.status === "ACTIVO"
-        })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 ) : [],
+        })).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1) : [],
         count: action.payload.count,
         loading: false,
         error: false,
@@ -293,13 +293,13 @@ export const getTicketsReset = (state: IState): IState => ({
 export const connectAgentWS = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];
     const data: IConnectAgentParams = action.payload;
-    
+
     const { userType } = state;
 
     if (userType === 'SUPERVISOR') {
-        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1 )
+        newAgentList = newAgentList.map(x => x.userid === data.userid ? { ...x, isConnected: data.isconnected } : x).sort((a: any, b: any) => (a.isConnected === b.isConnected) ? 0 : a.isConnected ? -1 : 1)
     }
-    
+
     return {
         ...state,
         agentList: {
@@ -331,9 +331,9 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     let newInteractionList = [...state.interactionList.data];
     let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
     let newAgentList = [...state.agentList.data];
-    
+
     const { agentSelected, ticketSelected, userType } = state;
-    
+
     if (userType === 'SUPERVISOR') {
         if (data.newConversation) {
             newAgentList = newAgentList.map(x => x.userid === data.userid ? {
@@ -355,7 +355,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
         } else {
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
-                ...data,
+                ...x,
+                personlastreplydate: data.usertype === "agent" ? null : (x.personlastreplydate || new Date().toISOString()),
                 countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
                 lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase()
             }) : x)
