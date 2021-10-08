@@ -9,14 +9,14 @@ import { CloseTicketIcon } from 'icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 
@@ -30,37 +30,57 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const closingRes = useSelector(state => state.inbox.triggerCloseTicket);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
+    const person = useSelector(state => state.inbox.person);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
+    const [bodyCleaned, setBodyCleaned] = useState('');
+
+    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
 
     useEffect(() => {
         if (waitClose) {
-            if (!closingRes.loading && !closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_close_ticket) }))
+            if (!sendingRes.loading && !sendingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
+                
+                const newInteractionSocket = {
+                    ...ticketSelected!!,
+                    interactionid: 0,
+                    typemessage: "text",
+                    typeinteraction: null,
+                    lastmessage: bodyCleaned,
+                    createdate: new Date().toISOString(),
+                    userid: 0,
+                    usertype: "agent",
+                    ticketWasAnswered: !ticketSelected!!.isAnswered,
+                }
                 dispatch(emitEvent({
-                    event: 'deleteTicket',
-                    data: {
-                        conversationid: ticketSelected?.conversationid,
-                        ticketnum: ticketSelected?.ticketnum,
-                        status: ticketSelected?.status,
-                        isanswered: ticketSelected?.isAnswered,
-                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-                    }
+                    event: 'newMessageFromAgent',
+                    data: newInteractionSocket
                 }));
+
                 setWaitClose(false);
-            } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+            } else if (sendingRes.error) {
+                
+                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }
         }
-    }, [closingRes, waitClose])
+    }, [sendingRes, waitClose])
 
     useEffect(() => {
         setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
@@ -71,32 +91,52 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
-                observation: ''
+                variables: []
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         }
     }, [openModal])
 
     const onSelectTemplate = (value: Dictionary) => {
-        console.log(value);
-        setBodyMessage(value.body);
-        setValue('hsmtemplateid', value ? value.id : 0);
+        if (value) {
+            
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+
+            const wordList = value.body?.split(" ");
+            setBodyCleaned(value.body);
+            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
     }
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+        setBodyCleaned(body => {
+            data.variables.forEach((x: Dictionary) => {
+                body = body.replace(`{{${x.name}}}`, x.text)
+            })
+            return body
+        })
+        const bb = {
+            hsmtemplateid: data.hsmtemplateid,
+            communicationchannelid: ticketSelected?.communicationchannelid!!,
+            platformtype: ticketSelected?.communicationchannelsite!!,
             communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
+            listmembers: [{
+                phone: person.data?.phone!! + "",
+                firstname: person.data?.firstname + "",
+                lastname: person.data?.lastname + "",
+                parameters: data.variables
+            }]
         }
+        dispatch(sendHSM(bb))
         dispatch(showBackdrop(true));
-        dispatch(closeTicket(dd));
         setWaitClose(true)
     });
 
@@ -125,10 +165,23 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             <FieldView
                 label={t(langKeys.message)}
                 value={bodyMessage}
-            // valueDefault={getValues('observation')}
-            // onChange={(value) => setValue('observation', value)}
-            // maxLength={1024}
             />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <FieldEditArray
+                        key={item.id}
+                        label={item.name}
+                        fregister={{
+                            ...register(`variables.${i}.text`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
+                        valueDefault={item.value}
+                        error={errors?.variables?.[i]?.text?.message}
+                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                    />
+                ))}
+            </div>
         </DialogZyx>)
 }
 
@@ -166,7 +219,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                 }));
                 setWaitClose(false);
             } else if (closingRes.error) {
-                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+                dispatch(showSnackbar({ show: true, success: false, message: t(closingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
             }

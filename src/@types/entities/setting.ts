@@ -11,4 +11,5 @@ export interface ISetting {
     orgid: number;
     num_sla: number | null;
     num_integrations: number | null;
+    num_whitelist: number | null;
 }

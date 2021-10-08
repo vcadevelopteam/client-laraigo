@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,9 +28,12 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
-import { Divider, Grid, ListItem, Box } from '@material-ui/core';
+import { Divider, Grid, ListItem, Box, IconButton } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import DeleteIcon from '@material-ui/icons/Delete';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -108,13 +111,14 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     const resFromOrg = useSelector(state => state.main.multiDataAux);
 
     // const dataTypeUser = multiData[5] && multiData[5].success ? multiData[5].data : [];
-    const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
+    // const dataGroups = multiData[6] && multiData[6].success ? multiData[6].data : [];
     const dataRoles = multiData[9] && multiData[9].success ? multiData[9].data : [];
     const dataOrganizationsTmp = multiData[8] && multiData[8].success ? multiData[8].data : []
 
     const [dataOrganizations, setDataOrganizations] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] })
     const [dataSupervisors, setDataSupervisors] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [dataChannels, setDataChannels] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [dataGroups, setDataGroups] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
     const [dataApplications, setDataApplications] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
 
     const { register, handleSubmit, setValue, getValues, trigger, formState: { errors }, reset } = useForm();
@@ -141,6 +145,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     useEffect(() => {//validar la respuesta y asignar la  data a supervisores y canales segun la organización q cambió
         const indexSupervisor = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_USER_SUPERVISOR_LST" + (index + 1)));
         const indexChannels = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_COMMUNICATIONCHANNELBYORG_LST" + (index + 1)));
+        const indexGroups = resFromOrg.data.findIndex((x: MultiData) => x.key === (`UFN_DOMAIN_LST_VALORES_GRUPOS${(index + 1)}`));
         const indexApplications = resFromOrg.data.findIndex((x: MultiData) => x.key === ("UFN_APPS_DATA_SEL" + (index + 1)));
 
         if (indexSupervisor > -1)
@@ -149,6 +154,9 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (indexChannels > -1)
             setDataChannels({ loading: false, data: resFromOrg.data[indexChannels] && resFromOrg.data[indexChannels].success ? resFromOrg.data[indexChannels].data : [] });
 
+        if (indexGroups > -1)
+            setDataGroups({ loading: false, data: resFromOrg.data[indexGroups] && resFromOrg.data[indexGroups].success ? resFromOrg.data[indexGroups].data : [] });
+
         if (indexApplications > -1)
             setDataApplications({ loading: false, data: resFromOrg.data[indexApplications] && resFromOrg.data[indexApplications].success ? resFromOrg.data[indexApplications].data : [] });
     }, [resFromOrg])
@@ -156,7 +164,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     useEffect(() => {
         //PARA MODALES SE DEBE RESETEAR EN EL EDITAR
         reset({
-            orgid: row ? row.orgid : 0,
+            orgid: row ? row.orgid : (dataOrganizationsTmp.length === 1 ? dataOrganizationsTmp[0].orgid : 0),
             roleid: row ? row.roleid : 0,
             roledesc: row ? row.roledesc : '', //for table
             orgdesc: row ? row.orgdesc : '', //for table
@@ -212,13 +220,16 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
         if (value) {
             setDataSupervisors({ loading: true, data: [] });
             setDataChannels({ loading: true, data: [] });
+            setDataGroups({ loading: true, data: [] });
             dispatch(getMultiCollectionAux([
                 getSupervisors(value.orgid, 0, index + 1),
-                getChannelsByOrg(value.orgid, index + 1)
+                getChannelsByOrg(value.orgid, index + 1),
+                getValuesFromDomain("GRUPOS", `_GRUPOS${index + 1}`, value.orgid)
             ]))
         } else {
             setDataSupervisors({ loading: false, data: [] });
             setDataChannels({ loading: false, data: [] });
+            setDataGroups({ loading: false, data: [] });
         }
     }
 
@@ -254,7 +265,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                 <FieldSelect
                                     label={t(langKeys.organization)}
                                     className={classes.mb2}
-                                    valueDefault={row?.orgid || ""}
+                                    valueDefault={getValues('orgid')}
                                     onChange={onChangeOrganization}
                                     triggerOnChangeOnFirst={true}
                                     error={errors?.orgid?.message}
@@ -389,7 +400,8 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     valueDefault={row?.groups || ""}
                                     onChange={(value) => setValue('groups', value.map((o: Dictionary) => o.domainvalue).join())}
                                     error={errors?.groups?.message}
-                                    data={dataGroups}
+                                    loading={dataGroups.loading}
+                                    data={dataGroups.data}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
                                 /> :
@@ -417,6 +429,151 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     );
 }
 
+interface ModalPasswordProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    data: any;
+    parentSetValue: (...param: any) => any;
+}
+
+const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, data, parentSetValue }) => {
+    const { t } = useTranslation();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
+        defaultValues: {
+            password: '',
+            confirmpassword: '',
+            generate_password: false,
+            send_password_by_email: false,
+            change_password_on_login: false
+        }
+    });
+
+    useEffect(() => {
+        setValue('password', data?.password);
+        setValue('confirmpassword', data?.password);
+        setValue('send_password_by_email', data?.send_password_by_email);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
+    }, [data]);
+
+    const validateSamePassword = (value: string): any => {
+        return getValues('password') === value;
+    }
+
+    useEffect(() => {
+        register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('confirmpassword', {
+            validate: {
+                validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                same: (value: any) => validateSamePassword(value) || "Contraseñas no coinciden"
+            }
+        });
+    }, [])
+
+    const setRandomPassword = (value: boolean) => {
+        if (value) {
+            const rndPassword = randomText(10, true, true, true);
+            setValue('password', rndPassword);
+            setValue('confirmpassword', rndPassword);
+            trigger();
+        }
+    }
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+        setValue('password', data?.password);
+        setValue('confirmpassword', data?.password);
+        setValue('send_password_by_email', data?.send_password_by_email);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
+        clearErrors();
+    }
+
+    const onSubmitPassword = handleSubmit((data) => {
+        parentSetValue('password', data.password);
+        parentSetValue('send_password_by_email', data.send_password_by_email);
+        parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
+        setOpenModal(false);
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.setpassword)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={handleCancelModal}
+            handleClickButton2={onSubmitPassword}
+        >
+            <div className="row-zyx">
+                <TemplateSwitch
+                    label={t(langKeys.generate_password)}
+                    className="col-4"
+                    valueDefault={getValues('generate_password')}
+                    onChange={setRandomPassword}
+                />
+                <TemplateSwitch
+                    label={t(langKeys.send_password_by_email)}
+                    className="col-4"
+                    valueDefault={getValues('send_password_by_email')}
+                    onChange={(value) => setValue('send_password_by_email', value)}
+                />
+                <TemplateSwitch
+                    label={t(langKeys.change_password_on_login)}
+                    className="col-4"
+                    valueDefault={getValues('change_password_on_login')}
+                    onChange={(value) => setValue('change_password_on_login', value)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.password)}
+                    className="col-6"
+                    valueDefault={getValues('password')}
+                    type={showPassword ? 'text' : 'password'}
+                    onChange={(value) => setValue('password', value)}
+                    error={errors?.password?.message}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                >
+                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <FieldEdit
+                    label={t(langKeys.confirmpassword)}
+                    className="col-6"
+                    valueDefault={getValues('confirmpassword')}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    onChange={(value) => setValue('confirmpassword', value)}
+                    error={errors?.confirmpassword?.message}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    edge="end"
+                                >
+                                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </div>
+        </DialogZyx>
+    )
+}
+
 const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -431,8 +588,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('')
     const [triggerSave, setTriggerSave] = useState(false)
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataDocType = multiData[1] && multiData[1].success ? multiData[1].data : [];
@@ -442,7 +597,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const [allIndex, setAllIndex] = useState([])
     const [getOrganizations, setGetOrganizations] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
-    
+
 
     const uploadResult = useSelector(state => state.main.uploadFile);
 
@@ -472,7 +627,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 setValue('image', uploadResult.url)
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
-                
+
                 setWaitUploadFile(false);
             }
         }
@@ -505,7 +660,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
             status: row?.status || 'ACTIVO',
-            image: row?.image || null
+            image: row?.image || null,
+            send_password_by_email: false,
+            pwdchangefirstlogin: false
         }
     });
 
@@ -594,20 +751,13 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         setTriggerSave(true)
     });
 
-    const onSubmitPassword = () => {
-        if (password && password === confirmPassword) {
-            setValue('password', password);
-            setOpenDialogPassword(false);
-        }
-    }
-
     const onChangeStatus = (value: Dictionary) => {
         setValue('status', (value ? value.domainvalue : ''));
         value && setOpenDialogStatus(true)
     }
 
     return (
-        <div>
+        <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -813,7 +963,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                 {detailRes.error ? <h1>ERROR</h1> :
                     <div>
                         <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between' }}>
-                            <div className={classes.title}>{t(langKeys.organization_plural)}</div>
+                            <div className={classes.title}>{t(langKeys.organization_permissions)}</div>
                             <div>
                                 <Button
                                     className={classes.button}
@@ -860,29 +1010,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     error={errors?.description?.message}
                 />
             </DialogZyx>
-            <DialogZyx
-                open={openDialogPassword}
-                title={t(langKeys.setpassword)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.save)}
-                handleClickButton1={() => setOpenDialogPassword(false)}
-                handleClickButton2={onSubmitPassword}
-            >
-                <div className="row-zyx">
-                    <FieldEdit
-                        label={t(langKeys.password)}
-                        className="col-6"
-                        type="password"
-                        onChange={setPassword}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.confirmpassword)}
-                        className="col-6"
-                        type="password"
-                        onChange={setConfirmPassword}
-                    />
-                </div>
-            </DialogZyx>
+            <ModalPassword
+                openModal={openDialogPassword}
+                setOpenModal={setOpenDialogPassword}
+                data={getValues()}
+                parentSetValue={setValue}
+            />
         </div>
     );
 }

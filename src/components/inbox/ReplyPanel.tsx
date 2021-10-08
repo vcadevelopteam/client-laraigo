@@ -34,7 +34,7 @@ import TextField from '@material-ui/core/TextField';
 import { showSnackbar } from 'store/popus/actions';
 import { cleanedRichResponse, convertLocalDate, getSecondsUntelNow } from 'common/helpers/functions'
 
-const channelsWhatsapp = ["WHAT", "WHAD", "WHAP", "TELE"];
+const channelsWhatsapp = ["WHAT", "WHAD", "WHAP"];
 interface IFile {
     type: string;
     url: string;

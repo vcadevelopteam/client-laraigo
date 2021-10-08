@@ -99,3 +99,25 @@ export { ReactComponent as GenderIcon } from './gender.svg';
 export { ReactComponent as BuildingIcon } from './building-city-town.svg';
 export { ReactComponent as EditPencilIcon } from './edit-pencil.svg';
 export { ReactComponent as InfoRoundedIcon } from './info-rounded.svg';
+
+export { ReactComponent as ClassificationIcon } from './classification.svg';
+export { ReactComponent as UserGroupIcon } from './user-group.svg';
+export { ReactComponent as EmojiSadFaceIcon } from './emoji-sad-face.svg';
+export { ReactComponent as ChannelsIcon } from './channels.svg';
+export { ReactComponent as DomainsIcon } from './domains.svg';
+export { ReactComponent as ForbiddenWordsIcon } from './forbidden-words.svg';
+export { ReactComponent as OrganizationsIcon } from './organization.svg';
+export { ReactComponent as QuickReplyIcon } from './quick-reply.svg';
+export { ReactComponent as ConfigPropertiesIcon } from './properties.svg';
+
+export { ReactComponent as BotDesignerIcon } from './bot-designer.svg';
+export { ReactComponent as Corporation2Icon } from './corporation.svg';
+export { ReactComponent as IAServicesIcon } from './iaservices.svg';
+export { ReactComponent as IntegrationIcon } from './integrations.svg';
+export { ReactComponent as OutboundIcon } from './outbound.svg';
+export { ReactComponent as SLAIcon } from './sla.svg';
+
+export { ReactComponent as AIModelsIcon } from './aimodels.svg';
+export { ReactComponent as MessageTemplateIcon2 } from './messagetemplate.svg';
+export { ReactComponent as WhitelistIcon } from './whitelist.svg';
+export { ReactComponent as MessageTemplateIcon } from './message-template.svg';

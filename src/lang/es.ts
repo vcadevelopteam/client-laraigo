@@ -30,7 +30,10 @@ const translation: LangKeys = {
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",
     answeredmessages: "Mensajes respondidos",
-    messagessuccesfullydelivered: "Mensajes Entregados Satisfactoriamente",
+    messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
+
+    successful_send_hsm: 'HSM enviado satisfactoriamente',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
@@ -76,6 +79,11 @@ const translation: LangKeys = {
 
     user: 'Usuario',
     user_plural: 'Usuarios',
+
+    organization_permissions: 'Permisos de la organización',
+    generate_password: 'Generar contraseña',
+    send_password_by_email: 'Enviar contraseña por email',
+    change_password_on_login: 'Cambiar contraseña al entrar',
 
     property: 'Propiedad',
     property_plural: 'Propiedades',
@@ -389,6 +397,7 @@ const translation: LangKeys = {
     filters: 'Filtros',
 
     hsm_template: 'Plantilla HSM',
+    hsm_template_plural: 'Plantillas HSM',
 
     id: 'Id',
     newmessagetemplate: 'Nueva plantilla de comunicación',
@@ -519,6 +528,7 @@ const translation: LangKeys = {
     default_organization: 'Organización por defecto',
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
+    code_duplicate: 'Código duplicado',
     field_duplicate: 'Campo duplicado',
     field_startwithchar: 'El campo debe comenzar con una letra',
     field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',
@@ -954,6 +964,11 @@ const translation: LangKeys = {
     sendingFrequency: 'Frecuencia de envío',
     administrator: 'Administrador',
     administrator_plural: 'Administradores',
+    outboundMessage: 'Mensaje saliente',
+    outboundMessage_plural: 'Mensajes salientes',
+    iaModel: 'Modelo IA',
+    iaModel_plural: 'Modelos IA',
+    ia: 'Inteligencia artificial',
 };
 
 const esResource: ResourceLanguage = {

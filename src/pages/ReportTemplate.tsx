@@ -189,6 +189,7 @@ const DetailReportDesigner: React.FC<DetailReportDesignerProps> = ({ data: { row
         control,
         name: 'columns',
     });
+    
     React.useEffect(() => {
         register('description', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length > 0) || "" + t(langKeys.field_required) });

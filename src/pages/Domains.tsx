@@ -62,15 +62,21 @@ const useStyles = makeStyles((theme) => ({
 
 const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, dataDomain, openModal, setOpenModal, updateRecords }) => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
     const user = useSelector(state => state.login.validateToken.user);
     const { register, handleSubmit, setValue, formState: { errors }, reset, getValues } = useForm();
     const onSubmit = handleSubmit((data) => {
-        if (edit)
-            updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
-        else
-            updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
-
-        setOpenModal(false);
+        if (!edit && dataDomain && dataDomain.some(d => d.domainvalue === data.domainvalue)) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.code_duplicate) }))
+        }
+        else {
+            if (edit)
+                updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
+            else
+                updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
+    
+            setOpenModal(false);
+        }
     });
 
     useEffect(() => {
@@ -108,6 +114,14 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                         onChange={(value) => setValue('domainname', value)}
                     />
                 }
+                {
+                    <TemplateSwitch
+                        label={t(langKeys.bydefault)}
+                        className="col-6"
+                        valueDefault={getValues('bydefault')}
+                        onChange={(value) => setValue('bydefault', value)}
+                    />
+                }
             </div>
             <div className="row-zyx">
                 {
@@ -127,16 +141,6 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                         valueDefault={getValues('domaindesc')}
                         onChange={(value) => setValue('domaindesc', value)}
                         error={errors?.domaindesc?.message}
-                    />
-                }
-            </div>
-            <div className="row-zyx">
-                {
-                    <TemplateSwitch
-                        label={t(langKeys.bydefault)}
-                        className="col-6"
-                        valueDefault={getValues('bydefault')}
-                        onChange={(value) => setValue('bydefault', value)}
                     />
                 }
             </div>

@@ -166,15 +166,15 @@ const Properties: FC = () => {
             return <h1>ERROR</h1>;
         }
         return (
-            <Fragment>
+            <div style={{ width: '100%' }}>
                 <div style={{ position: 'relative' }}>
                     <Box className={classes.containerHeader} justifyContent='space-between' alignItems='center' mb={1}>
                         <span className={classes.title}>{t(langKeys.property_plural, { count: 2 })}</span>
                     </Box>
-                    <div className='row-zyx' style={{ position: 'absolute', width: 700 }}>
+                    <div style={{ position: 'absolute', display: 'flex', gap: 16 }}>
                         <FieldSelect
                             label={t(langKeys.level)}
-                            className='col-4'
+                            style={{ width: 250 }}
                             valueDefault={levelFilter}
                             variant="outlined"
                             onChange={(value) => setLevelFilter((value?.levelvalue || ''))}
@@ -189,7 +189,7 @@ const Properties: FC = () => {
                         />
                         <FieldSelect
                             label={t(langKeys.category)}
-                            className='col-4'
+                            style={{ width: 250 }}
                             variant="outlined"
                             valueDefault={categoryFilter}
                             onChange={(value) => setCategoryFilter((value?.categoryvalue || ''))}
@@ -214,7 +214,7 @@ const Properties: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={false}
                 />
-            </Fragment>
+            </div>
         )
     }
     else if (viewSelected === 'view-2') {

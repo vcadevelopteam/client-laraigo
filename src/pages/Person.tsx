@@ -301,7 +301,7 @@ export const Person: FC = () => {
     const format = (date: Date) => date.toISOString().split('T')[0];
 
     return (
-        <div style={{ height: '100%' }}>
+        <div style={{ height: '100%', width: 'inherit' }}>
             <Grid container direction="row">
                 <Grid item xs={6}>
                     <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
@@ -443,6 +443,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         height: "100%",
+        width: 'inherit',
         // overflowY: 'hidden',
     },
     rootContent: {
@@ -905,11 +906,11 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                 if (conversations.loading) return;
                 if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
                     console.log("Scroll finalizó");
-                    setPage(page + 1);
+                    setPage(prevPage => prevPage + 1);
                 }
             };
         }
-    }, [page, firstCall.current, list, conversations, setPage]);
+    }, [list, conversations, setPage]);
 
     useEffect(() => {
         fetchTickets();
@@ -925,11 +926,10 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                 success: false,
             }));
         } else {
-            setList([...list, ...conversations.data]);
+            setList(prevList => [...prevList, ...conversations.data]);
         }
     }, [conversations, setList, dispatch]);
 
-    // console.log('calling fetchTickets', list.length, conversations.count, page);
     return (
         <div className={classes.root}>
             {list.map((e, i) => {
@@ -1169,6 +1169,7 @@ const useOpportunityItemStyles = makeStyles(theme => ({
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         justifyContent: 'stretch',
+        width: 'inherit',
     },
     rootItem: {  
         border: '#EBEAED solid 1px',

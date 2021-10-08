@@ -68,6 +68,8 @@ const paths = {
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
     DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
     IASERVICES: '/iaservices',
+    // IAMODELS: '/extras/intelligentmodels',
+    IA: '/iaservices/ia',
 
     SETTINGS: '/settings',
 };

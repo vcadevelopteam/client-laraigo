@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 
 const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
+    createStyles({
         root: {
             display: 'flex',
         },
@@ -24,6 +24,10 @@ const useStyles = makeStyles((theme: Theme) =>
             flexDirection: 'column',
         },
         infoUserName: {
+            maxWidth: 120,
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
             fontSize: 16,
             textAlign: 'start',
             lineHeight: 'normal',
@@ -87,7 +91,7 @@ const AccountMenu: FC = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={(e) => {}}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
+                <MenuItem onClick={(e) => { }}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
                 <MenuItem onClick={signOut}><Trans i18nKey={langKeys.signoff} /></MenuItem>
             </Menu>
         </div>

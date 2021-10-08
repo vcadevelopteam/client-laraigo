@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -112,7 +112,19 @@ export const connectAgentUI = (payload: boolean): IActionCall => {
 
 export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
 
-// export const connectAgent = (payload: IConnectAgentParams): IActionCall => ({ type: actionTypes.CONNECT_AGENT, payload });
+
+export const sendHSM = (params: ISendHSM): IActionCall => ({
+    callAPI: () => InboxService.sendHSM(params),
+    types: {
+        loading: actionTypes.SEND_HSM,
+        success: actionTypes.SEND_HSM_SUCCESS,
+        failure: actionTypes.SEND_HSM_FAILURE,
+    },
+    type: null,
+});
+
+export const resetSendHSM = (): IActionCall => ({ type: actionTypes.SEND_HSM_RESET });
+
 
 
 
@@ -127,6 +139,9 @@ export const closeTicket = (params: ICloseTicketsParams): IActionCall => ({
 });
 
 export const resetCloseTicket = (): IActionCall => ({ type: actionTypes.CLOSE_TICKET_RESET });
+
+
+
 
 export const replyTicket = (params: IReplyTicketParams | IReplyTicketParams[], isList: boolean = false): IActionCall => ({
     callAPI: () => InboxService.replyTicket(params, isList),

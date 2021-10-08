@@ -315,16 +315,16 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
-        return data.filter(item => item.status === "PAUSADO");
+        return data.filter(item => item.isAnswered);
     }
     if (page === 1 && searchName !== "") {
-        return data.filter(item => item.status === "PAUSADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.isAnswered && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
-        return data.filter(item => item.status !== "");
+        return data.filter(item => item.status === "PAUSADO");
     }
     if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status !== "" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.status === "PAUSADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     return data;
 }
