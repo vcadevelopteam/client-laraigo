@@ -1308,6 +1308,63 @@ export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
     parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
 });
+export const getdashboardoperativoTMOGENERALSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level:0,
+        closedby:"",
+        skipdown:0,
+        skipup:0,
+        bd:true,
+        min:"00:00:00",
+        max:"00:00:00",
+        target:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoTMEGENERALSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level:0,
+        closedby:"",
+        skipdown:0,
+        skipup:0,
+        bd:true,
+        min:"00:00:00",
+        max:"00:00:00",
+        target:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoSummarySel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        skipdowntmo:0,
+        skipuptmo:0,
+        skipdowntme:0,
+        skipuptme:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoProdxHoraSel = ({startdate,enddate,channel,group,company,label,supervisor,level}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoProdxHoraDistSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoEncuestaSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,closedby:"",
+        offset:-5.00,supervisorid:supervisor}
+});
 
 /// Settings tab (drawer)
 export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
