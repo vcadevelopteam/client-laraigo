@@ -222,6 +222,13 @@ export const insInappropriateWords = ({ id, description, status, type, username,
     parameters: { id, description, status, type, username, operation, classification, defaultanswer }
 });
 
+export const insarrayInappropriateWords = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_INS_ARRAY",
+    parameters: { 
+        table: JSON.stringify(table)
+    }
+});
+
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
     method: "UFN_INTELLIGENTMODELS_SEL",
     parameters: {
