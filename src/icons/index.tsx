@@ -118,5 +118,6 @@ export { ReactComponent as OutboundIcon } from './outbound.svg';
 export { ReactComponent as SLAIcon } from './sla.svg';
 
 export { ReactComponent as AIModelsIcon } from './aimodels.svg';
-export { ReactComponent as MessageTemplateIcon } from './messagetemplate.svg';
+export { ReactComponent as MessageTemplateIcon2 } from './messagetemplate.svg';
 export { ReactComponent as WhitelistIcon } from './whitelist.svg';
+export { ReactComponent as MessageTemplateIcon } from './message-template.svg';
