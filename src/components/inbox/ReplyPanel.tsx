@@ -26,7 +26,6 @@ import Badge from '@material-ui/core/Badge';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { SearchIcon } from 'icons';
 import List from '@material-ui/core/List';
-// import ListItemButton from '@material-ui/core/but';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -46,7 +45,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-
+    const { t } = useTranslation();
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [idUpload, setIdUpload] = useState('');
 
@@ -89,10 +88,12 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 onChange={(e) => onSelectImage(e.target.files)}
             />
             <label htmlFor={`laraigo-upload-${type}`}>
-                {type === "image" ?
-                    <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
-                    <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                }
+                <Tooltip title={t(type === "image" ? langKeys.send_image : langKeys.send_file) + ""} arrow placement="top">
+                    {type === "image" ?
+                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
+                        <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                    }
+                </Tooltip>
             </label>
         </>
     )
@@ -125,7 +126,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const handleClick = () => setOpen((prev) => !prev);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
-
+    const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
@@ -160,7 +161,9 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
+                <Tooltip title={t(langKeys.send_quickreply) + ""} arrow placement="top">
+                    <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -225,7 +228,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
-
+    const { t } = useTranslation();
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const handleClick = () => setOpen((prev) => !prev);
     const [showSearch, setShowSearch] = useState(false);
@@ -312,7 +315,9 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                <Tooltip title={t(langKeys.send_enrich_response) + ""} arrow placement="top">
+                    <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -448,7 +453,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
 
     useEffect(() => {
         if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
-            if (getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 360 > 24) {
+            if (getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600 > 24) {
                 setShowReply(false);
             }
         }

@@ -199,6 +199,7 @@ export const langKeys = {
     tme: 'tme',
     tmepercentobj: 'tmepercentobj',
     tmopercentobj: 'tmopercentobj',
+    rich_response: 'rich_response',
     tmototalobj: 'tmototalobj',
     tmoasesorobj: "tmoasesorobj",
     tmeasesorobj: "tmeasesorobj",
@@ -446,7 +447,16 @@ export const langKeys = {
     reassign_ticket: 'reassign_ticket',
     typify: 'typify',
     typify_ticket: 'typify_ticket',
+    
     send_hsm: 'send_hsm',
+    
+    send_quickreply: 'send_quickreply',
+    send_enrich_response: 'send_enrich_response',
+    send_image: 'send_image',
+    send_file: 'send_file',
+    send_gif: 'send_gif',
+    send_emoji: 'send_emoji',
+
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',

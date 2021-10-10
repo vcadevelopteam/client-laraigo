@@ -125,3 +125,4 @@ export { ReactComponent as HSMIcon } from './hsm.svg';
 export { ReactComponent as TipifyIcon } from './tipify.svg';
 export { ReactComponent as ReassignIcon } from './reassign.svg';
 export { ReactComponent as MessageTemplateIcon } from './message-template.svg';
+export { ReactComponent as InteractiveListIcon } from './interactive-list.svg';

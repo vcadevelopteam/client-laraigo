@@ -160,6 +160,15 @@ const translation: LangKeys = {
     detail_plural: 'Details',
     whitelist: 'Whitelist',
     newuser: "New user",
+    rich_response: 'Enriched response',
+
+    send_quickreply: 'Send quickreply',
+    send_enrich_response: 'Send enrich response',
+    send_image: 'Send image',
+    send_file: 'Send file',
+    send_gif: 'Send gif',
+    send_emoji: 'Send emoji',
+
     newdomain: "New domain",
     newgroupconfig: "New group configuration",
     newinnapropiateword: "New innapropiate word",

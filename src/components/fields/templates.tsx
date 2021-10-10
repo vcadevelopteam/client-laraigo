@@ -35,7 +35,7 @@ import { Picker } from 'emoji-mart'
 import { SearchField } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
 import DeleteIcon from '@material-ui/icons/Delete';
-
+import Tooltip from '@material-ui/core/Tooltip';
 import {
     WebMessengerIcon,
     ZyxmeMessengerIcon,
@@ -66,7 +66,7 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
     const handleClose = () => setAnchorEl(null);
 
     return (
-        <div style={{ whiteSpace: 'nowrap', display: 'flex'}}>
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
             <IconButton
                 aria-label="more"
                 aria-controls="long-menu"
@@ -254,7 +254,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard"}) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -667,13 +667,15 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
-
+    const {t} = useTranslation();
     const handleClickAway = () => setOpen(false);
 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
-                <EmojiICon className={classes.root} onClick={handleClick} />
+                <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
+                    <EmojiICon className={classes.root} onClick={handleClick} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -695,7 +697,7 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
-
+    const { t } = useTranslation()
     const handleClickAway = () => setOpen(false);
     const [listGif, setListGif] = useState([]);
 
@@ -720,7 +722,9 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style || undefined}>
-                <GifIcon className={classes.root} onClick={handleClick} />
+                <Tooltip title={t(langKeys.send_gif) + ""} arrow placement="top">
+                    <GifIcon className={classes.root} onClick={handleClick} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -782,7 +786,7 @@ interface EditWithSelectProps extends InputProps {
 }
 
 export const FieldEditWithSelect: React.FC<EditWithSelectProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 4, maxLength = 0, fregister = {},
-primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onClickSelection, onClickAway }) => {
+    primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onClickSelection, onClickAway }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -796,7 +800,7 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                 <ListItem
                     key={index}
                     button
-                    style={{...style, padding: '8px'}}
+                    style={{ ...style, padding: '8px' }}
                     onClick={(e) => onClickSelection(e, data[index][datakey])}
                     divider={true}
                 >
@@ -809,8 +813,8 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
     return (
         <div className={className}>
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
-            <ClickAwayListener onClickAway={({...param}) => onClickAway({...param})}>
-                <div style={{position: 'relative'}}>
+            <ClickAwayListener onClickAway={({ ...param }) => onClickAway({ ...param })}>
+                <div style={{ position: 'relative' }}>
                     <TextField
                         {...fregister}
                         color="primary"
@@ -835,35 +839,35 @@ primitive = false, inputProps = {}, show, data, datakey, top = 0, left = 0, onCl
                     />
                     {maxLength !== 0 && <FormHelperText style={{ textAlign: 'right' }}>{maxLength - value.length}/{maxLength}</FormHelperText>}
                     {show ?
-                    <div style={{
-                        backgroundColor: '#FFFFFF',
-                        position: 'absolute',
-                        top: top,
-                        left: left,
-                        borderColor: 'lightgray',
-                        borderStyle: 'solid',
-                        borderWidth: '1px',
-                        borderRadius: '5px',
-                    }}> 
-                        <FixedSizeList
-                        className="scroll-style-go"
-                        direction="vertical"
-                        height={200}
-                        width={280}
-                        itemSize={28}
-                        itemCount={data.length}
-                        >
-                            {renderRow}
-                        </FixedSizeList>
-                    </div>
-                    : null}
+                        <div style={{
+                            backgroundColor: '#FFFFFF',
+                            position: 'absolute',
+                            top: top,
+                            left: left,
+                            borderColor: 'lightgray',
+                            borderStyle: 'solid',
+                            borderWidth: '1px',
+                            borderRadius: '5px',
+                        }}>
+                            <FixedSizeList
+                                className="scroll-style-go"
+                                direction="vertical"
+                                height={200}
+                                width={280}
+                                itemSize={28}
+                                itemCount={data.length}
+                            >
+                                {renderRow}
+                            </FixedSizeList>
+                        </div>
+                        : null}
                 </div>
             </ClickAwayListener>
         </div>
     )
 }
 
-export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
+export const FieldEditArray: React.FC<InputProps> = ({ label, style = {}, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, variant = "standard" }) => {
     return (
         <div className={className} style={style}>
             {label && <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>}
@@ -917,14 +921,14 @@ const sxImageBox = {
     textAlign: 'center',
 }
 
-export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, valueDefault, label}) => {
+export const FieldUploadImage: React.FC<InputProps> = ({ className, onChange, valueDefault, label }) => {
     const { t } = useTranslation();
     const [url, setUrl] = useState<string>("");
 
     useEffect(() => {
         setUrl(valueDefault || "");
     }, [valueDefault])
-    
+
 
     const getUrl = (file: File | any): string => {
         if (!file) return "";
@@ -942,49 +946,49 @@ export const FieldUploadImage: React.FC<InputProps> = ({className, onChange, val
             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
             {
                 url === ""
-                ?
-                <Box
-                    component="label"
-                    sx={sxImageBox}
-                    style={{cursor: 'pointer'}}
-                >
-                    <React.Fragment>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            style={{display: 'none'}}
-                            onChange={(e) => {
-                                if ((e.target.files?.length || 0) > 0) {
-                                    setUrl(getUrl(e.target?.files?.item(0)));
-                                    onChange && onChange(e.target?.files?.item(0));
-                                }
-                            }}
-                        />
-                        <CameraAltIcon />
-                        <span>{t(langKeys.uploadImage)}</span>
-                    </React.Fragment>
-                </Box>
-                :
-                <React.Fragment>
+                    ?
                     <Box
+                        component="label"
                         sx={sxImageBox}
-                        style={{cursor: 'pointer'}}
-                        onClick={() => {
-                            setUrl("");
-                            onChange && onChange("")
-                        }}
+                        style={{ cursor: 'pointer' }}
                     >
-                        <DeleteIcon />
-                        <span>{t(langKeys.delete)}</span>
+                        <React.Fragment>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={(e) => {
+                                    if ((e.target.files?.length || 0) > 0) {
+                                        setUrl(getUrl(e.target?.files?.item(0)));
+                                        onChange && onChange(e.target?.files?.item(0));
+                                    }
+                                }}
+                            />
+                            <CameraAltIcon />
+                            <span>{t(langKeys.uploadImage)}</span>
+                        </React.Fragment>
                     </Box>
-                    <Box sx={{...sxImageBox, borderTop: '0px' }}>
-                        <img
-                            src={url}
-                            alt={url}
-                            style={{maxWidth: '300px'}}
-                        />
-                    </Box>
-                </React.Fragment>
+                    :
+                    <React.Fragment>
+                        <Box
+                            sx={sxImageBox}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                                setUrl("");
+                                onChange && onChange("")
+                            }}
+                        >
+                            <DeleteIcon />
+                            <span>{t(langKeys.delete)}</span>
+                        </Box>
+                        <Box sx={{ ...sxImageBox, borderTop: '0px' }}>
+                            <img
+                                src={url}
+                                alt={url}
+                                style={{ maxWidth: '300px' }}
+                            />
+                        </Box>
+                    </React.Fragment>
             }
         </div>
     )

@@ -5,7 +5,7 @@ import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
-
+import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -554,9 +554,11 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <IconButton onClick={closeTicket}>
-                    <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
-                </IconButton>
+                <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                    <IconButton onClick={closeTicket}>
+                        <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                    </IconButton>
+                </Tooltip>
                 <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon />
                 </IconButton>

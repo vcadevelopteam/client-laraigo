@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, FileIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, FileIcon, InteractiveListIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -10,7 +10,10 @@ import clsx from 'clsx';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate } from 'common/helpers';
-
+import Dialog from '@material-ui/core/Dialog';
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
 const useStylesCarousel = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
@@ -48,6 +51,66 @@ const useStylesCarousel = makeStyles((theme) => ({
     }
 }));
 
+const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, createdate: string, classes: any, userType: string }> = ({ interactiontext, createdate, classes, userType, onlyTime }) => {
+    const [open, setOpen] = React.useState(false);
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    const jsonIntt = JSON.parse(interactiontext);
+
+    return (
+        <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+            [classes.interactionTextAgent]: userType !== 'client',
+        })}>
+            {jsonIntt.headertype === "text" ? (
+                <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
+            ) : jsonIntt.header}
+            {jsonIntt.body}
+            {jsonIntt.footer && (
+                <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
+            )}
+            <div style={{ height: 2, borderTop: '1px solid rgb(235, 234, 237)', marginTop: 4 }}></div>
+            <div
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00a5f4', cursor: 'pointer' }}
+                onClick={handleClickOpen}
+            >
+                <InteractiveListIcon /> OPTIONS
+            </div>
+            <TimerInteraction time={onlyTime || ""} />
+            <Dialog
+                onClose={handleClose}
+                aria-labelledby="simple-dialog-title"
+                open={open}
+                fullWidth
+                maxWidth="xs"
+            >
+                <DialogTitle>Options</DialogTitle>
+                <DialogContent>
+                    {jsonIntt.sections[0].buttons.map((button: any, i: number) => (
+                        <div 
+                            key={i} 
+                            style={{ 
+                                background: '#FFF', 
+                                borderRadius: 4, 
+                                padding: '12px 8px', 
+                                textTransform: 'uppercase', 
+                                display: 'flex', 
+                                justifyContent: 'space-between' }}>
+                            {button.title}
+                            <RadioButtonUncheckedIcon />
+                        </div>
+                    ))}
+                </DialogContent>
+            </Dialog>
+        </div>
+    )
+}
 const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     const classes = useStylesCarousel();
     const [pageSelected, setPageSelected] = useState(0);
@@ -248,6 +311,54 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 </a>
                 <TimerInteraction background={true} time={onlyTime || ""} />
             </div>
+        )
+    } else if (interactiontype === "interactivebutton") {
+        const jsonIntt = JSON.parse(interactiontext);
+        jsonIntt.headertype = jsonIntt.headertype || "text";
+        return (
+            <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
+                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })}>
+                    {jsonIntt.headertype === "text" ? (
+                        <div style={{ fontWeight: 500 }}>{jsonIntt.header}</div>
+                    ) : jsonIntt.header}
+                    {jsonIntt.body}
+                    {jsonIntt.footer && (
+                        <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
+                    )}
+                    <TimerInteraction time={onlyTime || ""} />
+                </div>
+                {jsonIntt.buttons.map((button: any, i: number) => (
+                    <div key={i} style={{ background: '#FFF', color: '#00a5f4', borderRadius: 4, padding: '6px 8px', textAlign: 'center', textTransform: 'uppercase' }}>
+                        {button.title}
+                    </div>
+                ))}
+            </div>
+        )
+    } else if (interactiontype === "reply-text") {
+        const textres = interactiontext.split("###")[1];
+        // const typeref = interactiontext.split("###")[0].split("&&&")[0];
+        // const textref = interactiontext.split("###")[0].split("&&&")[1];
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })}>
+                {textres}
+                <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                <TimerInteraction time={onlyTime || ""} />
+            </div>
+        );
+    } else if (interactiontype === "interactivelist") {
+        console.log(interactiontext)
+        return (
+            <InteractiveList
+                interactiontext={interactiontext}
+                createdate={createdate}
+                classes={classes}
+                userType={userType}
+                onlyTime={onlyTime}
+            />
         )
     }
     return (

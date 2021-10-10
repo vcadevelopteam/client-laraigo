@@ -34,6 +34,13 @@ const translation: LangKeys = {
 
     successful_send_hsm: 'HSM enviado satisfactoriamente',
 
+    send_quickreply: 'Enviar respuesta rápida',
+    send_enrich_response: 'Enviar respuesta enriquecida',
+    send_image: 'Enviar imagen',
+    send_file: 'Enviar un archivo',
+    send_gif: 'Enviar gif',
+    send_emoji: 'Enviar emoji',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
@@ -175,6 +182,7 @@ const translation: LangKeys = {
     communicationchannel: 'Canal de comunicación',
     billingGroup: 'Grupo de facturación',
     registerCode: 'Código de registro',
+    rich_response: 'Respuesta enriquecida',
     docNumber: 'Número de documento',
     docType: 'Tipo de documento',
     objective: "Objetivo",
