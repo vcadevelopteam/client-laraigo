@@ -1,10 +1,10 @@
 //const BASE_URL = 'http://localhost:6065/api'; //local
 
-//const BASE_URL = 'https://apix.laraigo.com/api'; //dev
-//const WS_URL = 'https://socket.laraigo.com'; //dev
+const BASE_URL = 'https://apix.laraigo.com/api'; //dev
+const WS_URL = 'https://socket.laraigo.com'; //dev
 
-const BASE_URL = 'https://testapix.laraigo.com/api'; //testing
-const WS_URL = 'https://testsocket.laraigo.com'; //testing
+// const BASE_URL = 'https://testapix.laraigo.com/api'; //testing
+// const WS_URL = 'https://testsocket.laraigo.com'; //testing
 
 // const CHATFLOW_URL = 'https://localhost:4200' //local
 const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
