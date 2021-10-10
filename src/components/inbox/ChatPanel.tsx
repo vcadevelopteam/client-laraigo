@@ -4,7 +4,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CloseTicketIcon } from 'icons';
+import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
@@ -19,9 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
-
-
-
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import CachedIcon from '@material-ui/icons/Cached';
 
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
@@ -55,7 +54,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-                
+
                 const newInteractionSocket = {
                     ...ticketSelected!!,
                     interactionid: 0,
@@ -74,7 +73,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
                 setWaitClose(false);
             } else if (sendingRes.error) {
-                
+
                 dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
@@ -99,7 +98,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
 
     const onSelectTemplate = (value: Dictionary) => {
         if (value) {
-            
+
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
 
@@ -580,15 +579,28 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 <MenuItem onClick={() => {
                     setOpenModalReassignticket(true)
                     setAnchorEl(null)
-                }}>{t(langKeys.reassign)}</MenuItem>
+                }}>
+                    <ListItemIcon color="inherit">
+                        <ReassignIcon width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {t(langKeys.reassign)}
+                </MenuItem>
                 <MenuItem onClick={() => {
                     setAnchorEl(null)
                     setOpenModalTipification(true)
-                }}>{t(langKeys.typify)}</MenuItem>
+                }}>
+                    <ListItemIcon>
+                        <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {t(langKeys.typify)}</MenuItem>
                 <MenuItem onClick={() => {
                     setAnchorEl(null)
                     setOpenModalHSM(true)
-                }}>{t(langKeys.send_hsm)}</MenuItem>
+                }}>
+                    <ListItemIcon>
+                        <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}</MenuItem>
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}

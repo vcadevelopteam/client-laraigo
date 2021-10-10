@@ -315,10 +315,10 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
-        return data.filter(item => item.isAnswered);
+        return data
     }
     if (page === 1 && searchName !== "") {
-        return data.filter(item => item.isAnswered && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
         return data.filter(item => item.status === "PAUSADO");
@@ -383,7 +383,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             onChange={(_, value) => setPageSelected(value)}
                         >
                             <AntTab label={t(langKeys.assigned)} />
-                            <AntTab label={t(langKeys.pending)} />
+                            <AntTab label={t(langKeys.all)} />
                             <AntTab label={t(langKeys.paused)} />
                         </Tabs>
                         <IconButton style={{ width: '50px' }} size="small" onClick={() => setShowSearch(true)} edge="end">
