@@ -14,6 +14,7 @@ import { getReportSel } from 'common/helpers';
 import { getCollection, resetMain, resetCollectionPaginated, resetMultiMain, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { default as DashboardManagerial } from './DashboardManagerial';
+import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
 import { TemplateBreadcrumbs } from 'components';
 
@@ -129,6 +130,24 @@ const Dashboard: FC = () => {
                                     </CardActionArea>
                                 </Card>
                             </Grid>
+                            <Grid item key={"dashboardproductivity"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                <Card >
+                                    <CardActionArea onClick={() => handleSelected("dashboardproductivity")}>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            className={classes.media}
+                                            image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
+                                            title={t(langKeys.productivity)}
+                                        />
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h6" component="div">
+                                                {t(langKeys.productivity)}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
                             <Grid item key={"dashboardoperationalpush"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card >
                                     <CardActionArea onClick={() => handleSelected("dashboardoperationalpush")}>
@@ -161,6 +180,19 @@ const Dashboard: FC = () => {
                         handleClick={handleSelected}
                     />
                     <DashboardManagerial/>
+                </div>
+            </Fragment>
+        )
+    }
+    else if(viewSelected === "dashboardproductivity"){
+        return(
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={arrayBread}
+                        handleClick={handleSelected}
+                    />
+                    <DashboardProductivity/>
                 </div>
             </Fragment>
         )

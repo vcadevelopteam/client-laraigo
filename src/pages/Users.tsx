@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser } from 'common/helpers';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -28,9 +28,12 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
-import { Divider, Grid, ListItem, Box } from '@material-ui/core';
+import { Divider, Grid, ListItem, Box, IconButton } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import DeleteIcon from '@material-ui/icons/Delete';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -426,6 +429,151 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
     );
 }
 
+interface ModalPasswordProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    data: any;
+    parentSetValue: (...param: any) => any;
+}
+
+const ModalPassword: React.FC<ModalPasswordProps> = ({ openModal, setOpenModal, data, parentSetValue }) => {
+    const { t } = useTranslation();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
+        defaultValues: {
+            password: '',
+            confirmpassword: '',
+            generate_password: false,
+            send_password_by_email: false,
+            change_password_on_login: false
+        }
+    });
+
+    useEffect(() => {
+        setValue('password', data?.password);
+        setValue('confirmpassword', data?.password);
+        setValue('send_password_by_email', data?.send_password_by_email);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
+    }, [data]);
+
+    const validateSamePassword = (value: string): any => {
+        return getValues('password') === value;
+    }
+
+    useEffect(() => {
+        register('password', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('confirmpassword', {
+            validate: {
+                validate: (value: any) => (value && value.length) || t(langKeys.field_required),
+                same: (value: any) => validateSamePassword(value) || "Contraseñas no coinciden"
+            }
+        });
+    }, [])
+
+    const setRandomPassword = (value: boolean) => {
+        if (value) {
+            const rndPassword = randomText(10, true, true, true);
+            setValue('password', rndPassword);
+            setValue('confirmpassword', rndPassword);
+            trigger();
+        }
+    }
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+        setValue('password', data?.password);
+        setValue('confirmpassword', data?.password);
+        setValue('send_password_by_email', data?.send_password_by_email);
+        setValue('change_password_on_login', data?.pwdchangefirstlogin);
+        clearErrors();
+    }
+
+    const onSubmitPassword = handleSubmit((data) => {
+        parentSetValue('password', data.password);
+        parentSetValue('send_password_by_email', data.send_password_by_email);
+        parentSetValue('pwdchangefirstlogin', data.change_password_on_login);
+        setOpenModal(false);
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.setpassword)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={handleCancelModal}
+            handleClickButton2={onSubmitPassword}
+        >
+            <div className="row-zyx">
+                <TemplateSwitch
+                    label={t(langKeys.generate_password)}
+                    className="col-4"
+                    valueDefault={getValues('generate_password')}
+                    onChange={setRandomPassword}
+                />
+                <TemplateSwitch
+                    label={t(langKeys.send_password_by_email)}
+                    className="col-4"
+                    valueDefault={getValues('send_password_by_email')}
+                    onChange={(value) => setValue('send_password_by_email', value)}
+                />
+                <TemplateSwitch
+                    label={t(langKeys.change_password_on_login)}
+                    className="col-4"
+                    valueDefault={getValues('change_password_on_login')}
+                    onChange={(value) => setValue('change_password_on_login', value)}
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.password)}
+                    className="col-6"
+                    valueDefault={getValues('password')}
+                    type={showPassword ? 'text' : 'password'}
+                    onChange={(value) => setValue('password', value)}
+                    error={errors?.password?.message}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    edge="end"
+                                >
+                                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+                <FieldEdit
+                    label={t(langKeys.confirmpassword)}
+                    className="col-6"
+                    valueDefault={getValues('confirmpassword')}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    onChange={(value) => setValue('confirmpassword', value)}
+                    error={errors?.confirmpassword?.message}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <IconButton
+                                    aria-label="toggle password visibility"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    edge="end"
+                                >
+                                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </div>
+        </DialogZyx>
+    )
+}
+
 const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
@@ -440,8 +588,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
     const [openDialogStatus, setOpenDialogStatus] = useState(false);
     const [openDialogPassword, setOpenDialogPassword] = useState(false);
 
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('')
     const [triggerSave, setTriggerSave] = useState(false)
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataDocType = multiData[1] && multiData[1].success ? multiData[1].data : [];
@@ -514,7 +660,9 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
             status: row?.status || 'ACTIVO',
-            image: row?.image || null
+            image: row?.image || null,
+            send_password_by_email: false,
+            pwdchangefirstlogin: false
         }
     });
 
@@ -602,13 +750,6 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
         setAllIndex([])
         setTriggerSave(true)
     });
-
-    const onSubmitPassword = () => {
-        if (password && password === confirmPassword) {
-            setValue('password', password);
-            setOpenDialogPassword(false);
-        }
-    }
 
     const onChangeStatus = (value: Dictionary) => {
         setValue('status', (value ? value.domainvalue : ''));
@@ -869,29 +1010,12 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
                     error={errors?.description?.message}
                 />
             </DialogZyx>
-            <DialogZyx
-                open={openDialogPassword}
-                title={t(langKeys.setpassword)}
-                buttonText1={t(langKeys.cancel)}
-                buttonText2={t(langKeys.save)}
-                handleClickButton1={() => setOpenDialogPassword(false)}
-                handleClickButton2={onSubmitPassword}
-            >
-                <div className="row-zyx">
-                    <FieldEdit
-                        label={t(langKeys.password)}
-                        className="col-6"
-                        type="password"
-                        onChange={setPassword}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.confirmpassword)}
-                        className="col-6"
-                        type="password"
-                        onChange={setConfirmPassword}
-                    />
-                </div>
-            </DialogZyx>
+            <ModalPassword
+                openModal={openDialogPassword}
+                setOpenModal={setOpenDialogPassword}
+                data={getValues()}
+                parentSetValue={setValue}
+            />
         </div>
     );
 }

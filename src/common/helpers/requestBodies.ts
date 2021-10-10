@@ -169,10 +169,10 @@ export const getClassificationLevel2 = (type: string, classificationid: number):
 });
 
 
-export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid, image }: Dictionary): IRequestBody => ({
+export const insUser = ({ id, usr, doctype, docnum, password = "", firstname, lastname, email, pwdchangefirstlogin, type, status, description = "", operation, company, twofactorauthentication, registercode, billinggroupid, image }: Dictionary): IRequestBody => ({
     method: "UFN_USER_INS",
     key: "UFN_USER_INS",
-    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin: false, type, status, description, operation, company, twofactorauthentication, registercode, billinggroup: billinggroupid, image }
+    parameters: { id, usr, doctype, docnum, password: password, firstname, lastname, email, pwdchangefirstlogin, type, status, description, operation, company, twofactorauthentication, registercode, billinggroup: billinggroupid, image }
 });
 
 export const insOrgUser = ({ roleid, orgid, bydefault, labels, groups, channels, status, type, supervisor, operation, redirect }: Dictionary): IRequestBody => ({
@@ -220,6 +220,13 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
 export const insInappropriateWords = ({ id, description, status, type, username, operation, classification, defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
     parameters: { id, description, status, type, username, operation, classification, defaultanswer }
+});
+
+export const insarrayInappropriateWords = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_INS_ARRAY",
+    parameters: { 
+        table: JSON.stringify(table)
+    }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -1307,6 +1314,63 @@ export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,
     method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
     parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
+});
+export const getdashboardoperativoTMOGENERALSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level:0,
+        closedby:"",
+        skipdown:0,
+        skipup:0,
+        bd:true,
+        min:"00:00:00",
+        max:"00:00:00",
+        target:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoTMEGENERALSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level:0,
+        closedby:"",
+        skipdown:0,
+        skipup:0,
+        bd:true,
+        min:"00:00:00",
+        max:"00:00:00",
+        target:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoSummarySel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        skipdowntmo:0,
+        skipuptmo:0,
+        skipdowntme:0,
+        skipuptme:0,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoProdxHoraSel = ({startdate,enddate,channel,group,company,label,supervisor,level}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        level,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoProdxHoraDistSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,
+        offset:-5.00,supervisorid:supervisor}
+});
+export const getdashboardoperativoEncuestaSel = ({startdate,enddate,channel,group,company,label,supervisor}: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
+    parameters: {startdate,enddate,channel,group,company,label,closedby:"",
+        offset:-5.00,supervisorid:supervisor}
 });
 
 /// Settings tab (drawer)

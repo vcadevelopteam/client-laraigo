@@ -25,6 +25,8 @@ const translation: LangKeys = {
 
     client_message: 'Mensajes del Cliente',
     bot_message: 'Mensajes del Bot',
+    distributionTMO: "Distribución del TMO Asesor",
+    distributionTME: "Distribución del TME Asesor",
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",
     answeredmessages: "Mensajes respondidos",
@@ -43,7 +45,7 @@ const translation: LangKeys = {
 
     billingSetup: 'Facturación',
     billingSetup_plural: 'Facturaciones',
-
+    productivity: "Productividad",
     channel: 'Canal',
     channel_plural: 'Canales',
 
@@ -79,6 +81,9 @@ const translation: LangKeys = {
     user_plural: 'Usuarios',
 
     organization_permissions: 'Permisos de la organización',
+    generate_password: 'Generar contraseña',
+    send_password_by_email: 'Enviar contraseña por email',
+    change_password_on_login: 'Cambiar contraseña al entrar',
 
     property: 'Propiedad',
     property_plural: 'Propiedades',
@@ -107,9 +112,16 @@ const translation: LangKeys = {
     classification_plural: 'Clasificaciones',
     code: 'Código',
     bydefault: 'Valor por defecto',
+    distributionProductivity: "Distribución de Productividad por hora",
     documenttype: 'Tipo de documento',
     documentnumber: 'Número de documento',
+    productivitycard1: "Productividad x hora logueo",
+    productivitycard2: "Productividad x hora conectado",
+    productivitycard3: "Productividad x hora Bot",
+    productivitycard4: "Tasa de abandono",
     usergroup: 'Grupo usuario',
+    hourlogin: "Hora logueo",
+    hourconnected: "Hora conectado",
     inappropriatewords: 'Palabras inapropiadas',
     intelligentmodels: 'Modelos inteligentes',
     endpoint: 'Endpoint',

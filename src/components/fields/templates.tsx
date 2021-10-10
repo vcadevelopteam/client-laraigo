@@ -243,6 +243,7 @@ interface InputProps {
     prefixTranslation?: string;
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
+    InputProps?: any;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -253,7 +254,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {} , variant = "standard"}) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard"}) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -282,6 +283,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                     onBlur && onBlur(e.target.value);
                 }}
                 inputProps={inputProps}
+                InputProps={InputProps}
             />
         </div>
     )
