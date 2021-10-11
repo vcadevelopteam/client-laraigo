@@ -100,20 +100,14 @@ export function uploadCSV(file: any, owner: any = {}) {
                 let lines = [];
                 for (let i = 1; i < allTextLines.length; i++) {
                     if (allTextLines[i].split(';').length === headers.length) {
-                        // let data = { };
-                        // Object.keys(owner).forEach(o => {
-                        //     data[o] = owner[o];
-                        // });
-                        // let line = allTextLines[i].split(';')
-                        // headers.forEach((h: string, hi: string) => {
-                        //     data[h] = line[hi];
-                        // })
-                        // lines.push(data);
                         const line = allTextLines[i].split(';')
-                        const data = headers.map((key: any, j: number) => ({
-                            ...owner,
-                            [key]: line[j]
-                        }))
+                        const data = {
+                            ...headers.reduce((ad: any, key: any, j: number) => ({
+                                ...ad,
+                                [key]: line[j]
+                            }), {}),
+                            ...owner
+                        }
                         lines.push(data)
                     }
                 }
