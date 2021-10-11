@@ -57,6 +57,7 @@ export const langKeys = {
     informationCSAT: "informationCSAT",
     informationFIX: "informationFIX",
     closedbyadviser: "closedbyadviser",
+    template: "template",
     templatedownload: "templatedownload",
     closedbybot: "closedbybot",
     informationFCR: "informationFCR",

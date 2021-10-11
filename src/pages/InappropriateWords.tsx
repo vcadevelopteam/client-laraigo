@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, uploadExcel } from 'common/helpers';
+import { dictToArrayKV, exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -51,6 +51,13 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
 }));
+
+const dataClassification: Dictionary = {
+    INSULTS: 'INSULTS',
+    ENTITIES: 'ENTITIES',
+    LINKS: 'LINKS',
+    EMOTIONS: 'EMOTIONS',
+};
 
 const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
@@ -151,19 +158,15 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}    
                                 label={t(langKeys.classification)}
                                 className="col-12"
                                 valueDefault={row ? (row.classification || "") : ""}
                                 onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                                 error={errors?.classification?.message}
-                                data={[
-                                    {domaindesc:t(langKeys.insults)?.toUpperCase(), domainvalue: "INSULTS"},
-                                    {domaindesc:t(langKeys.entities)?.toUpperCase(), domainvalue: "ENTITIES"},
-                                    {domaindesc:t(langKeys.links)?.toUpperCase(), domainvalue: "LINKS"},
-                                    {domaindesc:t(langKeys.emotions)?.toUpperCase(), domainvalue: "EMOTIONS"},
-                                ]}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                data={dictToArrayKV(dataClassification)}
+                                optionDesc="value"
+                                optionValue="key"
                             />
                             : <FieldView
                                 label={t(langKeys.classification)}
@@ -366,7 +369,10 @@ const InappropriateWords: FC = () => {
     const handleUpload = async (files: any[]) => {
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
+            const data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.description)
+                    && Object.keys(dataClassification).includes(d.classification)
+                );
             if (data.length > 0) {
                 const validpk = Object.keys(data[0]).includes('description');
                 const keys = Object.keys(data[0]);
@@ -389,6 +395,12 @@ const InappropriateWords: FC = () => {
         }
     }
 
+    const handleTemplate = () => {
+        const data = [dataClassification, ];
+        const header = ['classification', 'description', 'defaultanswer'];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
+    }
+
     if (viewSelected === "view-1") {
 
         return (
@@ -401,7 +413,7 @@ const InappropriateWords: FC = () => {
                 register={true}
                 handleRegister={handleRegister}
                 importCSV={handleUpload}
-                // fetchData={fetchData}
+                handleTemplate={handleTemplate}
             />
         )
     }

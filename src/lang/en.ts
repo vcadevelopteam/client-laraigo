@@ -45,6 +45,7 @@ const translation: LangKeys = {
     channel_plural: 'Channels',
 
     configuration: 'Configuration',
+    template: 'Template',
     templatedownload: "Download template",
     configuration_plural: 'Configurations',
 
