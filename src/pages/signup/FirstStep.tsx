@@ -91,10 +91,11 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
 
     const onAuthWithFacebook = (r: any) => {
         if (r && r.id) {
+            console.log(r)
             const content = {
                 "method": "UFN_USERIDBYUSER",
                 "parameters": {
-                    "usr": r.dt.Ot,
+                    "usr": r.email,
                     "facebookid": String(r.id),
                     "googleid": null
                 }
@@ -126,6 +127,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
             <FacebookLogin
                 appId="1094526090706564"
                 callback={onAuthWithFacebook}
+                fields="name,email,picture"
                 buttonStyle={{
                     borderRadius: '3px', width: "400px", height: 50, display: 'flex', alignItems: 'center', 'fontSize': '24px', fontStyle: 'normal', fontWeight: 400, textTransform: 'none', justifyContent: 'center', marginBottom: 16
                 }}
