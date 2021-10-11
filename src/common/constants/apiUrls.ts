@@ -1,18 +1,26 @@
-//const BASE_URL = 'http://localhost:6065/api'; //local
+const ENV = "TESTING";
 
-const BASE_URL = 'https://apix.laraigo.com/api'; //dev
-const WS_URL = 'https://socket.laraigo.com'; //dev
+const APIS_URL = {
+    DEVELOP: {
+        API: 'https://apix.laraigo.com/api',
+        WS: 'https://socket.laraigo.com',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow'
+    },
+    TESTING: {
+        API: 'https://testapix.laraigo.com/api',
+        WS: 'https://testsocket.laraigo.com',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow'
+    },
+    LOCAL: {
+        API: 'http://localhost:6065/api',
+        WS: 'https://testsocket.laraigo.com',
+        CHATFLOW: 'https://localhost:4200'
+    }
+}
 
-//const BASE_URL = 'https://testapix.laraigo.com/api'; //testing
-//const WS_URL = 'https://testsocket.laraigo.com'; //testing
-
-// const CHATFLOW_URL = 'https://localhost:4200' //local
-// const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
-const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
-
-// const CHATFLOW_URL = 'https://localhost:4200' //local
-//const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow' //dev
-// const CHATFLOW_URL = 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow' //testing
+const BASE_URL = APIS_URL[ENV].API
+const WS_URL = APIS_URL[ENV].WS
+const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
 
 export const apiUrls = {
     WS_URL,
