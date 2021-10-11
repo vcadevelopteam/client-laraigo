@@ -76,6 +76,7 @@ const VariableConfiguration: FC = () => {
                 isComponent: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
+                    const id = props.cell.row.id;
                     return (
                         <React.Fragment>
                             <IconButton
@@ -89,7 +90,7 @@ const VariableConfiguration: FC = () => {
                             <IconButton
                                 aria-label="more"
                                 aria-controls="long-menu"
-                                aria-haspopup="true"
+                                aria-haspopup="true"    
                                 size="small"
                                 onClick={() => handleDownload(row)}>
                                 <GetAppIcon
@@ -97,7 +98,7 @@ const VariableConfiguration: FC = () => {
                                     style={{ color: '#B6B4BA' }} />
                             </IconButton>
                             <input
-                                id="upload-file"
+                                id={`upload-file${id}`}
                                 name="file"
                                 type="file"
                                 accept="text/csv"
@@ -105,7 +106,7 @@ const VariableConfiguration: FC = () => {
                                 style={{ display: 'none' }}
                                 onChange={(e) => handleUpload(row, e.target.files)}
                             />
-                            <label htmlFor="upload-file">
+                            <label htmlFor={`upload-file${id}`}>
                                 <IconButton
                                     size="small"
                                     component="span">
