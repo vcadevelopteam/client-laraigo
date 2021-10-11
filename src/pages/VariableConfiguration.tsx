@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs } from 'components';
-import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insVariableConfiguration } from 'common/helpers';
+import { getValuesFromDomain, getVariableConfigurationLst, getVariableConfigurationSel, downloadCSV, uploadCSV, insarrayVariableConfiguration } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import TableZyxEditable from 'components/fields/table-editable';
@@ -212,12 +212,7 @@ const VariableConfiguration: FC = () => {
 
     const uploadData = (data: any) => {
         dispatch(showBackdrop(true));
-        dispatch(execute({
-            header: null,
-            detail: [
-                ...data.map((x: any) => insVariableConfiguration(x))
-            ]
-        }, true));
+        dispatch(execute(insarrayVariableConfiguration(data)));
         setWaitSave(true)
     }
 
@@ -294,12 +289,7 @@ const DetailVariableConfiguration: React.FC<DetailProps> = ({ data: { row, edit 
 
     const onSubmit = () => {
         const callback = () => {
-            dispatch(execute({
-                header: null,
-                detail: [
-                    ...dataTable.map((x: any) => insVariableConfiguration(x))
-                ]
-            }, true));
+            dispatch(execute(insarrayVariableConfiguration(dataTable)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }

@@ -798,6 +798,14 @@ export const insVariableConfiguration = ({
         visible
     }
 });
+
+export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+
 export const getInsertChatwebChannel = (name: string, auto: boolean, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
