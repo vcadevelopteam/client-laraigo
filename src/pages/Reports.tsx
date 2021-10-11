@@ -14,14 +14,26 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport } from 'common/helpers';
-import { getCollection, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux } from 'store/main/actions';
+import { getReportSel, getReportTemplate, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport } from 'common/helpers';
+import { getCollection, getCollectionAux, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
 import AssessorProductivity from 'components/report/AssessorProductivity';
-
+import DetailReportDesigner from 'pages/ReportTemplate';
 import { SkeletonReport } from 'components';
+import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
+
+interface RowSelected {
+    row: Dictionary | null,
+    edit: boolean
+}
+
 
 interface ItemProps {
     setViewSelected: (view: string) => void;
@@ -32,10 +44,6 @@ interface ItemProps {
     customReport: boolean;
 }
 
-const arrayBread = [
-    { id: "view-1", name: "Reports" },
-    { id: "view-2", name: "Reports detail" }
-];
 
 const getArrayBread = (nametmp: string) => ([
     { id: "view-1", name: "Reports" },
@@ -187,7 +195,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 breadcrumbs={getArrayBread(t('report_' + row?.origin))}
                 handleClick={handleSelected}
             />
-            <div style={{height: 10}}></div>
+            <div style={{ height: 10 }}></div>
             {multiData.length > 0 ?
                 <>
                     {/* <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -267,23 +275,40 @@ const Reports: FC = () => {
     const [searchValue, setSearchValue] = useState('');
     const [viewSelected, setViewSelected] = useState("view-1");
     const [customReport, setCustomReport] = useState(false);
+    const [rowReportSelected, setRowReportSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-    const fetchData = () => dispatch(getCollection(getReportSel('')));
+    const fetchData = () => {
+        dispatch(getCollection(getReportSel('')))
+        dispatch(getCollectionAux(getReportTemplate(0, true)))
+    };
 
-    const allReports = useMemo(() =>
-        reportsResult.mainData.data.filter(report => {
+    const allReports = useMemo(() => {
+        if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error) {
             if (searchValue === null || searchValue.trim().length === 0) {
-                return reportsResult;
-            } else {
-                return t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase());
+                return [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
+                    ...x,
+                    columns: x.columnjson ? JSON.parse(x.columnjson) : [],
+                    ...(x.filterjson ? JSON.parse(x.filterjson) : {})
+                }))];
             }
-        }), [searchValue, reportsResult]);
+            return [...reportsResult.mainData.data.filter(report => t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())), ...reportsResult.mainAux.data.filter(r => r.description.toLowerCase().includes(searchValue.toLowerCase()))]
+        }
+        return [];
+    }, [searchValue, reportsResult.mainAux, reportsResult.mainData]);
 
     useEffect(() => {
         dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         fetchData();
+
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomain("ESTADOGENERICO"),
+            getValuesFromDomain("GRUPOS"),
+            getTagsChatflow(),
+            getCommChannelLst()
+        ]));
 
         return () => {
             dispatch(resetMainAux());
@@ -344,32 +369,126 @@ const Reports: FC = () => {
                 </Box>
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3} style={{ justifyContent: 'center' }}>
-                        {
-                            allReports.map((report, index) => (
-                                <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelected(report, report.filters)}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                                title={t('report_' + report?.origin)}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t('report_' + report?.origin)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
-                            ))
-                        }
+                        {allReports.filter(x => !!x.image).map((report, index) => (
+                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                <Card >
+                                    <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            className={classes.media}
+                                            image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                            title={t('report_' + report?.origin)}
+                                        />
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h6" component="div">
+                                                {t('report_' + report?.origin)}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                        {allReports.filter(x => !x.image).map((report, index) => (
+                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                <Card style={{ position: 'relative' }}>
+                                    <CardActionArea
+                                        onClick={() => {
+                                            setViewSelected("view-4");
+                                            console.log(report)
+                                            setRowReportSelected({ row: report, edit: true });
+                                        }}
+                                    >
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            className={classes.media}
+                                            image='https://www.datacrm.com/upload/article/b201902121011569.jpg'
+                                            title={report.description}
+                                        />
+
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h6" component="div">
+                                                {report.description}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                    <IconButton
+                                        aria-label="settings"
+                                        aria-describedby={`${report?.reporttemplateid}reporttemplate`}
+                                        aria-haspopup="true"
+                                        style={{ position: 'absolute', right: 0, top: 0 }}
+                                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                                    >
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                </Card>
+                                <Menu
+                                    id={`${report?.reporttemplateid}reporttemplate`}
+                                    anchorEl={anchorEl}
+                                    getContentAnchorEl={null}
+                                    keepMounted
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={() => setAnchorEl(null)}
+                                >
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null)
+                                            setViewSelected("view-3");
+                                            setRowReportSelected({ row: report, edit: true });
+                                        }}
+                                    >
+                                        {t(langKeys.edit)}
+                                    </MenuItem>
+                                    <MenuItem onClick={(e) => { }}>{t(langKeys.delete)}</MenuItem>
+                                </Menu>
+                            </Grid>
+                        ))}
+                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card style={{ height: '100%', minHeight: 211 }}>
+                                <CardActionArea
+                                    onClick={() => {
+                                        setViewSelected("view-3");
+                                        setRowReportSelected({ row: null, edit: true });
+                                    }}
+                                    style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
+                                >
+                                    <AddIcon
+                                        color="action"
+                                        style={{ width: 60, height: 60 }}
+                                    />
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
                     </Grid>
                 </div>
             </div>
         );
+    } else if (viewSelected === "view-3") {
+        return (
+            <DetailReportDesigner
+                data={rowReportSelected}
+                setViewSelected={setViewSelected}
+                multiData={reportsResult.multiDataAux.data}
+                fetchData={() => console.log("dd")}
+            />
+        )
+    } else if (viewSelected === "view-4") {
+        return (
+            <ReportPersonalized
+                item={rowReportSelected.row!!}
+                multiData={reportsResult.multiDataAux.data}
+                setViewSelected={setViewSelected}
+            />
+        )
     } else {
         return (
             <ReportItem

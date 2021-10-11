@@ -27,13 +27,13 @@ export const routes: RouteConfig[] = [
         path: paths.REPORTS,
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
-    {
-        key: paths.REPORTDESIGNER,
-        description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes
-        tooltip: <Trans i18nKey={langKeys.report_designer} count={2} />,
-        path: paths.REPORTDESIGNER,
-        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
-    },
+    // {
+    //     key: paths.REPORTDESIGNER,
+    //     description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes
+    //     tooltip: <Trans i18nKey={langKeys.report_designer} count={2} />,
+    //     path: paths.REPORTDESIGNER,
+    //     icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+    // },
     {
         key: paths.TICKETS,
         description: <Trans i18nKey={langKeys.ticket} count={2} />,
@@ -93,11 +93,11 @@ export const routes: RouteConfig[] = [
         path: paths.CONFIGURATION,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
     },
-    {
-        key: 'outbound-messages-label',
-        description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
-    },
+    // {
+    //     key: 'outbound-messages-label',
+    //     description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
+    //     tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
+    // },
     {
         key: paths.MESSAGETEMPLATE,
         description: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
@@ -119,11 +119,11 @@ export const routes: RouteConfig[] = [
         path: paths.BOTDESIGNER,
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
-    {
-        key: 'ia-services-label',
-        description: <Trans i18nKey={langKeys.iaservices} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.iaservices} count={2} />,
-    },
+    // {
+    //     key: 'ia-services-label',
+    //     description: <Trans i18nKey={langKeys.iaservices} count={2} />,
+    //     tooltip: <Trans i18nKey={langKeys.iaservices} count={2} />,
+    // },
     {
         key: paths.INTELLIGENTMODELS,
         description: <Trans i18nKey={langKeys.iaModel} count={2} />,

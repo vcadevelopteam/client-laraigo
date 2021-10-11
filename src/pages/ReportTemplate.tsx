@@ -45,8 +45,8 @@ interface DetailReportDesignerProps {
 }
 
 const arrayBread = [
-    { id: "view-1", name: "Designed reports" },
-    { id: "view-2", name: "Designer report detail" }
+    { id: "view-1", name: "Reports" },
+    { id: "view-2", name: "Create a report" }
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -605,13 +605,11 @@ const ReportsTemplate: FC = () => {
 
     useEffect(() => {
         if (!mainResult.mainData.loading && !mainResult.mainData.error) {
-            setDataReports(mainResult.mainData.data.map(x => {
-                return {
+            setDataReports(mainResult.mainData.data.map(x => ({
                     ...x,
                     columns: x.columnjson ? JSON.parse(x.columnjson) : [],
                     ...(x.filterjson ? JSON.parse(x.filterjson) : {})
-                }
-            }))
+            })))
         }
 
     }, [mainResult.mainData])
@@ -684,4 +682,4 @@ const ReportsTemplate: FC = () => {
 
 }
 
-export default ReportsTemplate;
+export default DetailReportDesigner;
