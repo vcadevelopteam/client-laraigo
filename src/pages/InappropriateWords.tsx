@@ -396,7 +396,7 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [dataClassification, ];
+        const data = [dataClassification];
         const header = ['classification', 'description', 'defaultanswer'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
