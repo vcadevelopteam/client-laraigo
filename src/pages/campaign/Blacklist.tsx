@@ -126,18 +126,24 @@ export const Blacklist: React.FC<DetailProps> = ({ setViewSelected }) => {
         const file = files[0];
         if (file) {
             const data: any = await uploadExcel(file, undefined);
-            dispatch(showBackdrop(true));
-            dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
-                ad.push({
-                    ...d,
-                    id: d.id || 0,
-                    type: d.type || 'NINGUNO',
-                    status: d.status || 'ACTIVO',
-                    operation: d.operation || 'INSERT',
-                })
-                return ad;
-            }, []))));
-            setWaitImport(true)
+            if (data.length > 0) {
+                const validpk = Object.keys(data[0]).includes('phone');
+                const keys = Object.keys(data[0]);
+                dispatch(showBackdrop(true));
+                dispatch(execute(insarrayBlacklist(data.reduce((ad: any[], d: any) => {
+                    ad.push({
+                        ...d,
+                        id: d.id || 0,
+                        phone: (validpk ? d.phone : d[keys[0]]) || '',
+                        description: (validpk ? d.description : d[keys[1]]) || '',
+                        type: d.type || 'NINGUNO',
+                        status: d.status || 'ACTIVO',
+                        operation: d.operation || 'INSERT',
+                    })
+                    return ad;
+                }, []))));
+                setWaitImport(true)
+            }
         }
     }
 
