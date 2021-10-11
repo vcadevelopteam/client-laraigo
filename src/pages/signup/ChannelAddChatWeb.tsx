@@ -1521,8 +1521,8 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
         setShowFinalStep(true);
     }
 
-    const handleSubmit = (name: string, auto: boolean) => {
-        const body = getInsertChatwebChannel(name, auto, form.getValues());
+    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
+        const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
         setrequestchannels((p:any)=>([...p,body]))
         setlistchannels((p:any)=>({...p,chatWeb:false}))
     }
@@ -1596,7 +1596,7 @@ const useFinalStepStyles = makeStyles(theme => ({
 interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean) => void;
+    onSubmit: (name: string, auto: boolean, hexIconCOlor: string) => void;
     onClose: () => void;
 }
 
@@ -1605,6 +1605,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
+    const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -1612,7 +1613,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     }
 
     const handleSave = () => {
-        onSubmit(name, auto);
+        onSubmit(name, auto, hexIconColor);
     }
 
     return (
@@ -1634,6 +1635,15 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         className="col-6"
                         disabled={loading || integrationId != null}
                     />
+                </div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
+                    <div className="col-6">
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            Give your channel a custom icon color
+                        </Box>
+                        <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
+                    </div>
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>

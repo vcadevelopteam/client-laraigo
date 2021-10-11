@@ -14,6 +14,7 @@ import { useSelector } from 'hooks';
 import {
     ChevronLeft,
     ChevronRight,
+    Menu,
 } from '@material-ui/icons/';
 import { RouteConfig } from '@types';
 import { Tooltip, Typography } from '@material-ui/core';
@@ -122,18 +123,20 @@ const Aside = ({ classes, theme, routes }: IProps) => {
                 }),
             }}
         >
-            <div className={classes.toolbar}>
-                <img src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"} style={{ height: 37 }} alt="logo" />
+            <div className={clsx(classes.toolbar, !openDrawer && classes.toolbarClosed)}>
+                <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
+                    <Menu />
+                </IconButton>
+                <img
+                    src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"}
+                    style={{ height: 37, display: openDrawer ? 'block' : 'none' }}
+                    alt="logo"
+                />
             </div>
             <Divider />
             <div style={{ height: 18 }} />
             {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             <div style={{ flexGrow: 1 }} />
-            <div className={classes.toolbar2}>
-                <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
-                    <ChevronIcon />
-                </IconButton>
-            </div>
         </Drawer>
     );
 };

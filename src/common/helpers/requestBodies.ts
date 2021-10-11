@@ -798,7 +798,7 @@ export const insVariableConfiguration = ({
         visible
     }
 });
-export const getInsertChatwebChannel = (name: string, auto: boolean, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
+export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: 0,
@@ -808,11 +808,12 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
         communicationchannelowner: "id del canal",
         chatflowenabled: auto,
         integrationid: "",
-        color: "",
+        color: iconColor,
         icons: "",
         other: "",
         form: "",
         apikey: "",
+        coloricon: iconColor,
     },
     type: "CHATWEB",
     service,

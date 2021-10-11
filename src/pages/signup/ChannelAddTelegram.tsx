@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch } from "components";
+import { FieldEdit, TemplateSwitch, ColorInput } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
@@ -53,6 +53,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
             "other": "",
             "form": "",
             "apikey": "",
+            "coloricon": "",
         },
         "type": "TELEGRAM",
         "service": {
@@ -171,6 +172,23 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
                             label={t(langKeys.givechannelname)}
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <div className="col-6">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                Give your channel a custom icon color
+                            </Box>
+                            <ColorInput
+                                hex={fields.parameters.coloricon}
+                                onChange={e => {
+                                    setFields(prev => ({
+                                        ...prev,
+                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                    }));
+                                }}
+                            />
+                        </div>
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
