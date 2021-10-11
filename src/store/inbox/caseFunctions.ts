@@ -5,7 +5,7 @@ import { toTime24HR, convertLocalDate } from 'common/helpers';
 
 const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[] => {
 
-    const listImages = interactions.filter(x => x.interactiontype === "image").map(x => x.interactiontext)
+    const listImages = interactions.filter(x => x.interactiontype.includes("image")).map(x => x.interactiontext)
     let indexImage = 0;
 
     return interactions.reduce((acc: any, item: IInteraction) => {
@@ -28,7 +28,7 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
         } else if (!item.userid && acc.last === "client") {
             acc.data[acc.data.length - 1].interactions.push(item)
         }
-        if (item.interactiontype === "image")
+        if (item.interactiontype.includes("image"))
             indexImage++;
         return { data: acc.data, last: currentUser }
     }, { data: [], last: "" }).data;
@@ -36,11 +36,11 @@ const getGroupInteractions = (interactions: IInteraction[]): IGroupInteraction[]
 
 const AddNewInteraction = (groupsInteraction: IGroupInteraction[], interaction: IInteraction): IGroupInteraction[] => {
     const listImage = groupsInteraction.length > 0 ? groupsInteraction[0].listImage || [] : [];
-    interaction.listImage = interaction.interactiontype === "image" ? [...listImage, interaction.interactiontext] : listImage;
+    interaction.listImage = interaction.interactiontype.includes("image") ? [...listImage, interaction.interactiontext] : listImage;
 
     interaction.onlyTime = toTime24HR(convertLocalDate(interaction.createdate, false, false).toLocaleTimeString())
 
-    interaction.indexImage = interaction.interactiontype === "image" ? listImage.length : 0;
+    interaction.indexImage = interaction.interactiontype.includes("image") ? listImage.length : 0;
     const lastGroupInteraction = groupsInteraction[groupsInteraction.length - 1];
     const lastType = lastGroupInteraction.usertype;
 
@@ -274,21 +274,6 @@ export const getTicketsReset = (state: IState): IState => ({
     ...state,
     ticketList: initialState.ticketList,
 });
-
-// export const addMessage = (state: IState, action: IAction): IState => {
-//     const newInteraction: IInteraction = action.payload;
-//     newInteraction.interactionid = state.interactionList.data.length * -1;
-//     return {
-//         ...state,
-//         interactionList: {
-//             data: AddNewInteraction(state.interactionList.data, newInteraction),
-//             count: action.payload.count,
-//             loading: false,
-//             error: false,
-//         },
-//     };
-// }
-
 
 export const connectAgentWS = (state: IState, action: IAction): IState => {
     let newAgentList = [...state.agentList.data];

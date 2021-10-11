@@ -668,7 +668,7 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
     const handleClickAway = () => setOpen(false);
 
     return (

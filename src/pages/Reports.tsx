@@ -37,6 +37,11 @@ const arrayBread = [
     { id: "view-2", name: "Reports detail" }
 ];
 
+const getArrayBread = (nametmp: string) => ([
+    { id: "view-1", name: "Reports" },
+    { id: "view-2", name: nametmp }
+]);
+
 const useStyles = makeStyles((theme) => ({
     container: {
         width: '100%'
@@ -105,8 +110,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     if (multiData.length > 0) {
         reportColumns.map(x => (
             columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames })
-        )
-        );
+        ));
         columns.shift();
     }
 
@@ -180,16 +184,17 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
+                breadcrumbs={getArrayBread(t('report_' + row?.origin))}
                 handleClick={handleSelected}
             />
+            <div style={{height: 10}}></div>
             {multiData.length > 0 ?
                 <>
-                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                    {/* <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
                         <span className={classes.title}>
                             {t('report_' + row?.origin)}
                         </span>
-                    </Box>
+                    </Box> */}
                     {customReport ?
                         <AssessorProductivity
                             row={row}
