@@ -367,21 +367,25 @@ const InappropriateWords: FC = () => {
         const file = files[0];
         if (file) {
             const data: any = await uploadExcel(file, undefined);
-            dispatch(showBackdrop(true));
-            dispatch(execute(insarrayInappropriateWords(data.reduce((ad: any[], d: any) => {
-                ad.push({
-                    ...d,
-                    id: d.id || 0,
-                    classification: d.classification || '',
-                    description: d.description || '',
-                    defaultanswer: d.defaultanswer || '',
-                    type: d.type || 'NINGUNO',
-                    status: d.status || 'ACTIVO',
-                    operation: d.operation || 'INSERT',
-                })
-                return ad;
-            }, []))));
-            setWaitImport(true)
+            if (data.length > 0) {
+                const validpk = Object.keys(data[0]).includes('description');
+                const keys = Object.keys(data[0]);
+                dispatch(showBackdrop(true));
+                dispatch(execute(insarrayInappropriateWords(data.reduce((ad: any[], d: any) => {
+                    ad.push({
+                        ...d,
+                        id: d.id || 0,
+                        description: (validpk ? d.description : d[keys[0]]) || '',
+                        classification: (validpk ? d.classification : d[keys[1]]) || '',
+                        defaultanswer: (validpk ? d.defaultanswer : d[keys[2]]) || '',
+                        type: d.type || 'NINGUNO',
+                        status: d.status || 'ACTIVO',
+                        operation: d.operation || 'INSERT',
+                    })
+                    return ad;
+                }, []))));
+                setWaitImport(true)
+            }
         }
     }
 
