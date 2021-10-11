@@ -95,11 +95,11 @@ const RouterApp: FC = () => {
 						<Reports />
 					</Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.REPORTDESIGNER}>
+				{/* <ProtectRoute exact path={paths.REPORTDESIGNER}>
 					<Layout mainClasses={classes.main}>
 						<ReportTemplate />
 					</Layout>
-				</ProtectRoute>
+				</ProtectRoute> */}
 				<ProtectRoute exact path={paths.TICKETS}>
 					<Layout mainClasses={classes.main}>
 						<Tickets />
