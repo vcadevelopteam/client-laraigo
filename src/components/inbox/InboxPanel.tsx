@@ -38,6 +38,10 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         display: 'flex'
     },
+    interactionFromPost: {
+        display: 'flex', 
+        gap: 8
+    },
     containerTickets: {
         flex: '0 0 300px',
         maxWidth: 300,

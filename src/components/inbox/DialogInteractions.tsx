@@ -219,6 +219,10 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#ececec'
         }
     },
+    interactionFromPost: {
+        display: 'flex', 
+        gap: 8
+    },
     buttonIcon: {
         width: 48,
         height: 42,

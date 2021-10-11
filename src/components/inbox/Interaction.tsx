@@ -7,6 +7,7 @@ import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import clsx from 'clsx';
+import { useSelector } from 'hooks';
 import { manageLightBox } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { convertLocalDate } from 'common/helpers';
@@ -14,6 +15,8 @@ import Dialog from '@material-ui/core/Dialog';
 import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
+import Avatar from '@material-ui/core/Avatar';
+
 const useStylesCarousel = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
@@ -93,15 +96,16 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
                 <DialogTitle>Options</DialogTitle>
                 <DialogContent>
                     {jsonIntt.sections[0].buttons.map((button: any, i: number) => (
-                        <div 
-                            key={i} 
-                            style={{ 
-                                background: '#FFF', 
-                                borderRadius: 4, 
-                                padding: '12px 8px', 
-                                textTransform: 'uppercase', 
-                                display: 'flex', 
-                                justifyContent: 'space-between' }}>
+                        <div
+                            key={i}
+                            style={{
+                                background: '#FFF',
+                                borderRadius: 4,
+                                padding: '12px 8px',
+                                textTransform: 'uppercase',
+                                display: 'flex',
+                                justifyContent: 'space-between'
+                            }}>
                             {button.title}
                             <RadioButtonUncheckedIcon />
                         </div>
@@ -350,7 +354,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     } else if (interactiontype === "interactivelist") {
-        console.log(interactiontext)
         return (
             <InteractiveList
                 interactiontext={interactiontext}
@@ -360,6 +363,27 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                 onlyTime={onlyTime}
             />
         )
+    } else if (interactiontype === "post-image") {
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+                <img
+                    className={classes.imageCard}
+                    src={interactiontext} alt=""
+                    onClick={() => {
+                        dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
+                    }}
+                />
+                <TimerInteraction time={onlyTime || ""} background={true} />
+            </div>
+        );
+    } else if (interactiontype === "post-text") {
+        return (
+            <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                [classes.interactionTextAgent]: userType !== 'client',
+            })} style={{marginLeft: 'auto', marginRight: 'auto'}}>
+                {interactiontext}
+            </div>
+        );
     }
     return (
         <div className={clsx(classes.interactionText, {
@@ -372,22 +396,33 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
     );
 }
 
-const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions }, clientName, imageClient }) => (
-    <div style={{ display: 'flex', gap: 8 }}>
-        <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {interactions.map((item: IInteraction, index: number) => (
-                    <div key={index} className={clsx({ [classes.interactionAgent]: usertype !== "client" })}>
-                        <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
-                    </div>
-                ))}
+const ItemGroupInteraction: React.FC<{ classes: any, groupInteraction: IGroupInteraction, clientName: string, imageClient: string | null }> = ({ classes, groupInteraction: { usertype, interactions } }) => {
+
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    return (
+        <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {interactions.map((item: IInteraction, index: number) => (
+                        <div key={index} className={clsx({
+                            [classes.interactionAgent]: usertype !== "client",
+                            [classes.interactionFromPost]: ticketSelected?.communicationchanneltype === "FBWA"
+                        })}>
+                            {!item.interactiontype.includes("post-") && ticketSelected?.communicationchanneltype === "FBWA" && usertype === "client" && (
+                                <Avatar src={item.avatar + "" || undefined} />
+                            )}
+                            <ItemInteraction interaction={item} classes={classes} userType={usertype!!} />
+                        </div>
+                    ))}
+                </div>
             </div>
+            {usertype === "agent" ?
+                <div style={{ marginTop: 'auto' }}><AgentIcon style={{ width: 40, height: 40 }} /></div> :
+                (usertype === "BOT" && <div style={{ marginTop: 'auto' }}><BotIcon style={{ width: 40, height: 40 }} /></div>)
+            }
         </div>
-        {usertype === "agent" ?
-            <div style={{ marginTop: 'auto' }}><AgentIcon style={{ width: 40, height: 40 }} /></div> :
-            (usertype === "BOT" && <div style={{ marginTop: 'auto' }}><BotIcon style={{ width: 40, height: 40 }} /></div>)
-        }
-    </div>
-);
+    )
+};
 
 export default ItemGroupInteraction;
