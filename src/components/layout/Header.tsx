@@ -4,7 +4,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 // import { useSelector } from 'hooks';
 import { useSelector } from 'hooks';
-import { StatusConnection, AccountMenu, NotificationMenu, ManageOrganization } from 'components';
+import { AccountMenu, ManageOrganization } from 'components';
 
 type IProps = {
     classes: any;
@@ -27,7 +27,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        <StatusConnection />
+                        {/* <StatusConnection /> */}
                         <ManageOrganization />
                         <AccountMenu />
                     </div>

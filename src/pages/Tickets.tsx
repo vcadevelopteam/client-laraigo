@@ -767,7 +767,7 @@ const Tickets = () => {
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
-            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
             settotalrow(mainPaginated.count);
         }
     }, [mainPaginated])
