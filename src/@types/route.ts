@@ -3,6 +3,7 @@ import React from "react";
 export interface RouteConfig {
     key: string;
     description: React.ReactNode;
+    tooltip: React.ReactChild;
     path?: string;
     /** default false */
     subroute?: boolean;

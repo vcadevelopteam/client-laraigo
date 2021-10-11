@@ -456,7 +456,7 @@ const DashboardOperationalPush: FC = () => {
                                 <YAxis />
                                 <Tooltip />
                                 <Bar dataKey="quantity" fill="#8884d8" >
-                                    {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
+                                    {dataHSMRANK.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Bar>

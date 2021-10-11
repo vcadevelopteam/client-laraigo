@@ -1,14 +1,16 @@
 import React, { FC } from "react";
 import { Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
-
+import Popover from '@material-ui/core/Popover';
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
+import { StatusConnection } from 'components';
 import { useSelector } from 'hooks';
 import { logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
+import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -19,9 +21,28 @@ const useStyles = makeStyles((theme: Theme) =>
             height: 32,
             width: 32,
         },
+        containerPopover: {
+            display: 'flex',
+            alignItems: 'center',
+            padding: theme.spacing(2),
+            flexDirection: 'column',
+            gap: theme.spacing(1.5),
+            width: 220
+        },
         infoContainer: {
             display: 'flex',
             flexDirection: 'column',
+        },
+        textNotPass: {
+            whiteSpace: 'normal',
+            textAlign: 'center',
+            wordBreak: 'break-word'
+        },
+        nameTextNotPass: {
+            whiteSpace: 'normal',
+            textAlign: 'center',
+            wordBreak: 'break-word',
+            color: theme.palette.primary.main
         },
         infoUserName: {
             maxWidth: 120,
@@ -60,11 +81,14 @@ const AccountMenu: FC = () => {
         history.push('/sign-in');
     }
 
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popoverxx' : undefined;
+
     return (
         <div className={classes.root}>
             <Button
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
+                aria-describedby={id}
                 aria-haspopup="true"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
                 startIcon={<Avatar className={classes.icon} src={user?.image + "" || undefined} />}
@@ -75,8 +99,40 @@ const AccountMenu: FC = () => {
                     <label className={classes.infoUserRol}>{user?.roledesc}</label>
                 </div>
             </Button>
-            <Menu
-                id="menu-appbar"
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                <div className={classes.containerPopover}>
+                    <Avatar style={{ width: 120, height: 120 }} src={user?.image + "" || undefined} />
+                    <div className={classes.nameTextNotPass} style={{ fontWeight: 500, }}>
+                        {user?.firstname} {user?.lastname}
+                    </div>
+                    <div className={classes.textNotPass}>
+                        {user?.email}
+                    </div>
+                    <StatusConnection />
+                    <Button
+                        onClick={signOut}
+                        startIcon={<PowerSettingsNewIcon color="primary" />}
+                        color="primary"
+                    >
+                        <Trans i18nKey={langKeys.signoff} />
+                    </Button>
+                </div>
+            </Popover>
+            {/* <Menu
+                id={id}
                 anchorEl={anchorEl}
                 getContentAnchorEl={null}
                 keepMounted
@@ -93,8 +149,8 @@ const AccountMenu: FC = () => {
             >
                 <MenuItem onClick={(e) => { }}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
                 <MenuItem onClick={signOut}><Trans i18nKey={langKeys.signoff} /></MenuItem>
-            </Menu>
-        </div>
+            </Menu> */}
+        </div >
     );
 };
 

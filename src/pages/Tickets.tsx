@@ -503,7 +503,7 @@ const Tickets = () => {
                 accessor: 'fechainicio',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.createdate).toLocaleString()
+                    return convertLocalDate(row.fechainicio).toLocaleString()
                 }
             },
             {
@@ -767,7 +767,7 @@ const Tickets = () => {
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
-            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
             settotalrow(mainPaginated.count);
         }
     }, [mainPaginated])

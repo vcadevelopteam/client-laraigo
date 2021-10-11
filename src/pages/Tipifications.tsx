@@ -33,6 +33,7 @@ interface DetailTipificationProps {
     multiData: MultiData[];
     fetchData: () => void;
     externalUse?: boolean;
+    externalType?: string;
     externalSaveHandler?: ({...param}?: any) => void;
     externalCancelHandler?: ({...param}?: any) => void;
 }
@@ -133,7 +134,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
     )
 };
 
-export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalSaveHandler, externalCancelHandler }) => {
+export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
@@ -148,13 +149,11 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
-
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
     
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'TIPIFICACION',
+            type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
             description: row?.description || '',
             title: row?.title || '',
@@ -194,7 +193,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
                     setViewSelected("view-1")
                 }
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.classification).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);

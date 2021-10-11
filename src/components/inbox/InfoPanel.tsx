@@ -105,6 +105,7 @@ const InfoClient: React.FC = () => {
         <div style={{ backgroundColor: 'white' }}>
             <IconButton
                 onClick={showInfoPanelTrigger}
+                size="small"
             >
                 <CloseIcon />
             </IconButton>

@@ -16,7 +16,7 @@ import {
     ChevronRight,
 } from '@material-ui/icons/';
 import { RouteConfig } from '@types';
-import { Typography } from '@material-ui/core';
+import { Tooltip, Typography } from '@material-ui/core';
 import { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -81,7 +81,9 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             className={clsx(className)}
 
         >
-            <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+            <Tooltip title={config.tooltip}>
+                <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
+            </Tooltip>
             <ListItemText primary={config.description} style={{ visibility: open ? 'visible' : 'hidden' }} />
         </ListItem>
     );

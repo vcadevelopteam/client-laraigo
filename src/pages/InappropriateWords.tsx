@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getInappropriateWordsSel, getValuesFromDomain, insInappropriateWords } from 'common/helpers';
+import { getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -157,10 +157,10 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                                 onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                                 error={errors?.classification?.message}
                                 data={[
-                                    {domaindesc:t(langKeys.insults), domainvalue: "Insults"},
-                                    {domaindesc:t(langKeys.entities), domainvalue: "Entities"},
-                                    {domaindesc:t(langKeys.links), domainvalue: "Links"},
-                                    {domaindesc:t(langKeys.emotions), domainvalue: "Emotions"},
+                                    {domaindesc:t(langKeys.insults)?.toUpperCase(), domainvalue: "INSULTS"},
+                                    {domaindesc:t(langKeys.entities)?.toUpperCase(), domainvalue: "ENTITIES"},
+                                    {domaindesc:t(langKeys.links)?.toUpperCase(), domainvalue: "LINKS"},
+                                    {domaindesc:t(langKeys.emotions)?.toUpperCase(), domainvalue: "EMOTIONS"},
                                 ]}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
@@ -237,6 +237,7 @@ const InappropriateWords: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [waitImport, setWaitImport] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -260,7 +261,12 @@ const InappropriateWords: FC = () => {
             {
                 Header: t(langKeys.classification),
                 accessor: 'classification',
-                NoFilter: true
+                NoFilter: true,
+                prefixTranslation: '',
+                Cell: (props: any) => {
+                    const { classification } = props.cell.row.original;
+                    return (t(`${classification}`.toLowerCase()) || "").toUpperCase()
+                }
             },
             {
                 Header: t(langKeys.description),
@@ -313,6 +319,22 @@ const InappropriateWords: FC = () => {
         }
     }, [executeResult, waitSave])
 
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeResult, waitImport]);
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -341,6 +363,28 @@ const InappropriateWords: FC = () => {
         }))
     }
 
+    const handleUpload = async (files: any[]) => {
+        const file = files[0];
+        if (file) {
+            const data: any = await uploadExcel(file, undefined);
+            dispatch(showBackdrop(true));
+            dispatch(execute(insarrayInappropriateWords(data.reduce((ad: any[], d: any) => {
+                ad.push({
+                    ...d,
+                    id: d.id || 0,
+                    classification: d.classification || '',
+                    description: d.description || '',
+                    defaultanswer: d.defaultanswer || '',
+                    type: d.type || 'NINGUNO',
+                    status: d.status || 'ACTIVO',
+                    operation: d.operation || 'INSERT',
+                })
+                return ad;
+            }, []))));
+            setWaitImport(true)
+        }
+    }
+
     if (viewSelected === "view-1") {
 
         return (
@@ -352,7 +396,8 @@ const InappropriateWords: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
+                importCSV={handleUpload}
+                // fetchData={fetchData}
             />
         )
     }
