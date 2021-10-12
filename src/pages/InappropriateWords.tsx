@@ -384,7 +384,7 @@ const InappropriateWords: FC = () => {
                         description: (validpk ? d.description : d[keys[0]]) || '',
                         classification: (validpk ? d.classification : d[keys[1]]) || '',
                         defaultanswer: (validpk ? d.defaultanswer : d[keys[2]]) || '',
-                        type: d.type || 'NINGUNO',
+                        type: 'NINGUNO',
                         status: d.status || 'ACTIVO',
                         operation: d.operation || 'INSERT',
                     })
@@ -396,8 +396,8 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [dataClassification];
-        const header = ['classification', 'description', 'defaultanswer'];
+        const data = [dataClassification, [], [], mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const header = ['classification', 'description', 'defaultanswer', 'status'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
