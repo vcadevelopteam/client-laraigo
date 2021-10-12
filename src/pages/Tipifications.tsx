@@ -158,7 +158,7 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
             description: row?.description || '',
             title: row?.title || '',
             parent: row?.parentid || 0,
-            communicationchannel: row?.communicationchannelid || '',
+            communicationchannel: row?.communicationchannel || '',
             status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
