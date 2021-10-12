@@ -598,17 +598,20 @@ const TableZyx = React.memo(({
                                 ><Trans i18nKey={langKeys.import} />
                                 </Button>
                             </label>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                disabled={loading}
-                                startIcon={<ListAltIcon color="secondary" />}
-                                onClick={handleTemplate}
-                                style={{ backgroundColor: "#55BD84" }}
-                            ><Trans i18nKey={langKeys.template} />
-                            </Button>
+                            {
+                                handleTemplate && 
+                                <Button
+                                    className={classes.button}
+                                    variant="contained"
+                                    component="span"
+                                    color="primary"
+                                    disabled={loading}
+                                    startIcon={<ListAltIcon color="secondary" />}
+                                    onClick={handleTemplate}
+                                    style={{ backgroundColor: "#55BD84" }}
+                                ><Trans i18nKey={langKeys.template} />
+                                </Button>
+                            }
                         </>
                     )}
                     {register && (

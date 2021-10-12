@@ -7,11 +7,15 @@ import { ISetting } from "@types";
 export interface IState {
     setting: IObjectState<ISetting>;
     propertySettings: IListState<any>;
+    loading: Boolean;
+    success: Boolean;
 }
 
 export const initialState: IState = {
     setting: initialObjectState,
     propertySettings: initialListState,
+    loading: false,
+    success: false,
 };
 
 export default createReducer<IState>(initialState, {
@@ -24,4 +28,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_PROPERTY_SETTINGS_SUCCESS]: caseFUnctions.getPropertySettingsSuccess,
     [actionTypes.GET_PROPERTY_SETTINGS_FAILURE]: caseFUnctions.getPropertySettingsFailure,
     [actionTypes.GET_PROPERTY_SETTINGS_RESET]: caseFUnctions.getPropertySettingsReset,
+
+    [actionTypes.UPDATE_USER]: caseFUnctions.getUpdateUser,
+    [actionTypes.UPDATE_USER_SUCCESS]: caseFUnctions.getUpdateUserSuccess,
+    [actionTypes.UPDATE_USER_FAILURE]: caseFUnctions.getUpdateUserFailure,
+    [actionTypes.GET_SETTING_RESET]: caseFUnctions.getUpdateUserReset,
 });

@@ -31,6 +31,30 @@ export const getSettingReset = (state: IState): IState => ({
     setting: initialState.setting,
 });
 
+export const getUpdateUser = (state: IState): IState => ({
+    ...state,    
+    loading: true,
+    success: false
+});
+
+export const getUpdateUserSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    loading: false,
+    success: true
+});
+
+export const getUpdateUserFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    loading: false,
+    success: false
+});
+
+export const getUpdateUserReset = (state: IState): IState => ({
+    ...state,
+    loading: false,
+    success: false,
+});
+
 export const getPropertySettings = (state: IState): IState => ({
     ...state,
     propertySettings: { ...state.propertySettings, loading: true, error: false },
