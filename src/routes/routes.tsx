@@ -6,7 +6,8 @@ import {
     IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
-    AIModelsIcon
+    AIModelsIcon,
+    ClientIcon
 
 } from 'icons';
 import { langKeys } from "lang/keys";
@@ -46,7 +47,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.person} count={2} />,
         tooltip: <Trans i18nKey={langKeys.person} count={2} />,
         path: paths.PERSON,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ClientIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,

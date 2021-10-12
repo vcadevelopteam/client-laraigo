@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2),
             flexDirection: 'column',
             gap: theme.spacing(1.5),
-            width: 250
+            width: 270
         },
         infoContainer: {
             display: 'flex',

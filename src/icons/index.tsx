@@ -127,3 +127,4 @@ export { ReactComponent as ReassignIcon } from './reassign.svg';
 export { ReactComponent as MessageTemplateIcon } from './message-template.svg';
 export { ReactComponent as InteractiveListIcon } from './interactive-list.svg';
 export { ReactComponent as SeenIcon } from './seen.svg';
+export { ReactComponent as ClientIcon } from './clients.svg';

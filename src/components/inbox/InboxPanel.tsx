@@ -17,6 +17,10 @@ import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import Tooltip from '@material-ui/core/Tooltip';
+import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import { openDrawer } from 'store/popus/caseFunctions';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -26,10 +30,6 @@ const useStyles = makeStyles((theme) => ({
     titleTicketChat: {
         fontWeight: 'bold',
         fontSize: 15,
-        // '&:hover': {
-        //     cursor: 'pointer',
-        //     borderBottom: '1px solid #2E2C34'
-        // }
     },
     interactionAgent: {
         marginLeft: 'auto'
@@ -39,7 +39,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex'
     },
     interactionFromPost: {
-        display: 'flex', 
+        display: 'flex',
         gap: 8
     },
     containerTickets: {
@@ -341,7 +341,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [dataTickets, setDataTickets] = useState<ITicket[]>([])
     const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>([]);
     const [search, setSearch] = useState("");
-
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
 
@@ -390,9 +390,11 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             <AntTab label={t(langKeys.all)} />
                             <AntTab label={t(langKeys.paused)} />
                         </Tabs>
-                        <IconButton style={{ width: '50px' }} size="small" onClick={() => setShowSearch(true)} edge="end">
-                            <SearchIcon />
-                        </IconButton>
+                        <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
+                            <IconButton size="small" onClick={() => setShowSearch(true)}>
+                                <SearchIcon />
+                            </IconButton>
+                        </div>
                     </>
                     :
                     <TextField
@@ -400,12 +402,24 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         fullWidth
                         autoFocus
                         style={{ margin: '8px 10px' }}
-                        onBlur={() => !search && setShowSearch(false)}
+                        onBlur={() => {
+                            // !search && setShowSearch(false)
+                        }}
+                        placeholder="Search inbox"
                         onChange={onChangeSearchTicket}
                         InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Tooltip title="Advanced search" arrow>
+                                        <IconButton size="small" onClick={() => setDrawerOpen(true)}>
+                                            <FilterListIcon />
+                                        </IconButton>
+                                    </Tooltip>
+                                </InputAdornment>
+                            ),
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton>
+                                    <IconButton size="small">
                                         <SearchIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -419,6 +433,17 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                     ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
                 }
             </div>
+
+            <SwipeableDrawer
+                anchor='right'
+                open={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+                onOpen={() => setDrawerOpen(true)}
+            >
+                <div>dasd</div>
+                <div>dasd</div>
+                <div>dasd</div>
+            </SwipeableDrawer>
         </div>
     )
 }
