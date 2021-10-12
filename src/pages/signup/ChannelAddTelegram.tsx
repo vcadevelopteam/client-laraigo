@@ -53,7 +53,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#207FDD",
         },
         "type": "TELEGRAM",
         "service": {

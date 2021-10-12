@@ -49,7 +49,7 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#1D9BF0",
         },
         "type": "TWITTERDM",
         "service": {
