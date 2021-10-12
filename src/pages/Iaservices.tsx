@@ -151,7 +151,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const [dataToModel, setdataToModel] = useState<any>([]);
     const dispatch = useDispatch();
     const { t } = useTranslation();
 

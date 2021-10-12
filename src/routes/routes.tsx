@@ -1,7 +1,7 @@
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
-    DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ConfigurationIcon, ExtrasIcon,
+    DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
     BotDesignerIcon,
     IAServicesIcon,
     OutboundIcon,

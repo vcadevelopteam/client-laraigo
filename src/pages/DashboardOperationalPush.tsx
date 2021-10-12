@@ -1,7 +1,7 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMRANKSel, getdashboardPushMENSAJEXDIASel, getdashboardPushSUMMARYSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
@@ -9,7 +9,7 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Scatter, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMain } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
@@ -228,6 +228,7 @@ const DashboardOperationalPush: FC = () => {
                 dataAsesor: asesor
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
 
     }, [dataPushSUMMARYSel])
     useEffect(() => {
@@ -246,6 +247,7 @@ const DashboardOperationalPush: FC = () => {
                 setWaitSave(false);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [remultiaux, waitSave])
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
@@ -257,6 +259,7 @@ const DashboardOperationalPush: FC = () => {
             setdataLabel(multiData[4] && multiData[4].success ? multiData[4].data : []);
             setdatacategoriaHSM(multiData[5] && multiData[5].success ? multiData[5].data : []);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -271,6 +274,7 @@ const DashboardOperationalPush: FC = () => {
         return () => {
             dispatch(resetMain());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <Fragment>

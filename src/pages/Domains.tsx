@@ -468,7 +468,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 const Domains: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");

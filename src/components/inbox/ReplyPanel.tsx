@@ -244,6 +244,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
 
     useEffect(() => {
         setRichResponseToShow(richResponseList)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [richResponseList])
 
     useEffect(() => {
@@ -252,6 +253,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
         } else {
             setRichResponseToShow(richResponseList.filter(x => x.title.toLowerCase().includes(search.toLowerCase())))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search])
 
     const reasignTicket = React.useCallback(() => {

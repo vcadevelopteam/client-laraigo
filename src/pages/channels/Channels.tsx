@@ -15,29 +15,14 @@ import { getCollection, resetMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
 import { deleteChannel } from 'store/channel/actions';
 
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
-
 export const Channels: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.channel.channelList);
 
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
-    
-
-    const handleView = (row: Dictionary) => {
-        setRowSelected({ row, edit: false });
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setRowSelected({ row, edit: true });
-    }
     
     const fetchData = () => dispatch(getCollection(getChannelSel(0)));
 
@@ -89,9 +74,9 @@ export const Channels: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            viewFunction={() => {}}
                             deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
+                            editFunction={() => {}}
                         />
                     )
                 }
