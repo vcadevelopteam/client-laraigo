@@ -6,7 +6,8 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Avatar, Box, IconButton, InputAdornment } from '@material-ui/core';
+import { Box, IconButton, InputAdornment } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
 import SaveIcon from '@material-ui/icons/Save';
 import { FieldEdit, TitleDetail } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
@@ -50,6 +51,7 @@ const UserSettings: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useStyles();
+    const user = useSelector(state => state.login.validateToken.user);
     const [showOldPassword, setOldShowPassword] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -63,9 +65,9 @@ const UserSettings: FC = () => {
             oldpassword: '',
             password: '',
             confirmpassword: '',
-            lastname: '',
-            firstname: '',
-            image: '',
+            lastname: user?.lastname,
+            firstname: user?.firstname,
+            image: user?.image || null,
         }
     });
     const onSelectImage = (files: any) => {
@@ -101,8 +103,8 @@ const UserSettings: FC = () => {
             }
         });
         register('oldpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
-        register('firstname');
-        register('lastname');
+        register('firstname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
+        register('lastname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
         register('image');
     }, [])
     
@@ -142,20 +144,20 @@ const UserSettings: FC = () => {
                                 label={t(langKeys.firstname)}
                                 style={{ marginBottom: 8 }}
                                 onChange={(value) => setValue('firstname', value)}
-                                //error={errors?.firstname?.message}
+                                valueDefault={user?.firstname || ""}
+                                error={errors?.firstname?.message}
                             />
                             <FieldEdit
                                 label={t(langKeys.lastname)}
                                 className="col-6"
                                 onChange={(value) => setValue('lastname', value)}
-                                //error={errors?.lastname?.message}
+                                valueDefault={user?.lastname || ""}
+                                error={errors?.lastname?.message}
                             />
                         </div>
                         <div className="col-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <div style={{ position: 'relative' }}>
-                                <Avatar style={{ width: 120, height: 120 }} 
-                                    //src={getValues('image')} 
-                                />
+                                <Avatar style={{ width: 120, height: 120 }} src={getValues('image')|| undefined} />
                                 <input
                                     name="file"
                                     accept="image/*"
