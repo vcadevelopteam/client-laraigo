@@ -1,11 +1,11 @@
 import React, { FC, useEffect, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
-import { FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
+import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
-import { ChromePicker, ColorChangeHandler } from 'react-color';
-import { ArrowDropDown, Close, CloudUpload } from '@material-ui/icons';
+import { ColorChangeHandler } from 'react-color';
+import { Close, CloudUpload } from '@material-ui/icons';
 import { useHistory } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
@@ -324,74 +324,6 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                 </Box>
             </Grid>
         </Grid>
-    );
-}
-
-const useColorInputStyles = makeStyles(theme => ({
-    colorInputContainer: {
-        display: 'flex',
-        flexDirection: 'row',
-        width: 60,
-        height: 30,
-        cursor: 'pointer',
-        borderRadius: 2,
-        position: 'relative',
-    },
-    colorInput: {
-        position: 'relative',
-        flexGrow: 1,
-        borderRadius: '0 2px 2px 0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'white',
-    },
-    colorInputSplash: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        right: 0,
-        left: 0,
-        borderRadius: 2,
-        '&:hover': {
-            backgroundColor: 'black',
-            opacity: .15,
-        },
-    },
-    colorInputPreview: {
-        flexGrow: 1,
-        borderRadius: 2,
-    },
-    popover: {
-        position: 'absolute',
-        zIndex: 2,
-        top: 36,
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'white',
-    },
-}));
-
-const ColorInput: FC<{ hex: string, onChange: ColorChangeHandler }> = ({ hex, onChange }) => {
-    const classes = useColorInputStyles();
-    const [open, setOpen] = useState(false);
-
-    const iconStyle = { style: { width: 'unset', height: 'unset' } };
-    const Icon: FC = () => open ? <Close {...iconStyle} /> : <ArrowDropDown {...iconStyle} />;
-
-    return (
-        <div className={classes.colorInputContainer}>
-            <div style={{ backgroundColor: hex }} className={classes.colorInputPreview} />
-            <div className={classes.colorInput} onClick={() => setOpen(!open)}>
-                <Icon />
-                <div className={classes.colorInputSplash} />
-            </div>
-            {open && (
-                <div className={classes.popover}>
-                    <ChromePicker color={hex} onChange={onChange} />
-                </div>
-            )}
-        </div>
     );
 }
 
@@ -1538,8 +1470,8 @@ export const ChannelAddChatWeb: FC = () => {
         form.handleSubmit((_) => setShowFinalStep(true), e => console.log(e))();
     }
 
-    const handleSubmit = (name: string, auto: boolean) => {
-        const body = getInsertChatwebChannel(name, auto, form.getValues());
+    const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
+        const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
         dispatch(insertChannel2(body));
     }
 
@@ -1619,15 +1551,17 @@ const useFinalStepStyles = makeStyles(theme => ({
 interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
-    onSubmit: (name: string, auto: boolean) => void;
+    onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose: () => void;
 }
 
 const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId }) => {
     const classes = useFinalStepStyles();
+    const { t } = useTranslation();
     const history = useHistory();
     const [name, setName] = useState("");
     const [auto, setAuto] = useState(false);
+    const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -1635,7 +1569,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     }
 
     const handleSave = () => {
-        onSubmit(name, auto);
+        onSubmit(name, auto, hexIconColor);
     }
 
     return (
@@ -1647,22 +1581,31 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
             </Breadcrumbs>
             <div>
                 <div className={classes.title}>
-                    You are one click away from connecting your communication channel
+                    <Trans i18nKey={langKeys.commchannelfinishreg} />
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
                     <FieldEdit
                         onChange={(value) => setName(value)}
-                        label="Give your channel a name"
+                        label={t(langKeys.givechannelname)}
                         className="col-6"
                         disabled={loading || integrationId != null}
                     />
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
+                    <div className="col-6">
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            Give your channel a custom icon color
+                        </Box>
+                        <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
+                    </div>
+                </div>
+                <div className="row-zyx">
+                    <div className="col-3"></div>
                     <TemplateSwitch
                         onChange={(value) => setAuto(value)}
-                        label="Enable Automated Conversational Flow"
+                        label={t(langKeys.enablechatflow)}
                         className="col-6"
                         disabled={loading || integrationId != null}
                     />
@@ -1675,7 +1618,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         color="primary"
                         disabled={loading || integrationId != null}
                     >
-                        FINISH REGISTRATION
+                        <Trans i18nKey={langKeys.finishreg} />
                     </Button>
                 </div>
             </div>

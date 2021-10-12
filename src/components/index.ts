@@ -12,6 +12,7 @@ export { default as AccountMenu } from './session/AccountMenu';
 export { default as ExtrasLayout } from './layout/ExtrasLayout';
 export { default as ListPaginated } from './fields/ListPaginated';
 export { default as DateRangePicker } from './fields/DateRangePicker';
+export { default as ColorInput } from './fields/ColorInput';
 
 export { default as SkeletonInteraction } from './skeletons/SkeletonInteraction';
 export { default as SkeletonReport } from './skeletons/SkeletonReport';

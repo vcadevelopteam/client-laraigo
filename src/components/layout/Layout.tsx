@@ -116,10 +116,16 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: theme.spacing(0, 1),
+        padding: theme.spacing(0, 1.5),
+        stroke: '#8F92A1',
+        fill: '#8F92A1',
         // necessary for content to be below app bar
         ...theme.mixins.toolbar,
+    },
+    toolbarClosed: {
+        justifyContent: 'center',
+        stroke: 'white',
+        fill: 'white',
     },
     toolbar2: {
         display: 'flex',
