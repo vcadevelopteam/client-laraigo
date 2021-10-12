@@ -30,10 +30,18 @@ export interface IPerson {
     imageurldef?: string;
     sex: string;
     gender?: string;
+    genderdesc?: string;
     birthday: string;
     civilstatus?: string;
+    civilstatusdesc?: string;
+    address?: string;
+    addressreference?: string;
     occupation?: string;
+    occupationdesc?: string;
     educationlevel?: string;
+    educationleveldesc?: string;
+    lastcommunicationchannel?: string;
+    totaltickets?: number;
     country: string;
     region?: string;
     province?: string;

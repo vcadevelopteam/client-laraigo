@@ -163,6 +163,9 @@ const translation: LangKeys = {
     newuser: "New user",
     rich_response: 'Enriched response',
 
+    addressReference: 'Address refrence',
+    birthday: 'Birthday',
+    
     send_quickreply: 'Send quickreply',
     send_enrich_response: 'Send enrich response',
     send_image: 'Send image',

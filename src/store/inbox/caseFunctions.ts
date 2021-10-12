@@ -369,7 +369,6 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
     return {
         ...state,
         triggerNewMessageClient: !state.triggerNewMessageClient,
-        // isOnBottom: null,
         ticketList: {
             ...state.ticketList,
             data: newticketList
@@ -427,6 +426,30 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
             count: action.payload.count,
             loading: false,
             error: false,
+        },
+    };
+}
+export const personSawChat = (state: IState, action: IAction): IState => {
+    const data: IDeleteTicketParams = action.payload;
+    let newticketList = [...state.ticketList.data];
+    let newTicketSelected = state.ticketSelected ? { ...state.ticketSelected } : null;
+
+    const { agentSelected, userType } = state;
+
+    if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
+
+        if (newTicketSelected?.conversationid === data.conversationid) {
+            newTicketSelected.lastseendate = new Date().toISOString();
+        }
+        newticketList = newticketList.map(x => x.conversationid === data.conversationid ? { ...x, lastseendate: new Date().toISOString() } : x)
+    }
+
+    return {
+        ...state,
+        ticketSelected: newTicketSelected,
+        ticketList: {
+            ...state.ticketList,
+            data: newticketList
         },
     };
 }

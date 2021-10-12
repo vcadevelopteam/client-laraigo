@@ -41,6 +41,9 @@ const translation: LangKeys = {
     send_gif: 'Enviar gif',
     send_emoji: 'Enviar emoji',
 
+    addressReference: 'Ref. dirección',
+    birthday: 'Cumpleaños',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',

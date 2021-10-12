@@ -17,7 +17,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import Avatar from '@material-ui/core/Avatar';
 
-const useStylesCarousel = makeStyles((theme) => ({
+const useStylesInteraction = makeStyles((theme) => ({
     containerCarousel: {
         width: 230,
         backgroundColor: '#f0f2f5',
@@ -51,6 +51,45 @@ const useStylesCarousel = makeStyles((theme) => ({
         top: '45%',
         right: -20,
         backgroundColor: 'white'
+    },
+    containerTime: {
+        visibility: 'hidden',
+        fontSize: 12,
+        float: 'right',
+        marginLeft: 4,
+        paddingRight: 6,
+        lineHeight: 1,
+        width: 50
+    },
+    timeSeen: {
+        color: '#4fc3f7'
+    },
+    timeInteraction: {
+        position: 'absolute',
+        bottom: 1.5,
+        height: 16,
+        right: 0,
+        visibility: 'visible',
+        color: '#757377',
+        padding: 'inherit',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4
+    },
+    timeInteractionWithBackground: {
+        position: 'absolute',
+        bottom: 3,
+        display: 'flex',
+        alignItems: 'center',
+        height: 13,
+        right: 0,
+        visibility: 'visible',
+        backgroundColor: '#00000059',
+        color: '#fff',
+        padding: '3px 2px 3px 3px',
+        borderRadius: 4,
+        marginRight: 4,
+        gap: 4
     }
 }));
 
@@ -85,7 +124,7 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
             >
                 <InteractiveListIcon /> OPTIONS
             </div>
-            <TimerInteraction userType={userType} time={onlyTime || ""} />
+            <TimerInteraction interactiontype="interactivelist" createdate={createdate} userType={userType} time={onlyTime || ""} />
             <Dialog
                 onClose={handleClose}
                 aria-labelledby="simple-dialog-title"
@@ -116,7 +155,7 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
     )
 }
 const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
-    const classes = useStylesCarousel();
+    const classes = useStylesInteraction();
     const [pageSelected, setPageSelected] = useState(0);
 
     if (carousel.length === 0) return null;
@@ -157,55 +196,40 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
         </div>
     )
 }
+const TimerInteraction: React.FC<{ interactiontype: string, time: string, createdate: string, background?: boolean, userType?: string }> = ({ time, background, userType, createdate, interactiontype }) => {
+    const classes = useStylesInteraction();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const [isSeen, setIsSeen] = useState(false)
 
-const TimerInteraction: React.FC<{ time: string, background?: boolean, userType?: string }> = ({ time, background, userType }) => (
-    <span style={{
-        visibility: 'hidden',
-        fontSize: 12,
-        float: 'right',
-        marginLeft: 4,
-        paddingRight: 6,
-        lineHeight: 1,
-        width: 20
-    }}>
-        {time}
-        {!background ?
-            <div style={{
-                position: 'absolute',
-                bottom: 1.5,
-                height: 16,
-                right: 0,
-                visibility: 'visible',
-                color: '#757377',
-                padding: 'inherit',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 4
-            }}>
-                {time}
-                {userType !== "client" && <SeenIcon color="action" />}
-            </div> :
-            <div style={{
-                position: 'absolute',
-                bottom: 3,
-                display: 'flex',
-                alignItems: 'center',
-                height: 13,
-                right: 0,
-                visibility: 'visible',
-                backgroundColor: '#00000059',
-                color: '#fff',
-                padding: '3px 2px 3px 3px',
-                borderRadius: 4,
-                marginRight: 4,
-                gap: 4
-            }}>
-                {time}
-                {userType !== "client" && <SeenIcon color="action" />}
-            </div>
+    React.useEffect(() => {
+        if (ticketSelected?.lastseendate && interactiontype != "LOG") {
+            const lastSeenDate = new Date(ticketSelected?.lastseendate);
+            const interactionDate = new Date(createdate!!);
+
+            setIsSeen(interactionDate <= lastSeenDate);
         }
-    </span>
-)
+    }, [createdate, interactiontype, ticketSelected?.lastseendate])
+
+    return (
+        <span className={classes.containerTime}>
+            {time}
+            {!background ?
+                <div className={classes.timeInteraction}>
+                    {time}
+                    {userType !== "client" && <SeenIcon className={clsx({
+                        [classes.timeSeen]: isSeen,
+                    })} />}
+                </div> :
+                <div className={classes.timeInteractionWithBackground}>
+                    {time}
+                    {userType !== "client" && <SeenIcon className={clsx({
+                        [classes.timeSeen]: isSeen,
+                    })} />}
+                </div>
+            }
+        </span>
+    )
+}
 
 const PickerInteraction: React.FC<{ userType: string, fill?: string }> = ({ userType, fill = '#FFF' }) => {
     if (userType === 'client')
@@ -233,7 +257,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })}>
                 {interactiontext}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction userType={userType} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
     else if (interactiontype === "image")
@@ -246,7 +270,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />
-                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
     else if (interactiontype === "quickreply") {
@@ -264,7 +288,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     })}
                 </div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction userType={userType} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "postback") {
@@ -290,7 +314,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
                 {interactiontext}
                 <PickerInteraction userType={userType!!} fill="#84818A" />
-                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
         );
     } else if (interactiontype === "carousel") {
@@ -300,14 +324,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         return (
             <div className={classes.interactionImage} style={{ borderRadius: 0, height: 50, backgroundColor: 'transparent' }}>
                 <audio controls src={interactiontext} className={classes.imageCard} style={{}}></audio>
-                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "video") {
         return (
             <div className={classes.interactionImage}>
                 <video className={classes.imageCard} width="200" controls src={interactiontext} />
-                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         )
     } else if (interactiontype === "file") {
@@ -319,7 +343,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     <DownloadIcon2 width="20" height="20" color="primary" />
 
                 </a>
-                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} background={true} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "interactivebutton") {
@@ -337,7 +361,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     {jsonIntt.footer && (
                         <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
                     )}
-                    <TimerInteraction userType={userType} time={onlyTime || ""} />
+                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
                 </div>
                 {jsonIntt.buttons.map((button: any, i: number) => (
                     <div key={i} style={{ background: '#FFF', color: '#00a5f4', borderRadius: 4, padding: '6px 8px', textAlign: 'center', textTransform: 'uppercase' }}>
@@ -356,7 +380,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })}>
                 {textres}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction userType={userType} time={onlyTime || ""} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
             </div>
         );
     } else if (interactiontype === "interactivelist") {
@@ -379,14 +403,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />
-                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
+                <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
     } else if (interactiontype === "post-text") {
         return (
             <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                 [classes.interactionTextAgent]: userType !== 'client',
-            })} style={{marginLeft: 'auto', marginRight: 'auto'}}>
+            })} style={{ marginLeft: 'auto', marginRight: 'auto' }}>
                 {interactiontext}
             </div>
         );
@@ -397,7 +421,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         })}>
             {interactiontext}
             <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-            <TimerInteraction userType={userType} time={onlyTime || ""} />
+            <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
         </div>
     );
 }

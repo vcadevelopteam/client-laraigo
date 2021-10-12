@@ -118,6 +118,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.MODIFY_TICKET]: caseFunctions.modifyTicket,
     [actionTypes.NEW_MESSAGE_FROM_CLIENT]: caseFunctions.newMessageFromClient,
     [actionTypes.DELETE_TICKET]: caseFunctions.deleteTicket,
+    [actionTypes.PERSON_SAW_CHAT]: caseFunctions.personSawChat,
     [actionTypes.CONNECT_AGENT_WS]: caseFunctions.connectAgentWS,
     [actionTypes.CONNECT_AGENT_UI]: caseFunctions.connectAgentUI,
 

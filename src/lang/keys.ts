@@ -182,6 +182,9 @@ export const langKeys = {
     registervalue: "registervalue",
     defaultanswer: "defaultanswer",
     newdomain: "newdomain",
+    addressReference: 'addressReference',
+    birthday: 'birthday',
+
     documenttype: 'documenttype',
     documentnumber: 'documentnumber',
     usergroup: 'usergroup',

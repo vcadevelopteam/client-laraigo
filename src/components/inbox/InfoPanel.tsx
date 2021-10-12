@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { convertLocalDate } from 'common/helpers';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import { DialogInteractions} from 'components';
+import { DialogInteractions } from 'components';
 import { Dictionary } from '@types';
 
 const useStyles = makeStyles((theme) => ({
@@ -138,13 +138,141 @@ const InfoClient: React.FC = () => {
     )
 }
 
+const InfoTab: React.FC = () => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const person = useSelector(state => state.inbox.person.data);
+    return (
+        <div >
+            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+
+                {person?.firstname && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.firstname)}</div>
+                        <div>{person?.firstname}</div>
+                    </div>
+                </div>}
+                {person?.lastname && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastname)}</div>
+                        <div>{person?.lastname}</div>
+                    </div>
+                </div>}
+
+                {person?.documenttype && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documenttype)}</div>
+                        <div>{person?.documenttype}</div>
+                    </div>
+                </div>}
+                {person?.documentnumber && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documentnumber)}</div>
+                        <div>{person?.documentnumber}</div>
+                    </div>
+                </div>}
+                {person?.email && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.email)}</div>
+                        <div>{person?.email}</div>
+                    </div>
+                </div>}
+                {person?.phone && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.phone)}</div>
+                        <div>{person?.phone}</div>
+                    </div>
+                </div>}
+                {person?.alternativephone && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
+                        <div>{person?.alternativephone}</div>
+                    </div>
+                </div>}
+                {person?.alternativeemail && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.alternativeEmail)}</div>
+                        <div>{person?.alternativeemail}</div>
+                    </div>
+                </div>}
+                {person?.address && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.address)}</div>
+                        <div>{person?.address}</div>
+                    </div>
+                </div>}
+                {person?.addressreference && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.addressReference)}</div>
+                        <div>{person?.addressreference}</div>
+                    </div>
+                </div>}
+                {person?.genderdesc && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.gender)}</div>
+                        <div>{person?.genderdesc}</div>
+                    </div>
+                </div>}
+                {person?.birthday && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.birthday)}</div>
+                        <div>{person?.birthday}</div>
+                    </div>
+                </div>}
+                {person?.occupationdesc && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.occupation)}</div>
+                        <div>{person?.occupationdesc}</div>
+                    </div>
+                </div>}
+                {person?.civilstatusdesc && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.civilStatus)}</div>
+                        <div>{person?.civilstatusdesc}</div>
+                    </div>
+                </div>}
+                {person?.educationleveldesc && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.educationLevel)}</div>
+                        <div>{person?.educationleveldesc}</div>
+                    </div>
+                </div>}
+                {person?.firstcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
+                        <div>{person?.firstcontact}</div>
+                    </div>
+                </div>}
+                {person?.lastcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
+                        <div>{person?.lastcontact}</div>
+                    </div>
+                </div>}
+                {person?.lastcommunicationchannel && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
+                        <div>{person?.lastcommunicationchannel}</div>
+                    </div>
+                </div>}
+                {person?.totaltickets && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.totalconversations)}</div>
+                        <div>{person?.totaltickets}</div>
+                    </div>
+                </div>}
+            </div>
+        </div>
+    )
+}
+
 const Variables: React.FC = () => {
     const variablecontext = useSelector(state => state.inbox.person.data?.variablecontext);
     const configurationVariables = useSelector(state => state.inbox.configurationVariables.data);
     const classes = useStyles();
 
     return (
-        <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1 }}>
+        <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
 
             {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
                 const variabletmp = variablecontext[variable];
@@ -201,7 +329,7 @@ const PreviewTickets = () => {
                     </div>
                 ))
             }
-            <DialogInteractions 
+            <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
                 ticket={rowSelected}
@@ -225,11 +353,13 @@ const InfoPanel: React.FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
+                <AntTab label="Info" />
                 <AntTab label="Variables" />
                 <AntTab label="Tickets" />
             </Tabs>
-            {pageSelected === 0 && <Variables />}
-            {pageSelected === 1 && <PreviewTickets />}
+            {pageSelected === 0 && <InfoTab />}
+            {pageSelected === 1 && <Variables />}
+            {pageSelected === 2 && <PreviewTickets />}
         </div>
     );
 }
