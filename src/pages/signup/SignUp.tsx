@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, Fragment, useState } from 'react';
+import { FC, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { RightSideMenu } from './RightSideMenu';
 import Backdrop from '@material-ui/core/Backdrop';

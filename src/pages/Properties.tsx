@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, Fragment, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
@@ -316,7 +316,7 @@ const DetailProperty: React.FC<DetailPropertyProps> = ({ data: { row, edit }, fe
             if (detailResult.data) {
                 if (detailResult.data instanceof Array) {
                     if (detailResult.data.length > 0) {
-                        if (detailResult.data[0].inputtype == 'DOMAIN') {
+                        if (detailResult.data[0].inputtype === 'DOMAIN') {
                             setDomainTable({ loading: true, data: [] });
                             dispatch(getMultiCollectionAux([
                                 getValuesFromDomain(detailResult.data[0].domainname, null, detailResult.data[0].orgid)

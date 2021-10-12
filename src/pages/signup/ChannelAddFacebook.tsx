@@ -64,6 +64,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
             dispatch(showBackdrop(false));
             setWaitSave(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {

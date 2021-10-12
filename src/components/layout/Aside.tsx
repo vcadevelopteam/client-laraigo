@@ -1,4 +1,3 @@
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
@@ -12,8 +11,6 @@ import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
 
 import {
-    ChevronLeft,
-    ChevronRight,
     Menu,
 } from '@material-ui/icons/';
 import { RouteConfig } from '@types';
@@ -27,24 +24,6 @@ type IProps = {
     theme: any;
     routes: RouteConfig[];
 }
-
-// view: 0
-// modify: 1
-// insert: 2
-// delete: 3
-
-const whiteIconTheme = createTheme({
-    overrides: {
-        MuiSvgIcon: {
-            root: {
-                color: "#FFF",
-                width: 24,
-                height: 24,
-                minWidth: 0
-            },
-        },
-    },
-});
 
 const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
     const history = useHistory();
@@ -94,7 +73,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-
+/*
     const ChevronIcon: FC = () => {
         if (!openDrawer) {
             return (
@@ -105,7 +84,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
         } else {
             return theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />;
         }
-    };
+    };*/
 
     return (
         <Drawer

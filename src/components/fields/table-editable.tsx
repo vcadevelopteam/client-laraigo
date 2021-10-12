@@ -28,7 +28,6 @@ import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 
 import { Dictionary, TableConfig } from '@types'
 import { OnlyCheckbox, SearchField } from 'components';
@@ -144,7 +143,6 @@ const TableZyxEditable = React.memo(({
     skipAutoReset = false,
 }: TableConfig) => {
     const classes = useStyles();
-    const isBigScreen = useMediaQuery((theme: any) => theme.breakpoints.up('sm'));
 
     const DefaultColumnFilter = (
     {

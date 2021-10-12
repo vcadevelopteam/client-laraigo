@@ -16,10 +16,6 @@ import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainD
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
 
-const arrayBread = [
-    { id: "view-1", name: "Reports" },
-    { id: "view-2", name: "Report personalized" }
-];
 
 const getArrayBread = (nametmp: string) => ([
     { id: "view-1", name: "Reports" },

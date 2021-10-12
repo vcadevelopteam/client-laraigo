@@ -1,13 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldEditArray, TemplateSwitchArray, TemplateSwitch } from 'components';
-import { getReportTemplate, getValuesFromDomain, insertReportTemplate, getTagsChatflow, getCommChannelLst } from 'common/helpers';
+import {insertReportTemplate} from 'common/helpers';
 import { Dictionary } from "@types";
-import TableZyx from 'components/fields/table-simple';
-import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
 import { makeStyles } from '@material-ui/core/styles';
 import Tabs from '@material-ui/core/Tabs';
 import SaveIcon from '@material-ui/icons/Save';
@@ -15,7 +13,7 @@ import { variablesTemplate } from 'common/constants'
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { IconButton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@material-ui/core';
@@ -512,7 +510,7 @@ export const TemplateIcons: React.FC<{
     )
 }
 
-const ReportsTemplate: FC = () => {
+/*const ReportsTemplate: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
@@ -678,6 +676,6 @@ const ReportsTemplate: FC = () => {
     } else
         return null;
 
-}
+}*/
 
 export default DetailReportDesigner;

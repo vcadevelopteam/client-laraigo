@@ -44,7 +44,6 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         password: "",
         confirmpassword: "",
     });
-    const resLogin = useSelector(state => state.login.login);
     const rescheckuser = useSelector(state => state.signup);
     const [disablebutton, setdisablebutton] = useState(true);
     const [firstlaunch, setfirstlaunch] = useState(true);

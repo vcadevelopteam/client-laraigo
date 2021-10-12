@@ -4,32 +4,18 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import { useTranslation } from "react-i18next";
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerencialencuestasel, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel, getCommChannelLst, getdashboardoperativoEncuestaSel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { getCommChannelLst, getdashboardoperativoEncuestaSel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
+import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
-const arraymonth = [
-    "ene",
-    "feb",
-    "mar",
-    "abr",
-    "may",
-    "jun",
-    "jul",
-    "ago",
-    "sep",
-    "oct",
-    "nov",
-    "dic",
-]
 function formatNumber(num: any) {
     if (num)
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
@@ -62,14 +48,6 @@ function timetomin(cc: any) {
     const minutes = parseInt(times[1]);
     const seconds = parseInt(times[2]);
     return hour * 60 + minutes + (seconds >= 30 ? 1 : 0);
-}
-function formatname(cc: any) {
-    let newname = cc.toLowerCase();
-    let names = newname.split(" ");
-    for (let i = 0; i < names.length; i++) {
-        names[i] = (names[i] ? names[i][0].toUpperCase() : "") + names[i].substr(1);
-    }
-    return names.join(" ")
 }
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -357,6 +335,7 @@ const DashboardProductivity: FC = () => {
             setdatasupervisors(multiData[3] && multiData[3].success ? multiData[3].data : []);
             setdataLabel(multiData[4] && multiData[4].success ? multiData[4].data : []);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
         
@@ -366,8 +345,8 @@ const DashboardProductivity: FC = () => {
             if (seconds >= 0) {
                 let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
                 variacionperc=variacionperc? variacionperc: 0;
-                let hh = (Math.floor(seconds / 3600)) == 0 ? "" : (Math.floor(seconds / 3600) + "h ")
-                let mm = Math.floor((seconds % 3600) / 60) == 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
+                let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
+                let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
                 let objetivo_max = timetomin(target_max)
                 let dataTMO = `${hh}${mm}${ss}`
@@ -380,23 +359,23 @@ const DashboardProductivity: FC = () => {
                 vartmo = Math.abs(vartmo)
                 let variacioncolor = vartmo <= 0;
 
-                hh = (Math.floor(vartmo / 3600)) == 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
-                mm = Math.floor((vartmo % 3600) / 60) == 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
+                hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
+                mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
                 ss = vartmo % 60 + "s"
                 let variaciontxt = `${sign}${hh}${mm}${ss}`
                 setData(p => ({ ...p, variaciontxt: variaciontxt }))
                 setData(p => ({ ...p, variacioncolor: variacioncolor }))
 
                 let secondsmax = timetoseconds(time_max)
-                hh = (Math.floor(secondsmax / 3600)) == 0 ? "" : (Math.floor(secondsmax / 3600) + "h ")
-                mm = Math.floor((secondsmax % 3600) / 60) == 0 ? "" : (Math.floor((secondsmax % 3600) / 60) + "m ")
+                hh = (Math.floor(secondsmax / 3600)) === 0 ? "" : (Math.floor(secondsmax / 3600) + "h ")
+                mm = Math.floor((secondsmax % 3600) / 60) === 0 ? "" : (Math.floor((secondsmax % 3600) / 60) + "m ")
                 ss = secondsmax % 60 + "s"
                 let timeMax = `${hh}${mm}${ss}`
                 setData(p => ({ ...p, timeMax: timeMax }))
 
                 let secondsmin = timetoseconds(time_min)
-                hh = (Math.floor(secondsmin / 3600)) == 0 ? "" : (Math.floor(secondsmin / 3600) + "h ")
-                mm = Math.floor((secondsmin % 3600) / 60) == 0 ? "" : (Math.floor((secondsmin % 3600) / 60) + "m ")
+                hh = (Math.floor(secondsmin / 3600)) === 0 ? "" : (Math.floor(secondsmin / 3600) + "h ")
+                mm = Math.floor((secondsmin % 3600) / 60) === 0 ? "" : (Math.floor((secondsmin % 3600) / 60) + "m ")
                 ss = secondsmin % 60 + "s"
                 let timeMin = `${hh}${mm}${ss}`
                 setData(p => ({ ...p, timeMin: timeMin }))
@@ -416,6 +395,7 @@ const DashboardProductivity: FC = () => {
                 ]);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resTMO])
     useEffect(() => {
         if (resTME.length) {
@@ -424,8 +404,8 @@ const DashboardProductivity: FC = () => {
             if (seconds >= 0) {
                 let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
                 variacionperc=variacionperc? variacionperc: 0;
-                let hh = (Math.floor(seconds / 3600)) == 0 ? "" : (Math.floor(seconds / 3600) + "h ")
-                let mm = Math.floor((seconds % 3600) / 60) == 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
+                let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
+                let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
                 let ss = seconds % 60 + "s"
                 let objetivo_max = timetomin(target_max)
                 let dataTMO = `${hh}${mm}${ss}`
@@ -438,23 +418,23 @@ const DashboardProductivity: FC = () => {
                 vartmo = Math.abs(vartmo)
                 let variacioncolor = vartmo <= 0;
 
-                hh = (Math.floor(vartmo / 3600)) == 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
-                mm = Math.floor((vartmo % 3600) / 60) == 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
+                hh = (Math.floor(vartmo / 3600)) === 0 ? "" : (Math.floor(vartmo / 3600) + "h ")
+                mm = Math.floor((vartmo % 3600) / 60) === 0 ? "" : (Math.floor((vartmo % 3600) / 60) + "m ")
                 ss = vartmo % 60 + "s"
                 let variaciontxt = `${sign}${hh}${mm}${ss}`
                 setDataTME(p => ({ ...p, variaciontxt: variaciontxt }))
                 setDataTME(p => ({ ...p, variacioncolor: variacioncolor }))
 
                 let secondsmax = timetoseconds(time_max)
-                hh = (Math.floor(secondsmax / 3600)) == 0 ? "" : (Math.floor(secondsmax / 3600) + "h ")
-                mm = Math.floor((secondsmax % 3600) / 60) == 0 ? "" : (Math.floor((secondsmax % 3600) / 60) + "m ")
+                hh = (Math.floor(secondsmax / 3600)) === 0 ? "" : (Math.floor(secondsmax / 3600) + "h ")
+                mm = Math.floor((secondsmax % 3600) / 60) === 0 ? "" : (Math.floor((secondsmax % 3600) / 60) + "m ")
                 ss = secondsmax % 60 + "s"
                 let timeMax = `${hh}${mm}${ss}`
                 setDataTME(p => ({ ...p, timeMax: timeMax }))
 
                 let secondsmin = timetoseconds(time_min)
-                hh = (Math.floor(secondsmin / 3600)) == 0 ? "" : (Math.floor(secondsmin / 3600) + "h ")
-                mm = Math.floor((secondsmin % 3600) / 60) == 0 ? "" : (Math.floor((secondsmin % 3600) / 60) + "m ")
+                hh = (Math.floor(secondsmin / 3600)) === 0 ? "" : (Math.floor(secondsmin / 3600) + "h ")
+                mm = Math.floor((secondsmin % 3600) / 60) === 0 ? "" : (Math.floor((secondsmin % 3600) / 60) + "m ")
                 ss = secondsmin % 60 + "s"
                 let timeMin = `${hh}${mm}${ss}`
                 setDataTME(p => ({ ...p, timeMin: timeMin }))
@@ -476,6 +456,7 @@ const DashboardProductivity: FC = () => {
 
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resTME])
     useEffect(() => {
         setprodxHora({
@@ -500,6 +481,7 @@ const DashboardProductivity: FC = () => {
                 prodbot: prodbotofi.toFixed(2),
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[prodxHoralvl1])
     useEffect(() => {
         setDataSummary({
@@ -526,7 +508,7 @@ const DashboardProductivity: FC = () => {
             {label:"30 +", quantity: 0}
         ])
         if (resSummary.length) {
-            if (resSummary[0] && resSummary[0].ticketstotal != 0) {
+            if (resSummary[0] && resSummary[0].ticketstotal !== 0) {
                 const {averagereplytime,botaveragereplytime,useraveragereplytime,personaveragereplytime,tmoasesorrange0, tmoasesorrange1, tmoasesorrange2, tmoasesorrange3, tmoasesorrange4, tmoasesorrange5,
                     tmeasesorrange0, tmeasesorrange1,  tmeasesorrange2, tmeasesorrange3, tmeasesorrange4, tmeasesorrange5,ticketsabandonados,ticketstotal} = resSummary[0]
                 setDataSummary({
@@ -556,6 +538,7 @@ const DashboardProductivity: FC = () => {
                 ])
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resSummary])
     useEffect(() => {
         setDataEncuesta({
@@ -668,6 +651,7 @@ const DashboardProductivity: FC = () => {
             ]);
 
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resEncuesta]);
 
     useEffect(() => {
@@ -714,6 +698,7 @@ const DashboardProductivity: FC = () => {
                 setWaitSave(false);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [remultiaux, waitSave])
     async function funcsearch() {
         let tosend = { 
@@ -751,6 +736,7 @@ const DashboardProductivity: FC = () => {
         return () => {
             dispatch(resetMain());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <Fragment>

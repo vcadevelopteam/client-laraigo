@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Button, createStyles, makeStyles, Menu, MenuItem, Theme } from "@material-ui/core";
+import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import Popover from '@material-ui/core/Popover';
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
