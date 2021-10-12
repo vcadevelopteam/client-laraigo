@@ -51,7 +51,7 @@ export const ChannelAddMessenger: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#0078FF",
         },
         "type": "MESSENGER",
         "service": {

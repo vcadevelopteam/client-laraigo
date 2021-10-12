@@ -45,7 +45,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#2d88ff",
         },
         "type": "FACEBOOK",
         "service": {

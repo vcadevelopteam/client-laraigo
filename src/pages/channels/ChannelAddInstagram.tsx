@@ -51,7 +51,7 @@ export const ChannelAddInstagram: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#F56040",
         },
         "type": "INSTAGRAM",
         "service": {

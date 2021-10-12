@@ -54,7 +54,7 @@ export const ChannelAddTelegram: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#207FDD",
         },
         "type": "TELEGRAM",
         "service": {

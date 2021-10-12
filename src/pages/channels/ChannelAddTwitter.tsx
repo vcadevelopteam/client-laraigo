@@ -50,7 +50,7 @@ export const ChannelAddTwitter: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#1D9BF0",
         },
         "type": "TWITTER",
         "service": {

@@ -49,7 +49,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#1D9BF0",
         },
         "type": "TWITTER",
         "service": {
