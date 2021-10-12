@@ -17,12 +17,11 @@ import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuic
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { AntTab } from 'components';
+import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
-import { ListItemSkeleton } from 'components'
 
 const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
@@ -98,39 +97,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface BadgePropsTmp extends BadgeProps {
-    colortmp: any;
-}
-
-const StyledBadge = withStyles((theme) => ({
-    badge: (props: any) => ({
-        backgroundColor: props.colortmp,
-        color: props.colortmp,
-        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-        '&::after': {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            borderRadius: '50%',
-            animation: 'ripple 1.2s infinite ease-in-out',
-            border: '1px solid currentColor',
-            content: '""',
-        },
-    }),
-    '@keyframes ripple': {
-        '0%': {
-            transform: 'scale(.8)',
-            opacity: 1,
-        },
-        '100%': {
-            transform: 'scale(2.4)',
-            opacity: 0,
-        },
-    },
-}))(({ ...props }: BadgePropsTmp) => <Badge {...props} />);
-
 const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
         <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
@@ -156,7 +122,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
     return (
         <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === agent.userid) })} onClick={handlerSelectAgent}>
             <div className={classes.agentUp}>
-                <StyledBadge
+                <BadgeGo
                     overlap="circular"
                     colortmp={isConnected ? "#44b700" : "#b41a1a"}
                     anchorOrigin={{
@@ -166,7 +132,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                     variant="dot"
                 >
                     <Avatar>{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
-                </StyledBadge>
+                </BadgeGo>
                 <div>
                     <div className={classes.agentName}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>

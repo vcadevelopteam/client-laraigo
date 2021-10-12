@@ -54,7 +54,7 @@ export const ChannelAddWhatsapp: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#4AC959",
         },
         "type": "WHATSAPP",
         "service": {

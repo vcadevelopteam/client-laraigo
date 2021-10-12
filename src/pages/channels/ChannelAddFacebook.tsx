@@ -51,7 +51,7 @@ export const ChannelAddFacebook: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#2d88ff",
         },
         "type": "FACEBOOK",
         "service": {

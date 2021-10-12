@@ -53,7 +53,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "",
+            "coloricon": "#4AC959",
         },
         "type": "WHATSAPP",
         "service": {
