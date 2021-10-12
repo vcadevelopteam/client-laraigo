@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
 import { IInteraction, IGroupInteraction, Dictionary } from "@types";
 import { makeStyles } from '@material-ui/core/styles';
-import { BotIcon, AgentIcon, DownloadIcon2, FileIcon, InteractiveListIcon } from 'icons';
+import { BotIcon, AgentIcon, DownloadIcon2, FileIcon, InteractiveListIcon, SeenIcon } from 'icons';
 import Fab from '@material-ui/core/Fab';
 import NavigateBeforeIcon from '@material-ui/icons/NavigateBefore';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -85,7 +85,7 @@ const InteractiveList: React.FC<{ onlyTime?: string, interactiontext: string, cr
             >
                 <InteractiveListIcon /> OPTIONS
             </div>
-            <TimerInteraction time={onlyTime || ""} />
+            <TimerInteraction userType={userType} time={onlyTime || ""} />
             <Dialog
                 onClose={handleClose}
                 aria-labelledby="simple-dialog-title"
@@ -158,28 +158,32 @@ const Carousel: React.FC<{ carousel: Dictionary[] }> = ({ carousel }) => {
     )
 }
 
-const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ time, background }) => (
+const TimerInteraction: React.FC<{ time: string, background?: boolean, userType?: string }> = ({ time, background, userType }) => (
     <span style={{
         visibility: 'hidden',
         fontSize: 12,
         float: 'right',
         marginLeft: 4,
         paddingRight: 6,
-        lineHeight: 1
+        lineHeight: 1,
+        width: 20
     }}>
         {time}
         {!background ?
             <div style={{
                 position: 'absolute',
-                bottom: -1,
+                bottom: 1.5,
                 height: 16,
                 right: 0,
                 visibility: 'visible',
                 color: '#757377',
-                padding: 'inherit'
-
+                padding: 'inherit',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4
             }}>
                 {time}
+                {userType !== "client" && <SeenIcon color="action" />}
             </div> :
             <div style={{
                 position: 'absolute',
@@ -191,11 +195,13 @@ const TimerInteraction: React.FC<{ time: string, background?: boolean }> = ({ ti
                 visibility: 'visible',
                 backgroundColor: '#00000059',
                 color: '#fff',
-                padding: '2px 4px 2px 3px',
+                padding: '3px 2px 3px 3px',
                 borderRadius: 4,
-                marginRight: 4
+                marginRight: 4,
+                gap: 4
             }}>
                 {time}
+                {userType !== "client" && <SeenIcon color="action" />}
             </div>
         }
     </span>
@@ -227,7 +233,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })}>
                 {interactiontext}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction time={onlyTime || ""} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} />
             </div>
         );
     else if (interactiontype === "image")
@@ -240,7 +246,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />
-                <TimerInteraction time={onlyTime || ""} background={true} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
     else if (interactiontype === "quickreply") {
@@ -258,7 +264,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     })}
                 </div>
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction time={onlyTime || ""} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "postback") {
@@ -284,7 +290,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })} style={{ backgroundColor: '#84818A', color: 'white' }}>
                 {interactiontext}
                 <PickerInteraction userType={userType!!} fill="#84818A" />
-                <TimerInteraction background={true} time={onlyTime || ""} />
+                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
             </div>
         );
     } else if (interactiontype === "carousel") {
@@ -294,14 +300,14 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         return (
             <div className={classes.interactionImage} style={{ borderRadius: 0, height: 50, backgroundColor: 'transparent' }}>
                 <audio controls src={interactiontext} className={classes.imageCard} style={{}}></audio>
-                <TimerInteraction background={true} time={onlyTime || ""} />
+                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "video") {
         return (
             <div className={classes.interactionImage}>
                 <video className={classes.imageCard} width="200" controls src={interactiontext} />
-                <TimerInteraction time={onlyTime || ""} background={true} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
             </div>
         )
     } else if (interactiontype === "file") {
@@ -313,7 +319,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     <DownloadIcon2 width="20" height="20" color="primary" />
 
                 </a>
-                <TimerInteraction background={true} time={onlyTime || ""} />
+                <TimerInteraction userType={userType} background={true} time={onlyTime || ""} />
             </div>
         )
     } else if (interactiontype === "interactivebutton") {
@@ -331,7 +337,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                     {jsonIntt.footer && (
                         <div style={{ color: 'rgb(0,0,0,0.45)', fontSize: 12 }}>{jsonIntt.footer}</div>
                     )}
-                    <TimerInteraction time={onlyTime || ""} />
+                    <TimerInteraction userType={userType} time={onlyTime || ""} />
                 </div>
                 {jsonIntt.buttons.map((button: any, i: number) => (
                     <div key={i} style={{ background: '#FFF', color: '#00a5f4', borderRadius: 4, padding: '6px 8px', textAlign: 'center', textTransform: 'uppercase' }}>
@@ -350,7 +356,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             })}>
                 {textres}
                 <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-                <TimerInteraction time={onlyTime || ""} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} />
             </div>
         );
     } else if (interactiontype === "interactivelist") {
@@ -373,7 +379,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
                 />
-                <TimerInteraction time={onlyTime || ""} background={true} />
+                <TimerInteraction userType={userType} time={onlyTime || ""} background={true} />
             </div>
         );
     } else if (interactiontype === "post-text") {
@@ -391,7 +397,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
         })}>
             {interactiontext}
             <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
-            <TimerInteraction time={onlyTime || ""} />
+            <TimerInteraction userType={userType} time={onlyTime || ""} />
         </div>
     );
 }

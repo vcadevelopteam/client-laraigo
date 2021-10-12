@@ -32,9 +32,8 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
-        height: '48px',
+        marginBottom: theme.spacing(1),
         color: theme.palette.text.primary,
     },
 

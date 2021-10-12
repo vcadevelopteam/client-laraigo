@@ -57,8 +57,6 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
-        height: '48px',
         color: theme.palette.text.primary,
     },
     button: {

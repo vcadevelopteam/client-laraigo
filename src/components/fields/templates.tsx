@@ -147,8 +147,8 @@ export const Title: React.FC = ({ children }) => {
     const theme = useTheme();
     const style: React.CSSProperties = {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
+        lineHeight: '48px',
         height: '48px',
         color: theme.palette.text.primary,
     };
@@ -712,12 +712,19 @@ export const GifPickerZyx: React.FC<{ onSelect?: (e: any) => void, style?: any }
     }
 
     React.useEffect(() => {
+        let isSubscribed = true;
+
         fetch(
             'https://api.tenor.com/v1/trending?key=WL0G6J5OBD12&locale=pe_ES&media_filter=minimal&limit=30')
             .then(response => response.json())
             .then(function (res) {
-                setListGif(res.results)
+                if (isSubscribed)
+                    setListGif(res.results)
             });
+
+        return () => {
+            isSubscribed = false
+        }
     }, [])
 
     return (

@@ -122,14 +122,14 @@ const InfoClient: React.FC = () => {
                     <EMailInboxIcon className={classes.propIcon} />
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.email)}</div>
-                        <div>{`${person?.email || 'fdcarlosd1@gmail.com'}`}</div>
+                        <div>{person?.email}</div>
                     </div>
                 </div>
                 <div className={classes.containerName}>
                     <PhoneIcon className={classes.propIcon} />
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.phone)}</div>
-                        <div>{`${person?.phone || '953845654'}`}</div>
+                        <div>{person?.phone}</div>
                     </div>
                 </div>
 

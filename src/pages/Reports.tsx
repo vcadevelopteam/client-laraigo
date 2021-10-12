@@ -14,9 +14,9 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplate, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport } from 'common/helpers';
-import { getCollection, getCollectionAux, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
-import { showSnackbar, showBackdrop } from 'store/popus/actions';
+import { getReportSel, getReportTemplate, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate } from 'common/helpers';
+import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
+import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
 import { reportsImage } from '../icons/index';
 import AssessorProductivity from 'components/report/AssessorProductivity';
@@ -84,9 +84,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
-        height: '48px',
         color: theme.palette.text.primary,
     },
     containerHeader: {
@@ -277,6 +275,8 @@ const Reports: FC = () => {
     const [customReport, setCustomReport] = useState(false);
     const [rowReportSelected, setRowReportSelected] = useState<RowSelected>({ row: null, edit: false });
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
 
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
@@ -349,10 +349,39 @@ const Reports: FC = () => {
         setCustomReport(row.reportname === 'PRODUCTIVITY' ? true : false);
     }
 
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(insertReportTemplate({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.reporttemplateid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
-                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
+                <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
                         {t(langKeys.report_plural)}
                     </span>
@@ -368,7 +397,7 @@ const Reports: FC = () => {
                     </div>
                 </Box>
                 <div className={classes.containerDetails}>
-                    <Grid container spacing={3} style={{ justifyContent: 'center' }}>
+                    <Grid container spacing={3} >
                         {allReports.filter(x => !!x.image).map((report, index) => (
                             <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card >
@@ -448,7 +477,7 @@ const Reports: FC = () => {
                                     >
                                         {t(langKeys.edit)}
                                     </MenuItem>
-                                    <MenuItem onClick={(e) => { }}>{t(langKeys.delete)}</MenuItem>
+                                    <MenuItem onClick={(e) => handleDelete(report)}>{t(langKeys.delete)}</MenuItem>
                                 </Menu>
                             </Grid>
                         ))}
@@ -478,7 +507,7 @@ const Reports: FC = () => {
                 data={rowReportSelected}
                 setViewSelected={setViewSelected}
                 multiData={reportsResult.multiDataAux.data}
-                fetchData={() => console.log("dd")}
+                fetchData={fetchData}
             />
         )
     } else if (viewSelected === "view-4") {

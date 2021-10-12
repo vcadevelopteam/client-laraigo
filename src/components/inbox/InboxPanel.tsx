@@ -120,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
         borderRadius: 12,
         borderBottomLeftRadius: 0,
-        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(.7)}px ${theme.spacing(1)}px`,
+        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
         position: 'relative',
         maxWidth: 480,
         backgroundColor: '#FFF',

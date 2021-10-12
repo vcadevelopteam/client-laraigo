@@ -58,9 +58,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
-        height: '48px',
         color: theme.palette.text.primary,
     },
     containerHeader: {
@@ -111,7 +109,7 @@ const Dashboard: FC = () => {
                     </span>
                 </Box>
                 <div className={classes.containerDetails}>
-                    <Grid container spacing={3} style={{ justifyContent: 'center' }}>
+                    <Grid container spacing={3}>
                             <Grid item key={"dashboardgerencial"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card >
                                     <CardActionArea onClick={() => handleSelected("dashboardgerencial")}>
