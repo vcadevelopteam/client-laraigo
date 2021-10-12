@@ -345,7 +345,12 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     });
 
     React.useEffect(() => {
-        register('name', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('name', {
+            validate: {
+                value: (value: any) => (value && value.length) || t(langKeys.field_required),
+                basiclatin: (value: any) => validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
+            }
+        });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('method', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
