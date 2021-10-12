@@ -32,6 +32,7 @@ import BackupIcon from '@material-ui/icons/Backup';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
@@ -220,6 +221,7 @@ const TableZyx = React.memo(({
     ButtonsElement,
     pageSizeDefault = 20,
     importCSV,
+    handleTemplate,
     filterGeneral = true,
     loading = false,
     useSelection,
@@ -596,18 +598,17 @@ const TableZyx = React.memo(({
                                 ><Trans i18nKey={langKeys.import} />
                                 </Button>
                             </label>
-                            <label htmlFor="download-template">
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={loading}
-                                    //startIcon={<BackupIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.templatedownload} />
-                                </Button>
-                            </label>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                disabled={loading}
+                                startIcon={<ListAltIcon color="secondary" />}
+                                onClick={handleTemplate}
+                                style={{ backgroundColor: "#55BD84" }}
+                            ><Trans i18nKey={langKeys.template} />
+                            </Button>
                         </>
                     )}
                     {register && (

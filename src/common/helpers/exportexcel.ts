@@ -9,7 +9,7 @@ type ColumnTmp = {
     prefixTranslation?: string;
 }
 
-export function exportExcel(filename: string, csvData: Dictionary[], columnsexport: ColumnTmp[]): void {
+export function exportExcel(filename: string, csvData: Dictionary[], columnsexport?: ColumnTmp[]): void {
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
 

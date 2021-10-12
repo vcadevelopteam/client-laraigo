@@ -237,3 +237,14 @@ export const randomText = (length = 8, use_upper = false, use_number = false, us
         return r;
     }, []).join('');
 }
+
+export const templateMaker = (data: any[], header: string[]) => {
+    const max = Math.max(...data.map((d: Dictionary) => Object.keys(d).length));
+    let temp: any[] = new Array(max).fill(0).map(() => ({}));
+    for (let i = 0; i < max; i++) {
+        header.forEach((d, j) => {
+            temp[i][d] = Object.keys(data[j] || {})[i]
+        })
+    }
+    return temp;
+}
