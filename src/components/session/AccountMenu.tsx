@@ -4,13 +4,13 @@ import Popover from '@material-ui/core/Popover';
 import { ArrowDropDownIcon } from "icons";
 import { Trans } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { StatusConnection } from 'components';
 import { useSelector } from 'hooks';
 import { logout } from 'store/login/actions';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import { ManageOrganization, BadgeGo, StatusConnection } from 'components';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: theme.spacing(2),
             flexDirection: 'column',
             gap: theme.spacing(1.5),
-            width: 220
+            width: 250
         },
         infoContainer: {
             display: 'flex',
@@ -69,6 +69,7 @@ const AccountMenu: FC = () => {
     const history = useHistory();
 
     const user = useSelector(state => state.login.validateToken.user);
+    const userConnected = useSelector(state => state.inbox.userConnected);
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -94,7 +95,20 @@ const AccountMenu: FC = () => {
                 aria-describedby={id}
                 aria-haspopup="true"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
-                startIcon={<Avatar className={classes.icon} src={user?.image + "" || undefined} />}
+                startIcon={
+
+                    <BadgeGo
+                        overlap="circular"
+                        colortmp={userConnected ? "#44b700" : "#b41a1a"}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        variant="dot"
+                    >
+                        <Avatar className={classes.icon} src={user?.image + "" || undefined} />
+                    </BadgeGo>
+                }
                 endIcon={<ArrowDropDownIcon />}
             >
                 <div className={classes.infoContainer}>
@@ -125,15 +139,20 @@ const AccountMenu: FC = () => {
                         {user?.email}
                     </div>
                     <StatusConnection />
+                    <ManageOrganization />
                     <Button
                         onClick={gotoSettings}
                         variant="outlined"
-                        style={{fontWeight:"normal", textTransform: "uppercase",borderRadius: "20px"}}
+                        color="primary"
+                        fullWidth
+                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
                     >
                         <Trans i18nKey={langKeys.personalsettings} />
                     </Button>
                     <Button
+                        variant="outlined"
                         onClick={signOut}
+                        fullWidth
                         startIcon={<PowerSettingsNewIcon color="primary" />}
                         color="primary"
                     >
@@ -141,25 +160,6 @@ const AccountMenu: FC = () => {
                     </Button>
                 </div>
             </Popover>
-            {/* <Menu
-                id={id}
-                anchorEl={anchorEl}
-                getContentAnchorEl={null}
-                keepMounted
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-            >
-                <MenuItem onClick={(e) => { }}><Trans i18nKey={langKeys.changePassword} /></MenuItem>
-                <MenuItem onClick={signOut}><Trans i18nKey={langKeys.signoff} /></MenuItem>
-            </Menu> */}
         </div >
     );
 };

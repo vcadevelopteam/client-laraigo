@@ -53,11 +53,10 @@ const ManageOrganization: FC = () => {
         <FieldSelect
             label="Organization"
             valueDefault={user?.orgid}
-            style={{ width: 200 }}
+            className="w-full"
             onChange={handleChangeOrganization}
             variant="outlined"
             disabled={resChangeOrganization.loading}
-            // triggerOnChangeOnFirst={true}
             data={user?.organizations!!}
             optionDesc="orgdesc"
             optionValue="orgid"

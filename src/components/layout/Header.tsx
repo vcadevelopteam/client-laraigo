@@ -28,7 +28,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                         {/* <StatusConnection /> */}
-                        <ManageOrganization />
+                        {/* <ManageOrganization /> */}
                         <AccountMenu />
                     </div>
                 </div>
