@@ -78,7 +78,7 @@ const UserSettings: FC = () => {
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('image', uploadResult?.url)
+                setValue('image', uploadResult.url || '')
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
 
