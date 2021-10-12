@@ -27,6 +27,7 @@ export { default as InternalServererror } from './InternalServerError';
 export { default as Corporations } from './Corporations';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
+export { default as UserSettings } from './UserSettings';
 
 export * from './channels';
 export * from './signup';

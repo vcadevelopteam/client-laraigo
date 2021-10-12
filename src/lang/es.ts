@@ -95,7 +95,7 @@ const translation: LangKeys = {
     generate_password: 'Generar contraseña',
     send_password_by_email: 'Enviar contraseña por email',
     change_password_on_login: 'Cambiar contraseña al entrar',
-
+    personalsettings: "Configuración personal",
     property: 'Propiedad',
     property_plural: 'Propiedades',
 
@@ -167,9 +167,13 @@ const translation: LangKeys = {
     detail: 'Detalle',
     detail_plural: 'Detalles',
     whitelist: 'Whitelist',
+    usersettings: 'Preferencias de usuario',
     productivitybyhour: 'Productividad por hora',
     firstname: 'Nombre',
+    modifysettings: "Modificar campos",
     lastname: 'Apellido',
+    newpassword: "Nueva contraseña",
+    confirmnewpassword: "Confirmar nueva contraseña",
     email: 'Correo',
     address: 'Dirección',
     department: 'Departamento',

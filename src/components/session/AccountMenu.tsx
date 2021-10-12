@@ -80,6 +80,9 @@ const AccountMenu: FC = () => {
         dispatch(logout());
         history.push('/sign-in');
     }
+    const gotoSettings = () => {
+        history.push('/usersettings');
+    }
 
 
     const open = Boolean(anchorEl);
@@ -122,6 +125,13 @@ const AccountMenu: FC = () => {
                         {user?.email}
                     </div>
                     <StatusConnection />
+                    <Button
+                        onClick={gotoSettings}
+                        variant="outlined"
+                        style={{fontWeight:"normal", textTransform: "uppercase",borderRadius: "20px"}}
+                    >
+                        <Trans i18nKey={langKeys.personalsettings} />
+                    </Button>
                     <Button
                         onClick={signOut}
                         startIcon={<PowerSettingsNewIcon color="primary" />}

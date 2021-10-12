@@ -5,7 +5,7 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,
+	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard
 } from 'pages';
 
@@ -193,6 +193,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.WHITELIST}>
 					<Layout mainClasses={classes.main}><Whitelist /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.USERSETTINGS}>
+					<Layout mainClasses={classes.main}><UserSettings /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
 					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>

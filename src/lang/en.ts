@@ -80,7 +80,7 @@ const translation: LangKeys = {
     generate_password: 'Generate password',
     send_password_by_email: 'Send password by email',
     change_password_on_login: 'Change password on login',
-
+    personalsettings: "Personal settings",
     personinformation: 'Person',
     ticketinformation: 'Ticket',
     AIservices: 'AI Services',
@@ -160,10 +160,14 @@ const translation: LangKeys = {
     detail: 'Detail',
     detail_plural: 'Details',
     whitelist: 'Whitelist',
+    usersettings: 'User settings',
     newuser: "New user",
+    modifysettings: "Modify settings",
     rich_response: 'Enriched response',
 
     addressReference: 'Address refrence',
+    newpassword: "New password",
+    confirmnewpassword: "Confirm new password",
     birthday: 'Birthday',
     
     send_quickreply: 'Send quickreply',

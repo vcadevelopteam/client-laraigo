@@ -49,6 +49,7 @@ const paths = {
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',    
     WHITELIST: '/extras/whitelist',    
+    USERSETTINGS: '/usersettings',    
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',
     SLA: '/extras/sla',
