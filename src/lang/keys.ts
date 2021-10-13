@@ -550,6 +550,7 @@ export const langKeys = {
     field_required: 'field_required',
     emailverification: 'emailverification',
     code_duplicate: 'code_duplicate',
+    field_key_required: 'field_key_required',
     field_duplicate: 'field_duplicate',
     field_startwithchar: 'field_startwithchar',
     field_basiclatinlowercase: 'field_basiclatinlowercase',

@@ -113,7 +113,7 @@ const dataLevel: Dictionary = {
     ORGANIZATION: 'organization',
 }
 
-const dataLevelKeys = ['corpid','orgid'];
+const dataLevelKeys = ['corpid','orgid','status'];
 
 const IntegrationManager: FC = () => {
     const dispatch = useDispatch();
@@ -324,7 +324,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             parameters: row ? (row.parameters || []) : [],
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
-            fields: row ? (row.fields || [{name: 'corpid', key: true}]) : [{name: 'corpid', key: true}],
+            fields: row ? (row.fields || [{name: 'corpid', key: true},{name: 'status', key: false}]) : [{name: 'corpid', key: true},{name: 'status', key: false}],
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -348,7 +348,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         register('name', {
             validate: {
                 value: (value: any) => (value && value.length) || t(langKeys.field_required),
-                basiclatin: (value: any) => validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
+                basiclatin: (value: any) => getValues('type') !== 'CUSTOM' || validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
             }
         });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
@@ -385,6 +385,10 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             data.variables = v;
         }
         else if (data.isnew && data.type === 'CUSTOM') {
+            if (data.fields.filter(d => !dataLevelKeys.includes(d.name) && d.key === true).length === 0) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.field_key_required) }))
+                return null;
+            }
             let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/,'g');
             let rex2 = new RegExp(/[\s-]/,'g');
             let corpdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
@@ -515,7 +519,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }
 
     const disableKeys = (field: FieldType, i: number) => {
-        if (dataLevelKeys.includes(field?.name) && [0,1].includes(i)) {
+        if (dataLevelKeys.includes(field?.name)) {
             return true;
         }
         else if (dataKeys.has(field?.id) && !getValues('isnew')) {

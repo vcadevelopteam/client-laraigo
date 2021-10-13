@@ -501,6 +501,7 @@ const translation: LangKeys = {
     password_required: 'Password is required',
     code_duplicate: 'Code duplicated',
     field_required: 'Field is required',
+    field_key_required: 'Must add at least 1 "key" field',
     field_duplicate: 'Field duplicate',
     field_startwithchar: 'Field must start with a letter',
     field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
