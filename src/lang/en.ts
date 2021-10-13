@@ -23,6 +23,9 @@ const translation: LangKeys = {
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
 
+    advance_search: 'Advance search',
+    search_inbox: 'Search inbox',
+
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
     agent_message: 'Agent Messages',

@@ -1154,7 +1154,7 @@ const Users: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid })));
+            dispatch(execute(insUser({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.userid, pwdchangefirstlogin: false })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

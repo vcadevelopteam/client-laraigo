@@ -44,6 +44,9 @@ const translation: LangKeys = {
     addressReference: 'Ref. dirección',
     birthday: 'Cumpleaños',
 
+    advance_search: 'Búsqueda avanzada',
+    search_inbox: 'Buscar en la bandeja de entrada',
+
     agent_message: 'Mensajes del Asesor',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',

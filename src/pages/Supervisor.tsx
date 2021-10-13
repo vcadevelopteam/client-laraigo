@@ -13,13 +13,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
+import { getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
-import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
 
@@ -275,7 +274,8 @@ const Supervisor: FC = () => {
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateSel(0)
+            getMessageTemplateSel(0),
+            getCommChannelLst(),
         ]))
     }, [])
 

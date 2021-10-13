@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { ITicket } from "@types";
-import { AntTab } from 'components';
+import { AntTab, FieldMultiSelect, FieldEdit } from 'components';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import { SearchIcon } from 'icons';
@@ -20,7 +20,8 @@ import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { openDrawer } from 'store/popus/caseFunctions';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -282,7 +283,6 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
-        // padding: theme.spacing(1)
     },
     headerQuickReply: {
         fontSize: 14,
@@ -308,7 +308,21 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#bd95d7',
             fontWeight: 500
         }
-    }
+    },
+    titleFilter: {
+        fontSize: 15,
+        fontWeight: 500
+    },
+    containerDrawer: {
+        width: 300,
+        padding: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(2),
+    },
+    itemFilter: {
+        flex: 1,
+    },
 }));
 
 const filterAboutStatusName = (data: ITicket[], page: number, searchName: string): ITicket[] => {
@@ -405,12 +419,12 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         onBlur={() => {
                             // !search && setShowSearch(false)
                         }}
-                        placeholder="Search inbox"
+                        placeholder={t(langKeys.search_inbox)}
                         onChange={onChangeSearchTicket}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <Tooltip title="Advanced search" arrow>
+                                    <Tooltip title={t(langKeys.advance_search) + ""} arrow>
                                         <IconButton size="small" onClick={() => setDrawerOpen(true)}>
                                             <FilterListIcon />
                                         </IconButton>
@@ -433,18 +447,69 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                     ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
                 }
             </div>
-
-            <SwipeableDrawer
-                anchor='right'
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                onOpen={() => setDrawerOpen(true)}
-            >
-                <div>dasd</div>
-                <div>dasd</div>
-                <div>dasd</div>
-            </SwipeableDrawer>
+            <DrawerFilter
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+            />
         </div>
+    )
+}
+
+const DrawerFilter: React.FC<{ drawerOpen: boolean, setDrawerOpen: (param: boolean) => void }> = ({ drawerOpen, setDrawerOpen }) => {
+    const classes = useStyles();
+    const { t } = useTranslation();
+
+    const multiData = useSelector(state => state.main.multiData);
+
+    return (
+        <SwipeableDrawer
+            anchor='right'
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            onOpen={() => setDrawerOpen(true)}
+        >
+            <div className={classes.containerDrawer}>
+                <div className={classes.titleFilter}>{t(langKeys.advance_search)}</div>
+                <FieldMultiSelect
+                    label={t(langKeys.channel_plural)}
+                    variant="outlined"
+                    className={classes.itemFilter}
+                    // onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
+                    data={multiData?.data[6]?.data}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
+                />
+                <div>
+                    <div>{t(langKeys.conversation) + " " + t(langKeys.status)}</div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        <FormControlLabel
+                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
+                            label={t(langKeys.assigned)}
+                        />
+                        <FormControlLabel
+                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
+                            label={t(langKeys.closed)}
+                        />
+                        <FormControlLabel
+                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
+                            label={t(langKeys.paused)}
+                        />
+                    </div>
+                </div>
+                <FieldEdit
+                    label={t(langKeys.name)} // "Corporation"
+                    className="col-6"
+                    valueDefault=''
+                    variant="outlined"
+                />
+                <FieldEdit
+                    label={t(langKeys.phone)} // "Corporation"
+                    className="col-6"
+                    valueDefault=''
+                    variant="outlined"
+                />
+            </div>
+        </SwipeableDrawer>
     )
 }
 

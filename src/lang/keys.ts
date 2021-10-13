@@ -396,6 +396,8 @@ export const langKeys = {
     delete: 'delete',
     search: 'search',
     duplicate: 'duplicate',
+    advance_search: 'advance_search',
+    search_inbox: 'search_inbox',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
