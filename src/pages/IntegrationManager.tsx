@@ -561,27 +561,27 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             {
                 "url": `${getValues('url')}/{operation}`,
                 "insert_one": {
-                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
                 },
                 "insert_many": {
                     "data": [
-                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
-                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data2")}), {})
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data2`)}), {})
                     ]
                 },
                 "update": {
-                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data2")}), {}),
-                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data2`)}), {}),
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
                 },
                 "remove": {
-                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
                 },
                 "find_one": {
-                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
                     "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {})
                 },
                 "find_many": {
-                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
                     "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {}),
                     "limit": 10
                 }
