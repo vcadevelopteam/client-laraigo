@@ -31,7 +31,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        // border: '#EBEAED solid 1px',
+    },
+    appBarShift2: {
+        width: '100%',
+        transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        zIndex: theme.zIndex.drawer + 3,
     },
     menuButton: {
         marginRight: 36,
@@ -43,11 +50,11 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         whiteSpace: 'nowrap',
         color: theme.palette.text.primary,
+        borderColor: 'none',
     },
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.secondary.light,
-        borderColor: '#EBEAED',
     },
     drawerLabel: {
         margin: '8px 20px;',
@@ -79,17 +86,21 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        border: 'none',
+        // borderColor: 'white',
     },
     drawerClose: {
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        overflowX: 'hidden',
+        // overflowX: 'hidden',
+        overflowX: 'visible',
         width: theme.spacing(9) + 1,
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
         },
+        border: 'none',
         backgroundColor: "#7721AD",
         zIndex: 1202,
     },
@@ -119,11 +130,12 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(0, 1.5),
         stroke: '#8F92A1',
         fill: '#8F92A1',
+        backgroundColor: 'white',
         // necessary for content to be below app bar
         ...theme.mixins.toolbar,
     },
     toolbarClosed: {
-        justifyContent: 'center',
+        // justifyContent: 'center',
         stroke: 'white',
         fill: 'white',
     },

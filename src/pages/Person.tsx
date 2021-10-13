@@ -559,18 +559,18 @@ export const PersonDetail: FC = () => {
                                 label={<Trans i18nKey={langKeys.opportunity} count={2} />}
                                 value="3"
                             />
-                            <Tab
+                            {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.claim} count={2} />}
                                 value="4"
-                            />
+                            /> */}
                         </Tabs>
                     </AppBar>
                     <TabPanel value="0" index={tabIndex}><CommunicationChannelsTab person={person} /></TabPanel>
                     <TabPanel value="1" index={tabIndex}><AuditTab person={person} /></TabPanel>
                     <TabPanel value="2" index={tabIndex}><ConversationsTab person={person} /></TabPanel>
                     <TabPanel value="3" index={tabIndex}><OpportunitiesTab person={person} /></TabPanel>
-                    <TabPanel value="4" index={tabIndex}>qqq</TabPanel>
+                    {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
                 <div className={classes.profile}>
