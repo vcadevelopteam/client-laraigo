@@ -7,15 +7,11 @@ import { ISetting } from "@types";
 export interface IState {
     setting: IObjectState<ISetting>;
     propertySettings: IListState<any>;
-    loading: Boolean;
-    success: Boolean;
 }
 
 export const initialState: IState = {
     setting: initialObjectState,
     propertySettings: initialListState,
-    loading: false,
-    success: false,
 };
 
 export default createReducer<IState>(initialState, {

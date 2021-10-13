@@ -56,6 +56,7 @@ const UserSettings: FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const [waitsave, setwaitsave] = useState(false);
     const [disableButton, setdisableButton] = useState(false);
     const setting = useSelector(state => state.setting.setting);
     const uploadResult = useSelector(state => state.main.uploadFile);
@@ -78,7 +79,12 @@ const UserSettings: FC = () => {
         setWaitUploadFile(true);
     }
     useEffect(() => {
-        console.log(setting)
+        if(waitsave){
+            if (!setting.loading && !setting.error) {
+                setwaitsave(false)
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+            }
+        }
     }, [setting])
     useEffect(() => {
         if (waitUploadFile) {
@@ -113,6 +119,7 @@ const UserSettings: FC = () => {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
             return;
         }
+        setwaitsave(true)
         dispatch(updateUserSettings(data));
     });
     
