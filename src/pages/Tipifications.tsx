@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -621,18 +621,30 @@ const Tipifications: FC = () => {
                 header: null,
                 detail: data.map((x: any) => insClassification({
                     ...x,
-                    title:x.classification,
-                    communicationchannel:x.channels,
-                    tags:x.tag,
-                    parent:0,
-                    operation:"INSERT",
+                    title: x.classification || '',
+                    communicationchannel: x.channels || '',
+                    tags: x.tag || '',
+                    parent: x.parent || 0,
+                    operation: "INSERT",
                     type: 'TIPIFICACION',
-                    status: "ACTIVO",
-                    id:0,
+                    status: x.status || "ACTIVO",
+                    id: 0,
                 }))
             }, true));
             setWaitSave(true)
         }
+    }
+
+    const handleTemplate = () => {
+        const data = [
+            [],
+            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            [],
+            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''}),
+            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+        ];
+        const header = ['classification', 'channels', 'tag', 'parent', 'status'];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
     if (viewSelected === "view-1") {
@@ -651,6 +663,7 @@ const Tipifications: FC = () => {
                     download={true}
                     register={true}
                     importCSV={importCSV}
+                    handleTemplate={handleTemplate}
                     handleRegister={handleRegister}
                     ButtonsElement={()=>
                         <Button
