@@ -548,6 +548,7 @@ const translation: LangKeys = {
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
     code_duplicate: 'Código duplicado',
+    field_key_required: 'Debe añadir al menos 1 campo "llave"',
     field_duplicate: 'Campo duplicado',
     field_startwithchar: 'El campo debe comenzar con una letra',
     field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',
@@ -565,6 +566,7 @@ const translation: LangKeys = {
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
+    info: 'Info',
 
     error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
     error_zero_records: '5005: Nada a exportar',

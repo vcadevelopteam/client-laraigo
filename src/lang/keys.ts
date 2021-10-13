@@ -552,6 +552,7 @@ export const langKeys = {
     field_required: 'field_required',
     emailverification: 'emailverification',
     code_duplicate: 'code_duplicate',
+    field_key_required: 'field_key_required',
     field_duplicate: 'field_duplicate',
     field_startwithchar: 'field_startwithchar',
     field_basiclatinlowercase: 'field_basiclatinlowercase',
@@ -569,6 +570,7 @@ export const langKeys = {
     login_with_facebook: 'login_with_facebook',
     signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
+    info: 'info',
 
     error_request_services: 'error_request_services',
     error_already_exists_record: 'error_already_exists_record',
