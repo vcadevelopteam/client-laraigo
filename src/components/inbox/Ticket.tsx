@@ -11,6 +11,7 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/help
 const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; timer?: number }> = ({ label, color, timer, isTimer }) => {
     const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? timer : -1);
+    console.log(isMounted.current)
 
     React.useEffect(() => {
         isMounted.current = true;
@@ -25,7 +26,7 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
             isMounted.current = false;
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [time]);
 
     return (
         <div style={{ position: 'relative' }}>
