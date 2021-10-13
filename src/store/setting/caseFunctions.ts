@@ -1,5 +1,6 @@
 import { IAction } from "@types";
 import { initialState, IState } from "./reducer";
+import { saveAuthorizationToken } from "common/helpers";
 
 export const getSetting = (state: IState): IState => ({
     ...state,
@@ -32,18 +33,22 @@ export const getSettingReset = (state: IState): IState => ({
 });
 
 export const getUpdateUser = (state: IState): IState => ({
-    ...state,    
+    ...state,
     setting: { ...state.setting, loading: true, error: false },
 });
 
-export const getUpdateUserSuccess = (state: IState, action: IAction): IState => ({
-    ...state,
-    setting: {
-        value: action.payload.data?.[0],
-        loading: false,
-        error: false,
-    },
-});
+export const getUpdateUserSuccess = (state: IState, action: IAction): IState => {
+    saveAuthorizationToken(action.payload.data.token);
+
+    return {
+        ...state,
+        setting: {
+            value: action.payload.data?.[0],
+            loading: false,
+            error: false,
+        },
+    }
+};
 
 export const getUpdateUserFailure = (state: IState, action: IAction): IState => ({
     ...state,

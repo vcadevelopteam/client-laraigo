@@ -219,7 +219,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData?.data[1])
+        if (multiData && multiData?.data[1])
             setAgentsConnected(multiData?.data[3].data)
     }, [multiData])
 

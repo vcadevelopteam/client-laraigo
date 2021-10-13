@@ -6,13 +6,13 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Box, IconButton, InputAdornment } from '@material-ui/core';
+import { IconButton, InputAdornment } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import SaveIcon from '@material-ui/icons/Save';
-import { FieldEdit, TitleDetail } from 'components';
+import { FieldEdit } from 'components';
 import CameraAltIcon from '@material-ui/icons/CameraAlt';
-import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-
+import { showSnackbar } from 'store/popus/actions';
+import { updateUserInformation } from 'store/login/actions';
 import { useForm } from 'react-hook-form';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -22,7 +22,7 @@ import { updateUserSettings } from 'store/setting/actions';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(1),
         padding: theme.spacing(2),
         background: '#fff',
     },
@@ -58,7 +58,7 @@ const UserSettings: FC = () => {
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [waitsave, setwaitsave] = useState(false);
     const [disableButton, setdisableButton] = useState(false);
-    const setting = useSelector(state => state.setting.setting);
+    const resSetting = useSelector(state => state.setting.setting);
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, trigger, clearErrors } = useForm({
@@ -78,26 +78,33 @@ const UserSettings: FC = () => {
         dispatch(uploadFile(fd));
         setWaitUploadFile(true);
     }
+
     useEffect(() => {
-        if(waitsave){
-            if (!setting.loading && !setting.error) {
+        if (waitsave) {
+            if (!resSetting.loading && !resSetting.error) {
                 setwaitsave(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }));
+                dispatch(updateUserInformation(getValues('firstname') + "", getValues('lastname') + "", getValues('image') + ""));
+            } else if (resSetting.error) {
+                const errormessage = t(resSetting.code || "error_unexpected_error")
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setwaitsave(false);
             }
         }
-    }, [setting])
+    }, [resSetting])
+
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
                 setValue('image', uploadResult.url || '')
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
-                
+
                 setWaitUploadFile(false);
             }
         }
     }, [waitUploadFile, uploadResult])
-    
+
     const validateSamePassword = (value: string): any => {
         return getValues('password') === value;
     }
@@ -108,12 +115,12 @@ const UserSettings: FC = () => {
                 same: (value: any) => validateSamePassword(value) || "Contraseñas no coinciden"
             }
         });
-        register('oldpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
-        register('firstname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
-        register('lastname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required)} );
+        register('oldpassword', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('firstname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('lastname', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('image');
     }, [])
-    
+
     const onSubmit = handleSubmit((data) => {
         if (!data.oldpassword) {
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.password_required) }));
@@ -122,16 +129,17 @@ const UserSettings: FC = () => {
         setwaitsave(true)
         dispatch(updateUserSettings(data));
     });
-    
+
 
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TitleDetail
-                            title={t(langKeys.modifysettings)}
-                        />
+                    <div style={{
+                        fontSize: '22px',
+                        fontWeight: 'bold',
+                    }}>
+                        {t(langKeys.personalsettings)}
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <Button
@@ -161,10 +169,31 @@ const UserSettings: FC = () => {
                                 valueDefault={user?.lastname || ""}
                                 error={errors?.lastname?.message}
                             />
+                            <FieldEdit
+                                label={t(langKeys.password)}
+                                className="col-6"
+                                valueDefault={getValues('oldpassword')}
+                                type={showOldPassword ? 'text' : 'password'}
+                                onChange={(value) => setValue('oldpassword', value)}
+                                error={errors?.oldpassword?.message}
+                                InputProps={{
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label="toggle password visibility"
+                                                onClick={() => setOldShowPassword(!showOldPassword)}
+                                                edge="end"
+                                            >
+                                                {showOldPassword ? <Visibility /> : <VisibilityOff />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
                         </div>
                         <div className="col-6" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <div style={{ position: 'relative' }}>
-                                <Avatar style={{ width: 120, height: 120 }} src={getValues('image')|| undefined} />
+                                <Avatar style={{ width: 180, height: 180 }} src={getValues('image') || undefined} />
                                 <input
                                     name="file"
                                     accept="image/*"
@@ -223,30 +252,10 @@ const UserSettings: FC = () => {
                                     </InputAdornment>
                                 ),
                             }}
-                        />                        
+                        />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.password)}
-                            className="col-6"
-                            valueDefault={getValues('oldpassword')}
-                            type={showOldPassword ? 'text' : 'password'}
-                            onChange={(value) => setValue('oldpassword', value)}
-                            error={errors?.oldpassword?.message}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            aria-label="toggle password visibility"
-                                            onClick={() => setOldShowPassword(!showOldPassword)}
-                                            edge="end"
-                                        >
-                                            {showOldPassword ? <Visibility /> : <VisibilityOff />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
+
                     </div>
                 </div>
             </form>
