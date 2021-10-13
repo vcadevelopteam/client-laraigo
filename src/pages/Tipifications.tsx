@@ -614,36 +614,43 @@ const Tipifications: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
-
-            dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: null,
-                detail: data.map((x: any) => insClassification({
-                    ...x,
-                    title: x.classification || '',
-                    communicationchannel: x.channels || '',
-                    tags: x.tag || '',
-                    parent: x.parent || 0,
-                    operation: "INSERT",
-                    type: 'TIPIFICACION',
-                    status: x.status || "ACTIVO",
-                    id: 0,
-                }))
-            }, true));
-            setWaitSave(true)
+            let data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.classification)
+                    && !['', null, undefined].includes(d.channels)    
+                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: null,
+                    detail: data.map((x: any) => insClassification({
+                        ...x,
+                        title: x.classification,
+                        description: x.description,
+                        communicationchannel: x.channels,
+                        tags: x.tag || '',
+                        parent: x.parent || 0,
+                        operation: "INSERT",
+                        type: 'TIPIFICACION',
+                        status: x.status || "ACTIVO",
+                        id: 0,
+                    }))
+                }, true));
+                setWaitSave(true)
+            }
         }
     }
 
     const handleTemplate = () => {
         const data = [
-            [],
+            {},
+            {},
             mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
-            [],
+            {},
             mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''}),
             mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
         ];
-        const header = ['classification', 'channels', 'tag', 'parent', 'status'];
+        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
