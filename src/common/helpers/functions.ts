@@ -243,7 +243,11 @@ export const templateMaker = (data: any[], header: string[]) => {
     let temp: any[] = new Array(max).fill(0).map(() => ({}));
     for (let i = 0; i < max; i++) {
         header.forEach((d, j) => {
-            temp[i][d] = Object.keys(data[j] || {})[i]
+            let datakey = Object.keys(data[j] || {})[i];
+            if (datakey === data[j][datakey])
+                temp[i][d] = Object.keys(data[j] || {})[i]
+            else
+                temp[i][d] = `${datakey} - ${data[j][datakey]}`
         })
     }
     return temp;
