@@ -88,6 +88,19 @@ export function downloadCSV(filename: string, data: Dictionary[]) {
     }
 }
 
+export const downloadJson = (filename: string, data: any) => {
+    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 export function uploadCSV(file: any, owner: any = {}) {
     var reader = new FileReader();
     reader.readAsText(file);
