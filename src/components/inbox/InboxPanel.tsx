@@ -23,6 +23,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -388,6 +390,18 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search])
 
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketsToShow[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketsToShow]
+    )
+
     return (
         <div className={classes.containerTickets}>
             <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
@@ -443,10 +457,22 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                     />
                 }
             </div>
-            <div style={{ overflowY: 'auto' }}>
-                {ticketList.loading ? <ListItemSkeleton /> :
+            <div style={{ height: '100%', overflowY: 'hidden' }}>
+                <AutoSizer>
+                    {({ height, width }: any) => (
+                        <FixedSizeList
+                            width={width}
+                            height={height}
+                            itemCount={ticketsToShow.length}
+                            itemSize={97}
+                        >
+                            {RenderRow}
+                        </FixedSizeList>
+                    )}
+                </AutoSizer>
+                {/* {ticketList.loading ? <ListItemSkeleton /> :
                     ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
-                }
+                } */}
             </div>
             <DrawerFilter
                 drawerOpen={drawerOpen}
