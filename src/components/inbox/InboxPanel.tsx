@@ -12,6 +12,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
+import DrawerFilter from 'components/inbox/DrawerFilter'
 import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
@@ -450,66 +451,9 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
             <DrawerFilter
                 drawerOpen={drawerOpen}
                 setDrawerOpen={setDrawerOpen}
+                classes={classes}
             />
         </div>
-    )
-}
-
-const DrawerFilter: React.FC<{ drawerOpen: boolean, setDrawerOpen: (param: boolean) => void }> = ({ drawerOpen, setDrawerOpen }) => {
-    const classes = useStyles();
-    const { t } = useTranslation();
-
-    const multiData = useSelector(state => state.main.multiData);
-
-    return (
-        <SwipeableDrawer
-            anchor='right'
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-            onOpen={() => setDrawerOpen(true)}
-        >
-            <div className={classes.containerDrawer}>
-                <div className={classes.titleFilter}>{t(langKeys.advance_search)}</div>
-                <FieldMultiSelect
-                    label={t(langKeys.channel_plural)}
-                    variant="outlined"
-                    className={classes.itemFilter}
-                    // onChange={(value) => setFilters(p => ({ ...p, communicationchannelid: value.map((o: Dictionary) => o.communicationchannelid).join() }))}
-                    data={multiData?.data[6]?.data}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-                <div>
-                    <div>{t(langKeys.conversation) + " " + t(langKeys.status)}</div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <FormControlLabel
-                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
-                            label={t(langKeys.assigned)}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
-                            label={t(langKeys.closed)}
-                        />
-                        <FormControlLabel
-                            control={<Checkbox onChange={() => console.log('dsadsa')} name="checkedA" />}
-                            label={t(langKeys.paused)}
-                        />
-                    </div>
-                </div>
-                <FieldEdit
-                    label={t(langKeys.name)} // "Corporation"
-                    className="col-6"
-                    valueDefault=''
-                    variant="outlined"
-                />
-                <FieldEdit
-                    label={t(langKeys.phone)} // "Corporation"
-                    className="col-6"
-                    valueDefault=''
-                    variant="outlined"
-                />
-            </div>
-        </SwipeableDrawer>
     )
 }
 
