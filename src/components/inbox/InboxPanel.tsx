@@ -458,18 +458,23 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                 }
             </div>
             <div style={{ height: '100%', overflowY: 'hidden' }}>
-                <AutoSizer>
-                    {({ height, width }: any) => (
-                        <FixedSizeList
-                            width={width}
-                            height={height}
-                            itemCount={ticketsToShow.length}
-                            itemSize={97}
-                        >
-                            {RenderRow}
-                        </FixedSizeList>
-                    )}
-                </AutoSizer>
+                {
+                    ticketList.loading ?
+                    <ListItemSkeleton />
+                    :
+                    <AutoSizer>
+                        {({ height, width }: any) => (
+                            <FixedSizeList
+                                width={width}
+                                height={height}
+                                itemCount={ticketsToShow.length}
+                                itemSize={97}
+                            >
+                                {RenderRow}
+                            </FixedSizeList>
+                        )}
+                    </AutoSizer>
+                }
                 {/* {ticketList.loading ? <ListItemSkeleton /> :
                     ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
                 } */}
