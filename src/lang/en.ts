@@ -529,6 +529,7 @@ const translation: LangKeys = {
     links: "Links",
     emotions: "Emotions",
     path: "Path",
+    info: 'Info',
     connectface: "Connect your Facebook",
     connectface2: "Install the chatbot on your Facebook page and start getting leads.",
     connectface3: "You only need to be an administrator of your Facebook page.",

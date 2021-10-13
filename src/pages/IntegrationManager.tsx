@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -556,6 +556,39 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         dispatch(resetRequest());
     }
 
+    const onClickInfo = () => {
+        downloadJson("info",
+            {
+                "url": `${getValues('url')}/{operation}`,
+                "insert_one": {
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                },
+                "insert_many": {
+                    "data": [
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data2")}), {})
+                    ]
+                },
+                "update": {
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data2")}), {}),
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                },
+                "remove": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {})
+                },
+                "find_one": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
+                    "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {})
+                },
+                "find_many": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : "data1")}), {}),
+                    "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {}),
+                    "limit": 10
+                }
+            }
+        );
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -578,6 +611,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             style={{ backgroundColor: "#7721AD" }}
                             onClick={() => onClickTest()}
                         >{t(langKeys.test)}</Button>
+                        }
+                        {getValues('type') === 'CUSTOM' &&
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            style={{ backgroundColor: "#7721AD" }}
+                            onClick={() => onClickInfo()}
+                        >{t(langKeys.info)}</Button>
                         }
                         <Button
                             variant="contained"

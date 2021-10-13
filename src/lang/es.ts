@@ -562,6 +562,7 @@ const translation: LangKeys = {
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
+    info: 'Info',
 
     error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
     error_zero_records: '5005: Nada a exportar',
