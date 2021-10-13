@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { ITicket } from "@types";
-import { AntTab, FieldMultiSelect, FieldEdit } from 'components';
+import { AntTab } from 'components';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import { SearchIcon } from 'icons';
@@ -20,9 +20,6 @@ import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {

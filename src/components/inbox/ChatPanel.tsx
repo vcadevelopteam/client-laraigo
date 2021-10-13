@@ -184,11 +184,6 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         </DialogZyx>)
 }
 
-
-
-
-
-
 const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -545,6 +540,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
     const handleClose = () => setAnchorEl(null);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
@@ -554,11 +550,13 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                    <IconButton onClick={closeTicket}>
-                        <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
-                    </IconButton>
-                </Tooltip>
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={closeTicket}>
+                            <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
                 <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
                     <MoreVertIcon />
                 </IconButton>
@@ -578,31 +576,39 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                <MenuItem onClick={() => {
-                    setOpenModalReassignticket(true)
-                    setAnchorEl(null)
-                }}>
-                    <ListItemIcon color="inherit">
-                        <ReassignIcon width={18} style={{ fill: '#2E2C34' }} />
-                    </ListItemIcon>
-                    {t(langKeys.reassign)}
-                </MenuItem>
-                <MenuItem onClick={() => {
-                    setAnchorEl(null)
-                    setOpenModalTipification(true)
-                }}>
-                    <ListItemIcon>
-                        <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
-                    </ListItemIcon>
-                    {t(langKeys.typify)}</MenuItem>
-                <MenuItem onClick={() => {
-                    setAnchorEl(null)
-                    setOpenModalHSM(true)
-                }}>
-                    <ListItemIcon>
-                        <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
-                    </ListItemIcon>
-                    {t(langKeys.send_hsm)}</MenuItem>
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <MenuItem onClick={() => {
+                        setOpenModalReassignticket(true)
+                        setAnchorEl(null)
+                    }}>
+                        <ListItemIcon color="inherit">
+                            <ReassignIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.reassign)}
+                    </MenuItem>
+                }
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+                        setOpenModalTipification(true)
+                    }}>
+                        <ListItemIcon>
+                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.typify)}
+                    </MenuItem>
+                }
+                {ticketSelected?.communicationchanneltype.includes('WHA') &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+                        setOpenModalHSM(true)
+                    }}>
+                        <ListItemIcon>
+                            <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.send_hsm)}
+                    </MenuItem>
+                }
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}
