@@ -396,7 +396,7 @@ const InappropriateWords: FC = () => {
     }
 
     const handleTemplate = () => {
-        const data = [dataClassification, [], [], mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const data = [dataClassification, {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
         const header = ['classification', 'description', 'defaultanswer', 'status'];
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }

@@ -33,26 +33,32 @@ export const getSettingReset = (state: IState): IState => ({
 
 export const getUpdateUser = (state: IState): IState => ({
     ...state,    
-    loading: true,
-    success: false
+    setting: { ...state.setting, loading: true, error: false },
 });
 
 export const getUpdateUserSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    loading: false,
-    success: true
+    setting: {
+        value: action.payload.data?.[0],
+        loading: false,
+        error: false,
+    },
 });
 
 export const getUpdateUserFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    loading: false,
-    success: false
+    setting: {
+        ...state.setting,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getSettingFailure:error',
+        message: action.payload.message || 'Error al obtener las configuraciones',
+    },
 });
 
 export const getUpdateUserReset = (state: IState): IState => ({
     ...state,
-    loading: false,
-    success: false,
+    setting: initialState.setting,
 });
 
 export const getPropertySettings = (state: IState): IState => ({
