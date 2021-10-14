@@ -38,7 +38,7 @@ const analysis_type = [
         description: 'DESACTIVADO'
     },
     {
-        value: 'BYINTERACCION',
+        value: 'BYINTERACTION',
         description: 'Por Interaccion'
     },
     {
@@ -46,6 +46,17 @@ const analysis_type = [
         description: 'Por Conversacion'
     }
 ];
+
+const service_type_tone = [
+    {
+        value: 'CUSTOMER',
+        description: 'Atención al cliente'
+    },
+    {
+        value: 'GENERAL',
+        description: 'General'
+    },
+]
 
 const nlu_fields = [
     {
@@ -77,6 +88,7 @@ const nlu_fields = [
         description: 'Sentimiento'
     }
 ]
+
 interface servicesData {
     service: string,
     intelligentmodelsid: number,
@@ -186,6 +198,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
         translationservice: '',
         analyzecustomer: false,
         analyzebot: false,
+        servicetype: '',
         analyzeuser: false,
         categories: false,
         concepts: false,
@@ -374,7 +387,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
-                                    <Typography style={{ fontSize: '24px' }}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
+                                    <Typography style={{ fontSize: 16 }}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <form onSubmit={onSubmit} style={{ width: '100%' }}>
@@ -392,7 +405,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                                 fieldUpdate(i, { ...fields[i], service: '' })
                                                                 dispatch(showSnackbar({ show: true, success: false, message: 'This service is already selected' }))
                                                                 return
-                                                            } 
+                                                            }
                                                             // else {
                                                             //     setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
                                                             // }
@@ -465,6 +478,26 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         </div>
                                                     </div>
                                                 )}
+                                                {getValues(`services.${i}.service`) === 'TONE ANALYZER' && (
+                                                    <FieldSelect
+                                                        fregister={{
+                                                            ...register(`services.${i}.servicetype`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        onChange={(value) => {
+                                                            fieldUpdate(i, { ...fields[i], servicetype: value.value })
+                                                        }
+                                                        }
+                                                        label={'Service type'} //traduccion
+                                                        className={classes.mb2}
+                                                        valueDefault={(item.servicetype) ? item.servicetype : ''}
+                                                        error={errors?.services?.[i]?.servicetype?.message}
+                                                        data={service_type_tone}
+                                                        optionDesc="description"
+                                                        optionValue="value"
+                                                    />
+                                                )}
                                                 <FieldSelect
                                                     fregister={{
                                                         ...register(`services.${i}.analyzemode`, {
@@ -478,7 +511,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     onChange={(value) => {
                                                         fieldUpdate(i, { ...fields[i], analyzemode: value.value })
                                                     }}
-                                                    // onChange={(value) => setValue(`services.${i}.analysis_type`, value.value)}
                                                     data={analysis_type}
                                                     optionDesc="description"
                                                     optionValue="value"

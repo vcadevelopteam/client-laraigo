@@ -57,10 +57,18 @@ const UserSettings: FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [waitsave, setwaitsave] = useState(false);
+<<<<<<< HEAD
     const resSetting = useSelector(state => state.setting.setting);
     const uploadResult = useSelector(state => state.main.uploadFile);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }} = useForm({
+=======
+    const [disableButton] = useState(false);
+    const resSetting = useSelector(state => state.setting.setting);
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+>>>>>>> d8949164ec1d2c637c736357c92014e597148346
         defaultValues: {
             oldpassword: '',
             password: '',
