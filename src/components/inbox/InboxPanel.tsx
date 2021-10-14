@@ -20,7 +20,6 @@ import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import { openDrawer } from 'store/popus/caseFunctions';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {

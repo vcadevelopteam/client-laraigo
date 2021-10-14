@@ -4,7 +4,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 // import { useSelector } from 'hooks';
 import { useSelector } from 'hooks';
-import { AccountMenu, ManageOrganization } from 'components';
+import { AccountMenu } from 'components';
 
 type IProps = {
     classes: any;

@@ -97,7 +97,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
         register('type');
         register('id');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('company', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('company');
         register('usergroup');
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('totaltmo', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -286,6 +286,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         <div className="row-zyx">
                             {edit ?
                                 <FieldEdit
+                                type="time"
                                 label={"TMO total min"} 
                                 className="col-4"
                                 onChange={(value) => setValue('totaltmomin', value)}
@@ -299,6 +300,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />}
                             {edit ?
                                 <FieldEdit
+                                    type="time"
                                     label={"TMO total max"} 
                                     className="col-4"
                                     onChange={(value) => setValue('totaltmo', value)}
@@ -312,6 +314,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />}
                             {edit ?
                                 <FieldEdit
+                                    type="number"
                                     label={t(langKeys.tmopercentobj)} 
                                     className="col-4"
                                     onChange={(value) => setValue('totaltmopercentmax', value)}
@@ -327,6 +330,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                         <div className="row-zyx">
                             {edit ?
                                 <FieldEdit
+                                type="time"
                                 label={"TMO user min"} 
                                 className="col-4"
                                 onChange={(value) => setValue('usertmomin', value)}
@@ -340,6 +344,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />}
                             {edit ?
                                 <FieldEdit
+                                    type="time"
                                     label={"TMO user max"} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmo', value)}
@@ -353,6 +358,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />}
                             {edit ?
                                 <FieldEdit
+                                    type="number"
                                     label={t(langKeys.usertmopercentmax)} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmopercentmax', value)}
@@ -369,6 +375,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             
                             {edit ?
                                 <FieldEdit
+                                    type="time"
                                     label={"TME user max"} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertme', value)}
@@ -382,6 +389,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 />}
                             {edit ?
                                 <FieldEdit
+                                    type="number"
                                     label={t(langKeys.usertmepercentmax)} 
                                     className="col-4"
                                     onChange={(value) => setValue('usertmepercentmax', value)}

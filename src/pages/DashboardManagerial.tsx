@@ -6,13 +6,19 @@ import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
 import { resetMain, getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import clsx from 'clsx';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import PersonIcon from '@material-ui/icons/Person';
+import ChatIcon from '@material-ui/icons/Chat';
+import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from 'react-i18next';
 import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerencialencuestasel, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
@@ -185,6 +191,18 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         dontshow: {
             display: "none"
+        },
+        downloadiconcontainer:{
+            width:"100%",display: "flex",justifyContent: "end"
+        },
+        styleicon:{
+            width: "18px",
+            height: "18px"
+        },
+        containertitleboxes:{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%"
         }
     }),
 );
@@ -293,6 +311,8 @@ const DashboardManagerial: FC = () => {
         avgconversationsattended: "0%",
         maxavgconversationsattendedasesor: "0%",
         minvgconversationsattendedbot: "0%",
+        iconconversationsattendedasesor: true,
+        iconconversationsattendedbot: true
     });
     const [dataTMOgraph, setDataTMOgraph] = useState([
         { label: t(langKeys.quantitymeets), quantity: 0 },
@@ -362,7 +382,7 @@ const DashboardManagerial: FC = () => {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
-                let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                let variacionperc = (tickets_comply / tickets_analyzed - parseFloat(target_percmax))*100
                 variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
@@ -421,7 +441,7 @@ const DashboardManagerial: FC = () => {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTME[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
-                let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                let variacionperc = (tickets_comply / tickets_analyzed - parseFloat(target_percmax))*100
                 variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
@@ -613,7 +633,7 @@ const DashboardManagerial: FC = () => {
                 fcrtotalpromoters: fcr_yes,
                 fcrtotaldetractors: fcr_no,
                 fcrtotalconversations: total_bot,
-                dataFIX: `${((toshowfcr) * 100).toFixed(2)}%`,
+                dataFIX: `${((toshowfix) * 100).toFixed(2)}%`,
                 fixvariacioncolor: (toshowfix - nps_green) * 100 >= 0,
                 fix_green: `${(parseFloat(fix_green) * 100).toFixed(2)}%`,
                 fixvariation: `${((toshowfix - fix_green) * 100).toFixed(2)}%`,
@@ -650,13 +670,17 @@ const DashboardManagerial: FC = () => {
             avgconversationsattended: "0%",
             maxavgconversationsattendedasesor: "0%",
             minvgconversationsattendedbot: "0%",
+            iconconversationsattendedasesor: true,
+            iconconversationsattendedbot: true
         })
         if (resDashboard.length) {
-            const { ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot } = resDashboard[0];
+            const { avgparam,ticketscerrados, ticketstotal, ticketscerradosasesor, ticketscerradosbot } = resDashboard[0];
             setDataDASHBOARD({
                 avgconversationsattended: ((ticketscerrados * 100) / ticketstotal).toFixed() + "%",
                 maxavgconversationsattendedasesor: ((ticketscerradosasesor * 100) / ticketstotal).toFixed() + "%",
                 minvgconversationsattendedbot: ((ticketscerradosbot * 100) / ticketstotal).toFixed() + "%",
+                iconconversationsattendedasesor: parseFloat(avgparam) < (ticketscerradosasesor / ticketstotal),
+                iconconversationsattendedbot: parseFloat(avgparam) < (ticketscerradosbot / ticketstotal)
             })
 
         }
@@ -829,6 +853,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -858,11 +883,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMOgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -873,7 +899,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={clsx(classes.containerFields, data.variacionperccolor ? classes.colorgreen : classes.colorred)}>
                                 <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{data.variacionperc}%</div>
+                                <div className={classes.datafield}>{data.variacionperc.toFixed(2)}%</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
@@ -894,6 +920,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
@@ -923,11 +950,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMEgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -938,7 +966,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
                                 <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{dataTME.variacionperc}%</div>
+                                <div className={classes.datafield}>{dataTME.variacionperc.toFixed(2)}%</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
@@ -962,6 +990,7 @@ const DashboardManagerial: FC = () => {
                         style={{ backgroundColor: "#53a6fa", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.tmrglobal}</div>
                         </div>
@@ -971,6 +1000,7 @@ const DashboardManagerial: FC = () => {
                         style={{ backgroundColor: "#22b66e", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Asesor</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
@@ -980,6 +1010,7 @@ const DashboardManagerial: FC = () => {
                         style={{ backgroundColor: "#fdab29", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRBot}</div>
                         </div>
@@ -989,6 +1020,7 @@ const DashboardManagerial: FC = () => {
                         style={{ backgroundColor: "#907eec", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Client</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
@@ -998,6 +1030,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -1027,11 +1060,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataNPSgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1057,6 +1091,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -1086,11 +1121,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataCSATgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1118,6 +1154,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1147,11 +1184,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFCRgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1173,6 +1211,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>
@@ -1202,11 +1241,12 @@ const DashboardManagerial: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFIXgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1230,52 +1270,77 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
-                        <div className={classes.boxtitlequarter}>Average conversations attended by hour</div>
-                        <div className="row-zyx" style={{ paddingTop: "10px" }}>
-                            <div style={{ width: "50%" }}>{dataSummary.maxavgtickethour}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdescdate}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbyhour)}</div>
+                        <div style={{display: "flex",  width: "100%"}}>
+                            <div style={{width: "100%"}}>
+                                <div className="row-zyx" style={{ paddingTop: "10px" }}>
+                                    <div style={{ width: "50%" }}>{dataSummary.maxavgtickethour}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdescdate}</div>
+                                </div>
+                                <div className="row-zyx" style={{ paddingTop: "0"  }}>
+                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdeschour}</div>
+                                </div>
+                            </div>
+                            <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>                        
                         </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>
-                            <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdeschour}</div>
-                        </div>
-                        <div className="row-zyx" style={{ paddingTop: "30px" }}>
-                            <div style={{ width: "50%" }}>{dataSummary.minvgtickethour}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdescdate}</div>
-                        </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>
-                            <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdeschour}</div>
+                        <div style={{display: "flex",  width: "100%"}}>
+                            <div style={{width: "100%"}}>
+                                <div className="row-zyx" style={{ paddingTop: "30px" }}>
+                                    <div style={{ width: "50%" }}>{dataSummary.minvgtickethour}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdescdate}</div>
+                                </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>
+                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdeschour}</div>
+                                </div>
+                            </div>
+                            <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
                         </div>
                     </Box>
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
-                        <div className={classes.boxtitlequarter}>Average conversations attended by the advisor by hour</div>
-                        <div className="row-zyx" style={{ paddingTop: "10px" }}>
-                            <div style={{ width: "50%" }}>{dataSummary.maxavgticketasesorhour}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdescdate}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
+                        <div style={{display: "flex",  width: "100%"}}>
+                            <div style={{width: "100%"}}>
+                                <div className="row-zyx" style={{ paddingTop: "10px" }}>
+                                    <div style={{ width: "50%" }}>{dataSummary.maxavgticketasesorhour}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdescdate}</div>
+                                </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>
+                                    <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdeschour}</div>
+                                </div>
+                            </div>
+                            <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>                        
                         </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>
-                            <div style={{ width: "50%" }}>{t(langKeys.highestvalue)}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdeschour}</div>
-                        </div>
-                        <div className="row-zyx" style={{ paddingTop: "30px" }}>
-                            <div style={{ width: "50%" }}>{dataSummary.minvgtickethour}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdescdate}</div>
-                        </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>
-                            <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
-                            <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdeschour}</div>
+                        <div style={{display: "flex",  width: "100%"}}>
+                            <div style={{width: "100%"}}>
+                                <div className="row-zyx" style={{ paddingTop: "30px" }}>
+                                    <div style={{ width: "50%" }}>{dataSummary.minvgtickethour}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdescdate}</div>
+                                </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>
+                                    <div style={{ width: "50%" }}>{t(langKeys.lowestvalue)}</div>
+                                    <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdeschour}</div>
+                                </div>
+                            </div>
+                            <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
                         </div>
                     </Box>
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
-                        <div className={classes.boxtitlequarter}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
-                        <div className={classes.boxtitlequarter}>Average number of advisers connected by hour</div>
+                        <div className={classes.containertitleboxes}>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
+                            <CloudDownloadIcon className={classes.styleicon}/>
+                        </div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.averagenumberofadvisersconnectedbyhour)}</div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <LineChart data={resAsesoreconectadosbar}>
@@ -1295,19 +1360,39 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataDASHBOARD.avgconversationsattended}</div>
-                        <div className={classes.boxtitlequarter}>Conversations attended </div>
-                        <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}</div>
-                        <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.conversationsattended)}</div>
+                        <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <div>
+                                <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataDASHBOARD.maxavgconversationsattendedasesor} </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbyasesor)}</div>
+                            </div>
+                            {
+                                dataDASHBOARD.iconconversationsattendedasesor?
+                                    <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"red",marginTop: "23px"}}/>
+
+                            }
+                        </div>
+                        
+                        <div style={{display:"flex",justifyContent:"space-between"}}>
+                            <div>
+                                <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataDASHBOARD.minvgconversationsattendedbot} </div>
+                                <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.attendedbybot)}</div>
+                            </div>
+                            {
+                                dataDASHBOARD.iconconversationsattendedbot?
+                                    <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"red",marginTop: "23px"}}/>
+
+                            }
+                        </div>
                     </Box>
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
-                        <div className={classes.boxtitlequarter}>Average Interaction by conversation</div>
+                        <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Asesor</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
@@ -1316,7 +1401,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
-                        <div className={classes.boxtitlequarter}>Top 5 labels</div>
+                        <div className={classes.containertitleboxes}>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.top5labels)}</div>
+                            <CloudDownloadIcon className={classes.styleicon}/>
+                        </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                                 <BarChart data={resLabels}>
