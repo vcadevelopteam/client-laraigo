@@ -454,7 +454,9 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [showReply, setShowReply] = useState(true);
 
     useEffect(() => {
-        if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
+        if (ticketSelected?.status === "CERRADO")
+            setShowReply(false);
+        else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
             if (getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600 > 24) {
                 setShowReply(false);
             }

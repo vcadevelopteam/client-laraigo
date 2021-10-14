@@ -73,18 +73,6 @@ const Aside = ({ classes, theme, routes }: IProps) => {
     const dispatch = useDispatch();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
-/*
-    const ChevronIcon: FC = () => {
-        if (!openDrawer) {
-            return (
-                <ThemeProvider theme={whiteIconTheme}>
-                    {theme.direction === 'rtl' ? <ChevronLeft /> : <ChevronRight />}
-                </ThemeProvider>
-            );
-        } else {
-            return theme.direction === 'rtl' ? <ChevronRight color="primary" /> : <ChevronLeft color="primary" />;
-        }
-    };*/
 
     return (
         <Drawer
@@ -102,19 +90,21 @@ const Aside = ({ classes, theme, routes }: IProps) => {
                 }),
             }}
         >
-            <div className={clsx(classes.toolbar, !openDrawer && classes.toolbarClosed)}>
-                <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
+            <div className={classes.toolbar}>
+                {/* <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
                     <Menu />
                 </IconButton>
                 <img
-                    src={openDrawer ? "/Laraigo-logo-name.svg" : "/Laraigo-logo_white.svg"}
-                    style={{ height: 37, display: openDrawer ? 'block' : 'none' }}
+                    src="/Laraigo-logo-name.svg"
+                    style={{ height: 37 }}
                     alt="logo"
-                />
+                /> */}
             </div>
             <Divider />
             <div style={{ height: 18 }} />
+            <div style={{ overflowX: 'hidden' }}>
             {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
+            </div>
             <div style={{ flexGrow: 1 }} />
         </Drawer>
     );

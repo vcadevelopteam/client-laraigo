@@ -25,7 +25,7 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
             isMounted.current = false;
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [time]);
 
     return (
         <div style={{ position: 'relative' }}>
@@ -70,7 +70,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
                         label={ticketnum}
-                        color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
+                        color={status === 'ASIGNADO' ? "#55BD84" : ( status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
                         isTimer={true}

@@ -244,6 +244,7 @@ interface InputProps {
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
     InputProps?: any;
+    size?: "small" | "medium" | undefined;
 }
 
 interface TemplateAutocompleteProps extends InputProps {
@@ -254,7 +255,7 @@ interface TemplateAutocompleteProps extends InputProps {
     triggerOnChangeOnFirst?: boolean;
 }
 
-export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
+export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
     const [value, setvalue] = useState("");
 
     useEffect(() => {
@@ -275,6 +276,7 @@ export const FieldEdit: React.FC<InputProps> = ({ label, className, disabled = f
                 error={!!error}
                 helperText={error || null}
                 rows={rows}
+                size={size}
                 onChange={(e) => {
                     setvalue(e.target.value);
                     onChange && onChange(e.target.value);

@@ -23,6 +23,10 @@ const translation: LangKeys = {
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
 
+    advance_search: 'Advance search',
+    search_inbox: 'Search inbox',
+    search_result: 'Search result',
+
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
     agent_message: 'Agent Messages',
@@ -204,7 +208,7 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
 
-    no_reply_use_hsm: 'Conversation blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
+    no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
 
     status: 'Status',
     status_plural: 'States',
@@ -508,6 +512,7 @@ const translation: LangKeys = {
     password_required: 'Password is required',
     code_duplicate: 'Code duplicated',
     field_required: 'Field is required',
+    field_key_required: 'Must add at least 1 "key" field',
     field_duplicate: 'Field duplicate',
     field_startwithchar: 'Field must start with a letter',
     field_basiclatinlowercase: 'Field must contain only basic Latin lowercase or digits',
@@ -536,6 +541,7 @@ const translation: LangKeys = {
     links: "Links",
     emotions: "Emotions",
     path: "Path",
+    info: 'Info',
     connectface: "Connect your Facebook",
     connectface2: "Install the chatbot on your Facebook page and start getting leads.",
     connectface3: "You only need to be an administrator of your Facebook page.",

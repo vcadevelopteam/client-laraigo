@@ -12,14 +12,17 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
+import DrawerFilter from 'components/inbox/DrawerFilter'
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -281,7 +284,6 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
-        // padding: theme.spacing(1)
     },
     headerQuickReply: {
         fontSize: 14,
@@ -307,7 +309,21 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#bd95d7',
             fontWeight: 500
         }
-    }
+    },
+    titleFilter: {
+        fontSize: 15,
+        fontWeight: 500
+    },
+    containerDrawer: {
+        width: 300,
+        padding: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(2),
+    },
+    itemFilter: {
+        flex: 1,
+    },
 }));
 
 const filterAboutStatusName = (data: ITicket[], page: number, searchName: string): ITicket[] => {
@@ -342,7 +358,9 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
+    const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const isFiltering = useSelector(state => state.inbox.isFiltering);
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
@@ -372,10 +390,34 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search])
 
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketsToShow[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketsToShow]
+    )
+
+    const RenderRowFilterd = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketFilteredList.data[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketFilteredList.data]
+    )
+
     return (
         <div className={classes.containerTickets}>
             <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
-                {!showSearch ?
+                {!showSearch && !isFiltering ?
                     <>
                         <Tabs
                             value={pageSelected}
@@ -402,18 +444,28 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         autoFocus
                         style={{ margin: '8px 10px' }}
                         onBlur={() => {
-                            // !search && setShowSearch(false)
+                            setTimeout(() => {
+                                !search && setShowSearch(false)
+                            }, 200);
                         }}
-                        placeholder="Search inbox"
+                        placeholder={t(langKeys.search_inbox)}
                         onChange={onChangeSearchTicket}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <Tooltip title="Advanced search" arrow>
+                                    {isFiltering &&
+                                        <Tooltip title={t(langKeys.clean) + ""} arrow>
+                                            <IconButton size="small" onClick={() => dispatch(setIsFiltering(false))}>
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    }
+                                    <Tooltip title={t(langKeys.advance_search) + ""} arrow>
                                         <IconButton size="small" onClick={() => setDrawerOpen(true)}>
                                             <FilterListIcon />
                                         </IconButton>
                                     </Tooltip>
+
                                 </InputAdornment>
                             ),
                             endAdornment: (
@@ -427,22 +479,50 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                     />
                 }
             </div>
-            <div style={{ overflowY: 'auto' }}>
-                {ticketList.loading ? <ListItemSkeleton /> :
-                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
+            <div style={{ height: '100%', overflowY: 'hidden' }}>
+                {
+                    isFiltering ?
+                        <>
+                            <div style={{ fontWeight: 500, padding: 8, fontSize: 15, borderBottom: '1px solid rgb(235, 234, 237)' }}>{t(langKeys.search_result)}</div>
+                            {ticketFilteredList.loading ? <ListItemSkeleton /> :
+                                <AutoSizer>
+                                    {({ height, width }: any) => (
+                                        <FixedSizeList
+                                            width={width}
+                                            height={height}
+                                            itemCount={ticketFilteredList.data.length}
+                                            itemSize={97}
+                                        >
+                                            {RenderRowFilterd}
+                                        </FixedSizeList>
+                                    )}
+                                </AutoSizer>
+                            }
+                        </>
+                        : (ticketList.loading ? <ListItemSkeleton /> :
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={ticketsToShow.length}
+                                        itemSize={97}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        )
                 }
+                {/* {ticketList.loading ? <ListItemSkeleton /> :
+                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
+                } */}
             </div>
-
-            <SwipeableDrawer
-                anchor='right'
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-                onOpen={() => setDrawerOpen(true)}
-            >
-                <div>dasd</div>
-                <div>dasd</div>
-                <div>dasd</div>
-            </SwipeableDrawer>
+            <DrawerFilter
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+                classes={classes}
+            />
         </div>
     )
 }

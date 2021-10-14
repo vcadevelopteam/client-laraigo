@@ -44,7 +44,11 @@ const translation: LangKeys = {
     addressReference: 'Ref. dirección',
     birthday: 'Cumpleaños',
 
+    advance_search: 'Búsqueda avanzada',
+    search_inbox: 'Buscar en la bandeja de entrada',
+
     agent_message: 'Mensajes del Asesor',
+    search_result: 'Resultado de búsqueda',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',
@@ -322,7 +326,7 @@ const translation: LangKeys = {
     inactive: 'Inactivo',
 
     status_activo: 'activo',
-    no_reply_use_hsm: 'Conversación bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
+    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
@@ -553,6 +557,7 @@ const translation: LangKeys = {
     password_required: 'La contraseña es requerida',
     field_required: 'El campo es requerido',
     code_duplicate: 'Código duplicado',
+    field_key_required: 'Debe añadir al menos 1 campo "llave"',
     field_duplicate: 'Campo duplicado',
     field_startwithchar: 'El campo debe comenzar con una letra',
     field_basiclatinlowercase: 'El campo debe contener únicamente mínusculas de latín básico o dígitos',
@@ -570,6 +575,7 @@ const translation: LangKeys = {
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
+    info: 'Info',
 
     error_cos_unexpected: '5005: Hubo un error, comuniquese con el administrador',
     error_zero_records: '5005: Nada a exportar',

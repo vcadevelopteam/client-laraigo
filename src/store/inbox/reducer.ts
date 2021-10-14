@@ -23,6 +23,7 @@ const initialTransaction: IBaseState = {
 
 export interface IState {
     ticketList: IListStatePaginated<ITicket>;
+    ticketFilteredList: IListStatePaginated<ITicket>;
     previewTicketList: IListStatePaginated<ITicket>;
     interactionList: IListStatePaginated<IGroupInteraction>;
     interactionExtraList: IListStatePaginated<IGroupInteraction>;
@@ -46,10 +47,12 @@ export interface IState {
     isOnBottom: boolean | null;
     triggerNewMessageClient: boolean | null;
     triggerConnectAgentGo: IBaseState;
+    isFiltering: boolean;
 }
 
 export const initialState: IState = {
     agentList: initialListPaginatedState,
+    ticketFilteredList: initialListPaginatedState,
     ticketList: initialListPaginatedState,
     previewTicketList: initialListPaginatedState,
     interactionList: initialListPaginatedState,
@@ -72,7 +75,8 @@ export const initialState: IState = {
     wsConnected: false,
     userConnected: !!localStorage.getItem("agentConnected"),
     isOnBottom: null,
-    triggerNewMessageClient: false
+    triggerNewMessageClient: false,
+    isFiltering: false,
 };
 
 export default createReducer<IState>(initialState, {
@@ -85,6 +89,13 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_AGENTS_SUCCESS]: caseFunctions.getAgentsSuccess,
     [actionTypes.GET_AGENTS_FAILURE]: caseFunctions.getAgentsFailure,
     [actionTypes.GET_AGENTS_RESET]: caseFunctions.getAgentsReset,
+
+
+    [actionTypes.FILTER_TICKETS]: caseFunctions.filterTickets,
+    [actionTypes.FILTER_TICKETS_SUCCESS]: caseFunctions.filterTicketsSuccess,
+    [actionTypes.FILTER_TICKETS_FAILURE]: caseFunctions.filterTicketsFailure,
+    [actionTypes.FILTER_TICKETS_RESET]: caseFunctions.filterTicketsReset,
+
 
     [actionTypes.GET_INTERACTIONS_EXTRA]: caseFunctions.getInteractionsExtra,
     [actionTypes.GET_INTERACTIONS_EXTRA_SUCCESS]: caseFunctions.getInteractionsExtraSuccess,
@@ -170,4 +181,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
     [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
     [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
+    [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
 });

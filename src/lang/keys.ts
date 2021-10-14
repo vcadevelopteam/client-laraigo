@@ -399,11 +399,14 @@ export const langKeys = {
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
     changeDate: 'changeDate',
+    search_result: 'search_result',
 
     edit: 'edit',
     delete: 'delete',
     search: 'search',
     duplicate: 'duplicate',
+    advance_search: 'advance_search',
+    search_inbox: 'search_inbox',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
@@ -558,6 +561,7 @@ export const langKeys = {
     field_required: 'field_required',
     emailverification: 'emailverification',
     code_duplicate: 'code_duplicate',
+    field_key_required: 'field_key_required',
     field_duplicate: 'field_duplicate',
     field_startwithchar: 'field_startwithchar',
     field_basiclatinlowercase: 'field_basiclatinlowercase',
@@ -575,6 +579,7 @@ export const langKeys = {
     login_with_facebook: 'login_with_facebook',
     signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
+    info: 'info',
 
     error_request_services: 'error_request_services',
     error_already_exists_record: 'error_already_exists_record',
