@@ -25,6 +25,7 @@ const translation: LangKeys = {
 
     advance_search: 'Advance search',
     search_inbox: 'Search inbox',
+    search_result: 'Search result',
 
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',
@@ -207,7 +208,7 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
 
-    no_reply_use_hsm: 'Conversation blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
+    no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
 
     status: 'Status',
     status_plural: 'States',

@@ -391,6 +391,7 @@ export const langKeys = {
     editRecord: 'editRecord',
     deleteRecord: 'deleteRecord',
     changeDate: 'changeDate',
+    search_result: 'search_result',
 
     edit: 'edit',
     delete: 'delete',

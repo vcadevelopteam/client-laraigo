@@ -48,6 +48,7 @@ const translation: LangKeys = {
     search_inbox: 'Buscar en la bandeja de entrada',
 
     agent_message: 'Mensajes del Asesor',
+    search_result: 'Resultado de búsqueda',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',
@@ -317,7 +318,7 @@ const translation: LangKeys = {
     inactive: 'Inactivo',
 
     status_activo: 'activo',
-    no_reply_use_hsm: 'Conversación bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
+    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',

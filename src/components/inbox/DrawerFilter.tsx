@@ -14,8 +14,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import { Range } from 'react-date-range';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-const format = (date: Date) => date.toISOString().split('T')[0];
 
+const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen: (param: boolean) => void }> = ({ drawerOpen, setDrawerOpen, classes }) => {
     const { t } = useTranslation();

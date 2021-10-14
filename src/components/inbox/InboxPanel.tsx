@@ -13,7 +13,7 @@ import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
 import DrawerFilter from 'components/inbox/DrawerFilter'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
@@ -22,6 +22,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import Tooltip from '@material-ui/core/Tooltip';
 import { FixedSizeList } from 'react-window';
 import AutoSizer from 'react-virtualized-auto-sizer';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -416,7 +417,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     return (
         <div className={classes.containerTickets}>
             <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
-                {!showSearch ?
+                {!showSearch && !isFiltering ?
                     <>
                         <Tabs
                             value={pageSelected}
@@ -443,20 +444,28 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         autoFocus
                         style={{ margin: '8px 10px' }}
                         onBlur={() => {
-                            // setTimeout(() => {
-                            //     !search && setShowSearch(false)
-                            // }, 100);
+                            setTimeout(() => {
+                                !search && setShowSearch(false)
+                            }, 200);
                         }}
                         placeholder={t(langKeys.search_inbox)}
                         onChange={onChangeSearchTicket}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
+                                    {isFiltering &&
+                                        <Tooltip title={t(langKeys.clean) + ""} arrow>
+                                            <IconButton size="small" onClick={() => dispatch(setIsFiltering(false))}>
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    }
                                     <Tooltip title={t(langKeys.advance_search) + ""} arrow>
                                         <IconButton size="small" onClick={() => setDrawerOpen(true)}>
                                             <FilterListIcon />
                                         </IconButton>
                                     </Tooltip>
+
                                 </InputAdornment>
                             ),
                             endAdornment: (
@@ -474,7 +483,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                 {
                     isFiltering ?
                         <>
-                            <div>Resultado busqueda</div>
+                            <div style={{ fontWeight: 500, padding: 8, fontSize: 15, borderBottom: '1px solid rgb(235, 234, 237)' }}>{t(langKeys.search_result)}</div>
                             {ticketFilteredList.loading ? <ListItemSkeleton /> :
                                 <AutoSizer>
                                     {({ height, width }: any) => (
