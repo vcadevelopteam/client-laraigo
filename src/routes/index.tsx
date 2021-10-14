@@ -39,6 +39,8 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
+	const resLogin = useSelector(state => state.login.login);
+
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
@@ -52,8 +54,9 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
+			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM' }));
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
 		}
 	}, [resValidateToken])
 
