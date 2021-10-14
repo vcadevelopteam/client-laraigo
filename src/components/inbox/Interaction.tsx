@@ -202,7 +202,7 @@ const TimerInteraction: React.FC<{ interactiontype: string, time: string, create
     const [isSeen, setIsSeen] = useState(false)
 
     React.useEffect(() => {
-        if (ticketSelected?.lastseendate && interactiontype != "LOG") {
+        if (ticketSelected?.lastseendate && interactiontype !== "LOG") {
             const lastSeenDate = new Date(ticketSelected?.lastseendate);
             const interactionDate = new Date(createdate!!);
 

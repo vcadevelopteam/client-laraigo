@@ -24,7 +24,7 @@ import { langKeys } from 'lang/keys';
 import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
-import { emitEvent, connectAgentUI, connectAgentAPI } from 'store/inbox/actions';
+import { connectAgentUI } from 'store/inbox/actions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
