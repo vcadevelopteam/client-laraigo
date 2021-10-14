@@ -203,7 +203,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder={t(langKeys.chatHeaderSubtitle)} // "Subtitulo de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderSubtitle)}
                                 name="subtitulo"
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}

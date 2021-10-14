@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import Drawer from '@material-ui/core/Drawer';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
 
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -10,14 +9,9 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'hooks';
 
-import {
-    Menu,
-} from '@material-ui/icons/';
 import { RouteConfig } from '@types';
 import { Tooltip, Typography } from '@material-ui/core';
 import { FC } from 'react';
-import { useDispatch } from 'react-redux';
-import { setOpenDrawer } from 'store/popus/actions';
 
 type IProps = {
     classes: any;
@@ -70,7 +64,6 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
 };
 
 const Aside = ({ classes, theme, routes }: IProps) => {
-    const dispatch = useDispatch();
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
@@ -90,16 +83,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
                 }),
             }}
         >
-            <div className={classes.toolbar}>
-                {/* <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
-                    <Menu />
-                </IconButton>
-                <img
-                    src="/Laraigo-logo-name.svg"
-                    style={{ height: 37 }}
-                    alt="logo"
-                /> */}
-            </div>
+            <div className={classes.toolbar} />
             <Divider />
             <div style={{ height: 18 }} />
             <div style={{ overflowX: 'hidden' }}>

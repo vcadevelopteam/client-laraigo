@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import { useSelector } from 'hooks';
-import { AccountMenu, ManageOrganization } from 'components';
+import { AccountMenu } from 'components';
 import { IconButton, makeStyles } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
@@ -16,9 +16,9 @@ type IProps = {
 }
 
 const useToolbarStyles = makeStyles(theme => ({
-    toobar: {
+    toolbar: {
         borderBottom: '1px solid #EBEAED',
-        padding: `0 14px`,
+        padding: `0 24px 0 14px`,
     },
 }));
 
@@ -36,7 +36,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 [classes.appBarShift2]: !openDrawer,
             }*/)}
         >
-            <Toolbar className={myClasses.toobar}>
+            <Toolbar className={myClasses.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
                     <Menu />
                 </IconButton>

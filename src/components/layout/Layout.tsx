@@ -87,15 +87,13 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
         border: 'none',
-        // borderColor: 'white',
     },
     drawerClose: {
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        // overflowX: 'hidden',
-        overflowX: 'visible',
+        overflowX: 'hidden',
         width: theme.spacing(9) + 1,
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,

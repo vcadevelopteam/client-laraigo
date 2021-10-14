@@ -2,24 +2,61 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody } from 'common/helpers';
-import { IPerson, IPersonChannel, IPersonConversation } from "@types";
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress } from '@material-ui/core';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody } from 'common/helpers';
+import { IDomain, IPerson, IPersonChannel, IPersonConversation } from "@types";
+import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Range } from 'react-date-range';
 import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
-import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson } from 'store/person/actions';
+import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson } from 'store/person/actions';
 import { showSnackbar } from 'store/popus/actions';
+import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 
 interface PersonItemProps {
     person: IPerson;
+}
+
+interface SelectFieldProps {
+    defaultValue: unknown;
+    onChange: (value: string, desc: string) => void;
+    data: IDomain[];
+    loading: boolean;
+}
+
+const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data, loading }) => {
+    return (
+        <TextField
+            select
+            defaultValue={defaultValue}
+            onChange={e => {
+                const vals = e.target.value.split('|');
+                const value = vals[0];
+                const desc = vals[1];
+                return onChange(value, desc);
+            }}
+            fullWidth
+            variant="standard"
+            disabled={loading}
+            InputProps={{
+                endAdornment: (
+                    loading && <CircularProgress color="inherit" size={20} style={{ backgroundColor: 'white' }} />
+                ),
+            }}
+        >
+            {data.map((option) => (
+                <MenuItem key={option.domainid} value={`${option.domainvalue}|${option.domaindesc}`}>
+                    {option.domaindesc}
+                </MenuItem>
+            ))}
+        </TextField>
+    );
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -131,7 +168,7 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
     const classes = useStyles();
     const history = useHistory();
 
-    const goToPersonDetail = () =>{
+    const goToPersonDetail = () => {
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
@@ -151,7 +188,7 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                             <Grid container direction="row" spacing={1}>
                                 <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                                     <Grid container direction="row" className={classes.gridRow}>
-                                        <Photo src={person.imageurldef}/>
+                                        <Photo src={person.imageurldef} />
                                         <div style={{ width: 8 }} />
                                         <div className={classes.itemColumn}>
                                             <label className={clsx(classes.label, classes.value)}>{person.name}</label>
@@ -400,6 +437,7 @@ const usePropertyStyles = makeStyles(theme => ({
         fontWeight: 400,
         fontSize: 15,
         margin: 0,
+        width: '100%',
     },
     leadingContainer: {
         height: 24,
@@ -407,12 +445,15 @@ const usePropertyStyles = makeStyles(theme => ({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+        stroke: '#8F92A1',
+        fill: '#8F92A1',
     },
     contentContainer: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',
+        flexGrow: 1,
     },
 }));
 
@@ -428,11 +469,11 @@ const Property: FC<PropertyProps> = ({ icon, title, subtitle, ...boxProps }) => 
     return (
         <Box className={classes.propertyRoot} {...boxProps}>
             {icon && <div className={classes.leadingContainer}>{icon}</div>}
-            {icon && <div style={{ width: 8 }} />}
+            {icon && <div style={{ width: 8, minWidth: 8 }} />}
             <div className={classes.contentContainer}>
                 <label className={classes.propTitle}>{title}</label>
                 <div style={{ height: 4 }} />
-                <p className={classes.propSubtitle}>{subtitle || "-"}</p>
+                <div className={classes.propSubtitle}>{subtitle || "-"}</div>
             </div>
         </Box>
     );
@@ -482,22 +523,76 @@ const usePersonDetailStyles = makeStyles(theme => ({
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
+        overflowY: 'auto',
     },
 }));
 
 export const PersonDetail: FC = () => {
+    const dispatch = useDispatch();
     const history = useHistory();
+    const { t } = useTranslation();
     const location = useLocation<IPerson>();
     const classes = usePersonDetailStyles();
     const [tabIndex, setTabIndex] = useState('0');
+    const domains = useSelector(state => state.person.editableDomains);
+    const edit = useSelector(state => state.person.editPerson);
 
     const person = location.state as IPerson | null;
 
     useEffect(() => {
+        console.log(person);
         if (!person) {
             history.push(paths.PERSON);
+        } else {
+            dispatch(getDomainsByTypename());
         }
-    }, [history, person]);
+
+        return () => {
+            dispatch(resetGetDomainsByTypename());
+            dispatch(resetEditPerson());
+        };
+    }, [history, person, dispatch]);
+
+    useEffect(() => {
+        if (domains.loading) return;
+        console.log(domains.value?.genders);
+        if (domains.error === true) {
+            dispatch(showSnackbar({
+                message: domains.message!,
+                show: true,
+                success: false,
+            }));
+        }
+    }, [domains, dispatch]);
+
+    useEffect(() => {
+        if (edit.loading) return;
+        console.log(edit);
+        if (edit.error === true) {
+            dispatch(showSnackbar({
+                message: edit.message!,
+                show: true,
+                success: false,
+            }));
+        } else if (edit.success) {
+            dispatch(showSnackbar({
+                message: "Se guardo exitosamente",
+                show: true,
+                success: true,
+            }));
+        }
+    }, [edit, dispatch]);
+
+    const { setValue, getValues } = useForm<IPerson>({
+        defaultValues: person || {},
+    });
+
+    const handleEditPerson = () => {
+        const values = getValues();
+        const payload = editPersonBody(values);
+        console.log("handleEditPerson", payload);
+        dispatch(editPerson(payload));
+    }
 
     if (!person) {
         return <div />;
@@ -528,7 +623,12 @@ export const PersonDetail: FC = () => {
                     <Trans i18nKey={langKeys.personDetail} />
                 </Link>
             </Breadcrumbs>
-            <h1>{person.name}</h1>
+            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <h1>{person.name}</h1>
+                <Button variant="contained" color="primary" onClick={handleEditPerson}>
+                    <Trans i18nKey={langKeys.save} />
+                </Button>
+            </div>
             <div style={{ height: 7 }} />
             <div className={classes.rootContent}>
                 <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflowY: 'hidden' }}>
@@ -566,10 +666,23 @@ export const PersonDetail: FC = () => {
                             /> */}
                         </Tabs>
                     </AppBar>
-                    <TabPanel value="0" index={tabIndex}><CommunicationChannelsTab person={person} /></TabPanel>
-                    <TabPanel value="1" index={tabIndex}><AuditTab person={person} /></TabPanel>
-                    <TabPanel value="2" index={tabIndex}><ConversationsTab person={person} /></TabPanel>
-                    <TabPanel value="3" index={tabIndex}><OpportunitiesTab person={person} /></TabPanel>
+                    <TabPanel value="0" index={tabIndex}>
+                        <CommunicationChannelsTab
+                            getValues={getValues}
+                            setValue={setValue}
+                            person={person}
+                            domainLoading={domains.loading}
+                        />
+                    </TabPanel>
+                    <TabPanel value="1" index={tabIndex}>
+                        <AuditTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="2" index={tabIndex}>
+                        <ConversationsTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="3" index={tabIndex}>
+                        <OpportunitiesTab person={person} />
+                    </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
@@ -579,36 +692,76 @@ export const PersonDetail: FC = () => {
                     <Photo src={person.imageurldef} radius={50} />
                     <h2>{person.name}</h2>
                     <Property
-                        icon={<EMailInboxIcon />}
+                        icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                         title={<Trans i18nKey={langKeys.phone} />}
-                        subtitle={person.phone}
+                        subtitle={(
+                            <TextField
+                                fullWidth
+                                placeholder={t(langKeys.phone)}
+                                defaultValue={getValues('phone')}
+                                onChange={e => setValue('phone', e.target.value)}
+                            />
+                        )}
                         mt={1}
                         mb={1}
                     />
                     <Property
-                        icon={<PhoneIcon />}
+                        icon={<EMailInboxIcon />}
                         title={<Trans i18nKey={langKeys.email} />}
-                        subtitle={person.email}
+                        subtitle={(
+                            <TextField
+                                fullWidth
+                                placeholder={t(langKeys.email)}
+                                defaultValue={getValues('email')}
+                                onChange={e => setValue('email', e.target.value)}
+                            />
+                        )}
                         mt={1}
                         mb={1} />
                     <Property
-                        icon={<PortfolioIcon />}
+                        icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                         title={<Trans i18nKey={langKeys.document} />}
-                        subtitle={person.documenttype}
+                        subtitle={(
+                            <DomainSelectField
+                                defaultValue={getValues('documenttype')}
+                                onChange={(value) => {
+                                    setValue('documenttype', value);
+                                }}
+                                loading={domains.loading}
+                                data={domains.value?.docTypes || []}
+                            />
+                        )}
                         mt={1}
                         mb={1}
                     />
                     <Property
-                        icon={<PortfolioIcon />}
+                        icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                         title={<Trans i18nKey={langKeys.docNumber} />}
-                        subtitle={person.documentnumber}
+                        subtitle={(
+                            <TextField
+                                fullWidth
+                                placeholder={t(langKeys.docNumber)}
+                                defaultValue={getValues('documentnumber')}
+                                onChange={e => setValue('documentnumber', e.target.value)}
+                            />
+                        )}
                         mt={1}
                         mb={1}
                     />
                     <Property
                         icon={<GenderIcon />}
                         title={<Trans i18nKey={langKeys.gender} />}
-                        subtitle={person.gender}
+                        subtitle={(
+                            <DomainSelectField
+                                defaultValue={getValues('gender')}
+                                onChange={(value, desc) => {
+                                    setValue('gender', value);
+                                    setValue('genderdesc', desc)
+                                }}
+                                loading={domains.loading}
+                                data={domains.value?.genders || []}
+                            />
+                        )}
                         mt={1}
                         mb={1}
                     />
@@ -703,10 +856,14 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
 
 interface ChannelTabProps {
     person: IPerson;
+    getValues: UseFormGetValues<IPerson>;
+    setValue: UseFormSetValue<IPerson>;
+    domainLoading: boolean;
 }
 
-const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
+const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domainLoading }) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const channelList = useSelector(state => state.person.personChannelList);
     // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
@@ -727,7 +884,17 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.personType} />}
-                                subtitle={person.type}
+                                subtitle={(
+                                    person.persontype
+                                    // <DomainSelectField
+                                    //     defaultValue={getValues('persontype')}
+                                    //     onChange={(value) => {
+                                    //         setValue('persontype', value);
+                                    //     }}
+                                    //     loading={doma}
+                                    //     data={domains.value?.docTypes || []}
+                                    // />
+                                )}
                                 mt={1} mb={1}
                             />
                         </Grid>
@@ -766,14 +933,28 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.alternativePhone} />}
-                                subtitle={person.alternativephone}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.alternativePhone)}
+                                        defaultValue={getValues('alternativephone')}
+                                        onChange={e => setValue('alternativephone', e.target.value)}
+                                    />
+                                )}
                                 mt={1} mb={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.alternativeEmail} />}
-                                subtitle={person.alternativeemail}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.alternativeEmail)}
+                                        defaultValue={getValues('alternativeemail')}
+                                        onChange={e => setValue('alternativeemail', e.target.value)}
+                                    />
+                                )}
                                 mt={1} mb={1}
                             />
                         </Grid>
@@ -1171,7 +1352,7 @@ const useOpportunityItemStyles = makeStyles(theme => ({
         justifyContent: 'stretch',
         width: 'inherit',
     },
-    rootItem: {  
+    rootItem: {
         border: '#EBEAED solid 1px',
         borderRadius: 5,
         padding: theme.spacing(2),
