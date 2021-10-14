@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -14,6 +14,29 @@ export const getAgents = (): IActionCall => ({
 });
 
 export const resetGetAgents = (): IActionCall => ({ type: actionTypes.GET_AGENTS_RESET });
+
+
+
+export const filterTickets = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IActionCall => ({
+    callAPI: () => CommonService.main(getTicketsByFilter(
+        lastmessage,
+        start_createticket,
+        end_createticket,
+        channels,
+        conversationstatus,
+        displayname,
+        phone
+    )),
+    types: {
+        loading: actionTypes.FILTER_TICKETS,
+        success: actionTypes.FILTER_TICKETS_SUCCESS,
+        failure: actionTypes.FILTER_TICKETS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetFilterTickets = (): IActionCall => ({ type: actionTypes.FILTER_TICKETS_RESET });
+
 
 
 export const getTickets = (userid: number | null): IActionCall => ({
@@ -111,6 +134,8 @@ export const connectAgentUI = (payload: boolean): IActionCall => {
 };
 
 export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
+
+export const setIsFiltering = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_IS_FILTERING, payload });
 
 
 export const sendHSM = (params: ISendHSM): IActionCall => ({

@@ -70,7 +70,7 @@ const AccountMenu: FC = () => {
 
     const user = useSelector(state => state.login.validateToken.user);
     const userConnected = useSelector(state => state.inbox.userConnected);
-
+    
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClose = () => {
@@ -84,7 +84,6 @@ const AccountMenu: FC = () => {
     const gotoSettings = () => {
         history.push('/usersettings');
     }
-
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;

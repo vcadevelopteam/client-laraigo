@@ -357,7 +357,9 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [search, setSearch] = useState("");
     const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
+    const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const isFiltering = useSelector(state => state.inbox.isFiltering);
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
@@ -399,6 +401,18 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         [ticketsToShow]
     )
 
+    const RenderRowFilterd = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketFilteredList.data[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketFilteredList.data]
+    )
+
     return (
         <div className={classes.containerTickets}>
             <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
@@ -429,7 +443,9 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         autoFocus
                         style={{ margin: '8px 10px' }}
                         onBlur={() => {
-                            // !search && setShowSearch(false)
+                            // setTimeout(() => {
+                            //     !search && setShowSearch(false)
+                            // }, 100);
                         }}
                         placeholder={t(langKeys.search_inbox)}
                         onChange={onChangeSearchTicket}
@@ -456,21 +472,38 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
             </div>
             <div style={{ height: '100%', overflowY: 'hidden' }}>
                 {
-                    ticketList.loading ?
-                    <ListItemSkeleton />
-                    :
-                    <AutoSizer>
-                        {({ height, width }: any) => (
-                            <FixedSizeList
-                                width={width}
-                                height={height}
-                                itemCount={ticketsToShow.length}
-                                itemSize={97}
-                            >
-                                {RenderRow}
-                            </FixedSizeList>
-                        )}
-                    </AutoSizer>
+                    isFiltering ?
+                        <>
+                            <div>Resultado busqueda</div>
+                            {ticketFilteredList.loading ? <ListItemSkeleton /> :
+                                <AutoSizer>
+                                    {({ height, width }: any) => (
+                                        <FixedSizeList
+                                            width={width}
+                                            height={height}
+                                            itemCount={ticketFilteredList.data.length}
+                                            itemSize={97}
+                                        >
+                                            {RenderRowFilterd}
+                                        </FixedSizeList>
+                                    )}
+                                </AutoSizer>
+                            }
+                        </>
+                        : (ticketList.loading ? <ListItemSkeleton /> :
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={ticketsToShow.length}
+                                        itemSize={97}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        )
                 }
                 {/* {ticketList.loading ? <ListItemSkeleton /> :
                     ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)

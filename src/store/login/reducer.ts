@@ -6,8 +6,8 @@ import actionTypes from "./actionTypes";
 
 export interface IUserTmp extends ITemplate {
     user: IUser | null;
+    
 }
-
 
 export interface IState {
     login: IUserTmp;

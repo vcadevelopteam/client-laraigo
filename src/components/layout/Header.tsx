@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import Toolbar from '@material-ui/core/Toolbar';
 import AppBar from '@material-ui/core/AppBar';
 import { useSelector } from 'hooks';
-import { AccountMenu, ManageOrganization } from 'components';
+import { AccountMenu } from 'components';
 import { IconButton, makeStyles } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';

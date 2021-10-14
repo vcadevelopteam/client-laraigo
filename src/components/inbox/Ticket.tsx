@@ -11,7 +11,6 @@ import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/help
 const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; timer?: number }> = ({ label, color, timer, isTimer }) => {
     const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? timer : -1);
-    console.log(isMounted.current)
 
     React.useEffect(() => {
         isMounted.current = true;
@@ -71,7 +70,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
                         label={ticketnum}
-                        color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
+                        color={status === 'ASIGNADO' ? "#55BD84" : ( status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
                         isTimer={true}

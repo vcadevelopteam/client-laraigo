@@ -89,6 +89,7 @@ const cleanLogsReassignedTask = (interactions: IInteraction[]) => {
 
 export const getAgents = (state: IState): IState => ({
     ...initialState,
+    userConnected: state.userConnected,
     userType: "SUPERVISOR",
     agentList: { ...state.agentList, loading: true, error: false },
 
@@ -121,13 +122,7 @@ export const getAgentsFailure = (state: IState, action: IAction): IState => ({
 });
 
 export const getAgentsReset = (state: IState): IState => ({
-    ...state,
-    agentList: initialState.agentList,
-    ticketList: initialState.ticketList,
-    interactionList: initialState.interactionList,
-    ticketSelected: initialState.ticketSelected,
-    agentSelected: initialState.agentSelected,
-    triggerCloseTicket: initialState.triggerCloseTicket,
+    ...initialState
 });
 
 export const getPerson = (state: IState): IState => ({
@@ -193,6 +188,43 @@ export const getTicketsByPersonReset = (state: IState): IState => ({
     ...state,
     previewTicketList: initialState.previewTicketList,
 });
+
+
+
+export const filterTickets = (state: IState): IState => ({
+    ...state,
+    ticketFilteredList: { ...state.ticketFilteredList, loading: true, error: false },
+    isFiltering: true
+});
+
+export const filterTicketsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketFilteredList: {
+        data: action.payload.data || [],
+        count: action.payload.count,
+        loading: false,
+        error: false,
+    },
+});
+
+export const filterTicketsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketFilteredList: {
+        ...state.ticketFilteredList,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const filterTicketsReset = (state: IState): IState => ({
+    ...state,
+    ticketFilteredList: initialState.ticketFilteredList,
+});
+
+
+
 
 export const setUserType = (state: IState, action: IAction): IState => ({
     ...state,
@@ -307,6 +339,14 @@ export const goToBottom = (state: IState, action: IAction): IState => {
     return {
         ...state,
         isOnBottom: action.payload
+    };
+}
+
+export const setIsFiltering = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        isFiltering: action.payload,
+        ticketFilteredList: initialState.ticketFilteredList
     };
 }
 
