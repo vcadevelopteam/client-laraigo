@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -13,8 +13,9 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
+import { exportExcel } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerencialencuestasel, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerencialencuestasel, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -216,9 +217,11 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const [downloaddatafile,setdownloaddatafile]=useState(false)
     const [data, setData] = useState({
         dataTMO: "0s",
         obj_max: "< 0m",
@@ -351,6 +354,7 @@ const DashboardManagerial: FC = () => {
     const [openDialog, setOpenDialog] = useState(false);
     const [resTMO, setResTMO] = useState<any>([]);
     const [resTME, setResTME] = useState<any>([]);
+    const [titlefile, settitlefile] = useState('');
     const [resSummary, setResSummary] = useState<any>([]);
     const [resEncuesta, setResEncuesta] = useState<any>([]);
     const [resDashboard, setResDashboard] = useState<any>([]);
@@ -376,7 +380,13 @@ const DashboardManagerial: FC = () => {
             setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResult])
+    }, [mainResult.multiData])
+    useEffect(() => {
+        if(downloaddatafile && !mainResultData.loading){
+            exportExcel(titlefile,mainResultData.data)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mainResultData])
     useEffect(() => {
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
@@ -775,6 +785,13 @@ const DashboardManagerial: FC = () => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    async function downloaddata(tipeoffilter:string){
+        setdownloaddatafile(true)
+        if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
+            settitlefile(tipeoffilter==="TMO" ?"DashboardManagerial-TMO":"DashboardManagerial-TME")
+            dispatch(getCollection(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }
+    }
     return (
         <Fragment>
             <DialogZyx
@@ -853,7 +870,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -920,7 +937,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
