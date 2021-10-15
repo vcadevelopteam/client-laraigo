@@ -534,6 +534,9 @@ export const langKeys = {
     execute: 'execute',
     sent: 'sent',
     campaign_in_execution: 'campaign_in_execution',
+    file_without_data: 'file_without_data',
+    too_many_records: 'file_without_data',
+    file_incompatbile_with_previous_one: 'file_incompatbile_with_previous_one',
 
     tablePageOf: 'tablePageOf',
     tableShowingRecordOf: 'tableShowingRecordOf',

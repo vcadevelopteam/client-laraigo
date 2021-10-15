@@ -491,6 +491,9 @@ const translation: LangKeys = {
     execute: 'Execute',
     sent: 'sent',
     campaign_in_execution: 'Campaign in execution',
+    file_without_data: 'File without data',
+    too_many_records: 'Too many records',
+    file_incompatbile_with_previous_one: 'File incompatbile with previous one',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',

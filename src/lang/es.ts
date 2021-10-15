@@ -535,6 +535,9 @@ const translation: LangKeys = {
     execute: 'Ejecutar',
     sent: 'enviado',
     campaign_in_execution: 'Campaña en ejecución',
+    file_without_data: 'Archivo sin data',
+    too_many_records: 'Demasiados registros',
+    file_incompatbile_with_previous_one: 'Archivo incompatible con el anterior',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
     successful_tipify_ticket: 'El ticket se tipificó satisfactoriamente',
