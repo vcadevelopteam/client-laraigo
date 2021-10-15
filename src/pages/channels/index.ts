@@ -8,3 +8,4 @@ export { ChannelAddWhatsapp } from './ChannelAddWhatsapp';
 export { ChannelAddTelegram } from './ChannelAddTelegram';
 export { ChannelAddTwitter } from './ChannelAddTwitter';
 export { ChannelAddTwitterDM } from './ChannelAddTwitterDM';
+export { default as ChannelEdit } from './ChannelEdit';

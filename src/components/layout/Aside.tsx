@@ -17,6 +17,7 @@ type IProps = {
     classes: any;
     theme: any;
     routes: RouteConfig[];
+    headerHeight: number;
 }
 
 const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ config, classes, open }) => {
@@ -63,7 +64,7 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
     );
 };
 
-const Aside = ({ classes, theme, routes }: IProps) => {
+const Aside = ({ classes, theme, routes, headerHeight }: IProps) => {
     const openDrawer = useSelector(state => state.popus.openDrawer);
     const applications = useSelector(state => state.login?.validateToken?.user?.menu);
 
@@ -83,9 +84,9 @@ const Aside = ({ classes, theme, routes }: IProps) => {
                 }),
             }}
         >
-            <div className={classes.toolbar} />
+            <div style={{ height: headerHeight }} />
             <Divider />
-            <div style={{ height: 18 }} />
+            <div style={{ height: 8 }} />
             <div style={{ overflowX: 'hidden' }}>
             {routes.map((ele) => (applications && applications[ele.key] && applications[ele.key][0]) ? <LinkList classes={classes} config={ele} key={ele.key} open={openDrawer} /> : null)}
             </div>

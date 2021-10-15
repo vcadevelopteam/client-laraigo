@@ -194,6 +194,8 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const occupations = (action.payload.data as any[])[2].data as IDomain[] | null;
     const civilStatuses = (action.payload.data as any[])[3].data as IDomain[] | null;
     const educationLevels = (action.payload.data as any[])[4].data as IDomain[] | null;
+    const personTypes = (action.payload.data as any[])[5].data as IDomain[] | null;
+    const groups = (action.payload.data as any[])[6].data as IDomain[] | null;
 
     return {
         ...state,
@@ -205,6 +207,8 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 educationLevels: educationLevels || [],
                 genders: genders || [],
                 occupations: occupations || [],
+                personTypes: personTypes || [],
+                groups: groups || [],
             },
             loading: false,
             error: false,

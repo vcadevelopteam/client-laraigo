@@ -41,6 +41,14 @@ const paths = {
     },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
+    CHANNELS_EDIT: {
+        path: '/channels/edit/:id',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}`,
+    },
+    CHANNELS_EDIT_CHATWEB: {
+        path: '/channels/edit/:id/chatweb',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
