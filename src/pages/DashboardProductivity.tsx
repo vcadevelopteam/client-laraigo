@@ -7,9 +7,13 @@ import { FC, Fragment, useEffect, useState } from "react";
 import { resetMain, getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
+import PersonIcon from '@material-ui/icons/Person';
+import ChatIcon from '@material-ui/icons/Chat';
+import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { getCommChannelLst, getdashboardoperativoEncuestaSel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ComposedChart } from 'recharts';
@@ -173,6 +177,18 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         dontshow: {
             display: "none"
+        },
+        downloadiconcontainer:{
+            width:"100%",display: "flex",justifyContent: "end"
+        },
+        styleicon:{
+            width: "18px",
+            height: "18px"
+        },
+        containertitleboxes:{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%"
         }
     }),
 );
@@ -343,7 +359,7 @@ const DashboardProductivity: FC = () => {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
-                let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                let variacionperc = (tickets_comply / tickets_analyzed - parseFloat(target_percmax))*100
                 variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
@@ -402,7 +418,7 @@ const DashboardProductivity: FC = () => {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTME[0];
             let seconds = timetoseconds(time_avg)
             if (seconds >= 0) {
-                let variacionperc = tickets_comply / tickets_analyzed - parseFloat(target_percmax)
+                let variacionperc = (tickets_comply / tickets_analyzed - parseFloat(target_percmax))*100
                 variacionperc=variacionperc? variacionperc: 0;
                 let hh = (Math.floor(seconds / 3600)) === 0 ? "" : (Math.floor(seconds / 3600) + "h ")
                 let mm = Math.floor((seconds % 3600) / 60) === 0 ? "" : (Math.floor((seconds % 3600) / 60) + "m ")
@@ -621,7 +637,7 @@ const DashboardProductivity: FC = () => {
                 fcrtotalpromoters: fcr_yes,
                 fcrtotaldetractors: fcr_no,
                 fcrtotalconversations: total_bot,
-                dataFIX: `${((toshowfcr) * 100).toFixed(2)}%`,
+                dataFIX: `${((toshowfix) * 100).toFixed(2)}%`,
                 fixvariacioncolor: (toshowfix - nps_green) * 100 >= 0,
                 fix_green: `${(parseFloat(fix_green) * 100).toFixed(2)}%`,
                 fixvariation: `${((toshowfix - fix_green) * 100).toFixed(2)}%`,
@@ -840,6 +856,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -869,11 +886,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMOgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -884,7 +902,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={clsx(classes.containerFields, data.variacionperccolor ? classes.colorgreen : classes.colorred)}>
                                 <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{data.variacionperc}%</div>
+                                <div className={classes.datafield}>{data.variacionperc.toFixed(2)}%</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
@@ -905,6 +923,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
@@ -934,11 +953,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataTMEgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -949,7 +969,7 @@ const DashboardProductivity: FC = () => {
                             </div>
                             <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
                                 <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{dataTME.variacionperc}%</div>
+                                <div className={classes.datafield}>{dataTME.variacionperc.toFixed(2)}%</div>
                             </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
@@ -973,6 +993,7 @@ const DashboardProductivity: FC = () => {
                         style={{ backgroundColor: "#53a6fa", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.tmrglobal}</div>
                         </div>
@@ -982,6 +1003,7 @@ const DashboardProductivity: FC = () => {
                         style={{ backgroundColor: "#22b66e", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Asesor</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
@@ -991,6 +1013,7 @@ const DashboardProductivity: FC = () => {
                         style={{ backgroundColor: "#fdab29", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Bot</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRBot}</div>
                         </div>
@@ -1000,6 +1023,7 @@ const DashboardProductivity: FC = () => {
                         style={{ backgroundColor: "#907eec", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Client</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
@@ -1035,7 +1059,10 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.distributionTMO)}</div>
+                        <div className={classes.containertitleboxes}>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTMO)}</div>
+                            <CloudDownloadIcon className={classes.styleicon}/>
+                        </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmoDistribution}>
                                 <XAxis dataKey="label" />
@@ -1050,7 +1077,10 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.distributionTME)}</div>
+                        <div className={classes.containertitleboxes}>
+                            <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTME)}</div>
+                            <CloudDownloadIcon className={classes.styleicon}/>
+                        </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmeDistribution}>
                                 <XAxis dataKey="label" />
@@ -1067,7 +1097,10 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle} style={{ width:"100%"}}>{t(langKeys.distributionProductivity)}</div>
+                        <div className={classes.containertitleboxes}>
+                            <div  style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionProductivity)}</div>
+                            <CloudDownloadIcon className={classes.styleicon}/>
+                        </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <ComposedChart
                                 data={prodxHoraDist}
@@ -1088,6 +1121,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -1117,11 +1151,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataNPSgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataNPSgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1147,6 +1182,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -1176,11 +1212,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataCSATgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataCSATgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1208,6 +1245,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1237,11 +1275,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataFCRgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFCRgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -1263,6 +1302,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>
@@ -1292,11 +1332,12 @@ const DashboardProductivity: FC = () => {
                             <ResponsiveContainer className={classes.itemGraphic}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataFIXgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataFIXgraph.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>

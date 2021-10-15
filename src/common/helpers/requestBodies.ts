@@ -1192,20 +1192,13 @@ export const gerencialTMOsel = ({ startdate, enddate, channel, group, company }:
     method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL",
     parameters: {
-        startdate,
-        enddate,
-        channel,
-        group,
-        company,
-        level: 0,
-        closedby: "ASESOR,BOT",
-        min: 0,
-        max: 0,
-        target: 0,
-        skipdown: 0,
-        skipup: 0,
-        bd: true,
-        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialTMOselData = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL",
+    parameters: { startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
 export const gerencialTMEsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({

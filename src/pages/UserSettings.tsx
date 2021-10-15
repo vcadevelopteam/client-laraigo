@@ -145,7 +145,6 @@ const UserSettings: FC = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            disabled={disableButton}
                             type="submit"
                             startIcon={<SaveIcon color="secondary" />}
                             style={{ backgroundColor: "#55BD84" }}
