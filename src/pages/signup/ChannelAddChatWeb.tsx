@@ -1658,7 +1658,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                     <div className="col-6" style={{ paddingBottom: '3px' }}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
                         <FormGroup>
-                            <FormControlLabel control={<Switch onChange={(e) => {setAuto(e.target.checked);setenable(e.target.checked)}} color="default"/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            <FormControlLabel control={<IOSSwitch onChange={(e) => {setAuto(e.target.checked);setenable(e.target.checked)}} />} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
                         </FormGroup>
                     </div>
                 </div>

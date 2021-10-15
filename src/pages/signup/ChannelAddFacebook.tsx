@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, Switch, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FacebookWallIcon } from "icons";
-import { FieldEdit, FieldSelect, ColorInput } from "components";
+import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -213,7 +213,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                         <div className="col-6" style={{ paddingBottom: '3px' }}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
                             <FormGroup>
-                                <FormControlLabel control={<Switch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}} color="default"/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
                             </FormGroup>
                         </div>
                     </div>

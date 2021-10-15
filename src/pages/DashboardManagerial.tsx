@@ -15,7 +15,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { exportExcel } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -803,6 +803,8 @@ const DashboardManagerial: FC = () => {
             dispatch(getCollection(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="asesoresconectados"){
             dispatch(getCollection(gerencialasesoresconectadosbarseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else{
+            dispatch(getCollection(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
     return (
@@ -1300,7 +1302,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbyhour")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
@@ -1333,7 +1335,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbytheadvisorbyhour")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
