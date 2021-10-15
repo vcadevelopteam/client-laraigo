@@ -1,11 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, TemplateSwitch, ColorInput } from "components";
+import { FacebookWallIcon } from "icons";
+import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -26,6 +27,8 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
+    const [enable, setenable] = useState(false);
+    const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -190,24 +193,29 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <FacebookWallIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button

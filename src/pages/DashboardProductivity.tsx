@@ -4,14 +4,14 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
-import { getCommChannelLst, getdashboardoperativoEncuestaSel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel, getdashboardoperativoSummarySel, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuestaSeldata, getdashboardoperativoProdxHoraDistSel,getdashboardoperativoProdxHoraDistSeldata, getdashboardoperativoProdxHoraSel,getdashboardoperativoSummarySeldata, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
@@ -202,7 +202,10 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardProductivity: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
+    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
+    const [downloaddatafile,setdownloaddatafile]=useState(false)
+    const [titlefile, settitlefile] = useState('');
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [data, setData] = useState({
@@ -754,6 +757,36 @@ const DashboardProductivity: FC = () => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    useEffect(() => {
+        if(downloaddatafile && !mainResultData.loading){
+            exportExcel(titlefile,mainResultData.data)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mainResultData])
+    async function downloaddata(tipeoffilter:string){
+        let tosend = { 
+            startdate: dateRangeCreateDate.startDate, 
+            enddate: dateRangeCreateDate.endDate, 
+            channel: searchfields.channels, 
+            group: searchfields.queue, 
+            company: searchfields.provider,
+            label: searchfields.label,
+            supervisor: searchfields.supervisor
+        }
+        setdownloaddatafile(true)
+        settitlefile(`DashboardManagerial-${tipeoffilter}`)
+        if(tipeoffilter==="TMO"){
+            dispatch(getCollection(getdashboardoperativoTMOGENERALSeldata(tosend)))
+        }else if(tipeoffilter==="TME"){
+            dispatch(getCollection(getdashboardoperativoTMEGENERALSeldata(tosend)))
+        }else if(tipeoffilter==="TMODistribution"||tipeoffilter==="TMEDistribution"){
+            dispatch(getCollection(getdashboardoperativoSummarySeldata(tosend)))
+        }else if(tipeoffilter==="prodxHoraDist"){
+            dispatch(getCollection(getdashboardoperativoProdxHoraDistSel(tosend)))
+        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+            dispatch(getCollection(getdashboardoperativoEncuestaSeldata(tosend)))
+        }
+    }
     return (
         <Fragment>
             <DialogZyx
@@ -856,7 +889,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -923,7 +956,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TME")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
@@ -1061,7 +1094,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containertitleboxes}>
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTMO)}</div>
-                            <CloudDownloadIcon className={classes.styleicon}/>
+                            <CloudDownloadIcon  onClick={()=>downloaddata("TMODistribution")} className={classes.styleicon}/>
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmoDistribution}>
@@ -1079,7 +1112,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containertitleboxes}>
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionTME)}</div>
-                            <CloudDownloadIcon className={classes.styleicon}/>
+                            <CloudDownloadIcon onClick={()=>downloaddata("TMEDistribution")} className={classes.styleicon}/>
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <BarChart data={tmeDistribution}>
@@ -1097,9 +1130,9 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.containertitleboxes}>
+                        <div className={classes.containertitleboxes} >
                             <div  style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.distributionProductivity)}</div>
-                            <CloudDownloadIcon className={classes.styleicon}/>
+                            <CloudDownloadIcon className={classes.styleicon} onClick={()=>downloaddata("prodxHoraDist")} />
                         </div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <ComposedChart
@@ -1121,7 +1154,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("NPS")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -1182,7 +1215,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("CSAT")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -1245,7 +1278,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FCR")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1302,7 +1335,7 @@ const DashboardProductivity: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FIX")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>

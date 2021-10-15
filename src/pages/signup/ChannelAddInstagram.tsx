@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, TemplateSwitch, ColorInput } from "components";
+import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
 import { useHistory } from "react-router";
+import { InstagramIcon} from "icons";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
@@ -33,6 +34,8 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
     const mainResult = useSelector(state => state.channel.channelList)
     const executeResult = useSelector(state => state.channel.successinsert)
     const history = useHistory();
+    const [coloricon, setcoloricon] = useState("#F56040");
+    const [enable, setenable] = useState(false);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -211,24 +214,29 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <InstagramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button

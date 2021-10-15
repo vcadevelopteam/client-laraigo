@@ -15,7 +15,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { exportExcel } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel, gerencialencuestasel, gerencialetiquetassel, gerencialinteractionsel, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -198,7 +198,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         styleicon:{
             width: "18px",
-            height: "18px"
+            height: "18px",
+            '&:hover': {
+                cursor: 'pointer',
+            }
         },
         containertitleboxes:{
             display: "flex",
@@ -787,9 +790,21 @@ const DashboardManagerial: FC = () => {
     }, []);
     async function downloaddata(tipeoffilter:string){
         setdownloaddatafile(true)
+        settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
-            settitlefile(tipeoffilter==="TMO" ?"DashboardManagerial-TMO":"DashboardManagerial-TME")
             dispatch(getCollection(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
+            dispatch(getCollection(gerencialencuestaseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="etiqueta"){
+            dispatch(getCollection(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="averageconversations"){
+            dispatch(getCollection(gerencialconversationseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="interaction"){
+            dispatch(getCollection(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else if(tipeoffilter==="asesoresconectados"){
+            dispatch(getCollection(gerencialasesoresconectadosbarseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }else{
+            dispatch(getCollection(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
     return (
@@ -1047,7 +1062,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("NPS")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -1108,7 +1123,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("CSAT")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -1171,7 +1186,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FCR")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1228,7 +1243,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FIX")} className={classes.styleicon}/></div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>
@@ -1287,7 +1302,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbyhour")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
@@ -1320,7 +1335,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbytheadvisorbyhour")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
@@ -1355,7 +1370,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containertitleboxes}>
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{dataAsesoreconectadosbar.avgasesoresconectados}</div>
-                            <CloudDownloadIcon className={classes.styleicon}/>
+                            <CloudDownloadIcon onClick={()=>downloaddata("asesoresconectados")} className={classes.styleicon}/>
                         </div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averagenumberofadvisersconnectedbyhour)}</div>
                         <div style={{ paddingTop: "20px" }}>
@@ -1377,7 +1392,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversations")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataDASHBOARD.avgconversationsattended}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.conversationsattended)}</div>
                         <div style={{display:"flex",justifyContent:"space-between"}}>
@@ -1407,7 +1422,7 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("interaction")} className={classes.styleicon}/></div>
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
@@ -1420,7 +1435,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containertitleboxes}>
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.top5labels)}</div>
-                            <CloudDownloadIcon className={classes.styleicon}/>
+                            <CloudDownloadIcon onClick={()=>downloaddata("etiqueta")} className={classes.styleicon}/>
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
