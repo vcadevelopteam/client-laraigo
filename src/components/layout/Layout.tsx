@@ -11,6 +11,7 @@ import Popus from 'components/layout/Popus';
 
 const drawerWidth = 240;
 const drawerWidthCompressed = 73;
+const headerHeight = 54;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         background: theme.palette.secondary.light,
+        minHeight: headerHeight,
+        height: headerHeight,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -87,15 +90,13 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
         border: 'none',
-        // borderColor: 'white',
     },
     drawerClose: {
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
-        // overflowX: 'hidden',
-        overflowX: 'visible',
+        overflowX: 'hidden',
         width: theme.spacing(9) + 1,
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
@@ -131,8 +132,10 @@ const useStyles = makeStyles((theme) => ({
         stroke: '#8F92A1',
         fill: '#8F92A1',
         backgroundColor: 'white',
+        height: headerHeight,
+        minHeight: headerHeight,
         // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
+        // ...theme.mixins.toolbar,
     },
     toolbarClosed: {
         // justifyContent: 'center',
@@ -214,7 +217,6 @@ interface LayoutProps {
     mainClasses?: string;
 }
 
-/** Authorized layout */
 const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -235,6 +237,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             routes={routes}
                             classes={classes}
                             theme={theme}
+                            headerHeight={headerHeight}
                         />
                         <main className={classes.content}>
                             <div className={classes.toolbar} />

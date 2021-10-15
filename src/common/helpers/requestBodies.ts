@@ -1,4 +1,4 @@
-import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -842,6 +842,46 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...payload,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
+    },
+});
+
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...channel,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
+    },
+    type: "CHATWEB",
+    service,
+});
+
 export const getCampaignLst = (): IRequestBody => ({
     method: "UFN_CAMPAIGN_LST",
     parameters: {}
@@ -1587,3 +1627,14 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
     },
 ]);
+
+export const editPersonBody = (person: IPerson): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        corpid: null,
+        orgid: null,
+        id: person.personid,
+        operation: 'UPDATE',
+    },
+});

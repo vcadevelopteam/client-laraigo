@@ -274,7 +274,26 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             </div>
         );
     else if (interactiontype === "quickreply") {
-        const [text, json] = interactiontext.split("&&&");
+
+        let text, json;
+
+        if (interactiontext.substring(0, 1) === "{") {
+            const jj = JSON.parse(interactiontext);
+            console.log('1111111111')
+            return (
+                <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
+                    [classes.interactionTextAgent]: userType !== 'client',
+                })}>
+                    {jj.stringsmooch}
+                    <PickerInteraction userType={userType!!} fill={userType === "client" ? "#FFF" : "#eeffde"} />
+                    <TimerInteraction interactiontype={interactiontype} createdate={createdate} userType={userType} time={onlyTime || ""} />
+                </div>
+            );
+        } else {
+            text = interactiontext.split("&&&")[0];
+            json = interactiontext.split("&&&")[1]
+        }
+        console.log('22222222')
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
             <div className={clsx(classes.interactionText, {

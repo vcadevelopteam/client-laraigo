@@ -95,3 +95,15 @@ export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall 
 });
 
 export const reserInsertChannel = () => ({type: actionTypes.INSERT_CHANNEL_RESET });
+
+export const editChannel = (payload: IRequestBody<any>): IActionCall => ({
+    callAPI: () => CommonService.main(payload),
+    types: {
+        loading: actionTypes.EDIT_CHANNEL,
+        failure: actionTypes.EDIT_CHANNEL_FAILURE,
+        success: actionTypes.EDIT_CHANNEL_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetEditChannel = () => ({type: actionTypes.EDIT_CHANNEL_RESET });

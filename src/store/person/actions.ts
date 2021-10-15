@@ -1,4 +1,5 @@
 import { IActionCall, IRequestBody, IRequestBodyPaginated } from "@types";
+import { getValuesFromDomain } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -73,3 +74,40 @@ export const getOpportunitiesByPerson = (payload: IRequestBody): IActionCall => 
 });
 
 export const resetGetOpportunitiesByPerson = () => ({type: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_RESET });
+
+/**
+ * Managed domain types
+ * 
+ * GENERO, TIPODOCUMENTO, OCUPACION, ESTADOCIVIL, NIVELEDUCATIVO
+ */
+export const getDomainsByTypename = (): IActionCall => ({
+    callAPI: async () => CommonService.multiMain([
+        getValuesFromDomain("GENERO"),
+        getValuesFromDomain("TIPODOCUMENTO"),
+        getValuesFromDomain("OCUPACION"),
+        getValuesFromDomain("ESTADOCIVIL"),
+        getValuesFromDomain("NIVELEDUCATIVO"),
+        getValuesFromDomain("TIPOPERSONA"),
+        getValuesFromDomain("GRUPOPERSONA"),
+    ]),
+    types: {
+        loading: actionTypes.GET_DOMAINS_BY_TYPENAME,
+        failure: actionTypes.GET_DOMAINS_BY_TYPENAME_FAILURE,
+        success: actionTypes.GET_DOMAINS_BY_TYPENAME_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_BY_TYPENAME_RESET });
+
+export const editPerson = (payload: IRequestBody): IActionCall => ({
+    callAPI: async () => CommonService.main(payload),
+    types: {
+        loading: actionTypes.EDIT_PERSON,
+        failure: actionTypes.EDIT_PERSON_FAILURE,
+        success: actionTypes.EDIT_PERSON_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetEditPerson = () => ({type: actionTypes.EDIT_PERSON_RESET });

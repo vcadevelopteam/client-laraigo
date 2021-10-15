@@ -128,3 +128,7 @@ export { ReactComponent as MessageTemplateIcon } from './message-template.svg';
 export { ReactComponent as InteractiveListIcon } from './interactive-list.svg';
 export { ReactComponent as SeenIcon } from './seen.svg';
 export { ReactComponent as ClientIcon } from './clients.svg';
+
+export { ReactComponent as DocNumberIcon } from './docnumber.svg';
+export { ReactComponent as DocTypeIcon } from './doctype.svg';
+export { ReactComponent as TelephoneIcon } from './telephone.svg';

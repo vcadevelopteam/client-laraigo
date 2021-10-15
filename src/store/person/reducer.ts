@@ -1,5 +1,5 @@
-import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation } from "@types";
-import { createReducer, initialListPaginatedState, initialListState, initialObjectState } from "common/helpers";
+import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IPersonDomains, IProcessState } from "@types";
+import { createReducer, initialListPaginatedState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
@@ -10,6 +10,11 @@ export interface IState {
     personAdditionInfo: IListState<IPersonAdditionalInfo>;
     person: IObjectState<IPerson>;
     personOpportunityList: IListState<any>;
+
+    /**GET_DOMAINS_BY_TYPENAME */
+    editableDomains: IObjectState<IPersonDomains>;
+
+    editPerson: IProcessState;
 }
 
 export const initialState: IState = {
@@ -19,6 +24,9 @@ export const initialState: IState = {
     personAdditionInfo: initialListState,
     person: initialObjectState,
     personOpportunityList: initialListState,
+
+    editableDomains: initialObjectState,
+    editPerson: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -51,4 +59,14 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getOpportunitiesByPersonSuccess,
     [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_FAILURE]: caseFUnctions.getOpportunitiesByPersonFailure,
     [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_RESET]: caseFUnctions.getOpportunitiesByPersonReset,
+
+    [actionTypes.GET_DOMAINS_BY_TYPENAME]: caseFUnctions.getDomainsByTypename,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_SUCCESS]: caseFUnctions.getDomainsByTypenameSuccess,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_FAILURE]: caseFUnctions.getDomainsByTypenameFailure,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_RESET]: caseFUnctions.getDomainsByTypenameReset,
+
+    [actionTypes.EDIT_PERSON]: caseFUnctions.editPerson,
+    [actionTypes.EDIT_PERSON_SUCCESS]: caseFUnctions.editPersonSuccess,
+    [actionTypes.EDIT_PERSON_FAILURE]: caseFUnctions.editPersonFailure,
+    [actionTypes.EDIT_PERSON_RESET]: caseFUnctions.editPersonReset,
 });

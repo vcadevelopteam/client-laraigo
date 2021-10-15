@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
 import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
@@ -6,9 +6,9 @@ import clsx from 'clsx';
 import { langKeys } from 'lang/keys';
 import { ColorChangeHandler } from 'react-color';
 import { Close, CloudUpload } from '@material-ui/icons';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
-import { IChatWebAdd, IChatWebAddFormField } from '@types';
+import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
 import { insertChannel2, reserInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
@@ -27,12 +27,16 @@ interface FieldTemplate {
     data: IChatWebAddFormField;
 }
 
-const getImgUrl = (file: File | null): string | null => {
+const getImgUrl = (file: File | string | null): string | null => {
     if (!file) return null;
 
     try {
-        const url = URL.createObjectURL(file);
-        return url;
+        if (typeof file === "string") {
+            return file;
+        } else if (typeof file === "object") {
+            return URL.createObjectURL(file);
+        }
+        return null;
     } catch (ex) {
         console.error(ex);
         return null;
@@ -100,9 +104,9 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
     const { setValue, getValues, formState: { errors } } = form;
     const classes = useTabInterfacetyles();
     const { t } = useTranslation();
-    const [chatBtn, setChatBtn] = useState<File | null>(getValues('interface.iconbutton') as File);
-    const [headerBtn, setHeaderBtn] = useState<File | null>(getValues('interface.iconheader') as File);
-    const [botBtn, setBotBtn] = useState<File | null>(getValues('interface.iconbot') as File);
+    const [chatBtn, setChatBtn] = useState<File | string | null>(getValues('interface.iconbutton'));
+    const [headerBtn, setHeaderBtn] = useState<File | string | null>(getValues('interface.iconheader'));
+    const [botBtn, setBotBtn] = useState<File | string | null>(getValues('interface.iconbot'));
 
     const handleChatBtnClick = () => {
         const input = document.getElementById('chatBtnInput');
@@ -203,7 +207,7 @@ const TabPanelInterface: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) =
                             <TextField
                                 variant="outlined"
                                 fullWidth
-                                placeholder={t(langKeys.chatHeaderSubtitle)} // "Subtitulo de la cabecera del chat"
+                                placeholder={t(langKeys.chatHeaderSubtitle)}
                                 name="subtitulo"
                                 size="small"
                                 defaultValue={getValues('interface.chatsubtitle')}
@@ -859,7 +863,7 @@ const TabPanelBubble: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabBubbleStyles();
     const { t } = useTranslation();
     const [enable, setEnable] = useState(getValues('bubble.active'));
-    const [waitingImg, setWaitingImg] = useState<File | null>(getValues('bubble.iconbubble') as File);
+    const [waitingImg, setWaitingImg] = useState<File | string | null>(getValues('bubble.iconbubble'));
 
     const handleWaitingBtnClick = () => {
         const input = document.getElementById('waitingBtnInput');
@@ -1371,9 +1375,10 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC = () => {
+export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const classes = useStyles();
     const history = useHistory();
+    const location = useLocation();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
@@ -1381,11 +1386,26 @@ export const ChannelAddChatWeb: FC = () => {
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
 
+    const channel = location.state as IChannel | null;
+
+    const service = useRef<IChatWebAdd | null>(null);
+
+    if (channel && !service.current && channel.servicecredentials.length > 0) {
+        service.current = JSON.parse(channel.servicecredentials);
+    }
+
     useEffect(() => {
+        console.log(channel);
+        if (edit && !channel) {
+            history.push(paths.CHANNELS);
+        } else if (edit && channel && channel.servicecredentials.length === 0) {
+            history.push(paths.CHANNELS);
+        }
+
         return () => {
             dispatch(reserInsertChannel());
         };
-    }, [dispatch]);
+    }, [history, dispatch]);
 
     useEffect(() => {
         if (insertChannel.loading) return;
@@ -1405,7 +1425,7 @@ export const ChannelAddChatWeb: FC = () => {
     }, [dispatch, insertChannel]);
 
     const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
-        defaultValues: {
+        defaultValues: service.current || {
             interface: {
                 chattitle: "",
                 chatsubtitle: "",
@@ -1480,6 +1500,10 @@ export const ChannelAddChatWeb: FC = () => {
         if (!insertChannel.value?.integrationid) history.push(paths.CHANNELS);
     }
 
+    if (edit && !channel) {
+        return <div />;
+    }
+
     return (
         <div className={classes.root}>
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
@@ -1522,6 +1546,9 @@ export const ChannelAddChatWeb: FC = () => {
                     integrationId={insertChannel.value?.integrationid}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
+                    defaultName=""
+                    defaultAuto={false}
+                    defaultHexIconColor="#7721ad"
                 />
             </div>
         </div>
@@ -1552,20 +1579,23 @@ interface ChannelAddEndProps {
     loading: boolean;
     integrationId?: string;
     onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
-    onClose: () => void;
+    onClose?: () => void;
+    defaultName: string;
+    defaultAuto: boolean;
+    defaultHexIconColor: string;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, defaultAuto, defaultHexIconColor, defaultName }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const [name, setName] = useState("");
-    const [auto, setAuto] = useState(false);
-    const [hexIconColor, setHexIconColor] = useState("#7721ad");
+    const [name, setName] = useState(defaultName);
+    const [auto, setAuto] = useState(defaultAuto);
+    const [hexIconColor, setHexIconColor] = useState(defaultHexIconColor);
 
     const handleGoBack = (e: React.MouseEvent) => {
         e.preventDefault();
-        if (!integrationId) onClose();
+        if (!integrationId) onClose?.();
     }
 
     const handleSave = () => {
@@ -1590,6 +1620,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         label={t(langKeys.givechannelname)}
                         className="col-6"
                         disabled={loading || integrationId != null}
+                        valueDefault={defaultName}
                     />
                 </div>
                 <div className="row-zyx">
@@ -1608,6 +1639,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         label={t(langKeys.enablechatflow)}
                         className="col-6"
                         disabled={loading || integrationId != null}
+                        valueDefault={defaultAuto}
                     />
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
