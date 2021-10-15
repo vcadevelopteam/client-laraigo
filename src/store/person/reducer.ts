@@ -1,4 +1,4 @@
-import { IDomain, IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IProcessState } from "@types";
+import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IPersonDomains, IProcessState } from "@types";
 import { createReducer, initialListPaginatedState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -12,13 +12,7 @@ export interface IState {
     personOpportunityList: IListState<any>;
 
     /**GET_DOMAINS_BY_TYPENAME */
-    editableDomains: IObjectState<{
-        docTypes: IDomain[];
-        genders: IDomain[];
-        occupations: IDomain[];
-        civilStatuses: IDomain[];
-        educationLevels: IDomain[];
-    }>;
+    editableDomains: IObjectState<IPersonDomains>;
 
     editPerson: IProcessState;
 }

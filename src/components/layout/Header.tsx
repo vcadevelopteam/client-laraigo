@@ -19,6 +19,8 @@ const useToolbarStyles = makeStyles(theme => ({
     toolbar: {
         borderBottom: '1px solid #EBEAED',
         padding: `0 24px 0 14px`,
+        height: 'inherit',
+        minHeight: 'inherit',
     },
 }));
 

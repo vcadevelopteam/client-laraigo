@@ -1,4 +1,4 @@
-import { Dictionary, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -837,6 +837,46 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
         form: "",
         apikey: "",
         coloricon: iconColor,
+    },
+    type: "CHATWEB",
+    service,
+});
+
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...payload,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
+    },
+});
+
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...channel,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
     },
     type: "CHATWEB",
     service,

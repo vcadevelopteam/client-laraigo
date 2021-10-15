@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, ListPaginated, TemplateIcons, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody } from 'common/helpers';
-import { IDomain, IPerson, IPersonChannel, IPersonConversation } from "@types";
+import { IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
@@ -24,7 +24,7 @@ interface PersonItemProps {
 }
 
 interface SelectFieldProps {
-    defaultValue: unknown;
+    defaultValue?: string;
     onChange: (value: string, desc: string) => void;
     data: IDomain[];
     loading: boolean;
@@ -35,23 +35,16 @@ const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data,
         <TextField
             select
             defaultValue={defaultValue}
-            onChange={e => {
-                const vals = e.target.value.split('|');
-                const value = vals[0];
-                const desc = vals[1];
-                return onChange(value, desc);
-            }}
             fullWidth
             variant="standard"
             disabled={loading}
-            InputProps={{
-                endAdornment: (
-                    loading && <CircularProgress color="inherit" size={20} style={{ backgroundColor: 'white' }} />
-                ),
-            }}
         >
             {data.map((option) => (
-                <MenuItem key={option.domainid} value={`${option.domainvalue}|${option.domaindesc}`}>
+                <MenuItem
+                    key={option.domainid}
+                    value={option.domainvalue}
+                    onClick={() => onChange(option.domainvalue, option.domaindesc)}
+                >
                     {option.domaindesc}
                 </MenuItem>
             ))}
@@ -671,7 +664,7 @@ export const PersonDetail: FC = () => {
                             getValues={getValues}
                             setValue={setValue}
                             person={person}
-                            domainLoading={domains.loading}
+                            domains={domains}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
@@ -698,7 +691,7 @@ export const PersonDetail: FC = () => {
                             <TextField
                                 fullWidth
                                 placeholder={t(langKeys.phone)}
-                                defaultValue={getValues('phone')}
+                                defaultValue={person.phone}
                                 onChange={e => setValue('phone', e.target.value)}
                             />
                         )}
@@ -712,7 +705,7 @@ export const PersonDetail: FC = () => {
                             <TextField
                                 fullWidth
                                 placeholder={t(langKeys.email)}
-                                defaultValue={getValues('email')}
+                                defaultValue={person.email}
                                 onChange={e => setValue('email', e.target.value)}
                             />
                         )}
@@ -723,7 +716,7 @@ export const PersonDetail: FC = () => {
                         title={<Trans i18nKey={langKeys.document} />}
                         subtitle={(
                             <DomainSelectField
-                                defaultValue={getValues('documenttype')}
+                                defaultValue={person.documenttype}
                                 onChange={(value) => {
                                     setValue('documenttype', value);
                                 }}
@@ -741,7 +734,7 @@ export const PersonDetail: FC = () => {
                             <TextField
                                 fullWidth
                                 placeholder={t(langKeys.docNumber)}
-                                defaultValue={getValues('documentnumber')}
+                                defaultValue={person.documentnumber}
                                 onChange={e => setValue('documentnumber', e.target.value)}
                             />
                         )}
@@ -753,7 +746,7 @@ export const PersonDetail: FC = () => {
                         title={<Trans i18nKey={langKeys.gender} />}
                         subtitle={(
                             <DomainSelectField
-                                defaultValue={getValues('gender')}
+                                defaultValue={person.gender}
                                 onChange={(value, desc) => {
                                     setValue('gender', value);
                                     setValue('genderdesc', desc)
@@ -858,10 +851,10 @@ interface ChannelTabProps {
     person: IPerson;
     getValues: UseFormGetValues<IPerson>;
     setValue: UseFormSetValue<IPerson>;
-    domainLoading: boolean;
+    domains: IObjectState<IPersonDomains>;
 }
 
-const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domainLoading }) => {
+const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domains }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const channelList = useSelector(state => state.person.personChannelList);
@@ -885,45 +878,83 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
                             <Property
                                 title={<Trans i18nKey={langKeys.personType} />}
                                 subtitle={(
-                                    person.persontype
-                                    // <DomainSelectField
-                                    //     defaultValue={getValues('persontype')}
-                                    //     onChange={(value) => {
-                                    //         setValue('persontype', value);
-                                    //     }}
-                                    //     loading={doma}
-                                    //     data={domains.value?.docTypes || []}
-                                    // />
+                                    <DomainSelectField
+                                        defaultValue={person.persontype}
+                                        onChange={(value) => {
+                                            setValue('persontype', value);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.personTypes || []}
+                                    />
                                 )}
-                                mt={1} mb={1}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.civilStatus} />}
-                                subtitle={person.civilstatus}
-                                mt={1} mb={1}
+                                subtitle={(
+                                    <DomainSelectField
+                                        defaultValue={person.civilstatus}
+                                        onChange={(value, desc) => {
+                                            setValue('civilstatus', value);
+                                            setValue('civilstatusdesc', desc);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.civilStatuses || []}
+                                    />
+                                )}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.educationLevel} />}
-                                subtitle={person.educationlevel}
-                                mt={1} mb={1}
+                                subtitle={(
+                                    <DomainSelectField
+                                        defaultValue={person.educationlevel}
+                                        onChange={(value, desc) => {
+                                            setValue('educationlevel', value);
+                                            setValue('educationleveldesc', desc);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.educationLevels || []}
+                                    />
+                                )}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.occupation} />}
-                                subtitle={person.occupation}
-                                mt={1} mb={1}
+                                subtitle={(
+                                    <DomainSelectField
+                                        defaultValue={person.occupation}
+                                        onChange={(value, desc) => {
+                                            setValue('occupation', value);
+                                            setValue('occupationdesc', desc);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.occupations || []}
+                                    />
+                                )}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.group} count={2} />}
-                                subtitle={person.groups}
-                                mt={1} mb={1}
+                                subtitle={(
+                                    <DomainSelectField
+                                        defaultValue={person.groups || ""}
+                                        onChange={(value) => {
+                                            setValue('groups', value);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.groups || []}
+                                    />
+                                )}
+                                m={1}
                             />
                         </Grid>
                     </Grid>
@@ -937,11 +968,11 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.alternativePhone)}
-                                        defaultValue={getValues('alternativephone')}
+                                        defaultValue={person.alternativephone}
                                         onChange={e => setValue('alternativephone', e.target.value)}
                                     />
                                 )}
-                                mt={1} mb={1}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
@@ -951,18 +982,18 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
                                     <TextField
                                         fullWidth
                                         placeholder={t(langKeys.alternativeEmail)}
-                                        defaultValue={getValues('alternativeemail')}
+                                        defaultValue={person.alternativeemail}
                                         onChange={e => setValue('alternativeemail', e.target.value)}
                                     />
                                 )}
-                                mt={1} mb={1}
+                                m={1}
                             />
                         </Grid>
                         <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.referredBy} />}
                                 subtitle={person.referringpersonname}
-                                mt={1} mb={1}
+                                m={1}
                             />
                         </Grid>
                     </Grid>

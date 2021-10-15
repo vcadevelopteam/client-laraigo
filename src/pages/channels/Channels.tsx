@@ -8,7 +8,7 @@ import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Dictionary } from '@types';
+import { Dictionary, IChannel } from '@types';
 import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetMain } from 'store/main/actions';
@@ -62,6 +62,17 @@ export const Channels: FC = () => {
             callback
         }))
     }
+
+    const handleEdit = (row: IChannel) => {
+        const pathname = row.type === "CHAZ" ?
+            paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
+            paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
+        history.push({
+            pathname,
+            state: row,
+        });
+    }
+
     const columns = React.useMemo(
         () => [
             {
@@ -76,7 +87,7 @@ export const Channels: FC = () => {
                         <TemplateIcons
                             viewFunction={() => {}}
                             deleteFunction={() => handleDelete(row)}
-                            editFunction={() => {}}
+                            editFunction={() => handleEdit(row)}
                         />
                     )
                 }

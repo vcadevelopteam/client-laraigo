@@ -87,6 +87,8 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("OCUPACION"),
         getValuesFromDomain("ESTADOCIVIL"),
         getValuesFromDomain("NIVELEDUCATIVO"),
+        getValuesFromDomain("TIPOPERSONA"),
+        getValuesFromDomain("GRUPOPERSONA"),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,
