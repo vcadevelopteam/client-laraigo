@@ -57,7 +57,6 @@ const UserSettings: FC = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [waitUploadFile, setWaitUploadFile] = useState(false);
     const [waitsave, setwaitsave] = useState(false);
-    const [disableButton] = useState(false);
     const resSetting = useSelector(state => state.setting.setting);
     const uploadResult = useSelector(state => state.main.uploadFile);
 

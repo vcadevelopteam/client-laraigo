@@ -8,6 +8,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from "react-redux";
 
 import { executeSubscription } from "store/signup/actions";
+import { useHistory } from "react-router-dom";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -38,6 +39,7 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void}> = ({mainData,requestchannels,setSnackbar,setBackdrop}) => {
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const history = useHistory();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const [disablebutton, setDisablebutton] = useState(false);
@@ -83,6 +85,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             if (!mainResult.loading && !mainResult.error) {
                 setBackdrop(false)
                 setSnackbar({ state: true, success: true, message: t(langKeys.successful_register) })
+                history.push('sign-in')
                 setWaitSave(false);
             } else if (mainResult.error) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })

@@ -9,7 +9,8 @@ import TelegramIcon from '@material-ui/icons/Telegram';
 import TwitterIcon from '@material-ui/icons/Twitter';
 import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
-import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon, Message as MessageIcon } from "@material-ui/icons";
+import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon } from "@material-ui/icons";
+import { FacebookMessengerIcon, ZyxmeMessengerIcon } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
 
 interface ChannelOption {
@@ -81,7 +82,8 @@ const useChannelAddStyles = makeStyles(theme => ({
         backgroundColor: 'white',
         fontSize: 16,
         fontWeight: 400,
-        color: '#A59F9F',
+        color: '#A59F9F',        
+        fill: '#A59F9F',
         '&:hover': {
             color: 'white',
             backgroundColor: 'lightgrey',
@@ -100,6 +102,11 @@ const useChannelAddStyles = makeStyles(theme => ({
         fontSize: 16,
         fontWeight: 700,
         color: 'white',
+        fill: 'white',
+    },
+    icon: {
+        fill: 'inherit',
+        height: 25,
     },
 }));
 
@@ -127,7 +134,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             selected: listchannels.instagram
         },
         {
-            icon: <MessageIcon color="inherit" />,
+            icon: <FacebookMessengerIcon className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',
             onClick: () => {
@@ -174,7 +181,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
     ];
     const businessChannelOptions: ChannelOption[] = [
         {
-            icon: <FacebookIcon color="inherit" />,
+            icon: <ZyxmeMessengerIcon className={classes.icon} />,
             label: 'Chat Web',
             key: 'chatWeb',
             onClick: () => {
@@ -247,6 +254,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                     </Breadcrumbs>
                 <div className={classes.title}>{t(langKeys.channeladdtitle)}</div>
                 <Typography className={classes.subtitle}>{t(langKeys.socialmediachannel)}</Typography>
+                <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.socialmediachannel2)}</div>
                 <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                     {socialMediaOptions.map((e, i) =>
                         <Option

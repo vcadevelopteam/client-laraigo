@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup, Switch } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch, ColorInput } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
+import { WhatsappIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -31,6 +32,8 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
+    const [enable, setenable] = useState(false);
+    const [coloricon, setcoloricon] = useState("#4AC959");
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
     const executeResult = useSelector(state => state.channel.successinsert)
@@ -177,24 +180,29 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <WhatsappIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<Switch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}} color="default"/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button

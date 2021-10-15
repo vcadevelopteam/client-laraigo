@@ -3,7 +3,10 @@ import { FC, useEffect, useState } from "react";
 import { makeStyles, Button, TextField, FormControl, FormGroup, FormControlLabel, Checkbox } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "@types";
+import { Dictionary } from "@types"
+import MuiPhoneNumber from 'material-ui-phone-number';
+import { styled } from '@material-ui/core/styles';
+
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -15,6 +18,20 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+      color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+          borderColor: '#7721ad',
+        },
+    },
+});
+
 export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void }> = ({ setMainData, mainData, setStep }) => {
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
@@ -23,6 +40,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const [disablebutton, setdisablebutton] = useState(true);
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
+        console.log(mainData)
     }, [mainData])
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
@@ -58,16 +76,17 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     helperText={errors.companybusinessname}
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    type="number"
-                    fullWidth
-                    size="small"
-                    defaultValue={mainData.mobilephone}
+                <CssPhonemui 
+                    variant="outlined" 
+                    margin="normal" 
+                    size="small" 
+                    disableAreaCodes={true}
+                    value={mainData.mobilephone}
                     label={t(langKeys.mobilephoneoptional)}
                     name="mobilephone"
-                    onChange={(e) => setMainData((p: any) => ({ ...p, mobilephone: e.target.value }))}
+                    fullWidth
+                    defaultCountry={'pe'} 
+                    onChange={(e) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
                 />
                 <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
                 <FormControl component="fieldset" style={{ padding: '16px 0' }}>
