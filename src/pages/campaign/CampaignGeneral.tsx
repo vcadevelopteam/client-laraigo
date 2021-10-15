@@ -282,8 +282,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         setValue('messagetemplatenamespace', messageTemplate?.namespace);
         setValue('messagetemplatetype', messageTemplate?.templatetype);
         if (data.type === 'HSM') {
-            setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
-            setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
+            if (messageTemplate.headerenabled)
+                setValue('messagetemplateheader', { type: messageTemplate?.headertype, value: messageTemplate?.header });
+            else
+                setValue('messagetemplateheader', { type: '', value: '' });
+            if (messageTemplate.buttonsenabled)
+                setValue('messagetemplatebuttons', messageTemplate?.buttons || []);
+            else
+                setValue('messagetemplatebuttons', []);
         }
         await trigger(['messagetemplateid', 'messagetemplatename', 'messagetemplatenamespace', 'messagetemplatetype']);
     }

@@ -280,13 +280,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             category: row?.category || '',
             language: row?.language || '',
             templatetype: row?.templatetype || 'STANDARD',
-            headerenabled: row?.headerenabled || true,
+            headerenabled: ![null, undefined].includes(row?.headerenabled) ? row?.headerenabled : true,
             headertype: row?.headertype || 'text',
             header: row?.header || '',
             body: row?.body || '',
-            footerenabled: row?.footerenabled || true,
+            footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : true,
             footer: row?.footer || '',
-            buttonsenabled: row?.buttonsenabled || true,
+            buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
             buttons: row ? (row.buttons || []) : [],
             operation: row ? "EDIT" : "INSERT"
         }

@@ -143,18 +143,18 @@ export const CampaignPerson: React.FC<DetailProps> = ({ row, edit, auxdata, deta
 
     const uploadData = (data: any) => {
         if (data.length === 0) {
-            alert('Archivo sin data!');
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_without_data)}));
             return null;
         }
         if (data.length > 100000) {
-            alert('Archivo con demasiados registros!');
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.too_many_records)}));
             return null;
         }
         let actualHeaders = jsonData.length > 0 ? Object.keys(jsonData[0]) : null;
         let newHeaders = Object.keys(data[0]);
         if (actualHeaders) {
             if (!actualHeaders.every(h => newHeaders?.includes(h))) {
-                alert('Archivo incompatible con el anterior!');
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.file_incompatbile_with_previous_one)}));
                 return null;
             }
         }
