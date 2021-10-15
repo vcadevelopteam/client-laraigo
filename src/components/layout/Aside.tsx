@@ -82,16 +82,7 @@ const Aside = ({ classes, theme, routes }: IProps) => {
                 }),
             }}
         >
-            <div className={classes.toolbar}>
-                {/* <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
-                    <Menu />
-                </IconButton>
-                <img
-                    src="/Laraigo-logo-name.svg"
-                    style={{ height: 37 }}
-                    alt="logo"
-                /> */}
-            </div>
+            <div className={classes.toolbar} />
             <Divider />
             <div style={{ height: 18 }} />
             <div style={{ overflowX: 'hidden' }}>

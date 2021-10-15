@@ -1,4 +1,4 @@
-import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1454,3 +1454,14 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
     },
 ]);
+
+export const editPersonBody = (person: IPerson): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        corpid: null,
+        orgid: null,
+        id: person.personid,
+        operation: 'UPDATE',
+    },
+});

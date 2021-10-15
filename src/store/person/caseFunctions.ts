@@ -1,4 +1,4 @@
-import { IAction } from "@types";
+import { IAction, IDomain } from "@types";
 import { IState, initialState } from './reducer';
 
 export const getPerson = (state: IState): IState => ({
@@ -181,4 +181,78 @@ export const getOpportunitiesByPersonFailure = (state: IState, action: IAction):
 export const getOpportunitiesByPersonReset = (state: IState): IState => ({
     ...state,
     personOpportunityList: initialState.personOpportunityList,
+});
+
+export const getDomainsByTypename = (state: IState): IState => ({
+    ...state,
+    editableDomains: { ...state.editableDomains, loading: true },
+});
+
+export const getDomainsByTypenameSuccess = (state: IState, action: IAction): IState => {
+    const genders = (action.payload.data as any[])[0].data as IDomain[] | null;
+    const docTypes = (action.payload.data as any[])[1].data as IDomain[] | null;
+    const occupations = (action.payload.data as any[])[2].data as IDomain[] | null;
+    const civilStatuses = (action.payload.data as any[])[3].data as IDomain[] | null;
+    const educationLevels = (action.payload.data as any[])[4].data as IDomain[] | null;
+
+    return {
+        ...state,
+        editableDomains: {
+            ...state.editableDomains,
+            value: {
+                civilStatuses: civilStatuses || [],
+                docTypes: docTypes || [],
+                educationLevels: educationLevels || [],
+                genders: genders || [],
+                occupations: occupations || [],
+            },
+            loading: false,
+            error: false,
+        },
+    };
+};
+
+export const getDomainsByTypenameFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    editableDomains: {
+        ...state.editableDomains,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error Obtener los dominios"
+    },
+});
+
+export const getDomainsByTypenameReset = (state: IState): IState => ({
+    ...state,
+    editableDomains: initialState.editableDomains,
+});
+
+export const editPerson = (state: IState): IState => ({
+    ...state,
+    editPerson: { ...state.editPerson, loading: true },
+});
+
+export const editPersonSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    editPerson: {
+        ...state.editPerson,
+        loading: false,
+        error: false,
+        success: true,
+    },
+});
+
+export const editPersonFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    editPerson: {
+        ...state.editPerson,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error al editar la persona",
+    },
+});
+
+export const editPersonReset = (state: IState): IState => ({
+    ...state,
+    editPerson: initialState.editPerson,
 });

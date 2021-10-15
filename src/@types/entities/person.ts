@@ -9,37 +9,37 @@ export interface IPerson {
     orgdesc: string;
     personid: number;
     description?: string;
-    groups: any;
+    groups: any; // edit
     status: string;
     type: string;
     name: string;
-    persontype: string;
+    persontype: string; // edit
     personstatus: string;
-    phone?: string;
-    email?: string;
-    alternativephone?: string;
-    alternativeemail?: string;
+    phone?: string; // edit
+    email?: string; // edit
+    alternativephone?: string; // edit
+    alternativeemail?: string; // edit
     firstcontact: string;
     lastcontact: string;
     lastcommunicationchannelid: number;
     communicationchannelname?: string;
-    documenttype: string;
-    documentnumber: string;
+    documenttype: string; // edit
+    documentnumber: string; // edit
     firstname: string;
     lastname: string;
     imageurldef?: string;
-    sex: string;
+    sex: string; // edit
     gender?: string;
     genderdesc?: string;
     birthday: string;
-    civilstatus?: string;
-    civilstatusdesc?: string;
+    civilstatus?: string; // edit
+    civilstatusdesc?: string; // edit
     address?: string;
     addressreference?: string;
-    occupation?: string;
-    occupationdesc?: string;
-    educationlevel?: string;
-    educationleveldesc?: string;
+    occupation?: string; // edit
+    occupationdesc?: string; // edit
+    educationlevel?: string; // edit
+    educationleveldesc?: string; // edit
     lastcommunicationchannel?: string;
     totaltickets?: number;
     country: string;
@@ -57,6 +57,24 @@ export interface IPerson {
     createdate: string;
     changeby: string;
     changedate: string;
+}
+
+export interface IPersonEdit {
+    groups: any;
+    persontype: string;
+    phone?: string;
+    email?: string;
+    alternativephone?: string;
+    alternativeemail?: string;
+    documenttype: string;
+    documentnumber: string;
+    sex: string;
+    civilstatus?: string;
+    civilstatusdesc?: string;
+    occupation?: string;
+    occupationdesc?: string;
+    educationlevel?: string;
+    educationleveldesc?: string;
 }
 
 export interface IPersonChannel {
