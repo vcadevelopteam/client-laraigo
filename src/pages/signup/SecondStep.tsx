@@ -20,14 +20,14 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 const CssPhonemui = styled(MuiPhoneNumber)({
     '& label.Mui-focused': {
-      color: '#7721ad',
+        color: '#7721ad',
     },
     '& .MuiInput-underline:after': {
         borderBottomColor: '#7721ad',
     },
     '& .MuiOutlinedInput-root': {
         '&.Mui-focused fieldset': {
-          borderColor: '#7721ad',
+            borderColor: '#7721ad',
         },
     },
 });
@@ -76,16 +76,16 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     helperText={errors.companybusinessname}
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />
-                <CssPhonemui 
-                    variant="outlined" 
-                    margin="normal" 
-                    size="small" 
+                <CssPhonemui
+                    variant="outlined"
+                    margin="normal"
+                    size="small"
                     disableAreaCodes={true}
                     value={mainData.mobilephone}
                     label={t(langKeys.mobilephoneoptional)}
                     name="mobilephone"
                     fullWidth
-                    defaultCountry={'pe'} 
+                    defaultCountry={'pe'}
                     onChange={(e) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
                 />
                 <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
