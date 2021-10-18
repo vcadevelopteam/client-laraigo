@@ -11,6 +11,11 @@ const APIS_URL = {
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow'
     },
+    PRODUCTION: {
+        API: 'https://apiprd.laraigo.com/api',
+        WS: 'https://broker.laraigo.com',
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow'
+    },
     LOCAL: {
         API: 'http://localhost:6065/api',
         WS: 'https://testsocket.laraigo.com',

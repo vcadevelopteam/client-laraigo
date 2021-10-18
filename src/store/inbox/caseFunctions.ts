@@ -249,6 +249,8 @@ export const resetSelectTicket = (state: IState, action: IAction): IState => ({
 export const selectAgent = (state: IState, action: IAction): IState => ({
     ...state,
     agentSelected: action.payload,
+    isFiltering: false,
+    ticketFilteredList: initialState.ticketFilteredList
 })
 
 export const showInfoPanel = (state: IState): IState => ({
@@ -377,21 +379,24 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
 
     if (agentSelected?.userid === data.userid || userType === 'AGENT' || newticketList.some(x => x.conversationid === data.conversationid)) {
         if (data.newConversation) {
-            newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
+            if (!newticketList.some(x => x.conversationid === data.conversationid)) { // a veces se cruza cuando esta cargando al data
+                newticketList = [...newticketList, { ...data, isAnswered: data.userid === 2 }]
+            }
         } else {
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
                 ...x,
-                personlastreplydate: data.usertype === "agent" ? null : (x.personlastreplydate || new Date().toISOString()),
+                personlastreplydate: data.usertype === "client" ? new Date().toISOString() : x.personlastreplydate,
                 countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
-                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase()
+                lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
             }) : x)
         }
 
         if (ticketSelected?.conversationid === data.conversationid) {
-
+        
             if (data.usertype === "agent" && data.ticketWasAnswered) {
-                if (newTicketSelected)
-                    newTicketSelected.isAnswered = true;
+                newTicketSelected!!.isAnswered = true;
+            } else if (data.usertype === "client") {
+                newTicketSelected!!.personlastreplydate = new Date().toISOString();
             }
 
             const newInteraction: IInteraction = {

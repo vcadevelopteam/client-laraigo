@@ -49,6 +49,7 @@ const translation: LangKeys = {
 
     agent_message: 'Mensajes del Asesor',
     search_result: 'Resultado de búsqueda',
+    without_result: 'Sin resultado',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
     channeldesc: 'Descripcion Canal',

@@ -26,6 +26,10 @@ const translation: LangKeys = {
     advance_search: 'Advance search',
     search_inbox: 'Search inbox',
     search_result: 'Search result',
+    
+
+    without_result: 'Without result',
+
 
     client_message: 'Client Messages',
     bot_message: 'Bot Messages',

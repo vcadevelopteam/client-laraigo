@@ -403,6 +403,7 @@ export const langKeys = {
     deleteRecord: 'deleteRecord',
     changeDate: 'changeDate',
     search_result: 'search_result',
+    without_result: 'without_result',
 
     edit: 'edit',
     delete: 'delete',

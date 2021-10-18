@@ -483,20 +483,31 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                 {
                     isFiltering ?
                         <>
-                            <div style={{ fontWeight: 500, padding: 8, fontSize: 15, borderBottom: '1px solid rgb(235, 234, 237)' }}>{t(langKeys.search_result)}</div>
-                            {ticketFilteredList.loading ? <ListItemSkeleton /> :
-                                <AutoSizer>
-                                    {({ height, width }: any) => (
-                                        <FixedSizeList
-                                            width={width}
-                                            height={height}
-                                            itemCount={ticketFilteredList.data.length}
-                                            itemSize={97}
-                                        >
-                                            {RenderRowFilterd}
-                                        </FixedSizeList>
-                                    )}
-                                </AutoSizer>
+                            <div style={{ fontWeight: 500, padding: 8, fontSize: 15, borderBottom: '1px solid rgb(235, 234, 237)' }}>
+                                {t(langKeys.search_result)}
+                            </div>
+                            {ticketFilteredList.loading ?
+                                <ListItemSkeleton />
+                                :
+                                (ticketFilteredList.data.length === 0 ?
+                                    <div style={{ padding: 8 }}>
+                                        {t(langKeys.without_result)}
+                                    </div>
+                                    :
+                                    <AutoSizer>
+                                        {({ height, width }: any) => (
+                                            <FixedSizeList
+                                                width={width}
+                                                height={height}
+                                                itemCount={ticketFilteredList.data.length}
+                                                itemSize={97}
+                                            >
+                                                {RenderRowFilterd}
+                                            </FixedSizeList>
+                                        )}
+                                    </AutoSizer>
+                                )
+
                             }
                         </>
                         : (ticketList.loading ? <ListItemSkeleton /> :
