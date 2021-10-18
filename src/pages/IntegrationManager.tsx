@@ -324,7 +324,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             parameters: row ? (row.parameters || []) : [],
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
-            fields: row ? (row.fields || [{name: 'corpid', key: true},{name: 'status', key: false}]) : [{name: 'corpid', key: true},{name: 'status', key: false}],
+            fields: row
+            ? (row.fields || [{name: 'corpid', key: true}, {name: 'status', key: false}])
+            : [{name: 'corpid', key: true}, {name: 'status', key: false}],
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -491,18 +493,19 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         setValue('level', data?.key || '');
         await trigger('level');
         if (data?.key === 'CORPORATION') {
-            if (fields.findIndex(x => x.name === 'corpid') === -1) {
-                fieldsInsert(0, {name: 'corpid', key: true});
-            }
-            fieldsRemove(fields.findIndex(x => x.name === 'orgid'));
+            setValue('fields', [
+                { name: 'corpid', key: true },
+                { name: 'status', key: false },
+                ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
+            ])
         }
         if (data?.key === 'ORGANIZATION') {
-            if (fields.findIndex(x => x.name === 'corpid') === -1) {
-                fieldsInsert(0, {name: 'corpid', key: true});
-            }
-            if (fields.findIndex(x => x.name === 'orgid') === -1) {
-                fieldsInsert(1, {name: 'orgid', key: true});
-            }
+            setValue('fields', [
+                { name: 'corpid', key: true },
+                { name: 'orgid', key: true },
+                { name: 'status', key: false },
+                ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
+            ])
         }
     }
 
