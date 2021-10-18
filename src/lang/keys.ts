@@ -10,6 +10,8 @@ export const langKeys = {
     organization: 'organization',
     iaservices: 'iaservices',
     iaservices_plural: 'iaservices_plural',
+    iaservice_already_exist: 'iaservice_already_exist',
+    iaservice_must_select: 'iaservice_must_select',
     error_already_exists_channel:'error_already_exists_channel',
     services_plural: 'services_plural',
     organization_plural: 'organization_plural',
@@ -296,6 +298,9 @@ export const langKeys = {
 
     model_type: 'model_type',
     model_type_plural: 'model_type_plural',
+
+    type_service: 'type_service',
+    type_service_plural: 'type_service_plural',
 
     model: 'model',
     model_plural: 'model_plural',

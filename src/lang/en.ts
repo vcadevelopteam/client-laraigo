@@ -14,8 +14,13 @@ const translation: LangKeys = {
     iaservices: 'IA Service',
     iaservices_plural: 'IA Services',
 
+    iaservice_already_exist: 'The service selected already exist',
+
     model_type: 'Model Type',
     model_type_plural: 'Models Type',
+
+    type_service: 'Service Type',
+    type_service_plural: 'Services Type',
 
     model: 'Model',
     model_plural: 'Models',
@@ -529,6 +534,7 @@ const translation: LangKeys = {
     negative: 'No',
     opendrilldown: "Open Drilldown",
     organization_by_default: 'You must select only a default organization',
+    iaservice_must_select: 'You must select at least one service',
     attention_group: 'Attention group',
     register: 'Register',
     tmototalobj: "Objective Total TMO",
