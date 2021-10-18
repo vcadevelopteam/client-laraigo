@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormHelperText, FormControlLabel, FormGroup } from '@material-ui/core';
 import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -1589,7 +1589,8 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
-    const [name, setName] = useState(defaultName);
+    const [name, setName] = useState(defaultName)
+    const [enable, setenable] = useState(false);
     const [auto, setAuto] = useState(defaultAuto);
     const [hexIconColor, setHexIconColor] = useState(defaultHexIconColor);
 
@@ -1634,13 +1635,12 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
-                    <TemplateSwitch
-                        onChange={(value) => setAuto(value)}
-                        label={t(langKeys.enablechatflow)}
-                        className="col-6"
-                        disabled={loading || integrationId != null}
-                        valueDefault={defaultAuto}
-                    />
+                    <div className="col-6" style={{ paddingBottom: '3px' }}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                        <FormGroup>
+                            <FormControlLabel control={<IOSSwitch onChange={(e) => {setAuto(e.target.checked);setenable(e.target.checked)}} />} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                        </FormGroup>
+                    </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
                     <Button

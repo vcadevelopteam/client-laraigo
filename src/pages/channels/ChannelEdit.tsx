@@ -7,10 +7,10 @@ import { getEditChannel } from 'common/helpers';
 import { useHistory, useLocation } from 'react-router';
 import { IChannel } from '@types';
 import paths from 'common/constants/paths';
-import { Box, Breadcrumbs, Button, Link, makeStyles } from '@material-ui/core';
+import { Box, Breadcrumbs, Button, FormControlLabel, FormGroup, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { ColorInput, FieldEdit, TemplateSwitch } from 'components';
+import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
 
 const useFinalStepStyles = makeStyles(theme => ({
     title: {
@@ -38,6 +38,7 @@ const ChannelEdit: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const location = useLocation();
+    const [enable, setenable] = useState(false);
     const edit = useSelector(state => state.channel.editChannel);
 
     const [name, setName] = useState("");
@@ -127,13 +128,12 @@ const ChannelEdit: FC = () => {
                 </div>
                 <div className="row-zyx">
                     <div className="col-3"></div>
-                    <TemplateSwitch
-                        onChange={(value) => setAuto(value)}
-                        label={t(langKeys.enablechatflow)}
-                        className="col-6"
-                        disabled={edit.loading}
-                        valueDefault={channel!.chatflowenabled}
-                    />
+                    <div className="col-6" style={{ paddingBottom: '3px' }}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                        <FormGroup>
+                            <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                        </FormGroup>
+                    </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
                     <Button

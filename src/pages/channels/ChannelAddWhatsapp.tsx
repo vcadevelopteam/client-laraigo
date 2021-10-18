@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch, ColorInput } from "components";
+import { FieldEdit, TemplateSwitch, ColorInput, IOSSwitch } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
@@ -38,6 +38,7 @@ export const ChannelAddWhatsapp: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const [enable, setenable] = useState(false);
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
@@ -196,13 +197,15 @@ export const ChannelAddWhatsapp: FC = () => {
                             />
                         </div>
                     </div>
+                    
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
