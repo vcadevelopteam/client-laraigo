@@ -1,4 +1,4 @@
-const ENV = "TESTING";
+const ENV = "DEVELOP";
 
 const APIS_URL = {
     DEVELOP: {
@@ -14,7 +14,7 @@ const APIS_URL = {
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
         WS: 'https://broker.laraigo.com',
-        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow'
+        CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud'
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -54,6 +54,7 @@ export const apiUrls = {
 
 
     INTEGRATION_URL: `${BASE_URL}/load`,
+    CHANNELS: `${BASE_URL}/channel`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
     GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,

@@ -10,10 +10,10 @@ import { useHistory, useLocation } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChannel, IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
-import { insertChannel2, reserInsertChannel } from 'store/channel/actions';
+import { editChannel as getEditChannel, insertChannel2, resetInsertChannel, resetEditChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
-import { getInsertChatwebChannel } from 'common/helpers';
+import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
 
 interface TabPanelProps {
@@ -491,10 +491,16 @@ const useTemplateStyles = makeStyles(theme => ({
     },
 }));
 
-const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: IChatWebAddFormField }> = ({ data, onClose, title }) => {
+interface NameTemplateProps {
+    onClose: () => void;
+    title: React.ReactNode;
+    data: IChatWebAddFormField;
+}
+
+const NameTemplate: FC<NameTemplateProps> = ({ data, onClose, title }) => {
     const classes = useTemplateStyles();
     const { t } = useTranslation();
-    const [required, setRequired] = useState(true);
+    const [required, setRequired] = useState(data.required);
 
     const handleRequired = (checked: boolean) =>{
         setRequired(checked);
@@ -546,6 +552,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     size="small"
                                                     fullWidth
                                                     onChange={e => data.label = e.target.value}
+                                                    defaultValue={data.label}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -568,6 +575,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     size="small"
                                                     fullWidth
                                                     onChange={e => data.placeholder = e.target.value}
+                                                    defaultValue={data.placeholder}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -588,6 +596,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                                     size="small"
                                                     fullWidth
                                                     onChange={e => data.validationtext = e.target.value}
+                                                    defaultValue={data.validationtext}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -613,6 +622,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                     size="small"
                                     fullWidth
                                     onChange={e => data.inputvalidation = e.target.value}
+                                    defaultValue={data.inputvalidation}
                                 />
                             </Grid>
                         </Grid>
@@ -633,6 +643,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                     size="small"
                                     fullWidth
                                     onChange={e => data.keyvalidation = e.target.value}
+                                    defaultValue={data.keyvalidation}
                                 />
                             </Grid>
                         </Grid>
@@ -651,17 +662,26 @@ const useTabFormStyles = makeStyles(theme => ({
     },
 }));
 
-const NAME_FIELD = "NAME_FIELD";
+const FIRSTNAME_FIELD = "FIRSTNAME_FIELD";
 const LASTNAME_FIELD = "LASTNAME_FIELD";
 const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
-const SUPPLUNUMBER_FIELD = "SUPPLUNUMBER_FIELD";
+const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
-    [NAME_FIELD]: {
+    [FIRSTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.name} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(NAME_FIELD)} key={NAME_FIELD} title={<Trans i18nKey={langKeys.name} />} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(FIRSTNAME_FIELD)}
+                    key={FIRSTNAME_FIELD}
+                    title={<Trans i18nKey={langKeys.name} />}
+                />
+            );
+        },
         data: {
             field: "FIRSTNAME",
             type: "text",
@@ -675,7 +695,16 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [LASTNAME_FIELD]: {
         text: <Trans i18nKey={langKeys.lastname} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(LASTNAME_FIELD)} key={LASTNAME_FIELD} title={<Trans i18nKey={langKeys.lastname} />} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(LASTNAME_FIELD)}
+                    key={LASTNAME_FIELD}
+                    title={<Trans i18nKey={langKeys.lastname} />}
+                />
+            );
+        },
         data: {
             field: "LASTNAME",
             type: "text",
@@ -689,7 +718,16 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [PHONE_FIELD]: {
         text: <Trans i18nKey={langKeys.phone} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(PHONE_FIELD)} key={PHONE_FIELD} title={<Trans i18nKey={langKeys.phone} />} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(PHONE_FIELD)}
+                    key={PHONE_FIELD}
+                    title={<Trans i18nKey={langKeys.phone} />}
+                />
+            );
+        },
         data: {
             field: "PHONE",
             type: "phone",
@@ -703,7 +741,16 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [EMAIL_FIELD]: {
         text: <Trans i18nKey={langKeys.email} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(EMAIL_FIELD)} key={EMAIL_FIELD} title={<Trans i18nKey={langKeys.email} />} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(EMAIL_FIELD)}
+                    key={EMAIL_FIELD}
+                    title={<Trans i18nKey={langKeys.email} />}
+                />
+            );
+        },
         data: {
             field: "EMAIL",
             type: "text",
@@ -717,7 +764,16 @@ const templates: { [x: string]: FieldTemplate } = {
     },
     [DOCUMENT_FIELD]: {
         text: <Trans i18nKey={langKeys.document} />,
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(DOCUMENT_FIELD)} key={DOCUMENT_FIELD} title={<Trans i18nKey={langKeys.document} />} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(DOCUMENT_FIELD)}
+                    key={DOCUMENT_FIELD}
+                    title={<Trans i18nKey={langKeys.document} />}
+                />
+            );
+        },
         data: {
             field: "DOCUMENT",
             type: "text",
@@ -729,9 +785,18 @@ const templates: { [x: string]: FieldTemplate } = {
             keyvalidation: "",
         },
     },
-    [SUPPLUNUMBER_FIELD]: {
+    [SUPPLYNUMBER_FIELD]: {
         text: "Supply Number",
-        node: (onClose, data) => <NameTemplate data={data} onClose={() => onClose(SUPPLUNUMBER_FIELD)} key={SUPPLUNUMBER_FIELD} title={"Supply Number"} />,
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(SUPPLYNUMBER_FIELD)}
+                    key={SUPPLYNUMBER_FIELD}
+                    title={"Supply Number"}
+                />
+            );
+        },
         data: {
             field: "SUPPLYNUMBER",
             type: "text",
@@ -747,9 +812,17 @@ const templates: { [x: string]: FieldTemplate } = {
 
 const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
     const classes = useTabFormStyles();
+
+    const defFields = useRef<FieldTemplate[]>((form.getValues('form') || []).map(x => {
+        return {
+            ...templates[`${x.field}_FIELD`],
+            data: x,
+        } as FieldTemplate;
+    }));
+
     const [enable, setEnable] = useState(true);
     const [fieldTemplate, setFieldTemplate] = useState<string>("");
-    const [fields, setFields] = useState<FieldTemplate[]>([]);
+    const [fields, setFields] = useState<FieldTemplate[]>(defFields.current);
 
     useEffect(() => {
         form.setValue('form', fields.map(x => x.data));
@@ -1385,6 +1458,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     const [showFinalStep, setShowFinalStep] = useState(false);
 
     const insertChannel = useSelector(state => state.channel.insertChannel);
+    const editChannel = useSelector(state => state.channel.editChannel);
 
     const channel = location.state as IChannel | null;
 
@@ -1395,7 +1469,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
-        console.log(channel);
+        console.log("ChannelAddChatWeb", channel, service);
         if (edit && !channel) {
             history.push(paths.CHANNELS);
         } else if (edit && channel && channel.servicecredentials.length === 0) {
@@ -1403,7 +1477,8 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
         }
 
         return () => {
-            dispatch(reserInsertChannel());
+            dispatch(resetInsertChannel());
+            dispatch(resetEditChannel());
         };
     }, [history, dispatch]);
 
@@ -1423,6 +1498,24 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             }));
         }
     }, [dispatch, insertChannel]);
+
+    useEffect(() => {
+        if (editChannel.loading) return;
+        if (editChannel.error === true) {
+            dispatch(showSnackbar({
+                message: editChannel.message!,
+                show: true,
+                success: false,
+            }));
+        } else if (editChannel.success) {
+            dispatch(showSnackbar({
+                message: "El canal se edito con éxito",
+                show: true,
+                success: true,
+            }));
+            history.push(paths.CHANNELS);
+        }
+    }, [dispatch, editChannel]);
 
     const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({
         defaultValues: service.current || {
@@ -1491,8 +1584,17 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     const handleSubmit = (name: string, auto: boolean, hexIconColor: string) => {
-        const body = getInsertChatwebChannel(name, auto, hexIconColor, form.getValues());
-        dispatch(insertChannel2(body));
+        const values = form.getValues();
+        console.log("handleSubmit:values", values);
+        if (!channel) {
+            const body = getInsertChatwebChannel(name, auto, hexIconColor, values);
+            dispatch(insertChannel2(body));
+        } else {
+            const id = channel.communicationchannelid;
+            const body = getEditChatWebChannel(id, channel, values, name, auto, hexIconColor);
+            dispatch(getEditChannel(body, "CHAZ"));
+        }
+        
     }
 
     const handleGoBack: React.MouseEventHandler = (e) => {
@@ -1542,13 +1644,11 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             </div>
             <div style={{ display: showFinalStep ? 'block' : 'none' }}>
                 <ChannelAddEnd
-                    loading={insertChannel.loading}
+                    loading={insertChannel.loading || editChannel.loading}
                     integrationId={insertChannel.value?.integrationid}
                     onSubmit={handleSubmit}
                     onClose={() => setShowFinalStep(false)}
-                    defaultName=""
-                    defaultAuto={false}
-                    defaultHexIconColor="#7721ad"
+                    channel={channel}
                 />
             </div>
         </div>
@@ -1580,12 +1680,10 @@ interface ChannelAddEndProps {
     integrationId?: string;
     onSubmit: (name: string, auto: boolean, hexIconColor: string) => void;
     onClose?: () => void;
-    defaultName: string;
-    defaultAuto: boolean;
-    defaultHexIconColor: string;
+    channel: IChannel | null;
 }
 
-const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, defaultAuto, defaultHexIconColor, defaultName }) => {
+const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, integrationId, channel }) => {
     const classes = useFinalStepStyles();
     const { t } = useTranslation();
     const history = useHistory();
@@ -1621,7 +1719,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         label={t(langKeys.givechannelname)}
                         className="col-6"
                         disabled={loading || integrationId != null}
-                        valueDefault={defaultName}
+                        valueDefault={channel?.communicationchanneldesc}
                     />
                 </div>
                 <div className="row-zyx">
@@ -1630,7 +1728,11 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                             Give your channel a custom icon color
                         </Box>
-                        <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
+                        <ColorInput
+                            hex={hexIconColor}
+                            onChange={e => setHexIconColor(e.hex)}
+                            disabled={loading || integrationId != null}
+                        />
                     </div>
                 </div>
                 <div className="row-zyx">

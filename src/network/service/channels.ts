@@ -22,3 +22,7 @@ export function validateNewUser(requestBody: IRequestBody ) {
 export function deletechnl(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.DELETE_CHANNEL, { data: requestBody }, true);
 }
+export function editchnl(requestBody: IRequestBody ) {
+    const uri = `${apiUrls.CHANNELS}/updatechannel`;
+    return APIManager.post(uri, { data: requestBody }, true);
+}
