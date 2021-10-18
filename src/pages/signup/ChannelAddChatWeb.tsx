@@ -11,7 +11,7 @@ import { useHistory } from 'react-router';
 import { useForm, UseFormReturn } from 'react-hook-form';
 import { IChatWebAdd, IChatWebAddFormField } from '@types';
 import { useDispatch } from 'react-redux';
-import { reserInsertChannel } from 'store/channel/actions';
+import { resetInsertChannel } from 'store/channel/actions';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getInsertChatwebChannel } from 'common/helpers';
@@ -1451,7 +1451,7 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
 
     useEffect(() => {
         return () => {
-            dispatch(reserInsertChannel());
+            dispatch(resetInsertChannel());
         };
     }, []);
 
