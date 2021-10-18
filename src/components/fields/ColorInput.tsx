@@ -1,8 +1,14 @@
 import { makeStyles } from "@material-ui/core";
 import { ArrowDropDown } from "@material-ui/icons";
 import Close from "@material-ui/icons/Close";
-import { FC, useState } from "react";
-import { ChromePicker, ColorChangeHandler } from "react-color";
+import React, { FC, useCallback, useEffect, useState } from "react";
+import { ChromePicker, ColorChangeHandler, ColorResult } from "react-color";
+
+interface ColorInputProps {
+    hex: string;
+    onChange: ColorChangeHandler;
+    disabled?: boolean;
+}
 
 const useColorInputStyles = makeStyles(theme => ({
     colorInputContainer: {
@@ -49,23 +55,36 @@ const useColorInputStyles = makeStyles(theme => ({
     },
 }));
 
-const ColorInput: FC<{ hex: string, onChange: ColorChangeHandler }> = ({ hex, onChange }) => {
+const iconStyle = { style: { width: 'unset', height: 'unset' } };
+
+const ColorInput: FC<ColorInputProps> = ({ hex, onChange, disabled = false }) => {
     const classes = useColorInputStyles();
     const [open, setOpen] = useState(false);
 
-    const iconStyle = { style: { width: 'unset', height: 'unset' } };
     const Icon: FC = () => open ? <Close {...iconStyle} /> : <ArrowDropDown {...iconStyle} />;
+
+    useEffect(() =>{
+        if (disabled && open) setOpen(false);
+    }, [disabled]);
+
+    const handleChange = useCallback((v: ColorResult, e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!disabled) onChange(v, e);
+    }, [disabled]);
+
+    const handleOpen = useCallback(() => {
+        if (!disabled) setOpen(!open);
+    }, [disabled, open]);
 
     return (
         <div className={classes.colorInputContainer}>
             <div style={{ backgroundColor: hex }} className={classes.colorInputPreview} />
-            <div className={classes.colorInput} onClick={() => setOpen(!open)}>
+            <div className={classes.colorInput} onClick={handleOpen}>
                 <Icon />
                 <div className={classes.colorInputSplash} />
             </div>
             {open && (
                 <div className={classes.popover}>
-                    <ChromePicker color={hex} onChange={onChange} />
+                    <ChromePicker color={hex} onChange={handleChange} />
                 </div>
             )}
         </div>

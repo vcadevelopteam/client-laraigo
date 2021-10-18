@@ -826,7 +826,7 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: 
     service,
 });
 
-export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChannel> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         ...payload,
