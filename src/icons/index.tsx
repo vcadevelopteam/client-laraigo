@@ -132,3 +132,14 @@ export { ReactComponent as ClientIcon } from './clients.svg';
 export { ReactComponent as DocNumberIcon } from './docnumber.svg';
 export { ReactComponent as DocTypeIcon } from './doctype.svg';
 export { ReactComponent as TelephoneIcon } from './telephone.svg';
+
+export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
+export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';
+export { ReactComponent as LaraigoCaraIcon } from './Laraigo-emojis_cara.svg';
+export { ReactComponent as LaraigoCarroIcon } from './Laraigo-emojis_carro.svg';
+export { ReactComponent as LaraigoComidaIcon } from './Laraigo-emojis_comida.svg';
+export { ReactComponent as LaraigoDeporteIcon } from './Laraigo-emojis_deporte.svg';
+export { ReactComponent as LaraigoFocoIcon } from './Laraigo-emojis_foco.svg';
+export { ReactComponent as LaraigoHashtagIcon } from './Laraigo-emojis_hashtag.svg';
+export { ReactComponent as LaraigoRecienteIcon } from './Laraigo-emojis_reciente.svg';
+export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.svg';

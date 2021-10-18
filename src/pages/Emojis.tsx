@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from '@material-ui/core/styles';
 import SearchField from "components/fields/SearchField";
 import { emojis } from "common/constants";
-import { EmojiICon } from "icons";
+import { LaraigoAnimalIcon, LaraigoBanderaIcon, LaraigoCaraIcon, LaraigoCarroIcon, LaraigoComidaIcon, LaraigoDeporteIcon, LaraigoFocoIcon, LaraigoHashtagIcon, LaraigoRecienteIcon,LaraigoBlockedIcon } from "icons";
 import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import { DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from "components/fields/templates";
@@ -65,6 +65,7 @@ const Emojis: FC = () => {
 
     const fetchData = () => dispatch(getCollection(getEmojiAllSel()));
 
+
     const handleFiend = (searchValue: string) => {
         setSearchValue(searchValue);
     };
@@ -103,6 +104,9 @@ const Emojis: FC = () => {
             dispatch(resetMain());
         };
     }, []);
+    useEffect(() => {
+        console.log(groups)
+    }, [groups]);
 
     return (
         <div className={classes.container}>
@@ -156,6 +160,7 @@ const Emojis: FC = () => {
 }
 
 const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => void, setSearchValue: (searchValue: any) => any }> = React.memo(({ groups, setCategory, setSearchValue }) => {
+    const { t } = useTranslation();
     const [value, setValue] = useState(0);
 
     const handleChange = (event: any, newValue: any) => {
@@ -178,15 +183,46 @@ const TabEmoji: FC<{ groups: Dictionary, setCategory: (categorydesc: any) => voi
             aria-label="scrollable force tabs example"
             style={{ paddingBottom: 12 }}
         >
-            {groups &&
-                Object.values(groups).map(group =>
-                    <Tab
-                        key={'tab_' + (group)}
-                        label={group} icon={<EmojiICon />}
-                        onClick={() => handleTabClick(group)}
-                    />
-                )
-            }
+            <Tab
+                label={t(langKeys.favorites)} icon={<LaraigoRecienteIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("FAVORITES")}
+            />
+            <Tab
+                label={t(langKeys.restricted)} icon={<LaraigoBlockedIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("RESTRICTED")}
+            />
+            <Tab
+                label={t(langKeys.smileys)} icon={<LaraigoCaraIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("SMILEYS")}
+            />
+            <Tab
+                label={t(langKeys.animals)} icon={<LaraigoAnimalIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("ANIMAL")}
+            />
+            <Tab
+                label={t(langKeys.food)} icon={<LaraigoComidaIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("FOOD")}
+            />
+            <Tab
+                label={t(langKeys.activities)} icon={<LaraigoDeporteIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("ACTIVITY")}
+            />
+            <Tab
+                label={t(langKeys.travel)} icon={<LaraigoCarroIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("TRAVEL")}
+            />
+            <Tab
+                label={t(langKeys.objects)} icon={<LaraigoFocoIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("OBJECT")}
+            />
+            <Tab
+                label={t(langKeys.symbols)} icon={<LaraigoHashtagIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("SYMBOL")}
+            />
+            <Tab
+                label={t(langKeys.flags)} icon={<LaraigoBanderaIcon style={{width:25}}/>}
+                onClick={() => handleTabClick("FLAG")}
+            />
         </Tabs>
     )
 })
