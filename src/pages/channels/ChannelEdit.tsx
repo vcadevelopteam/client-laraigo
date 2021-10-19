@@ -121,7 +121,7 @@ const ChannelEdit: FC = () => {
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            Give your channel a custom icon color
+                        {t(langKeys.givechannelcolor)}
                         </Box>
                         <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
                     </div>

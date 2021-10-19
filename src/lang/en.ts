@@ -580,6 +580,7 @@ const translation: LangKeys = {
     enable: "Enable",
     disabled: "Disabled",
     givechannelname: "Give your channel a name",
+    givechannelcolor: "Give your channel a custom icon color",
     enablechatflow: "Automated Conversational Flow",
     finishreg: "FINISH REGISTRATION",
     whatsapptitle: 'To connect a whatsapp channel you must click on "Register Whatsapp account" and once you finishthe registration, enter the number and the API Key in this form',

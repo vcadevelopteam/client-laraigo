@@ -291,6 +291,7 @@ const translation: LangKeys = {
     selectpagelink: "Seleccione la página para vincular",
     commchannelfinishreg: "Estás a un clic de conectar tu canal de comunicación",
     givechannelname: "Dale un nombre a tu canal",
+    givechannelcolor: "Dale a tu canal un color de icono personalizado",
     enablechatflow: "Flujo conversacional automatizado",
     finishreg: "FINALIZAR REGISTRO",
     whatsapptitle: 'Para conectar un canal de whatsapp debes hacer clic en "Registrar cuenta de Whatsapp" y una vez que termines el registro, ingresar el número y la Clave API en este formulario',

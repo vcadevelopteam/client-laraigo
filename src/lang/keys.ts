@@ -162,6 +162,7 @@ export const langKeys = {
     configuration_plural: 'configuration_plural',
     commchannelfinishreg: "commchannelfinishreg",
     givechannelname: "givechannelname",
+    givechannelcolor: "givechannelcolor",
     socialmediachannel2: "socialmediachannel2",
     enablechatflow: "enablechatflow",
     enterapikey: "enterapikey",

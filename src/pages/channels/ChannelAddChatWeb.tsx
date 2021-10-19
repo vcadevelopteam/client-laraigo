@@ -1727,7 +1727,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                         </Box>
                         <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                             <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
