@@ -43,7 +43,8 @@ export const reportsImage = [
   ];
 
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
-export { ReactComponent as ReportsIcon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as ReportsIcon } from 'icons/reports.svg';
 export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
 export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';

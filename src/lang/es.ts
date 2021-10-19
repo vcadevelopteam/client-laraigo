@@ -5,8 +5,8 @@ const translation: LangKeys = {
     english: 'Inglés',
     spanish: 'Español',
 
-    dashboard: 'Panel',
-    dashboard_plural: 'Paneles',
+    dashboard: 'Dashboard',
+    dashboard_plural: 'Dashboards',
 
     organization: "Organización",
     organization_plural: 'Organizaciones',
