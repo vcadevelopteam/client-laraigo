@@ -23,7 +23,7 @@ export const Channels: FC = () => {
 
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
-    
+
     const fetchData = () => dispatch(getCollection(getChannelSel(0)));
 
     useEffect(() => {
@@ -31,7 +31,7 @@ export const Channels: FC = () => {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
-                
+
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 //dispatch(getCollection(getChannelSel(0)));
@@ -48,10 +48,10 @@ export const Channels: FC = () => {
         const callback = () => {
             dispatch(deleteChannel({
                 method: "UFN_COMMUNICATIONCHANNEL_INS",
-                parameters:{
-                    ...row,id:row.communicationchannelid, description:row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO' 
+                parameters: {
+                    ...row, id: row.communicationchannelid, description: row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO'
                 }
-                }));
+            }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -85,7 +85,7 @@ export const Channels: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => {}}
+                            viewFunction={() => { }}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -132,7 +132,7 @@ export const Channels: FC = () => {
             dispatch(resetMain());
         };
     }, []);
-    
+
     return (
         <TableZyx
             columns={columns}

@@ -511,7 +511,7 @@ const Tickets = () => {
                 accessor: 'fechafin',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.fechafin).toLocaleString()
+                    return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
                 }
             },
             {
