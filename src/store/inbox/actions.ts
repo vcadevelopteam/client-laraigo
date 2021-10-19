@@ -135,6 +135,8 @@ export const connectAgentUI = (payload: boolean): IActionCall => {
 
 export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
 
+export const showGoToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_SHOW_GO_TO_BOTTOM, payload });
+
 export const setIsFiltering = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_IS_FILTERING, payload });
 
 
