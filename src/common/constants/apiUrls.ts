@@ -35,6 +35,7 @@ export const apiUrls = {
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
+    MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,

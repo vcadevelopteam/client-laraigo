@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { Dictionary } from "@types"
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection } from 'store/main/actions';
+import { resetMain, getCollectionPublic } from 'store/main/actions';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { FieldMultiSelect } from "components";
@@ -46,7 +46,6 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         companybusinessname: "",
     });
     const [disablebutton, setdisablebutton] = useState(true);
-    const [datareasons, setdatareasons] = useState<any>([]);
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
@@ -56,17 +55,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         setMainData((p: any) => ({ ...p, [field]: value }))
         setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
     }
+    const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
-        if (mainResult.multiData.data.length !== 0) {
-            let multiData = mainResult.multiData.data;
-            setdatareasons(multiData[0] && multiData[0].success ? multiData[0].data : []);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResult.multiData])
-    useEffect(() => {
-        dispatch(getMultiCollection([
-            getValuesFromDomain("REASONSSIGNUP"),
-        ]));
+        fetchData();
         return () => {
             dispatch(resetMain());
         };
@@ -123,8 +114,8 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     className="col-6"
                     style={{margin:"15px 0"}}
                     valueDefault={mainData.join_reason}
-                    prefixTranslation="type_org_"
-                    data={datareasons}
+                    prefixTranslation="reason_"
+                    data={mainResult.mainData.data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
