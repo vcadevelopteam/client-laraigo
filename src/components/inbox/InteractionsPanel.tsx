@@ -18,7 +18,7 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
     const scrollToBottom = () => {
         if (!loadingInteractions && (isOnBottom || isOnBottom === null)) {
             if (el?.current) {
-                el.current.scrollIntoView({ behavior: 'smooth' })
+                el.current.scrollIntoView()
             }
         }
     };

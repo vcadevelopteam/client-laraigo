@@ -458,7 +458,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
             const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
-            if (hoursWaiting >= 24) {
+            if (hoursWaiting >= 0.16) {
                 setShowReply(false);
             } else {
                 setShowReply(true);
