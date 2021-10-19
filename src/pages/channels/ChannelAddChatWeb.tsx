@@ -15,6 +15,7 @@ import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { getEditChatWebChannel, getInsertChatwebChannel } from 'common/helpers';
 import paths from 'common/constants/paths';
+import { ZyxmeMessengerIcon } from 'icons';
 
 interface TabPanelProps {
     value: string;
@@ -1688,6 +1689,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const { t } = useTranslation();
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
+    const [coloricon, setcoloricon] = useState("#7721ad");
     const [auto, setAuto] = useState(channel?.chatflowenabled || false);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
@@ -1727,11 +1729,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                             Give your channel a custom icon color
                         </Box>
-                        <ColorInput
-                            hex={hexIconColor}
-                            onChange={e => setHexIconColor(e.hex)}
-                            disabled={loading || integrationId != null}
-                        />
+                        <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                            <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                            <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
+                        </div>
                     </div>
                 </div>
                 <div className="row-zyx">

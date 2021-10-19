@@ -10,7 +10,7 @@ import paths from 'common/constants/paths';
 import { Box, Breadcrumbs, Button, FormControlLabel, FormGroup, Link, makeStyles } from '@material-ui/core';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from 'components';
+import { ColorInput, FieldEdit, IOSSwitch } from 'components';
 
 const useFinalStepStyles = makeStyles(theme => ({
     title: {

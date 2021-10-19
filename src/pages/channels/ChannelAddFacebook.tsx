@@ -6,13 +6,14 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch, TemplateSwitch } from "components";
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
+import { FacebookWallIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -35,6 +36,7 @@ export const ChannelAddFacebook: FC = () => {
     const executeResult = useSelector(state => state.channel.successinsert)
     const history = useHistory();
     const dispatch = useDispatch();
+    const [coloricon, setcoloricon] = useState("#2d88ff");
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -70,13 +72,13 @@ export const ChannelAddFacebook: FC = () => {
     }
     useEffect(() => {
         if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
+            if (mainResult.loading && executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
+            } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
@@ -219,15 +221,19 @@ export const ChannelAddFacebook: FC = () => {
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <FacebookWallIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="row-zyx">

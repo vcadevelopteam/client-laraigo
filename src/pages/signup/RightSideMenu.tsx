@@ -25,9 +25,7 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         mobilephone: "",
         facebookid: "",
         googleid: "",
-        sales: false,
-        customerservice: false,
-        marketing: false,
+        join_reason: ""
     });
     const [requestchannels, setrequestchannels] = useState([]);
     const [sendchannels, setsendchannels] = useState(false);

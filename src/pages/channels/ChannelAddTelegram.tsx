@@ -5,12 +5,13 @@ import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, IOSSwitch, TemplateSwitch } from "components";
+import { ColorInput, FieldEdit, IOSSwitch } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { insertChannel } from "store/channel/actions";
+import { TelegramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -34,6 +35,7 @@ export const ChannelAddTelegram: FC = () => {
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
+    const [coloricon, setcoloricon] = useState("#207FDD");
     const executeResult = useSelector(state => state.channel.successinsert)
     const history = useHistory();
     const dispatch = useDispatch();
@@ -72,14 +74,15 @@ export const ChannelAddTelegram: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
+        console.log(executeResult)
         if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
+            if (mainResult.loading && executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
+            } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
@@ -188,15 +191,19 @@ export const ChannelAddTelegram: FC = () => {
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <TelegramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     

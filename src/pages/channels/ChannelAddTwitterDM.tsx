@@ -5,12 +5,13 @@ import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput, IOSSwitch } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { insertChannel } from "store/channel/actions";
+import { TwitterIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -27,6 +28,7 @@ export const ChannelAddTwitterDM: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
+    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
@@ -72,13 +74,13 @@ export const ChannelAddTwitterDM: FC = () => {
     }
     useEffect(() => {
         if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
+            if (mainResult.loading && executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
+            } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
@@ -262,15 +264,19 @@ export const ChannelAddTwitterDM: FC = () => {
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Give your channel a custom icon color
                             </Box>
-                            <ColorInput
-                                hex={fields.parameters.coloricon}
-                                onChange={e => {
-                                    setFields(prev => ({
-                                        ...prev,
-                                        parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
-                                    }));
-                                }}
-                            />
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <TwitterIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="row-zyx">

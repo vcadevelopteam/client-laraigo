@@ -70,13 +70,13 @@ export const ChannelAddMessenger: FC<{setrequestchannels:(param:any)=>void,setli
     }
     useEffect(() => {
         if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
+            if (mainResult.loading && executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
+            } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
