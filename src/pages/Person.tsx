@@ -1184,35 +1184,49 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     return (
         <div className={classes.root}>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={channel.typedesc}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.displayname} />}
+                        subtitle={channel.displayname}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.personIdentifier} />}
+                        subtitle={channel.personcommunicationchannelowner}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.internalIdentifier} />}
                         subtitle={channel.personcommunicationchannel}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.firstConnection} />}
                         subtitle={channel.firstcontact}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.lastConnection} />}
                         subtitle={channel.lastcontact}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.conversation} count={2} />}
                         subtitle={channel.conversations || '0'}
@@ -1233,7 +1247,6 @@ interface ChannelTabProps {
 
 const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domains }) => {
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const channelList = useSelector(state => state.person.personChannelList);
     // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
@@ -1248,134 +1261,6 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Grid container direction="row">
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.personType} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.persontype}
-                                        onChange={(value) => {
-                                            setValue('persontype', value);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.civilStatus} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.civilstatus}
-                                        onChange={(value, desc) => {
-                                            setValue('civilstatus', value);
-                                            setValue('civilstatusdesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.civilStatuses || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.educationLevel} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.educationlevel}
-                                        onChange={(value, desc) => {
-                                            setValue('educationlevel', value);
-                                            setValue('educationleveldesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.educationLevels || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.occupation} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.occupation}
-                                        onChange={(value, desc) => {
-                                            setValue('occupation', value);
-                                            setValue('occupationdesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.occupations || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.group} count={2} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.groups || ""}
-                                        onChange={(value) => {
-                                            setValue('groups', value);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.groups || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.alternativePhone} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativePhone)}
-                                        defaultValue={person.alternativephone}
-                                        onChange={e => setValue('alternativephone', e.target.value)}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.alternativeEmail} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativeEmail)}
-                                        defaultValue={person.alternativeemail}
-                                        onChange={e => setValue('alternativeemail', e.target.value)}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.referredBy} />}
-                                subtitle={person.referringpersonname}
-                                m={1}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
             <div style={{ height: 12 }} />
             {channelList.data.map((e, i) => <ChannelItem channel={e} key={`channel_item_${i}`} />)}
         </div>
