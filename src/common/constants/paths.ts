@@ -10,6 +10,7 @@ const paths = {
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
+    PRIVACY: "/privacy",
     CHANNELS: '/channels',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',

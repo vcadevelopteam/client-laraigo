@@ -31,6 +31,7 @@ export const langKeys = {
     productivitycard1: "productivitycard1",
     food: "food",
     productivitycard2: "productivitycard2",
+    privacypoliciestitle: "privacypoliciestitle",
     productivitycard3: "productivitycard3",
     activities: "activities",
     travel: "travel",
