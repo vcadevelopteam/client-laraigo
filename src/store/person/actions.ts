@@ -39,6 +39,18 @@ export const getTicketListByPerson = (payload: IRequestBodyPaginated): IActionCa
 
 export const resetGetTicketListByPerson = () => ({type: actionTypes.GET_TICKET_LIST_BY_PERSON_RESET });
 
+export const getReferrerListByPerson = (payload: IRequestBody): IActionCall => ({
+    callAPI: async () => CommonService.main(payload),
+    types: {
+        loading: actionTypes.GET_REFERRER_LIST_BY_PERSON,
+        failure: actionTypes.GET_REFERRER_LIST_BY_PERSON_FAILURE,
+        success: actionTypes.GET_REFERRER_LIST_BY_PERSON_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetGetReferrerListByPerson = () => ({type: actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET });
+
 export const getChannelListByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => CommonService.main(payload),
     types: {
@@ -89,6 +101,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("NIVELEDUCATIVO"),
         getValuesFromDomain("TIPOPERSONA"),
         getValuesFromDomain("GRUPOPERSONA"),
+        getValuesFromDomain("TIPOPERSONAGEN"),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,

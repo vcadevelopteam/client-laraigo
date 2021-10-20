@@ -138,6 +138,11 @@ const RouterApp: FC = () => {
 						<ChannelAddInstagram />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddInstagramDM />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddWhatsapp />

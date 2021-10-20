@@ -24,6 +24,10 @@ const paths = {
         path: '/channels/:id/add/instagram',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/instagram`,
     },
+    CHANNELS_ADD_INSTAGRAMDM: {
+        path: '/channels/:id/add/instagramdm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/instagramdm`,
+    },
     CHANNELS_ADD_WHATSAPP: {
         path: '/channels/:id/add/whatsapp',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/whatsapp`,

@@ -1042,6 +1042,13 @@ export const getTicketListByPersonBody = (personId: ID, { filters, sorts, take, 
     },
 });
 
+export const getReferrerByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONREFERRER_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
 export const getChannelListByPersonBody = (personId: ID) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
     parameters: {
