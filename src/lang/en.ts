@@ -107,6 +107,7 @@ const translation: LangKeys = {
 
     firstname: 'Firstname',
     lastname: 'Lastname',
+    fullname: 'Fullname',
     email: 'Email',
     address: 'Address',
     department: 'Department',
@@ -177,6 +178,8 @@ const translation: LangKeys = {
     newuser: "New user",
     modifysettings: "Modify settings",
     rich_response: 'Enriched response',
+
+    generalinformation: 'General Information',
 
     addressReference: 'Address refrence',
     newpassword: "New password",

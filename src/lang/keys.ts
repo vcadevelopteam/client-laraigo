@@ -185,6 +185,7 @@ export const langKeys = {
     person: 'person',
     opendrilldown: "opendrilldown",
     person_plural: 'person_plural',
+    generalinformation: 'generalinformation',
     signupstep1title: 'signupstep1title',
     signupstep1title2: 'signupstep1title2',
     signupfacebookbutton: 'signupfacebookbutton',
@@ -280,6 +281,7 @@ export const langKeys = {
 
     firstname: 'firstname',
     lastname: 'lastname',
+    fullname: 'fullname',
     email: 'email',
     docType: 'docType',
     docNumber: 'docNumber',
