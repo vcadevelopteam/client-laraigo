@@ -910,14 +910,16 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.document} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}    
                                         valueDefault={person.documenttype}
                                         onChange={(value) => {
                                             setValue('documenttype', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.docTypes || []}
+                                        prefixTranslation="type_documenttype_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -942,12 +944,14 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.personType} />}
                                 subtitle={(
                                     <FieldSelect
+                                    uset={true}  
                                         valueDefault={person.persontype}
                                         onChange={(value) => {
                                             setValue('persontype', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personGenTypes || []}
+                                        prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"
                                     />
@@ -960,14 +964,16 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.type} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}    
                                         valueDefault={person.type}
                                         onChange={(value) => {
                                             setValue('type', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.personTypes || []}
+                                        prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -1049,6 +1055,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.gender} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}    
                                         valueDefault={person.gender}
                                         onChange={(value) => {
                                             setValue('gender', value?.domainvalue);
@@ -1056,8 +1063,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.genders || []}
+                                        prefixTranslation="type_gender_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -1068,6 +1076,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.educationLevel} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}    
                                         valueDefault={person.educationlevel}
                                         onChange={(value) => {
                                             setValue('educationlevel', value?.domainvalue);
@@ -1075,8 +1084,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.educationLevels || []}
+                                        prefixTranslation="type_educationlevel_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -1087,6 +1097,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.civilStatus} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}
                                         valueDefault={person.civilstatus}
                                         onChange={(value) => {
                                             setValue('civilstatus', value?.domainvalue);
@@ -1094,8 +1105,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.civilStatuses || []}
+                                        prefixTranslation="type_civilstatus_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
@@ -1106,6 +1118,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.occupation} />}
                                 subtitle={(
                                     <FieldSelect
+                                        uset={true}
                                         valueDefault={person.occupation}
                                         onChange={(value) => {
                                             setValue('occupation', value?.domainvalue);
@@ -1113,8 +1126,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         }}
                                         loading={domains.loading}
                                         data={domains.value?.occupations || []}
+                                        prefixTranslation="type_ocupation_"
                                         optionValue="domainvalue"
-                                        optionDesc="domaindesc"
+                                        optionDesc="domainvalue"
                                     />
                                 )}
                                 m={1}
