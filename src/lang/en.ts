@@ -623,6 +623,7 @@ const translation: LangKeys = {
     campaign_plural: 'Campaigns',
     newcampaign: 'New campaign',
     startdate: 'Start date',
+    privacypoliciestitle: "Privacy Policies",
     enddate: 'End date',
     blacklist: 'Blacklist',
     executiontype: 'Execution type',

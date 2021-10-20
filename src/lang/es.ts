@@ -284,6 +284,7 @@ const translation: LangKeys = {
     connectface2: "Instala el chatbot en tu página de Facebook y empieza a conseguir clientes potenciales.",
     connectface3: "Solo necesitas ser administrador de tu página de Facebook.",
     connectface4: "*No publicaremos ningún contenido",
+    privacypoliciestitle: "Politicas de privacidad",
     connectinsta: "Conecta tu Instagram",
     connectinsta2: "Instala el chatbot en tu página de Instagram y empieza a conseguir clientes potenciales.",
     connectinsta3: "Solo necesitas ser administrador de la página de Facebook asociada a tu cuenta Business de Instagram.",
