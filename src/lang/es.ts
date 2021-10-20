@@ -218,7 +218,7 @@ const translation: LangKeys = {
     lastConnection: 'Última Conexión',
     ticketCreatedOn: 'Ticket Creado',
     parent: 'Padre',
-    firstConnection: 'Primera conecxión',
+    firstConnection: 'Primera conexión',
     company: 'Compañia',
     tag: 'Tag',
     communicationchannel: 'Canal de comunicación',
