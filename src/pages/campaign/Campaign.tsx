@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate } from 'common/helpers';
+import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -218,8 +218,15 @@ export const Campaign: FC = () => {
         if (waitStatus) {
             if (!auxResult.loading && !auxResult.error) {
                 const { status, enviado, total } = auxResult.data[0];
-                dispatch(showSnackbar({ show: true, success: true, message: `${(t(`status_${status}`.toLowerCase()) || "").toUpperCase()}: ${t(langKeys.sent)} ${enviado}/${total}` }))
-                setWaitStatus(false);
+                if (status === 'EJECUTANDO') {
+                    dispatch(showSnackbar({ show: true, success: true, message: `${(t(`status_${status}`.toLowerCase()) || "").toUpperCase()}: ${t(langKeys.sent)} ${enviado}/${total}` }))
+                    setWaitStatus(false);
+                }
+                else if (status === 'ACTIVO') {
+                    dispatch(showSnackbar({ show: true, success: true, message: `${capitalize(t(langKeys.sent))}` }))
+                    fetchData();
+                    setWaitStatus(false);
+                }
             } else if (auxResult.error) {
                 const errormessage = t(auxResult.code || "error_unexpected_error", { module: t(langKeys.campaign).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))

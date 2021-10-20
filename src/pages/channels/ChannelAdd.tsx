@@ -94,6 +94,11 @@ export const ChannelAdd: FC = () => {
             onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path)},
         },
         {
+            icon: c => <InstagramIcon className={c} />,
+            label: 'Instagram DM',
+            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path)},
+        },
+        {
             icon: c => <FacebookMessengerIcon className={c} />,
             label: 'Messenger',
             onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path)},

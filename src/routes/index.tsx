@@ -4,7 +4,7 @@ import Layout from 'components/layout/Layout';
 import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
-	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
+	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddInstagramDM, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
 	Corporations, Settings, Dashboard, ChannelEdit
 } from 'pages';
@@ -135,6 +135,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddInstagram />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddInstagramDM />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>

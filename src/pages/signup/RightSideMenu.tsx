@@ -7,6 +7,7 @@ import {ThirdStep} from './ThirdStep';
 import {LastStep} from './LastStep';
 import {ChannelAddFacebook} from './ChannelAddFacebook'
 import {ChannelAddInstagram} from './ChannelAddInstagram'
+import {ChannelAddInstagramDM} from './ChannelAddInstagramDM'
 import {ChannelAddMessenger} from './ChannelAddMessenger'
 import {ChannelAddWhatsapp} from './ChannelAddWhatsapp'
 import {ChannelAddTelegram} from './ChannelAddTelegram'
@@ -76,6 +77,7 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
     else if(step===3&&sendchannels){
         if(listchannels.facebook) return <ChannelAddFacebook  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.instagram) return <ChannelAddInstagram  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.instagram) return <ChannelAddInstagramDM  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.messenger) return <ChannelAddMessenger setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.whatsapp) return <ChannelAddWhatsapp setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.telegram) return <ChannelAddTelegram setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
