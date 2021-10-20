@@ -15,8 +15,10 @@ import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
+import ClearIcon from '@material-ui/icons/Clear';
+import SaveIcon from '@material-ui/icons/Save';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
-import { showSnackbar } from 'store/popus/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 
 interface PersonItemProps {
@@ -564,12 +566,14 @@ export const PersonDetail: FC = () => {
         if (edit.loading) return;
         console.log(edit);
         if (edit.error === true) {
+            dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
                 success: false,
             }));
         } else if (edit.success) {
+            dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: "Se guardo exitosamente",
                 show: true,
@@ -584,9 +588,18 @@ export const PersonDetail: FC = () => {
 
     const handleEditPerson = () => {
         const values = getValues();
-        const payload = editPersonBody(values);
-        console.log("handleEditPerson", payload);
-        dispatch(editPerson(payload));
+        const callback = () => {
+            const payload = editPersonBody(values);
+            console.log("handleEditPerson", payload);
+            dispatch(editPerson(payload));
+            dispatch(showBackdrop(true));
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     }
 
     if (!person) {
@@ -620,9 +633,30 @@ export const PersonDetail: FC = () => {
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <h1>{person.name}</h1>
-                <Button variant="contained" color="primary" onClick={handleEditPerson}>
-                    <Trans i18nKey={langKeys.save} />
-                </Button>
+                <div style={{display: 'flex', gap: '10px'}}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            history.push(paths.PERSON);
+                        }}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleEditPerson}
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.save} />
+                    </Button>
+                </div>
             </div>
             <div style={{ height: 7 }} />
             <div className={classes.rootContent}>
