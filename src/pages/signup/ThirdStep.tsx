@@ -134,6 +134,15 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             selected: listchannels.instagram
         },
         {
+            icon: <InstagramIcon color="inherit" />,
+            label: 'Instagram DM',
+            key: 'instagramDM',
+            onClick: () => {
+                setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
+            },
+            selected: listchannels.instagramDM
+        },
+        {
             icon: <FacebookMessengerIcon className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',

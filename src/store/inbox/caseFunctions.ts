@@ -344,6 +344,13 @@ export const goToBottom = (state: IState, action: IAction): IState => {
     };
 }
 
+export const showGoToBottom = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        showGoToBottom: action.payload
+    };
+}
+
 export const setIsFiltering = (state: IState, action: IAction): IState => {
     return {
         ...state,

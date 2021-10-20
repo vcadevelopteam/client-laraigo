@@ -33,6 +33,9 @@ export function changeOrganization(newcorpid: number, neworgid: number, corpdesc
 export function main(requestBody: IRequestBody | ITransaction, transaction: boolean = false) {
     return APIManager.post(transaction ? apiUrls.EXECUTE_TRANSACTION : apiUrls.MAIN_URL, { data: requestBody }, true);
 }
+export function mainPublic(requestBody: IRequestBody | ITransaction) {
+    return APIManager.post(apiUrls.MAIN_URL_PUBLIC, { data: requestBody }, true);
+}
 
 export function multiMain(requestBody: IRequestBody[]) {
     return APIManager.post(apiUrls.MAIN_MULTI, { data: requestBody }, true);

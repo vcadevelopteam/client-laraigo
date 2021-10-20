@@ -293,7 +293,7 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             text = interactiontext.split("&&&")[0];
             json = interactiontext.split("&&&")[1]
         }
-        console.log('22222222')
+        
         const listButtons: Dictionary[] = JSON.parse(`[${json}]`);
         return (
             <div className={clsx(classes.interactionText, {

@@ -6,14 +6,14 @@ import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch, } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
-import { FacebookMessengerIcon } from "icons";
+import { InstagramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -25,7 +25,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddMessenger: FC = () => {
+export const ChannelAddInstagramDM: FC = () => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
@@ -36,9 +36,9 @@ export const ChannelAddMessenger: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const classes = useChannelAddStyles();
-    const [coloricon, setcoloricon] = useState("#0078FF");
+    const [coloricon, setcoloricon] = useState("#F56040");
     const [enable, setenable] = useState(false);
+    const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
         "parameters": {
@@ -54,13 +54,13 @@ export const ChannelAddMessenger: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
-            "coloricon": "#0078FF",
+            "coloricon": "#F56040",
         },
-        "type": "MESSENGER",
+        "type": "INSTAGRAM",
         "service": {
             "accesstoken": "",
             "siteid": "",
-            "appid": "1094526090706564"
+            "appid": "1924971937716955"
         }
     })
 
@@ -131,30 +131,30 @@ export const ChannelAddMessenger: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectface2)}</div>
-                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.connectinsta2)}</div>
+                    <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectinsta3)}</div>
     
                         <FacebookLogin
-                            appId="1094526090706564"
+                            appId="1924971937716955"
                             autoLoad={false}
-                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
+                            buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721AD", textTransform: "none" }}
                             fields="name,email,picture"
-                            scope="pages_messaging,pages_read_engagement,pages_manage_engagement,pages_read_user_content,pages_manage_metadata,pages_show_list,public_profile"
+                            scope="pages_show_list,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_manage_metadata,public_profile"
                             callback={processFacebookCallback}
-                            textButton={t(langKeys.linkfacebookpage)}
-                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
+                            textButton={t(langKeys.linkinstagrampage)}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
-                                    appId: '1094526090706564',
+                                    appId: '1924971937716955',
                                     cookie: true,
                                     xfbml: true,
                                     version: 'v8.0'
                                 });
                             }}
+                            icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                         />
     
-                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectface4)}</div>
+                    <div style={{ textAlign: "center", paddingBottom: "80px", color: "#969ea5", fontStyle: "italic" }}>{t(langKeys.connectinsta4)}</div>
     
                 </div>
             </div>
@@ -168,7 +168,7 @@ export const ChannelAddMessenger: FC = () => {
                     </Link>
                 </Breadcrumbs>
                 <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectface)}</div>
+                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connectinsta)}</div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldSelect
@@ -222,7 +222,7 @@ export const ChannelAddMessenger: FC = () => {
                             {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
-                                <FacebookMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <InstagramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
                                 <ColorInput
                                     hex={fields.parameters.coloricon}
                                     onChange={e => {
@@ -236,7 +236,6 @@ export const ChannelAddMessenger: FC = () => {
                             </div>
                         </div>
                     </div>
-                    
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <div className="col-6" style={{ paddingBottom: '3px' }}>
