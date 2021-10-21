@@ -14,6 +14,8 @@ import {ChannelAddTelegram} from './ChannelAddTelegram'
 import {ChannelAddTwitter} from './ChannelAddTwitter'
 import {ChannelAddTwitterDM} from './ChannelAddTwitterDM'
 import {ChannelAddChatWeb} from './ChannelAddChatWeb'
+import {ChannelAddAndroid} from './ChannelAddAndroid'
+import {ChannelAddIos} from './ChannelAddIos'
 
 
 export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any}> = ({setSnackbar,setBackdrop,setStep,step}) => {
@@ -43,6 +45,8 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         email: false,
         phone: false,
         sms: false,
+        android: false,
+        ios: false,
     });
 
     if(step===1){
@@ -87,6 +91,8 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         if(listchannels.email) return <div>email</div>
         if(listchannels.phone) return <div>phone</div>
         if(listchannels.sms) return <div>sms</div>
+        if(listchannels.android) return <ChannelAddAndroid setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.apple) return <ChannelAddIos setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         else {
             setStep(4)
             return(<div>error no more channels</div>)
