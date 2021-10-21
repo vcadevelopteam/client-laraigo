@@ -1,6 +1,7 @@
 import React, { FC } from 'react';
 import clsx from 'clsx';
-import { Box, BoxProps, makeStyles } from '@material-ui/core';
+import { Box, BoxProps, IconButton, makeStyles } from '@material-ui/core';
+import { Add, Menu } from '@material-ui/icons';
 import { DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 
 interface LeadCardContentProps extends BoxProps {
@@ -10,17 +11,27 @@ interface LeadCardContentProps extends BoxProps {
 
 const useLeadCardStyles = makeStyles(theme => ({
     root: {
-        userSelect: "none",
+        userSelect: 'contain',
         padding: 16,
-        // margin: "0 0 8px 0",
-        minHeight: "50px",
-        backgroundColor: "#456C86",
-        color: "white",
+        // margin: '0 0 8px 0',
+        minHeight: '50px',
+        backgroundColor: 'white',
+        color: theme.palette.text.primary,
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
     },
-    dragging: {
-        backgroundColor: "#263B4A",
+    rootDragging: {
+        opacity: .9,
+    },
+    floatingMenuIcon: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        width: 22,
+        height: 22,
+        maxHeight: 22,
+        maxWidth: 22,
     },
     title: {
         fontSize: 16,
@@ -30,17 +41,20 @@ const useLeadCardStyles = makeStyles(theme => ({
     info: {
         fontSize: 14,
         fontWeight: 400,
-        marginBottom: theme.spacing(1),
+        marginBottom: theme.spacing(.5),
     },
     tagsRow: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
+        justifyContent: 'flex-start',
     },
     tag: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
+        marginRight: theme.spacing(1),
+        marginBottom: 4,
     },
     tagCircle: {
         width: 8,
@@ -58,15 +72,40 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 
     return (
         <Box {...boxProps} pb={1}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.dragging)}>
+            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
+                <div className={classes.floatingMenuIcon}>
+                    <IconButton color="primary" size="small">
+                        <Menu style={{ height: 'inherit', width: 'inherit' }} />
+                    </IconButton>
+                </div>
                 <label className={classes.title}>Distribution</label>
                 <label className={classes.info}>S/ 19,800.00</label>
                 <label className={classes.info}>Gemini Furniture</label>
                 <div className={classes.tagsRow}>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'cyan' }} />
                         <div style={{ width: 8 }} />
                         <div className={classes.tagtext}>Information</div>
+                    </div>
+                    <div className={classes.tag}>
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div style={{ width: 8 }} />
+                        <div className={classes.tagtext}>Other</div>
+                    </div>
+                    <div className={classes.tag}>
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div style={{ width: 8 }} />
+                        <div className={classes.tagtext}>Other</div>
+                    </div>
+                    <div className={classes.tag}>
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div style={{ width: 8 }} />
+                        <div className={classes.tagtext}>Other</div>
+                    </div>
+                    <div className={classes.tag}>
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div style={{ width: 8 }} />
+                        <div className={classes.tagtext}>Other</div>
                     </div>
                 </div>
             </div>
@@ -81,9 +120,48 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
 
 const useLeadColumnStyles = makeStyles(theme => ({
     root: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start',
+        margin: `0 ${theme.spacing(1)}px`,
+        maxHeight: '100%',
+        overflowY: 'hidden',
+        // width: '100%',
+    },
+    header: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+    },
+    title: {
+        fontWeight: 500,
+    },
+    subHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        fontSize: 14,
+        fontWeight: 400,
+        width: '100%',
+        marginBottom: theme.spacing(2),
+    },
+    backgroundProgressbar: {
+        backgroundColor: 'lightgrey',
+        height: 14,
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        borderRadius: 7,
+    },
+    progressbar: {
+        backgroundColor: 'red',
+        height: 'inherit',
+        borderTopLeftRadius: 'inherit',
+        borderBottomLeftRadius: 'inherit',
     },
 }));
 
@@ -93,10 +171,20 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, ...b
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <h2>{title}</h2>
-                <div style={{ margin: 8 }}>
-                    {children}
+                <div className={classes.header}>
+                    <h2 className={classes.title}>{title}</h2>
+                    <IconButton color="primary" size="small">
+                        <Add style={{ height: 22, width: 22 }} />
+                    </IconButton>
                 </div>
+                <div className={classes.subHeader}>
+                    <div className={classes.backgroundProgressbar}>
+                        <div className={classes.progressbar} style={{ width: '30%' }} />
+                    </div>
+                    <div style={{ width: 8 }} />
+                    <span>S/ 80,000</span>
+                </div>
+                {children}
             </div>
         </Box>
     );
@@ -108,14 +196,13 @@ interface LeadColumnListProps extends BoxProps {
 
 const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
-        background: "lightgrey",
-        padding: 4,
         width: 250,
+        // backgroundColor: 'red',
         minHeight: 500,
     },
-    draggOver: {
-        background: "lightblue",
-    }
+    // draggOver: {
+    //     background: "lightblue",
+    // },
 }));
 
 export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, title, snapshot, ...boxProps }) => {
@@ -123,7 +210,7 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, tit
 
     return (
         <Box {...boxProps}>
-            <div className={clsx(classes.root, snapshot.isDraggingOver && classes.draggOver)}>
+            <div className={clsx(classes.root/*, snapshot.isDraggingOver && classes.draggOver*/)}>
                 {children}
             </div>
         </Box>

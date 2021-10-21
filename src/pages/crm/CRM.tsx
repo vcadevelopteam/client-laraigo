@@ -8,7 +8,10 @@ const itemsFromBackend = [
     { id: uuidv4(), content: "Second task" },
     { id: uuidv4(), content: "Third task" },
     { id: uuidv4(), content: "Fourth task" },
-    { id: uuidv4(), content: "Fifth task" }
+    { id: uuidv4(), content: "Fifth task" },
+    { id: uuidv4(), content: "Fifth task" },
+    { id: uuidv4(), content: "Fifth task" },
+    { id: uuidv4(), content: "Fifth task" },
   ];
 
   const columnsFromBackend = {
@@ -83,6 +86,7 @@ const CRM: FC = () => {
                           <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
+                            style={{ overflowY: 'auto' }}
                           >
                             <DroppableLeadColumnList snapshot={snapshot}>
                             {column.items.map((item, index) => {
