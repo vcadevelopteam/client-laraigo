@@ -254,14 +254,14 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                     <Grid container direction="column">
                                         <label><Trans i18nKey={langKeys.firstConnection} />:</label>
                                         <div style={{ height: 4 }} />
-                                        <label>{person.firstcontact || "-"}</label>
+                                        <label>{person.firstcontact ? new Date(person.firstcontact).toLocaleString() : "-"}</label>
                                     </Grid>
                                 </Grid>
                                 <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                                     <Grid container direction="column">
                                         <label><Trans i18nKey={langKeys.lastConnection} />:</label>
                                         <div style={{ height: 4 }} />
-                                        <label>{person.lastcontact || "-"}</label>
+                                        <label>{person.lastcontact ? new Date(person.lastcontact).toLocaleString() : "-"}</label>
                                     </Grid>
                                 </Grid>
                                 <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />

@@ -279,7 +279,6 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
 
         if (interactiontext.substring(0, 1) === "{") {
             const jj = JSON.parse(interactiontext);
-            console.log('1111111111')
             return (
                 <div title={convertLocalDate(createdate).toLocaleString()} className={clsx(classes.interactionText, {
                     [classes.interactionTextAgent]: userType !== 'client',
