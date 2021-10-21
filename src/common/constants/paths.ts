@@ -44,6 +44,14 @@ const paths = {
         path: '/channels/:id/add/twitterdm',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/twitterdm`,
     },
+    CHANNELS_ADD_ANDROID: {
+        path: '/channels/:id/add/ChannelAddAndroid',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddAndroid`,
+    },
+    CHANNELS_ADD_IOS: {
+        path: '/channels/:id/add/ChannelAddIos',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddIos`,
+    },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
     CHANNELS_EDIT: {

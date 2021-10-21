@@ -74,9 +74,8 @@ export const ChannelAddTelegram: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        console.log(executeResult)
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
+        if (!mainResult.loading && setins){
+            if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -89,7 +88,7 @@ export const ChannelAddTelegram: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult,waitSave])
+    }, [mainResult])
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));

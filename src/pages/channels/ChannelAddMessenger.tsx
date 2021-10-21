@@ -71,8 +71,8 @@ export const ChannelAddMessenger: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
+        if (!mainResult.loading && setins){
+            if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -85,7 +85,7 @@ export const ChannelAddMessenger: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult,waitSave])
+    }, [mainResult])
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
