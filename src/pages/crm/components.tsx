@@ -175,7 +175,7 @@ const useLeadColumnStyles = makeStyles(theme => ({
         alignItems: 'flex-start',
         margin: `0 ${theme.spacing(1)}px`,
         maxHeight: '100%',
-        overflowY: 'hidden',
+        overflow: 'hidden', // overflowY
         width: columnWidth,
         maxWidth: columnWidth,
     },
