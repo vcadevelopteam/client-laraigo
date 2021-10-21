@@ -16,9 +16,40 @@ const useLeadCardStyles = makeStyles(theme => ({
         minHeight: "50px",
         backgroundColor: "#456C86",
         color: "white",
+        display: 'flex',
+        flexDirection: 'column',
     },
     dragging: {
         backgroundColor: "#263B4A",
+    },
+    title: {
+        fontSize: 16,
+        fontWeight: 700,
+        marginBottom: theme.spacing(1),
+    },
+    info: {
+        fontSize: 14,
+        fontWeight: 400,
+        marginBottom: theme.spacing(1),
+    },
+    tagsRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    tag: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    tagCircle: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    tagtext: {
+        fontSize: 12,
+        fontWeight: 400,
     },
 }));
 
@@ -28,7 +59,16 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     return (
         <Box {...boxProps} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.dragging)}>
-                {String(lead)}
+                <label className={classes.title}>Distribution</label>
+                <label className={classes.info}>S/ 19,800.00</label>
+                <label className={classes.info}>Gemini Furniture</label>
+                <div className={classes.tagsRow}>
+                    <div className={classes.tag}>
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
+                        <div style={{ width: 8 }} />
+                        <div className={classes.tagtext}>Information</div>
+                    </div>
+                </div>
             </div>
         </Box>
     );
