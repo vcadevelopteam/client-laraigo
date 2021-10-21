@@ -14,4 +14,5 @@ export interface IPersonDomains {
     personTypes: IDomain[];
     groups: IDomain[];
     personGenTypes: IDomain[];
+    channelTypes: IDomain[];
 }

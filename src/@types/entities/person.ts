@@ -59,6 +59,17 @@ export interface IPerson {
     changedate: string;
 }
 
+export interface IPersonCommunicationChannel {
+    channeltype: string;
+    personcommunicationchannel: string;
+    personcommunicationchannelowner: string;
+    displayname: string;
+}
+
+export interface IPersonImport extends IPerson, IPersonCommunicationChannel {
+    pcc: IPersonCommunicationChannel[];
+}
+
 export interface IPersonEdit {
     groups: any;
     persontype: string;

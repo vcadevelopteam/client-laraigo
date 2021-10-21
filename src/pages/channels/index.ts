@@ -5,6 +5,8 @@ export { ChannelAddFacebook } from './ChannelAddFacebook';
 export { ChannelAddMessenger } from './ChannelAddMessenger';
 export { ChannelAddInstagram } from './ChannelAddInstagram';
 export { ChannelAddInstagramDM } from './ChannelAddInstagramDM';
+export { ChannelAddAndroid } from './ChannelAddAndroid';
+export { ChannelAddIos } from './ChannelAddIos';
 export { ChannelAddWhatsapp } from './ChannelAddWhatsapp';
 export { ChannelAddTelegram } from './ChannelAddTelegram';
 export { ChannelAddTwitter } from './ChannelAddTwitter';

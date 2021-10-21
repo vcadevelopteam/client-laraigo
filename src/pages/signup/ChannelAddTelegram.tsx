@@ -1,15 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput, IOSSwitch } from "components";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
 import { TelegramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -29,16 +24,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#207FDD");
     const [channelreg, setChannelreg] = useState(true);
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -70,28 +59,6 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,telegram:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     function setnameField(value: any) {
         setChannelreg(value==="")

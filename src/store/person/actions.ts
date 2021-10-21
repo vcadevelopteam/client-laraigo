@@ -102,6 +102,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("TIPOPERSONA"),
         getValuesFromDomain("GRUPOPERSONA"),
         getValuesFromDomain("TIPOPERSONAGEN"),
+        getValuesFromDomain("TIPOCANAL"),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,

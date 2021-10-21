@@ -1644,6 +1644,24 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
     },
 ]);
 
+export const insPersonBody = (person: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSONCOMMUNICATIONCHANNEL_INS',
+    parameters: {
+        ...pcc,
+        corpid: null,
+        orgid: null,
+    },
+});
+
 export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_INS',
     parameters: {

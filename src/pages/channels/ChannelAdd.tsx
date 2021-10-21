@@ -150,12 +150,12 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <AppleIcon className={c} />,
             label: 'iOS SDk',
-            onClick: () => { },
+            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path),
         },
         {
             icon: c => <AndroidIcon className={c} />,
             label: 'Android SDK',
-            onClick: () => { },
+            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path),
         },
     ];
 
