@@ -492,7 +492,6 @@ const translation: LangKeys = {
     designed_reports: 'Personalized reports',
     filters: 'Filters',
 
-
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
     return: "Return",
@@ -1126,6 +1125,10 @@ const translation: LangKeys = {
     priority: 'Priority',
     extraInformation: 'Extra information',
     contactInformation: 'Contact information',
+    confirmation_person_lock: 'Do you want to block the user? The messages will be ignored.',
+    confirmation_person_unlock: 'Do you want to unblock the user? The messages will be served by advisors and the bot.',
+    lock: 'Lock',
+    unlock: 'Unlock',
 
     agreement: 'Agreement',
     agreement_plural: 'Agreements',

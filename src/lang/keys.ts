@@ -1115,6 +1115,10 @@ export const langKeys = {
     priority: 'priority',
     extraInformation: 'extraInformation',
     contactInformation: 'contactInformation',
+    confirmation_person_lock: 'confirmation_person_lock',
+    confirmation_person_unlock: 'confirmation_person_unlock',
+    lock: 'lock',
+    unlock: 'unlock',
 
     agreement: 'agreement',
     agreement_plural: 'agreement_plural',

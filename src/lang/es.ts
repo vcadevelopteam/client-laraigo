@@ -1114,6 +1114,10 @@ const translation: LangKeys = {
     priority: 'Prioridad',
     extraInformation: 'Información extra',
     contactInformation: 'Información de contacto',
+    confirmation_person_lock: '¿Desea bloquear al usuario? Sus mensajes serán ignorados.',
+    confirmation_person_unlock: '¿Desea desbloquear al usuario? Sus mensajes serán atendidos por asesores y el bot.',
+    lock: 'Bloquear',
+    unlock: 'Desbloquear',
 
     agreement: 'Acuerdo',
     agreement_plural: 'Acuerdos',
