@@ -3,7 +3,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody } from 'common/helpers';
-import { IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
@@ -306,12 +306,20 @@ export const Person: FC = () => {
     const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
     const initialDateRange: Range = { startDate, endDate, key: 'selection' };
 
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+    const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
+
+    const columns = [
+        { Header: t(langKeys.name), accessor: 'name' },
+        { Header: t(langKeys.email), accessor: 'email' },
+        { Header: t(langKeys.phone), accessor: 'phone' }
+    ]
 
     useEffect(() => {
         return () => {
@@ -326,9 +334,9 @@ export const Person: FC = () => {
             skip: pageSize * page,
             take: pageSize,
             sorts: {},
-            filters: {},
+            filters: filters,
         })));
-    }, [dispatch, pageSize, page, dateRange]);
+    }, [dispatch, pageSize, page, dateRange, filters]);
 
     const format = (date: Date) => date.toISOString().split('T')[0];
 
@@ -365,7 +373,10 @@ export const Person: FC = () => {
                             open={openDateRangeModal}
                             setOpen={setOpenDateRangeModal}
                             range={dateRange}
-                            onSelect={setDateRange}
+                            onSelect={(e) => {
+                                setPage(0);
+                                setDateRange(e);
+                            }}
                         >
                             <Button
                                 disabled={personList.loading}
@@ -381,8 +392,11 @@ export const Person: FC = () => {
             </Grid>
             <div style={{ height: 30 }} />
             <ListPaginated
+                dateRange={dateRange}
                 currentPage={page}
+                columns={columns}
                 data={personList.data as IPerson[]}
+                onFilterChange={setFilters}
                 onPageChange={setPage}
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
@@ -1251,14 +1265,14 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannelowner}
+                        subtitle={channel.personcommunicationchannel}
                         m={1}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.internalIdentifier} />}
-                        subtitle={channel.personcommunicationchannel}
+                        subtitle={channel.personcommunicationchannelowner}
                         m={1}
                     />
                 </Grid>
