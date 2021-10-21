@@ -1343,14 +1343,14 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.firstContactDate} />}
-                            subtitle={person.firstcontact}
+                            subtitle={new Date(person.firstcontact).toLocaleString()}
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.lastContactDate} />}
-                            subtitle={person.lastcontact}
+                            subtitle={new Date(person.lastcontact).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -1375,7 +1375,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.creationDate} />}
-                            subtitle={person.createdate}
+                            subtitle={new Date(person.createdate).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -1389,7 +1389,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.modificationDate} />}
-                            subtitle={person.changedate}
+                            subtitle={new Date(person.changedate).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -1551,13 +1551,13 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
                         title={<Trans i18nKey={langKeys.startDate} />}
-                        subtitle={conversation.fechainicio}
+                        subtitle={new Date(conversation.fechainicio).toLocaleString()}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
                         title={<Trans i18nKey={langKeys.endDate} />}
-                        subtitle={conversation.fechafin}
+                        subtitle={conversation.fechafin && new Date(conversation.fechafin).toLocaleString()}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
