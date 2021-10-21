@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
@@ -23,7 +23,7 @@ import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
-import { execute } from 'store/main/actions';
+import { execute, exportData } from 'store/main/actions';
 
 interface PersonItemProps {
     person: IPerson;
@@ -320,6 +320,9 @@ export const Person: FC = () => {
     const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
 
+    const resExportData = useSelector(state => state.main.exportData);
+    const [waitExport, setWaitExport] = useState(false);
+
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
         { Header: t(langKeys.email), accessor: 'email' },
@@ -349,6 +352,33 @@ export const Person: FC = () => {
 
     const format = (date: Date) => date.toISOString().split('T')[0];
 
+    const triggerExportData = () => {
+        dispatch(exportData(getPersonExport(
+            {
+                startdate: format(dateRange.startDate!),
+                enddate: format(dateRange.endDate!),
+                sorts: {},
+                filters: filters
+            })));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Grid container direction="row" justifyContent="space-between">
@@ -361,7 +391,7 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            onClick={() => { }}
+                            onClick={triggerExportData}
                             startIcon={<DownloadIcon />}
                         >
                             <Trans i18nKey={langKeys.download} />
