@@ -120,6 +120,13 @@ export const routes: RouteConfig[] = [
         path: paths.BOTDESIGNER,
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
+    {
+        key: paths.VARIABLECONFIGURATION,
+        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
+        path: paths.VARIABLECONFIGURATION,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
     // {
     //     key: 'ia-services-label',
     //     description: <Trans i18nKey={langKeys.iaservices} count={2} />,

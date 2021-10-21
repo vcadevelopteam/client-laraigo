@@ -111,6 +111,7 @@ const translation: LangKeys = {
     email: 'Email',
     address: 'Address',
     department: 'Department',
+    province: 'Province',
     phone: 'Phone',
 
     lastConnection: 'Last connection',
@@ -491,7 +492,6 @@ const translation: LangKeys = {
     new_report_designer: 'New report',
     designed_reports: 'Personalized reports',
     filters: 'Filters',
-
 
     recordPerPage: 'Record per page',
     recordPerPage_plural: 'Records per page',
@@ -1126,6 +1126,10 @@ const translation: LangKeys = {
     priority: 'Priority',
     extraInformation: 'Extra information',
     contactInformation: 'Contact information',
+    confirmation_person_lock: 'Do you want to block the user? The messages will be ignored.',
+    confirmation_person_unlock: 'Do you want to unblock the user? The messages will be served by advisors and the bot.',
+    lock: 'Lock',
+    unlock: 'Unlock',
 
     agreement: 'Agreement',
     agreement_plural: 'Agreements',

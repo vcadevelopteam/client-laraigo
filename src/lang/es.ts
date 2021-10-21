@@ -5,8 +5,8 @@ const translation: LangKeys = {
     english: 'Inglés',
     spanish: 'Español',
 
-    dashboard: 'Panel',
-    dashboard_plural: 'Paneles',
+    dashboard: 'Dashboard',
+    dashboard_plural: 'Dashboards',
 
     organization: "Organización",
     organization_plural: 'Organizaciones',
@@ -211,6 +211,7 @@ const translation: LangKeys = {
     email: 'Correo',
     address: 'Dirección',
     department: 'Departamento',
+    province: 'Provincia',
     closedbyadviser: "Cerrado por asesor",
     closedbybot: "Cerrado por bot",
     phone: 'Teléfono',
@@ -218,7 +219,7 @@ const translation: LangKeys = {
     lastConnection: 'Última Conexión',
     ticketCreatedOn: 'Ticket Creado',
     parent: 'Padre',
-    firstConnection: 'Primera conecxión',
+    firstConnection: 'Primera conexión',
     company: 'Compañia',
     tag: 'Tag',
     communicationchannel: 'Canal de comunicación',
@@ -1114,6 +1115,10 @@ const translation: LangKeys = {
     priority: 'Prioridad',
     extraInformation: 'Información extra',
     contactInformation: 'Información de contacto',
+    confirmation_person_lock: '¿Desea bloquear al usuario? Sus mensajes serán ignorados.',
+    confirmation_person_unlock: '¿Desea desbloquear al usuario? Sus mensajes serán atendidos por asesores y el bot.',
+    lock: 'Bloquear',
+    unlock: 'Desbloquear',
 
     agreement: 'Acuerdo',
     agreement_plural: 'Acuerdos',
