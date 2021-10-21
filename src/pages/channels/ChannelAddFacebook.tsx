@@ -71,6 +71,8 @@ export const ChannelAddFacebook: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
+        
+        console.log(executeResult)
         if (waitSave && setins) {
             if (mainResult.loading && executeResult) {
                 setsetins(false)
