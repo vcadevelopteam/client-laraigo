@@ -1,12 +1,12 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DateRangePicker, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody } from 'common/helpers';
-import { IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains } from "@types";
+import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody } from 'common/helpers';
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -15,8 +15,10 @@ import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown } from '@material-ui/icons';
-import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson } from 'store/person/actions';
-import { showSnackbar } from 'store/popus/actions';
+import ClearIcon from '@material-ui/icons/Clear';
+import SaveIcon from '@material-ui/icons/Save';
+import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
+import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 
 interface PersonItemProps {
@@ -304,12 +306,20 @@ export const Person: FC = () => {
     const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
     const initialDateRange: Range = { startDate, endDate, key: 'selection' };
 
+    const { t } = useTranslation();
     const dispatch = useDispatch();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+    const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
+
+    const columns = [
+        { Header: t(langKeys.name), accessor: 'name' },
+        { Header: t(langKeys.email), accessor: 'email' },
+        { Header: t(langKeys.phone), accessor: 'phone' }
+    ]
 
     useEffect(() => {
         return () => {
@@ -324,9 +334,9 @@ export const Person: FC = () => {
             skip: pageSize * page,
             take: pageSize,
             sorts: {},
-            filters: {},
+            filters: filters,
         })));
-    }, [dispatch, pageSize, page, dateRange]);
+    }, [dispatch, pageSize, page, dateRange, filters]);
 
     const format = (date: Date) => date.toISOString().split('T')[0];
 
@@ -363,10 +373,15 @@ export const Person: FC = () => {
                             open={openDateRangeModal}
                             setOpen={setOpenDateRangeModal}
                             range={dateRange}
-                            onSelect={setDateRange}
+                            onSelect={(e) => {
+                                setPage(0);
+                                setDateRange(e);
+                            }}
                         >
                             <Button
                                 disabled={personList.loading}
+                                style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                                startIcon={<CalendarIcon />}
                                 onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                             >
                                 {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
@@ -377,8 +392,11 @@ export const Person: FC = () => {
             </Grid>
             <div style={{ height: 30 }} />
             <ListPaginated
+                dateRange={dateRange}
                 currentPage={page}
+                columns={columns}
                 data={personList.data as IPerson[]}
+                onFilterChange={setFilters}
                 onPageChange={setPage}
                 pageSize={pageSize}
                 onPageSizeChange={setPageSize}
@@ -562,12 +580,14 @@ export const PersonDetail: FC = () => {
         if (edit.loading) return;
         console.log(edit);
         if (edit.error === true) {
+            dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: edit.message!,
                 show: true,
                 success: false,
             }));
         } else if (edit.success) {
+            dispatch(showBackdrop(false));
             dispatch(showSnackbar({
                 message: "Se guardo exitosamente",
                 show: true,
@@ -582,9 +602,18 @@ export const PersonDetail: FC = () => {
 
     const handleEditPerson = () => {
         const values = getValues();
-        const payload = editPersonBody(values);
-        console.log("handleEditPerson", payload);
-        dispatch(editPerson(payload));
+        const callback = () => {
+            const payload = editPersonBody(values);
+            console.log("handleEditPerson", payload);
+            dispatch(editPerson(payload));
+            dispatch(showBackdrop(true));
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
     }
 
     if (!person) {
@@ -618,9 +647,30 @@ export const PersonDetail: FC = () => {
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <h1>{person.name}</h1>
-                <Button variant="contained" color="primary" onClick={handleEditPerson}>
-                    <Trans i18nKey={langKeys.save} />
-                </Button>
+                <div style={{display: 'flex', gap: '10px'}}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={<ClearIcon color="secondary" />}
+                        style={{ backgroundColor: "#FB5F5F" }}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            history.push(paths.PERSON);
+                        }}
+                    >
+                        {t(langKeys.back)}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleEditPerson}
+                        startIcon={<SaveIcon color="secondary" />}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.save} />
+                    </Button>
+                </div>
             </div>
             <div style={{ height: 7 }} />
             <div className={classes.rootContent}>
@@ -634,23 +684,28 @@ export const PersonDetail: FC = () => {
                         >
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "0" && classes.activetab)}
-                                label={<div><Trans i18nKey={langKeys.communicationchannel} /> {' & '} <Trans i18nKey={langKeys.extra} count={2} /></div>}
+                                label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.audit} />}
+                                label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
                                 value="1"
                             />
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                label={<Trans i18nKey={langKeys.audit} />}
                                 value="2"
                             />
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
                                 value="3"
+                            />
+                            <Tab
+                                className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
+                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                value="4"
                             />
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
@@ -660,7 +715,7 @@ export const PersonDetail: FC = () => {
                         </Tabs>
                     </AppBar>
                     <TabPanel value="0" index={tabIndex}>
-                        <CommunicationChannelsTab
+                        <GeneralInformationTab
                             getValues={getValues}
                             setValue={setValue}
                             person={person}
@@ -668,12 +723,20 @@ export const PersonDetail: FC = () => {
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
-                        <AuditTab person={person} />
+                        <CommunicationChannelsTab
+                            getValues={getValues}
+                            setValue={setValue}
+                            person={person}
+                            domains={domains}
+                        />
                     </TabPanel>
                     <TabPanel value="2" index={tabIndex}>
-                        <ConversationsTab person={person} />
+                        <AuditTab person={person} />
                     </TabPanel>
                     <TabPanel value="3" index={tabIndex}>
+                        <ConversationsTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="4" index={tabIndex}>
                         <OpportunitiesTab person={person} />
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
@@ -771,6 +834,384 @@ export const PersonDetail: FC = () => {
     );
 }
 
+const useReferrerItemStyles = makeStyles(theme => ({
+    root: {
+        border: '#EBEAED solid 1px',
+        borderRadius: 5,
+        padding: theme.spacing(2),
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    },
+    item: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    itemLabel: {
+        color: '#8F92A1',
+        fontSize: 14,
+        fontWeight: 400,
+        margin: 0,
+    },
+    itemText: {
+        color: theme.palette.text.primary,
+        fontSize: 15,
+        fontWeight: 400,
+        margin: '6px 0',
+    },
+}));
+
+interface ReferrerItemProps {
+    referrer: IPersonReferrer;
+}
+
+const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
+    const classes = useReferrerItemStyles();
+
+    return (
+        <div className={classes.root}>
+            <Grid container direction="row">
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.name} />}
+                        subtitle={referrer.name}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.docType} />}
+                        subtitle={referrer.documenttype}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.docNumber} />}
+                        subtitle={referrer.documentnumber}
+                        m={1}
+                    />
+                </Grid>
+            </Grid>
+        </div>
+    );
+}
+
+interface GeneralInformationTabProps {
+    person: IPerson;
+    getValues: UseFormGetValues<IPerson>;
+    setValue: UseFormSetValue<IPerson>;
+    domains: IObjectState<IPersonDomains>;
+}
+
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains }) => {
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const referrerList = useSelector(state => state.person.personReferrerList);
+
+    useEffect(() => {
+        dispatch(getReferrerListByPerson(getReferrerByPersonBody(person.referringpersonid)));
+        return () => {
+            dispatch(resetGetReferrerListByPerson());
+        };
+    }, [dispatch, person]);
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <Grid container direction="row">
+                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                    <Grid container>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.corporation} />}
+                                subtitle={person.corpdesc}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.organization} />}
+                                subtitle={person.orgdesc}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.firstname} />}
+                                subtitle={person.firstname}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.lastname} />}
+                                subtitle={person.lastname}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.fullname} />}
+                                subtitle={person.name}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.document} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}    
+                                        valueDefault={person.documenttype}
+                                        onChange={(value) => {
+                                            setValue('documenttype', value?.domainvalue);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.docTypes || []}
+                                        prefixTranslation="type_documenttype_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.docNumber} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.docNumber)}
+                                        defaultValue={person.documentnumber}
+                                        onChange={e => setValue('documentnumber', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.personType} />}
+                                subtitle={(
+                                    <FieldSelect
+                                    uset={true}  
+                                        valueDefault={person.persontype}
+                                        onChange={(value) => {
+                                            setValue('persontype', value?.domainvalue);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.personGenTypes || []}
+                                        prefixTranslation="type_persontype_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domaindesc"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.type} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}    
+                                        valueDefault={person.type}
+                                        onChange={(value) => {
+                                            setValue('type', value?.domainvalue);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.personTypes || []}
+                                        prefixTranslation="type_personlevel_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.phone} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.phone)}
+                                        defaultValue={person.phone}
+                                        onChange={e => setValue('phone', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.alternativePhone} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.alternativePhone)}
+                                        defaultValue={person.alternativephone}
+                                        onChange={e => setValue('alternativephone', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.email} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.email)}
+                                        defaultValue={person.email}
+                                        onChange={e => setValue('email', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.alternativeEmail} />}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.alternativeEmail)}
+                                        defaultValue={person.alternativeemail}
+                                        onChange={e => setValue('alternativeemail', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.birthday} />}
+                                subtitle={(
+                                    <TextField
+                                        type="date"
+                                        fullWidth
+                                        placeholder={t(langKeys.birthday)}
+                                        defaultValue={person.birthday}
+                                        onChange={e => setValue('birthday', e.target.value)}
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.gender} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}    
+                                        valueDefault={person.gender}
+                                        onChange={(value) => {
+                                            setValue('gender', value?.domainvalue);
+                                            setValue('genderdesc', value?.domaindesc)
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.genders || []}
+                                        prefixTranslation="type_gender_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.educationLevel} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}    
+                                        valueDefault={person.educationlevel}
+                                        onChange={(value) => {
+                                            setValue('educationlevel', value?.domainvalue);
+                                            setValue('educationleveldesc', value?.domaindesc)
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.educationLevels || []}
+                                        prefixTranslation="type_educationlevel_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.civilStatus} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}
+                                        valueDefault={person.civilstatus}
+                                        onChange={(value) => {
+                                            setValue('civilstatus', value?.domainvalue);
+                                            setValue('civilstatusdesc', value?.domaindesc)
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.civilStatuses || []}
+                                        prefixTranslation="type_civilstatus_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.occupation} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        uset={true}
+                                        valueDefault={person.occupation}
+                                        onChange={(value) => {
+                                            setValue('occupation', value?.domainvalue);
+                                            setValue('occupationdesc', value?.domaindesc)
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.occupations || []}
+                                        prefixTranslation="type_ocupation_"
+                                        optionValue="domainvalue"
+                                        optionDesc="domainvalue"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Property
+                                title={<Trans i18nKey={langKeys.group} count={2} />}
+                                subtitle={(
+                                    <FieldSelect
+                                        valueDefault={person.groups || ""}
+                                        onChange={(value) => {
+                                            setValue('groups', value?.domainvalue);
+                                        }}
+                                        loading={domains.loading}
+                                        data={domains.value?.groups || []}
+                                        optionValue="domainvalue"
+                                        optionDesc="domaindesc"
+                                    />
+                                )}
+                                m={1}
+                            />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+            <div style={{ height: 12 }} />
+            <label>{t(langKeys.referredBy)}</label>
+            {referrerList.data.map((e, i) => <ReferrerItem referrer={e} key={`referrer_item_${i}`} />)}
+        </div>
+    );
+}
+
 const useChannelItemStyles = makeStyles(theme => ({
     root: {
         border: '#EBEAED solid 1px',
@@ -807,35 +1248,49 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     return (
         <div className={classes.root}>
             <Grid container direction="row">
-                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
                         subtitle={channel.typedesc}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
-                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                        title={<Trans i18nKey={langKeys.displayname} />}
+                        subtitle={channel.displayname}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.personIdentifier} />}
                         subtitle={channel.personcommunicationchannel}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                    <Property
+                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                        subtitle={channel.personcommunicationchannelowner}
+                        m={1}
+                    />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.firstConnection} />}
                         subtitle={channel.firstcontact}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.lastConnection} />}
                         subtitle={channel.lastcontact}
                         m={1}
                     />
                 </Grid>
-                <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+                <Grid item xs={12} sm={12} md={4} lg={4} xl={4}>
                     <Property
                         title={<Trans i18nKey={langKeys.conversation} count={2} />}
                         subtitle={channel.conversations || '0'}
@@ -856,7 +1311,6 @@ interface ChannelTabProps {
 
 const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domains }) => {
     const dispatch = useDispatch();
-    const { t } = useTranslation();
     const channelList = useSelector(state => state.person.personChannelList);
     // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
@@ -871,134 +1325,6 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <Grid container direction="row">
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.personType} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.persontype}
-                                        onChange={(value) => {
-                                            setValue('persontype', value);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.civilStatus} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.civilstatus}
-                                        onChange={(value, desc) => {
-                                            setValue('civilstatus', value);
-                                            setValue('civilstatusdesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.civilStatuses || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.educationLevel} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.educationlevel}
-                                        onChange={(value, desc) => {
-                                            setValue('educationlevel', value);
-                                            setValue('educationleveldesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.educationLevels || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.occupation} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.occupation}
-                                        onChange={(value, desc) => {
-                                            setValue('occupation', value);
-                                            setValue('occupationdesc', desc);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.occupations || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.group} count={2} />}
-                                subtitle={(
-                                    <DomainSelectField
-                                        defaultValue={person.groups || ""}
-                                        onChange={(value) => {
-                                            setValue('groups', value);
-                                        }}
-                                        loading={domains.loading}
-                                        data={domains.value?.groups || []}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                    <Grid container direction="column">
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.alternativePhone} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativePhone)}
-                                        defaultValue={person.alternativephone}
-                                        onChange={e => setValue('alternativephone', e.target.value)}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.alternativeEmail} />}
-                                subtitle={(
-                                    <TextField
-                                        fullWidth
-                                        placeholder={t(langKeys.alternativeEmail)}
-                                        defaultValue={person.alternativeemail}
-                                        onChange={e => setValue('alternativeemail', e.target.value)}
-                                    />
-                                )}
-                                m={1}
-                            />
-                        </Grid>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Property
-                                title={<Trans i18nKey={langKeys.referredBy} />}
-                                subtitle={person.referringpersonname}
-                                m={1}
-                            />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Grid>
             <div style={{ height: 12 }} />
             {channelList.data.map((e, i) => <ChannelItem channel={e} key={`channel_item_${i}`} />)}
         </div>

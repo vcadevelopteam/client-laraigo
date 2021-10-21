@@ -77,6 +77,12 @@ export interface IPersonEdit {
     educationleveldesc?: string;
 }
 
+export interface IPersonReferrer {
+    name: string;
+    documenttype: string;
+    documentnumber: string;
+}
+
 export interface IPersonChannel {
     corpid: number;
     displayname: string;

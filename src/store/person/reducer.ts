@@ -1,4 +1,4 @@
-import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IPersonDomains, IProcessState } from "@types";
+import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer, IProcessState } from "@types";
 import { createReducer, initialListPaginatedState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -6,6 +6,7 @@ import actionTypes from "./actionTypes";
 export interface IState {
     personList: IListStatePaginated<IPerson>;
     personTicketList: IListStatePaginated<IPersonConversation>;
+    personReferrerList: IListState<IPersonReferrer>;
     personChannelList: IListState<IPersonChannel>;
     personAdditionInfo: IListState<IPersonAdditionalInfo>;
     person: IObjectState<IPerson>;
@@ -20,6 +21,7 @@ export interface IState {
 export const initialState: IState = {
     personList: initialListPaginatedState,
     personTicketList: initialListPaginatedState,
+    personReferrerList: initialListState,
     personChannelList: initialListState,
     personAdditionInfo: initialListState,
     person: initialObjectState,
@@ -45,6 +47,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TICKET_LIST_BY_PERSON_FAILURE]: caseFUnctions.getTicketListByPersonFailure,
     [actionTypes.GET_TICKET_LIST_BY_PERSON_RESET]: caseFUnctions.getTicketListByPersonReset,
 
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON]: caseFUnctions.getReferrerListByPerson,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getReferrerListByPersonSuccess,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_FAILURE]: caseFUnctions.getReferrerListByPersonFailure,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET]: caseFUnctions.getReferrerListByPersonReset,
+    
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON]: caseFUnctions.getChannelListByPerson,
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getChannelListByPersonSuccess,
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON_FAILURE]: caseFUnctions.getChannelListByPersonFailure,

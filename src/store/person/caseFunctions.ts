@@ -93,6 +93,36 @@ export const getTicketListByPersonReset = (state: IState): IState => ({
     personTicketList: initialState.personTicketList,
 });
 
+export const getReferrerListByPerson = (state: IState): IState => ({
+    ...state,
+    personReferrerList: { ...state.personReferrerList, loading: true },
+});
+
+export const getReferrerListByPersonSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    personReferrerList: {
+        ...state.personReferrerList,
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getReferrerListByPersonFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    personReferrerList: {
+        ...state.personReferrerList,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error Obtener la lista"
+    },
+});
+
+export const getReferrerListByPersonReset = (state: IState): IState => ({
+    ...state,
+    personReferrerList: initialState.personReferrerList,
+});
+
 export const getChannelListByPerson = (state: IState): IState => ({
     ...state,
     personChannelList: { ...state.personChannelList, loading: true },
@@ -196,6 +226,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const educationLevels = (action.payload.data as any[])[4].data as IDomain[] | null;
     const personTypes = (action.payload.data as any[])[5].data as IDomain[] | null;
     const groups = (action.payload.data as any[])[6].data as IDomain[] | null;
+    const personGenTypes = (action.payload.data as any[])[7].data as IDomain[] | null;
 
     return {
         ...state,
@@ -209,6 +240,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 occupations: occupations || [],
                 personTypes: personTypes || [],
                 groups: groups || [],
+                personGenTypes: personGenTypes || []
             },
             loading: false,
             error: false,

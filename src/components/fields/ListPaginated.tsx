@@ -1,17 +1,26 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { IconButton, Box, Select, MenuItem, Theme, List } from '@material-ui/core';
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@material-ui/icons';
 import NoDataImg from 'images/no_data.png';
+import Input from '@material-ui/core/Input';
+import { Dictionary } from '@types';
 
+interface IColumns {
+    Header: string;
+    accessor: string;
+}
 interface PaginatedListProps<T> {
     builder: (item: T, index: number) => React.ReactNode;
+    onFilterChange?: (filter: any) => void;
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
     skeleton?: (index: number) => React.ReactNode;
+    dateRange?: any;
     data: T[];
+    columns: IColumns[];
     currentPage: number;
     pageSize: number;
     totalItems: number;
@@ -75,12 +84,15 @@ const NoData: FC = () => {
 
 function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const {
+        dateRange,
         data,
         builder,
+        columns,
         loading = false,
         pageSize,
         totalItems,
         currentPage,
+        onFilterChange,
         onPageChange,
         onPageSizeChange,
         pageSizeOptions = [10, 20, 50, 100],
@@ -90,19 +102,48 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const pageCount = totalItems <= pageSize ? 1 : Math.ceil(totalItems / pageSize); // total pages
     const canPreviousPage = currentPage > 0;
     const canNextPage = currentPage < pageCount - 1;
+    const [filters, setFilters] = useState<Dictionary>(columns.reduce((a, c) => ({...a, [c.accessor]: ''}), {}));
 
     console.assert(data.length <= pageSize, "PaginatedList: la propiedad 'data' tiene más elementos de lo especificado en 'pageSize'");
     
+    const keyPress = (e: any) => {
+        if (e.keyCode === 13) {
+            onPageChange(0);
+            onFilterChange && onFilterChange(
+                Object.keys(filters).reduce((a: any, f: string) => ({
+                    ...a,
+                    [f]: {operator: 'contains', value: filters[f]}
+                }), {})
+            );
+        }
+    };
+
     const skeletonData = (): React.ReactNode[] => {
         const data: React.ReactNode[] = [];
         for (let i = 0; i < 3; i++) data.push(skeleton?.(i));
         return data;
     };
 
+    useEffect(() => {
+        setFilters({});
+    }, [dateRange])
+
     if (!loading && totalItems === 0) return <NoData />;
 
     return (
         <Box width={1} style={{ height: '100%' }}>
+            <div style={{display: 'flex', gap: '20px'}}>
+                {loading ? null : columns.map((c, i) => (
+                    <div key={`filter_${i}`}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{c.Header}</Box>
+                        <Input
+                            value={filters[c.accessor] || ''}
+                            onKeyDown={keyPress}
+                            onChange={e => setFilters({...filters, [c.accessor]: e.target.value})}
+                        />
+                    </div>
+                ))}
+            </div>
             <List>
                 {loading && skeleton ? skeletonData() : data.map((e, i) => builder(e, i))}
             </List>
@@ -143,7 +184,7 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
                 <Box>
                     <Trans
                         i18nKey={langKeys.tableShowingRecordOf}
-                        values={{ itemCount: pageSize, totalItems }}
+                        values={{ itemCount: data.length, totalItems }}
                     />
                 </Box>
                 <Box>
