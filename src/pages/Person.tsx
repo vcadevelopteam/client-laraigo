@@ -243,7 +243,7 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                                 <Trans i18nKey={langKeys.address} />
                                             </label>
                                             <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.province || '-'}</label>
+                                            <label className={clsx(classes.label, classes.value)}>{person.address || '-'}</label>
                                         </div>
                                     </Grid>
                                 </Grid>
@@ -323,7 +323,11 @@ export const Person: FC = () => {
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
         { Header: t(langKeys.email), accessor: 'email' },
-        { Header: t(langKeys.phone), accessor: 'phone' }
+        { Header: t(langKeys.phone), accessor: 'phone' },
+        { Header: t(langKeys.department), accessor: 'region' },
+        { Header: t(langKeys.province), accessor: 'province' },
+        { Header: t(langKeys.firstConnection), accessor: 'firstcontact' },
+        { Header: t(langKeys.lastConnection), accessor: 'lastcontact' }
     ]
 
     useEffect(() => {
@@ -611,7 +615,7 @@ export const PersonDetail: FC = () => {
         } else if (edit.success) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
-                message: "Se guardo exitosamente",
+                message: t(langKeys.successful_edit),
                 show: true,
                 success: true,
             }));

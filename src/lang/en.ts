@@ -111,6 +111,7 @@ const translation: LangKeys = {
     email: 'Email',
     address: 'Address',
     department: 'Department',
+    province: 'Province',
     phone: 'Phone',
 
     lastConnection: 'Last connection',

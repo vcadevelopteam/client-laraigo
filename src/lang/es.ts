@@ -211,6 +211,7 @@ const translation: LangKeys = {
     email: 'Correo',
     address: 'Dirección',
     department: 'Departamento',
+    province: 'Provincia',
     closedbyadviser: "Cerrado por asesor",
     closedbybot: "Cerrado por bot",
     phone: 'Teléfono',

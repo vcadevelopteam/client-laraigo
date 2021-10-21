@@ -292,6 +292,7 @@ export const langKeys = {
     registerCode: 'registerCode',
     phone: 'phone',
     department: 'department',
+    province: 'province',
     address: 'address',
 
     ticketCreatedOn: 'ticketCreatedOn',
