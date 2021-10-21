@@ -1,8 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
@@ -14,12 +15,15 @@ import { Range } from 'react-date-range';
 import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
-import { ArrowDropDown } from '@material-ui/icons';
+import { ArrowDropDown, Add as AddIcon } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
+import LockIcon from '@material-ui/icons/Lock';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { execute, exportData } from 'store/main/actions';
 
 interface PersonItemProps {
     person: IPerson;
@@ -239,7 +243,7 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                                 <Trans i18nKey={langKeys.address} />
                                             </label>
                                             <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.province || '-'}</label>
+                                            <label className={clsx(classes.label, classes.value)}>{person.address || '-'}</label>
                                         </div>
                                     </Grid>
                                 </Grid>
@@ -302,6 +306,7 @@ const PersonItemSkeleton: FC = () => {
 }
 
 export const Person: FC = () => {
+    const history = useHistory();
     const endDate = new Date();
     const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
     const initialDateRange: Range = { startDate, endDate, key: 'selection' };
@@ -315,10 +320,17 @@ export const Person: FC = () => {
     const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
 
+    const resExportData = useSelector(state => state.main.exportData);
+    const [waitExport, setWaitExport] = useState(false);
+
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
         { Header: t(langKeys.email), accessor: 'email' },
-        { Header: t(langKeys.phone), accessor: 'phone' }
+        { Header: t(langKeys.phone), accessor: 'phone' },
+        { Header: t(langKeys.department), accessor: 'region' },
+        { Header: t(langKeys.province), accessor: 'province' },
+        { Header: t(langKeys.firstConnection), accessor: 'firstcontact' },
+        { Header: t(langKeys.lastConnection), accessor: 'lastcontact' }
     ]
 
     useEffect(() => {
@@ -340,22 +352,64 @@ export const Person: FC = () => {
 
     const format = (date: Date) => date.toISOString().split('T')[0];
 
+    const triggerExportData = () => {
+        dispatch(exportData(getPersonExport(
+            {
+                startdate: format(dateRange.startDate!),
+                enddate: format(dateRange.endDate!),
+                sorts: {},
+                filters: filters
+            })));
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
-            <Grid container direction="row">
-                <Grid item xs={6}>
+            <Grid container direction="row" justifyContent="space-between">
+                <Grid item>
                     <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item>
                     <Grid container direction="row-reverse" spacing={1}>
                         <Button
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            onClick={() => { }}
+                            onClick={triggerExportData}
                             startIcon={<DownloadIcon />}
                         >
                             <Trans i18nKey={langKeys.download} />
+                        </Button>
+                        <div style={{ width: 9 }} />
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={personList.loading}
+                            onClick={() => {
+                                history.push({
+                                    pathname: paths.PERSON_DETAIL.resolve(0),
+                                    state: {},
+                                });
+                            }}
+                            startIcon={<AddIcon />}
+                        >
+                            <Trans i18nKey={langKeys.register} />
                         </Button>
                         <div style={{ width: 9 }} />
                         <Button
@@ -547,6 +601,8 @@ export const PersonDetail: FC = () => {
     const [tabIndex, setTabIndex] = useState('0');
     const domains = useSelector(state => state.person.editableDomains);
     const edit = useSelector(state => state.person.editPerson);
+    const executeResult = useSelector(state => state.main.execute);
+    const [waitLock, setWaitLock] = useState(false);
 
     const person = location.state as IPerson | null;
 
@@ -589,14 +645,14 @@ export const PersonDetail: FC = () => {
         } else if (edit.success) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
-                message: "Se guardo exitosamente",
+                message: t(langKeys.successful_edit),
                 show: true,
                 success: true,
             }));
         }
     }, [edit, dispatch]);
 
-    const { setValue, getValues } = useForm<IPerson>({
+    const { setValue, getValues, trigger } = useForm<IPerson>({
         defaultValues: person || {},
     });
 
@@ -615,6 +671,39 @@ export const PersonDetail: FC = () => {
             callback
         }))
     }
+
+    const handleLock = () => {
+        if (person) {
+            const callback = () => {
+                setValue('locked', !getValues('locked'));
+                trigger('locked');
+                dispatch(execute(insPersonUpdateLocked({...person, locked: !person.locked})));
+                dispatch(showBackdrop(true));
+                setWaitLock(true);
+            }
+    
+            dispatch(manageConfirmation({
+                visible: true,
+                question: getValues('locked') ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
+                callback
+            }))
+        }
+    }
+
+    useEffect(() => {
+        if (waitLock) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitLock(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitLock(false);
+            }
+        }
+    }, [executeResult, waitLock]);
 
     if (!person) {
         return <div />;
@@ -648,6 +737,15 @@ export const PersonDetail: FC = () => {
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <h1>{person.name}</h1>
                 <div style={{display: 'flex', gap: '10px'}}>
+                    <Button
+                        variant="contained"
+                        type="button"
+                        color="primary"
+                        startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
+                        onClick={handleLock}
+                    >
+                        {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
+                    </Button>
                     <Button
                         variant="contained"
                         type="button"
@@ -909,10 +1007,12 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
     const referrerList = useSelector(state => state.person.personReferrerList);
 
     useEffect(() => {
-        dispatch(getReferrerListByPerson(getReferrerByPersonBody(person.referringpersonid)));
-        return () => {
-            dispatch(resetGetReferrerListByPerson());
-        };
+        if (person.referringpersonid) {
+            dispatch(getReferrerListByPerson(getReferrerByPersonBody(person.referringpersonid)));
+            return () => {
+                dispatch(resetGetReferrerListByPerson());
+            };
+        }
     }, [dispatch, person]);
 
     return (
@@ -1315,12 +1415,14 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
     // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
     useEffect(() => {
-        dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
-        // dispatch(getAdditionalInfoByPerson(getAdditionalInfoByPersonBody(person.personid)));
-        return () => {
-            dispatch(resetGetChannelListByPerson());
-            // dispatch(resetgetAdditionalInfoByPerson());
-        };
+        if (person.personid && person.personid !== 0) {
+            dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
+            // dispatch(getAdditionalInfoByPerson(getAdditionalInfoByPersonBody(person.personid)));
+            return () => {
+                dispatch(resetGetChannelListByPerson());
+                // dispatch(resetgetAdditionalInfoByPerson());
+            };
+        }
     }, [dispatch, person]);
 
     return (
@@ -1357,7 +1459,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.lastCommunicationChannel} />}
-                            subtitle={`${person.communicationchannelname} - ${person.lastcommunicationchannelid}`}
+                            subtitle={`${person.communicationchannelname || ''} - ${person.lastcommunicationchannelid || ''}`}
                             m={1}
                         />
                     </Grid>
@@ -1420,14 +1522,16 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
     const conversations = useSelector(state => state.person.personTicketList);
 
     const fetchTickets = useCallback(() => {
-        const params = {
-            filters: {},
-            sorts: {},
-            take: 20,
-            skip: 20 * page,
-            offset: 0,
-        };
-        dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid, params)))
+        if (person.personid && person.personid !== 0) {
+            const params = {
+                filters: {},
+                sorts: {},
+                take: 20,
+                skip: 20 * page,
+                offset: 0,
+            };
+            dispatch(getTicketListByPerson(getTicketListByPersonBody(person.personid, params)))
+        }
     }, [page, person, dispatch]);
 
     useEffect(() => {

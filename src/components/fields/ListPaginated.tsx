@@ -7,10 +7,12 @@ import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@material-ui/
 import NoDataImg from 'images/no_data.png';
 import Input from '@material-ui/core/Input';
 import { Dictionary } from '@types';
+import { SearchField } from 'components';
 
 interface IColumns {
     Header: string;
     accessor: string;
+    filter?: boolean;
 }
 interface PaginatedListProps<T> {
     builder: (item: T, index: number) => React.ReactNode;
@@ -21,6 +23,7 @@ interface PaginatedListProps<T> {
     dateRange?: any;
     data: T[];
     columns: IColumns[];
+    filterGeneral?: boolean;
     currentPage: number;
     pageSize: number;
     totalItems: number;
@@ -51,6 +54,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
     loading: {
 
+    },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#FFF',
+        padding: `${theme.spacing(2)}px`,
+    },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
     },
 }));
 
@@ -88,6 +103,7 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         data,
         builder,
         columns,
+        filterGeneral = true,
         loading = false,
         pageSize,
         totalItems,
@@ -118,6 +134,26 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         }
     };
 
+    const setGlobalFilter = (value: string) => {
+        if (value === '') {
+            setFilters({});
+            onFilterChange && onFilterChange({});
+        }
+        else {
+            setFilters(columns.reduce((a: any, c: IColumns) => ({
+                ...a,
+                [c.accessor]: value
+            }), {}));
+            onPageChange(0);
+            onFilterChange && onFilterChange(
+                columns.reduce((a: any, c: IColumns) => ({
+                    ...a,
+                    [c.accessor]: {operator: 'or', value: value}
+                }), {})
+            );
+        }
+    }
+
     const skeletonData = (): React.ReactNode[] => {
         const data: React.ReactNode[] = [];
         for (let i = 0; i < 3; i++) data.push(skeleton?.(i));
@@ -128,21 +164,41 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
         setFilters({});
     }, [dateRange])
 
-    if (!loading && totalItems === 0) return <NoData />;
+    // if (!loading && totalItems === 0) return <NoData />;
 
     return (
         <Box width={1} style={{ height: '100%' }}>
-            <div style={{display: 'flex', gap: '20px'}}>
-                {loading ? null : columns.map((c, i) => (
-                    <div key={`filter_${i}`}>
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{c.Header}</Box>
-                        <Input
-                            value={filters[c.accessor] || ''}
-                            onKeyDown={keyPress}
-                            onChange={e => setFilters({...filters, [c.accessor]: e.target.value})}
+            {filterGeneral && (
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <SearchField
+                            disabled={loading}
+                            colorPlaceHolder='#FFF'
+                            handleChangeOther={setGlobalFilter}
+                            lazy
                         />
                     </div>
-                ))}
+                </Box>
+            )}
+            <div style={{display: 'flex', gap: '20px'}}>
+                {loading ? null : columns.map((c, i) => {
+                    if (c.filter) {
+                        return (
+                        <div key={`filter_${i}`}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{c.Header}</Box>
+                            <Input
+                                value={filters[c.accessor] || ''}
+                                onKeyDown={keyPress}
+                                onChange={e => setFilters({...filters, [c.accessor]: e.target.value})}
+                            />
+                        </div>
+                        )
+                    }
+                    else {
+                        return null
+                    }
+                })}
             </div>
             <List>
                 {loading && skeleton ? skeletonData() : data.map((e, i) => builder(e, i))}

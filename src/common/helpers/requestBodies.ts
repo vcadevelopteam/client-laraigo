@@ -1049,6 +1049,15 @@ export const getReferrerByPersonBody = (personId: ID) => ({
     },
 });
 
+export const insPersonUpdateLocked = ({personid, personcommunicationchannel, locked }: Dictionary) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
+    parameters: {
+        personid,
+        personcommunicationchannel,
+        locked
+    },
+});
+
 export const getChannelListByPersonBody = (personId: ID) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
     parameters: {
