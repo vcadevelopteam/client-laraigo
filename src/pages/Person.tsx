@@ -3,11 +3,11 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, getValuesFromDomain, uploadExcel, insPersonBody, insPersonCommunicationChannel } from 'common/helpers';
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -20,6 +20,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import BackupIcon from '@material-ui/icons/Backup';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
@@ -319,9 +321,12 @@ export const Person: FC = () => {
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
     const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
+    const domains = useSelector(state => state.person.editableDomains);
 
     const resExportData = useSelector(state => state.main.exportData);
+    const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
+    const [waitImport, setWaitImport] = useState(false);
 
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
@@ -332,6 +337,10 @@ export const Person: FC = () => {
         { Header: t(langKeys.firstConnection), accessor: 'firstcontact' },
         { Header: t(langKeys.lastConnection), accessor: 'lastcontact' }
     ]
+
+    useEffect(() => {
+        dispatch(getDomainsByTypename());
+    }, [])
 
     useEffect(() => {
         return () => {
@@ -379,6 +388,156 @@ export const Person: FC = () => {
         }
     }, [resExportData, waitExport]);
 
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            domains.value?.docTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`)}), {}),
+            {},
+            domains.value?.personGenTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`)}), {}),
+            domains.value?.personTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`)}), {}),
+            {},
+            {},
+            {},
+            {},
+            {},
+            domains.value?.genders.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`)}), {}),
+            domains.value?.educationLevels.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`)}), {}),
+            domains.value?.civilStatuses.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`)}), {}),
+            domains.value?.occupations.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`)}), {}),
+            domains.value?.groups.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            domains.value?.channelTypes.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            {},
+            {},
+            {}
+        ];
+        const header = [
+            'firstname',
+            'lastname',
+            'documenttype',
+            'documentnumber',
+            'persontype',
+            'type',
+            'phone',
+            'alternativephone',
+            'email',
+            'alternativeemail',
+            'birthday',
+            'gender',
+            'educationlevel',
+            'civilstatus',
+            'occupation',
+            'groups',
+            'channeltype',
+            'personcommunicationchannel',
+            'personcommunicationchannelowner',
+            'displayname'
+        ];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
+    }
+
+    const handleUpload = async (e: any) => {
+        const file = e.target?.files?.item(0);
+        if (file) {
+            let excel: any = await uploadExcel(file, undefined);
+            let data: IPersonImport[] = excel.filter((f: IPersonImport) => 
+                    (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.documenttype))
+                    && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.persontype))
+                    && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.type))
+                    && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.gender))
+                    && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.educationlevel))
+                    && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.civilstatus))
+                    && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.occupation))
+                    && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.groups))
+                    && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.channeltype))
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                    ...a,
+                    [`${d.documenttype}_${d.documentnumber}`]: {
+                        id: 0,
+                        firstname: d.firstname || null,
+                        lastname: d.lastname || null,
+                        documenttype: d.documenttype,
+                        documentnumber: d.documentnumber,
+                        persontype: d.persontype || null,
+                        type: d.type || '',
+                        phone: d.phone || null,
+                        alternativephone: d.alternativephone || null,
+                        email: d.email || null,
+                        alternativeemail: d.alternativeemail || null,
+                        birthday: d.birthday || null,
+                        gender: d.gender || null,
+                        educationlevel: d.educationlevel || null,
+                        civilstatus: d.civilstatus || null,
+                        occupation: d.occupation || null,
+                        groups: d.groups || null,
+                        status: 'ACTIVO',
+                        personstatus: 'ACTIVO',
+                        referringpersonid: 0,
+                        geographicalarea: null,
+                        age: null,
+                        sex: null,
+                        operation: 'INSERT',
+                        pcc: data
+                        .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
+                            && !['', null, undefined].includes(c.channeltype)
+                            && !['', null, undefined].includes(c.personcommunicationchannel)
+                        )
+                        .map((c: IPersonImport) => ({
+                            type: c.channeltype,
+                            personcommunicationchannel: c.personcommunicationchannel || null,
+                            personcommunicationchannelowner: c.personcommunicationchannelowner || null,
+                            displayname: c.displayname || null,
+                            status: 'ACTIVO',
+                            operation: 'INSERT'
+                        }))
+                    }
+                }), {});
+                Object.values(table).forEach((p: IPersonImport) => {
+                    dispatch(execute({
+                        header: insPersonBody({ ...p }),
+                        detail: [
+                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+                        ]
+                    }, true));
+                });
+                // dispatch(execute({
+                //     header: null,
+                //     detail: data.map((x: any) => insQuickreplies({
+                //         ...x,
+                //         description: x.summarize, 
+                //         quickreply: x.detail, 
+                //         status: x.status || 'ACTIVO', 
+                //         favorite: x.favorite || false,
+                //         classificationid: x.classificationid,
+                //         operation: "INSERT",
+                //         type: 'NINGUNO',
+                //         id: 0,
+                //     }))
+                // }, true));
+                setWaitImport(true)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                // fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeResult, waitImport])
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Grid container direction="row" justifyContent="space-between">
@@ -416,12 +575,33 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            startIcon={<DownloadReverseIcon color="secondary" />}
-                            onClick={() => { }}
+                            startIcon={<ListAltIcon color="secondary" />}
+                            onClick={handleTemplate}
                             style={{ backgroundColor: "#55BD84" }}
                         >
-                            <Trans i18nKey={langKeys.import} />
+                            <Trans i18nKey={langKeys.template} />
                         </Button>
+                        <div style={{ width: 9 }} />
+                        <input
+                            name="file"
+                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                            id="laraigo-upload-csv-file"
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={(e) => handleUpload(e)}
+                        />
+                        <label htmlFor="laraigo-upload-csv-file">
+                            <Button
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                disabled={personList.loading}
+                                startIcon={<BackupIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                <Trans i18nKey={langKeys.import} />
+                            </Button>
+                        </label>
                         <div style={{ width: 9 }} />
                         <DateRangePicker
                             open={openDateRangeModal}
@@ -622,7 +802,6 @@ export const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (domains.loading) return;
-        console.log(domains.value?.genders);
         if (domains.error === true) {
             dispatch(showSnackbar({
                 message: domains.message!,
