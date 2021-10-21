@@ -1,6 +1,7 @@
 import { uuidv4 } from "common/helpers";
 import React, { FC, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 
 const itemsFromBackend = [
     { id: uuidv4(), content: "First task" },
@@ -75,31 +76,15 @@ const CRM: FC = () => {
           >
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center"
-                  }}
-                  key={columnId}
-                >
-                  <h2>{column.name}</h2>
-                  <div style={{ margin: 8 }}>
-                    <Droppable droppableId={columnId} key={columnId}>
+                <DraggableLeadColumn title={column.name} key={index} snapshot={null}>
+                    <Droppable droppableId={columnId}>
                       {(provided, snapshot) => {
                         return (
                           <div
                             {...provided.droppableProps}
                             ref={provided.innerRef}
-                            style={{
-                              background: snapshot.isDraggingOver
-                                ? "lightblue"
-                                : "lightgrey",
-                              padding: 4,
-                              width: 250,
-                              minHeight: 500
-                            }}
                           >
+                            <DroppableLeadColumnList snapshot={snapshot}>
                             {column.items.map((item, index) => {
                               return (
                                 <Draggable
@@ -113,32 +98,24 @@ const CRM: FC = () => {
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        style={{
-                                          userSelect: "none",
-                                          padding: 16,
-                                          margin: "0 0 8px 0",
-                                          minHeight: "50px",
-                                          backgroundColor: snapshot.isDragging
-                                            ? "#263B4A"
-                                            : "#456C86",
-                                          color: "white",
-                                          ...provided.draggableProps.style
-                                        }}
                                       >
-                                        {item.content}
+                                        <DraggableLeadCardContent
+                                          lead={item.content}
+                                          snapshot={snapshot}
+                                        />
                                       </div>
                                     );
                                   }}
                                 </Draggable>
                               );
                             })}
+                            </DroppableLeadColumnList>
                             {provided.placeholder}
                           </div>
                         );
                       }}
                     </Droppable>
-                  </div>
-                </div>
+                </DraggableLeadColumn>
               );
             })}
           </DragDropContext>
