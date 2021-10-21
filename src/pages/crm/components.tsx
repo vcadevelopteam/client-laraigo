@@ -6,6 +6,8 @@ import { DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 
+const columnWidth = 275;
+
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
@@ -174,6 +176,8 @@ const useLeadColumnStyles = makeStyles(theme => ({
         margin: `0 ${theme.spacing(1)}px`,
         maxHeight: '100%',
         overflowY: 'hidden',
+        width: columnWidth,
+        maxWidth: columnWidth,
     },
     header: {
         display: 'flex',
@@ -263,7 +267,8 @@ interface LeadColumnListProps extends BoxProps {
 
 const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
-        width: 250,
+        width: 275,
+        maxWidth: 275,
         // backgroundColor: 'red',
         minHeight: 500,
     },
