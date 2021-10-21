@@ -1,8 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useCallback, useState } from 'react';
 import clsx from 'clsx';
-import { Box, BoxProps, IconButton, makeStyles } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
 import { DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
+import { langKeys } from 'lang/keys';
+import { Trans } from 'react-i18next';
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
@@ -11,7 +13,6 @@ interface LeadCardContentProps extends BoxProps {
 
 const useLeadCardStyles = makeStyles(theme => ({
     root: {
-        userSelect: 'contain',
         padding: 16,
         // margin: '0 0 8px 0',
         minHeight: '50px',
@@ -20,6 +21,13 @@ const useLeadCardStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
     },
     rootDragging: {
         opacity: .9,
@@ -65,22 +73,59 @@ const useLeadCardStyles = makeStyles(theme => ({
         fontSize: 12,
         fontWeight: 400,
     },
+    popoverPaper: {
+        maxWidth: 150,
+    }
 }));
 
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, ...boxProps }) => {
     const classes = useLeadCardStyles();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
     return (
         <Box {...boxProps} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
-                    <IconButton color="primary" size="small">
+                    <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
                         <Menu style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{
+                            className: classes.popoverPaper,
+                        }}
+                    >
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+                    </Popover>
                 </div>
-                <label className={classes.title}>Distribution</label>
-                <label className={classes.info}>S/ 19,800.00</label>
-                <label className={classes.info}>Gemini Furniture</label>
+                <span className={classes.title}>Distribution</span>
+                <span className={classes.info}>S/ 19,800.00</span>
+                <span className={classes.info}>Gemini Furniture</span>
                 <div className={classes.tagsRow}>
                     <div className={classes.tag}>
                         <div className={classes.tagCircle} style={{ backgroundColor: 'cyan' }} />
@@ -88,19 +133,19 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         <div className={classes.tagtext}>Information</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Design</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'violet' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Music</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blue' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Style</div>
                     </div>
                     <div className={classes.tag}>
                         <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
@@ -114,8 +159,10 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 }
 
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
+    /**default title value */
     title: React.ReactNode;
     snapshot: DraggableStateSnapshot | null;
+    titleOnChange?: (value: string) => void;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -127,7 +174,6 @@ const useLeadColumnStyles = makeStyles(theme => ({
         margin: `0 ${theme.spacing(1)}px`,
         maxHeight: '100%',
         overflowY: 'hidden',
-        // width: '100%',
     },
     header: {
         display: 'flex',
@@ -137,7 +183,14 @@ const useLeadColumnStyles = makeStyles(theme => ({
         width: '100%',
     },
     title: {
+        margin: '0.83em 0',
+    },
+    titleInput: {
+        fontSize: '1.5em',
         fontWeight: 500,
+    },
+    inputUnderline: {
+        display: 'none',
     },
     subHeader: {
         display: 'flex',
@@ -165,14 +218,28 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, titleOnChange, ...boxProps }) => {
     const classes = useLeadColumnStyles();
+    const [disableUnderline, setDisableUnderline] = useState(true);
+    // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header}>
-                    <h2 className={classes.title}>{title}</h2>
+                    <TextField
+                        defaultValue={title}
+                        className={classes.title}
+                        onBlur={() => setDisableUnderline(true)}
+                        onFocus={() => setDisableUnderline(false)}
+                        InputProps={{
+                            classes: {
+                                input: classes.titleInput,
+                            },
+                            disableUnderline,
+                        }}
+                        onChange={e => titleOnChange?.(e.target.value)}
+                    />
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
