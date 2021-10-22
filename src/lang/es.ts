@@ -693,6 +693,7 @@ const translation: LangKeys = {
     missing_header: 'Falta cabecera',
     invalid_parameter: 'Parámetro inválido',
     no_record_selected: 'Ningún registro seleccionado',
+    no_records_valid: 'No hay registros válidos',
     reporttype: 'Tipo de reporte',
     no_type_selected: 'Ningún tipo seleccionado',
     rundate: 'Fecha ejecución',
