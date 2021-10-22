@@ -31,7 +31,7 @@ export interface IPerson {
     sex: string; // edit
     gender?: string;
     genderdesc?: string;
-    birthday: string;
+    birthday: string | null;
     civilstatus?: string; // edit
     civilstatusdesc?: string; // edit
     address?: string;
@@ -57,6 +57,18 @@ export interface IPerson {
     createdate: string;
     changeby: string;
     changedate: string;
+
+}
+
+export interface IPersonCommunicationChannel {
+    channeltype: string;
+    personcommunicationchannel: string;
+    personcommunicationchannelowner: string;
+    displayname: string;
+}
+
+export interface IPersonImport extends IPerson, IPersonCommunicationChannel {
+    pcc: IPersonCommunicationChannel[];
 }
 
 export interface IPersonEdit {

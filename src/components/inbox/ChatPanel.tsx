@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
+import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
@@ -11,17 +11,21 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation } from 'common/helpers';
+import { insertClassificationConversation, insLead } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditArray, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import CachedIcon from '@material-ui/icons/Cached';
 
+const dataPriority = [
+    { option: 'high' },
+    { option: 'medium' },
+    { option: 'low' },
+]
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -401,6 +405,147 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         </DialogZyx>)
 }
 
+const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitInsLead, setWaitInsLead] = useState(false);
+
+    const insLeadRes = useSelector(state => state.main.execute);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        description: string;
+        expected_revenue: string;
+        priority: string;
+    }>();
+
+    useEffect(() => {
+        if (waitInsLead) {
+            if (!insLeadRes.loading && !insLeadRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            } else if (insLeadRes.error) {
+                const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            }
+        }
+    }, [insLeadRes, waitInsLead])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                description: '',
+                expected_revenue: '',
+                priority: ''
+            })
+            register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('priority', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+
+        const newLead: ILead = {
+            leadid: 0,
+            description: data.description,
+            type: 'NINGUNO',
+            status: 'ACTIVO',
+            expected_revenue: parseFloat(data.expected_revenue),
+            date_deadline: null,
+            tags: '',
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            priority: data.priority,
+            conversationid: ticketSelected?.conversationid!!,
+            columnid: 0,
+            index: 0,
+        }
+
+        dispatch(showBackdrop(true));
+        dispatch(execute(insLead(newLead, 'INSERT')))
+        setWaitInsLead(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.newlead)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.description)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('description')}
+                        error={errors?.description?.message}
+                        onChange={(value) => setValue('description', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.description)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('description')}
+                        error={errors?.description?.message}
+                        onChange={(value) => setValue('description', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                </div>
+                <FieldEdit
+                    label={t(langKeys.description)} // "Corporation"
+                    className="col-12"
+                    valueDefault={getValues('description')}
+                    error={errors?.description?.message}
+                    onChange={(value) => setValue('description', value)}
+                />
+                <FieldEdit
+                    label={t(langKeys.expected_revenue)} // "Corporation"
+                    className="col-12"
+                    valueDefault={getValues('expected_revenue')}
+                    error={errors?.expected_revenue?.message}
+                    type="number"
+                    onChange={(value) => setValue('expected_revenue', value)}
+                />
+                <FieldSelect
+                    label={t(langKeys.priority)}
+                    className="col-12"
+                    valueDefault={getValues('priority')}
+                    onChange={(value) => setValue('priority', value ? value.option : '')}
+                    error={errors?.priority?.message}
+                    data={dataPriority}
+                    optionDesc="option"
+                    optionValue="option"
+                    uset
+                    prefixTranslation="priority_"
+                />
+            </div>
+        </DialogZyx>)
+}
+
 const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -544,6 +689,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const closeTicket = () => setOpenModalCloseticket(true);
 
@@ -609,6 +755,17 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+                        setOpenModalLead(true)
+                    }}>
+                        <ListItemIcon>
+                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.lead)}
+                    </MenuItem>
+                }
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}
@@ -622,7 +779,14 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 openModal={openModalHSM}
                 setOpenModal={setOpenModalHSM}
             />
-            <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
+            <DialogTipifications
+                openModal={openModalTipification}
+                setOpenModal={setOpenModalTipification}
+            />
+            <DialogLead
+                openModal={openModalLead}
+                setOpenModal={setOpenModalLead}
+            />
         </>
     )
 }

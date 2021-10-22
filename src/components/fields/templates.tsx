@@ -284,7 +284,6 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
                 onBlur={(e) => {
                     onBlur && onBlur(e.target.value);
                 }}
-                inputProps={inputProps}
                 InputProps={InputProps}
             />
         </div>

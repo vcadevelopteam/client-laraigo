@@ -23,15 +23,22 @@ const translation: LangKeys = {
     type_service: 'Tipo de Servicio',
     type_service_plural: 'Tipos de Servicio',
 
+    lead: 'Oportunidad',
+    lead_plural: 'Oportunidades',
     model: 'Modelo',
     model_plural: 'Modelos',
+    newlead: 'Nueva oportunidad',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
+    expected_revenue: 'Ingreso esperado',
 
     client_message: 'Mensajes del Cliente',
     bot_message: 'Mensajes del Bot',
     distributionTMO: "Distribución del TMO Asesor",
+    priority_high: 'Alta',
+    priority_medium: 'Media',
+    priority_low: 'Baja',
     distributionTME: "Distribución del TME Asesor",
     sentmessages: "Mensajes Enviados",
     failedmessages: "Mensajes fallidos",

@@ -3,11 +3,11 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonConversation, IPersonDomains, IPersonReferrer } from "@types";
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, getValuesFromDomain, uploadExcel, insPersonBody, insPersonCommunicationChannel } from 'common/helpers';
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, DownloadReverseIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -20,6 +20,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import BackupIcon from '@material-ui/icons/Backup';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
@@ -254,14 +256,14 @@ const PersonItem: FC<PersonItemProps> = ({ person }) => {
                                     <Grid container direction="column">
                                         <label><Trans i18nKey={langKeys.firstConnection} />:</label>
                                         <div style={{ height: 4 }} />
-                                        <label>{person.firstcontact || "-"}</label>
+                                        <label>{person.firstcontact ? new Date(person.firstcontact).toLocaleString() : "-"}</label>
                                     </Grid>
                                 </Grid>
                                 <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
                                     <Grid container direction="column">
                                         <label><Trans i18nKey={langKeys.lastConnection} />:</label>
                                         <div style={{ height: 4 }} />
-                                        <label>{person.lastcontact || "-"}</label>
+                                        <label>{person.lastcontact ? new Date(person.lastcontact).toLocaleString() : "-"}</label>
                                     </Grid>
                                 </Grid>
                                 <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />
@@ -319,9 +321,12 @@ export const Person: FC = () => {
     const [dateRange, setDateRange] = useState<Range>(initialDateRange);
     const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
+    const domains = useSelector(state => state.person.editableDomains);
 
     const resExportData = useSelector(state => state.main.exportData);
+    const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
+    const [waitImport, setWaitImport] = useState(false);
 
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
@@ -334,12 +339,16 @@ export const Person: FC = () => {
     ]
 
     useEffect(() => {
+        dispatch(getDomainsByTypename());
+    }, [])
+
+    useEffect(() => {
         return () => {
             dispatch(resetGetPersonListPaginated());
         };
     }, [dispatch]);
-
-    useEffect(() => {
+    
+    const fetchData = () => {
         dispatch(getPersonListPaginated(getPaginatedPerson({
             startdate: format(dateRange.startDate!),
             enddate: format(dateRange.endDate!),
@@ -348,6 +357,10 @@ export const Person: FC = () => {
             sorts: {},
             filters: filters,
         })));
+    }
+
+    useEffect(() => {
+        fetchData();
     }, [dispatch, pageSize, page, dateRange, filters]);
 
     const format = (date: Date) => date.toISOString().split('T')[0];
@@ -379,6 +392,142 @@ export const Person: FC = () => {
         }
     }, [resExportData, waitExport]);
 
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            domains.value?.personGenTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`) }), {}),
+            domains.value?.personTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            {},
+            {},
+            {},
+            {},
+            domains.value?.genders.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.educationLevels.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            {},
+            {},
+            {}
+        ];
+        const header = [
+            'firstname',
+            'lastname',
+            'documenttype',
+            'documentnumber',
+            'persontype',
+            'type',
+            'phone',
+            'alternativephone',
+            'email',
+            'alternativeemail',
+            'birthday',
+            'gender',
+            'educationlevel',
+            'civilstatus',
+            'occupation',
+            'groups',
+            'channeltype',
+            'personcommunicationchannel',
+            'personcommunicationchannelowner',
+            'displayname'
+        ];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
+    }
+
+    const handleUpload = async (e: any) => {
+        const file = e.target?.files?.item(0);
+        if (file) {
+            let excel: any = await uploadExcel(file, undefined);
+            let data: IPersonImport[] = excel.filter((f: IPersonImport) =>
+                (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
+                && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
+                && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
+                && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
+                && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
+                && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
+                && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
+                && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
+                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+            );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
+                    ...a,
+                    [`${d.documenttype}_${d.documentnumber}`]: {
+                        id: 0,
+                        firstname: d.firstname || null,
+                        lastname: d.lastname || null,
+                        documenttype: d.documenttype,
+                        documentnumber: d.documentnumber,
+                        persontype: d.persontype || null,
+                        type: d.type || '',
+                        phone: d.phone || null,
+                        alternativephone: d.alternativephone || null,
+                        email: d.email || null,
+                        alternativeemail: d.alternativeemail || null,
+                        birthday: d.birthday || null,
+                        gender: d.gender || null,
+                        educationlevel: d.educationlevel || null,
+                        civilstatus: d.civilstatus || null,
+                        occupation: d.occupation || null,
+                        groups: d.groups || null,
+                        status: 'ACTIVO',
+                        personstatus: 'ACTIVO',
+                        referringpersonid: 0,
+                        geographicalarea: null,
+                        age: null,
+                        sex: null,
+                        operation: 'INSERT',
+                        pcc: data
+                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
+                                && !['', null, undefined].includes(c.channeltype)
+                                && !['', null, undefined].includes(c.personcommunicationchannel)
+                            )
+                            .map((c: IPersonImport) => ({
+                                type: c.channeltype,
+                                personcommunicationchannel: c.personcommunicationchannel || null,
+                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
+                                displayname: c.displayname || null,
+                                status: 'ACTIVO',
+                                operation: 'INSERT'
+                            }))
+                    }
+                }), {});
+                Object.values(table).forEach((p: IPersonImport) => {
+                    dispatch(execute({
+                        header: insPersonBody({ ...p }),
+                        detail: [
+                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+                        ]
+                    }, true));
+                });
+                setWaitImport(true)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.quickreplies).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeResult, waitImport])
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Grid container direction="row" justifyContent="space-between">
@@ -391,8 +540,8 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            onClick={triggerExportData}
                             startIcon={<DownloadIcon />}
+                            onClick={triggerExportData}
                         >
                             <Trans i18nKey={langKeys.download} />
                         </Button>
@@ -401,13 +550,14 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
+                            startIcon={<AddIcon color="secondary" />}
                             onClick={() => {
                                 history.push({
                                     pathname: paths.PERSON_DETAIL.resolve(0),
                                     state: {},
                                 });
                             }}
-                            startIcon={<AddIcon />}
+                            style={{ backgroundColor: "#55BD84" }}
                         >
                             <Trans i18nKey={langKeys.register} />
                         </Button>
@@ -416,12 +566,33 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            startIcon={<DownloadReverseIcon color="secondary" />}
-                            onClick={() => { }}
+                            startIcon={<ListAltIcon color="secondary" />}
+                            onClick={handleTemplate}
                             style={{ backgroundColor: "#55BD84" }}
                         >
-                            <Trans i18nKey={langKeys.import} />
+                            <Trans i18nKey={langKeys.template} />
                         </Button>
+                        <div style={{ width: 9 }} />
+                        <input
+                            name="file"
+                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                            id="laraigo-upload-csv-file"
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={(e) => handleUpload(e)}
+                        />
+                        <label htmlFor="laraigo-upload-csv-file">
+                            <Button
+                                variant="contained"
+                                component="span"
+                                color="primary"
+                                disabled={personList.loading}
+                                startIcon={<BackupIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >
+                                <Trans i18nKey={langKeys.import} />
+                            </Button>
+                        </label>
                         <div style={{ width: 9 }} />
                         <DateRangePicker
                             open={openDateRangeModal}
@@ -592,6 +763,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
     },
 }));
 
+
 export const PersonDetail: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -604,13 +776,50 @@ export const PersonDetail: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitLock, setWaitLock] = useState(false);
 
+    const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
+
+    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
+        defaultValues: { ...person } || {},
+    });
+
 
     useEffect(() => {
         console.log(person);
         if (!person) {
             history.push(paths.PERSON);
         } else {
+            if (!person.personid) {
+                person.corpdesc = user?.corpdesc || '';
+                person.orgdesc = user?.orgdesc || '';
+                person.personid = 0;
+                person.groups = '';
+                person.status = 'ACTIVO';
+                person.type = '';
+                person.persontype = '';
+                person.personstatus = '';
+                person.phone = '';
+                person.email = '';
+                person.birthday = null;
+                person.alternativephone = '';
+                person.alternativeemail = '';
+                person.documenttype = '';
+                person.documentnumber = '';
+                person.firstname = '';
+                person.lastname = '';
+                person.sex = '';
+                person.gender = '';
+                person.civilstatus = '';
+                person.occupation = '';
+                person.educationlevel = '';
+                person.referringpersonid = 0;
+
+                register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('personcommunicationchannel', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('personcommunicationchannelowner', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('channeltype', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+            }
             dispatch(getDomainsByTypename());
         }
 
@@ -622,7 +831,6 @@ export const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (domains.loading) return;
-        console.log(domains.value?.genders);
         if (domains.error === true) {
             dispatch(showSnackbar({
                 message: domains.message!,
@@ -634,7 +842,7 @@ export const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (edit.loading) return;
-        console.log(edit);
+
         if (edit.error === true) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
@@ -649,27 +857,44 @@ export const PersonDetail: FC = () => {
                 show: true,
                 success: true,
             }));
+            if (!person?.personid) {
+                history.push(paths.PERSON);
+            }
         }
     }, [edit, dispatch]);
 
-    const { setValue, getValues, trigger } = useForm<IPerson>({
-        defaultValues: person || {},
-    });
 
-    const handleEditPerson = () => {
-        const values = getValues();
-        const callback = () => {
-            const payload = editPersonBody(values);
-            console.log("handleEditPerson", payload);
-            dispatch(editPerson(payload));
-            dispatch(showBackdrop(true));
+    const handleEditPerson = async () => {
+        const allOk = await trigger(); //para q valide el formulario
+        if (allOk) {
+            const values = getValues();
+            const callback = () => {
+                const payload = editPersonBody(values);
+                console.log("handleEditPerson", payload);
+
+                dispatch(editPerson(payload.parameters.personid ? payload : {
+                    header: editPersonBody({ ...person, ...values }),
+                    detail: [
+                        insPersonCommunicationChannel({
+                            personcommunicationchannel: values.personcommunicationchannel,
+                            personcommunicationchannelowner: values.personcommunicationchannelowner,
+                            displayname: `${values.firstname} ${values.lastname}`,
+                            type: values.channeltype,
+                            operation: 'INSERT',
+                            status: 'ACTIVO'
+                        })
+                    ]
+                }, !payload.parameters.personid));
+
+                dispatch(showBackdrop(true));
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
     }
 
     const handleLock = () => {
@@ -677,11 +902,11 @@ export const PersonDetail: FC = () => {
             const callback = () => {
                 setValue('locked', !getValues('locked'));
                 trigger('locked');
-                dispatch(execute(insPersonUpdateLocked({...person, locked: !person.locked})));
+                dispatch(execute(insPersonUpdateLocked({ ...person, locked: !person.locked })));
                 dispatch(showBackdrop(true));
                 setWaitLock(true);
             }
-    
+
             dispatch(manageConfirmation({
                 visible: true,
                 question: getValues('locked') ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
@@ -736,16 +961,18 @@ export const PersonDetail: FC = () => {
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <h1>{person.name}</h1>
-                <div style={{display: 'flex', gap: '10px'}}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
-                        onClick={handleLock}
-                    >
-                        {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
-                    </Button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {!!person.personid &&
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
+                            onClick={handleLock}
+                        >
+                            {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
+                        </Button>
+                    }
                     <Button
                         variant="contained"
                         type="button"
@@ -785,26 +1012,34 @@ export const PersonDetail: FC = () => {
                                 label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                                label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
-                                value="1"
-                            />
+                            {!!person.personid && 
+                                    <Tab
+                                        className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
+                                        label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
+                                        value="1"
+                                    />
+                            }
+                            {!!person.personid && 
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.audit} />}
                                 value="2"
                             />
+                            }
+                            {!!person.personid && 
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.conversation} count={2} />}
                                 value="3"
                             />
+                            }
+                            {!!person.personid && 
                             <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.opportunity} count={2} />}
                                 value="4"
                             />
+                            }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.claim} count={2} />}
@@ -818,6 +1053,7 @@ export const PersonDetail: FC = () => {
                             setValue={setValue}
                             person={person}
                             domains={domains}
+                            errors={errors}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
@@ -840,93 +1076,95 @@ export const PersonDetail: FC = () => {
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
-                <div className={classes.profile}>
-                    <label className={classes.label}>Overview</label>
-                    <div style={{ height: 16 }} />
-                    <Photo src={person.imageurldef} radius={50} />
-                    <h2>{person.name}</h2>
-                    <Property
-                        icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.phone} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.phone)}
-                                defaultValue={person.phone}
-                                onChange={e => setValue('phone', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<EMailInboxIcon />}
-                        title={<Trans i18nKey={langKeys.email} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.email)}
-                                defaultValue={person.email}
-                                onChange={e => setValue('email', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1} />
-                    <Property
-                        icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.document} />}
-                        subtitle={(
-                            <DomainSelectField
-                                defaultValue={person.documenttype}
-                                onChange={(value) => {
-                                    setValue('documenttype', value);
-                                }}
-                                loading={domains.loading}
-                                data={domains.value?.docTypes || []}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.docNumber} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.docNumber)}
-                                defaultValue={person.documentnumber}
-                                onChange={e => setValue('documentnumber', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<GenderIcon />}
-                        title={<Trans i18nKey={langKeys.gender} />}
-                        subtitle={(
-                            <DomainSelectField
-                                defaultValue={person.gender}
-                                onChange={(value, desc) => {
-                                    setValue('gender', value);
-                                    setValue('genderdesc', desc)
-                                }}
-                                loading={domains.loading}
-                                data={domains.value?.genders || []}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<BuildingIcon />}
-                        title={<Trans i18nKey={langKeys.organization} />}
-                        subtitle={person.orgdesc}
-                        mt={1}
-                        mb={1}
-                    />
-                </div>
+                {!!person.personid &&
+                    <div className={classes.profile}>
+                        <label className={classes.label}>Overview</label>
+                        <div style={{ height: 16 }} />
+                        <Photo src={person.imageurldef} radius={50} />
+                        <h2>{person.name}</h2>
+                        <Property
+                            icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.phone} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.phone)}
+                                    defaultValue={person.phone}
+                                    onChange={e => setValue('phone', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<EMailInboxIcon />}
+                            title={<Trans i18nKey={langKeys.email} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.email)}
+                                    defaultValue={person.email}
+                                    onChange={e => setValue('email', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1} />
+                        <Property
+                            icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.document} />}
+                            subtitle={(
+                                <DomainSelectField
+                                    defaultValue={person.documenttype}
+                                    onChange={(value) => {
+                                        setValue('documenttype', value);
+                                    }}
+                                    loading={domains.loading}
+                                    data={domains.value?.docTypes || []}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.docNumber} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.docNumber)}
+                                    defaultValue={person.documentnumber}
+                                    onChange={e => setValue('documentnumber', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<GenderIcon />}
+                            title={<Trans i18nKey={langKeys.gender} />}
+                            subtitle={(
+                                <DomainSelectField
+                                    defaultValue={person.gender}
+                                    onChange={(value, desc) => {
+                                        setValue('gender', value);
+                                        setValue('genderdesc', desc)
+                                    }}
+                                    loading={domains.loading}
+                                    data={domains.value?.genders || []}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<BuildingIcon />}
+                            title={<Trans i18nKey={langKeys.organization} />}
+                            subtitle={person.orgdesc}
+                            mt={1}
+                            mb={1}
+                        />
+                    </div>
+                }
             </div>
         </div>
     );
@@ -997,11 +1235,12 @@ const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
 interface GeneralInformationTabProps {
     person: IPerson;
     getValues: UseFormGetValues<IPerson>;
-    setValue: UseFormSetValue<IPerson>;
+    setValue: any;
     domains: IObjectState<IPersonDomains>;
+    errors: any;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const referrerList = useSelector(state => state.person.personReferrerList);
@@ -1034,20 +1273,94 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 m={1}
                             />
                         </Grid>
+
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.firstname} />}
-                                subtitle={person.firstname}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.firstname)}
+                                        defaultValue={person.firstname}
+                                        onChange={e => setValue('firstname', e.target.value)}
+                                        error={errors?.firstname?.message ? true : false}
+                                        helperText={errors?.firstname?.message || null}
+                                    />
+                                )}
+
                                 m={1}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.lastname} />}
-                                subtitle={person.lastname}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.lastname)}
+                                        defaultValue={person.lastname}
+                                        onChange={e => setValue('lastname', e.target.value)}
+                                        error={errors?.lastname?.message ? true : false}
+                                        helperText={errors?.lastname?.message || null}
+                                    />
+                                )}
                                 m={1}
                             />
                         </Grid>
+
+                        {!person.personid &&
+                            <>
+                                <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                                    <Property
+                                        title={<Trans i18nKey={langKeys.personIdentifier} />}
+                                        subtitle={(
+                                            <TextField
+                                                fullWidth
+                                                placeholder={t(langKeys.personIdentifier)}
+                                                onChange={e => setValue('personcommunicationchannel', e.target.value)}
+                                                error={errors?.personcommunicationchannel?.message ? true : false}
+                                                helperText={errors?.personcommunicationchannel?.message || null}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                                    <Property
+                                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
+                                        subtitle={(
+                                            <TextField
+                                                fullWidth
+                                                placeholder={t(langKeys.internalIdentifier)}
+                                                onChange={e => setValue('personcommunicationchannelowner', e.target.value)}
+                                                error={!!errors?.personcommunicationchannelowner?.message}
+                                                helperText={errors?.personcommunicationchannelowner?.message || null}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                                    <Property
+                                        title={<Trans i18nKey={langKeys.communicationchannel} />}
+                                        subtitle={(
+                                            <FieldSelect
+                                                onChange={(value) => {
+                                                    setValue('channeltype', value?.domainvalue);
+                                                }}
+                                                loading={domains.loading}
+                                                data={domains.value?.channelTypes || []}
+                                                optionValue="domainvalue"
+                                                optionDesc="domaindesc"
+                                                error={errors?.channeltype?.message}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                            </>
+                        }
+
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.fullname} />}
@@ -1060,7 +1373,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.document} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.documenttype}
                                         onChange={(value) => {
                                             setValue('documenttype', value?.domainvalue);
@@ -1094,7 +1407,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.personType} />}
                                 subtitle={(
                                     <FieldSelect
-                                    uset={true}  
+                                        uset={true}
                                         valueDefault={person.persontype}
                                         onChange={(value) => {
                                             setValue('persontype', value?.domainvalue);
@@ -1114,7 +1427,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.type} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.type}
                                         onChange={(value) => {
                                             setValue('type', value?.domainvalue);
@@ -1205,7 +1518,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.gender} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.gender}
                                         onChange={(value) => {
                                             setValue('gender', value?.domainvalue);
@@ -1226,7 +1539,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.educationLevel} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.educationlevel}
                                         onChange={(value) => {
                                             setValue('educationlevel', value?.domainvalue);

@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1644,13 +1644,38 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
     },
 ]);
 
-export const editPersonBody = (person: IPerson): IRequestBody => ({
+export const insPersonBody = (person: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS',
     parameters: {
         ...person,
         corpid: null,
         orgid: null,
+    },
+});
+
+export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSONCOMMUNICATIONCHANNEL_INS',
+    parameters: {
+        ...pcc,
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const editPersonBody = (person: IPerson): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
         id: person.personid,
-        operation: 'UPDATE',
+        operation: person.personid ? 'UPDATE' : 'INSERT',
+    },
+});
+
+export const insLead = (lead: ILead, operation: string): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        operation
     },
 });

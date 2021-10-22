@@ -240,13 +240,13 @@ const InfoTab: React.FC = () => {
                 {person?.firstcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{person?.firstcontact}</div>
+                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
                     </div>
                 </div>}
                 {person?.lastcontact && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{person?.lastcontact}</div>
+                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
                     </div>
                 </div>}
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
