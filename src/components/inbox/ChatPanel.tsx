@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
+import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
@@ -11,7 +11,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation } from 'common/helpers';
+import { insertClassificationConversation, insLead } from 'common/helpers';
 import { execute } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
@@ -408,14 +408,10 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
 const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [waitReassign, setWaitReassign] = useState(false);
+    const [waitInsLead, setWaitInsLead] = useState(false);
 
-    // const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
-    const multiData = useSelector(state => state.main.multiData);
+    const insLeadRes = useSelector(state => state.main.execute);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const userType = useSelector(state => state.inbox.userType);
-    const agentSelected = useSelector(state => state.inbox.agentSelected);
-    const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -424,29 +420,20 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     }>();
 
     useEffect(() => {
-        // if (waitReassign) {
-        //     if (!reassigningRes.loading && !reassigningRes.error) {
-        //         dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
-        //         setOpenModal(false);
-        //         dispatch(showBackdrop(false));
-        //         setWaitReassign(false);
-
-        //         dispatch(emitEvent({
-        //             event: 'reassignTicket',
-        //             data: {
-        //                 ...ticketSelected,
-        //                 userid: userType === "AGENT" ? 0 : agentSelected?.userid,
-        //                 newuserid: getValues('newUserId') || 3,
-        //             }
-        //         }));
-
-        //     } else if (reassigningRes.error) {
-        //         dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
-        //         dispatch(showBackdrop(false));
-        //         setWaitReassign(false);
-        //     }
-        // }
-    }, [reassigningRes, waitReassign])
+        if (waitInsLead) {
+            if (!insLeadRes.loading && !insLeadRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            } else if (insLeadRes.error) {
+                const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            }
+        }
+    }, [insLeadRes, waitInsLead])
 
     useEffect(() => {
         if (openModal) {
@@ -455,34 +442,38 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 expected_revenue: '',
                 priority: ''
             })
-            register('description');
-            register('expected_revenue');
-            register('priority');
+            register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('priority', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        // if (data.newUserId === 0 && !data.newUserGroup) {
-        //     dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
-        //     return;
-        // }
-        // const dd: IReassignicketParams = {
-        //     ...ticketSelected!!,
-        //     ...data,
-        //     newUserId: data.newUserId || 3,
-        //     newConversation: true,
-        //     wasanswered: true
-        // }
-        // dispatch(reassignTicket(dd));
-        // dispatch(showBackdrop(true));
-        // setWaitReassign(true)
+        
+        const newLead: ILead = {
+            leadid: 0,
+            description: data.description,
+            type: 'NINGUNO',
+            status: 'ACTIVO',
+            expected_revenue: parseFloat(data.expected_revenue),
+            date_deadline: null,
+            tags: '',
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            priority: data.priority,
+            conversationid: ticketSelected?.conversationid!!,
+            columnid: 0,
+            index: 0,
+        }
 
+        dispatch(showBackdrop(true));
+        dispatch(execute(insLead(newLead, 'INSERT')))
+        setWaitInsLead(true)
     });
 
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.reassign_ticket)}
+            title={t(langKeys.newlead)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setOpenModal(false)}
@@ -492,14 +483,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             <div className="row-zyx">
                 <FieldEdit
                     label={t(langKeys.description)} // "Corporation"
-                    className="col-6"
+                    className="col-12"
                     valueDefault={getValues('description')}
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
                 <FieldEdit
                     label={t(langKeys.expected_revenue)} // "Corporation"
-                    className="col-6"
+                    className="col-12"
                     valueDefault={getValues('expected_revenue')}
                     error={errors?.expected_revenue?.message}
                     type="number"
@@ -509,7 +500,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     label={t(langKeys.priority)}
                     className="col-12"
                     valueDefault={getValues('priority')}
-                    onChange={(value) => setValue('priority', value ? value.domainvalue : '')}
+                    onChange={(value) => setValue('priority', value ? value.option : '')}
                     error={errors?.priority?.message}
                     data={dataPriority}
                     optionDesc="option"

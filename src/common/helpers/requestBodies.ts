@@ -1666,15 +1666,13 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     method: 'UFN_PERSON_INS',
     parameters: {
         ...person,
-        corpid: null,
-        orgid: null,
         id: person.personid,
-        operation: 'UPDATE',
+        operation: person.personid ? 'UPDATE' : 'INSERT',
     },
 });
 
 export const insLead = (lead: ILead, operation: string): IRequestBody => ({
-    method: 'UFN_PERSON_INS',
+    method: 'UFN_LEAD_INS',
     parameters: {
         ...lead,
         id: lead.leadid,

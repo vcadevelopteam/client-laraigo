@@ -392,21 +392,21 @@ export const Person: FC = () => {
         const data = [
             {},
             {},
-            domains.value?.docTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`)}), {}),
+            domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
-            domains.value?.personGenTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`)}), {}),
-            domains.value?.personTypes.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`)}), {}),
-            {},
-            {},
+            domains.value?.personGenTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_persontype_${d.domaindesc?.toLowerCase()}`) }), {}),
+            domains.value?.personTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_personlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
             {},
             {},
             {},
-            domains.value?.genders.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`)}), {}),
-            domains.value?.educationLevels.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`)}), {}),
-            domains.value?.civilStatuses.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`)}), {}),
-            domains.value?.occupations.reduce((a,d) => ({...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`)}), {}),
-            domains.value?.groups.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
-            domains.value?.channelTypes.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            {},
+            {},
+            domains.value?.genders.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_gender_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.educationLevels.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_educationlevel_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.civilStatuses.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_civilstatus_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.occupations.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_ocupation_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.groups.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            domains.value?.channelTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
             {},
             {},
             {}
@@ -440,17 +440,17 @@ export const Person: FC = () => {
         const file = e.target?.files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
-            let data: IPersonImport[] = excel.filter((f: IPersonImport) => 
-                    (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.documenttype))
-                    && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.persontype))
-                    && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.type))
-                    && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.gender))
-                    && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.educationlevel))
-                    && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.civilstatus))
-                    && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domainvalue}), {})).includes('' + f.occupation))
-                    && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.groups))
-                    && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({...a, [d.domainvalue]: d.domaindesc}), {})).includes('' + f.channeltype))
-                );
+            let data: IPersonImport[] = excel.filter((f: IPersonImport) =>
+                (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
+                && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
+                && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
+                && (f.gender === undefined || Object.keys(domains.value?.genders.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.gender))
+                && (f.educationlevel === undefined || Object.keys(domains.value?.educationLevels.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.educationlevel))
+                && (f.civilstatus === undefined || Object.keys(domains.value?.civilStatuses.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.civilstatus))
+                && (f.occupation === undefined || Object.keys(domains.value?.occupations.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.occupation))
+                && (f.groups === undefined || Object.keys(domains.value?.groups.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.groups))
+                && (f.channeltype === undefined || Object.keys(domains.value?.channelTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.channeltype))
+            );
             if (data.length > 0) {
                 dispatch(showBackdrop(true));
                 let table: Dictionary = data.reduce((a: any, d: IPersonImport) => ({
@@ -481,18 +481,18 @@ export const Person: FC = () => {
                         sex: null,
                         operation: 'INSERT',
                         pcc: data
-                        .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
-                            && !['', null, undefined].includes(c.channeltype)
-                            && !['', null, undefined].includes(c.personcommunicationchannel)
-                        )
-                        .map((c: IPersonImport) => ({
-                            type: c.channeltype,
-                            personcommunicationchannel: c.personcommunicationchannel || null,
-                            personcommunicationchannelowner: c.personcommunicationchannelowner || null,
-                            displayname: c.displayname || null,
-                            status: 'ACTIVO',
-                            operation: 'INSERT'
-                        }))
+                            .filter((c: IPersonImport) => `${c.documenttype}_${c.documentnumber}` === `${d.documenttype}_${d.documentnumber}`
+                                && !['', null, undefined].includes(c.channeltype)
+                                && !['', null, undefined].includes(c.personcommunicationchannel)
+                            )
+                            .map((c: IPersonImport) => ({
+                                type: c.channeltype,
+                                personcommunicationchannel: c.personcommunicationchannel || null,
+                                personcommunicationchannelowner: c.personcommunicationchannelowner || null,
+                                displayname: c.displayname || null,
+                                status: 'ACTIVO',
+                                operation: 'INSERT'
+                            }))
                     }
                 }), {});
                 Object.values(table).forEach((p: IPersonImport) => {
@@ -772,6 +772,7 @@ const usePersonDetailStyles = makeStyles(theme => ({
     },
 }));
 
+
 export const PersonDetail: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
@@ -786,11 +787,45 @@ export const PersonDetail: FC = () => {
 
     const person = location.state as IPerson | null;
 
+    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
+        defaultValues: { ...person } || {},
+    });
+
+
     useEffect(() => {
         console.log(person);
         if (!person) {
             history.push(paths.PERSON);
         } else {
+            if (!person.personid) {
+                person.personid = 0;
+                person.groups = '';
+                person.status = 'ACTIVO';
+                person.type = '';
+                person.persontype = '';
+                person.personstatus = '';
+                person.phone = '';
+                person.email = '';
+                person.birthday = null;
+                person.alternativephone = '';
+                person.alternativeemail = '';
+                person.documenttype = '';
+                person.documentnumber = '';
+                person.firstname = '';
+                person.lastname = '';
+                person.sex = '';
+                person.gender = '';
+                person.civilstatus = '';
+                person.occupation = '';
+                person.educationlevel = '';
+                person.referringpersonid = 0;
+                // person.personcommunicationchannel = '';
+                // person.personcommunicationchannelowner = '';
+
+                register('personcommunicationchannel', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('personcommunicationchannelowner', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('channeltype', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+            }
             dispatch(getDomainsByTypename());
         }
 
@@ -813,7 +848,7 @@ export const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (edit.loading) return;
-        console.log(edit);
+        
         if (edit.error === true) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
@@ -828,27 +863,44 @@ export const PersonDetail: FC = () => {
                 show: true,
                 success: true,
             }));
+            if (!person?.personid) {
+                history.push(paths.PERSON);
+            }
         }
     }, [edit, dispatch]);
 
-    const { setValue, getValues, trigger } = useForm<IPerson>({
-        defaultValues: person || {},
-    });
 
-    const handleEditPerson = () => {
-        const values = getValues();
-        const callback = () => {
-            const payload = editPersonBody(values);
-            console.log("handleEditPerson", payload);
-            dispatch(editPerson(payload));
-            dispatch(showBackdrop(true));
+    const handleEditPerson = async () => {
+        const allOk = await trigger(); //para q valide el formulario
+        if (allOk) {
+            const values = getValues();
+            const callback = () => {
+                const payload = editPersonBody(values);
+                console.log("handleEditPerson", payload);
+
+                dispatch(editPerson(payload.parameters.personid ? payload : {
+                    header: editPersonBody({ ...person, ...values }),
+                    detail: [
+                        insPersonCommunicationChannel({
+                            personcommunicationchannel: values.personcommunicationchannel,
+                            personcommunicationchannelowner: values.personcommunicationchannelowner,
+                            displayname: `${values.firstname} ${values.lastname}`,
+                            type: values.channeltype,
+                            operation: 'INSERT',
+                            status: 'ACTIVO'
+                        })
+                    ]
+                }, !payload.parameters.personid));
+
+                dispatch(showBackdrop(true));
+            }
+
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
         }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
     }
 
     const handleLock = () => {
@@ -856,11 +908,11 @@ export const PersonDetail: FC = () => {
             const callback = () => {
                 setValue('locked', !getValues('locked'));
                 trigger('locked');
-                dispatch(execute(insPersonUpdateLocked({...person, locked: !person.locked})));
+                dispatch(execute(insPersonUpdateLocked({ ...person, locked: !person.locked })));
                 dispatch(showBackdrop(true));
                 setWaitLock(true);
             }
-    
+
             dispatch(manageConfirmation({
                 visible: true,
                 question: getValues('locked') ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
@@ -915,16 +967,18 @@ export const PersonDetail: FC = () => {
             </Breadcrumbs>
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
                 <h1>{person.name}</h1>
-                <div style={{display: 'flex', gap: '10px'}}>
-                    <Button
-                        variant="contained"
-                        type="button"
-                        color="primary"
-                        startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
-                        onClick={handleLock}
-                    >
-                        {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
-                    </Button>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    {!!person.personid &&
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={getValues('locked') ? <LockOpenIcon color="secondary" /> : <LockIcon color="secondary" />}
+                            onClick={handleLock}
+                        >
+                            {getValues('locked') ? t(langKeys.unlock) : t(langKeys.lock)}
+                        </Button>
+                    }
                     <Button
                         variant="contained"
                         type="button"
@@ -964,26 +1018,30 @@ export const PersonDetail: FC = () => {
                                 label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                                label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
-                                value="1"
-                            />
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.audit} />}
-                                value="2"
-                            />
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
-                                value="3"
-                            />
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
-                                value="4"
-                            />
+                            {!!person.personid &&
+                                <>
+                                    <Tab
+                                        className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
+                                        label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
+                                        value="1"
+                                    />
+                                    <Tab
+                                        className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
+                                        label={<Trans i18nKey={langKeys.audit} />}
+                                        value="2"
+                                    />
+                                    <Tab
+                                        className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
+                                        label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                        value="3"
+                                    />
+                                    <Tab
+                                        className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
+                                        label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                        value="4"
+                                    />
+                                </>
+                            }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
                                 label={<Trans i18nKey={langKeys.claim} count={2} />}
@@ -997,6 +1055,7 @@ export const PersonDetail: FC = () => {
                             setValue={setValue}
                             person={person}
                             domains={domains}
+                            errors={errors}
                         />
                     </TabPanel>
                     <TabPanel value="1" index={tabIndex}>
@@ -1019,93 +1078,95 @@ export const PersonDetail: FC = () => {
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
                 <Divider style={{ backgroundColor: '#EBEAED' }} orientation="vertical" flexItem />
-                <div className={classes.profile}>
-                    <label className={classes.label}>Overview</label>
-                    <div style={{ height: 16 }} />
-                    <Photo src={person.imageurldef} radius={50} />
-                    <h2>{person.name}</h2>
-                    <Property
-                        icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.phone} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.phone)}
-                                defaultValue={person.phone}
-                                onChange={e => setValue('phone', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<EMailInboxIcon />}
-                        title={<Trans i18nKey={langKeys.email} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.email)}
-                                defaultValue={person.email}
-                                onChange={e => setValue('email', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1} />
-                    <Property
-                        icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.document} />}
-                        subtitle={(
-                            <DomainSelectField
-                                defaultValue={person.documenttype}
-                                onChange={(value) => {
-                                    setValue('documenttype', value);
-                                }}
-                                loading={domains.loading}
-                                data={domains.value?.docTypes || []}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                        title={<Trans i18nKey={langKeys.docNumber} />}
-                        subtitle={(
-                            <TextField
-                                fullWidth
-                                placeholder={t(langKeys.docNumber)}
-                                defaultValue={person.documentnumber}
-                                onChange={e => setValue('documentnumber', e.target.value)}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<GenderIcon />}
-                        title={<Trans i18nKey={langKeys.gender} />}
-                        subtitle={(
-                            <DomainSelectField
-                                defaultValue={person.gender}
-                                onChange={(value, desc) => {
-                                    setValue('gender', value);
-                                    setValue('genderdesc', desc)
-                                }}
-                                loading={domains.loading}
-                                data={domains.value?.genders || []}
-                            />
-                        )}
-                        mt={1}
-                        mb={1}
-                    />
-                    <Property
-                        icon={<BuildingIcon />}
-                        title={<Trans i18nKey={langKeys.organization} />}
-                        subtitle={person.orgdesc}
-                        mt={1}
-                        mb={1}
-                    />
-                </div>
+                {!!person.personid &&
+                    <div className={classes.profile}>
+                        <label className={classes.label}>Overview</label>
+                        <div style={{ height: 16 }} />
+                        <Photo src={person.imageurldef} radius={50} />
+                        <h2>{person.name}</h2>
+                        <Property
+                            icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.phone} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.phone)}
+                                    defaultValue={person.phone}
+                                    onChange={e => setValue('phone', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<EMailInboxIcon />}
+                            title={<Trans i18nKey={langKeys.email} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.email)}
+                                    defaultValue={person.email}
+                                    onChange={e => setValue('email', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1} />
+                        <Property
+                            icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.document} />}
+                            subtitle={(
+                                <DomainSelectField
+                                    defaultValue={person.documenttype}
+                                    onChange={(value) => {
+                                        setValue('documenttype', value);
+                                    }}
+                                    loading={domains.loading}
+                                    data={domains.value?.docTypes || []}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
+                            title={<Trans i18nKey={langKeys.docNumber} />}
+                            subtitle={(
+                                <TextField
+                                    fullWidth
+                                    placeholder={t(langKeys.docNumber)}
+                                    defaultValue={person.documentnumber}
+                                    onChange={e => setValue('documentnumber', e.target.value)}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<GenderIcon />}
+                            title={<Trans i18nKey={langKeys.gender} />}
+                            subtitle={(
+                                <DomainSelectField
+                                    defaultValue={person.gender}
+                                    onChange={(value, desc) => {
+                                        setValue('gender', value);
+                                        setValue('genderdesc', desc)
+                                    }}
+                                    loading={domains.loading}
+                                    data={domains.value?.genders || []}
+                                />
+                            )}
+                            mt={1}
+                            mb={1}
+                        />
+                        <Property
+                            icon={<BuildingIcon />}
+                            title={<Trans i18nKey={langKeys.organization} />}
+                            subtitle={person.orgdesc}
+                            mt={1}
+                            mb={1}
+                        />
+                    </div>
+                }
             </div>
         </div>
     );
@@ -1176,11 +1237,12 @@ const ReferrerItem: FC<ReferrerItemProps> = ({ referrer }) => {
 interface GeneralInformationTabProps {
     person: IPerson;
     getValues: UseFormGetValues<IPerson>;
-    setValue: UseFormSetValue<IPerson>;
+    setValue: any;
     domains: IObjectState<IPersonDomains>;
+    errors: any;
 }
 
-const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains }) => {
+const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValues, setValue, domains, errors }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const referrerList = useSelector(state => state.person.personReferrerList);
@@ -1213,20 +1275,89 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 m={1}
                             />
                         </Grid>
+
                         <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.firstname} />}
-                                subtitle={person.firstname}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.firstname)}
+                                        defaultValue={person.firstname}
+                                        onChange={e => setValue('firstname', e.target.value)}
+                                    />
+                                )}
+
                                 m={1}
                             />
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
                                 title={<Trans i18nKey={langKeys.lastname} />}
-                                subtitle={person.lastname}
+                                subtitle={(
+                                    <TextField
+                                        fullWidth
+                                        placeholder={t(langKeys.lastname)}
+                                        defaultValue={person.lastname}
+                                        onChange={e => setValue('lastname', e.target.value)}
+                                    />
+                                )}
                                 m={1}
                             />
                         </Grid>
+
+                        {!person.personid &&
+                            <>
+                                <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
+                                    <Property
+                                        title="Person communication channel"
+                                        subtitle={(
+                                            <TextField
+                                                fullWidth
+                                                placeholder="personcommunicationchannel"
+                                                onChange={e => setValue('personcommunicationchannel', e.target.value)}
+                                                error={errors?.personcommunicationchannel?.message ? true : false}
+                                                helperText={errors?.personcommunicationchannel?.message || null}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                                    <Property
+                                        title="Person communication channel owner"
+                                        subtitle={(
+                                            <TextField
+                                                fullWidth
+                                                placeholder="personcommunicationchannelowner"
+                                                onChange={e => setValue('personcommunicationchannelowner', e.target.value)}
+                                                error={!!errors?.personcommunicationchannelowner?.message}
+                                                helperText={errors?.personcommunicationchannelowner?.message || null}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                                    <Property
+                                        title="Channel type"
+                                        subtitle={(
+                                            <TextField
+                                                fullWidth
+                                                placeholder="channel type"
+                                                onChange={e => setValue('channeltype', e.target.value)}
+                                                error={!!errors?.channeltype?.message}
+                                                helperText={errors?.channeltype?.message || null}
+                                            />
+                                        )}
+                                        m={1}
+                                    />
+                                </Grid>
+                            </>
+                        }
+
+
+
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
                                 title={<Trans i18nKey={langKeys.fullname} />}
@@ -1239,7 +1370,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.document} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.documenttype}
                                         onChange={(value) => {
                                             setValue('documenttype', value?.domainvalue);
@@ -1273,7 +1404,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.personType} />}
                                 subtitle={(
                                     <FieldSelect
-                                    uset={true}  
+                                        uset={true}
                                         valueDefault={person.persontype}
                                         onChange={(value) => {
                                             setValue('persontype', value?.domainvalue);
@@ -1293,7 +1424,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.type} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.type}
                                         onChange={(value) => {
                                             setValue('type', value?.domainvalue);
@@ -1384,7 +1515,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.gender} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.gender}
                                         onChange={(value) => {
                                             setValue('gender', value?.domainvalue);
@@ -1405,7 +1536,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 title={<Trans i18nKey={langKeys.educationLevel} />}
                                 subtitle={(
                                     <FieldSelect
-                                        uset={true}    
+                                        uset={true}
                                         valueDefault={person.educationlevel}
                                         onChange={(value) => {
                                             setValue('educationlevel', value?.domainvalue);

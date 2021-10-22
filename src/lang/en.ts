@@ -680,6 +680,7 @@ const translation: LangKeys = {
     priority_medium: 'Medium',
     priority_low: 'Low',
     expected_revenue: 'Expected revenue',
+    newlead: 'New lead',
     select: "Select",
     data: "Data",
     cancel: 'Cancel',

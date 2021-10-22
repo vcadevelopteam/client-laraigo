@@ -27,6 +27,7 @@ const translation: LangKeys = {
     lead_plural: 'Oportunidades',
     model: 'Modelo',
     model_plural: 'Modelos',
+    newlead: 'Nueva oportunidad',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',

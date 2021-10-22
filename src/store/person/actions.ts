@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody, IRequestBodyPaginated } from "@types";
+import { IActionCall, IRequestBody, IRequestBodyPaginated, ITransaction } from "@types";
 import { getValuesFromDomain } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
@@ -114,14 +114,31 @@ export const getDomainsByTypename = (): IActionCall => ({
 
 export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_BY_TYPENAME_RESET });
 
-export const editPerson = (payload: IRequestBody): IActionCall => ({
-    callAPI: async () => CommonService.main(payload),
-    types: {
-        loading: actionTypes.EDIT_PERSON,
-        failure: actionTypes.EDIT_PERSON_FAILURE,
-        success: actionTypes.EDIT_PERSON_SUCCESS,
-    },
-    type: null,
-});
+// dispatch(execute({
+//     header: insPersonBody({ ...p }),
+//     detail: [
+//         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+//     ]
+// }, true));
+export const editPerson = (payload: IRequestBody | ITransaction, insert: boolean = false): IActionCall => {
+    let request = {};
+    if (insert) {
+        // dispatch(execute({
+//     header: insPersonBody({ ...p }),
+//     detail: [
+//         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+//     ]
+// }, true));
+    }
+    return {
+        callAPI: async () => CommonService.main(payload, insert),
+        types: {
+            loading: actionTypes.EDIT_PERSON,
+            failure: actionTypes.EDIT_PERSON_FAILURE,
+            success: actionTypes.EDIT_PERSON_SUCCESS,
+        },
+        type: null,
+    }
+};
 
 export const resetEditPerson = () => ({type: actionTypes.EDIT_PERSON_RESET });
