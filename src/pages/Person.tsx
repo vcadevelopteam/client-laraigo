@@ -347,8 +347,8 @@ export const Person: FC = () => {
             dispatch(resetGetPersonListPaginated());
         };
     }, [dispatch]);
-
-    useEffect(() => {
+    
+    const fetchData = () => {
         dispatch(getPersonListPaginated(getPaginatedPerson({
             startdate: format(dateRange.startDate!),
             enddate: format(dateRange.endDate!),
@@ -357,6 +357,10 @@ export const Person: FC = () => {
             sorts: {},
             filters: filters,
         })));
+    }
+
+    useEffect(() => {
+        fetchData();
     }, [dispatch, pageSize, page, dateRange, filters]);
 
     const format = (date: Date) => date.toISOString().split('T')[0];
@@ -503,20 +507,6 @@ export const Person: FC = () => {
                         ]
                     }, true));
                 });
-                // dispatch(execute({
-                //     header: null,
-                //     detail: data.map((x: any) => insQuickreplies({
-                //         ...x,
-                //         description: x.summarize, 
-                //         quickreply: x.detail, 
-                //         status: x.status || 'ACTIVO', 
-                //         favorite: x.favorite || false,
-                //         classificationid: x.classificationid,
-                //         operation: "INSERT",
-                //         type: 'NINGUNO',
-                //         id: 0,
-                //     }))
-                // }, true));
                 setWaitImport(true)
             }
         }
@@ -526,7 +516,7 @@ export const Person: FC = () => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
-                // fetchData();
+                fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
@@ -550,8 +540,8 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
-                            onClick={triggerExportData}
                             startIcon={<DownloadIcon />}
+                            onClick={triggerExportData}
                         >
                             <Trans i18nKey={langKeys.download} />
                         </Button>
@@ -560,13 +550,14 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
+                            startIcon={<AddIcon color="secondary" />}
                             onClick={() => {
                                 history.push({
                                     pathname: paths.PERSON_DETAIL.resolve(0),
                                     state: {},
                                 });
                             }}
-                            startIcon={<AddIcon />}
+                            style={{ backgroundColor: "#55BD84" }}
                         >
                             <Trans i18nKey={langKeys.register} />
                         </Button>
@@ -785,6 +776,7 @@ export const PersonDetail: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitLock, setWaitLock] = useState(false);
 
+    const user = useSelector(state => state.login.validateToken.user);
     const person = location.state as IPerson | null;
 
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
@@ -798,6 +790,8 @@ export const PersonDetail: FC = () => {
             history.push(paths.PERSON);
         } else {
             if (!person.personid) {
+                person.corpdesc = user?.corpdesc || '';
+                person.orgdesc = user?.orgdesc || '';
                 person.personid = 0;
                 person.groups = '';
                 person.status = 'ACTIVO';
@@ -819,9 +813,9 @@ export const PersonDetail: FC = () => {
                 person.occupation = '';
                 person.educationlevel = '';
                 person.referringpersonid = 0;
-                // person.personcommunicationchannel = '';
-                // person.personcommunicationchannelowner = '';
 
+                register('firstname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
+                register('lastname', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('personcommunicationchannel', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('personcommunicationchannelowner', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
                 register('channeltype', { validate: (value) => (value && value.length) ? true : t(langKeys.field_required) + "" });
@@ -1289,6 +1283,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.firstname)}
                                         defaultValue={person.firstname}
                                         onChange={e => setValue('firstname', e.target.value)}
+                                        error={errors?.firstname?.message ? true : false}
+                                        helperText={errors?.firstname?.message || null}
                                     />
                                 )}
 
@@ -1304,6 +1300,8 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                         placeholder={t(langKeys.lastname)}
                                         defaultValue={person.lastname}
                                         onChange={e => setValue('lastname', e.target.value)}
+                                        error={errors?.lastname?.message ? true : false}
+                                        helperText={errors?.lastname?.message || null}
                                     />
                                 )}
                                 m={1}
@@ -1314,11 +1312,11 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                             <>
                                 <Grid item sm={6} xl={6} xs={6} md={6} lg={6}>
                                     <Property
-                                        title="Person communication channel"
+                                        title={<Trans i18nKey={langKeys.personIdentifier} />}
                                         subtitle={(
                                             <TextField
                                                 fullWidth
-                                                placeholder="personcommunicationchannel"
+                                                placeholder={t(langKeys.personIdentifier)}
                                                 onChange={e => setValue('personcommunicationchannel', e.target.value)}
                                                 error={errors?.personcommunicationchannel?.message ? true : false}
                                                 helperText={errors?.personcommunicationchannel?.message || null}
@@ -1329,11 +1327,11 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                     <Property
-                                        title="Person communication channel owner"
+                                        title={<Trans i18nKey={langKeys.internalIdentifier} />}
                                         subtitle={(
                                             <TextField
                                                 fullWidth
-                                                placeholder="personcommunicationchannelowner"
+                                                placeholder={t(langKeys.internalIdentifier)}
                                                 onChange={e => setValue('personcommunicationchannelowner', e.target.value)}
                                                 error={!!errors?.personcommunicationchannelowner?.message}
                                                 helperText={errors?.personcommunicationchannelowner?.message || null}
@@ -1344,14 +1342,17 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                                     <Property
-                                        title="Channel type"
+                                        title={<Trans i18nKey={langKeys.communicationchannel} />}
                                         subtitle={(
-                                            <TextField
-                                                fullWidth
-                                                placeholder="channel type"
-                                                onChange={e => setValue('channeltype', e.target.value)}
-                                                error={!!errors?.channeltype?.message}
-                                                helperText={errors?.channeltype?.message || null}
+                                            <FieldSelect
+                                                onChange={(value) => {
+                                                    setValue('channeltype', value?.domainvalue);
+                                                }}
+                                                loading={domains.loading}
+                                                data={domains.value?.channelTypes || []}
+                                                optionValue="domainvalue"
+                                                optionDesc="domaindesc"
+                                                error={errors?.channeltype?.message}
                                             />
                                         )}
                                         m={1}
@@ -1359,8 +1360,6 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 </Grid>
                             </>
                         }
-
-
 
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Property
