@@ -1679,3 +1679,16 @@ export const insLead = (lead: ILead, operation: string): IRequestBody => ({
         operation
     },
 });
+
+export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number): IRequestBody => ({
+    method: 'UFN_LEAD_PERSON_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        firstname,
+        lastname,
+        email,
+        phone,
+        personid,
+    },
+});

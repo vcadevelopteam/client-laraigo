@@ -104,6 +104,9 @@ footer a {
 .mt-1 {
     margin-top: 8px!important;
 }
+.flex-1 {
+    flex: 1
+}
 .row-zyx {
     display: flex;
     flex-wrap: wrap;

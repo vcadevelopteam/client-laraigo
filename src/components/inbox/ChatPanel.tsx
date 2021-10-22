@@ -11,7 +11,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation, insLead } from 'common/helpers';
+import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
@@ -412,11 +412,16 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
     const insLeadRes = useSelector(state => state.main.execute);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const personSelected = useSelector(state => state.inbox.person);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
         expected_revenue: string;
         priority: string;
+        lastname: string;
+        firstname: string;
+        email: string;
+        phone: string;
     }>();
 
     useEffect(() => {
@@ -440,11 +445,20 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             reset({
                 description: '',
                 expected_revenue: '',
-                priority: ''
+                priority: '',
+                firstname: personSelected.data?.firstname,
+                lastname: personSelected.data?.lastname,
+                email: personSelected.data?.email,
+                phone: personSelected.data?.phone,
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('priority', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+
+            register('lastname');
+            register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('email', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
         }
     }, [openModal])
 
@@ -464,9 +478,10 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             columnid: 0,
             index: 0,
         }
-
+        
+        const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
-        dispatch(execute(insLead(newLead, 'INSERT')))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected.data?.personid!!)))
         setWaitInsLead(true)
     });
 
@@ -483,48 +498,44 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
-                        label={t(langKeys.description)} // "Corporation"
-                        className="col-12"
-                        valueDefault={getValues('description')}
-                        error={errors?.description?.message}
-                        onChange={(value) => setValue('description', value)}
+                        label={t(langKeys.firstname)}
+                        valueDefault={getValues('firstname')}
+                        className="flex-1"
+                        error={errors?.firstname?.message}
+                        onChange={(value) => setValue('firstname', value)}
                     />
                     <FieldEdit
-                        label={t(langKeys.expected_revenue)} // "Corporation"
-                        className="col-12"
-                        valueDefault={getValues('expected_revenue')}
-                        error={errors?.expected_revenue?.message}
-                        type="number"
-                        onChange={(value) => setValue('expected_revenue', value)}
+                        label={t(langKeys.lastname)}
+                        valueDefault={getValues('lastname')}
+                        className="flex-1"
+                        error={errors?.lastname?.message}
+                        onChange={(value) => setValue('lastname', value)}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
-                        label={t(langKeys.description)} // "Corporation"
-                        className="col-12"
-                        valueDefault={getValues('description')}
-                        error={errors?.description?.message}
-                        onChange={(value) => setValue('description', value)}
+                        label={t(langKeys.alternativeEmail)}
+                        valueDefault={getValues('email')}
+                        className="flex-1"
+                        error={errors?.email?.message}
+                        onChange={(value) => setValue('email', value)}
                     />
                     <FieldEdit
-                        label={t(langKeys.expected_revenue)} // "Corporation"
-                        className="col-12"
-                        valueDefault={getValues('expected_revenue')}
-                        error={errors?.expected_revenue?.message}
-                        type="number"
-                        onChange={(value) => setValue('expected_revenue', value)}
+                        label={t(langKeys.phone)}
+                        valueDefault={getValues('phone')}
+                        className="flex-1"
+                        error={errors?.phone?.message}
+                        onChange={(value) => setValue('phone', value)}
                     />
                 </div>
                 <FieldEdit
-                    label={t(langKeys.description)} // "Corporation"
-                    className="col-12"
+                    label={t(langKeys.description)}
                     valueDefault={getValues('description')}
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
                 <FieldEdit
-                    label={t(langKeys.expected_revenue)} // "Corporation"
-                    className="col-12"
+                    label={t(langKeys.expected_revenue)}
                     valueDefault={getValues('expected_revenue')}
                     error={errors?.expected_revenue?.message}
                     type="number"
@@ -532,7 +543,6 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 />
                 <FieldSelect
                     label={t(langKeys.priority)}
-                    className="col-12"
                     valueDefault={getValues('priority')}
                     onChange={(value) => setValue('priority', value ? value.option : '')}
                     error={errors?.priority?.message}
