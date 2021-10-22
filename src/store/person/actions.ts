@@ -75,17 +75,17 @@ export const getAdditionalInfoByPerson = (payload: IRequestBody): IActionCall =>
 
 export const resetgetAdditionalInfoByPerson = () => ({type: actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_RESET });
 
-export const getOpportunitiesByPerson = (payload: IRequestBody): IActionCall => ({
-    callAPI: async () => PersonService.getOpportunitiesByPerson(payload),
+export const getLeadsByPerson = (payload: IRequestBody): IActionCall => ({
+    callAPI: async () => PersonService.getLeadsByPerson(payload),
     types: {
-        loading: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON,
-        failure: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_FAILURE,
-        success: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_SUCCESS,
+        loading: actionTypes.GET_LEAD_LIST_BY_PERSON,
+        failure: actionTypes.GET_LEAD_LIST_BY_PERSON_FAILURE,
+        success: actionTypes.GET_LEAD_LIST_BY_PERSON_SUCCESS,
     },
     type: null,
 });
 
-export const resetGetOpportunitiesByPerson = () => ({type: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_RESET });
+export const resetGetLeadsByPerson = () => ({type: actionTypes.GET_LEAD_LIST_BY_PERSON_RESET });
 
 /**
  * Managed domain types
