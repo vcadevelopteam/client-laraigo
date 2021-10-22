@@ -121,7 +121,6 @@ export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_B
 //     ]
 // }, true));
 export const editPerson = (payload: IRequestBody | ITransaction, insert: boolean = false): IActionCall => {
-    let request = {};
     if (insert) {
         // dispatch(execute({
 //     header: insPersonBody({ ...p }),
