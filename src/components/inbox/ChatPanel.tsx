@@ -4,7 +4,7 @@ import 'emoji-mart/css/emoji-mart.css'
 import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
+import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
@@ -478,7 +478,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             columnid: 0,
             index: 0,
         }
-        
+
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
         dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected.data?.personid!!)))
@@ -771,7 +771,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         setOpenModalLead(true)
                     }}>
                         <ListItemIcon>
-                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <LeadIcon width={18} style={{ fill: '#2E2C34' }} />
                         </ListItemIcon>
                         {t(langKeys.lead)}
                     </MenuItem>

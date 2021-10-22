@@ -143,3 +143,4 @@ export { ReactComponent as LaraigoFocoIcon } from './Laraigo-emojis_foco.svg';
 export { ReactComponent as LaraigoHashtagIcon } from './Laraigo-emojis_hashtag.svg';
 export { ReactComponent as LaraigoRecienteIcon } from './Laraigo-emojis_reciente.svg';
 export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.svg';
+export { ReactComponent as LeadIcon } from './Laraigo-emojis_blocked.svg';
