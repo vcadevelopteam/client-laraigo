@@ -449,7 +449,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        
+
         const newLead: ILead = {
             leadid: 0,
             description: data.description,
@@ -480,7 +480,41 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div className="row-zyx">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.description)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('description')}
+                        error={errors?.description?.message}
+                        onChange={(value) => setValue('description', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.description)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('description')}
+                        error={errors?.description?.message}
+                        onChange={(value) => setValue('description', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)} // "Corporation"
+                        className="col-12"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                </div>
                 <FieldEdit
                     label={t(langKeys.description)} // "Corporation"
                     className="col-12"

@@ -848,7 +848,7 @@ export const PersonDetail: FC = () => {
 
     useEffect(() => {
         if (edit.loading) return;
-        
+
         if (edit.error === true) {
             dispatch(showBackdrop(false));
             dispatch(showSnackbar({
@@ -1018,29 +1018,33 @@ export const PersonDetail: FC = () => {
                                 label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
-                            {!!person.personid &&
-                                <>
+                            {!!person.personid && 
                                     <Tab
                                         className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
                                         label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
                                         value="1"
                                     />
-                                    <Tab
-                                        className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                        label={<Trans i18nKey={langKeys.audit} />}
-                                        value="2"
-                                    />
-                                    <Tab
-                                        className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                        label={<Trans i18nKey={langKeys.conversation} count={2} />}
-                                        value="3"
-                                    />
-                                    <Tab
-                                        className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                        label={<Trans i18nKey={langKeys.opportunity} count={2} />}
-                                        value="4"
-                                    />
-                                </>
+                            }
+                            {!!person.personid && 
+                            <Tab
+                                className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
+                                label={<Trans i18nKey={langKeys.audit} />}
+                                value="2"
+                            />
+                            }
+                            {!!person.personid && 
+                            <Tab
+                                className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
+                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                value="3"
+                            />
+                            }
+                            {!!person.personid && 
+                            <Tab
+                                className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
+                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                value="4"
+                            />
                             }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
