@@ -653,6 +653,14 @@ export const langKeys = {
     confirmation_reasign_with_reply: 'confirmation_reasign_with_reply',
     botdesigner: 'botdesigner',
     least_user_or_group: 'least_user_or_group',
+    lead: 'lead',
+    lead_plural: 'lead_plural',
+
+    
+    priority_high: 'priority_high',
+    priority_medium: 'priority_medium',
+    priority_low: 'priority_low',
+    expected_revenue: 'expected_revenue',
 
     variableconfiguration: 'variableconfiguration',
     variableconfiguration_plural: 'variableconfiguration_plural',

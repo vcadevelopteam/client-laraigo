@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1670,5 +1670,14 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
         orgid: null,
         id: person.personid,
         operation: 'UPDATE',
+    },
+});
+
+export const insLead = (lead: ILead, operation: string): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        operation
     },
 });

@@ -13,15 +13,19 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditArray, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import CachedIcon from '@material-ui/icons/Cached';
 
+const dataPriority = [
+    { option: 'high' },
+    { option: 'medium' },
+    { option: 'low' },
+]
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -401,6 +405,122 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         </DialogZyx>)
 }
 
+const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitReassign, setWaitReassign] = useState(false);
+
+    // const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
+    const multiData = useSelector(state => state.main.multiData);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const userType = useSelector(state => state.inbox.userType);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        description: string;
+        expected_revenue: string;
+        priority: string;
+    }>();
+
+    useEffect(() => {
+        // if (waitReassign) {
+        //     if (!reassigningRes.loading && !reassigningRes.error) {
+        //         dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
+        //         setOpenModal(false);
+        //         dispatch(showBackdrop(false));
+        //         setWaitReassign(false);
+
+        //         dispatch(emitEvent({
+        //             event: 'reassignTicket',
+        //             data: {
+        //                 ...ticketSelected,
+        //                 userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+        //                 newuserid: getValues('newUserId') || 3,
+        //             }
+        //         }));
+
+        //     } else if (reassigningRes.error) {
+        //         dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
+        //         dispatch(showBackdrop(false));
+        //         setWaitReassign(false);
+        //     }
+        // }
+    }, [reassigningRes, waitReassign])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                description: '',
+                expected_revenue: '',
+                priority: ''
+            })
+            register('description');
+            register('expected_revenue');
+            register('priority');
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        // if (data.newUserId === 0 && !data.newUserGroup) {
+        //     dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+        //     return;
+        // }
+        // const dd: IReassignicketParams = {
+        //     ...ticketSelected!!,
+        //     ...data,
+        //     newUserId: data.newUserId || 3,
+        //     newConversation: true,
+        //     wasanswered: true
+        // }
+        // dispatch(reassignTicket(dd));
+        // dispatch(showBackdrop(true));
+        // setWaitReassign(true)
+
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.reassign_ticket)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldEdit
+                    label={t(langKeys.description)} // "Corporation"
+                    className="col-6"
+                    valueDefault={getValues('description')}
+                    error={errors?.description?.message}
+                    onChange={(value) => setValue('description', value)}
+                />
+                <FieldEdit
+                    label={t(langKeys.expected_revenue)} // "Corporation"
+                    className="col-6"
+                    valueDefault={getValues('expected_revenue')}
+                    error={errors?.expected_revenue?.message}
+                    type="number"
+                    onChange={(value) => setValue('expected_revenue', value)}
+                />
+                <FieldSelect
+                    label={t(langKeys.priority)}
+                    className="col-12"
+                    valueDefault={getValues('priority')}
+                    onChange={(value) => setValue('priority', value ? value.domainvalue : '')}
+                    error={errors?.priority?.message}
+                    data={dataPriority}
+                    optionDesc="option"
+                    optionValue="option"
+                    uset
+                    prefixTranslation="priority_"
+                />
+            </div>
+        </DialogZyx>)
+}
+
 const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -544,6 +664,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const closeTicket = () => setOpenModalCloseticket(true);
 
@@ -609,6 +730,17 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+                        setOpenModalLead(true)
+                    }}>
+                        <ListItemIcon>
+                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.lead)}
+                    </MenuItem>
+                }
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}
@@ -622,7 +754,14 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 openModal={openModalHSM}
                 setOpenModal={setOpenModalHSM}
             />
-            <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
+            <DialogTipifications
+                openModal={openModalTipification}
+                setOpenModal={setOpenModalTipification}
+            />
+            <DialogLead
+                openModal={openModalLead}
+                setOpenModal={setOpenModalLead}
+            />
         </>
     )
 }
