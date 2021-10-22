@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import React, { FC, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
@@ -7,6 +7,7 @@ import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 
 const columnWidth = 275;
+const cardBorderRadius = 12;
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
@@ -23,6 +24,7 @@ const useLeadCardStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        borderRadius: cardBorderRadius,
 
         '-webkit-touch-callout': 'none', /* iOS Safari */
         '-webkit-user-select': 'none', /* Safari */
@@ -160,6 +162,43 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     );
 }
 
+
+interface InputTitleProps {
+    defaultValue: React.ReactNode;
+    onChange?: (value: string) => void;
+}
+
+const useInputTitleStyles = makeStyles(theme => ({
+    title: {
+        margin: '0.83em 0',
+    },
+    titleInput: {
+        fontSize: '1.5em',
+        fontWeight: 500,
+    },
+}));
+
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange }) => {
+    const classes = useInputTitleStyles();
+    const [disableUnderline, setDisableUnderline] = useState(true);
+
+    return (
+        <TextField
+            defaultValue={defaultValue}
+            className={classes.title}
+            onBlur={() => setDisableUnderline(true)}
+            onFocus={() => setDisableUnderline(false)}
+            InputProps={{
+                classes: {
+                    input: classes.titleInput,
+                },
+                disableUnderline,
+            }}
+            onChange={e => onChange?.(e.target.value)}
+        />
+    );
+}
+
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     /**default title value */
     title: React.ReactNode;
@@ -185,13 +224,6 @@ const useLeadColumnStyles = makeStyles(theme => ({
         justifyContent: 'space-between',
         alignItems: 'center',
         width: '100%',
-    },
-    title: {
-        margin: '0.83em 0',
-    },
-    titleInput: {
-        fontSize: '1.5em',
-        fontWeight: 500,
     },
     inputUnderline: {
         display: 'none',
@@ -224,26 +256,13 @@ const useLeadColumnStyles = makeStyles(theme => ({
 
 export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, titleOnChange, ...boxProps }) => {
     const classes = useLeadColumnStyles();
-    const [disableUnderline, setDisableUnderline] = useState(true);
     // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header}>
-                    <TextField
-                        defaultValue={title}
-                        className={classes.title}
-                        onBlur={() => setDisableUnderline(true)}
-                        onFocus={() => setDisableUnderline(false)}
-                        InputProps={{
-                            classes: {
-                                input: classes.titleInput,
-                            },
-                            disableUnderline,
-                        }}
-                        onChange={e => titleOnChange?.(e.target.value)}
-                    />
+                    <InputTitle defaultValue={title} onChange={titleOnChange} />
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
@@ -263,26 +282,27 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, titl
 
 interface LeadColumnListProps extends BoxProps {
     snapshot: DroppableStateSnapshot;
+    itemCount: number;
 }
 
 const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
         width: 275,
         maxWidth: 275,
-        // backgroundColor: 'red',
         minHeight: 500,
+        borderRadius: cardBorderRadius,
     },
-    // draggOver: {
-    //     background: "lightblue",
-    // },
+    draggOver: {
+        background: 'rgb(211,211,211, 0.2)', // "lightgrey",
+    },
 }));
 
-export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, title, snapshot, ...boxProps }) => {
+export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, snapshot, itemCount, ...boxProps }) => {
     const classes = useLeadColumnListStyles();
 
     return (
         <Box {...boxProps}>
-            <div className={clsx(classes.root/*, snapshot.isDraggingOver && classes.draggOver*/)}>
+            <div className={clsx(classes.root, (snapshot.isDraggingOver && itemCount === 0) && classes.draggOver)}>
                 {children}
             </div>
         </Box>

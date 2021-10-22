@@ -88,7 +88,7 @@ const CRM: FC = () => {
                             ref={provided.innerRef}
                             style={{ overflowY: 'auto' }}
                           >
-                            <DroppableLeadColumnList snapshot={snapshot}>
+                            <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items.length}>
                             {column.items.map((item, index) => {
                               return (
                                 <Draggable
