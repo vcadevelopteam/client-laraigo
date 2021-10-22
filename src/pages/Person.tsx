@@ -2005,7 +2005,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
                                     </label>
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.fechainicio}
+                                    {conversation.fechainicio && new Date(conversation.fechainicio).toLocaleString()}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -2070,12 +2070,11 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
                             </Grid>
                         </Grid>
                         <Divider orientation="horizontal" />
-                        <h3>Close</h3>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Grid container direction="row">
                                 <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                     <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.type} />
+                                        <Trans i18nKey={langKeys.closetype} />
                                     </label>
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>

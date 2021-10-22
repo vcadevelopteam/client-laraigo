@@ -777,6 +777,7 @@ export const langKeys = {
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
     close: 'close',
+    closetype: 'closetype',
 
     today: 'today',
     yesterday: 'yesterday',
