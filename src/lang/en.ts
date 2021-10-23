@@ -641,6 +641,7 @@ const translation: LangKeys = {
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
     no_record_selected: 'No record selected',
+    no_records_valid: 'No valid records',
     reporttype: 'Report type',
     no_type_selected: 'No type selected',
     rundate: 'Run date',
@@ -783,6 +784,7 @@ const translation: LangKeys = {
     confirmation_reasign_with_reply: 'If you confirm sending the message the ticket will be assigned to your tray.',
     apply: 'Apply',
     close: 'Close',
+    closetype: 'Close type',
 
     today: 'Today',
     yesterday: 'Yesterday',

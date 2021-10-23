@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, getValuesFromDomain, uploadExcel, insPersonBody, insPersonCommunicationChannel } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
@@ -327,6 +327,7 @@ export const Person: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
+    const [importPath, setImportPath] = useState('');
 
     const columns = [
         { Header: t(langKeys.name), accessor: 'name' },
@@ -444,7 +445,8 @@ export const Person: FC = () => {
         const file = e.target?.files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
-            let data: IPersonImport[] = excel.filter((f: IPersonImport) =>
+            let data: IPersonImport[] = array_trimmer(excel);
+            data = data.filter((f: IPersonImport) =>
                 (f.documenttype === undefined || Object.keys(domains.value?.docTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.documenttype))
                 && (f.persontype === undefined || Object.keys(domains.value?.personGenTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {})).includes('' + f.persontype))
                 && (f.type === undefined || Object.keys(domains.value?.personTypes.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.type))
@@ -509,13 +511,17 @@ export const Person: FC = () => {
                 });
                 setWaitImport(true)
             }
+            else {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+            }
         }
+        setImportPath('');
     }
 
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
@@ -577,6 +583,7 @@ export const Person: FC = () => {
                             name="file"
                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
                             id="laraigo-upload-csv-file"
+                            value={importPath}
                             type="file"
                             style={{ display: 'none' }}
                             onChange={(e) => handleUpload(e)}
@@ -1998,7 +2005,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
                                     </label>
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.fechainicio}
+                                    {conversation.fechainicio && new Date(conversation.fechainicio).toLocaleString()}
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -2063,12 +2070,11 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
                             </Grid>
                         </Grid>
                         <Divider orientation="horizontal" />
-                        <h3>Close</h3>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Grid container direction="row">
                                 <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                     <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.type} />
+                                        <Trans i18nKey={langKeys.closetype} />
                                     </label>
                                 </Grid>
                                 <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>

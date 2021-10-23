@@ -341,7 +341,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         name: "parameters",
     });
 
-    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate, insert: fieldsInsert } = useFieldArray({
+    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate } = useFieldArray({
         control,
         name: "fields",
     });

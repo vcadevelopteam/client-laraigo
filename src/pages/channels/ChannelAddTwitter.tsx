@@ -127,6 +127,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.consumerkey= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumerkey}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
                         />
@@ -140,6 +141,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.consumersecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumersecret}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
                         />
@@ -153,6 +155,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.accesstoken= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
                         />
@@ -166,6 +169,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.accesssecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesssecret}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
                         />
@@ -206,6 +210,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.devenvironment= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.devenvironment}
                             label={t(langKeys.devenvironment)}
                             className="col-6"
                         />
@@ -221,6 +226,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.parameters.communicationchannelsite = value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.siteid}
                             label={t(langKeys.consumerpageid)}
                             className="col-6"
                         />

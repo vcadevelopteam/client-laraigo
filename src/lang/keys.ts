@@ -693,6 +693,7 @@ export const langKeys = {
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
     no_record_selected: 'no_record_selected',
+    no_records_valid: 'no_records_valid',
     reporttype: 'reporttype',
     no_type_selected: 'no_type_selected',
     rundate: 'rundate',
@@ -776,6 +777,7 @@ export const langKeys = {
     dateRangeFilterTitle: 'dateRangeFilterTitle',
     apply: 'apply',
     close: 'close',
+    closetype: 'closetype',
 
     today: 'today',
     yesterday: 'yesterday',

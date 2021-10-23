@@ -85,18 +85,6 @@ const useNoDataStyles = makeStyles(theme => ({
     }
 }));
 
-const NoData: FC = () => {
-    const classes = useNoDataStyles();
-
-    return (
-        <Box width={1} className={classes.noDataRoot}>
-            <img src={NoDataImg} alt="No Data" />
-            <div style={{ height: 18 }} />
-            <label className={classes.label}>No data</label>
-        </Box>
-    );
-}
-
 function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const {
         dateRange,
