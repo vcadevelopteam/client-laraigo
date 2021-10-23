@@ -27,8 +27,12 @@ export const ChannelAddIos: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const [setins, setsetins] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
+    const [showRegister, setShowRegister] = useState(true);
+    const [showClose, setShowClose] = useState(false);
+    const [showScript, setShowScript] = useState(false);
+    const [integrationId, setIntegrationId] = useState('');
+    const mainResult = useSelector(state => state.channel.channelList);
+    const executeResult = useSelector(state => state.channel.successinsert);
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -60,6 +64,9 @@ export const ChannelAddIos: FC = () => {
         dispatch(insertChannel(fields))
         setWaitSave(true);
     }
+    async function goback() {
+        history.push(paths.CHANNELS);
+    }
     useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
@@ -67,7 +74,10 @@ export const ChannelAddIos: FC = () => {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
-                history.push(paths.CHANNELS)
+                setShowRegister(false);
+                setShowClose(true);
+                setShowScript(true);
+                setIntegrationId(mainResult.data[0].integrationId);
             } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -143,17 +153,36 @@ export const ChannelAddIos: FC = () => {
                     </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
-                    <Button
-                        onClick={() => { finishreg() }}
-                        className={classes.button}
-                        disabled={channelreg}
-                        variant="contained"
-                        color="primary"
-                    >{t(langKeys.finishreg)}
-                    </Button>
-
+                    {showRegister ? 
+                        <Button
+                            onClick={() => { finishreg() }}
+                            className={classes.button}
+                            disabled={channelreg}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.finishreg)}
+                        </Button>
+                        : null
+                    }
+                    {showClose ? 
+                        <Button
+                            onClick={() => { goback() }}
+                            className={classes.button}
+                            disabled={channelreg}
+                            variant="contained"
+                            color="primary"
+                        >{t(langKeys.close)}
+                        </Button>
+                        : null
+                    }
                 </div>
-
+            </div>
+            <div style={{ height: 20 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
+                {
+                    `Smooch.init(this, new Settings("${integrationId}"), new SmoochCallback<InitializationStatus>() {\n@Override\npublic void run(@NonNull Response<InitializationStatus> response) {\n// Handle the response, no casting required...\nif (response.getData() == InitializationStatus.SUCCESS) {\n// Your code after init is complete\n} else {\n// Something went wrong during initialization\n}\n}\n});`
+                }
+                </code></pre><div style={{ height: 20 }} />
             </div>
         </div>
     )
