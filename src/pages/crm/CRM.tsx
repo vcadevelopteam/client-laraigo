@@ -1,10 +1,10 @@
-import { getChannelsByOrg, getColumnsSel, getIntelligentModels, getIntelligentModelsConfigurations, getLeadsSel, getValuesFromDomain, uuidv4 } from "common/helpers";
+import { getColumnsSel, getLeadsSel } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
-import { getCollection, getMultiCollection, resetMain } from "store/main/actions";
+import { getMultiCollection, resetMain } from "store/main/actions";
 
 interface dataBackend {
   columnid: number,
@@ -81,7 +81,7 @@ const CRM: FC = () => {
       return () => {
           dispatch(resetMain());
       };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
@@ -125,7 +125,7 @@ const CRM: FC = () => {
                                 ref={provided.innerRef}
                                 style={{ overflowY: 'auto' }}
                               >
-                                <DroppableLeadColumnList snapshot={snapshot}>
+                                <DroppableLeadColumnList snapshot={snapshot} itemCount={dataColumn[0].items?.length || 0}>
                                 {dataColumn[0].items?.map((item, index) => {
                                   return (
                                     <Draggable
@@ -190,7 +190,7 @@ const CRM: FC = () => {
                                         ref={provided.innerRef}
                                         style={{ overflowY: 'auto' }}
                                       >
-                                        <DroppableLeadColumnList snapshot={snapshot}>
+                                        <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                                         {column.items?.map((item, index) => {
                                           return (
                                             <Draggable

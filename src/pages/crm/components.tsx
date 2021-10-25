@@ -1,8 +1,13 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import clsx from 'clsx';
-import { Box, BoxProps, IconButton, makeStyles } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
+import { langKeys } from 'lang/keys';
+import { Trans } from 'react-i18next';
+
+const columnWidth = 275;
+const cardBorderRadius = 12;
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
@@ -11,7 +16,6 @@ interface LeadCardContentProps extends BoxProps {
 
 const useLeadCardStyles = makeStyles(theme => ({
     root: {
-        userSelect: 'contain',
         padding: 16,
         // margin: '0 0 8px 0',
         minHeight: '50px',
@@ -20,6 +24,14 @@ const useLeadCardStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
+        borderRadius: cardBorderRadius,
+
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
     },
     rootDragging: {
         opacity: .9,
@@ -65,22 +77,59 @@ const useLeadCardStyles = makeStyles(theme => ({
         fontSize: 12,
         fontWeight: 400,
     },
+    popoverPaper: {
+        maxWidth: 150,
+    }
 }));
 
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, ...boxProps }) => {
     const classes = useLeadCardStyles();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
     return (
         <Box {...boxProps} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
-                    <IconButton color="primary" size="small">
+                    <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
                         <Menu style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{
+                            className: classes.popoverPaper,
+                        }}
+                    >
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+                    </Popover>
                 </div>
-                <label className={classes.title}>{lead.description}</label>
-                <label className={classes.info}>S/ {lead.expected_revenue}</label>
-                <label className={classes.info}>Gemini Furniture</label>
+                <span className={classes.title}>{lead.description}</span>
+                <span className={classes.info}>S/ {lead.expected_revenue}</span>
+                <span className={classes.info}>Gemini Furniture</span>
                 <div className={classes.tagsRow}>
                     <div className={classes.tag}>
                         <div className={classes.tagCircle} style={{ backgroundColor: 'cyan' }} />
@@ -88,19 +137,19 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         <div className={classes.tagtext}>Information</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Design</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'violet' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Music</div>
                     </div>
                     <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
+                        <div className={classes.tagCircle} style={{ backgroundColor: 'blue' }} />
                         <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
+                        <div className={classes.tagtext}>Style</div>
                     </div>
                     <div className={classes.tag}>
                         <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
@@ -113,9 +162,48 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     );
 }
 
+
+interface InputTitleProps {
+    defaultValue: React.ReactNode;
+    onChange?: (value: string) => void;
+}
+
+const useInputTitleStyles = makeStyles(theme => ({
+    title: {
+        margin: '0.83em 0',
+    },
+    titleInput: {
+        fontSize: '1.5em',
+        fontWeight: 500,
+    },
+}));
+
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange }) => {
+    const classes = useInputTitleStyles();
+    const [disableUnderline, setDisableUnderline] = useState(true);
+
+    return (
+        <TextField
+            defaultValue={defaultValue}
+            className={classes.title}
+            onBlur={() => setDisableUnderline(true)}
+            onFocus={() => setDisableUnderline(false)}
+            InputProps={{
+                classes: {
+                    input: classes.titleInput,
+                },
+                disableUnderline,
+            }}
+            onChange={e => onChange?.(e.target.value)}
+        />
+    );
+}
+
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
+    /**default title value */
     title: React.ReactNode;
     snapshot: DraggableStateSnapshot | null;
+    titleOnChange?: (value: string) => void;
     provided: DraggableProvided;
 }
 
@@ -127,8 +215,16 @@ const useLeadColumnStyles = makeStyles(theme => ({
         alignItems: 'flex-start',
         margin: `0 ${theme.spacing(1)}px`,
         maxHeight: '100%',
-        overflowY: 'hidden',
-        // width: '100%',
+        overflow: 'hidden', // overflowY
+        width: columnWidth,
+        maxWidth: columnWidth,
+
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
     },
     header: {
         display: 'flex',
@@ -137,8 +233,8 @@ const useLeadColumnStyles = makeStyles(theme => ({
         alignItems: 'center',
         width: '100%',
     },
-    title: {
-        fontWeight: 500,
+    inputUnderline: {
+        display: 'none',
     },
     subHeader: {
         display: 'flex',
@@ -166,14 +262,15 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
     const classes = useLeadColumnStyles();
+    // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header} {...provided.dragHandleProps}>
-                    <h2 className={classes.title}>{title}</h2>
+                    <InputTitle defaultValue={title} onChange={titleOnChange} />
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
@@ -193,25 +290,27 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, prov
 
 interface LeadColumnListProps extends BoxProps {
     snapshot: DroppableStateSnapshot;
+    itemCount: number;
 }
 
 const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
-        width: 250,
-        // backgroundColor: 'red',
+        width: 275,
+        maxWidth: 275,
         minHeight: 500,
+        borderRadius: cardBorderRadius,
     },
-    // draggOver: {
-    //     background: "lightblue",
-    // },
+    draggOver: {
+        background: 'rgb(211,211,211, 0.2)', // "lightgrey",
+    },
 }));
 
-export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, title, snapshot, ...boxProps }) => {
+export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, snapshot, itemCount, ...boxProps }) => {
     const classes = useLeadColumnListStyles();
 
     return (
         <Box {...boxProps}>
-            <div className={clsx(classes.root/*, snapshot.isDraggingOver && classes.draggOver*/)}>
+            <div className={clsx(classes.root, (snapshot.isDraggingOver && itemCount === 0) && classes.draggOver)}>
                 {children}
             </div>
         </Box>
