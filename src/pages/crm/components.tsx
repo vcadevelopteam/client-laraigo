@@ -236,30 +236,6 @@ const useLeadColumnStyles = makeStyles(theme => ({
     inputUnderline: {
         display: 'none',
     },
-    subHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        fontSize: 14,
-        fontWeight: 400,
-        width: '100%',
-        marginBottom: theme.spacing(2),
-    },
-    backgroundProgressbar: {
-        backgroundColor: 'lightgrey',
-        height: 14,
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        borderRadius: 7,
-    },
-    progressbar: {
-        backgroundColor: 'red',
-        height: 'inherit',
-        borderTopLeftRadius: 'inherit',
-        borderBottomLeftRadius: 'inherit',
-    },
 }));
 
 export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
@@ -274,13 +250,6 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, prov
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
-                </div>
-                <div className={classes.subHeader}>
-                    <div className={classes.backgroundProgressbar}>
-                        <div className={classes.progressbar} style={{ width: '30%' }} />
-                    </div>
-                    <div style={{ width: 8 }} />
-                    <span>S/ 80,000</span>
                 </div>
                 {children}
             </div>
