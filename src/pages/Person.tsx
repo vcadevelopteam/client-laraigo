@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer } from "@types";
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonLead, IPersonReferrer } from "@types";
 import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
 import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
@@ -22,7 +22,7 @@ import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import BackupIcon from '@material-ui/icons/Backup';
-import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getOpportunitiesByPerson, resetGetOpportunitiesByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
+import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
@@ -2107,23 +2107,26 @@ interface OpportunitiesTabProps {
 
 const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
-    // const opportunityList = useSelector(state => state.person.personOpportunityList);
+    const leads = useSelector(state => state.person.personLeadList);
 
     useEffect(() => {
-        dispatch(getOpportunitiesByPerson(getOpportunitiesByPersonBody(person.personid)));
+        dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
         return () => {
-            dispatch(resetGetOpportunitiesByPerson());
+            dispatch(resetGetLeadsByPerson());
         };
     }, [dispatch, person]);
 
+    useEffect(() => {
+        console.log(leads);
+    }, [leads]);
+
     return (
         <div>
-            <OpportunityItem opportunity={{}} />
-            {/* {opportunityList.data.map((e, i) => <OpportunityItem opportunity={e} key={`opportunity_item_${i}`} />)} */}
+            {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
         </div>
     );
 }
-const useOpportunityItemStyles = makeStyles(theme => ({
+const useLeadItemStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -2175,12 +2178,12 @@ const useOpportunityItemStyles = makeStyles(theme => ({
     },
 }));
 
-interface OpportunityItemProps {
-    opportunity: any;
+interface LeadItemProps {
+    lead: IPersonLead;
 }
 
-const OpportunityItem: FC<OpportunityItemProps> = ({ opportunity }) => {
-    const classes = useOpportunityItemStyles();
+const LeadItem: FC<LeadItemProps> = ({ lead }) => {
+    const classes = useLeadItemStyles();
     const [open, setOpen] = useState(false);
 
     return (
@@ -2191,16 +2194,16 @@ const OpportunityItem: FC<OpportunityItemProps> = ({ opportunity }) => {
                         <Property title="Ticket #" subtitle="#0000006" />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle="-" />
+                        <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle="24/02/1189" />
+                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={lead.createdate} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                         <Property title={<Trans i18nKey={langKeys.salesperson} />} subtitle="William Sam" />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.lastUpdate} />} subtitle="-" />
+                        <Property title={<Trans i18nKey={langKeys.lastUpdate} />} subtitle={lead.changedate} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                         <Property title={<Trans i18nKey={langKeys.phase} />} subtitle="Won" />

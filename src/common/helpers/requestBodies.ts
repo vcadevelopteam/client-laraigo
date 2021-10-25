@@ -1074,6 +1074,7 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
     },
 });
 
+/**Person Leads */
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
     parameters: {

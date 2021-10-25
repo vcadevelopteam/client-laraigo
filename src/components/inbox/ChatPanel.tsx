@@ -300,6 +300,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         newUserId: number;
         newUserGroup: string;
         observation: string;
+        token: string;
     }>();
 
     useEffect(() => {
@@ -316,6 +317,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         ...ticketSelected,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
+                        token: getValues('token') || '',
                     }
                 }));
 
@@ -337,11 +339,13 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             reset({
                 newUserId: 0,
                 newUserGroup: '',
-                observation: ''
+                observation: '',
+                token: ''
             })
             register('newUserId');
             register('newUserGroup');
             register('observation');
+            register('token');
         }
     }, [openModal])
 
@@ -378,7 +382,10 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     label={t(langKeys.user_plural)}
                     className="col-12"
                     valueDefault={"" + getValues('newUserId')}
-                    onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
+                    onChange={(value) => {
+                        setValue('newUserId', value ? value.userid : 0);
+                        setValue('token', value ? value.token : '');
+                    }}
                     error={errors?.newUserId?.message}
                     data={agentsConnected}
                     optionDesc="displayname"
