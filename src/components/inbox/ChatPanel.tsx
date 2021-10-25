@@ -213,6 +213,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                        getLastToken: userType === "SUPERVISOR"
                     }
                 }));
                 setWaitClose(false);
@@ -318,6 +319,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
                         token: getValues('token') || '',
+                        getLastToken: userType === "SUPERVISOR"
                     }
                 }));
 
