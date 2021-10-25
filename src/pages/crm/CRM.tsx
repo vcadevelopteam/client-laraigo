@@ -89,7 +89,6 @@ const CRM: FC = () => {
         const colum0 = {columnid: 0, description: 'BACKLOG', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
         const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
-        console.log('mainMulti',mainMulti.data)
         setDataColumn(
           columns.map((column) => {
             column.items = leads.filter( x => x.columnid === column.columnid)
