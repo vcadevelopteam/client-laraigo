@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
@@ -166,36 +166,68 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 interface InputTitleProps {
     defaultValue: React.ReactNode;
     onChange?: (value: string) => void;
+    className?: string;
+    inputClasses?: string;
 }
 
 const useInputTitleStyles = makeStyles(theme => ({
+    root: {
+        maxHeight: 70.6,
+        height: 70.6,
+        width: 'inherit',
+    },
     title: {
         margin: '0.83em 0',
+        fontSize: '1.5em',
+        fontWeight: 500,
+        width: 'inherit',
     },
     titleInput: {
-        fontSize: '1.5em',
+        fontSize: '1.35em',
         fontWeight: 500,
     },
 }));
 
-const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange }) => {
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, className, inputClasses }) => {
     const classes = useInputTitleStyles();
-    const [disableUnderline, setDisableUnderline] = useState(true);
+    const [edit, setEdit] = useState(false);
+    const [value, setValue] = useState(defaultValue);
+
+    const handleValueChange = useCallback((newValue: string) => {
+        setValue(newValue);
+        onChange?.(newValue);
+    }, []);
+    
+    if (!edit) {
+        return (
+            <div className={classes.root}>
+                <h2
+                    className={classes.title}
+                    onClick={() => setEdit(true)}
+                >
+                    {value}
+                </h2>
+            </div>
+        );
+    }
 
     return (
-        <TextField
-            defaultValue={defaultValue}
-            className={classes.title}
-            onBlur={() => setDisableUnderline(true)}
-            onFocus={() => setDisableUnderline(false)}
-            InputProps={{
-                classes: {
-                    input: classes.titleInput,
-                },
-                disableUnderline,
-            }}
-            onChange={e => onChange?.(e.target.value)}
-        />
+        <div className={classes.root}>
+            <TextField
+                autoFocus
+                value={value}
+                size="small"
+                className={clsx(classes.title, className)}
+                onBlur={() => setEdit(false)}
+                InputProps={{
+                    classes: {
+                        input: clsx(classes.titleInput, inputClasses),
+                    },
+                    disableUnderline: false,
+                }}
+                onChange={e => handleValueChange(e.target.value)}
+            />
+        </div>
     );
 }
 
@@ -233,14 +265,15 @@ const useLeadColumnStyles = makeStyles(theme => ({
         alignItems: 'center',
         width: '100%',
     },
-    inputUnderline: {
-        display: 'none',
+    textField: {
+        '&:hover': {
+            cursor: 'grab',
+        }
     },
 }));
 
 export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
     const classes = useLeadColumnStyles();
-    // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
 
     return (
         <Box {...boxProps}>
