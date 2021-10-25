@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, IconButton, makeStyles } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
-import { DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
+import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
@@ -78,8 +78,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         <Menu style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
                 </div>
-                <label className={classes.title}>Distribution</label>
-                <label className={classes.info}>S/ 19,800.00</label>
+                <label className={classes.title}>{lead.description}</label>
+                <label className={classes.info}>S/ {lead.expected_revenue}</label>
                 <label className={classes.info}>Gemini Furniture</label>
                 <div className={classes.tagsRow}>
                     <div className={classes.tag}>
@@ -116,6 +116,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
     snapshot: DraggableStateSnapshot | null;
+    provided: DraggableProvided;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -165,13 +166,13 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, ...boxProps }) => {
     const classes = useLeadColumnStyles();
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <div className={classes.header}>
+                <div className={classes.header} {...provided.dragHandleProps}>
                     <h2 className={classes.title}>{title}</h2>
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
