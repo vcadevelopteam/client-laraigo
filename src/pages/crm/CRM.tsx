@@ -151,6 +151,7 @@ const CRM: FC = () => {
                                   );
                                 })}
                                 </DroppableLeadColumnList>
+                                {provided.placeholder}
                               </div>
                             )}
                           </Droppable>
@@ -158,6 +159,7 @@ const CRM: FC = () => {
                       </div>
                     )}
                   </Draggable>
+                  {provided.placeholder}
                 </div>
               )}
             </Droppable>
