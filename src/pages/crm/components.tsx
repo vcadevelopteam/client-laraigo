@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, Menu } from '@material-ui/icons';
-import { DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
+import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 
@@ -127,8 +127,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         </Button>
                     </Popover>
                 </div>
-                <span className={classes.title}>Distribution</span>
-                <span className={classes.info}>S/ 19,800.00</span>
+                <span className={classes.title}>{lead.description}</span>
+                <span className={classes.info}>S/ {lead.expected_revenue}</span>
                 <span className={classes.info}>Gemini Furniture</span>
                 <div className={classes.tagsRow}>
                     <div className={classes.tag}>
@@ -204,6 +204,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
+    provided: DraggableProvided;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -254,14 +255,14 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, titleOnChange, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
     const classes = useLeadColumnStyles();
     // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <div className={classes.header}>
+                <div className={classes.header} {...provided.dragHandleProps}>
                     <InputTitle defaultValue={title} onChange={titleOnChange} />
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />

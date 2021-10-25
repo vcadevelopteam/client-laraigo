@@ -1,4 +1,4 @@
-import { IListStatePaginated } from "@types";
+import { IListStatePaginated, MultiData } from "@types";
 import { Dictionary, ITemplate } from "@types";
 import { createReducer, initialListPaginatedState, initialCommon } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
@@ -16,7 +16,7 @@ export interface IUpload extends ITemplate {
 export interface IState {
     mainData: IListStatePaginated<Dictionary>;
     mainDynamic: IListStatePaginated<Dictionary>;
-    multiData: IListStatePaginated<itemMulti>;
+    multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
     execute: IListStatePaginated<Dictionary>;
     mainAux: IListStatePaginated<Dictionary>;
