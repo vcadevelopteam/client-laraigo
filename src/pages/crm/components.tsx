@@ -218,6 +218,13 @@ const useLeadColumnStyles = makeStyles(theme => ({
         overflow: 'hidden', // overflowY
         width: columnWidth,
         maxWidth: columnWidth,
+
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
     },
     header: {
         display: 'flex',
