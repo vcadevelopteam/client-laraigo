@@ -164,8 +164,9 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 
 
 interface InputTitleProps {
-    defaultValue: React.ReactNode;
+    defaultValue: string;
     onChange?: (value: string) => void;
+    onBlur?: (value: string) => void;
     className?: string;
     inputClasses?: string;
 }
@@ -188,7 +189,7 @@ const useInputTitleStyles = makeStyles(theme => ({
     },
 }));
 
-const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, className, inputClasses }) => {
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, onBlur, className, inputClasses }) => {
     const classes = useInputTitleStyles();
     const [edit, setEdit] = useState(false);
     const [value, setValue] = useState(defaultValue);
@@ -197,6 +198,11 @@ const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, className, i
         setValue(newValue);
         onChange?.(newValue);
     }, []);
+
+    const handleOnBlur = useCallback(() => {
+        setEdit(false);
+        onBlur?.(value);
+    }, [value]);
     
     if (!edit) {
         return (
@@ -218,7 +224,7 @@ const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, className, i
                 value={value}
                 size="small"
                 className={clsx(classes.title, className)}
-                onBlur={() => setEdit(false)}
+                onBlur={handleOnBlur}
                 InputProps={{
                     classes: {
                         input: clsx(classes.titleInput, inputClasses),
@@ -233,7 +239,7 @@ const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, className, i
 
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     /**default title value */
-    title: React.ReactNode;
+    title: string;
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
     provided: DraggableProvided;
