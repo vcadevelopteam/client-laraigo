@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "TESTING";
 
 const APIS_URL = {
     DEVELOP: {
@@ -18,7 +18,7 @@ const APIS_URL = {
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
-        WS: 'https://testsocket.laraigo.com',
+        WS: 'http://localhost:7070',
         CHATFLOW: 'https://localhost:4200'
     }
 }
