@@ -3,7 +3,7 @@ import { BoxProps, makeStyles, Box, Grid, IconButton } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, OrganizationIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';

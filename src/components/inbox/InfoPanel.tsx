@@ -16,6 +16,10 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { DialogInteractions } from 'components';
 import { Dictionary } from '@types';
+import EditIcon from '@material-ui/icons/Edit';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import SaveIcon from '@material-ui/icons/Save';
+import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
@@ -142,10 +146,44 @@ const InfoTab: React.FC = () => {
     const classes = useStyles();
     const { t } = useTranslation();
     const person = useSelector(state => state.inbox.person.data);
-    return (
-        <div >
-            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+    const [view, setView] = useState('view');
 
+    const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
+        defaultValues: person
+    });
+    console.log(person)
+    if (view === 'edit') {
+        return (
+            <div>
+                <div style={{ display: 'flex', marginRight: 8, justifyContent: 'space-between' }}>
+                    <IconButton
+                        onClick={() => setView('edit')}
+                        size="small"
+                    >
+                        <SaveIcon />
+                    </IconButton>
+                    <IconButton
+                        onClick={() => setView('view')}
+                        size="small"
+                    >
+                        <VisibilityIcon />
+                    </IconButton>
+                </div>
+            </div>
+        )
+    }
+    return (
+        <div>
+            <div style={{ display: 'flex', marginRight: 8, justifyContent: 'flex-end' }}>
+
+                <IconButton
+                    onClick={() => setView('edit')}
+                    size="small"
+                >
+                    <EditIcon />
+                </IconButton>
+            </div>
+            <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
                 {person?.firstname && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.firstname)}</div>
@@ -158,7 +196,6 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
-
                 {person?.documenttype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documenttype)}</div>

@@ -738,7 +738,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                         </div>
-                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
+                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>
