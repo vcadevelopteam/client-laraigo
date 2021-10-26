@@ -20,11 +20,14 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Rating from '@material-ui/lab/Rating';
+import { Box } from '@material-ui/core';
 
 const dataPriority = [
-    { option: 'high' },
-    { option: 'medium' },
-    { option: 'low' },
+    { option: 'HIGH' },
+    { option: 'LOW' },
+    { option: 'MEDIUM' },
+    { option: 'HIGH' },
 ]
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
@@ -420,7 +423,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
         expected_revenue: string;
-        priority: string;
+        priority: number;
         lastname: string;
         firstname: string;
         email: string;
@@ -448,7 +451,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             reset({
                 description: '',
                 expected_revenue: '',
-                priority: '',
+                priority: 1,
                 firstname: personSelected.data?.firstname,
                 lastname: personSelected.data?.lastname,
                 email: personSelected.data?.email,
@@ -456,7 +459,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
-            register('priority', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('priority', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
 
             register('lastname');
             register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
@@ -466,7 +469,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-
+        console.log(data.priority)
         const newLead: ILead = {
             leadid: 0,
             description: data.description,
@@ -476,7 +479,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             date_deadline: null,
             tags: '',
             personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            priority: data.priority,
+            priority: dataPriority[data.priority].option,
             conversationid: ticketSelected?.conversationid!!,
             columnid: 0,
             index: 0,
@@ -517,7 +520,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 </div>
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit
-                        label={t(langKeys.alternativeEmail)}
+                        label={t(langKeys.email)}
                         valueDefault={getValues('email')}
                         className="flex-1"
                         error={errors?.email?.message}
@@ -537,24 +540,26 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
-                <FieldEdit
-                    label={t(langKeys.expected_revenue)}
-                    valueDefault={getValues('expected_revenue')}
-                    error={errors?.expected_revenue?.message}
-                    type="number"
-                    onChange={(value) => setValue('expected_revenue', value)}
-                />
-                <FieldSelect
-                    label={t(langKeys.priority)}
-                    valueDefault={getValues('priority')}
-                    onChange={(value) => setValue('priority', value ? value.option : '')}
-                    error={errors?.priority?.message}
-                    data={dataPriority}
-                    optionDesc="option"
-                    optionValue="option"
-                    uset
-                    prefixTranslation="priority_"
-                />
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)}
+                        className="flex-1"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                    <div style={{ flex: 1 }}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">Prioridad</Box>
+                        <Rating
+                            name="simple-controlled"
+                            // defaultValue={2}
+                            max={3}
+                            value={getValues('priority')}
+                            onChange={(event, newValue) => setValue('priority', newValue || 0, { shouldValidate: true })}
+                        />
+                    </div>
+                </div>
             </div>
         </DialogZyx>)
 }

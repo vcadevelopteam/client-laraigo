@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
-        // gap: theme.spacing(1),
+        gap: theme.spacing(.5),
     },
     containerPostback: {
         width: 200,
