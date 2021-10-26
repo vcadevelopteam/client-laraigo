@@ -177,13 +177,25 @@ export const ChannelAddIos: FC = () => {
                     }
                 </div>
             </div>
-            <div style={{ height: 20 }} />
-            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
-                {
-                    `Smooch.init(this, new Settings("${integrationId}"), new SmoochCallback<InitializationStatus>() {\n@Override\npublic void run(@NonNull Response<InitializationStatus> response) {\n// Handle the response, no casting required...\nif (response.getData() == InitializationStatus.SUCCESS) {\n// Your code after init is complete\n} else {\n// Something went wrong during initialization\n}\n}\n});`
-                }
-                </code></pre><div style={{ height: 20 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', height: 10 }} />
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+                {t(langKeys.iosstep1)}
             </div>
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces'}}><code>
+                { `[Smooch initWithSettings:[SKTSettings settingsWithIntegrationId:@"${integrationId}"] completionHandler:^(NSError * _Nullable error, NSDictionary * _Nullable userInfo) {\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}];` }
+                </code></pre><div style={{ height: 10 }} />
+            </div>
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+                {t(langKeys.iosstep2)}
+            </div>
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word', width: '100%', whiteSpace: 'break-spaces'}}><code>
+                { `Smooch.initWith(SKTSettings(integrationId: "${integrationId}")) { (error: Error?, userInfo: [AnyHashable : Any]?) in\n\tif (error == nil) {\n\t\t// Initialization complete\n\t} else {\n\t\t// Something went wrong\n\t}\n}` }
+                </code></pre><div style={{ height: 10 }} />
+            </div>
+            <div style={{ display: showScript ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+                {t(langKeys.iosstep3)}
+            </div>
+            <div style={{ display: showScript ? 'flex' : 'none', height: 20 }} />
         </div>
     )
 }

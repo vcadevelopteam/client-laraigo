@@ -1188,6 +1188,15 @@ export const langKeys = {
     iaModel: 'iaModel',
     iaModel_plural: 'iaModel_plural',
     ia: 'ia',
+
+    androidalert: 'androidalert',
+    androidlibrary: 'androidlibrary',
+    androidstep1: 'androidstep1',
+    androidstep2: 'androidstep2',
+    iosstep1: 'iosstep1',
+    iosstep2: 'iosstep2',
+    iosstep3: 'iosstep3',
+    chatwebstep: 'chatwebstep',
 };
 
 export type LangKeys = typeof langKeys;

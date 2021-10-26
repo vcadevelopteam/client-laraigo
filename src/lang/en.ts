@@ -1196,6 +1196,15 @@ const translation: LangKeys = {
     iaModel: 'IA Model',
     iaModel_plural: 'IA Models',
     ia: 'Artificial intelligence',
+
+    androidalert: 'The minimum supported SDK version is API level 16, and your app must be compiled with at least API version 29. If your app needs to support earlier versions of Android, you may still try to integrate, but it is untested and we cannot guarantee compatibility',
+    androidlibrary: 'You need to add these dependencies to your build.gradle file. This library is hosted on Bintray and available on JCenter by using the following url: https://zendesk.jfrog.io/zendesk/repo/.',
+    androidstep1: 'In order to initialize the chat from your application class, add the following lines of code',
+    androidstep2: 'If you want to use another initialization method, like initializing from an activity class, please check this link for a more detailed documentation: https://docs.smooch.io/guide/native-android-sdk/#quick-start',
+    iosstep1: 'If you are using Objective-C, copy the following lines of code in order to initialize the chat',
+    iosstep2: 'If you are using Swift, copy the following lines of code in order to initialize the chat',
+    iosstep3: 'The SDK iOS supports installation through both CocoaPods and Carthage. Please, refer to this document if you need help in the install: https://docs.smooch.io/guide/native-ios-sdk/#installation',
+    chatwebstep: 'Copy the following lines of code in the website where you want to use the chat',
 };
 
 const enResource: ResourceLanguage = {
