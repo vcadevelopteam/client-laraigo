@@ -1656,3 +1656,17 @@ export const getLeadsSel = (id:number): IRequestBody => ({
         all: true
     }
 })
+
+export const insColumns = ({ id, description, type, status, edit, index, operation }: Dictionary): IRequestBody => ({
+    method: 'UFN_COLUMN_INS',
+    key: "UFN_COLUMN_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        edit,
+        index,
+        operation
+    }
+});

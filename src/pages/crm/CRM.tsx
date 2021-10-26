@@ -1,10 +1,10 @@
-import { getColumnsSel, getLeadsSel } from "common/helpers";
+import { getColumnsSel, getLeadsSel, insColumns } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
-import { getMultiCollection, resetMain } from "store/main/actions";
+import { getMultiCollection, resetMain, execute } from "store/main/actions";
 
 interface dataBackend {
   columnid: number,
@@ -69,6 +69,25 @@ const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) 
   }
 };
 
+// const cambiarColumna = (columnid:number, title:string, columns:dataBackend[], setDataColumn:any) => {
+//   const dispatch = useDispatch();
+//   const index = columns.findIndex(c => c.columnid === columnid)
+//   const column = columns[index];
+//   setDataColumn(Object.values({...columns, [index]: {...column, description: title}}));
+
+//   const data = {
+//     id: column.columnid,
+//     description: column.description,
+//     type: null,
+//     status: column.columnid,
+//     edit: column.columnid,
+//     username: column.columnid,
+//     index: column.columnid,
+//     operation: column.columnid
+//   }
+//   dispatch(execute(insColumns(data)));
+// }
+
 const CRM: FC = () => {
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const dispatch = useDispatch();
@@ -86,7 +105,7 @@ const CRM: FC = () => {
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
-        const colum0 = {columnid: 0, description: 'BACKLOG', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
+        const colum0 = {columnid: 0, description: 'Backlog', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
         const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
         setDataColumn(
@@ -98,6 +117,25 @@ const CRM: FC = () => {
       }
     }
   },[mainMulti])
+
+  const handleEdit = (columnid:number, title:string, columns:dataBackend[], setDataColumn:any) => {
+    const index = columns.findIndex(c => c.columnid === columnid)
+    const column = columns[index];
+    setDataColumn(Object.values({...columns, [index]: {...column, description: title}}));
+
+    if (column.columnid !== 0) {
+      const data = {
+        id: column.columnid,
+        description: title,
+        type: 'NINGUNO',
+        status: 'ACTIVO',
+        edit: true,
+        index: column.index,
+        operation: 'EDIT'
+      }
+      dispatch(execute(insColumns(data)));
+    }
+  }
 
   
   return (
@@ -183,7 +221,7 @@ const CRM: FC = () => {
                           {...provided.draggableProps}
                           ref={provided.innerRef}
                         >
-                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided}>
+                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.columnid,val,dataColumn, setDataColumn)}}>
                                 <Droppable droppableId={column.columnid.toString()} type="task">
                                   {(provided, snapshot) => {
                                     return (

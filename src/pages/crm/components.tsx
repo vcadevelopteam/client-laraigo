@@ -285,7 +285,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, prov
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header} {...provided.dragHandleProps}>
-                    <InputTitle defaultValue={title} onChange={titleOnChange} />
+                    <InputTitle defaultValue={title} onBlur={titleOnChange} />
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
