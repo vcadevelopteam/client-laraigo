@@ -111,7 +111,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -119,7 +119,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
     const handlerSelectAgent = () => dispatch(selectAgent(agent));
 
     return (
-        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === agent.userid) })} onClick={handlerSelectAgent}>
+        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === userid) })} onClick={handlerSelectAgent}>
             <div className={classes.agentUp}>
                 <BadgeGo
                     overlap="circular"
@@ -143,16 +143,28 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 </div>
             </div>
             <div className={classes.counterCount}>
-                <CountTicket
-                    label={t(langKeys.attending)}
-                    count={countAnwsered}
-                    color="#55BD84"
-                />
-                <CountTicket
-                    label={t(langKeys.pending)}
-                    count={countNotAnwsered || 0}
-                    color="#FB5F5F"
-                />
+
+                {(userid === 2 || userid === 3) &&
+                    <CountTicket
+                        label={t(langKeys.active) + "s"}
+                        count={countAnwsered + (countNotAnwsered || 0)}
+                        color="#55BD84"
+                    />
+                }
+                {userid !== 2 && userid !== 3 &&
+                    <>
+                        <CountTicket
+                            label={t(langKeys.attending)}
+                            count={countAnwsered}
+                            color="#55BD84"
+                        />
+                        <CountTicket
+                            label={t(langKeys.pending)}
+                            count={countNotAnwsered || 0}
+                            color="#FB5F5F"
+                        />
+                    </>
+                }
                 <CountTicket
                     label={t(langKeys.paused)}
                     count={countPaused}
