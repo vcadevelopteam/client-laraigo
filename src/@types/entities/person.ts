@@ -153,3 +153,19 @@ export interface IPersonConversation {
     firstreplytime: string;
     totalpauseduration: string;
 }
+
+export interface IPersonLead {
+    changeby: string;
+    changedate: string;
+    columnid: number;
+    corpid: number;
+    createby: string;
+    createdate: string;
+    description: string;
+    index: number;
+    orgid: number;
+    personcommunicationchannel: string;
+    personid: number;
+    status: string;
+    type: string;
+}

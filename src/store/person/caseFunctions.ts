@@ -183,34 +183,34 @@ export const getAdditionalInfoByPersonReset = (state: IState): IState => ({
     personAdditionInfo: initialState.personAdditionInfo,
 });
 
-export const getOpportunitiesByPerson = (state: IState): IState => ({
+export const getLeadsByPerson = (state: IState): IState => ({
     ...state,
-    personOpportunityList: { ...state.personOpportunityList, loading: true },
+    personLeadList: { ...state.personLeadList, loading: true },
 });
 
-export const getOpportunitiesByPersonSuccess = (state: IState, action: IAction): IState => ({
+export const getLeadsByPersonSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    personOpportunityList: {
-        ...state.personOpportunityList,
+    personLeadList: {
+        ...state.personLeadList,
         data: action.payload.data || [],
         loading: false,
         error: false,
     },
 });
 
-export const getOpportunitiesByPersonFailure = (state: IState, action: IAction): IState => ({
+export const getLeadsByPersonFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    personOpportunityList: {
-        ...state.personOpportunityList,
+    personLeadList: {
+        ...state.personLeadList,
         error: true,
         loading: false,
         message: action.payload?.message || "Ocurrio un error Obtener la lista"
     },
 });
 
-export const getOpportunitiesByPersonReset = (state: IState): IState => ({
+export const getLeadsByPersonReset = (state: IState): IState => ({
     ...state,
-    personOpportunityList: initialState.personOpportunityList,
+    personLeadList: initialState.personLeadList,
 });
 
 export const getDomainsByTypename = (state: IState): IState => ({

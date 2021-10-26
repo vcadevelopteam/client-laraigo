@@ -103,7 +103,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     name="mobilephone"
                     fullWidth
                     defaultCountry={'pe'}
-                    onChange={(e) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
+                    onChange={(e:any) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
                 />
                 <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
                 

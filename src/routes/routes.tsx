@@ -146,6 +146,13 @@ export const routes: RouteConfig[] = [
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
+    {
+        key: paths.CRM,
+        description: 'CRM',
+        tooltip: 'CRM',
+        path: paths.CRM,
+        icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
     // {
     //     key: paths.EXTRAS,
     //     description: <Trans i18nKey={langKeys.extra} count={2} />,

@@ -1074,6 +1074,7 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
     },
 });
 
+/**Person Leads */
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
     parameters: {
@@ -1692,3 +1693,20 @@ export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, 
         personid,
     },
 });
+export const getColumnsSel = (id:number): IRequestBody => ({
+    method: "UFN_COLUMN_SEL",
+    key: "UFN_COLUMN_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
+
+export const getLeadsSel = (id:number): IRequestBody => ({
+    method: "UFN_LEAD_SEL",
+    key: "UFN_LEAD_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})

@@ -213,6 +213,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                        getLastToken: userType === "SUPERVISOR"
                     }
                 }));
                 setWaitClose(false);
@@ -300,6 +301,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         newUserId: number;
         newUserGroup: string;
         observation: string;
+        token: string;
     }>();
 
     useEffect(() => {
@@ -316,6 +318,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                         ...ticketSelected,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
                         newuserid: getValues('newUserId') || 3,
+                        getLastToken: userType === "SUPERVISOR"
                     }
                 }));
 
@@ -337,7 +340,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             reset({
                 newUserId: 0,
                 newUserGroup: '',
-                observation: ''
+                observation: '',
             })
             register('newUserId');
             register('newUserGroup');

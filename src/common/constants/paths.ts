@@ -94,6 +94,7 @@ const paths = {
     IA: '/iaservices/ia',
 
     SETTINGS: '/settings',
+    CRM: '/crm',
 };
 
 export default paths;
