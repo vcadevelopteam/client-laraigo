@@ -383,6 +383,11 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
     const open = Boolean(anchorEl);
     const id = open ? 'crm-add-new-column-popover' : undefined;
 
+    const handleSubmit = (title: string) => {
+        onSubmit(title);
+        handleClose();
+    };
+
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
@@ -406,7 +411,7 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
                         className: classes.popoverRoot,
                     }}
                 >
-                    <ColumnTemplate onSubmit={onSubmit} />
+                    <ColumnTemplate onSubmit={handleSubmit} />
                 </Popover>
             </div>
         </Box>
