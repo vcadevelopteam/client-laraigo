@@ -5,9 +5,12 @@ import { Add, Menu } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
+import { Skeleton } from '@material-ui/lab';
 
 const columnWidth = 275;
+const columnMinHeight = 500;
 const cardBorderRadius = 12;
+const inputTitleHeight = 70.6;
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
@@ -173,8 +176,8 @@ interface InputTitleProps {
 
 const useInputTitleStyles = makeStyles(theme => ({
     root: {
-        maxHeight: 70.6,
-        height: 70.6,
+        maxHeight: inputTitleHeight,
+        height: inputTitleHeight,
         width: 'inherit',
     },
     title: {
@@ -305,7 +308,7 @@ const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
         width: 275,
         maxWidth: 275,
-        minHeight: 500,
+        minHeight: columnMinHeight,
         borderRadius: cardBorderRadius,
     },
     draggOver: {
@@ -322,5 +325,161 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
                 {children}
             </div>
         </Box>
+    );
+}
+
+interface AddColumnTemplatePops extends Omit<BoxProps, 'onSubmit'> {
+    onSubmit: (title: string) => void;
+}
+
+const useAddColumnTemplateStyles = makeStyles(theme => ({
+    root: {
+        width: columnWidth,
+        maxWidth: columnWidth,
+        display: 'flex',
+        flexDirection: 'column',
+        fontSize: 14,
+        fontWeight: 500,
+        color: theme.palette.primary.main,
+        padding: `calc(0.83em + ${inputTitleHeight * .1}px) 6px 0 6px`,
+    },
+    addBtnContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: 'inherit',
+        position: 'relative',
+        height: 35,
+        width: 'inherit',
+    },
+    addBtn: {
+        width: 35,
+        height: 35,
+        backgroundColor: theme.palette.primary.light,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 3,
+    },
+    popoverRoot: {
+        width: columnWidth,
+        height: columnMinHeight,
+    },
+}));
+
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
+    const classes = useAddColumnTemplateStyles();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'crm-add-new-column-popover' : undefined;
+
+    return (
+        <Box {...boxProps}>
+            <div className={classes.root}>
+                <Button color="primary" className={classes.addBtnContainer} onClick={handleClick}>
+                    <div className={classes.addBtn}>
+                        <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
+                    </div>
+                    <div style={{ width: 12 }} />
+                    <span>Add a column</span>
+                </Button>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    PaperProps={{
+                        className: classes.popoverRoot,
+                    }}
+                >
+                    <ColumnTemplate onSubmit={onSubmit} />
+                </Popover>
+            </div>
+        </Box>
+    );
+}
+
+interface ColumnTemplateProps {
+    onSubmit: (title: string) => void;
+}
+
+const useColumnTemplateStyles = makeStyles(theme => ({
+    root: {
+        overflow: 'hidden',
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
+    },
+    titleSection: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: 'inherit',
+    },
+    btn: {
+        minWidth: 'unset',
+    },
+    input: {
+        flexGrow: 1,
+    },
+}));
+
+const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
+    const classes = useColumnTemplateStyles();
+    const inputClasses = useInputTitleStyles();
+    const [title, setTitle] = useState("");
+
+    return (
+        <div className={classes.root}>
+            <div className={classes.titleSection}>
+                <TextField
+                    value={title}
+                    size="small"
+                    placeholder="Column title"
+                    className={classes.input}
+                    InputProps={{
+                        classes: {
+                            input: inputClasses.titleInput,
+                        },
+                    }}
+                    onChange={e => setTitle(e.target.value)}
+                />
+                <div style={{ width: 12 }} />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    className={classes.btn}
+                    onClick={() => onSubmit(title)}
+                >
+                    <Trans i18nKey={langKeys.add} />
+                </Button>
+            </div>
+            <div style={{ height: 24 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+        </div>
     );
 }

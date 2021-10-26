@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 
 interface dataBackend {
@@ -272,6 +272,7 @@ const CRM: FC = () => {
             )}
           </Droppable>
         </DragDropContext>
+        <AddColumnTemplate onSubmit={(columnTitle) =>{ console.log("Columna agregada", columnTitle); }} />
       </div>
     );
 };
