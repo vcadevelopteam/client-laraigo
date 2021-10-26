@@ -8,12 +8,13 @@ import { apiUrls } from 'common/constants';
 import Backdrop from '@material-ui/core/Backdrop';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+const origin = new URL(apiUrls.CHATFLOW).origin;
+const pathname = new URL(apiUrls.CHATFLOW).pathname
+const url = `${origin}${pathname}`;
+
 const BotDesigner: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-
-    const origin = new URL(apiUrls.CHATFLOW).origin;
-    const pathname = new URL(apiUrls.CHATFLOW).pathname
 
     const receiveCrossDomainMessage = (event: any) => {
         if (event?.origin === origin) {
@@ -33,11 +34,11 @@ const BotDesigner: FC = () => {
     }
 
     const [frame, setFrame] = useState(false);
-    const [url, setUrl] = useState('');
 
     useEffect(() => {
-        postCrossDomainMessage(localStorage.getItem('accessToken'));
-        setUrl(`${origin}${pathname}`);
+        if (frame) {
+            postCrossDomainMessage(localStorage.getItem('accessToken'));
+        }
     }, [frame])
 
     return (
