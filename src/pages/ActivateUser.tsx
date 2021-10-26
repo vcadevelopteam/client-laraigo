@@ -78,53 +78,79 @@ export const ActivateUser: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const activationRes = useSelector(state => state.activationuser.activation);
-    const [valid, setValid] = useState(false);
+    const [valid, setValid] = useState<boolean | null>(null);
 
     useEffect(() => {
         dispatch(sendActivation(token));
-        setTimeout(() => {
-            setValid(true);
-        }, 10000)
     }, []);
 
     useEffect(() => {
-        console.log(activationRes)
+        setTimeout(() => {
+            const x = Math.random();
+            if (x > 0.5)
+                setValid(true);
+            else
+                setValid(false);
+            // if (!activationRes.loading && !activationRes.error) {
+            //     setValid(true);
+            // } else if (activationRes.error) {
+            //     setValid(false);
+            // }
+        }, 10000)
     }, [activationRes])
 
     const classes = useStyles();
     const { t } = useTranslation();
 
-    if (valid) {
-        return (
-            <div style={{ width: "100%",marginTop:25}}>
-                <div className={classes.titlecards}>Your Account Has Been Createad!</div>
-                <Box className={classes.boxstyles}>
-                    <p>Thanks for registering to our platform!</p>
-                    <p>To continue to login click continue</p>
-                    <div className={classes.buttonContainer}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            style={{ backgroundColor: "#7721AD" }}
-                            onClick={() => history.push(paths.SIGNIN)}
-                        >{t(langKeys.continue)}</Button>
-                    </div>
-                </Box>
-            </div>
-        );
-    }
-    else {
-        return (
-            <div style={{ width: "100%",marginTop:25}}>
-                <div className={classes.titlecards}>We are validating your account...</div>
+    switch (valid) {
+        case null:
+            return (
+                <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.titlecards}>We are validating your account...</div>
                     <div className={clsx("la-ball-beat la-2x", classes.spinnerContainer)}>
                         <div></div>
                         <div></div>
                         <div></div>
                     </div>
-            </div>
-        );
+                </div>
+            );
+        case true:
+            return (
+                <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.titlecards}>Your account has been createad!</div>
+                    <Box className={classes.boxstyles}>
+                        <p>Thanks for registering to our platform!</p>
+                        <p>To continue to login click continue</p>
+                        <div className={classes.buttonContainer}>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                style={{ backgroundColor: "#7721AD" }}
+                                onClick={() => history.push(paths.SIGNIN)}
+                            >{t(langKeys.continue)}</Button>
+                        </div>
+                    </Box>
+                </div>
+            );
+        case false:
+            return (
+                <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.titlecards}>Your account has been already created!</div>
+                    <Box className={classes.boxstyles}>
+                        <p>To continue to login click continue</p>
+                        <div className={classes.buttonContainer}>
+                            <Button
+                                variant="contained"
+                                type="button"
+                                color="primary"
+                                style={{ backgroundColor: "#7721AD" }}
+                                onClick={() => history.push(paths.SIGNIN)}
+                            >{t(langKeys.continue)}</Button>
+                        </div>
+                    </Box>
+                </div>
+            );
     }
 };
 
