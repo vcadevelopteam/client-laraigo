@@ -376,6 +376,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
 
                             {edit ?
                                 <FieldSelect
+                                    uset={true}
                                     label={t(langKeys.default_application)}
                                     className={classes.mb2}
                                     valueDefault={row?.redirect || ""}
@@ -384,6 +385,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     data={dataApplications.data}
                                     loading={dataApplications.loading}
                                     triggerOnChangeOnFirst={true}
+                                    prefixTranslation="app_"
                                     optionDesc="description"
                                     optionValue="path"
                                 /> :
