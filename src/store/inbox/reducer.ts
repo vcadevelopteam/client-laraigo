@@ -45,7 +45,8 @@ export interface IState {
     wsConnected: boolean;
     userConnected: boolean;
     isOnBottom: boolean | null;
-    triggerNewMessageClient: boolean | null;
+    showGoToBottom: boolean | null;
+    triggerNewMessageClient: boolean;
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
 }
@@ -75,6 +76,7 @@ export const initialState: IState = {
     wsConnected: false,
     userConnected: !!localStorage.getItem("agentConnected"),
     isOnBottom: null,
+    showGoToBottom: false,
     triggerNewMessageClient: false,
     isFiltering: false,
 };
@@ -181,5 +183,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TIPIFICATION_LEVEL_3_RESET]: caseFunctions.getTipificationLevel3Reset,
     [actionTypes.WS_CONNECTED]: caseFunctions.wsConnect,
     [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
+    [actionTypes.SET_SHOW_GO_TO_BOTTOM]: caseFunctions.showGoToBottom,
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
+    [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,
 });

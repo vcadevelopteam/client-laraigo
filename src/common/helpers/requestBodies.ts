@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1042,6 +1042,22 @@ export const getTicketListByPersonBody = (personId: ID, { filters, sorts, take, 
     },
 });
 
+export const getReferrerByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONREFERRER_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const insPersonUpdateLocked = ({personid, personcommunicationchannel, locked }: Dictionary) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
+    parameters: {
+        personid,
+        personcommunicationchannel,
+        locked
+    },
+});
+
 export const getChannelListByPersonBody = (personId: ID) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
     parameters: {
@@ -1058,6 +1074,7 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
     },
 });
 
+/**Person Leads */
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
     parameters: {
@@ -1628,17 +1645,54 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
     },
 ]);
 
-export const editPersonBody = (person: IPerson): IRequestBody => ({
+export const insPersonBody = (person: Dictionary): IRequestBody => ({
     method: 'UFN_PERSON_INS',
     parameters: {
         ...person,
         corpid: null,
         orgid: null,
-        id: person.personid,
-        operation: 'UPDATE',
     },
 });
 
+export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSONCOMMUNICATIONCHANNEL_INS',
+    parameters: {
+        ...pcc,
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const editPersonBody = (person: IPerson): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        id: person.personid,
+        operation: person.personid ? 'UPDATE' : 'INSERT',
+    },
+});
+
+export const insLead = (lead: ILead, operation: string): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        operation
+    },
+});
+
+export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number): IRequestBody => ({
+    method: 'UFN_LEAD_PERSON_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        firstname,
+        lastname,
+        email,
+        phone,
+        personid,
+    },
+});
 export const getColumnsSel = (id:number): IRequestBody => ({
     method: "UFN_COLUMN_SEL",
     key: "UFN_COLUMN_SEL",

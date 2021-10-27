@@ -10,7 +10,7 @@ import TwitterIcon from '@material-ui/icons/Twitter';
 import EmailIcon from '@material-ui/icons/Email';
 import PhoneIcon from '@material-ui/icons/Phone';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon } from "@material-ui/icons";
-import { FacebookMessengerIcon, ZyxmeMessengerIcon } from "icons";
+import { AndroidIcon, AppleIcon, FacebookMessengerIcon, ZyxmeMessengerIcon } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
 
 interface ChannelOption {
@@ -134,6 +134,15 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             selected: listchannels.instagram
         },
         {
+            icon: <InstagramIcon color="inherit" />,
+            label: 'Instagram DM',
+            key: 'instagramDM',
+            onClick: () => {
+                setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
+            },
+            selected: listchannels.instagramDM
+        },
+        {
             icon: <FacebookMessengerIcon className={classes.icon} />,
             label: 'Messenger',
             key: 'messenger',
@@ -216,6 +225,24 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                 setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
             },
             selected: listchannels.sms
+        },
+        {
+            icon: <AndroidIcon className={classes.icon} />,
+            label: 'Android SDK',
+            key: 'android',
+            onClick: () => {
+                setlistchannels((p: any) => ({ ...p, android: !p.android }))
+            },
+            selected: listchannels.android
+        },
+        {
+            icon: <AppleIcon className={classes.icon} />,
+            label: 'iOS SDk',
+            key: 'apple',
+            onClick: () => {
+                setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
+            },
+            selected: listchannels.apple
         },
     ];
 

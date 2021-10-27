@@ -61,8 +61,7 @@ export const ChannelAddTwitter: FC = () => {
             "consumersecret": "",
             "accesstoken": "",
             "accesssecret": "",
-            "devenvironment": "",
-            "siteid": "",
+            "devenvironment": ""
         }
     })
 
@@ -73,8 +72,8 @@ export const ChannelAddTwitter: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
+        if (!mainResult.loading && setins){
+            if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -87,7 +86,7 @@ export const ChannelAddTwitter: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult,waitSave])
+    }, [mainResult])
 
     useEffect(() => {
         if (waitSave) {
@@ -127,6 +126,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.consumerkey= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumerkey}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
                         />
@@ -140,6 +140,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.consumersecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumersecret}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
                         />
@@ -153,6 +154,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.accesstoken= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
                         />
@@ -166,6 +168,7 @@ export const ChannelAddTwitter: FC = () => {
                                 partialf.service.accesssecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesssecret}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
                         />
@@ -201,27 +204,14 @@ export const ChannelAddTwitter: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton2(value===""||fields.parameters.communicationchannelowner==="")
+                                setNextbutton2(value==="")
                                 let partialf = fields;
-                                partialf.service.devenvironment= value
+                                partialf.parameters.communicationchannelowner = "";
+                                partialf.service.devenvironment= value;
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.devenvironment}
                             label={t(langKeys.devenvironment)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton2(value===""||fields.service.devenvironment==="")
-                                let partialf = fields;
-                                partialf.service.siteid= value
-                                partialf.parameters.communicationchannelowner = value
-                                partialf.parameters.communicationchannelsite = value
-                                setFields(partialf)
-                            }}
-                            label={t(langKeys.consumerpageid)}
                             className="col-6"
                         />
                     </div>
@@ -264,7 +254,7 @@ export const ChannelAddTwitter: FC = () => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                                 <TwitterIcon style={{fill: `${coloricon}`, width: "100px" }}/>

@@ -1,15 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput, IOSSwitch } from "components";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
 import { TelegramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -29,16 +24,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#207FDD");
     const [channelreg, setChannelreg] = useState(true);
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -60,9 +49,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
         },
         "type": "TELEGRAM",
         "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": "1094526090706564"
+            "accesstoken": ""
         }
     })
 
@@ -70,28 +57,6 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,telegram:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     function setnameField(value: any) {
         setChannelreg(value==="")
@@ -104,18 +69,11 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
         partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
-    function setBotName(val:string){
-        setNextbutton(val===""||fields.service.accesstoken==="")
-        let partialf = fields;
-        partialf.service.siteid=val
-        partialf.parameters.communicationchannelowner=val
-        partialf.parameters.communicationchannelsite=val
-        setFields(partialf)
-    }
     function setBotKey(val:string){
-        setNextbutton(val===""||fields.parameters.communicationchannelowner==="")
+        setNextbutton(val==="")
         let partialf = fields;
-        partialf.service.accesstoken=val
+        partialf.service.accesstoken=val;
+        partialf.parameters.communicationchannelowner="";
         setFields(partialf)
     }
     if(viewSelected==="view1"){
@@ -124,14 +82,6 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connecttelegram)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.connecttelegramins)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setBotName(value)}
-                            label={t(langKeys.enterbotname)}
-                            className="col-6"
-                        />
-                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -180,7 +130,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                                 <TelegramIcon style={{fill: `${coloricon}`, width: "100px" }}/>

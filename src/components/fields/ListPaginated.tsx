@@ -1,17 +1,29 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { IconButton, Box, Select, MenuItem, Theme, List } from '@material-ui/core';
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@material-ui/icons';
 import NoDataImg from 'images/no_data.png';
+import Input from '@material-ui/core/Input';
+import { Dictionary } from '@types';
+import { SearchField } from 'components';
 
+interface IColumns {
+    Header: string;
+    accessor: string;
+    filter?: boolean;
+}
 interface PaginatedListProps<T> {
     builder: (item: T, index: number) => React.ReactNode;
+    onFilterChange?: (filter: any) => void;
     onPageChange: (page: number) => void;
     onPageSizeChange: (pageSize: number) => void;
     skeleton?: (index: number) => React.ReactNode;
+    dateRange?: any;
     data: T[];
+    columns: IColumns[];
+    filterGeneral?: boolean;
     currentPage: number;
     pageSize: number;
     totalItems: number;
@@ -43,6 +55,18 @@ const useStyles = makeStyles((theme: Theme) => ({
     loading: {
 
     },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#FFF',
+        padding: `${theme.spacing(2)}px`,
+    },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
+    },
 }));
 
 const useNoDataStyles = makeStyles(theme => ({
@@ -61,26 +85,18 @@ const useNoDataStyles = makeStyles(theme => ({
     }
 }));
 
-const NoData: FC = () => {
-    const classes = useNoDataStyles();
-
-    return (
-        <Box width={1} className={classes.noDataRoot}>
-            <img src={NoDataImg} alt="No Data" />
-            <div style={{ height: 18 }} />
-            <label className={classes.label}>No data</label>
-        </Box>
-    );
-}
-
 function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const {
+        dateRange,
         data,
         builder,
+        columns,
+        filterGeneral = true,
         loading = false,
         pageSize,
         totalItems,
         currentPage,
+        onFilterChange,
         onPageChange,
         onPageSizeChange,
         pageSizeOptions = [10, 20, 50, 100],
@@ -90,19 +106,88 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const pageCount = totalItems <= pageSize ? 1 : Math.ceil(totalItems / pageSize); // total pages
     const canPreviousPage = currentPage > 0;
     const canNextPage = currentPage < pageCount - 1;
+    const [filters, setFilters] = useState<Dictionary>(columns.reduce((a, c) => ({...a, [c.accessor]: ''}), {}));
 
     console.assert(data.length <= pageSize, "PaginatedList: la propiedad 'data' tiene más elementos de lo especificado en 'pageSize'");
     
+    const keyPress = (e: any) => {
+        if (e.keyCode === 13) {
+            onPageChange(0);
+            onFilterChange && onFilterChange(
+                Object.keys(filters).reduce((a: any, f: string) => ({
+                    ...a,
+                    [f]: {operator: 'contains', value: filters[f]}
+                }), {})
+            );
+        }
+    };
+
+    const setGlobalFilter = (value: string) => {
+        if (value === '') {
+            setFilters({});
+            onFilterChange && onFilterChange({});
+        }
+        else {
+            setFilters(columns.reduce((a: any, c: IColumns) => ({
+                ...a,
+                [c.accessor]: value
+            }), {}));
+            onPageChange(0);
+            onFilterChange && onFilterChange(
+                columns.reduce((a: any, c: IColumns) => ({
+                    ...a,
+                    [c.accessor]: {operator: 'or', value: value}
+                }), {})
+            );
+        }
+    }
+
     const skeletonData = (): React.ReactNode[] => {
         const data: React.ReactNode[] = [];
         for (let i = 0; i < 3; i++) data.push(skeleton?.(i));
         return data;
     };
 
-    if (!loading && totalItems === 0) return <NoData />;
+    useEffect(() => {
+        setFilters({});
+    }, [dateRange])
+
+    // if (!loading && totalItems === 0) return <NoData />;
 
     return (
         <Box width={1} style={{ height: '100%' }}>
+            {filterGeneral && (
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <SearchField
+                            disabled={loading}
+                            colorPlaceHolder='#FFF'
+                            handleChangeOther={setGlobalFilter}
+                            lazy
+                        />
+                    </div>
+                </Box>
+            )}
+            <div style={{display: 'flex', gap: '20px'}}>
+                {loading ? null : columns.map((c, i) => {
+                    if (c.filter) {
+                        return (
+                        <div key={`filter_${i}`}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{c.Header}</Box>
+                            <Input
+                                value={filters[c.accessor] || ''}
+                                onKeyDown={keyPress}
+                                onChange={e => setFilters({...filters, [c.accessor]: e.target.value})}
+                            />
+                        </div>
+                        )
+                    }
+                    else {
+                        return null
+                    }
+                })}
+            </div>
             <List>
                 {loading && skeleton ? skeletonData() : data.map((e, i) => builder(e, i))}
             </List>
@@ -143,7 +228,7 @@ function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
                 <Box>
                     <Trans
                         i18nKey={langKeys.tableShowingRecordOf}
-                        values={{ itemCount: pageSize, totalItems }}
+                        values={{ itemCount: data.length, totalItems }}
                     />
                 </Box>
                 <Box>

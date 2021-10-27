@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, CRM
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -91,6 +91,8 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path="/" />
 				<Route exact path={paths.SIGNIN} component={SignIn} />
 				<Route exact path={paths.SIGNUP} component={SignUp} />
+				<Route exact path={paths.PRIVACY} component={Privacy} />
+				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
 
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
@@ -137,6 +139,11 @@ const RouterApp: FC = () => {
 						<ChannelAddInstagram />
 					</Layout>
 				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddInstagramDM />
+					</Layout>
+				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddWhatsapp />
@@ -155,6 +162,16 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddTwitterDM />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddIos />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddAndroid />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_EDIT.path}>

@@ -11,6 +11,25 @@ export const getCollection = (requestBody: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+export const getCollectionPublic = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.mainPublic(requestBody),
+    types: {
+        loading: actionTypes.MAIN,
+        success: actionTypes.MAIN_SUCCESS,
+        failure: actionTypes.MAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const getMultiCollectionPublic = (requestBodies: string[]): IActionCall => ({
+    callAPI: () => CommonService.multiMainPublic(requestBodies),
+    types: {
+        loading: actionTypes.MULTI_MAIN,
+        success: actionTypes.MULTI_MAIN_SUCCESS,
+        failure: actionTypes.MULTI_MAIN_FAILURE,
+    },
+    type: null,
+});
 
 export const resetMain = (): IActionCall => ({ type: actionTypes.MAIN_RESET });
 

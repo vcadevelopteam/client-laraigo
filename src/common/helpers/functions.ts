@@ -224,6 +224,39 @@ export const capitalize = (text: string) => {
     return text.charAt(0).toUpperCase() + lower.slice(1);
 }
 
+export const object_trimmer = (data: any) => {
+    if (!data) {
+        return Object.keys(data).reduce((k, v) => (
+            {
+                ...k,
+                [v]: typeof data[v] === 'string' ? data[v]?.trim() : data[v]
+            }
+        ), {})
+    }
+    else {
+        return {};
+    }
+}
+
+export const array_trimmer = (data: any[]) => {
+    if (Array.isArray(data)) {
+        return data.reduce((a: any[], e: any) => (
+            [
+                ...a,
+                Object.keys(e).reduce((k, v) => (
+                    {
+                        ...k,
+                        [v]: typeof e[v] === 'string' ? e[v]?.trim() : e[v]
+                    }
+                ), {})
+            ]
+        ), []);
+    }
+    else {
+        return [];
+    }
+}
+
 export const randomInterval = (min: number, max: number) => { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }

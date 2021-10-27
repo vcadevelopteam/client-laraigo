@@ -1727,7 +1727,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                     <div className="col-3"></div>
                     <div className="col-6">
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                            Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                         </Box>
                         <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                             <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
@@ -1757,8 +1757,11 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                     </Button>
                 </div>
             </div>
-            <div style={{ height: 20 }} />
-            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column' }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
+            <div style={{ display: integrationId ? 'flex' : 'none', height: 10 }} />
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}>
+                {t(langKeys.chatwebstep)}
+            </div>
+            <div style={{ display: integrationId ? 'flex' : 'none', flexDirection: 'column', marginLeft: 120, marginRight: 120 }}><pre style={{ background: '#f4f4f4', border: '1px solid #ddd', color: '#666', pageBreakInside: 'avoid', fontFamily: 'monospace', lineHeight: 1.6, maxWidth: '100%', overflow: 'auto', padding: '1em 1.5em', display: 'block', wordWrap: 'break-word'}}><code>
                 {`<script src="https://zyxmelinux.zyxmeapp.com/zyxme/chat/src/chatwebclient.min.js" integrationid="${integrationId}"></script>`}
                 </code></pre><div style={{ height: 20 }} />
                 <Button variant="contained" color="primary" onClick={() => history.push(paths.CHANNELS)}>

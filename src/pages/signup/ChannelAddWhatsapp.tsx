@@ -1,15 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, ColorInput, IOSSwitch } from "components";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
-import { useSelector } from "hooks";
-import { useDispatch } from "react-redux";
 import { WhatsappIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -29,16 +24,10 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#4AC959");
     const [channelreg, setChannelreg] = useState(true);
-    const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
-    const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
@@ -60,9 +49,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         },
         "type": "WHATSAPP",
         "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": "1094526090706564"
+            "accesstoken": ""
         }
     })
 
@@ -70,28 +57,6 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,whatsapp:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     function setnameField(value: any) {
         setChannelreg(value==="")
@@ -104,20 +69,11 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
-    function setParameter(value: string, field: string) {
-        setNextbutton(value===""|| fields.service.accesstoken==="")
-        let partialf = fields;
-        if (field === "communicationchannel") {
-            partialf.parameters.communicationchannelowner = value;
-            partialf.parameters.communicationchannelsite = value;
-            partialf.service.siteid = value;
-        }
-        setFields(partialf)
-    }
     function setService(value: string, field: string) {
-        setNextbutton(value===""|| fields.parameters.communicationchannelowner==="")
+        setNextbutton(value==="")
         let partialf = fields;
         partialf.service.accesstoken = value;
+        partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
     }
     if(viewSelected==="view1"){
@@ -134,14 +90,6 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                         onClick={() => { setViewSelected("viewfinishreg") }}
                     >{t(langKeys.registerwhats)}
                     </Button>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setParameter(value, "communicationchannel")}
-                            label={t(langKeys.connectnumberfield)}
-                            className="col-6"
-                        />
-                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -178,7 +126,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                                 <WhatsappIcon style={{fill: `${coloricon}`, width: "100px" }}/>

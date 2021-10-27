@@ -62,7 +62,7 @@ export const insertChannelSuccess = (state: IState, action: IAction): IState => 
         ...state.insertChannel,
         value: action.payload,
         loading: false,
-        error: false,
+        error: !(action.payload?.success||true),
     },
 });
 

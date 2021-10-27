@@ -61,9 +61,7 @@ export const ChannelAddTelegram: FC = () => {
         },
         "type": "TELEGRAM",
         "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": "1094526090706564"
+            "accesstoken": ""
         }
     })
 
@@ -74,9 +72,8 @@ export const ChannelAddTelegram: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        console.log(executeResult)
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
+        if (!mainResult.loading && setins){
+            if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
@@ -89,7 +86,7 @@ export const ChannelAddTelegram: FC = () => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult,waitSave])
+    }, [mainResult])
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -108,18 +105,11 @@ export const ChannelAddTelegram: FC = () => {
         partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
-    function setBotName(val:string){
-        setNextbutton(val===""||fields.service.accesstoken==="")
-        let partialf = fields;
-        partialf.service.siteid=val
-        partialf.parameters.communicationchannelowner=val
-        partialf.parameters.communicationchannelsite=val
-        setFields(partialf)
-    }
     function setBotKey(val:string){
-        setNextbutton(val===""||fields.parameters.communicationchannelowner==="")
+        setNextbutton(val==="")
         let partialf = fields;
-        partialf.service.accesstoken=val
+        partialf.service.accesstoken=val;
+        partialf.parameters.communicationchannelowner="";
         setFields(partialf)
     }
     if(viewSelected==="view1"){
@@ -133,14 +123,6 @@ export const ChannelAddTelegram: FC = () => {
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.connecttelegram)}</div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px 80px" }}>{t(langKeys.connecttelegramins)}</div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setBotName(value)}
-                            label={t(langKeys.enterbotname)}
-                            className="col-6"
-                        />
-                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
@@ -189,7 +171,7 @@ export const ChannelAddTelegram: FC = () => {
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                                 <TelegramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
