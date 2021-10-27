@@ -253,6 +253,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
     onDelete?: () => void;
+    onAddCard?: () => void;
     provided: DraggableProvided;
 }
 
@@ -292,7 +293,15 @@ const useLeadColumnStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, onDelete, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({
+    children,
+    title,
+    provided,
+    titleOnChange,
+    onDelete,
+    onAddCard,
+    ...boxProps
+}) => {
     const classes = useLeadColumnStyles();
     const edit = useRef(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -369,7 +378,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, prov
                             <Trans i18nKey={langKeys.delete} />
                         </Button>
                     </Popover>
-                    <IconButton color="primary" size="small">
+                    <IconButton color="primary" size="small" onClick={onAddCard}>
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
                 </div>
