@@ -97,6 +97,7 @@ const actionType = {
     CONNECT_AGENT_UI: 'inbox/CONNECT_AGENT_UI',
     GO_TO_BOTTOM: 'inbox/GO_TO_BOTTOM',
     SET_IS_FILTERING: 'inbox/SET_IS_FILTERING',
+    UPDATE_PERSON: 'inbox/UPDATE_PERSON',
     
 
     

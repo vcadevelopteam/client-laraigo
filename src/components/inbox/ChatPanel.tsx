@@ -808,10 +808,10 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     )
 }
 
-
-const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { ticketnum, displayname, imageurldef } }) => {
+const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
-
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    console.log(ticketSelected!!.displayname)
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
@@ -819,13 +819,11 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <Avatar src={imageurldef || ""} />
+                    <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
-                        <div>
-                            {displayname}
-                        </div>
+                        <div>{ticketSelected!!.displayname}</div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
-                            Ticket #{ticketnum}
+                            Ticket #{ticketSelected!!.ticketnum}
                         </div>
                     </div>
                 </div>
@@ -835,14 +833,14 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket }) => (
+const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => (
     <div className={classes.containerChat}>
         <HeadChat
             classes={classes}
-            ticket={ticket} />
+        />
         <InteractionsPanel
             classes={classes}
-            ticket={ticket} />
+        />
         <ReplyPanel
             classes={classes} />
     </div>

@@ -241,6 +241,21 @@ export const selectTicket = (state: IState, action: IAction): IState => ({
     tipificationsLevel3: initialState.tipificationsLevel3
 })
 
+
+export const updatePerson = (state: IState, action: IAction): IState => ({
+    ...state,
+    person: {
+        ...state.person,
+        data: action.payload
+    },
+    ticketSelected: {
+        ...state.ticketSelected!!,
+        displayname: action.payload.name
+    }
+})
+
+
+
 export const resetSelectTicket = (state: IState, action: IAction): IState => ({
     ...state,
     ticketSelected: null,

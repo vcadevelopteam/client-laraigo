@@ -7,12 +7,13 @@ import { useDispatch } from 'react-redux';
 import ItemGroupInteraction from 'components/inbox/Interaction';
 import { SkeletonInteraction } from 'components';
 
-const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket: { displayname, imageurldef } }) => {
+const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => {
+
     const dispatch = useDispatch();
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const groupInteractionList = useSelector(state => state.inbox.interactionList);
     const loadingInteractions = useSelector(state => state.inbox.interactionList.loading);
     const isOnBottom = useSelector(state => state.inbox.isOnBottom);
-    const triggerNewMessageClient = useSelector(state => state.inbox.triggerNewMessageClient);
 
     const el = useRef<null | HTMLDivElement>(null);
     const refContInteractions = useRef<null | HTMLDivElement>(null);
@@ -24,7 +25,6 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
             }
         }
     };
-
 
     useEffect(scrollToBottom, [loadingInteractions, isOnBottom]);
 
@@ -53,8 +53,8 @@ const InteractionPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {groupInteractionList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
-                            imageClient={imageurldef}
-                            clientName={displayname}
+                            imageClient={ticketSelected!!.imageurldef}
+                            clientName={ticketSelected!!.displayname}
                             classes={classes}
                             groupInteraction={groupInteraction}
                             key={groupInteraction.interactionid} />
