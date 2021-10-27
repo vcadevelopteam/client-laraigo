@@ -200,17 +200,16 @@ const InfoTab: React.FC = () => {
     if (view === 'edit') {
         return (
             <>
-
+                <div style={{ position: 'relative' }}>
+                    <Fab
+                        onClick={onSubmit}
+                        size="small"
+                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 99999 }}
+                    >
+                        <SaveIcon color="primary" />
+                    </Fab>
+                </div>
                 <div style={{ overflowY: 'auto' }} className="scroll-style-go">
-                    <div style={{ position: 'relative' }}>
-                        <Fab
-                            onClick={onSubmit}
-                            size="small"
-                            style={{ position: 'absolute', top: 8, right: 8 }}
-                        >
-                            <SaveIcon color="primary" />
-                        </Fab>
-                    </div>
                     <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
                         <FieldEdit
                             label={t(langKeys.firstname)}
