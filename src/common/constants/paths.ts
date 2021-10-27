@@ -99,6 +99,10 @@ const paths = {
 
     SETTINGS: '/settings',
     CRM: '/crm',
+    CRM_EDIT: {
+        path: '/crm/leads/:id',
+        resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
+    },
 };
 
 export default paths;

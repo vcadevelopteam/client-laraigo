@@ -1,21 +1,24 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
+import { Avatar, Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Add, MoreVert as MoreVertIcon, AccessTime as AccessTimeIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
 import { Rating, Skeleton } from '@material-ui/lab';
+import { useHistory } from 'react-router';
+import paths from 'common/constants/paths';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
 const cardBorderRadius = 12;
-const inputTitleHeight = 70.6;
+const inputTitleHeight = 50;
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
     onDelete?: (value: string) => void;
+    onClick?: (lead: any) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -71,6 +74,7 @@ const useLeadCardStyles = makeStyles(theme => ({
         alignItems: 'center',
         marginRight: theme.spacing(1),
         marginBottom: 4,
+        minHeight: 16.67,
     },
     tagCircle: {
         width: 8,
@@ -84,17 +88,25 @@ const useLeadCardStyles = makeStyles(theme => ({
     },
     popoverPaper: {
         maxWidth: 150,
-    }
+    },
+    footer: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        alignItems: 'center',
+    },
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = lead.tags.split(',')
     const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const history = useHistory();
+
+    const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -102,19 +114,26 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         setAnchorEl(null);
     };
 
-    const handleDelete = () => {
+    const handleClick = useCallback(() => {
+        history.push({
+            pathname: paths.CRM_EDIT.resolve(lead.leadid),
+            state: lead,
+        });
+    }, [lead]);
+
+    const handleDelete = useCallback(() => {
         setAnchorEl(null);
-        onDelete?.(lead)
-    };
+        onDelete?.(lead);
+    }, [lead]);
 
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
     return (
-        <Box {...boxProps} pb={1}>
+        <Box {...boxProps} pb={1} onClick={handleClick}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
-                    <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
+                    <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
                         <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
                     <Popover
@@ -149,18 +168,28 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                     {tags.map((tag: String, index:number) =>
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
-                            <div style={{ width: 8 }} />
+                            <div style={{ width: 6 }} />
                             <div className={classes.tagtext}>{tag}</div>
                         </div>
                     )}
                 </div>
-                <div>
+                <div className={classes.footer}>
                     <Rating
                         name="hover-feedback"
                         defaultValue={urgencyLevels.findIndex(x => x === lead.priority)}
                         max={3}
                         readOnly
                     />
+                    <div style={{ width: 8 }} />
+                    <AccessTimeIcon
+                        style={{
+                            height: 18,
+                            width: 'auto',
+                            fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
+                        }}
+                    />
+                    <div style={{ flexGrow: 1 }} />
+                    <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>
             </div>
         </Box>
@@ -182,9 +211,11 @@ const useInputTitleStyles = makeStyles(theme => ({
         maxHeight: inputTitleHeight,
         height: inputTitleHeight,
         width: 'inherit',
+        alignItems: 'center',
+        display: 'flex',
+        justifyContent: 'center',
     },
     title: {
-        margin: '0.83em 0',
         fontSize: '1.5em',
         fontWeight: 500,
         width: 'inherit',
@@ -291,6 +322,9 @@ const useLeadColumnStyles = makeStyles(theme => ({
     popoverPaper: {
         maxWidth: 150,
     },
+    currency: {
+        marginBottom: '0.63em',
+    },
 }));
 
 export const DraggableLeadColumn: FC<LeadColumnProps> = ({
@@ -341,7 +375,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         edit={edit.current}
                         onBlur={handleOnBlur}
                     />
-                    <IconButton color="primary" size="small" onClick={handleClick}>
+                    <IconButton size="small" aria-describedby={id} onClick={handleClick}>
                         <MoreVertIcon style={{ height: 22, width: 22 }} />
                     </IconButton>
                     <Popover
@@ -378,10 +412,11 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                             <Trans i18nKey={langKeys.delete} />
                         </Button>
                     </Popover>
-                    <IconButton color="primary" size="small" onClick={onAddCard}>
+                    <IconButton size="small" onClick={onAddCard}>
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
                 </div>
+                <span className={classes.currency}>S/ 80,000</span>
                 {children}
             </div>
         </Box>
@@ -480,7 +515,12 @@ export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxP
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
-                <Button color="primary" className={classes.addBtnContainer} onClick={handleClick}>
+                <Button
+                    color="primary"
+                    aria-describedby={id}
+                    className={classes.addBtnContainer}
+                    onClick={handleClick}
+                >
                     <div className={classes.addBtn}>
                         <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
                     </div>
@@ -518,7 +558,7 @@ const useColumnTemplateStyles = makeStyles(theme => ({
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
+        padding: theme.spacing(2),
     },
     titleSection: {
         display: 'flex',
