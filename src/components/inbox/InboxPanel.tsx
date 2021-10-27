@@ -551,7 +551,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} classes={classes} />
+                    <ChatPanel classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

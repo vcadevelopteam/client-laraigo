@@ -206,9 +206,9 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         // padding: theme.spacing(2),
         display: 'flex',
-        height: 'calc(100vh - 64px)',
-        minHeight: 'calc(100vh - 64px)',
-        maxHeight: 'calc(100vh - 64px)',
+        height: 'calc(100vh - 54px)',
+        minHeight: 'calc(100vh - 54px)',
+        maxHeight: 'calc(100vh - 54px)',
         // height: '100%'
     },
 }));

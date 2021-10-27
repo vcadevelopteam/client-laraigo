@@ -66,5 +66,7 @@ export const apiUrls = {
 
     PERSON: `${BASE_URL}/person`,
 
+    ACTIVATION_USER: `${BASE_URL}/activationuser`,
+
     CHATFLOW: `${CHATFLOW_URL}`,
 };

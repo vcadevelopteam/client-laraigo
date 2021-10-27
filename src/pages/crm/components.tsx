@@ -1,17 +1,21 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, Menu } from '@material-ui/icons';
+import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
+import { Rating, Skeleton } from '@material-ui/lab';
 
 const columnWidth = 275;
+const columnMinHeight = 500;
 const cardBorderRadius = 12;
+const inputTitleHeight = 70.6;
 
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
+    onDelete?: (value: string) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -76,15 +80,19 @@ const useLeadCardStyles = makeStyles(theme => ({
     tagtext: {
         fontSize: 12,
         fontWeight: 400,
+        textTransform: 'capitalize'
     },
     popoverPaper: {
         maxWidth: 150,
     }
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const tags = lead.tags.split(',')
+    const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
+    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -94,6 +102,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         setAnchorEl(null);
     };
 
+    const handleDelete = useCallback(() => {
+        setAnchorEl(null);
+        onDelete?.(lead)
+    }, [lead]);
+
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
@@ -102,7 +115,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
                     <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
-                        <Menu style={{ height: 'inherit', width: 'inherit' }} />
+                        <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
                     <Popover
                         id={id}
@@ -121,6 +134,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                             variant="text"
                             color="inherit"
                             fullWidth
+                            type="button"
+                            onClick={handleDelete}
                             style={{ fontWeight: "normal", textTransform: "uppercase" }}
                         >
                             <Trans i18nKey={langKeys.delete} />
@@ -129,33 +144,23 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 </div>
                 <span className={classes.title}>{lead.description}</span>
                 <span className={classes.info}>S/ {lead.expected_revenue}</span>
-                <span className={classes.info}>Gemini Furniture</span>
+                <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'cyan' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Information</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Design</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'violet' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Music</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blue' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Style</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
-                    </div>
+                    {tags.map((tag: String, index:number) =>
+                        <div className={classes.tag} key={index}>
+                            <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
+                            <div style={{ width: 8 }} />
+                            <div className={classes.tagtext}>{tag}</div>
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <Rating
+                        name="hover-feedback"
+                        defaultValue={urgencyLevels.findIndex(x => x === lead.priority)}
+                        max={3}
+                        readOnly
+                    />
                 </div>
             </div>
         </Box>
@@ -164,46 +169,91 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 
 
 interface InputTitleProps {
-    defaultValue: React.ReactNode;
+    defaultValue: string;
+    edit: boolean;
     onChange?: (value: string) => void;
+    onBlur?: (value: string) => void;
+    className?: string;
+    inputClasses?: string;
 }
 
 const useInputTitleStyles = makeStyles(theme => ({
+    root: {
+        maxHeight: inputTitleHeight,
+        height: inputTitleHeight,
+        width: 'inherit',
+    },
     title: {
         margin: '0.83em 0',
+        fontSize: '1.5em',
+        fontWeight: 500,
+        width: 'inherit',
     },
     titleInput: {
-        fontSize: '1.5em',
+        fontSize: '1.35em',
         fontWeight: 500,
     },
 }));
 
-const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange }) => {
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, edit: enableEdit, onChange, onBlur, className, inputClasses }) => {
     const classes = useInputTitleStyles();
-    const [disableUnderline, setDisableUnderline] = useState(true);
+    const [edit, setEdit] = useState(false);
+    const [value, setValue] = useState(defaultValue);
+
+    useEffect(() => {
+        setEdit(enableEdit);
+    }, [enableEdit]);
+
+    const handleValueChange = useCallback((newValue: string) => {
+        setValue(newValue);
+        onChange?.(newValue);
+    }, [onChange]);
+
+    const handleOnBlur = useCallback(() => {
+        setEdit(false);
+        onBlur?.(value);
+    }, [value, onBlur]);
+    
+    if (!edit) {
+        return (
+            <div className={classes.root}>
+                <h2
+                    className={classes.title}
+                    onClick={() => setEdit(true)}
+                >
+                    {value}
+                </h2>
+            </div>
+        );
+    }
 
     return (
-        <TextField
-            defaultValue={defaultValue}
-            className={classes.title}
-            onBlur={() => setDisableUnderline(true)}
-            onFocus={() => setDisableUnderline(false)}
-            InputProps={{
-                classes: {
-                    input: classes.titleInput,
-                },
-                disableUnderline,
-            }}
-            onChange={e => onChange?.(e.target.value)}
-        />
+        <div className={classes.root}>
+            <TextField
+                autoFocus
+                value={value}
+                size="small"
+                className={clsx(classes.title, className)}
+                onBlur={handleOnBlur}
+                InputProps={{
+                    classes: {
+                        input: clsx(classes.titleInput, inputClasses),
+                    },
+                    disableUnderline: false,
+                }}
+                onChange={e => handleValueChange(e.target.value)}
+            />
+        </div>
     );
 }
 
 interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     /**default title value */
-    title: React.ReactNode;
+    title: string;
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
+    onDelete?: () => void;
+    onAddCard?: () => void;
     provided: DraggableProvided;
 }
 
@@ -233,54 +283,104 @@ const useLeadColumnStyles = makeStyles(theme => ({
         alignItems: 'center',
         width: '100%',
     },
-    inputUnderline: {
-        display: 'none',
+    textField: {
+        '&:hover': {
+            cursor: 'grab',
+        }
     },
-    subHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        fontSize: 14,
-        fontWeight: 400,
-        width: '100%',
-        marginBottom: theme.spacing(2),
-    },
-    backgroundProgressbar: {
-        backgroundColor: 'lightgrey',
-        height: 14,
-        flexGrow: 1,
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'flex-start',
-        borderRadius: 7,
-    },
-    progressbar: {
-        backgroundColor: 'red',
-        height: 'inherit',
-        borderTopLeftRadius: 'inherit',
-        borderBottomLeftRadius: 'inherit',
+    popoverPaper: {
+        maxWidth: 150,
     },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({
+    children,
+    title,
+    provided,
+    titleOnChange,
+    onDelete,
+    onAddCard,
+    ...boxProps
+}) => {
     const classes = useLeadColumnStyles();
-    // <h2 className={classes.title} onClick={() => setEdition(true)}>{title}</h2>;
+    const edit = useRef(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOnBlur = useCallback((value: string) => {
+        edit.current = false;
+        titleOnChange?.(value);
+    }, [titleOnChange]);
+
+    const handleEdit = useCallback(() => {
+        edit.current = true;
+        setAnchorEl(null);
+    }, []);
+
+    const handleDelete = useCallback(() => {
+        setAnchorEl(null);
+        onDelete?.();
+    }, []);
+
+    const open = Boolean(anchorEl);
+    const id = open ? `lead-column-popover-${title}` : undefined;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header} {...provided.dragHandleProps}>
-                    <InputTitle defaultValue={title} onChange={titleOnChange} />
-                    <IconButton color="primary" size="small">
+                    <InputTitle
+                        defaultValue={title}
+                        edit={edit.current}
+                        onBlur={handleOnBlur}
+                    />
+                    <IconButton color="primary" size="small" onClick={handleClick}>
+                        <MoreVertIcon style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{
+                            className: classes.popoverPaper,
+                        }}
+                    >
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            type="button"
+                            onClick={handleEdit}
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.edit} />
+                        </Button>
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            type="button"
+                            onClick={handleDelete}
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+                    </Popover>
+                    <IconButton color="primary" size="small" onClick={onAddCard}>
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
-                </div>
-                <div className={classes.subHeader}>
-                    <div className={classes.backgroundProgressbar}>
-                        <div className={classes.progressbar} style={{ width: '30%' }} />
-                    </div>
-                    <div style={{ width: 8 }} />
-                    <span>S/ 80,000</span>
                 </div>
                 {children}
             </div>
@@ -297,7 +397,7 @@ const useLeadColumnListStyles = makeStyles(theme => ({
     root: {
         width: 275,
         maxWidth: 275,
-        minHeight: 500,
+        minHeight: columnMinHeight,
         borderRadius: cardBorderRadius,
     },
     draggOver: {
@@ -314,5 +414,167 @@ export const DroppableLeadColumnList: FC<LeadColumnListProps> = ({ children, sna
                 {children}
             </div>
         </Box>
+    );
+}
+
+interface AddColumnTemplatePops extends Omit<BoxProps, 'onSubmit'> {
+    onSubmit: (title: string) => void;
+}
+
+const useAddColumnTemplateStyles = makeStyles(theme => ({
+    root: {
+        width: columnWidth,
+        maxWidth: columnWidth,
+        display: 'flex',
+        flexDirection: 'column',
+        fontSize: 14,
+        fontWeight: 500,
+        color: theme.palette.primary.main,
+        padding: `calc(0.83em + ${inputTitleHeight * .1}px) 6px 0 6px`,
+    },
+    addBtnContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        backgroundColor: 'inherit',
+        position: 'relative',
+        height: 35,
+        width: 'inherit',
+    },
+    addBtn: {
+        width: 35,
+        height: 35,
+        backgroundColor: theme.palette.primary.light,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 3,
+    },
+    popoverRoot: {
+        width: columnWidth,
+        height: columnMinHeight,
+    },
+}));
+
+export const AddColumnTemplate: FC<AddColumnTemplatePops> = ({ onSubmit, ...boxProps }) => {
+    const classes = useAddColumnTemplateStyles();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'crm-add-new-column-popover' : undefined;
+
+    const handleSubmit = (title: string) => {
+        onSubmit(title);
+        handleClose();
+    };
+
+    return (
+        <Box {...boxProps}>
+            <div className={classes.root}>
+                <Button color="primary" className={classes.addBtnContainer} onClick={handleClick}>
+                    <div className={classes.addBtn}>
+                        <Add style={{ height: '75%', width: 'auto' }} color="secondary" />
+                    </div>
+                    <div style={{ width: 12 }} />
+                    <span>Add a column</span>
+                </Button>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    PaperProps={{
+                        className: classes.popoverRoot,
+                    }}
+                >
+                    <ColumnTemplate onSubmit={handleSubmit} />
+                </Popover>
+            </div>
+        </Box>
+    );
+}
+
+interface ColumnTemplateProps {
+    onSubmit: (title: string) => void;
+}
+
+const useColumnTemplateStyles = makeStyles(theme => ({
+    root: {
+        overflow: 'hidden',
+        height: '100%',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
+    },
+    titleSection: {
+        display: 'flex',
+        flexDirection: 'row',
+        width: 'inherit',
+    },
+    btn: {
+        minWidth: 'unset',
+    },
+    input: {
+        flexGrow: 1,
+    },
+}));
+
+const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
+    const classes = useColumnTemplateStyles();
+    const inputClasses = useInputTitleStyles();
+    const [title, setTitle] = useState("");
+
+    return (
+        <div className={classes.root}>
+            <div className={classes.titleSection}>
+                <TextField
+                    value={title}
+                    size="small"
+                    placeholder="Column title"
+                    className={classes.input}
+                    InputProps={{
+                        classes: {
+                            input: inputClasses.titleInput,
+                        },
+                    }}
+                    onChange={e => setTitle(e.target.value)}
+                />
+                <div style={{ width: 12 }} />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    className={classes.btn}
+                    onClick={() => onSubmit(title)}
+                    disabled={title.trim().length === 0}
+                >
+                    <Trans i18nKey={langKeys.add} />
+                </Button>
+            </div>
+            <div style={{ height: 24 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+            <div style={{ height: 12 }} />
+            <Skeleton variant="rect" width="100%" height={150} />
+        </div>
     );
 }

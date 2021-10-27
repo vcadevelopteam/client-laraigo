@@ -185,4 +185,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GO_TO_BOTTOM]: caseFunctions.goToBottom,
     [actionTypes.SET_SHOW_GO_TO_BOTTOM]: caseFunctions.showGoToBottom,
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
+    [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,
 });
