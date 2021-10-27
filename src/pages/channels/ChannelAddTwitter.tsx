@@ -61,8 +61,7 @@ export const ChannelAddTwitter: FC = () => {
             "consumersecret": "",
             "accesstoken": "",
             "accesssecret": "",
-            "devenvironment": "",
-            "siteid": "",
+            "devenvironment": ""
         }
     })
 
@@ -205,29 +204,14 @@ export const ChannelAddTwitter: FC = () => {
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton2(value===""||fields.parameters.communicationchannelowner==="")
+                                setNextbutton2(value==="")
                                 let partialf = fields;
-                                partialf.service.devenvironment= value
+                                partialf.parameters.communicationchannelowner = "";
+                                partialf.service.devenvironment= value;
                                 setFields(partialf)
                             }}
                             valueDefault={fields.service.devenvironment}
                             label={t(langKeys.devenvironment)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton2(value===""||fields.service.devenvironment==="")
-                                let partialf = fields;
-                                partialf.service.siteid= value
-                                partialf.parameters.communicationchannelowner = value
-                                partialf.parameters.communicationchannelsite = value
-                                setFields(partialf)
-                            }}
-                            valueDefault={fields.service.siteid}
-                            label={t(langKeys.consumerpageid)}
                             className="col-6"
                         />
                     </div>

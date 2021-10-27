@@ -49,9 +49,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         },
         "type": "WHATSAPP",
         "service": {
-            "accesstoken": "",
-            "siteid": "",
-            "appid": "1094526090706564"
+            "accesstoken": ""
         }
     })
 
@@ -71,20 +69,11 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
-    function setParameter(value: string, field: string) {
-        setNextbutton(value===""|| fields.service.accesstoken==="")
-        let partialf = fields;
-        if (field === "communicationchannel") {
-            partialf.parameters.communicationchannelowner = value;
-            partialf.parameters.communicationchannelsite = value;
-            partialf.service.siteid = value;
-        }
-        setFields(partialf)
-    }
     function setService(value: string, field: string) {
-        setNextbutton(value===""|| fields.parameters.communicationchannelowner==="")
+        setNextbutton(value==="")
         let partialf = fields;
         partialf.service.accesstoken = value;
+        partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
     }
     if(viewSelected==="view1"){
@@ -101,14 +90,6 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                         onClick={() => { setViewSelected("viewfinishreg") }}
                     >{t(langKeys.registerwhats)}
                     </Button>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setParameter(value, "communicationchannel")}
-                            label={t(langKeys.connectnumberfield)}
-                            className="col-6"
-                        />
-                    </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
                         <FieldEdit
