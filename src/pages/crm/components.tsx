@@ -1,7 +1,7 @@
-import React, { FC, useCallback, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, Menu } from '@material-ui/icons';
+import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
@@ -15,6 +15,7 @@ const inputTitleHeight = 70.6;
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
+    onDelete?: (lead: any) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -85,7 +86,7 @@ const useLeadCardStyles = makeStyles(theme => ({
     }
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
@@ -97,6 +98,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         setAnchorEl(null);
     };
 
+    const handleDelete = useCallback(() => {
+        setAnchorEl(null);
+        onDelete?.(lead)
+    }, [lead]);
+
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
@@ -105,7 +111,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
                     <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
-                        <Menu style={{ height: 'inherit', width: 'inherit' }} />
+                        <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
                     <Popover
                         id={id}
@@ -124,6 +130,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                             variant="text"
                             color="inherit"
                             fullWidth
+                            type="button"
+                            onClick={handleDelete}
                             style={{ fontWeight: "normal", textTransform: "uppercase" }}
                         >
                             <Trans i18nKey={langKeys.delete} />
@@ -168,6 +176,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 
 interface InputTitleProps {
     defaultValue: string;
+    edit: boolean;
     onChange?: (value: string) => void;
     onBlur?: (value: string) => void;
     className?: string;
@@ -192,20 +201,24 @@ const useInputTitleStyles = makeStyles(theme => ({
     },
 }));
 
-const InputTitle : FC<InputTitleProps> = ({ defaultValue, onChange, onBlur, className, inputClasses }) => {
+const InputTitle : FC<InputTitleProps> = ({ defaultValue, edit: enableEdit, onChange, onBlur, className, inputClasses }) => {
     const classes = useInputTitleStyles();
     const [edit, setEdit] = useState(false);
     const [value, setValue] = useState(defaultValue);
 
+    useEffect(() => {
+        setEdit(enableEdit);
+    }, [enableEdit]);
+
     const handleValueChange = useCallback((newValue: string) => {
         setValue(newValue);
         onChange?.(newValue);
-    }, []);
+    }, [onChange]);
 
     const handleOnBlur = useCallback(() => {
         setEdit(false);
         onBlur?.(value);
-    }, [value]);
+    }, [value, onBlur]);
     
     if (!edit) {
         return (
@@ -245,6 +258,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     title: string;
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
+    onDelete?: () => void;
     provided: DraggableProvided;
 }
 
@@ -279,16 +293,88 @@ const useLeadColumnStyles = makeStyles(theme => ({
             cursor: 'grab',
         }
     },
+    popoverPaper: {
+        maxWidth: 150,
+    },
 }));
 
-export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, ...boxProps }) => {
+export const DraggableLeadColumn: FC<LeadColumnProps> = ({ children, title, provided, titleOnChange, onDelete, ...boxProps }) => {
     const classes = useLeadColumnStyles();
+    const edit = useRef(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOnBlur = useCallback((value: string) => {
+        edit.current = false;
+        titleOnChange?.(value);
+    }, [titleOnChange]);
+
+    const handleEdit = useCallback(() => {
+        edit.current = true;
+        setAnchorEl(null);
+    }, []);
+
+    const handleDelete = useCallback(() => {
+        setAnchorEl(null);
+        onDelete?.();
+    }, []);
+
+    const open = Boolean(anchorEl);
+    const id = open ? `lead-column-popover-${title}` : undefined;
 
     return (
         <Box {...boxProps}>
             <div className={classes.root}>
                 <div className={classes.header} {...provided.dragHandleProps}>
-                    <InputTitle defaultValue={title} onBlur={titleOnChange} />
+                    <InputTitle
+                        defaultValue={title}
+                        edit={edit.current}
+                        onBlur={handleOnBlur}
+                    />
+                    <IconButton color="primary" size="small" onClick={handleClick}>
+                        <MoreVertIcon style={{ height: 22, width: 22 }} />
+                    </IconButton>
+                    <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        PaperProps={{
+                            className: classes.popoverPaper,
+                        }}
+                    >
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            type="button"
+                            onClick={handleEdit}
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.edit} />
+                        </Button>
+                        <Button
+                            variant="text"
+                            color="inherit"
+                            fullWidth
+                            type="button"
+                            onClick={handleDelete}
+                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                        >
+                            <Trans i18nKey={langKeys.delete} />
+                        </Button>
+                    </Popover>
                     <IconButton color="primary" size="small">
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
@@ -471,6 +557,7 @@ const ColumnTemplate: FC<ColumnTemplateProps> = ({ onSubmit }) => {
                     size="small"
                     className={classes.btn}
                     onClick={() => onSubmit(title)}
+                    disabled={title.trim().length === 0}
                 >
                     <Trans i18nKey={langKeys.add} />
                 </Button>
