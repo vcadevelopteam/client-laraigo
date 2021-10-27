@@ -37,6 +37,7 @@ export const apiUrls = {
     MAIN_URL: `${BASE_URL}/main`,
     MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
+    MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
     MAIN_DYNAMIC: `${BASE_URL}/reportdesigner`,

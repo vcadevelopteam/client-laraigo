@@ -40,6 +40,9 @@ export function mainPublic(requestBody: IRequestBody | ITransaction) {
 export function multiMain(requestBody: IRequestBody[]) {
     return APIManager.post(apiUrls.MAIN_MULTI, { data: requestBody }, true);
 }
+export function multiMainPublic(requestBody: string[]) {
+    return APIManager.post(apiUrls.MAIN_MULTI_PUBLIC, { data: {parameters:{domains: requestBody}} }, true);
+}
 
 export function mainPaginated(requestBody: IRequestBodyPaginated) {
     return APIManager.post(apiUrls.MAIN_PAGINATED, { data: requestBody }, true);

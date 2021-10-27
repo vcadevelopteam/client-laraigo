@@ -26,6 +26,7 @@ import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPagin
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
+import { DialogInteractions } from 'components';
 
 interface PersonItemProps {
     person: IPerson;
@@ -698,17 +699,27 @@ const usePropertyStyles = makeStyles(theme => ({
         alignItems: 'flex-start',
         flexGrow: 1,
     },
+    propSubtitleTicket: {
+        fontWeight: 400,
+        fontSize: 15,
+        margin: 0,
+        width: '100%',
+        color: '#7721ad',
+        textDecoration: 'underline',
+        cursor: 'pointer'
+    },
 }));
 
 interface PropertyProps extends Omit<BoxProps, 'title'> {
     icon?: React.ReactNode;
     title: React.ReactNode;
     subtitle?: React.ReactNode;
+    isLink?: Boolean;
 }
 
-const Property: FC<PropertyProps> = ({ icon, title, subtitle, ...boxProps }) => {
+const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink=false,...boxProps}) => {
     const classes = usePropertyStyles();
-
+    
     return (
         <Box className={classes.propertyRoot} {...boxProps}>
             {icon && <div className={classes.leadingContainer}>{icon}</div>}
@@ -716,7 +727,7 @@ const Property: FC<PropertyProps> = ({ icon, title, subtitle, ...boxProps }) => 
             <div className={classes.contentContainer}>
                 <label className={classes.propTitle}>{title}</label>
                 <div style={{ height: 4 }} />
-                <div className={classes.propSubtitle}>{subtitle || "-"}</div>
+                <div className={isLink?classes.propSubtitleTicket:classes.propSubtitle}>{subtitle || "-"}</div>
             </div>
         </Box>
     );
@@ -1897,7 +1908,7 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             {list.map((e, i) => {
                 if (list.length < conversations.count && i === list.length - 1) {
                     return [
-                        <ConversationItem conversation={e} key={`conversation_item_${i}`} />,
+                        <ConversationItem conversation={e} key={`conversation_item_${i}` } person={person} />,
                         <div
                             style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
                             key={`conversation_item_${i}_loader`}
@@ -1906,7 +1917,7 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                         </div>
                     ];
                 }
-                return <ConversationItem conversation={e} key={`conversation_item_${i}`} />;
+                return <ConversationItem conversation={e} key={`conversation_item_${i}`} person={person} />;
             })}
         </div>
     );
@@ -1948,17 +1959,31 @@ const useConversationsItemStyles = makeStyles(theme => ({
 
 interface ConversationItemProps {
     conversation: IPersonConversation;
+    person: Dictionary;
 }
 
-const ConversationItem: FC<ConversationItemProps> = ({ conversation }) => {
+
+const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) => {
     const classes = useConversationsItemStyles();
     const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const mainResult = useSelector(state => state.main);
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const openDialogInteractions = useCallback((row: any) => {
+        setOpenModal(true);
+        setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
+    }, [mainResult]);
 
     return (
         <div className={classes.root}>
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                    <Property title="Ticket #" subtitle={conversation.ticketnum} />
+                    <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true}   onClick={() => openDialogInteractions(conversation)}/>
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
