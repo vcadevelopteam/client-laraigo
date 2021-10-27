@@ -6,6 +6,9 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
+import { manageConfirmation } from "store/popus/actions";
+import { langKeys } from "lang/keys";
+import { useTranslation } from "react-i18next";
 
 interface dataBackend {
   columnid: number,
@@ -41,6 +44,7 @@ const CRM: FC = () => {
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const mainMulti = useSelector(state => state.main.multiData);
+  const { t } = useTranslation();
   useEffect(() => {
       dispatch(getMultiCollection([
           getColumnsSel(1),
@@ -180,6 +184,19 @@ const CRM: FC = () => {
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
   }
+
+  const hanldeDeleteColumn = (column_uuid : string) => {
+    console.log('desde la funcion ',column_uuid)
+    const callback = () => {
+      console.log('eilinando')
+    }
+    dispatch(manageConfirmation({
+      visible: true,
+      question: t(langKeys.confirmation_save),
+      callback
+  }))
+  }
+  
   console.log('dataColumn', dataColumn)
   return (
       <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
@@ -198,7 +215,14 @@ const CRM: FC = () => {
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided}>
+                        <DraggableLeadColumn 
+                          title={dataColumn[0].description}
+                          key={0}
+                          snapshot={null}
+                          provided={provided}
+                          columnid={dataColumn[0].column_uuid} 
+                          onDelete={hanldeDeleteColumn}
+                        >
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
                               <div
@@ -273,7 +297,15 @@ const CRM: FC = () => {
                           {...provided.draggableProps}
                           ref={provided.innerRef}
                         >
-                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}>
+                            <DraggableLeadColumn 
+                              title={column.description} 
+                              key={index+1} 
+                              snapshot={null} 
+                              provided={provided} 
+                              titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
+                              columnid={column.column_uuid} 
+                              onDelete={hanldeDeleteColumn}
+                            >
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
                                     return (

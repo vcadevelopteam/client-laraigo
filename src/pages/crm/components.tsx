@@ -283,9 +283,10 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     title: string;
     snapshot: DraggableStateSnapshot | null;
     titleOnChange?: (value: string) => void;
-    onDelete?: () => void;
+    onDelete?: (value: string) => void;
     onAddCard?: () => void;
     provided: DraggableProvided;
+    columnid: string;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -331,6 +332,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     children,
     title,
     provided,
+    columnid,
     titleOnChange,
     onDelete,
     onAddCard,
@@ -360,7 +362,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
 
     const handleDelete = useCallback(() => {
         setAnchorEl(null);
-        onDelete?.();
+        onDelete?.(columnid);
     }, []);
 
     const open = Boolean(anchorEl);
