@@ -6,7 +6,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
-import { AnyARecord } from "dns";
 
 interface dataBackend {
   columnid: number,
