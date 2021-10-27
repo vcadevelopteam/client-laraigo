@@ -11,6 +11,10 @@ const paths = {
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
     PRIVACY: "/privacy",
+    ACTIVATE_USER: {
+        path: '/activateuser/:token',
+        resolve: (token: string) => `/activateuser/${token}`
+    },
     CHANNELS: '/channels',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
