@@ -49,7 +49,6 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const mainResult = useSelector(state => state.main);
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
-        console.log(mainData)
     }, [mainData])
     function maindataChange(field: string, value: any) {
         setMainData((p: any) => ({ ...p, [field]: value }))
