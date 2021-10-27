@@ -30,7 +30,7 @@ const theme = createTheme({
 	},
 	overrides: {
 		MuiSvgIcon: {
-			root: { color: "#8F92A1", width: 24, height: 24, minWidth: 0 },
+			root: { width: 24, height: 24, minWidth: 0 },
 		},
 		MuiListItemIcon: {
 			root: { minWidth: 38 },

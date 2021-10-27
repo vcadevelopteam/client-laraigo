@@ -1,11 +1,12 @@
 import React, { FC, useCallback, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, Menu } from '@material-ui/icons';
+import { Add, Menu, MoreHoriz } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { Skeleton } from '@material-ui/lab';
+import { Rating, Skeleton } from '@material-ui/lab';
+import MoreVert from '@material-ui/icons/MoreVert';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
@@ -15,6 +16,7 @@ const inputTitleHeight = 70.6;
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
+    handleDelete?: (value: string) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -79,15 +81,19 @@ const useLeadCardStyles = makeStyles(theme => ({
     tagtext: {
         fontSize: 12,
         fontWeight: 400,
+        textTransform: 'capitalize'
     },
     popoverPaper: {
         maxWidth: 150,
     }
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, handleDelete, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const tags = lead.tags.split(',')
+    const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
+    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -105,7 +111,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
                 <div className={classes.floatingMenuIcon}>
                     <IconButton color="primary" size="small" aria-describedby={id} onClick={handleClick}>
-                        <Menu style={{ height: 'inherit', width: 'inherit' }} />
+                        <MoreVert style={{ height: 'inherit', width: 'inherit' }} />
                     </IconButton>
                     <Popover
                         id={id}
@@ -125,6 +131,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                             color="inherit"
                             fullWidth
                             style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                            onClick={() => handleDelete && handleDelete(lead)}
                         >
                             <Trans i18nKey={langKeys.delete} />
                         </Button>
@@ -132,33 +139,23 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 </div>
                 <span className={classes.title}>{lead.description}</span>
                 <span className={classes.info}>S/ {lead.expected_revenue}</span>
-                <span className={classes.info}>Gemini Furniture</span>
+                <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'cyan' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Information</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'red' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Design</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'violet' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Music</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blue' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Style</div>
-                    </div>
-                    <div className={classes.tag}>
-                        <div className={classes.tagCircle} style={{ backgroundColor: 'blueviolet' }} />
-                        <div style={{ width: 8 }} />
-                        <div className={classes.tagtext}>Other</div>
-                    </div>
+                    {tags.map((tag: String, index:number) =>
+                        <div className={classes.tag} key={index}>
+                            <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
+                            <div style={{ width: 8 }} />
+                            <div className={classes.tagtext}>{tag}</div>
+                        </div>
+                    )}
+                </div>
+                <div>
+                    <Rating
+                        name="hover-feedback"
+                        defaultValue={urgencyLevels.findIndex(x => x === lead.priority)}
+                        max={3}
+                        readOnly
+                    />
                 </div>
             </div>
         </Box>
