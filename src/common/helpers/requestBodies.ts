@@ -1672,14 +1672,14 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
     },
 });
 
-export const insLead = (lead: ILead, operation: string): IRequestBody => ({
-    method: 'UFN_LEAD_INS',
-    parameters: {
-        ...lead,
-        id: lead.leadid,
-        operation
-    },
-});
+// export const insLead = (lead: ILead, operation: string): IRequestBody => ({
+//     method: 'UFN_LEAD_INS',
+//     parameters: {
+//         ...lead,
+//         id: lead.leadid,
+//         operation
+//     },
+// });
 
 export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number): IRequestBody => ({
     method: 'UFN_LEAD_PERSON_INS',
