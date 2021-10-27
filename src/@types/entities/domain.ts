@@ -13,4 +13,6 @@ export interface IPersonDomains {
     educationLevels: IDomain[];
     personTypes: IDomain[];
     groups: IDomain[];
+    personGenTypes: IDomain[];
+    channelTypes: IDomain[];
 }

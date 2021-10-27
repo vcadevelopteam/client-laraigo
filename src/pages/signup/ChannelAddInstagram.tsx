@@ -1,15 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
-import { useHistory } from "react-router";
 import { InstagramIcon} from "icons";
-import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -27,13 +25,9 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
-    const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
     const [coloricon, setcoloricon] = useState("#F56040");
     const [enable, setenable] = useState(false);
     const dispatch = useDispatch();
@@ -68,35 +62,12 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,instagram:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && executeResult) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (!executeResult) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
-    useEffect(() => {
-        if (waitSave) {
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
-        }
-    }, [mainResult])
 
     const processFacebookCallback = async (r: any) => {
         if (r.status !== "unknown" && !r.error) {
             dispatch(getChannelsListSub(r.accessToken))
             setViewSelected("view2")
             dispatch(showBackdrop(true));
-            setWaitSave(true);
         }
     }
     function setValueField(value: any) {
@@ -212,7 +183,7 @@ export const ChannelAddInstagram: FC<{setrequestchannels:(param:any)=>void,setli
                         <div className="col-3"></div>
                         <div className="col-6">
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Give your channel a custom icon color
+                            {t(langKeys.givechannelcolor)}
                             </Box>
                             <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
                                 <InstagramIcon style={{fill: `${coloricon}`, width: "100px" }}/>

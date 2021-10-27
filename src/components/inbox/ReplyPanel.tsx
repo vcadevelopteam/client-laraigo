@@ -6,7 +6,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket, goToBottom, reassignTicket } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -390,13 +390,14 @@ const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
 const BottomGoToUnder: React.FC = () => {
     const dispatch = useDispatch();
     const isOnBottom = useSelector(state => state.inbox.isOnBottom);
+    const boolShowGoToBottom = useSelector(state => state.inbox.showGoToBottom);
     const triggerNewMessageClient = useSelector(state => state.inbox.triggerNewMessageClient);
     const [countNewMessage, setCountNewMessage] = useState(0)
 
     useEffect(() => {
         if (triggerNewMessageClient !== null) {
             if (isOnBottom || isOnBottom === null)
-                dispatch(goToBottom(null))
+                dispatch(goToBottom(isOnBottom ? null : true))
             else
                 setCountNewMessage(countNewMessage + 1)
         }
@@ -406,11 +407,13 @@ const BottomGoToUnder: React.FC = () => {
 
     useEffect(() => {
         if (isOnBottom) {
-            setCountNewMessage(0)
+            dispatch(showGoToBottom(false));
+            setCountNewMessage(0);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOnBottom])
 
-    if (isOnBottom || isOnBottom === null)
+    if (!boolShowGoToBottom || isOnBottom)
         return null;
 
     return (
@@ -424,7 +427,7 @@ const BottomGoToUnder: React.FC = () => {
             >
                 <Fab
                     size="small"
-                    onClick={() => dispatch(goToBottom(true))}>
+                    onClick={() => dispatch(goToBottom(isOnBottom ? null : true))}>
                     <DoubleArrowIcon style={{ color: '#2e2c34ba', transform: 'rotate(90deg)', width: 20, height: 20 }} />
                 </Fab>
             </Badge>
@@ -458,7 +461,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
             setShowReply(false);
         else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
             const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
-            if (hoursWaiting >= 0.16) {
+            if (hoursWaiting >= 24) {
                 setShowReply(false);
             } else {
                 setShowReply(true);
@@ -735,7 +738,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                         </div>
-                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
+                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>

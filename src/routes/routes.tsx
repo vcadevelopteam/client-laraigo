@@ -7,8 +7,8 @@ import {
     OutboundIcon,
     MessageTemplateIcon,
     AIModelsIcon,
-    ClientIcon
-
+    ClientIcon,
+    CRMIcon
 } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
@@ -120,6 +120,13 @@ export const routes: RouteConfig[] = [
         path: paths.BOTDESIGNER,
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
+    {
+        key: paths.VARIABLECONFIGURATION,
+        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
+        path: paths.VARIABLECONFIGURATION,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
+    },
     // {
     //     key: 'ia-services-label',
     //     description: <Trans i18nKey={langKeys.iaservices} count={2} />,
@@ -144,7 +151,7 @@ export const routes: RouteConfig[] = [
         description: 'CRM',
         tooltip: 'CRM',
         path: paths.CRM,
-        icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,

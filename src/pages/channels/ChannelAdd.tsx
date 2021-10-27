@@ -94,6 +94,11 @@ export const ChannelAdd: FC = () => {
             onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAM.path)},
         },
         {
+            icon: c => <InstagramIcon className={c} />,
+            label: 'Instagram DM',
+            onClick: () => {history.push(paths.CHANNELS_ADD_INSTAGRAMDM.path)},
+        },
+        {
             icon: c => <FacebookMessengerIcon className={c} />,
             label: 'Messenger',
             onClick: () => {history.push(paths.CHANNELS_ADD_MESSENGER.path)},
@@ -145,12 +150,12 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <AppleIcon className={c} />,
             label: 'iOS SDk',
-            onClick: () => { },
+            onClick: () => history.push(paths.CHANNELS_ADD_IOS.path),
         },
         {
             icon: c => <AndroidIcon className={c} />,
             label: 'Android SDK',
-            onClick: () => { },
+            onClick: () => history.push(paths.CHANNELS_ADD_ANDROID.path),
         },
     ];
 

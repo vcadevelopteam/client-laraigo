@@ -1,27 +1,34 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams } from "@types";
+import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon } from 'icons';
+import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';
 import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation } from 'common/helpers';
+import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEditArray, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import CachedIcon from '@material-ui/icons/Cached';
+import Rating from '@material-ui/lab/Rating';
+import { Box } from '@material-ui/core';
 
+const dataPriority = [
+    { option: 'HIGH' },
+    { option: 'LOW' },
+    { option: 'MEDIUM' },
+    { option: 'HIGH' },
+]
 
 const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
     const { t } = useTranslation();
@@ -209,6 +216,7 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
                         status: ticketSelected?.status,
                         isanswered: ticketSelected?.isAnswered,
                         userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                        getToken: userType === "SUPERVISOR"
                     }
                 }));
                 setWaitClose(false);
@@ -296,6 +304,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
         newUserId: number;
         newUserGroup: string;
         observation: string;
+        token: string;
     }>();
 
     useEffect(() => {
@@ -333,7 +342,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             reset({
                 newUserId: 0,
                 newUserGroup: '',
-                observation: ''
+                observation: '',
             })
             register('newUserId');
             register('newUserGroup');
@@ -397,6 +406,159 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     onChange={(value) => setValue('observation', value)}
                     maxLength={1024}
                 />
+            </div>
+        </DialogZyx>)
+}
+
+const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitInsLead, setWaitInsLead] = useState(false);
+
+    const insLeadRes = useSelector(state => state.main.execute);
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const personSelected = useSelector(state => state.inbox.person);
+
+    const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
+        description: string;
+        expected_revenue: string;
+        priority: number;
+        lastname: string;
+        firstname: string;
+        email: string;
+        phone: string;
+    }>();
+
+    useEffect(() => {
+        if (waitInsLead) {
+            if (!insLeadRes.loading && !insLeadRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            } else if (insLeadRes.error) {
+                const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitInsLead(false);
+            }
+        }
+    }, [insLeadRes, waitInsLead])
+
+    useEffect(() => {
+        if (openModal) {
+            reset({
+                description: '',
+                expected_revenue: '',
+                priority: 1,
+                firstname: personSelected.data?.firstname,
+                lastname: personSelected.data?.lastname,
+                email: personSelected.data?.email,
+                phone: personSelected.data?.phone,
+            })
+            register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('priority', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
+
+            register('lastname');
+            register('firstname', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('email', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+            register('phone', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
+        }
+    }, [openModal])
+
+    const onSubmit = handleSubmit((data) => {
+        console.log(data.priority)
+        const newLead: ILead = {
+            leadid: 0,
+            description: data.description,
+            type: 'NINGUNO',
+            status: 'ACTIVO',
+            expected_revenue: parseFloat(data.expected_revenue),
+            date_deadline: null,
+            tags: '',
+            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+            priority: dataPriority[data.priority].option,
+            conversationid: ticketSelected?.conversationid!!,
+            columnid: 0,
+            index: 0,
+        }
+
+        const { firstname = "", lastname = "", email = "", phone = "" } = data;
+        dispatch(showBackdrop(true));
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected.data?.personid!!)))
+        setWaitInsLead(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.newlead)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.firstname)}
+                        valueDefault={getValues('firstname')}
+                        className="flex-1"
+                        error={errors?.firstname?.message}
+                        onChange={(value) => setValue('firstname', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.lastname)}
+                        valueDefault={getValues('lastname')}
+                        className="flex-1"
+                        error={errors?.lastname?.message}
+                        onChange={(value) => setValue('lastname', value)}
+                    />
+                </div>
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.email)}
+                        valueDefault={getValues('email')}
+                        className="flex-1"
+                        error={errors?.email?.message}
+                        onChange={(value) => setValue('email', value)}
+                    />
+                    <FieldEdit
+                        label={t(langKeys.phone)}
+                        valueDefault={getValues('phone')}
+                        className="flex-1"
+                        error={errors?.phone?.message}
+                        onChange={(value) => setValue('phone', value)}
+                    />
+                </div>
+                <FieldEdit
+                    label={t(langKeys.description)}
+                    valueDefault={getValues('description')}
+                    error={errors?.description?.message}
+                    onChange={(value) => setValue('description', value)}
+                />
+                <div style={{ display: 'flex', gap: 16 }}>
+                    <FieldEdit
+                        label={t(langKeys.expected_revenue)}
+                        className="flex-1"
+                        valueDefault={getValues('expected_revenue')}
+                        error={errors?.expected_revenue?.message}
+                        type="number"
+                        onChange={(value) => setValue('expected_revenue', value)}
+                    />
+                    <div style={{ flex: 1 }}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">Prioridad</Box>
+                        <Rating
+                            name="simple-controlled"
+                            // defaultValue={2}
+                            max={3}
+                            value={getValues('priority')}
+                            onChange={(event, newValue) => setValue('priority', newValue || 0, { shouldValidate: true })}
+                        />
+                    </div>
+                </div>
             </div>
         </DialogZyx>)
 }
@@ -544,6 +706,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
     const closeTicket = () => setOpenModalCloseticket(true);
 
@@ -609,6 +772,17 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
+                {ticketSelected?.status !== 'CERRADO' &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null)
+                        setOpenModalLead(true)
+                    }}>
+                        <ListItemIcon>
+                            <LeadIcon width={18} style={{ fill: '#2E2C34' }} />
+                        </ListItemIcon>
+                        {t(langKeys.lead)}
+                    </MenuItem>
+                }
             </Menu>
             <DialogCloseticket
                 openModal={openModalCloseticket}
@@ -622,15 +796,22 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                 openModal={openModalHSM}
                 setOpenModal={setOpenModalHSM}
             />
-            <DialogTipifications openModal={openModalTipification} setOpenModal={setOpenModalTipification} />
+            <DialogTipifications
+                openModal={openModalTipification}
+                setOpenModal={setOpenModalTipification}
+            />
+            <DialogLead
+                openModal={openModalLead}
+                setOpenModal={setOpenModalLead}
+            />
         </>
     )
 }
 
-
-const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket, ticket: { ticketnum, displayname, imageurldef } }) => {
+const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
-
+    const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    console.log(ticketSelected!!.displayname)
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
@@ -638,13 +819,11 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
             <div onClick={showInfoPanelTrigger} style={{ cursor: 'pointer', width: '100%', height: '100%', position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}></div>
             <div className={classes.headChat}>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <Avatar src={imageurldef || ""} />
+                    <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
-                        <div>
-                            {displayname}
-                        </div>
+                        <div>{ticketSelected!!.displayname}</div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
-                            Ticket #{ticketnum}
+                            Ticket #{ticketSelected!!.ticketnum}
                         </div>
                     </div>
                 </div>
@@ -654,14 +833,14 @@ const HeadChat: React.FC<{ classes: any, ticket: ITicket }> = ({ classes, ticket
     )
 }
 
-const ChatPanel: React.FC<{ classes: any, ticket: ITicket }> = React.memo(({ classes, ticket }) => (
+const ChatPanel: React.FC<{ classes: any }> = React.memo(({ classes }) => (
     <div className={classes.containerChat}>
         <HeadChat
             classes={classes}
-            ticket={ticket} />
+        />
         <InteractionsPanel
             classes={classes}
-            ticket={ticket} />
+        />
         <ReplyPanel
             classes={classes} />
     </div>

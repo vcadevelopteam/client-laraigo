@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody, IRequestBodyPaginated } from "@types";
+import { IActionCall, IRequestBody, IRequestBodyPaginated, ITransaction } from "@types";
 import { getValuesFromDomain } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
@@ -39,6 +39,18 @@ export const getTicketListByPerson = (payload: IRequestBodyPaginated): IActionCa
 
 export const resetGetTicketListByPerson = () => ({type: actionTypes.GET_TICKET_LIST_BY_PERSON_RESET });
 
+export const getReferrerListByPerson = (payload: IRequestBody): IActionCall => ({
+    callAPI: async () => CommonService.main(payload),
+    types: {
+        loading: actionTypes.GET_REFERRER_LIST_BY_PERSON,
+        failure: actionTypes.GET_REFERRER_LIST_BY_PERSON_FAILURE,
+        success: actionTypes.GET_REFERRER_LIST_BY_PERSON_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetGetReferrerListByPerson = () => ({type: actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET });
+
 export const getChannelListByPerson = (payload: IRequestBody): IActionCall => ({
     callAPI: async () => CommonService.main(payload),
     types: {
@@ -63,17 +75,17 @@ export const getAdditionalInfoByPerson = (payload: IRequestBody): IActionCall =>
 
 export const resetgetAdditionalInfoByPerson = () => ({type: actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_RESET });
 
-export const getOpportunitiesByPerson = (payload: IRequestBody): IActionCall => ({
-    callAPI: async () => PersonService.getOpportunitiesByPerson(payload),
+export const getLeadsByPerson = (payload: IRequestBody): IActionCall => ({
+    callAPI: async () => PersonService.getLeadsByPerson(payload),
     types: {
-        loading: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON,
-        failure: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_FAILURE,
-        success: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_SUCCESS,
+        loading: actionTypes.GET_LEAD_LIST_BY_PERSON,
+        failure: actionTypes.GET_LEAD_LIST_BY_PERSON_FAILURE,
+        success: actionTypes.GET_LEAD_LIST_BY_PERSON_SUCCESS,
     },
     type: null,
 });
 
-export const resetGetOpportunitiesByPerson = () => ({type: actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_RESET });
+export const resetGetLeadsByPerson = () => ({type: actionTypes.GET_LEAD_LIST_BY_PERSON_RESET });
 
 /**
  * Managed domain types
@@ -89,6 +101,8 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("NIVELEDUCATIVO"),
         getValuesFromDomain("TIPOPERSONA"),
         getValuesFromDomain("GRUPOPERSONA"),
+        getValuesFromDomain("TIPOPERSONAGEN"),
+        getValuesFromDomain("TIPOCANAL"),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,
@@ -100,14 +114,30 @@ export const getDomainsByTypename = (): IActionCall => ({
 
 export const resetGetDomainsByTypename = () => ({type: actionTypes.GET_DOMAINS_BY_TYPENAME_RESET });
 
-export const editPerson = (payload: IRequestBody): IActionCall => ({
-    callAPI: async () => CommonService.main(payload),
-    types: {
-        loading: actionTypes.EDIT_PERSON,
-        failure: actionTypes.EDIT_PERSON_FAILURE,
-        success: actionTypes.EDIT_PERSON_SUCCESS,
-    },
-    type: null,
-});
+// dispatch(execute({
+//     header: insPersonBody({ ...p }),
+//     detail: [
+//         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+//     ]
+// }, true));
+export const editPerson = (payload: IRequestBody | ITransaction, insert: boolean = false): IActionCall => {
+    if (insert) {
+        // dispatch(execute({
+//     header: insPersonBody({ ...p }),
+//     detail: [
+//         ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+//     ]
+// }, true));
+    }
+    return {
+        callAPI: async () => CommonService.main(payload, insert),
+        types: {
+            loading: actionTypes.EDIT_PERSON,
+            failure: actionTypes.EDIT_PERSON_FAILURE,
+            success: actionTypes.EDIT_PERSON_SUCCESS,
+        },
+        type: null,
+    }
+};
 
 export const resetEditPerson = () => ({type: actionTypes.EDIT_PERSON_RESET });

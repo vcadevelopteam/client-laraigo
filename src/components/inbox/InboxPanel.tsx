@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
-        // gap: theme.spacing(1),
+        gap: theme.spacing(.5),
     },
     containerPostback: {
         width: 200,
@@ -551,7 +551,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} classes={classes} />
+                    <ChatPanel classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

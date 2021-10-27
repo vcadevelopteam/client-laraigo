@@ -10,6 +10,11 @@ const paths = {
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
     SIGNUP: "/sign-up",
+    PRIVACY: "/privacy",
+    ACTIVATE_USER: {
+        path: '/activateuser/:token',
+        resolve: (token: string) => `/activateuser/${token}`
+    },
     CHANNELS: '/channels',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
@@ -22,6 +27,10 @@ const paths = {
     CHANNELS_ADD_INSTAGRAM: {
         path: '/channels/:id/add/instagram',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/instagram`,
+    },
+    CHANNELS_ADD_INSTAGRAMDM: {
+        path: '/channels/:id/add/instagramdm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/instagramdm`,
     },
     CHANNELS_ADD_WHATSAPP: {
         path: '/channels/:id/add/whatsapp',
@@ -38,6 +47,14 @@ const paths = {
     CHANNELS_ADD_TWITTERDM: {
         path: '/channels/:id/add/twitterdm',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/twitterdm`,
+    },
+    CHANNELS_ADD_ANDROID: {
+        path: '/channels/:id/add/ChannelAddAndroid',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddAndroid`,
+    },
+    CHANNELS_ADD_IOS: {
+        path: '/channels/:id/add/ChannelAddIos',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddIos`,
     },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',

@@ -176,7 +176,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
             redirect: row?.redirect || '',
             groups: row?.groups || '',
             labels: row?.labels || '',
-            status: 'ACTIVO',
+            status: 'DESCONECTADO',
             bydefault: row ? row.bydefault : true,
         })
 
@@ -297,24 +297,6 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     className={classes.mb2}
                                 />
                             }
-                            {/* {edit ?
-                                <FieldSelect
-                                    label={t(langKeys.type)}
-                                    className={classes.mb2}
-                                    valueDefault={row?.type || ""}
-                                    triggerOnChangeOnFirst={true}
-                                    onChange={(value) => setValue('type', value ? value.domainvalue : '')}
-                                    error={errors?.type?.message}
-                                    data={dataTypeUser}
-                                    optionDesc="domaindesc"
-                                    optionValue="domainvalue"
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.organization)}
-                                    value={row ? row.orgdesc : ""}
-                                    className={classes.mb2}
-                                />
-                            } */}
                             {edit ?
                                 <FieldMultiSelect //los multiselect te devuelven un array de objetos en OnChange por eso se le recorre
                                     label={t(langKeys.channel)}
@@ -376,6 +358,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
 
                             {edit ?
                                 <FieldSelect
+                                    uset={true}
                                     label={t(langKeys.default_application)}
                                     className={classes.mb2}
                                     valueDefault={row?.redirect || ""}
@@ -384,6 +367,7 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                                     data={dataApplications.data}
                                     loading={dataApplications.loading}
                                     triggerOnChangeOnFirst={true}
+                                    prefixTranslation="app_"
                                     optionDesc="description"
                                     optionValue="path"
                                 /> :
@@ -659,7 +643,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
-            status: row?.status || 'ACTIVO',
+            status: row?.status || 'DESCONECTADO',
             image: row?.image || null,
             send_password_by_email: false,
             pwdchangefirstlogin: false

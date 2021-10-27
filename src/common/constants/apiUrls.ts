@@ -18,7 +18,7 @@ const APIS_URL = {
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
-        WS: 'https://testsocket.laraigo.com',
+        WS: 'http://localhost:7070',
         CHATFLOW: 'https://localhost:4200'
     }
 }
@@ -35,7 +35,9 @@ export const apiUrls = {
     CHANGE_ORGANIZATION: `${BASE_URL}/auth/changeorganization`,
     LOGOUT_URL: `${BASE_URL}/auth/logout`,
     MAIN_URL: `${BASE_URL}/main`,
+    MAIN_URL_PUBLIC: `${BASE_URL}/main/public/domainvalues`,
     MAIN_MULTI: `${BASE_URL}/main/multi`,
+    MAIN_MULTI_PUBLIC: `${BASE_URL}/main/public/multi/domainvalues`,
     EXECUTE_TRANSACTION: `${BASE_URL}/main/executetransaction`,
     MAIN_PAGINATED: `${BASE_URL}/main/paginated`,
     MAIN_DYNAMIC: `${BASE_URL}/reportdesigner`,
@@ -63,6 +65,8 @@ export const apiUrls = {
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 
     PERSON: `${BASE_URL}/person`,
+
+    ACTIVATION_USER: `${BASE_URL}/activationuser`,
 
     CHATFLOW: `${CHATFLOW_URL}`,
 };

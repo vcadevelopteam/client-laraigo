@@ -1,4 +1,4 @@
-import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams } from "@types";
+import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
 import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
@@ -107,6 +107,8 @@ export const resetGetDataTicket = (): IActionCall => ({ type: actionTypes.GET_IN
 
 export const selectTicket = (ticket: ITicket): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: ticket });
 
+export const updatePerson = (person: IPerson): IActionCall => ({ type: actionTypes.UPDATE_PERSON, payload: person });
+
 export const resetSelectTicket = (): IActionCall => ({ type: actionTypes.SELECT_TICKET, payload: null });
 
 export const selectAgent = (ticket: IAgent): IActionCall => ({ type: actionTypes.SELECT_AGENT, payload: ticket });
@@ -134,6 +136,8 @@ export const connectAgentUI = (payload: boolean): IActionCall => {
 };
 
 export const goToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.GO_TO_BOTTOM, payload });
+
+export const showGoToBottom = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_SHOW_GO_TO_BOTTOM, payload });
 
 export const setIsFiltering = (payload: boolean | null): IActionCall => ({ type: actionTypes.SET_IS_FILTERING, payload });
 
