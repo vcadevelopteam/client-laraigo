@@ -19,7 +19,7 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
-
+import Fab from '@material-ui/core/Fab';
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
         flex: '0 0 300px',
@@ -199,147 +199,144 @@ const InfoTab: React.FC = () => {
 
     if (view === 'edit') {
         return (
-            <div style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-                <div style={{ display: 'flex', marginRight: 4, justifyContent: 'space-between' }}>
-                    <IconButton
-                        onClick={onSubmit}
-                        size="small"
-                        disabled={resUpdatePerson.loading}
-                    >
-                        <SaveIcon />
-                    </IconButton>
-                    <IconButton
+            <>
+
+                <div style={{ overflowY: 'auto' }} className="scroll-style-go">
+                    <div style={{ position: 'relative' }}>
+                        <Fab
+                            onClick={onSubmit}
+                            size="small"
+                            style={{ position: 'absolute', top: 8, right: 8 }}
+                        >
+                            <SaveIcon color="primary" />
+                        </Fab>
+                    </div>
+                    <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
+                        <FieldEdit
+                            label={t(langKeys.firstname)}
+                            onChange={(value) => setValue('firstname', value)}
+                            valueDefault={getValues('firstname')}
+                            error={errors?.firstname?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.lastname)}
+                            onChange={(value) => setValue('lastname', value)}
+                            valueDefault={getValues('lastname')}
+                            error={errors?.lastname?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('documenttype', value?.domainvalue)}
+                            label={t(langKeys.documenttype)}
+                            loading={multiData.loading}
+                            data={multiData.data[0]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('documenttype')}
+                            error={errors?.documenttype?.message}
+                            uset={true}
+                            prefixTranslation="type_documenttype_"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.documentnumber)}
+                            onChange={(value) => setValue('documentnumber', value)}
+                            valueDefault={getValues('documentnumber')}
+                            type="number"
+                            error={errors?.documentnumber?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.email)}
+                            onChange={(value) => setValue('email', value)}
+                            valueDefault={getValues('email')}
+                            error={errors?.email?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.phone)}
+                            onChange={(value) => setValue('phone', value)}
+                            valueDefault={getValues('phone')}
+                            error={errors?.phone?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.alternativeEmail)}
+                            onChange={(value) => setValue('alternativeemail', value)}
+                            valueDefault={getValues('alternativeemail')}
+                            error={errors?.alternativeemail?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.alternativePhone)}
+                            onChange={(value) => setValue('alternativephone', value)}
+                            valueDefault={getValues('alternativephone')}
+                            error={errors?.alternativephone?.message}
+                        />
+                        <FieldEdit
+                            label={t(langKeys.birthday)}
+                            onChange={(value) => setValue('birthday', value)}
+                            valueDefault={getValues('birthday')}
+                            type="date"
+                            error={errors?.birthday?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('gender', value?.domainvalue)}
+                            label={t(langKeys.gender)}
+                            loading={multiData.loading}
+                            data={multiData.data[1]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('gender')}
+                            uset={true}
+                            prefixTranslation="type_gender_"
+                            error={errors?.gender?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('occupation', value?.domainvalue)}
+                            label={t(langKeys.occupation)}
+                            loading={multiData.loading}
+                            data={multiData.data[2]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('occupation')}
+                            uset={true}
+                            prefixTranslation="type_ocupation_"
+                            error={errors?.occupation?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('civilstatus', value?.domainvalue)}
+                            label={t(langKeys.civilStatus)}
+                            loading={multiData.loading}
+                            data={multiData.data[3]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('civilstatus')}
+                            uset={true}
+                            prefixTranslation="type_civilstatus_"
+                            error={errors?.civilstatus?.message}
+                        />
+                        <FieldSelect
+                            onChange={(value) => setValue('educationlevel', value?.domainvalue)}
+                            label={t(langKeys.educationLevel)}
+                            loading={multiData.loading}
+                            data={multiData.data[4]?.data || []}
+                            optionValue="domainvalue"
+                            optionDesc="domainvalue"
+                            valueDefault={getValues('educationlevel')}
+                            uset={true}
+                            prefixTranslation="type_educationlevel_"
+                            error={errors?.educationlevel?.message}
+                        />
+                    </div>
+                    <Fab
                         onClick={() => setView('view')}
                         size="small"
+                        style={{ position: 'absolute', bottom: 8, right: 8 }}
                     >
-                        <VisibilityIcon />
-                    </IconButton>
+                        <VisibilityIcon color="action" />
+                    </Fab>
                 </div>
-                <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
-                    <FieldEdit
-                        label={t(langKeys.firstname)}
-                        onChange={(value) => setValue('firstname', value)}
-                        valueDefault={getValues('firstname')}
-                        error={errors?.firstname?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.lastname)}
-                        onChange={(value) => setValue('lastname', value)}
-                        valueDefault={getValues('lastname')}
-                        error={errors?.lastname?.message}
-                    />
-                    <FieldSelect
-                        onChange={(value) => setValue('documenttype', value?.domainvalue)}
-                        label={t(langKeys.documenttype)}
-                        loading={multiData.loading}
-                        data={multiData.data[0]?.data || []}
-                        optionValue="domainvalue"
-                        optionDesc="domainvalue"
-                        valueDefault={getValues('documenttype')}
-                        error={errors?.documenttype?.message}
-                        uset={true}
-                        prefixTranslation="type_documenttype_"
-                    />
-                    <FieldEdit
-                        label={t(langKeys.documentnumber)}
-                        onChange={(value) => setValue('documentnumber', value)}
-                        valueDefault={getValues('documentnumber')}
-                        type="number"
-                        error={errors?.documentnumber?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.email)}
-                        onChange={(value) => setValue('email', value)}
-                        valueDefault={getValues('email')}
-                        error={errors?.email?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.phone)}
-                        onChange={(value) => setValue('phone', value)}
-                        valueDefault={getValues('phone')}
-                        error={errors?.phone?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.alternativeEmail)}
-                        onChange={(value) => setValue('alternativeemail', value)}
-                        valueDefault={getValues('alternativeemail')}
-                        error={errors?.alternativeemail?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.alternativePhone)}
-                        onChange={(value) => setValue('alternativephone', value)}
-                        valueDefault={getValues('alternativephone')}
-                        error={errors?.alternativephone?.message}
-                    />
-                    <FieldEdit
-                        label={t(langKeys.birthday)}
-                        onChange={(value) => setValue('birthday', value)}
-                        valueDefault={getValues('birthday')}
-                        type="date"
-                        error={errors?.birthday?.message}
-                    />
-                    <FieldSelect
-                        onChange={(value) => setValue('gender', value?.domainvalue)}
-                        label={t(langKeys.gender)}
-                        loading={multiData.loading}
-                        data={multiData.data[1]?.data || []}
-                        optionValue="domainvalue"
-                        optionDesc="domainvalue"
-                        valueDefault={getValues('gender')}
-                        uset={true}
-                        prefixTranslation="type_gender_"
-                        error={errors?.gender?.message}
-                    />
-                    <FieldSelect
-                        onChange={(value) => setValue('occupation', value?.domainvalue)}
-                        label={t(langKeys.occupation)}
-                        loading={multiData.loading}
-                        data={multiData.data[2]?.data || []}
-                        optionValue="domainvalue"
-                        optionDesc="domainvalue"
-                        valueDefault={getValues('occupation')}
-                        uset={true}
-                        prefixTranslation="type_ocupation_"
-                        error={errors?.occupation?.message}
-                    />
-                    <FieldSelect
-                        onChange={(value) => setValue('civilstatus', value?.domainvalue)}
-                        label={t(langKeys.civilStatus)}
-                        loading={multiData.loading}
-                        data={multiData.data[3]?.data || []}
-                        optionValue="domainvalue"
-                        optionDesc="domainvalue"
-                        valueDefault={getValues('civilstatus')}
-                        uset={true}
-                        prefixTranslation="type_civilstatus_"
-                        error={errors?.civilstatus?.message}
-                    />
-                    <FieldSelect
-                        onChange={(value) => setValue('educationlevel', value?.domainvalue)}
-                        label={t(langKeys.educationLevel)}
-                        loading={multiData.loading}
-                        data={multiData.data[4]?.data || []}
-                        optionValue="domainvalue"
-                        optionDesc="domainvalue"
-                        valueDefault={getValues('educationlevel')}
-                        uset={true}
-                        prefixTranslation="type_educationlevel_"
-                        error={errors?.educationlevel?.message}
-                    />
-                </div>
-            </div>
+
+            </>
         )
     }
     return (
-        <div style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
-            <div style={{ display: 'flex', marginRight: 8, justifyContent: 'flex-end' }}>
-                <IconButton
-                    onClick={() => setView('edit')}
-                    size="small"
-                >
-                    <EditIcon />
-                </IconButton>
-            </div>
+        <div style={{ overflowY: 'auto' }} className="scroll-style-go">
             <div className={classes.containerInfoClient} style={{ paddingTop: 0, backgroundColor: 'transparent' }}>
                 {person?.firstname && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
@@ -356,7 +353,7 @@ const InfoTab: React.FC = () => {
                 {person?.documenttype && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.documenttype)}</div>
-                        <div>{person?.documenttype}</div>
+                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
                 {person?.documentnumber && <div className={classes.containerName}>
@@ -401,34 +398,34 @@ const InfoTab: React.FC = () => {
                         <div>{person?.addressreference}</div>
                     </div>
                 </div>}
-                {person?.genderdesc && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.gender)}</div>
-                        <div>{person?.genderdesc}</div>
-                    </div>
-                </div>}
                 {person?.birthday && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.birthday)}</div>
                         <div>{person?.birthday}</div>
                     </div>
                 </div>}
+                {person?.genderdesc && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.gender)}</div>
+                        <div>{person?.gender && t("type_gender_" + person?.gender.toLocaleLowerCase())}</div>
+                    </div>
+                </div>}
                 {person?.occupationdesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.occupation)}</div>
-                        <div>{person?.occupationdesc}</div>
+                        <div>{person?.occupation && t("type_ocupation_" + person?.occupation.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
                 {person?.civilstatusdesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.civilStatus)}</div>
-                        <div>{person?.civilstatusdesc}</div>
+                        <div>{person?.civilstatus && t("type_civilstatus_" + person?.civilstatus.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
                 {person?.educationleveldesc && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.educationLevel)}</div>
-                        <div>{person?.educationleveldesc}</div>
+                        <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
                 {person?.firstcontact && <div className={classes.containerName}>
@@ -456,6 +453,13 @@ const InfoTab: React.FC = () => {
                     </div>
                 </div>}
             </div>
+            <Fab
+                onClick={() => setView('edit')}
+                size="small"
+                style={{ position: 'absolute', bottom: 8, right: 8 }}
+            >
+                <EditIcon color="action" />
+            </Fab>
         </div>
     )
 }
