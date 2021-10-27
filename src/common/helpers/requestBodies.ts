@@ -1681,3 +1681,11 @@ export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, st
         finalcolumn_uuid
     }
 });
+
+export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody => ({
+    method: 'UFN_UPDATE_COLUMNS',
+    key: "UFN_UPDATE_COLUMNS",
+    parameters: {
+        cards_uuid: columns_uuid, 
+    }
+});

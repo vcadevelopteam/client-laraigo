@@ -1,4 +1,4 @@
-import { getColumnsSel, getLeadsSel, insColumns, updateColumnsLeads, uuidv4 } from "common/helpers";
+import { getColumnsSel, getLeadsSel, insColumns, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -132,6 +132,8 @@ const CRM: FC = () => {
       const [removed] = newColumnOrder.splice((source.index-1),1)
       newColumnOrder.splice(destination.index-1, 0, removed)
       setDataColumn(newColumnOrder)
+      const columns_uuid = newColumnOrder.slice(1).map(x => x.column_uuid).join(',')
+      dispatch(execute(updateColumnsOrder({columns_uuid})));
       return;
     }
   
