@@ -130,37 +130,8 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
 
     return (
-        <Box {...boxProps} pb={1} onClick={handleClick}>
-            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)}>
-                <div className={classes.floatingMenuIcon}>
-                    <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
-                        <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
-                    </IconButton>
-                    <Popover
-                        id={id}
-                        open={open}
-                        anchorEl={anchorEl}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        PaperProps={{
-                            className: classes.popoverPaper,
-                        }}
-                    >
-                        <Button
-                            variant="text"
-                            color="inherit"
-                            fullWidth
-                            type="button"
-                            onClick={handleDelete}
-                            style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                        >
-                            <Trans i18nKey={langKeys.delete} />
-                        </Button>
-                    </Popover>
-                </div>
+        <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
+            <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
                 <span className={classes.info}>S/ {lead.expected_revenue}</span>
                 <span className={classes.info}>{lead.displayname}</span>
@@ -191,6 +162,35 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                     <div style={{ flexGrow: 1 }} />
                     <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>
+            </div>
+            <div className={classes.floatingMenuIcon}>
+                <IconButton size="small" aria-describedby={id} onClick={handleMoreVertClick}>
+                    <MoreVertIcon style={{ height: 'inherit', width: 'inherit' }} />
+                </IconButton>
+                <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    PaperProps={{
+                        className: classes.popoverPaper,
+                    }}
+                >
+                    <Button
+                        variant="text"
+                        color="inherit"
+                        fullWidth
+                        type="button"
+                        onClick={handleDelete}
+                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                    >
+                        <Trans i18nKey={langKeys.delete} />
+                    </Button>
+                </Popover>
             </div>
         </Box>
     );
