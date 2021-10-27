@@ -239,7 +239,7 @@ const CRM: FC = () => {
                                                 <DraggableLeadCardContent
                                                   lead={item}
                                                   snapshot={snapshot}
-                                                  onDelete={(val) => {handleDelete(val)}}
+                                                  onDelete={handleDelete}
                                                 />
                                               </div>
                                             )}

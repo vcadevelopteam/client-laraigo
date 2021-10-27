@@ -102,10 +102,10 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         setAnchorEl(null);
     };
 
-    const handleDelete = useCallback(() => {
+    const handleDelete = () => {
         setAnchorEl(null);
         onDelete?.(lead)
-    }, [lead]);
+    };
 
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
