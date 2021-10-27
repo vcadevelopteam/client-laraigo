@@ -1,4 +1,4 @@
-import { getColumnsSel, getLeadsSel, insColumns, uuidv4 } from "common/helpers";
+import { getColumnsSel, getLeadsSel, insColumns, updateColumnsLeads, uuidv4 } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -36,42 +36,6 @@ interface leadBackend {
   edit: string,
   index: number
 }
-
-const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
-  if (!result.destination) return;
-  const { source, destination, type } = result;
-
-  if (type === 'column') {
-    const newColumnOrder = [...columns]
-    const [removed] = newColumnOrder.splice((source.index-1),1)
-    newColumnOrder.splice(destination.index-1, 0, removed)
-    setDataColumn(newColumnOrder)
-    return;
-  }
-
-  if (source.droppableId === destination.droppableId) {
-    const index = columns.findIndex(c => c.column_uuid === source.droppableId)
-    if (index >= 0) {
-      const column = columns[index];
-      const copiedItems = [...column.items!!]
-      const [removed] = copiedItems!.splice(source.index, 1);
-      copiedItems!.splice(destination.index, 0, removed);
-      setDataColumn(Object.values({...columns, [index]: {...column, items: copiedItems}}));
-    }
-  } else {
-    const sourceIndex = columns.findIndex(c => c.column_uuid === source.droppableId)
-    const destIndex = columns.findIndex(c => c.column_uuid === destination.droppableId)
-    if (sourceIndex >= 0 && destIndex >= 0) {
-      const sourceColumn = columns[sourceIndex];
-      const destColumn = columns[destIndex];
-      const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
-      const destItems = (destColumn.items) ? [...destColumn.items] : null
-      const [removed] = sourceItems!.splice(source.index, 1);
-      destItems!.splice(destination.index, 0, removed);
-      setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [destIndex]: {...destColumn, items: destItems}}));
-    }
-  }
-};
 
 const CRM: FC = () => {
   const dispatch = useDispatch();
@@ -125,6 +89,10 @@ const CRM: FC = () => {
     }
   }
 
+  const handleDelete = (lead:any) => {
+    console.log('lead',lead)
+  }
+
   const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4()
@@ -154,6 +122,52 @@ const CRM: FC = () => {
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
   }
+
+  const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
+    if (!result.destination) return;
+    const { source, destination, type } = result;
+  
+    if (type === 'column') {
+      const newColumnOrder = [...columns]
+      const [removed] = newColumnOrder.splice((source.index-1),1)
+      newColumnOrder.splice(destination.index-1, 0, removed)
+      setDataColumn(newColumnOrder)
+      return;
+    }
+  
+    if (source.droppableId === destination.droppableId) {
+      const index = columns.findIndex(c => c.column_uuid === source.droppableId)
+      if (index >= 0) {
+        const column = columns[index];
+        const copiedItems = [...column.items!!]
+        const [removed] = copiedItems!.splice(source.index, 1);
+        copiedItems!.splice(destination.index, 0, removed);
+        setDataColumn(Object.values({...columns, [index]: {...column, items: copiedItems}}));
+        
+        const cards_startingcolumn = copiedItems!.map(x => x.leadid).join(',')
+        const startingcolumn_uuid = column.column_uuid
+        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn:'', startingcolumn_uuid, finalcolumn_uuid: startingcolumn_uuid})));
+      }
+    } else {
+      const sourceIndex = columns.findIndex(c => c.column_uuid === source.droppableId)
+      const destIndex = columns.findIndex(c => c.column_uuid === destination.droppableId)
+      if (sourceIndex >= 0 && destIndex >= 0) {
+        const sourceColumn = columns[sourceIndex];
+        const destColumn = columns[destIndex];
+        const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
+        const destItems = (destColumn.items) ? [...destColumn.items] : null
+        const [removed] = sourceItems!.splice(source.index, 1);
+        destItems!.splice(destination.index, 0, removed);
+        setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [destIndex]: {...destColumn, items: destItems}}));
+
+        const cards_startingcolumn = sourceItems!.map(x => x.leadid).join(',')
+        const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
+        const startingcolumn_uuid = sourceColumn.column_uuid
+        const finalcolumn_uuid = destColumn.column_uuid
+        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid})));
+      }
+    }
+  };
 
   
   return (
@@ -205,7 +219,7 @@ const CRM: FC = () => {
                                                 <DraggableLeadCardContent
                                                   lead={item}
                                                   snapshot={snapshot}
-                                                  handleDelete={(val) => console.log(val)}
+                                                  onDelete={(val) => console.log(val)}
                                                 />
                                               </div>
                                             )}
@@ -281,7 +295,7 @@ const CRM: FC = () => {
                                                         <DraggableLeadCardContent
                                                           lead={item}
                                                           snapshot={snapshot}
-                                                          handleDelete={(val) => console.log(val)}
+                                                          onDelete={(val) => {handleDelete(val)}}
                                                         />
                                                       </div>
                                                     )}

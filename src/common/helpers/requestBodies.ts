@@ -1670,3 +1670,14 @@ export const insColumns = ({ id, description, type, status, edit, index, operati
         operation
     }
 });
+
+export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid }: Dictionary): IRequestBody => ({
+    method: 'UFN_UPDATE_LEADS',
+    key: "UFN_UPDATE_LEADS",
+    parameters: {
+        cards_startingcolumn, 
+        cards_finalcolumn, 
+        startingcolumn_uuid, 
+        finalcolumn_uuid
+    }
+});

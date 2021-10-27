@@ -16,7 +16,7 @@ const inputTitleHeight = 70.6;
 interface LeadCardContentProps extends BoxProps {
     lead: any;
     snapshot: DraggableStateSnapshot;
-    handleDelete?: (value: string) => void;
+    onDelete?: (value: string) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -88,7 +88,7 @@ const useLeadCardStyles = makeStyles(theme => ({
     }
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, handleDelete, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = lead.tags.split(',')
@@ -131,7 +131,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                             color="inherit"
                             fullWidth
                             style={{ fontWeight: "normal", textTransform: "uppercase" }}
-                            onClick={() => handleDelete && handleDelete(lead)}
+                            onClick={() => onDelete && onDelete(lead)}
                         >
                             <Trans i18nKey={langKeys.delete} />
                         </Button>
