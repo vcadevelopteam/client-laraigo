@@ -1689,3 +1689,24 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
         cards_uuid: columns_uuid, 
     }
 });
+
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation }: Dictionary): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    key: "UFN_LEAD_INS",
+    parameters: {
+        leadid,
+        description,
+        status,
+        type,
+        expected_revenue,
+        date_deadline,
+        tags,
+        personcommunicationchannel,
+        priority,
+        conversationid,
+        columnid,
+        column_uuid,
+        index,
+        operation
+    }
+});

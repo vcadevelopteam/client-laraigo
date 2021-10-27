@@ -6,6 +6,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
+import { AnyARecord } from "dns";
 
 interface dataBackend {
   columnid: number,
@@ -90,8 +91,24 @@ const CRM: FC = () => {
   }
 
   const handleDelete = (lead:any) => {
-    console.log('lead',lead)
+    // console.log('lead',lead)
+    // console.log('leadid',lead.leadid)
+    // console.log('columns0', columns[0])
+    const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
+    const column = dataColumn[index];
+    const copiedItems = [...column.items!!]
+    const copiedItems2 = [...column.items!!]
+    const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+    const [removed] = copiedItems!.splice(leadIndex, 1);
+    // console.log('index',index)
+    // console.log('leadIndex',leadIndex)
+    // console.log('copiedItems2',copiedItems2)
+    // console.log('copiedItems',copiedItems)
+    const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
+    // console.log('newData',newData)
+    setDataColumn(newData);
   }
+  console.log('datacolumn', dataColumn)
 
   const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
@@ -124,6 +141,7 @@ const CRM: FC = () => {
   }
 
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
+    console.log('columns', columns)
     if (!result.destination) return;
     const { source, destination, type } = result;
   
@@ -221,7 +239,7 @@ const CRM: FC = () => {
                                                 <DraggableLeadCardContent
                                                   lead={item}
                                                   snapshot={snapshot}
-                                                  onDelete={(val) => console.log(val)}
+                                                  onDelete={(val) => {handleDelete(val)}}
                                                 />
                                               </div>
                                             )}
