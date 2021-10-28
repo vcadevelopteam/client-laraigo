@@ -100,10 +100,9 @@ const useLeadCardStyles = makeStyles(theme => ({
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const tags = lead.tags.split(',')
+    const tags = (lead.tags) ? lead.tags.split(',') : []
     const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
-
     const history = useHistory();
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -152,13 +151,15 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         readOnly
                     />
                     <div style={{ width: 8 }} />
-                    <AccessTimeIcon
-                        style={{
-                            height: 18,
-                            width: 'auto',
-                            fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
-                        }}
-                    />
+                    {(lead.date_deadline) && (
+                        <AccessTimeIcon
+                            style={{
+                                height: 18,
+                                width: 'auto',
+                                fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
+                            }}
+                        />
+                    )}
                     <div style={{ flexGrow: 1 }} />
                     <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>
@@ -287,6 +288,7 @@ interface LeadColumnProps extends Omit<BoxProps, 'title'> {
     onAddCard?: () => void;
     provided: DraggableProvided;
     columnid: string;
+    total_revenue: number;
 }
 
 const useLeadColumnStyles = makeStyles(theme => ({
@@ -333,6 +335,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
     title,
     provided,
     columnid,
+    total_revenue,
     titleOnChange,
     onDelete,
     onAddCard,
@@ -418,7 +421,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
                 </div>
-                <span className={classes.currency}>S/ 80,000</span>
+                <span className={classes.currency}>S/ {total_revenue ? total_revenue : 0}</span>
                 {children}
             </div>
         </Box>

@@ -18,7 +18,8 @@ interface dataBackend {
   type: string,
   globalid: string,
   index: number,
-  items?: leadBackend[] | null
+  items?: leadBackend[] | null,
+  total_revenue?: number
 }
 
 interface leadBackend {
@@ -71,8 +72,15 @@ const CRM: FC = () => {
     }
   },[mainMulti])
 
+  const updateTotalRevenue = () => {
+    const columns = [...dataColumn]
+    columns.map((column) => {
+      column.total_revenue = column.items?.map(item => item.expected_revenue).reduce((a,b) => a + b, 0)
+    })
+    setDataColumn(columns)
+  }
+
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
-    console.log('columns', columns)
     if (!result.destination) return;
     const { source, destination, type } = result;
   
@@ -119,6 +127,9 @@ const CRM: FC = () => {
         dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid})));
       }
     }
+
+    console.log('dataColumn',dataColumn)
+    // updateTotalRevenue()
   };
 
   const handleEdit = (column_uuid:string, title:string, columns:dataBackend[], setDataColumn:any) => {
@@ -144,21 +155,27 @@ const CRM: FC = () => {
   }
 
   const handleDelete = (lead:any) => {
-    const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
-    const column = dataColumn[index];
-    const copiedItems = [...column.items!!]
-    const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
-    const [removed] = copiedItems!.splice(leadIndex, 1);
-    const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
-    setDataColumn(newData);
-    const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
-    dispatch(execute(insLead(data)))
+    const callback = () => {
+      const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
+      const column = dataColumn[index];
+      const copiedItems = [...column.items!!]
+      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+      const [removed] = copiedItems!.splice(leadIndex, 1);
+      const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
+      setDataColumn(newData);
+      const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
+      dispatch(execute(insLead(data)))
+    }
+    dispatch(manageConfirmation({
+      visible: true,
+      question: t(langKeys.confirmation_delete),
+      callback
+    }))
   }
 
   const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4()
-    console.log('uuid', uuid)
 
     const data = {
       id: uuid,
@@ -186,18 +203,16 @@ const CRM: FC = () => {
   }
 
   const hanldeDeleteColumn = (column_uuid : string) => {
-    console.log('desde la funcion ',column_uuid)
     const callback = () => {
       console.log('eilinando')
     }
     dispatch(manageConfirmation({
       visible: true,
-      question: t(langKeys.confirmation_save),
+      question: t(langKeys.confirmation_delete),
       callback
-  }))
+    }))
   }
   
-  console.log('dataColumn', dataColumn)
   return (
       <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
@@ -222,6 +237,7 @@ const CRM: FC = () => {
                           provided={provided}
                           columnid={dataColumn[0].column_uuid} 
                           onDelete={hanldeDeleteColumn}
+                          total_revenue={dataColumn[0].total_revenue!}
                         >
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
@@ -305,6 +321,7 @@ const CRM: FC = () => {
                               titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
                               columnid={column.column_uuid} 
                               onDelete={hanldeDeleteColumn}
+                              total_revenue={column.total_revenue!}
                             >
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
