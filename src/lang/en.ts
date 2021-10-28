@@ -1225,6 +1225,7 @@ const translation: LangKeys = {
     chatwebstep: 'Copy the following lines of code in the website where you want to use the chat',
 
     message_please_wait: 'Please wait a moment...',
+    message_try_later: 'Something happened, try againg later...',
     message_account_already_activated: 'Your account has already been activated!',
     message_account_activated: 'Your account has been activated!',
     message_thanks_for_register: 'Thanks for registering to our platform!',

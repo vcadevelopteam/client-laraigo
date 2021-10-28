@@ -1218,6 +1218,7 @@ export const langKeys = {
     chatwebstep: 'chatwebstep',
 
     message_please_wait: 'message_please_wait',
+    message_try_later: 'message_try_later',
     message_account_already_activated: 'message_account_already_activated',
     message_account_activated: 'message_account_activated',
     message_thanks_for_register: 'message_thanks_for_register',

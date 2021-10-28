@@ -48,49 +48,68 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ActivateUser: FC = () => {
+    // const location = useLocation();
+    // const query = new URLSearchParams(location.search)
+    // const tk = query.get('t');
+    const classes = useStyles();
+    const { t } = useTranslation();
     const { token }: any = useParams();
     const dispatch = useDispatch();
     const history = useHistory();
     const activationRes = useSelector(state => state.activationuser.activation);
+    const [loading, setLoading] = useState<boolean>(true);
     const [valid, setValid] = useState<boolean | null>(null);
 
     useEffect(() => {
-        dispatch(sendActivation(token));
+        if (token) {
+            dispatch(sendActivation(token));
+        }
     }, []);
 
     useEffect(() => {
-        setTimeout(() => {
-            const x = Math.random();
-            if (x > 0.5)
+        if (!activationRes.error && activationRes.data) {
+            setLoading(false);
+            if (activationRes.data?.sucess) {
                 setValid(true);
-            else
+            }
+            else {
                 setValid(false);
-            // if (!activationRes.loading && !activationRes.error) {
-            //     setValid(true);
-            // } else if (activationRes.error) {
-            //     setValid(false);
-            // }
-        }, 10000)
+            }
+        }
+        else if (activationRes.error) {
+            setTimeout(() => {
+                setLoading(false);
+            }, 3000);
+        }
     }, [activationRes])
-
-    const classes = useStyles();
-    const { t } = useTranslation();
 
     switch (valid) {
         case null:
-            return (
-                <div style={{ width: "100%",marginTop:25}}>
-                    <div className={classes.containerHead}>
-                        <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+            if (loading) {
+                return (
+                    <div style={{ width: "100%",marginTop:25}}>
+                        <div className={classes.containerHead}>
+                            <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                        </div>
+                        <div className={classes.titlecards}>{t(langKeys.message_please_wait)}</div>
+                        <div className={clsx("la-ball-beat la-2x", classes.spinnerContainer)}>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
                     </div>
-                    <div className={classes.titlecards}>{t(langKeys.message_please_wait)}</div>
-                    <div className={clsx("la-ball-beat la-2x", classes.spinnerContainer)}>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+                );
+            }
+            else {
+                return (
+                    <div style={{ width: "100%",marginTop:25}}>
+                        <div className={classes.containerHead}>
+                            <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                        </div>
+                        <div className={classes.titlecards}>{t(langKeys.message_try_later)}</div>
                     </div>
-                </div>
-            );
+                );
+            }
         case true:
             return (
                 <div style={{ width: "100%",marginTop:25}}>

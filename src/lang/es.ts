@@ -1216,6 +1216,7 @@ const translation: LangKeys = {
     chatwebstep: 'Copia las siguientes lineas de código en el sitio web donde quieres usar el chat',
 
     message_please_wait: 'Por favor espere unos momentos...',
+    message_try_later: 'Algo inesperado sucedió, inténtelo de nuevo más tarde...',
     message_account_already_activated: 'Tu cuenta ya ha sido activada!',
     message_account_activated: 'Tu cuenta se ha activado',
     message_thanks_for_register: '¡Gracias por registrarse en nuestra plataforma!',
