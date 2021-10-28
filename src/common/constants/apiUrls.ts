@@ -62,11 +62,11 @@ export const apiUrls = {
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
     VALIDATE_NEW_USER: `${BASE_URL}/subscription/validateusername`,
+    ACTIVATION_USER: `${BASE_URL}/subscription/activateuser`,
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
 
     PERSON: `${BASE_URL}/person`,
 
-    ACTIVATION_USER: `${BASE_URL}/activationuser`,
 
     CHATFLOW: `${CHATFLOW_URL}`,
 };
