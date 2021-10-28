@@ -1224,6 +1224,12 @@ const translation: LangKeys = {
     iosstep3: 'The SDK iOS supports installation through both CocoaPods and Carthage. Please, refer to this document if you need help in the install: https://docs.smooch.io/guide/native-ios-sdk/#installation',
     chatwebstep: 'Copy the following lines of code in the website where you want to use the chat',
 
+    message_please_wait: 'Please wait a moment...',
+    message_account_already_activated: 'Your account has already been activated!',
+    message_account_activated: 'Your account has been activated!',
+    message_thanks_for_register: 'Thanks for registering to our platform!',
+    message_click_to_login: 'Click continue to go to login',
+
     app_whitelist: "Whitelist",
     app_inappropriatewords: "Inappropriate words",
     app_intelligentmodels: "Intelligent models",
