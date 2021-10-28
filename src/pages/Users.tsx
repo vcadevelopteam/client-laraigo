@@ -643,7 +643,7 @@ const DetailUsers: React.FC<DetailProps> = ({ data: { row, edit }, setViewSelect
             billinggroupid: row?.billinggroupid || 0,
             registercode: row?.registercode || '',
             twofactorauthentication: row?.twofactorauthentication || 'INACTIVO',
-            status: row?.status || 'DESCONECTADO',
+            status: row?.status || 'ACTIVO',
             image: row?.image || null,
             send_password_by_email: false,
             pwdchangefirstlogin: false
