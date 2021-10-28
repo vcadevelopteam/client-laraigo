@@ -1226,8 +1226,8 @@ const translation: LangKeys = {
 
     message_please_wait: 'Please wait a moment...',
     message_try_later: 'Something happened, try againg later...',
-    message_account_already_activated: 'Your account has already been activated!',
-    message_account_activated: 'Your account has been activated!',
+    message_account_already_activated: 'Account already active!',
+    message_account_activated: 'Your account has been successfully activated!',
     message_thanks_for_register: 'Thanks for registering to our platform!',
     message_click_to_login: 'Click continue to go to login',
 
