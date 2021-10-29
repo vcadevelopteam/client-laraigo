@@ -332,6 +332,8 @@ const translation: LangKeys = {
     registerwhats: "Registrar cuenta de Whatsapp",
     whatsappinformation: "Información de Whatsapp",
     whatsappinformation2: "WhatsApp no ​​activará su cuenta sin esta información. Este número se puede encontrar en la sección 'Información comercial' de su panel de Facebook Business Manager",
+    whatsappinformation3: "Proporcione el número que desea activar para su WhatsApp oficial. Tenga en cuenta que debe poder recibir un código PIN a través de SMS o voz en este número para completar la activación",
+    whatsappinformation4: "Este es el nombre que se muestra cuando su mensaje aparece en las aplicaciones de su cliente. No se puede cambiar ni editar más tarde.",
     emailcondition: "El dominio de correo electrónico debe estar afiliado a la marca",
     brandpointcontact: "Punto de contacto de la marca",
     brandpointcontact2: "Proporcione la información de contacto del propietario del proyecto; debe ser empleado de la marca que solicita un perfil de WhatsApp. La confirmación de la compra se enviará a este contacto",
@@ -1281,6 +1283,10 @@ const translation: LangKeys = {
     formMandatoryFields: "Debe completar todos los campos",
     newLead: 'Nueva oportunidad',
     leadDetail: 'Detalle de la oportunidad',
+    logNote: 'Nota de registro',
+    logNote_plural: 'Notas de registro',
+    scheduleActivity: 'Programa de actividad',
+    scheduleActivity_plural: 'Programa de actividades',
 };
 
 const esResource: ResourceLanguage = {
