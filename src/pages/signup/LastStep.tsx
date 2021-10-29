@@ -43,6 +43,8 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     const classes = useChannelAddStyles();
     const history = useHistory();
     const dispatch = useDispatch();
+    const planData = useSelector(state => state.signup.verifyPlan)
+    console.log(planData)
     const [waitSave, setWaitSave] = useState(false);
     const [industryList, setindustryList] = useState<any>([]);
     const [companySizeList, setcompanySizeList] = useState<any>([]);
@@ -87,6 +89,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 industry: lastfields.industry,
                 companysize: lastfields.companysize,
                 rolecompany: lastfields.companyrole,
+                paymentplanid: planData.data[0].paymentplanid
             },
             channellist: requestchannels
         }

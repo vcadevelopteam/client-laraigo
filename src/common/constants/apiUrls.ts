@@ -58,6 +58,7 @@ export const apiUrls = {
     INTEGRATION_URL: `${BASE_URL}/load`,
     CHANNELS: `${BASE_URL}/channel`,
     GET_PAGELIST: `${BASE_URL}/channel/getpagelist`,
+    VERIFY_CHANNEL: `${BASE_URL}/subscription/get/contract`,
     GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,

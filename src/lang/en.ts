@@ -40,6 +40,8 @@ const translation: LangKeys = {
     industry_entertainment: "Games and Entertainment",
     industry_telecommunications: "Telecommunications",
     industry_hydrocarbons: "Hydrocarbons",
+    brandname: "Brand name",
+    brandaddress: "Brand address",
     companysize_to50people: "1 to 50 people",
     companysize_to250people: "50 to 250 people",
     companysize_to150people: "250 to 1000 people",

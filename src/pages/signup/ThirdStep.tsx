@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { makeStyles, Breadcrumbs, Button, Typography, Paper } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
@@ -12,6 +12,7 @@ import PhoneIcon from '@material-ui/icons/Phone';
 import { Facebook as FacebookIcon, Instagram as InstagramIcon, WhatsApp as WhatsAppIcon } from "@material-ui/icons";
 import { AndroidIcon, AppleIcon, FacebookMessengerIcon, ZyxmeMessengerIcon } from "icons";
 import SmsIcon from '@material-ui/icons/Sms';
+import { useSelector } from "hooks";
 
 interface ChannelOption {
     icon: React.ReactNode;
@@ -113,6 +114,9 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels: any, setStep: (param: any) => void, setsendchannels: (param: any) => void }> = ({ setlistchannels, listchannels, setStep, setsendchannels }) => {
 
     const { t } = useTranslation();
+    const planData = useSelector(state => state.signup.verifyPlan)
+    const limitChannels = planData.data[0].channelscontracted
+    const [selectedChannels, setselectedChannels] = useState(0);
     const classes = useChannelAddStyles();
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -120,7 +124,15 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Facebook',
             key: 'facebook',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
+                
+                if(listchannels.facebook){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.facebook?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, facebook: !p.facebook }))
+                }
             },
             selected: listchannels.facebook
         },
@@ -129,7 +141,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Instagram',
             key: 'instagram',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
+                if(listchannels.instagram){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.instagram?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, instagram: !p.instagram }))
+                }
             },
             selected: listchannels.instagram
         },
@@ -138,7 +157,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Instagram DM',
             key: 'instagramDM',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
+                if(listchannels.instagramDM){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.instagramDM?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, instagramDM: !p.instagramDM }))
+                }
             },
             selected: listchannels.instagramDM
         },
@@ -147,7 +173,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Messenger',
             key: 'messenger',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                if(listchannels.messenger){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.messenger?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, messenger: !p.messenger }))
+                }
             },
             selected: listchannels.messenger
         },
@@ -156,7 +189,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Whatsapp',
             key: 'whatsapp',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
+                if(listchannels.whatsapp){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.whatsapp?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, whatsapp: !p.whatsapp }))
+                }
             },
             selected: listchannels.whatsapp
         },
@@ -165,7 +205,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Telegram',
             key: 'telegram',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
+                if(listchannels.telegram){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.telegram?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, telegram: !p.telegram }))
+                }
             },
             selected: listchannels.telegram
         },
@@ -174,7 +221,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Twitter',
             key: 'twitter',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
+                if(listchannels.twitter){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.twitter?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, twitter: !p.twitter }))
+                }
             },
             selected: listchannels.twitter
         },
@@ -183,7 +237,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Twitter DM',
             key: 'twitterDM',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
+                if(listchannels.twitterDM){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.twitterDM?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, twitterDM: !p.twitterDM }))
+                }
             },
             selected: listchannels.twitterDM
         },
@@ -194,7 +255,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Chat Web',
             key: 'chatWeb',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
+                if(listchannels.chatWeb){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.chatWeb?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, chatWeb: !p.chatWeb }))
+                }
             },
             selected: listchannels.chatWeb
         },
@@ -203,7 +271,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Email',
             key: 'email',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, email: !p.email }))
+                if(listchannels.email){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, email: !p.email }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.email?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, email: !p.email }))
+                }
             },
             selected: listchannels.email
 
@@ -213,7 +288,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Phone',
             key: 'phone',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
+                if(listchannels.phone){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.phone?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
+                }
             },
             selected: listchannels.phone
         },
@@ -222,7 +304,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Sms',
             key: 'sms',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
+                if(listchannels.sms){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.sms?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, sms: !p.sms }))
+                }
             },
             selected: listchannels.sms
         },
@@ -231,7 +320,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'Android SDK',
             key: 'android',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, android: !p.android }))
+                if(listchannels.android){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.android?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, android: !p.android }))
+                }
             },
             selected: listchannels.android
         },
@@ -240,7 +336,14 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
             label: 'iOS SDk',
             key: 'apple',
             onClick: () => {
-                setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
+                if(listchannels.apple){
+                    setselectedChannels(selectedChannels-1)
+                    setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
+                }
+                else if(limitChannels>selectedChannels){
+                    listchannels.apple?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
+                    setlistchannels((p: any) => ({ ...p, apple: !p.apple }))
+                }
             },
             selected: listchannels.apple
         },

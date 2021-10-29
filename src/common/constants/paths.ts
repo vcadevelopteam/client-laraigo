@@ -9,7 +9,10 @@ const paths = {
     CORPORATIONS: '/corporations',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
-    SIGNUP: "/sign-up",
+    SIGNUP: {
+        path: "/sign-up/:token",
+        resolve: (token: string) => `/sign-up/${token}`,
+    },
     PRIVACY: "/privacy",
     ACTIVATE_USER: {
         path: '/activateuser/:token',

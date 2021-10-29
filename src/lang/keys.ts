@@ -26,6 +26,8 @@ export const langKeys = {
     industry_audiovisual: "industry_audiovisual",
     industry_beauty: "industry_beauty",
     industry_construction: "industry_construction",
+    brandname: "brandname",
+    brandaddress: "brandaddress",
     industry_education: "industry_education",
     industry_institution: "industry_institution",
     industry_entertainment: "industry_entertainment",

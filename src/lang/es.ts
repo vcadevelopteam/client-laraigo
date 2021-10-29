@@ -32,6 +32,8 @@ const translation: LangKeys = {
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
     expected_revenue: 'Ingreso esperado',
+    brandname: "Nombre de la Marca",
+    brandaddress: "Dirección de la marca",
 
     industry_foodsanddrinks: "Alimentos y Bebidas",
     industry_audiovisual: "Audiovisuales",
