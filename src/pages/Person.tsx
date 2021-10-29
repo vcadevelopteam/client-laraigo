@@ -1971,6 +1971,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
+        console.log(row)
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
 
