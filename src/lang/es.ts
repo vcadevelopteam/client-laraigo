@@ -1281,6 +1281,10 @@ const translation: LangKeys = {
     formMandatoryFields: "Debe completar todos los campos",
     newLead: 'Nueva oportunidad',
     leadDetail: 'Detalle de la oportunidad',
+    logNote: 'Nota de registro',
+    logNote_plural: 'Notas de registro',
+    scheduleActivity: 'Programa de actividad',
+    scheduleActivity_plural: 'Programa de actividades',
 };
 
 const esResource: ResourceLanguage = {

@@ -1283,6 +1283,10 @@ export const langKeys = {
     formMandatoryFields: 'formMandatoryFields',
     newLead: 'newLead',
     leadDetail: 'leadDetail',
+    logNote: 'logNote',
+    logNote_plural: 'logNote_plural',
+    scheduleActivity: 'scheduleActivity',
+    scheduleActivity_plural: 'scheduleActivity_plural',
 };
 
 export type LangKeys = typeof langKeys;

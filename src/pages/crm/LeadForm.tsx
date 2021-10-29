@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip, AppBar, Tabs, Tab, Avatar, Divider } from '@material-ui/core';
 import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, Title, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -19,6 +19,8 @@ import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { Add } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
+import clsx from 'clsx';
+import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
 
 const tagsOptions = [
     { title: "Information"},
@@ -27,7 +29,37 @@ const tagsOptions = [
     // crear mas
 ];
 
-  
+interface TabPanelProps {
+    value: string;
+    index: string;
+}
+
+const useTabPanelStyles = makeStyles(theme => ({
+    root: {
+        border: '#A59F9F 1px solid',
+        borderRadius: 6,
+    },
+}));
+
+const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
+    const classes = useTabPanelStyles();
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            className={classes.root}
+            id={`wrapped-tabpanel-${index}`}
+            aria-labelledby={`wrapped-tab-${index}`}
+            style={{ display: value === index ? 'block' : 'none' }}
+        >
+            <Box p={1}>
+                {children}
+            </Box>
+        </div>
+    );
+}
+
 const useLeadFormStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -54,6 +86,27 @@ const useLeadFormStyles = makeStyles(theme => ({
         fontWeight: 'bold',
         color: theme.palette.text.primary,
     },
+    tabs: {
+        color: '#989898',
+        backgroundColor: 'white',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: 'inherit',
+    },
+    tab: {
+        // width: 130,
+        height: 45,
+        maxWidth: 'unset',
+        border: '#A59F9F 1px solid',
+        borderRadius: 6,
+        backgroundColor: 'white',
+        flexGrow: 1,
+    },
+    activetab: {
+        color: 'white',
+        backgroundColor: theme.palette.primary.main,
+    }
 }));
 
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
@@ -64,8 +117,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
     const [values, setValues] = useState<ICrmLead>({
             column_uuid: match.params.columnuuid,
-            columnid: Number(match.params.columnid) } as ICrmLead
+            columnid: Number(match.params.columnid),
+            priority: 'LOW', } as ICrmLead
     );
+    const [tabIndex, setTabIndes] = useState('0');
     const [openPersonModal, setOpenPersonmodal] = useState(false);
     const lead = useSelector(state => state.lead.lead);
     const advisers = useSelector(state => state.lead.advisers);
@@ -175,9 +230,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             if (!edit) history.push(paths.CRM);
         }
     }, [saveLead]);
-
+    
     if (edit === true && lead.loading) {
-        return <CircularProgress />;
+        return (
+            <div style={{ width: '100%', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+                <CircularProgress />
+            </div>
+        );
     } else if (edit === true && (lead.error || !lead.value)) {
         return <div>ERROR</div>;
     }
@@ -270,7 +329,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             data={advisers.data}
                             optionDesc="firstname"
                             optionValue="userid"
-                            onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
+                            onChange={v => setValues(prev => {
+                                return {
+                                    ...prev,
+                                    userid: !v ? 0 : v.userid,
+                                };
+                            })}
                         />
                     </Grid>
                 </Grid>
@@ -282,7 +346,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 className={classes.field}
                                 value={lead.value?.displayname}
                             />) : 
-                            (<div style={{ display: 'flex', flexDirection: 'column'  }} className={classes.field} >
+                            (<div style={{ display: 'flex', flexDirection: 'column'  }} className={classes.field}>
                                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                     <div style={{ flexGrow: 1 }}>
                                         <FieldView
@@ -299,7 +363,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </div>)
                         }
                         <FieldEdit
-                            label={t(langKeys.person)}
+                            label={t(langKeys.phone)}
                             className={classes.field}
                             valueDefault={values?.phone || ""}
                             onChange={v => setValues(prev => ({ ...prev, phone: v }))}
@@ -313,7 +377,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 variant="inline"
                                 format="yyyy-MM-dd HH:mm:ss"
                                 id="date-picker-inline"
-                                value={values?.date_deadline || "" /*new Date('2014-08-18T21:11:54')*/}
+                                value={values?.date_deadline || ""}
                                 onChange={(_, v) => setValues(prev => ({ ...prev, date_deadline: v || "" }))}
                                 fullWidth
                                 KeyboardButtonProps={{
@@ -327,7 +391,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </Box>
                             <Rating
                                 name="simple-controlled"
-                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
+                                defaultValue={values?.priority === 'LOW' ? 1 : values?.priority === 'MEDIUM' ? 2 : values?.priority === 'HIGH' ? 3 : undefined}
                                 max={3}
                                 onChange={(event, newValue) => {
                                     const priority = newValue === 1 ? 'LOW' : newValue === 2 ? 'MEDIUM' : newValue === 3 ? 'HIGH' : undefined;
@@ -338,6 +402,38 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     </Grid>
                 </Grid>
             </Grid>
+            <div style={{ height: '1em' }} />
+            {edit && (
+            <>
+                <AppBar position="static" elevation={0}>
+                    <Tabs
+                        value={tabIndex}
+                        onChange={(_, i: string) => setTabIndes(i)}
+                        className={classes.tabs}
+                        TabIndicatorProps={{ style: { display: 'none' } }}
+                    >
+                        <Tab
+                            className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
+                            label={<Trans i18nKey={langKeys.logNote} count={2} />}
+                            value="0"
+                        />
+                        <Tab
+                            className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
+                            label={(
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <AccessTimeIcon style={{ width: 22, height: 22 }} />
+                                    <div style={{ width: 6 }}  />
+                                    <Trans i18nKey={langKeys.scheduleActivity} count={2} />
+                                </div>
+                            )}
+                            value="1"
+                        />
+                    </Tabs>
+                </AppBar>
+                <TabPanel value="0" index={tabIndex}><TabPanelLogNote /></TabPanel>
+                <TabPanel value="1" index={tabIndex}><TabPanelScheduleActivity /></TabPanel>
+            </>
+            )}
         </div>
         <SelectPersonModal
             open={openPersonModal}
@@ -475,5 +571,116 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
                 />
             </Box>
         </Modal>
+    );
+}
+
+const useTabPanelLogNoteStyles = makeStyles(theme => ({
+    root: {
+        padding: theme.spacing(1),
+    },
+    column: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+    },
+    paper: {
+        backgroundColor: 'white',
+        padding: theme.spacing(2),
+    },
+    row: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    logTextContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    logOwnerName: {
+        fontWeight: 'bold',
+    },
+    avatar: {
+        height: 28,
+        width: 28,
+    },
+    centerRow: {
+        alignItems: 'center',
+    },
+    logDate: {
+        color: 'grey',
+        fontSize: 12,
+    },
+}));
+
+export const TabPanelLogNote: FC = () => {
+    const classes = useTabPanelLogNoteStyles();
+
+    return (
+        <div className={clsx(classes.root, classes.column)}>
+            <div className={clsx(classes.paper, classes.column)}>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <TextField
+                        placeholder="Log an internal note"
+                        minRows={4}
+                        fullWidth
+                    />
+                </div>
+                <div style={{ height: 12 }} />
+                <div>
+                    <Button variant="contained" color="primary">
+                        Log
+                    </Button>
+                </div>
+            </div>
+            <div style={{ height: '2.3em' }} />
+            <div className={classes.paper}>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <div className={classes.logTextContainer}>
+                        <div className={clsx(classes.row, classes.centerRow)}>
+                            <span className={classes.logOwnerName}>Mitchell Admin</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.logDate}>now</span>
+                        </div>
+                        <div style={{ height: 4 }} />
+                        <span>Log de prueba</span>
+                    </div>
+                </div>
+            </div>
+            <div style={{ backgroundColor: 'grey', height: 1 }} />
+            <div className={classes.paper}>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <div className={classes.logTextContainer}>
+                        <div className={clsx(classes.row, classes.centerRow)}>
+                            <span className={classes.logOwnerName}>Mitchell Admin</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.logDate}>now</span>
+                        </div>
+                        <div style={{ height: 4 }} />
+                        <span>Log de prueba</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
+    root: {
+
+    },
+}));
+
+export const TabPanelScheduleActivity: FC = () => {
+    const classes = useTabPanelScheduleActivityStyles();
+
+    return (
+        <div>
+            A
+        </div>
     );
 }
