@@ -99,7 +99,11 @@ const paths = {
 
     SETTINGS: '/settings',
     CRM: '/crm',
-    CRM_EDIT: {
+    CRM_ADD_LEAD: {
+        path : '/crm/columns/:columnid/uuid/:columnuuid/leads/add',
+        resolve: (columnid: string | number, uuid: string) => `/crm/columns/${columnid}/uuid/${uuid}/leads/add`,
+    },
+    CRM_EDIT_LEAD: {
         path: '/crm/leads/:id',
         resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
     },

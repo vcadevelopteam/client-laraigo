@@ -72,7 +72,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm/leads')) {
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -277,8 +277,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.CRM_EDIT.path}>
+				<ProtectRoute exact path={paths.CRM_ADD_LEAD.path}>
 					<Layout mainClasses={classes.main}><LeadForm /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
+					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

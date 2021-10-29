@@ -6,6 +6,8 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
+import paths from "common/constants/paths";
+import { useHistory } from "react-router";
 
 interface dataBackend {
   columnid: number,
@@ -38,6 +40,7 @@ interface leadBackend {
 }
 
 const CRM: FC = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const mainMulti = useSelector(state => state.main.multiData);
@@ -198,7 +201,7 @@ const CRM: FC = () => {
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided}>
+                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}>
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
                               <div
@@ -273,7 +276,7 @@ const CRM: FC = () => {
                           {...provided.draggableProps}
                           ref={provided.innerRef}
                         >
-                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}>
+                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}>
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
                                     return (

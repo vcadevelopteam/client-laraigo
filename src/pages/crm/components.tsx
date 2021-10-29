@@ -116,8 +116,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
 
     const handleClick = useCallback(() => {
         history.push({
-            pathname: paths.CRM_EDIT.resolve(lead.leadid),
-            state: lead,
+            pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid),
         });
     }, [lead]);
 
