@@ -44,7 +44,6 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     const history = useHistory();
     const dispatch = useDispatch();
     const planData = useSelector(state => state.signup.verifyPlan)
-    console.log(planData)
     const [waitSave, setWaitSave] = useState(false);
     const [industryList, setindustryList] = useState<any>([]);
     const [companySizeList, setcompanySizeList] = useState<any>([]);
@@ -103,7 +102,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             if (!mainResult.loading && !mainResult.error) {
                 setBackdrop(false)
                 setSnackbar({ state: true, success: true, message: t(langKeys.successful_register) })
-                history.push('sign-in')
+                history.push('../sign-in')
                 setWaitSave(false);
             } else if (mainResult.error) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
