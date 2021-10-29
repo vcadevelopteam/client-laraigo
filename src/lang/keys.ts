@@ -1280,7 +1280,11 @@ export const langKeys = {
     app_user_settings: "app_user_settings",
     app_ia_models: "app_ia_models",
     app_ia: "app_ia",
-    app_privacy: "app_privacy"
+    app_privacy: "app_privacy",
+
+    formMandatoryFields: 'formMandatoryFields',
+    newLead: 'newLead',
+    leadDetail: 'leadDetail',
 };
 
 export type LangKeys = typeof langKeys;

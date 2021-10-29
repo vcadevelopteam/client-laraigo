@@ -1278,7 +1278,11 @@ const translation: LangKeys = {
     app_user_settings: "Configuración de usuario",
     app_ia_models: "Modelos IA",
     app_ia: "IA",
-    app_privacy: "Privacidad"
+    app_privacy: "Privacidad",
+
+    formMandatoryFields: "Debe completar todos los campos",
+    newLead: 'Nueva oportunidad',
+    leadDetail: 'Detalle de la oportunidad',
 };
 
 const esResource: ResourceLanguage = {
