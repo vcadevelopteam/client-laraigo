@@ -42,6 +42,8 @@ export const langKeys = {
     customerfacebookid: "customerfacebookid",
     whatsappinformation: "whatsappinformation",
     whatsappinformation2: "whatsappinformation2",
+    whatsappinformation3: "whatsappinformation3",
+    whatsappinformation4: "whatsappinformation4",
     companysize_to250people: "companysize_to250people",
     companysize_to150people: "companysize_to150people",
     companysize_more1000people: "companysize_more1000people",
@@ -1278,7 +1280,11 @@ export const langKeys = {
     app_user_settings: "app_user_settings",
     app_ia_models: "app_ia_models",
     app_ia: "app_ia",
-    app_privacy: "app_privacy"
+    app_privacy: "app_privacy",
+
+    formMandatoryFields: 'formMandatoryFields',
+    newLead: 'newLead',
+    leadDetail: 'leadDetail',
 };
 
 export type LangKeys = typeof langKeys;

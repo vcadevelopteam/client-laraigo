@@ -767,6 +767,8 @@ const translation: LangKeys = {
     brandpointcontact2: "Please provide the contact information for the project owner - you must be employed by the brand applying for a WhatsApp Profile. Confirmation of purchase will be sent to this contact",
     whatsappinformation: "Whatsapp information",    
     whatsappinformation2: "WhatsApp will not activate your account without this information. This number can be found in the 'Business Info' section of your Facebook Business Manager Dashboard",
+    whatsappinformation3: "Please provide the number you wish to activate for your official WhatsApp. Note, you must be able to receive a pin code via SMS or Voice on this number in order to complete activation",
+    whatsappinformation4: "This is the name that's displayed when your message appears in your customer's apps. It cannot be changed or edited later.",    
     emailcondition: "Email domain must be affiliated to the brand",
     customerfacebookid: "Customer Facebook business manager id",
     desiredphonenumberwhatsappbusiness: "Desired phone number for Whatsapp business",
@@ -1285,7 +1287,11 @@ const translation: LangKeys = {
     app_user_settings: "User settings",
     app_ia_models: "AI models",
     app_ia: "AI",
-    app_privacy: "Privacy"
+    app_privacy: "Privacy",
+
+    formMandatoryFields: "You must complete all the fields",
+    newLead: 'New lead',
+    leadDetail: 'Lead detail',
 };
 
 const enResource: ResourceLanguage = {

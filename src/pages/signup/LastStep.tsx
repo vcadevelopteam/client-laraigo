@@ -102,7 +102,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             if (!executeResult.loading && !executeResult.error) {
                 setBackdrop(false)
                 setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
-                history.push('../sign-in')
+                history.push('/sign-in')
                 setWaitSave(false);
             } else if (executeResult.error) {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
