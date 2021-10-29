@@ -89,16 +89,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             !values.date_deadline || values.date_deadline.length === 0 ||
             !values.priority || values.priority.length === 0
         ) {
-            const errormessage = 'Debe completar todos los campos';
             dispatch(showSnackbar({
                 success: false,
-                message: errormessage,
+                message: t(langKeys.formMandatoryFields),
                 show: true,
             }));
             return;
         }
         cb(values);
-    }, [dispatch]);
+    }, [t, dispatch]);
 
     const handleSubmit = useCallback(() => {
         // validate edit
@@ -209,7 +208,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             </Breadcrumbs>
 
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                <TitleDetail title={edit ? 'Lead detail' : 'New lead'} />
+                <TitleDetail title={edit ? t(langKeys.leadDetail) : t(langKeys.newLead)} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
