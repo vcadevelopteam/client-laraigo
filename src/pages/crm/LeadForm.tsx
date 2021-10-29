@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
 import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -13,13 +13,21 @@ import { useSelector } from 'hooks';
 import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
 import { ICrmLead, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
-import { Rating } from '@material-ui/lab';
+import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { Add } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 
+const tagsOptions = [
+    { title: "Information"},
+    { title: "Design"},
+    { title: "Product"},
+    // crear mas
+];
+
+  
 const useLeadFormStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -85,6 +93,10 @@ username null
 index
          */
     }, [lead, values, dispatch]);
+
+    const onTagsChange = (event:any, val:any) => {
+        setValues(prev => ({ ...prev, tags: val.join(',') }))
+    };
 
     useEffect(() => {
         if (edit === true) {
@@ -256,10 +268,28 @@ index
                             optionValue="userid"
                             onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
                         />
+                        <Autocomplete
+                            multiple
+                            freeSolo
+                            options={tagsOptions.map((option) => option.title)}
+                            defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                            onChange={onTagsChange}
+                            renderInput={params => (
+                                <TextField
+                                {...params}
+                                variant="standard"
+                                label="Tags"
+                                placeholder="Tags"
+                                margin="normal"
+                                fullWidth
+                                />
+                            )}
+                        />
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        <div className={classes.field}></div>
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Expected closing
@@ -291,12 +321,12 @@ index
                                 }}
                             />
                         </div>
-                        <FieldEdit
+                        {/* <FieldEdit
                             label="Tags"
                             className={classes.field}
                             valueDefault={lead.value?.tags || ""}
                             onChange={v => setValues(prev => ({ ...prev, tags: v }))}
-                        />
+                        /> */}
                     </Grid>
                 </Grid>
             </Grid>
