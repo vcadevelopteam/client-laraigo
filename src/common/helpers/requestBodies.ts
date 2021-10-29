@@ -1773,9 +1773,7 @@ export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELET
     key: "UFN_LEAD_INS",
     parameters: {
         ...lead,
-        operation,
-        corpid: null,
-        orgid: null,
+        operation
     },
 });
 

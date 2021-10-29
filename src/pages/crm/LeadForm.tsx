@@ -5,7 +5,7 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel } from 'common/helpers';
+import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel, getPaginatedPerson as getPersonListPaginated1 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
@@ -182,6 +182,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     <Trans i18nKey={langKeys.opportunity} />
                 </Link>
             </Breadcrumbs>
+
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                 <div style={{ flexGrow: 1 }} />
                 <Button
@@ -423,8 +424,10 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
     );
 
     const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
-        dispatch(getPersonListPaginated(paginatedPersonWithoutDateSel({
+        dispatch(getPersonListPaginated(getPersonListPaginated1({
             skip: pageSize * pageIndex,
+            startdate: '2021-01-01',
+            enddate: '2025-01-01',
             take: pageSize,
             sorts: sorts,
             filters: filters,
