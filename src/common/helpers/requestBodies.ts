@@ -1711,7 +1711,7 @@ export const getLeadsSel = (id:number): IRequestBody => ({
     }
 })
 
-export const insColumns = ({ id, description, type, status, edit, index, operation }: Dictionary): IRequestBody => ({
+export const insColumns = ({ id, description, type, status, edit, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
     method: 'UFN_COLUMN_INS',
     key: "UFN_COLUMN_INS",
     parameters: {
@@ -1721,7 +1721,8 @@ export const insColumns = ({ id, description, type, status, edit, index, operati
         status,
         edit,
         index,
-        operation
+        operation,
+        delete_all
     }
 });
 
@@ -1744,7 +1745,7 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
     }
 });
 
-export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation }: Dictionary): IRequestBody => ({
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email }: Dictionary): IRequestBody => ({
     method: 'UFN_LEAD_INS',
     key: "UFN_LEAD_INS",
     parameters: {
@@ -1761,6 +1762,8 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
         columnid,
         column_uuid,
         index,
+        phone,
+        email,
         operation
     }
 });
