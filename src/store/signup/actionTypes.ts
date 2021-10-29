@@ -11,6 +11,9 @@ const actionType = {
     ISVALID_FAILURE: 'signup/ISVALID_FAILURE',
     ISVALID_SUCCESS: 'signup/ISVALID_SUCCESS',
     ISVALID_RESET: 'signup/ISVALID_RESET',
+    VERIFYPLAN: 'signup/VERIFYPLAN',
+    VERIFYPLAN_SUCCESS: 'signup/VERIFYPLAN_SUCCESS',
+    VERIFYPLAN_FAILURE: 'signup/VERIFYPLAN_FAILURE',
 };
 
 export default actionType;

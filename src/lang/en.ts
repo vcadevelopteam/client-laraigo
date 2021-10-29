@@ -40,6 +40,8 @@ const translation: LangKeys = {
     industry_entertainment: "Games and Entertainment",
     industry_telecommunications: "Telecommunications",
     industry_hydrocarbons: "Hydrocarbons",
+    brandname: "Brand name",
+    brandaddress: "Brand address",
     companysize_to50people: "1 to 50 people",
     companysize_to250people: "50 to 250 people",
     companysize_to150people: "250 to 1000 people",
@@ -1223,6 +1225,13 @@ const translation: LangKeys = {
     iosstep2: 'If you are using Swift, copy the following lines of code in order to initialize the chat',
     iosstep3: 'The SDK iOS supports installation through both CocoaPods and Carthage. Please, refer to this document if you need help in the install: https://docs.smooch.io/guide/native-ios-sdk/#installation',
     chatwebstep: 'Copy the following lines of code in the website where you want to use the chat',
+
+    message_please_wait: 'Please wait a moment...',
+    message_try_later: 'Something happened, try againg later...',
+    message_account_already_activated: 'Account already active!',
+    message_account_activated: 'Your account has been successfully activated!',
+    message_thanks_for_register: 'Thanks for registering to our platform!',
+    message_click_to_login: 'Click continue to go to login',
 
     app_whitelist: "Whitelist",
     app_inappropriatewords: "Inappropriate words",

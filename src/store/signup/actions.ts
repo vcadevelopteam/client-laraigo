@@ -29,7 +29,15 @@ export const executeCheckNewUser = (requestBody: IRequestBody): IActionCall => (
     },
     type: null,
 });
-
+export const verifyPlan = (accessToken: String): IActionCall => ({
+    callAPI: () => ChannelsService.vrfplan(accessToken),
+    types: {
+        loading: actionTypes.VERIFYPLAN,
+        success: actionTypes.VERIFYPLAN_SUCCESS,
+        failure: actionTypes.VERIFYPLAN_FAILURE,
+    },
+    type: null,
+});
 export const resetGetChannelsListSub = (): IActionCall => ({type: actionTypes.PAGELIST_RESET});
 
 

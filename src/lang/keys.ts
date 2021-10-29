@@ -26,6 +26,8 @@ export const langKeys = {
     industry_audiovisual: "industry_audiovisual",
     industry_beauty: "industry_beauty",
     industry_construction: "industry_construction",
+    brandname: "brandname",
+    brandaddress: "brandaddress",
     industry_education: "industry_education",
     industry_institution: "industry_institution",
     industry_entertainment: "industry_entertainment",
@@ -1216,6 +1218,13 @@ export const langKeys = {
     iosstep2: 'iosstep2',
     iosstep3: 'iosstep3',
     chatwebstep: 'chatwebstep',
+
+    message_please_wait: 'message_please_wait',
+    message_try_later: 'message_try_later',
+    message_account_already_activated: 'message_account_already_activated',
+    message_account_activated: 'message_account_activated',
+    message_thanks_for_register: 'message_thanks_for_register',
+    message_click_to_login: 'message_click_to_login',
 
     app_whitelist: "app_whitelist",
     app_inappropriatewords: "app_inappropriatewords",

@@ -32,6 +32,8 @@ const translation: LangKeys = {
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
     expected_revenue: 'Ingreso esperado',
+    brandname: "Nombre de la Marca",
+    brandaddress: "Dirección de la marca",
 
     industry_foodsanddrinks: "Alimentos y Bebidas",
     industry_audiovisual: "Audiovisuales",
@@ -1214,6 +1216,13 @@ const translation: LangKeys = {
     iosstep2: 'Si estas usando Swift, copia estas lineas de código para inicializar el chat',
     iosstep3: 'El SDK de iOS soporta instalación por CocoaPods y Carthage. Favor de utilizar este documento si necesitas apoyo con la instalación: https://docs.smooch.io/guide/native-ios-sdk/#installation',
     chatwebstep: 'Copia las siguientes lineas de código en el sitio web donde quieres usar el chat',
+
+    message_please_wait: 'Por favor espere unos momentos...',
+    message_try_later: 'Algo inesperado sucedió, inténtelo de nuevo más tarde...',
+    message_account_already_activated: 'Cuenta ya activa!',
+    message_account_activated: 'Su cuenta se ha activado satisfactoriamente!',
+    message_thanks_for_register: '¡Gracias por registrarse en nuestra plataforma!',
+    message_click_to_login: 'Haga click en continuar para ir al login',
 
     app_whitelist: "Whitelist",
     app_inappropriatewords: "Palabras prohibidas",

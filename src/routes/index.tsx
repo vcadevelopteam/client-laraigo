@@ -90,7 +90,7 @@ const RouterApp: FC = () => {
 			<Switch>
 				<ProtectRoute exact path="/" />
 				<Route exact path={paths.SIGNIN} component={SignIn} />
-				<Route exact path={paths.SIGNUP} component={SignUp} />
+				<Route exact path={paths.SIGNUP.path} component={SignUp} />
 				<Route exact path={paths.PRIVACY} component={Privacy} />
 				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
 

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Backdrop, Box, Button, CircularProgress } from '@material-ui/core';
+import { Box, Button } from '@material-ui/core';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory, useParams } from 'react-router';
@@ -10,6 +10,7 @@ import { sendActivation } from 'store/activationuser/actions';
 import { useSelector } from 'hooks';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
+import { LangKeys } from '../lang/keys';
 
 const useStyles = makeStyles(theme => ({
     titlecards:{
@@ -23,41 +24,14 @@ const useStyles = makeStyles(theme => ({
         display: "flex",
         width: "100%",
         justifyContent: "center",
-        alignItems: "center"
-    },
-    containerLogo: {
-        flex: 1,
-        backgroundColor: 'white',
-        display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        [theme.breakpoints.down("sm")]: {
-            display: "none"
-        },
+        marginBottom: "30px"
     },
     boxstyles: {
         textAlign: "justify",
         margin: "25px 10%",
         border: "grey 1px solid",
         padding: 25
-    },
-    separator: {
-        borderBottom: "1px solid #D1CBCB",
-        width: "15%",
-        height: 0,
-        marginLeft: 4,
-        marginRight: 4
-    },
-    cookieAlert: {
-        "& svg": {
-            color: 'white'
-        }
-    },
-    emptyspacenumber:{
-        flex: 1,
-        [theme.breakpoints.down("sm")]: {
-            display: "none"
-        },
     },
     buttonContainer: {
         display: 'flex',
@@ -74,53 +48,74 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ActivateUser: FC = () => {
+    // const location = useLocation();
+    // const query = new URLSearchParams(location.search)
+    // const tk = query.get('t');
+    const classes = useStyles();
+    const { t } = useTranslation();
     const { token }: any = useParams();
     const dispatch = useDispatch();
     const history = useHistory();
     const activationRes = useSelector(state => state.activationuser.activation);
+    const [loading, setLoading] = useState<boolean>(true);
     const [valid, setValid] = useState<boolean | null>(null);
 
     useEffect(() => {
-        dispatch(sendActivation(token));
+        if (token) {
+            dispatch(sendActivation(token));
+        }
     }, []);
 
     useEffect(() => {
-        setTimeout(() => {
-            const x = Math.random();
-            if (x > 0.5)
+        if (!activationRes.error && activationRes.data) {
+            setLoading(false);
+            if (activationRes.data?.sucess) {
                 setValid(true);
-            else
+            }
+            else {
                 setValid(false);
-            // if (!activationRes.loading && !activationRes.error) {
-            //     setValid(true);
-            // } else if (activationRes.error) {
-            //     setValid(false);
-            // }
-        }, 10000)
+            }
+        }
+        else if (activationRes.error) {
+            setTimeout(() => {
+                setLoading(false);
+            }, 3000);
+        }
     }, [activationRes])
-
-    const classes = useStyles();
-    const { t } = useTranslation();
 
     switch (valid) {
         case null:
-            return (
-                <div style={{ width: "100%",marginTop:25}}>
-                    <div className={classes.titlecards}>We are validating your account...</div>
-                    <div className={clsx("la-ball-beat la-2x", classes.spinnerContainer)}>
-                        <div></div>
-                        <div></div>
-                        <div></div>
+            if (loading) {
+                return (
+                    <div style={{ width: "100%",marginTop:25}}>
+                        <div className={classes.containerHead}>
+                            <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                        </div>
+                        <div className={classes.titlecards}>{t(langKeys.message_please_wait)}</div>
+                        <div className={clsx("la-ball-beat la-2x", classes.spinnerContainer)}>
+                            <div></div>
+                            <div></div>
+                            <div></div>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            }
+            else {
+                return (
+                    <div style={{ width: "100%",marginTop:25}}>
+                        <div className={classes.containerHead}>
+                            <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                        </div>
+                        <div className={classes.titlecards}>{t(langKeys.message_try_later)}</div>
+                    </div>
+                );
+            }
         case true:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
-                    <div className={classes.titlecards}>Your account has been createad!</div>
+                    <div className={classes.titlecards}>{t(langKeys.message_account_activated)}</div>
                     <Box className={classes.boxstyles}>
-                        <p>Thanks for registering to our platform!</p>
-                        <p>To continue to login click continue</p>
+                        <p>{t(langKeys.message_click_to_login)}</p>
                         <div className={classes.buttonContainer}>
                             <Button
                                 variant="contained"
@@ -136,9 +131,9 @@ export const ActivateUser: FC = () => {
         case false:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
-                    <div className={classes.titlecards}>Your account has been already created!</div>
+                    <div className={classes.titlecards}>{t(langKeys.message_account_already_activated)}</div>
                     <Box className={classes.boxstyles}>
-                        <p>To continue to login click continue</p>
+                        <p>{t(langKeys.message_click_to_login)}</p>
                         <div className={classes.buttonContainer}>
                             <Button
                                 variant="contained"

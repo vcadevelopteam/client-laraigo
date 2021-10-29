@@ -26,3 +26,7 @@ export function editchnl(requestBody: IRequestBody ) {
     const uri = `${apiUrls.CHANNELS}/updatechannel`;
     return APIManager.post(uri, { data: requestBody }, true);
 }
+export function vrfplan(accessToken: String ) {
+    const data = { parameters:{code: accessToken }};
+    return APIManager.post(apiUrls.VERIFY_CHANNEL, { data }, true);
+}

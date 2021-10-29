@@ -106,3 +106,30 @@ export const checkvalidityReset = (state: IState): IState => ({
     error: false,
     message: ""
 });
+
+export const verifyPlanFunc = (state: IState): IState => ({
+    ...state,
+    verifyPlan: { ...state.verifyPlan, loading: true, error: false },
+});
+
+export const verifyPlanSuccess = (state: IState, action: IAction): IState => {
+    return{
+        ...state,
+        verifyPlan: {
+            ...state.verifyPlan,
+            loading: false,
+            data: action.payload?.data||[],
+            error: action.payload?.error,
+        },
+    }
+};
+export const verifyPlanFailure = (state: IState, action: IAction): IState => {
+    return{
+        ...state,
+        verifyPlan: {
+            ...state.verifyPlan,
+            loading: false,
+            error: true,
+        },
+    }
+};
