@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title } from 'components';
+import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -184,6 +184,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             </Breadcrumbs>
 
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+                <TitleDetail title={edit ? 'Lead detail' : 'New lead'} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -206,47 +207,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     <Trans i18nKey={langKeys.save} />
                 </Button>
             </div>
-            {/* {edit ?
-                (<div className={classes.subtitle}>
-                    <span className={classes.currency}>{values?.expected_revenue}</span>
-                </div>) :
-                (<FieldEdit
-                    label="Expected revenue"
-                    className={classes.field}
-                    type="number"
-                    // valueDefault={lead.value?.expected_revenue || ""}
-                    onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
-                />)
-            } */}
             <div style={{ height: '1em' }} />
-            <Grid container direction="row">
+            <Grid container direction="row" style={{ backgroundColor: 'white', padding: '16px' }}>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
                         <FieldEdit
-                            label={edit ? undefined : "Descripción"}
+                            label="Descripción"
                             className={classes.field}
                             valueDefault={values?.description || ""}
                             onChange={v => setValues(prev => ({ ...prev, description: v }))}
                         />
-                        {edit ? 
-                            (<FieldView
-                                label="Customer"
-                                className={classes.field}
-                                value={lead.value?.displayname}
-                            />) : 
-                            (<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                <div style={{ flexGrow: 1 }}>
-                                    <FieldView
-                                        label="Customer"
-                                        className={classes.field}
-                                        value={values?.displayname}
-                                    />
-                                </div>
-                                <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
-                                    <Add style={{ height: 22, width: 22 }} />
-                                </IconButton>
-                            </div>)
-                        }
                         <FieldEdit
                             label="Email"
                             className={classes.field}
@@ -254,19 +224,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             onChange={v => setValues(prev => ({ ...prev, email: v }))}
                         />
                         <FieldEdit
-                            label="Phone"
+                            label="Expected revenue"
                             className={classes.field}
-                            valueDefault={lead.value?.phone || ""}
-                            onChange={v => setValues(prev => ({ ...prev, phone: v }))}
-                        />
-                        <FieldSelect
-                            label="Advisor"
-                            className={classes.field}
-                            valueDefault={lead.value?.userid}
-                            data={advisers.data}
-                            optionDesc="firstname"
-                            optionValue="userid"
-                            onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
+                            type="number"
+                            valueDefault={lead.value?.expected_revenue || ""}
+                            onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
                         />
                         <Autocomplete
                             multiple
@@ -277,25 +239,55 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             onChange={onTagsChange}
                             renderInput={params => (
                                 <TextField
-                                {...params}
-                                variant="standard"
-                                label="Tags"
-                                placeholder="Tags"
-                                margin="normal"
-                                fullWidth
+                                    {...params}
+                                    variant="standard"
+                                    label="Tags"
+                                    placeholder="Tags"
+                                    margin="normal"
+                                    fullWidth
                                 />
                             )}
+                        />
+                        <FieldSelect
+                            label="Advisor"
+                            className={classes.field}
+                            valueDefault={lead.value?.userid}
+                            data={advisers.data}
+                            optionDesc="firstname"
+                            optionValue="userid"
+                            onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
                         />
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        {edit ? 
+                            (<FieldView
+                                label="Customer"
+                                className={classes.field}
+                                value={lead.value?.displayname}
+                            />) : 
+                            (<div style={{ display: 'flex', flexDirection: 'column'  }} className={classes.field} >
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <div style={{ flexGrow: 1 }}>
+                                        <FieldView
+                                            label="Customer"
+                                            value={values?.displayname}
+                                        />
+                                    </div>
+                                    <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
+                                        <Add style={{ height: 22, width: 22 }} />
+                                    </IconButton>
+                                </div>
+                                <div style={{ flexGrow: 1 }} />
+                                <div style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.42)' }} />
+                            </div>)
+                        }
                         <FieldEdit
-                            label="Expected revenue"
+                            label="Phone"
                             className={classes.field}
-                            type="number"
-                            valueDefault={lead.value?.expected_revenue || ""}
-                            onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
+                            valueDefault={lead.value?.phone || ""}
+                            onChange={v => setValues(prev => ({ ...prev, phone: v }))}
                         />
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
@@ -328,12 +320,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 }}
                             />
                         </div>
-                        {/* <FieldEdit
-                            label="Tags"
-                            className={classes.field}
-                            valueDefault={lead.value?.tags || ""}
-                            onChange={v => setValues(prev => ({ ...prev, tags: v }))}
-                        /> */}
                     </Grid>
                 </Grid>
             </Grid>
