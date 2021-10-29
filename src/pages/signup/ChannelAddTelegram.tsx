@@ -38,7 +38,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
             "type": "",
             "communicationchannelsite": "",
             "communicationchannelowner": "",
-            "chatflowenabled": false,
+            "chatflowenabled": true,
             "integrationid": "",
             "color": "",
             "icons": "",
@@ -62,11 +62,6 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
         setChannelreg(value==="")
         let partialf = fields;
         partialf.parameters.description = value
-        setFields(partialf)
-    }
-    function setvalField(value: any) {
-        let partialf = fields;
-        partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
     function setBotKey(val:string){
@@ -145,15 +140,6 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
                                     }}
                                 />
                             </div>
-                        </div>
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6" style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
-                            <FormGroup>
-                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
-                            </FormGroup>
                         </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>

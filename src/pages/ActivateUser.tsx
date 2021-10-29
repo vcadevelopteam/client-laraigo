@@ -69,7 +69,7 @@ export const ActivateUser: FC = () => {
     useEffect(() => {
         if (!activationRes.error && activationRes.data) {
             setLoading(false);
-            if (activationRes.data?.sucess) {
+            if (activationRes.data?.success) {
                 setValid(true);
             }
             else {

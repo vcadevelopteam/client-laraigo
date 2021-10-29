@@ -1605,10 +1605,10 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const classes = useFinalStepStyles();
     const history = useHistory();
     const [name, setName] = useState("");
-    const [enable, setenable] = useState(false);
+    const [enable, setenable] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#7721ad");
-    const [auto, setAuto] = useState(false);
+    const [auto, setAuto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
@@ -1651,15 +1651,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                             <ZyxmeMessengerIcon style={{fill: `${coloricon}`, width: "100px" }}/>
                             <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
                         </div>
-                    </div>
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6" style={{ paddingBottom: '3px' }}>
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
-                        <FormGroup>
-                            <FormControlLabel control={<IOSSwitch onChange={(e) => {setAuto(e.target.checked);setenable(e.target.checked)}} />} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
-                        </FormGroup>
                     </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>

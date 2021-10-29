@@ -42,6 +42,8 @@ export const langKeys = {
     customerfacebookid: "customerfacebookid",
     whatsappinformation: "whatsappinformation",
     whatsappinformation2: "whatsappinformation2",
+    whatsappinformation3: "whatsappinformation3",
+    whatsappinformation4: "whatsappinformation4",
     companysize_to250people: "companysize_to250people",
     companysize_to150people: "companysize_to150people",
     companysize_more1000people: "companysize_more1000people",

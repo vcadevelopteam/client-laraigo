@@ -1690,7 +1690,7 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const history = useHistory();
     const [name, setName] = useState(channel?.communicationchanneldesc || "");
     const [coloricon, setcoloricon] = useState("#7721ad");
-    const [auto, setAuto] = useState(channel?.chatflowenabled || false);
+    const [auto, setAuto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState(channel?.coloricon || "#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {
@@ -1734,16 +1734,6 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
                             <ColorInput hex={hexIconColor} onChange={e => {setHexIconColor(e.hex);setcoloricon(e.hex)}} />
                         </div>
                     </div>
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <TemplateSwitch
-                        onChange={(value) => setAuto(value)}
-                        label={t(langKeys.enablechatflow)}
-                        className="col-6"
-                        disabled={loading || integrationId != null}
-                        valueDefault={channel?.chatflowenabled}
-                    />
                 </div>
                 <div style={{ paddingLeft: "80%" }}>
                     <Button

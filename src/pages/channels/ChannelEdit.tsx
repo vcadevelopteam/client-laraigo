@@ -53,8 +53,8 @@ const ChannelEdit: FC = () => {
             history.push(paths.CHANNELS);
         } else {
             setName(channel.communicationchanneldesc);
-            setAuto(channel.chatflowenabled);
-            setenable(channel.chatflowenabled);
+            setAuto(true);
+            setenable(true);
             channel.coloricon && setHexIconColor(channel.coloricon);
         }
 
@@ -125,15 +125,6 @@ const ChannelEdit: FC = () => {
                         {t(langKeys.givechannelcolor)}
                         </Box>
                         <ColorInput hex={hexIconColor} onChange={e => setHexIconColor(e.hex)} />
-                    </div>
-                </div>
-                <div className="row-zyx">
-                    <div className="col-3"></div>
-                    <div className="col-6" style={{ paddingBottom: '3px' }}>
-                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
-                        <FormGroup>
-                            <FormControlLabel control={<IOSSwitch checked={auto} onChange={(e) => {setAuto(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
-                        </FormGroup>
                     </div>
                 </div>
                 <div style={{ paddingLeft: "80%" }}>

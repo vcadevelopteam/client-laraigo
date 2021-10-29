@@ -50,7 +50,7 @@ export const ChannelAddWhatsapp: FC = () => {
             "type": "",
             "communicationchannelsite": "",
             "communicationchannelowner": "",
-            "chatflowenabled": false,
+            "chatflowenabled": true,
             "integrationid": "",
             "color": "",
             "icons": "",
@@ -98,11 +98,6 @@ export const ChannelAddWhatsapp: FC = () => {
         setChannelreg(value==="")
         let partialf = fields;
         partialf.parameters.description = value
-        setFields(partialf)
-    }
-    function setvalField(value: any) {
-        let partialf = fields;
-        partialf.parameters.chatflowenabled = value
         setFields(partialf)
     }
     function setService(value: string, field: string) {
@@ -185,15 +180,6 @@ export const ChannelAddWhatsapp: FC = () => {
                         </div>
                     </div>
                     
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <div className="col-6" style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
-                            <FormGroup>
-                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
-                            </FormGroup>
-                        </div>
-                    </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={() => { finishreg() }}
