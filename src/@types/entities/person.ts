@@ -160,7 +160,11 @@ export interface IPersonLead {
     columnid: number;
     corpid: number;
     createby: string;
+    date_deadline: string;
     createdate: string;
+    expected_revenue: string;
+    priority: string;
+    ticketnum: string;
     description: string;
     index: number;
     orgid: number;

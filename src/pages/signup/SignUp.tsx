@@ -94,7 +94,7 @@ export const SignUp: FC = () => {
             if(!mainResult.error){
                 setWaitLoad(false)
             }else{
-                history.push('../sign-in')
+                history.push('/sign-in')
             }
         }
     }, [mainResult])

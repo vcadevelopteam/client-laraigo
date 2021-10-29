@@ -27,10 +27,13 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
 import { DialogInteractions } from 'components';
+import Rating from '@material-ui/lab/Rating';
 
 interface PersonItemProps {
     person: IPerson;
 }
+
+const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
 
 interface SelectFieldProps {
     defaultValue?: string;
@@ -349,7 +352,7 @@ export const Person: FC = () => {
             dispatch(resetGetPersonListPaginated());
         };
     }, [dispatch]);
-    
+
     const fetchData = () => {
         dispatch(getPersonListPaginated(getPaginatedPerson({
             startdate: format(dateRange.startDate!),
@@ -717,9 +720,9 @@ interface PropertyProps extends Omit<BoxProps, 'title'> {
     isLink?: Boolean;
 }
 
-const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink=false,...boxProps}) => {
+const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink = false, ...boxProps }) => {
     const classes = usePropertyStyles();
-    
+
     return (
         <Box className={classes.propertyRoot} {...boxProps}>
             {icon && <div className={classes.leadingContainer}>{icon}</div>}
@@ -727,7 +730,7 @@ const Property: FC<PropertyProps> = ({ icon, title, subtitle, isLink=false,...bo
             <div className={classes.contentContainer}>
                 <label className={classes.propTitle}>{title}</label>
                 <div style={{ height: 4 }} />
-                <div className={isLink?classes.propSubtitleTicket:classes.propSubtitle}>{subtitle || "-"}</div>
+                <div className={isLink ? classes.propSubtitleTicket : classes.propSubtitle}>{subtitle || "-"}</div>
             </div>
         </Box>
     );
@@ -1030,33 +1033,33 @@ export const PersonDetail: FC = () => {
                                 label={<div><Trans i18nKey={langKeys.generalinformation} /></div>}
                                 value="0"
                             />
-                            {!!person.personid && 
-                                    <Tab
-                                        className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
-                                        label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
-                                        value="1"
-                                    />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "1" && classes.activetab)}
+                                    label={<div><Trans i18nKey={langKeys.communicationchannel} /></div>}
+                                    value="1"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.audit} />}
-                                value="2"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.audit} />}
+                                    value="2"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.conversation} count={2} />}
-                                value="3"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                    value="3"
+                                />
                             }
-                            {!!person.personid && 
-                            <Tab
-                                className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                label={<Trans i18nKey={langKeys.opportunity} count={2} />}
-                                value="4"
-                            />
+                            {!!person.personid &&
+                                <Tab
+                                    className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
+                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                    value="4"
+                                />
                             }
                             {/* <Tab
                                 className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
@@ -1908,7 +1911,7 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             {list.map((e, i) => {
                 if (list.length < conversations.count && i === list.length - 1) {
                     return [
-                        <ConversationItem conversation={e} key={`conversation_item_${i}` } person={person} />,
+                        <ConversationItem conversation={e} key={`conversation_item_${i}`} person={person} />,
                         <div
                             style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
                             key={`conversation_item_${i}_loader`}
@@ -1984,7 +1987,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             />
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                    <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true}   onClick={() => openDialogInteractions(conversation)}/>
+                    <Property title="Ticket #" subtitle={conversation.ticketnum} isLink={true} onClick={() => openDialogInteractions(conversation)} />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
@@ -2217,7 +2220,7 @@ const LeadItem: FC<LeadItemProps> = ({ lead }) => {
             <div className={classes.rootItem}>
                 <Grid container direction="row">
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title="Ticket #" subtitle="#0000006" />
+                        <Property title="Ticket #" subtitle={lead.ticketnum} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                         <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
@@ -2226,13 +2229,18 @@ const LeadItem: FC<LeadItemProps> = ({ lead }) => {
                         <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.salesperson} />} subtitle="William Sam" />
+                        <Property title={<Trans i18nKey={langKeys.expectedRevenue} />} subtitle={parseFloat(lead.expected_revenue || "0").toFixed(2)} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.lastUpdate} />} subtitle={lead.changedate} />
+                        <Property title={<Trans i18nKey={langKeys.expectedClosing} />} subtitle={lead.date_deadline ? new Date(lead.date_deadline).toLocaleString() : ''} />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                        <Property title={<Trans i18nKey={langKeys.phase} />} subtitle="Won" />
+                    <Grid item xs={12} sm={12} md={1} lg={1} xl={2}>
+                        <Property title={<Trans i18nKey={langKeys.priority} />} subtitle={(
+                            <Rating
+                                max={3}
+                                value={urgencyLevels.findIndex(x => x === lead.priority)}
+                            />
+                        )} />
                     </Grid>
                     {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                         <IconButton onClick={() => setOpen(!open)}>

@@ -551,8 +551,6 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     <div style={{ flex: 1 }}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">Prioridad</Box>
                         <Rating
-                            name="simple-controlled"
-                            // defaultValue={2}
                             max={3}
                             value={getValues('priority')}
                             onChange={(event, newValue) => setValue('priority', newValue || 0, { shouldValidate: true })}
