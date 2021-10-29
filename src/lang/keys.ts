@@ -745,6 +745,7 @@ export const langKeys = {
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
     successful_register: 'successful_register',
+    successful_sign_up: 'successful_sign_up',
     successful_delete: 'successful_delete',
 
     quickreplies: 'quickreplies',

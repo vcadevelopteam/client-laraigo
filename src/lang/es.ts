@@ -28,6 +28,7 @@ const translation: LangKeys = {
     model: 'Modelo',
     model_plural: 'Modelos',
     newlead: 'Nueva oportunidad',
+    successful_sign_up: 'Se registró correctamente, revise su bandeja para que active su cuenta.',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
