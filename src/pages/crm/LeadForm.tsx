@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title, TitleDetail } from 'components';
+import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, Title, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -254,23 +254,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             valueDefault={lead.value?.expected_revenue || ""}
                             onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
                         />
-                        <Autocomplete
-                            multiple
-                            freeSolo
-                            options={tagsOptions.map((option) => option.title)}
-                            defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                        <FieldMultiSelectFreeSolo
+                            label={'Tags'}
+                            valueDefault={lead.value?.tags || ""}
                             className={classes.field}
-                            onChange={onTagsChange}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    variant="standard"
-                                    label="Tags"
-                                    placeholder="Tags"
-                                    margin="normal"
-                                    fullWidth
-                                />
-                            )}
+                            onChange={(value) => { setValues((p) => ({ ...p, tags: value.map((o: any) => o.title || o).join() })) }}
+                            data={tagsOptions}  
+                            optionDesc="title"
+                            optionValue="title"
                         />
                         <FieldSelect
                             label="Advisor"
