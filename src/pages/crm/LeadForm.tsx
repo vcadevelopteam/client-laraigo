@@ -17,7 +17,7 @@ import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
-import { Add } from '@material-ui/icons';
+import { Add, Clear, Create, Done, Info } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
@@ -671,7 +671,38 @@ export const TabPanelLogNote: FC = () => {
 
 const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
     root: {
-
+        padding: theme.spacing(1),
+    },
+    column: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+    },
+    paper: {
+        backgroundColor: 'white',
+        padding: theme.spacing(2),
+    },
+    row: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    avatar: {
+        height: 28,
+        width: 28,
+    },
+    centerRow: {
+        alignItems: 'center',
+    },
+    activityFor: {
+        color: 'grey',
+        fontSize: 12,
+    },
+    activityName: {
+        fontWeight: 'bold',
+    },
+    activityDate: {
+        fontWeight: 'bold',
+        color: 'green',
     },
 }));
 
@@ -679,8 +710,78 @@ export const TabPanelScheduleActivity: FC = () => {
     const classes = useTabPanelScheduleActivityStyles();
 
     return (
-        <div>
-            A
+        <div className={clsx(classes.root, classes.column)}>
+            <div className={classes.paper}>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <div className={classes.column}>
+                        <div className={clsx(classes.row, classes.centerRow)}>
+                            <span className={classes.activityDate}>Due in 2 days</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.activityName}>"call para seguimiento"</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.activityFor}>for Mitchell Admin</span>
+                            <div style={{ width: '0.5em' }} />
+                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                        </div>
+                        <div style={{ height: 4 }} />
+                        <div className={classes.row}>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Mark Done</span>
+                            </div>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Edit</span>
+                            </div>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Cancel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style={{ backgroundColor: 'grey', height: 1 }} />
+            <div className={classes.paper}>
+                <div className={classes.row}>
+                    <Avatar className={classes.avatar} />
+                    <div style={{ width: '1em' }} />
+                    <div className={classes.column}>
+                        <div className={clsx(classes.row, classes.centerRow)}>
+                            <span className={classes.activityDate}>Due in 2 days</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.activityName}>"call para seguimiento"</span>
+                            <div style={{ width: '1em' }} />
+                            <span className={classes.activityFor}>for Mitchell Admin</span>
+                            <div style={{ width: '0.5em' }} />
+                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                        </div>
+                        <div style={{ height: 4 }} />
+                        <div className={classes.row}>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Mark Done</span>
+                            </div>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Edit</span>
+                            </div>
+                            <div style={{ width: '1em' }} />
+                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
+                                <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                <span>Cancel</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
