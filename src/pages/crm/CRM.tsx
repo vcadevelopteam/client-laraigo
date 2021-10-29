@@ -263,6 +263,7 @@ const CRM: FC = () => {
                           columnid={dataColumn[0].column_uuid} 
                           onDelete={hanldeDeleteColumn}
                           total_revenue={dataColumn[0].total_revenue!}
+                          onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}
                         >
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
@@ -347,6 +348,7 @@ const CRM: FC = () => {
                               columnid={column.column_uuid} 
                               onDelete={hanldeDeleteColumn}
                               total_revenue={column.total_revenue!}
+                              onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
                             >
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
