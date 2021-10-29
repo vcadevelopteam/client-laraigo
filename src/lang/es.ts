@@ -774,6 +774,7 @@ const translation: LangKeys = {
     confirmation: 'Confirmación',
     confirmation_save: '¿Está seguro de guardar el registro?',
     confirmation_delete: '¿Está seguro de eliminar el registro?',
+    question_delete_all_items: '¿Quieres eliminar todos los items dentro de este elemento?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
     info: 'Info',
