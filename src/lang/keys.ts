@@ -1219,6 +1219,13 @@ export const langKeys = {
     iosstep3: 'iosstep3',
     chatwebstep: 'chatwebstep',
 
+    message_please_wait: 'message_please_wait',
+    message_try_later: 'message_try_later',
+    message_account_already_activated: 'message_account_already_activated',
+    message_account_activated: 'message_account_activated',
+    message_thanks_for_register: 'message_thanks_for_register',
+    message_click_to_login: 'message_click_to_login',
+
     app_whitelist: "app_whitelist",
     app_inappropriatewords: "app_inappropriatewords",
     app_intelligentmodels: "app_intelligentmodels",
