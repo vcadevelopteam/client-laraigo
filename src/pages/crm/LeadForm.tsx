@@ -80,22 +80,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const handleSubmit = useCallback(() => {
         // validate edit
-        const params = edit ? { ...lead.value, ...values } : { ...values, id: 0 };
+        const params = edit ?
+            { ...lead.value, ...values } :
+            { ...values, id: 0, status: "ACTIVO", type: "NINGUNO", conversationid: 0, username: null, index: 0, leadid: 0 };
         const body = insLead2(params, edit ? "UPDATE" : "INSERT");
         console.log(body);
         dispatch(saveLeadBody(body));
-        /**
-         * type
-status
-expected_revenue
-conversationid null
-username null
-index
-         */
     }, [lead, values, dispatch]);
 
-    const onTagsChange = (event:any, val:any) => {
-        setValues(prev => ({ ...prev, tags: val.join(',') }))
+    const onTagsChange = (event: any, tags: string[]) => {
+        console.log(tags);
+        setValues(prev => ({ ...prev, tags: tags.join(',') }));
     };
 
     useEffect(() => {
@@ -221,9 +216,17 @@ index
                     <Trans i18nKey={langKeys.save} />
                 </Button>
             </div>
-            {edit && <div className={classes.subtitle}>
-                <span className={classes.currency}>{values?.expected_revenue}</span>
-            </div>}
+            {edit ?
+                (<div className={classes.subtitle}>
+                    <span className={classes.currency}>{values?.expected_revenue}</span>
+                </div>) :
+                (<FieldEdit
+                    label="Expected revenue"
+                    className={classes.field}
+                    // valueDefault={lead.value?.expected_revenue || ""}
+                    onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
+                />)
+            }
             <div style={{ height: '1em' }} />
             <Grid container direction="row">
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
