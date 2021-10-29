@@ -48,10 +48,10 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     const [industryList, setindustryList] = useState<any>([]);
     const [companySizeList, setcompanySizeList] = useState<any>([]);
     const [roleList, setroleList] = useState<any>([]);
-    const [disablebutton, setDisablebutton] = useState(false);
+    // const [disablebutton, setDisablebutton] = useState(false);
     const multiResult = useSelector(state => state.main.multiData.data);
     const mainResult = useSelector(state => state.signup.channelList)
-    const executeResult = useSelector(state => state.signup.successinsert)
+    const executeResult = useSelector(state => state.signup.insertChannel)
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));
     }, []);
@@ -92,22 +92,22 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             },
             channellist: requestchannels
         }
-        setBackdrop(true)
+        // setBackdrop(true)
         setWaitSave(true);
-        setDisablebutton(true);
+        // setDisablebutton(true);
         dispatch(executeSubscription(majorfield))
     }
     useEffect(() => {
         if (waitSave) {
-            if (!mainResult.loading && !mainResult.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 setBackdrop(false)
                 setSnackbar({ state: true, success: true, message: t(langKeys.successful_register) })
                 history.push('../sign-in')
                 setWaitSave(false);
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 setSnackbar({ state: true, success: false, message: errormessage })
-                setBackdrop(false)
+                // setBackdrop(false)
                 setWaitSave(false);
             }
         }
@@ -166,7 +166,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        disabled={disablebutton}
+                        disabled={executeResult.loading}
                     >{t(langKeys.finishreg)}
                     </Button>
                 </div>

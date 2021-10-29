@@ -1,4 +1,4 @@
-import { getColumnsSel, getLeadsSel, insColumns, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+import { getColumnsSel, getLeadsSel, insColumns, insLead, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -6,6 +6,8 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautif
 import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
+import paths from "common/constants/paths";
+import { useHistory } from "react-router";
 
 interface dataBackend {
   columnid: number,
@@ -38,6 +40,7 @@ interface leadBackend {
 }
 
 const CRM: FC = () => {
+  const history = useHistory();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const mainMulti = useSelector(state => state.main.multiData);
@@ -67,63 +70,8 @@ const CRM: FC = () => {
     }
   },[mainMulti])
 
-  const handleEdit = (column_uuid:string, title:string, columns:dataBackend[], setDataColumn:any) => {
-    const index = columns.findIndex(c => c.column_uuid === column_uuid)
-    const column = columns[index];
-    if (column.description === title) {
-      return;
-    }
-    setDataColumn(Object.values({...columns, [index]: {...column, description: title}}));
-
-    if (column.columnid !== 0) {
-      const data = {
-        id: column.column_uuid,
-        description: title,
-        type: 'NINGUNO',
-        status: 'ACTIVO',
-        edit: true,
-        index: column.index,
-        operation: 'EDIT'
-      }
-      dispatch(execute(insColumns(data)));
-    }
-  }
-
-  const handleDelete = (lead:any) => {
-    console.log('lead',lead)
-  }
-
-  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
-    const newIndex = columns.length
-    const uuid = uuidv4()
-    console.log('uuid', uuid)
-
-    const data = {
-      id: uuid,
-      description: title,
-      type: 'NINGUNO',
-      status: 'ACTIVO',
-      edit: true,
-      index: newIndex,
-      operation: 'INSERT',
-    }
-    
-    const newColumn = {
-      columnid: null,
-      column_uuid: uuid,
-      description: title,
-      status: 'ACTIVO',
-      type: 'NINGUNO',
-      globalid: '',
-      index: newIndex,
-      items: []
-    }
-
-    dispatch(execute(insColumns(data)))
-    setDataColumn(Object.values({...columns, newColumn}));
-  }
-
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
+    console.log('columns', columns)
     if (!result.destination) return;
     const { source, destination, type } = result;
   
@@ -159,6 +107,7 @@ const CRM: FC = () => {
         const sourceItems = (sourceColumn.items) ? [...sourceColumn.items] : null
         const destItems = (destColumn.items) ? [...destColumn.items] : null
         const [removed] = sourceItems!.splice(source.index, 1);
+        removed.column_uuid = destination.droppableId
         destItems!.splice(destination.index, 0, removed);
         setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [destIndex]: {...destColumn, items: destItems}}));
 
@@ -171,7 +120,70 @@ const CRM: FC = () => {
     }
   };
 
-  
+  const handleEdit = (column_uuid:string, title:string, columns:dataBackend[], setDataColumn:any) => {
+    const index = columns.findIndex(c => c.column_uuid === column_uuid)
+    const column = columns[index];
+    if (column.description === title) {
+      return;
+    }
+    setDataColumn(Object.values({...columns, [index]: {...column, description: title}}));
+
+    if (column.columnid !== 0) {
+      const data = {
+        id: column.column_uuid,
+        description: title,
+        type: 'NINGUNO',
+        status: 'ACTIVO',
+        edit: true,
+        index: column.index,
+        operation: 'EDIT'
+      }
+      dispatch(execute(insColumns(data)));
+    }
+  }
+
+  const handleDelete = (lead:any) => {
+    const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
+    const column = dataColumn[index];
+    const copiedItems = [...column.items!!]
+    const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+    const [removed] = copiedItems!.splice(leadIndex, 1);
+    const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
+    setDataColumn(newData);
+    const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
+    dispatch(execute(insLead(data)))
+  }
+
+  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+    const newIndex = columns.length
+    const uuid = uuidv4()
+    console.log('uuid', uuid)
+
+    const data = {
+      id: uuid,
+      description: title,
+      type: 'NINGUNO',
+      status: 'ACTIVO',
+      edit: true,
+      index: newIndex,
+      operation: 'INSERT',
+    }
+    
+    const newColumn = {
+      columnid: null,
+      column_uuid: uuid,
+      description: title,
+      status: 'ACTIVO',
+      type: 'NINGUNO',
+      globalid: '',
+      index: newIndex,
+      items: []
+    }
+
+    dispatch(execute(insColumns(data)))
+    setDataColumn(Object.values({...columns, newColumn}));
+  }
+  console.log('dataColumn', dataColumn)
   return (
       <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
@@ -189,13 +201,13 @@ const CRM: FC = () => {
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided}>
+                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}>
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
                               <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                style={{ overflowY: 'auto' }}
+                                style={{ overflowY: 'auto', width: '100%' }}
                               >
                                 <DroppableLeadColumnList snapshot={snapshot} itemCount={dataColumn[0].items?.length || 0}>
                                 {dataColumn[0].items?.map((item, index) => {
@@ -216,12 +228,12 @@ const CRM: FC = () => {
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
-                                                style={style}
+                                                style={{width: '100%', ...style}}
                                               >
                                                 <DraggableLeadCardContent
                                                   lead={item}
                                                   snapshot={snapshot}
-                                                  onDelete={(val) => console.log(val)}
+                                                  onDelete={handleDelete}
                                                 />
                                               </div>
                                             )}
@@ -264,14 +276,14 @@ const CRM: FC = () => {
                           {...provided.draggableProps}
                           ref={provided.innerRef}
                         >
-                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}>
+                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}>
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
                                     return (
                                       <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        style={{ overflowY: 'auto' }}
+                                        style={{ overflowY: 'auto', width: '100%' }}
                                       >
                                         <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                                         {column.items?.map((item, index) => {
@@ -292,12 +304,12 @@ const CRM: FC = () => {
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
                                                         {...provided.dragHandleProps}
-                                                        style={style}
+                                                        style={{width: '100%', ...style}}
                                                       >
                                                         <DraggableLeadCardContent
                                                           lead={item}
                                                           snapshot={snapshot}
-                                                          onDelete={(val) => {handleDelete(val)}}
+                                                          onDelete={handleDelete}
                                                         />
                                                       </div>
                                                     )}

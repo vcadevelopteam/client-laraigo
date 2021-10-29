@@ -57,7 +57,7 @@ export interface IPerson {
     createdate: string;
     changeby: string;
     changedate: string;
-
+    personcommunicationchannel: string;
 }
 
 export interface IPersonCommunicationChannel {
