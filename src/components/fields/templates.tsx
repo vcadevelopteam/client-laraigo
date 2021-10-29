@@ -520,6 +520,78 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
         </div>
     )
 }
+
+export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
+
+    const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (valueDefault && data.length > 0) {
+            const optionsSelected = data.filter(o => valueDefault.split(",").indexOf(o[optionValue].toString()) > -1)
+            setOptionsSelected(optionsSelected);
+        } else {
+            setOptionsSelected([]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [valueDefault, data]);
+
+    return (
+        <div className={className}>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
+            <Autocomplete
+                multiple
+                freeSolo
+                filterSelectedOptions
+                style={style}
+                disabled={disabled}
+                loading={loading}
+                value={optionsSelected}
+                renderOption={(item, { selected }: any) => (
+                    <React.Fragment>
+                        <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                        />
+                        {item[optionDesc]}
+                    </React.Fragment>
+                )}
+                onChange={(_, values, action, option) => {
+                    // console.log('values',values)
+                    setOptionsSelected(values);
+                    onChange && onChange(values, { action, option });
+                }}
+                // onChange={onChange}
+                size="small"
+                getOptionLabel={option => option ? option[optionDesc] || option : ''}
+                options={data}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label={variant !== "standard" && label}
+                        variant={variant}
+                        InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                                <React.Fragment>
+                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                    {params.InputProps.endAdornment}
+                                </React.Fragment>
+                            ),
+                        }}
+                        error={!!error}
+                        helperText={error || null}
+
+                    />
+                )}
+            />
+        </div>
+    )
+}
+
 interface TemplateSwitchProps extends InputProps {
     className?: any;
     label: string;
