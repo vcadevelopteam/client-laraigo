@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
-import { ICrmLead, IFetchData, IPerson } from '@types';
+import { ICrmLead, ICRmSaveLead, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
@@ -59,6 +59,7 @@ const useLeadFormStyles = makeStyles(theme => ({
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const classes = useLeadFormStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
     const [values, setValues] = useState<ICrmLead>({
@@ -78,14 +79,38 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         return `${date}T${hours}:${minutes}`;
     }
 
+    const validateForm = useCallback((values: ICrmLead, cb: (values: ICrmLead) => void) => {
+        if (
+            !values.personcommunicationchannel || values.personcommunicationchannel.length === 0 ||
+            !values.expected_revenue || values.expected_revenue.length === 0 ||
+            !values.tags || values.tags.length === 0 ||
+            !values.userid || values.userid === 0 ||
+            !values.description || values.description.length === 0 ||
+            !values.date_deadline || values.date_deadline.length === 0 ||
+            !values.priority || values.priority.length === 0
+        ) {
+            const errormessage = 'Debe completar todos los campos';
+            dispatch(showSnackbar({
+                success: false,
+                message: errormessage,
+                show: true,
+            }));
+            return;
+        }
+        cb(values);
+    }, [dispatch]);
+
     const handleSubmit = useCallback(() => {
         // validate edit
         const params = edit ?
             { ...lead.value, ...values } :
             { ...values, id: 0, status: "ACTIVO", type: "NINGUNO", conversationid: 0, username: null, index: 0, leadid: 0 };
-        const body = insLead2(params, edit ? "UPDATE" : "INSERT");
-        console.log(body);
-        dispatch(saveLeadBody(body));
+
+        validateForm(params, (values) => {
+            const body = insLead2(params, edit ? "UPDATE" : "INSERT");
+            console.log(body);
+            dispatch(saveLeadBody(body));
+        });
     }, [lead, values, dispatch]);
 
     const onTagsChange = (event: any, tags: string[]) => {
@@ -220,7 +245,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         <FieldEdit
                             label="Email"
                             className={classes.field}
-                            valueDefault={lead.value?.email || ""}
+                            valueDefault={values?.email || ""}
                             onChange={v => setValues(prev => ({ ...prev, email: v }))}
                         />
                         <FieldEdit
@@ -286,7 +311,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         <FieldEdit
                             label="Phone"
                             className={classes.field}
-                            valueDefault={lead.value?.phone || ""}
+                            valueDefault={values?.phone || ""}
                             onChange={v => setValues(prev => ({ ...prev, phone: v }))}
                         />
                         <div className={classes.field}>
