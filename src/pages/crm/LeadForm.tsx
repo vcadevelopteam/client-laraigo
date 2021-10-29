@@ -72,7 +72,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const handleSubmit = useCallback(() => {
         // validate edit
-        const params = edit ? { ...lead.value, ...values } : { ...values, id: 0 };
+        const params = edit ? { ...lead.value, ...values, expected_revenue: '0', conversationid: 0, index: 0 } : { ...values, leadid: 0, status: 'ACTIVO', expected_revenue: '0', conversationid: 0, index: 0 };
         const body = insLead2(params, edit ? "UPDATE" : "INSERT");
         console.log(body);
         dispatch(saveLeadBody(body));
@@ -175,12 +175,14 @@ index
                     <Trans i18nKey={langKeys.opportunity} />
                 </Link>
             </Breadcrumbs>
+
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                 <FieldEdit
                     label={edit ? undefined : "Descripción"}
                     className={classes.field}
                     valueDefault={values?.description || ""}
                     onChange={v => setValues(prev => ({ ...prev, description: v }))}
+                    
                     InputProps={{
                         classes: {
                             input: classes.titleInput,

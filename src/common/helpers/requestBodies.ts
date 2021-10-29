@@ -1774,8 +1774,7 @@ export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELET
     parameters: {
         ...lead,
         operation: 'UPDATE',
-        corpid: null,
-        orgid: null,
+        type: 'NINGUNO',
     },
 });
 
