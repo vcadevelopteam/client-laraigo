@@ -30,10 +30,18 @@ export const langKeys = {
     brandaddress: "brandaddress",
     industry_education: "industry_education",
     industry_institution: "industry_institution",
+    desiredphonenumberwhatsappbusiness: "desiredphonenumberwhatsappbusiness",
     industry_entertainment: "industry_entertainment",
     industry_telecommunications: "industry_telecommunications",
     industry_hydrocarbons: "industry_hydrocarbons",
     companysize_to50people: "companysize_to50people",
+    brandpointcontact: "brandpointcontact",
+    brandpointcontact2: "brandpointcontact2",
+    emailcondition: "emailcondition",
+    nameassociatednumber: "nameassociatednumber",
+    customerfacebookid: "customerfacebookid",
+    whatsappinformation: "whatsappinformation",
+    whatsappinformation2: "whatsappinformation2",
     companysize_to250people: "companysize_to250people",
     companysize_to150people: "companysize_to150people",
     companysize_more1000people: "companysize_more1000people",
@@ -1270,7 +1278,11 @@ export const langKeys = {
     app_user_settings: "app_user_settings",
     app_ia_models: "app_ia_models",
     app_ia: "app_ia",
-    app_privacy: "app_privacy"
+    app_privacy: "app_privacy",
+
+    formMandatoryFields: 'formMandatoryFields',
+    newLead: 'newLead',
+    leadDetail: 'leadDetail',
 };
 
 export type LangKeys = typeof langKeys;

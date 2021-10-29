@@ -763,6 +763,14 @@ const translation: LangKeys = {
     finishreg: "FINISH REGISTRATION",
     whatsapptitle: 'To connect a whatsapp channel you must click on "Register Whatsapp account" and once you finishthe registration, enter the number and the API Key in this form',
     registerwhats: "Register Whatsapp Account",
+    brandpointcontact: "Brand point of contact",
+    brandpointcontact2: "Please provide the contact information for the project owner - you must be employed by the brand applying for a WhatsApp Profile. Confirmation of purchase will be sent to this contact",
+    whatsappinformation: "Whatsapp information",    
+    whatsappinformation2: "WhatsApp will not activate your account without this information. This number can be found in the 'Business Info' section of your Facebook Business Manager Dashboard",
+    emailcondition: "Email domain must be affiliated to the brand",
+    customerfacebookid: "Customer Facebook business manager id",
+    desiredphonenumberwhatsappbusiness: "Desired phone number for Whatsapp business",
+    nameassociatednumber: "Name associated to the number",
     connectnumberfield: "Enter the number to connect",
     enterapikey: "Enter the API Key",
     connecttelegram: "Connect your Telegram Bot",
@@ -1277,7 +1285,11 @@ const translation: LangKeys = {
     app_user_settings: "User settings",
     app_ia_models: "AI models",
     app_ia: "AI",
-    app_privacy: "Privacy"
+    app_privacy: "Privacy",
+
+    formMandatoryFields: "You must complete all the fields",
+    newLead: 'New lead',
+    leadDetail: 'Lead detail',
 };
 
 const enResource: ResourceLanguage = {

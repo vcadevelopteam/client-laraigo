@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title, TitleDetail } from 'components';
+import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, Title, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
-import { ICrmLead, IFetchData, IPerson } from '@types';
+import { ICrmLead, ICRmSaveLead, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
@@ -59,6 +59,7 @@ const useLeadFormStyles = makeStyles(theme => ({
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const classes = useLeadFormStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
     const [values, setValues] = useState<ICrmLead>({
@@ -78,14 +79,37 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         return `${date}T${hours}:${minutes}`;
     }
 
+    const validateForm = useCallback((values: ICrmLead, cb: (values: ICrmLead) => void) => {
+        if (
+            !values.personcommunicationchannel || values.personcommunicationchannel.length === 0 ||
+            !values.expected_revenue || values.expected_revenue.length === 0 ||
+            // !values.tags || values.tags.length === 0 ||
+            !values.userid || values.userid === 0 ||
+            !values.description || values.description.length === 0 ||
+            !values.date_deadline || values.date_deadline.length === 0 ||
+            !values.priority || values.priority.length === 0
+        ) {
+            dispatch(showSnackbar({
+                success: false,
+                message: t(langKeys.formMandatoryFields),
+                show: true,
+            }));
+            return;
+        }
+        cb(values);
+    }, [t, dispatch]);
+
     const handleSubmit = useCallback(() => {
         // validate edit
         const params = edit ?
             { ...lead.value, ...values } :
             { ...values, id: 0, status: "ACTIVO", type: "NINGUNO", conversationid: 0, username: null, index: 0, leadid: 0 };
-        const body = insLead2(params, edit ? "UPDATE" : "INSERT");
-        console.log(body);
-        dispatch(saveLeadBody(body));
+
+        validateForm(params, (values) => {
+            const body = insLead2(params, edit ? "UPDATE" : "INSERT");
+            console.log(body);
+            dispatch(saveLeadBody(body));
+        });
     }, [lead, values, dispatch]);
 
     const onTagsChange = (event: any, tags: string[]) => {
@@ -184,7 +208,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             </Breadcrumbs>
 
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                <TitleDetail title={edit ? 'Lead detail' : 'New lead'} />
+                <TitleDetail title={edit ? (values?.description || '-') : t(langKeys.newLead)} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -212,44 +236,35 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
                         <FieldEdit
-                            label="Descripción"
+                            label={t(langKeys.description)}
                             className={classes.field}
                             valueDefault={values?.description || ""}
                             onChange={v => setValues(prev => ({ ...prev, description: v }))}
                         />
                         <FieldEdit
-                            label="Email"
+                            label={t(langKeys.email)}
                             className={classes.field}
-                            valueDefault={lead.value?.email || ""}
+                            valueDefault={values?.email || ""}
                             onChange={v => setValues(prev => ({ ...prev, email: v }))}
                         />
                         <FieldEdit
-                            label="Expected revenue"
+                            label={t(langKeys.expectedRevenue)}
                             className={classes.field}
                             type="number"
                             valueDefault={lead.value?.expected_revenue || ""}
                             onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
                         />
-                        <Autocomplete
-                            multiple
-                            freeSolo
-                            options={tagsOptions.map((option) => option.title)}
-                            defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                        <FieldMultiSelectFreeSolo
+                            label={'Tags'}
+                            valueDefault={lead.value?.tags || ""}
                             className={classes.field}
-                            onChange={onTagsChange}
-                            renderInput={params => (
-                                <TextField
-                                    {...params}
-                                    variant="standard"
-                                    label="Tags"
-                                    placeholder="Tags"
-                                    margin="normal"
-                                    fullWidth
-                                />
-                            )}
+                            onChange={(value) => { setValues((p) => ({ ...p, tags: value.map((o: any) => o.title || o).join() })) }}
+                            data={tagsOptions}  
+                            optionDesc="title"
+                            optionValue="title"
                         />
                         <FieldSelect
-                            label="Advisor"
+                            label={t(langKeys.advisor)}
                             className={classes.field}
                             valueDefault={lead.value?.userid}
                             data={advisers.data}
@@ -263,7 +278,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     <Grid container direction="column">
                         {edit ? 
                             (<FieldView
-                                label="Customer"
+                                label={t(langKeys.person)}
                                 className={classes.field}
                                 value={lead.value?.displayname}
                             />) : 
@@ -284,14 +299,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </div>)
                         }
                         <FieldEdit
-                            label="Phone"
+                            label={t(langKeys.person)}
                             className={classes.field}
-                            valueDefault={lead.value?.phone || ""}
+                            valueDefault={values?.phone || ""}
                             onChange={v => setValues(prev => ({ ...prev, phone: v }))}
                         />
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Expected closing
+                                {t(langKeys.expectedClosing)}
                             </Box>
                             <KeyboardDateTimePicker
                                 disableToolbar
@@ -308,7 +323,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         </div>
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                Priority
+                                {t(langKeys.priority)}
                             </Box>
                             <Rating
                                 name="simple-controlled"
