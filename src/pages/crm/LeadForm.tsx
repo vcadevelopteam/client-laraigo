@@ -267,7 +267,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         <FieldSelect
                             label="Advisor"
                             className={classes.field}
-                            valueDefault={lead.value?.createby}
+                            valueDefault={lead.value?.userid}
                             data={advisers.data}
                             optionDesc="firstname"
                             optionValue="userid"
