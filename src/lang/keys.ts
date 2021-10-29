@@ -753,6 +753,7 @@ export const langKeys = {
     successful_transaction: 'successful_transaction',
     successful_edit: 'successful_edit',
     successful_register: 'successful_register',
+    successful_sign_up: 'successful_sign_up',
     successful_delete: 'successful_delete',
 
     quickreplies: 'quickreplies',
@@ -785,6 +786,7 @@ export const langKeys = {
     confirmation: 'confirmation',
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
+    question_delete_all_items: 'question_delete_all_items',
     login_with_facebook: 'login_with_facebook',
     signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',

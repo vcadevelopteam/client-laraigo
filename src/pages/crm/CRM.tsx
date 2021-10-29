@@ -8,6 +8,10 @@ import { getMultiCollection, resetMain, execute } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory } from "react-router";
+import { manageConfirmation } from "store/popus/actions";
+import { langKeys } from "lang/keys";
+import { useTranslation } from "react-i18next";
+import { DialogZyx3Opt } from "components";
 
 interface dataBackend {
   columnid: number,
@@ -17,6 +21,7 @@ interface dataBackend {
   type: string,
   globalid: string,
   index: number,
+  total_revenue?: number | null,
   items?: leadBackend[] | null
 }
 
@@ -25,7 +30,7 @@ interface leadBackend {
   description: string,
   status: string,
   type: string,
-  expected_revenue: number,
+  expected_revenue: string,
   date_deadline: string,
   tags: string,
   personcommunicationchannel: number,
@@ -36,14 +41,19 @@ interface leadBackend {
   displayname: string,
   globalid: number,
   edit: string,
-  index: number
+  index: number,
+  phone: string,
+  email: string
 }
 
 const CRM: FC = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
+  const [openDialog, setOpenDialog] = useState(false);
+  const [deleteColumn, setDeleteColumn] = useState('')
   const mainMulti = useSelector(state => state.main.multiData);
+  const { t } = useTranslation();
   useEffect(() => {
       dispatch(getMultiCollection([
           getColumnsSel(1),
@@ -55,6 +65,10 @@ const CRM: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    console.log('openDialogEffect',openDialog)
+  },[openDialog])
+
+  useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
         const colum0 = {columnid: 0, column_uuid: '00000000-0000-0000-0000-000000000000', description: 'Backlog', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
@@ -62,8 +76,8 @@ const CRM: FC = () => {
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
         setDataColumn(
           columns.map((column) => {
-            column.items = leads.filter( x => x.column_uuid === column.column_uuid)
-            return column
+            column.items = leads.filter( x => x.column_uuid === column.column_uuid);
+            return {...column, total_revenue: (column.items.reduce((a,b) => a + parseFloat(b.expected_revenue), 0))}
           })
         )
       }
@@ -71,7 +85,6 @@ const CRM: FC = () => {
   },[mainMulti])
 
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
-    console.log('columns', columns)
     if (!result.destination) return;
     const { source, destination, type } = result;
   
@@ -109,7 +122,10 @@ const CRM: FC = () => {
         const [removed] = sourceItems!.splice(source.index, 1);
         removed.column_uuid = destination.droppableId
         destItems!.splice(destination.index, 0, removed);
-        setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [destIndex]: {...destColumn, items: destItems}}));
+        const sourceTotalRevenue = sourceItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
+        const destTotalRevenue = destItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
+      
+        setDataColumn(Object.values({...columns, [sourceIndex]: {...sourceColumn, total_revenue: sourceTotalRevenue,items: sourceItems}, [destIndex]: {...destColumn, total_revenue: destTotalRevenue,items: destItems}}));
 
         const cards_startingcolumn = sourceItems!.map(x => x.leadid).join(',')
         const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
@@ -143,21 +159,27 @@ const CRM: FC = () => {
   }
 
   const handleDelete = (lead:any) => {
-    const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
-    const column = dataColumn[index];
-    const copiedItems = [...column.items!!]
-    const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
-    const [removed] = copiedItems!.splice(leadIndex, 1);
-    const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
-    setDataColumn(newData);
-    const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
-    dispatch(execute(insLead(data)))
+    const callback = () => {
+      const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
+      const column = dataColumn[index];
+      const copiedItems = [...column.items!!]
+      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+      const [removed] = copiedItems!.splice(leadIndex, 1);
+      const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
+      setDataColumn(newData);
+      const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
+      dispatch(execute(insLead(data)))
+    }
+    dispatch(manageConfirmation({
+      visible: true,
+      question: t(langKeys.confirmation_delete),
+      callback
+    }))
   }
 
   const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4()
-    console.log('uuid', uuid)
 
     const data = {
       id: uuid,
@@ -183,7 +205,39 @@ const CRM: FC = () => {
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
   }
-  console.log('dataColumn', dataColumn)
+
+  const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
+    if (column_uuid === '00000000-0000-0000-0000-000000000000') return;
+
+    if (openDialog) {
+      const columns = [...dataColumn]
+      const sourceIndex = columns.findIndex(c => c.column_uuid === column_uuid)
+      const sourceColumn = columns[sourceIndex];
+      let newColumn:dataBackend[] = [];
+      if (delete_all) {
+        newColumn = columns
+      } else {
+        const destColumn = columns[0];
+        const sourceItems = [...sourceColumn.items!]
+        const removed = sourceItems!.splice(0)
+        console.log('removed', removed)
+        const newDestItems = [...destColumn.items!].concat(removed)
+        newDestItems.map((item) => item.column_uuid = destColumn.column_uuid)
+        console.log('newDestItems', newDestItems)
+        const destTotalRevenue = newDestItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
+        newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [0]: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
+      }
+      setDataColumn(newColumn.filter(c => c.column_uuid !== column_uuid))
+      dispatch(execute(insColumns({...sourceColumn, status: 'ELIMINADO', delete_all, id: sourceColumn.column_uuid, operation: 'DELETE'})));
+      setOpenDialog(false)
+
+      return;
+    } else {
+      setDeleteColumn(column_uuid)
+      setOpenDialog(true)
+    }
+  }
+
   return (
       <div style={{ display: "flex", justifyContent: "center", height: "100%"}}>
         <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
@@ -201,13 +255,22 @@ const CRM: FC = () => {
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                       >
-                        <DraggableLeadColumn title={dataColumn[0].description} key={0} snapshot={null} provided={provided} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}>
+                        <DraggableLeadColumn 
+                          title={dataColumn[0].description}
+                          key={0}
+                          snapshot={null}
+                          provided={provided}
+                          columnid={dataColumn[0].column_uuid} 
+                          onDelete={hanldeDeleteColumn}
+                          total_revenue={dataColumn[0].total_revenue!}
+                          onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}
+                        >
                           <Droppable droppableId={dataColumn[0].column_uuid} type="task">
                             {(provided, snapshot) => (
                               <div
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
-                                style={{ overflowY: 'auto', width: '100%' }}
+                                style={{ overflow: 'hidden', width: '100%' }}
                               >
                                 <DroppableLeadColumnList snapshot={snapshot} itemCount={dataColumn[0].items?.length || 0}>
                                 {dataColumn[0].items?.map((item, index) => {
@@ -276,14 +339,24 @@ const CRM: FC = () => {
                           {...provided.draggableProps}
                           ref={provided.innerRef}
                         >
-                            <DraggableLeadColumn title={column.description} key={index+1} snapshot={null} provided={provided} titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}} onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}>
+                            <DraggableLeadColumn 
+                              title={column.description} 
+                              key={index+1} 
+                              snapshot={null} 
+                              provided={provided} 
+                              titleOnChange={(val) =>{handleEdit(column.column_uuid,val,dataColumn, setDataColumn)}}
+                              columnid={column.column_uuid} 
+                              onDelete={hanldeDeleteColumn}
+                              total_revenue={column.total_revenue!}
+                              onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(column.columnid, column.column_uuid))}
+                            >
                                 <Droppable droppableId={column.column_uuid} type="task">
                                   {(provided, snapshot) => {
                                     return (
                                       <div
                                         {...provided.droppableProps}
                                         ref={provided.innerRef}
-                                        style={{ overflowY: 'auto', width: '100%' }}
+                                        style={{ overflow: 'hidden', width: '100%' }}
                                       >
                                         <DroppableLeadColumnList snapshot={snapshot} itemCount={column.items?.length || 0}>
                                         {column.items?.map((item, index) => {
@@ -337,6 +410,21 @@ const CRM: FC = () => {
           </Droppable>
         </DragDropContext>
         <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} />
+        <DialogZyx3Opt
+          open={openDialog}
+          title={t(langKeys.confirmation)}
+          buttonText1={t(langKeys.cancel)}
+          buttonText2={t(langKeys.negative)}
+          buttonText3={t(langKeys.affirmative)}
+          handleClickButton1={() => setOpenDialog(false)}
+          handleClickButton2={() => hanldeDeleteColumn(deleteColumn, false)}
+          handleClickButton3={() => hanldeDeleteColumn(deleteColumn, true)}
+          maxWidth={'xs'}
+          >
+          <div>{t(langKeys.question_delete_all_items)}</div>
+          <div className="row-zyx">
+          </div>
+        </DialogZyx3Opt>
       </div>
     );
 };

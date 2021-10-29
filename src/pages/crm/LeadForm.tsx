@@ -1,25 +1,33 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title } from 'components';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
+import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel } from 'common/helpers';
+import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel, getPaginatedPerson as getPersonListPaginated1 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
-import { ICrmLead, IFetchData, IPerson } from '@types';
+import { ICrmLead, ICRmSaveLead, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
-import { Rating } from '@material-ui/lab';
+import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { Add } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 
+const tagsOptions = [
+    { title: "Information"},
+    { title: "Design"},
+    { title: "Product"},
+    // crear mas
+];
+
+  
 const useLeadFormStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -51,6 +59,7 @@ const useLeadFormStyles = makeStyles(theme => ({
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const classes = useLeadFormStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const history = useHistory();
     const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
     const [values, setValues] = useState<ICrmLead>({
@@ -70,21 +79,44 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         return `${date}T${hours}:${minutes}`;
     }
 
+    const validateForm = useCallback((values: ICrmLead, cb: (values: ICrmLead) => void) => {
+        if (
+            !values.personcommunicationchannel || values.personcommunicationchannel.length === 0 ||
+            !values.expected_revenue || values.expected_revenue.length === 0 ||
+            !values.tags || values.tags.length === 0 ||
+            !values.userid || values.userid === 0 ||
+            !values.description || values.description.length === 0 ||
+            !values.date_deadline || values.date_deadline.length === 0 ||
+            !values.priority || values.priority.length === 0
+        ) {
+            const errormessage = 'Debe completar todos los campos';
+            dispatch(showSnackbar({
+                success: false,
+                message: errormessage,
+                show: true,
+            }));
+            return;
+        }
+        cb(values);
+    }, [dispatch]);
+
     const handleSubmit = useCallback(() => {
         // validate edit
-        const params = edit ? { ...lead.value, ...values } : { ...values, id: 0 };
-        const body = insLead2(params, edit ? "UPDATE" : "INSERT");
-        console.log(body);
-        dispatch(saveLeadBody(body));
-        /**
-         * type
-status
-expected_revenue
-conversationid null
-username null
-index
-         */
+        const params = edit ?
+            { ...lead.value, ...values } :
+            { ...values, id: 0, status: "ACTIVO", type: "NINGUNO", conversationid: 0, username: null, index: 0, leadid: 0 };
+
+        validateForm(params, (values) => {
+            const body = insLead2(params, edit ? "UPDATE" : "INSERT");
+            console.log(body);
+            dispatch(saveLeadBody(body));
+        });
     }, [lead, values, dispatch]);
+
+    const onTagsChange = (event: any, tags: string[]) => {
+        console.log(tags);
+        setValues(prev => ({ ...prev, tags: tags.join(',') }));
+    };
 
     useEffect(() => {
         if (edit === true) {
@@ -175,18 +207,9 @@ index
                     <Trans i18nKey={langKeys.opportunity} />
                 </Link>
             </Breadcrumbs>
+
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                <FieldEdit
-                    label={edit ? undefined : "Descripción"}
-                    className={classes.field}
-                    valueDefault={values?.description || ""}
-                    onChange={v => setValues(prev => ({ ...prev, description: v }))}
-                    InputProps={{
-                        classes: {
-                            input: classes.titleInput,
-                        },
-                    }}
-                />
+                <TitleDetail title={edit ? 'Lead detail' : 'New lead'} />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -209,48 +232,51 @@ index
                     <Trans i18nKey={langKeys.save} />
                 </Button>
             </div>
-            {edit && <div className={classes.subtitle}>
-                <span className={classes.currency}>{values?.expected_revenue}</span>
-            </div>}
             <div style={{ height: '1em' }} />
-            <Grid container direction="row">
+            <Grid container direction="row" style={{ backgroundColor: 'white', padding: '16px' }}>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
-                        {edit ? 
-                            (<FieldView
-                                label="Customer"
-                                className={classes.field}
-                                value={lead.value?.displayname}
-                            />) : 
-                            (<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                <div style={{ flexGrow: 1 }}>
-                                    <FieldView
-                                        label="Customer"
-                                        className={classes.field}
-                                        value={values?.displayname}
-                                    />
-                                </div>
-                                <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
-                                    <Add style={{ height: 22, width: 22 }} />
-                                </IconButton>
-                            </div>)
-                        }
+                        <FieldEdit
+                            label="Descripción"
+                            className={classes.field}
+                            valueDefault={values?.description || ""}
+                            onChange={v => setValues(prev => ({ ...prev, description: v }))}
+                        />
                         <FieldEdit
                             label="Email"
                             className={classes.field}
-                            valueDefault={lead.value?.email || ""}
+                            valueDefault={values?.email || ""}
                             onChange={v => setValues(prev => ({ ...prev, email: v }))}
                         />
                         <FieldEdit
-                            label="Phone"
+                            label="Expected revenue"
                             className={classes.field}
-                            valueDefault={lead.value?.phone || ""}
-                            onChange={v => setValues(prev => ({ ...prev, phone: v }))}
+                            type="number"
+                            valueDefault={lead.value?.expected_revenue || ""}
+                            onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
+                        />
+                        <Autocomplete
+                            multiple
+                            freeSolo
+                            options={tagsOptions.map((option) => option.title)}
+                            defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                            className={classes.field}
+                            onChange={onTagsChange}
+                            renderInput={params => (
+                                <TextField
+                                    {...params}
+                                    variant="standard"
+                                    label="Tags"
+                                    placeholder="Tags"
+                                    margin="normal"
+                                    fullWidth
+                                />
+                            )}
                         />
                         <FieldSelect
                             label="Advisor"
                             className={classes.field}
-                            valueDefault={lead.value?.createby}
+                            valueDefault={lead.value?.userid}
                             data={advisers.data}
                             optionDesc="firstname"
                             optionValue="userid"
@@ -260,6 +286,34 @@ index
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        {edit ? 
+                            (<FieldView
+                                label="Customer"
+                                className={classes.field}
+                                value={lead.value?.displayname}
+                            />) : 
+                            (<div style={{ display: 'flex', flexDirection: 'column'  }} className={classes.field} >
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <div style={{ flexGrow: 1 }}>
+                                        <FieldView
+                                            label="Customer"
+                                            value={values?.displayname}
+                                        />
+                                    </div>
+                                    <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
+                                        <Add style={{ height: 22, width: 22 }} />
+                                    </IconButton>
+                                </div>
+                                <div style={{ flexGrow: 1 }} />
+                                <div style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.42)' }} />
+                            </div>)
+                        }
+                        <FieldEdit
+                            label="Phone"
+                            className={classes.field}
+                            valueDefault={values?.phone || ""}
+                            onChange={v => setValues(prev => ({ ...prev, phone: v }))}
+                        />
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Expected closing
@@ -283,7 +337,7 @@ index
                             </Box>
                             <Rating
                                 name="simple-controlled"
-                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : undefined}
+                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
                                 max={3}
                                 onChange={(event, newValue) => {
                                     const priority = newValue === 1 ? 'LOW' : newValue === 2 ? 'MEDIUM' : newValue === 3 ? 'HIGH' : undefined;
@@ -291,12 +345,6 @@ index
                                 }}
                             />
                         </div>
-                        <FieldEdit
-                            label="Tags"
-                            className={classes.field}
-                            valueDefault={lead.value?.tags || ""}
-                            onChange={v => setValues(prev => ({ ...prev, tags: v }))}
-                        />
                     </Grid>
                 </Grid>
             </Grid>
@@ -308,6 +356,8 @@ index
                 ...prev,
                 personcommunicationchannel: v.personcommunicationchannel,
                 displayname: v.displayname,
+                email: v.email as string,
+                phone: v.phone as string,
             }))}
         />
         </MuiPickersUtilsProvider>
@@ -372,13 +422,23 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
                 Header: t(langKeys.name),
                 accessor: 'displayname' as keyof IPerson,
             },
+            {
+                Header: t(langKeys.email),
+                accessor: 'email' as keyof IPerson,
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone' as keyof IPerson,
+            },
         ],
         []
     );
 
     const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
-        dispatch(getPersonListPaginated(paginatedPersonWithoutDateSel({
+        dispatch(getPersonListPaginated(getPersonListPaginated1({
             skip: pageSize * pageIndex,
+            startdate: '2021-01-01',
+            enddate: '2025-01-01',
             take: pageSize,
             sorts: sorts,
             filters: filters,

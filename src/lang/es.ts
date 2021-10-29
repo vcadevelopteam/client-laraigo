@@ -28,6 +28,7 @@ const translation: LangKeys = {
     model: 'Modelo',
     model_plural: 'Modelos',
     newlead: 'Nueva oportunidad',
+    successful_sign_up: 'Se registró correctamente, revise su bandeja para que active su cuenta.',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
@@ -782,6 +783,7 @@ const translation: LangKeys = {
     confirmation: 'Confirmación',
     confirmation_save: '¿Está seguro de guardar el registro?',
     confirmation_delete: '¿Está seguro de eliminar el registro?',
+    question_delete_all_items: '¿Quieres eliminar todos los items dentro de este elemento?',
     login_with_facebook: 'Iniciar sesión con Facebook',
     login_with_google: 'Iniciar sesión con Google',
     info: 'Info',

@@ -15,7 +15,6 @@ import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
 import EditIcon from '@material-ui/icons/Edit';
-import VisibilityIcon from '@material-ui/icons/Visibility';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
@@ -194,6 +193,7 @@ const InfoTab: React.FC = () => {
                 birthday: data.birthday || null
             })));
             dispatch(updatePerson({ ...person, ...data, name: `${data.firstname} ${data.lastname}` }));
+            setView('view');
         }
     };
 
@@ -327,7 +327,7 @@ const InfoTab: React.FC = () => {
                         size="small"
                         style={{ position: 'absolute', bottom: 8, right: 8 }}
                     >
-                        <VisibilityIcon color="action" />
+                        <CloseIcon color="action" />
                     </Fab>
                 </div>
 

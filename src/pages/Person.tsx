@@ -2223,7 +2223,7 @@ const LeadItem: FC<LeadItemProps> = ({ lead }) => {
                         <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={lead.createdate} />
+                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
                     </Grid>
                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                         <Property title={<Trans i18nKey={langKeys.salesperson} />} subtitle="William Sam" />
@@ -2234,11 +2234,11 @@ const LeadItem: FC<LeadItemProps> = ({ lead }) => {
                     <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                         <Property title={<Trans i18nKey={langKeys.phase} />} subtitle="Won" />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
+                    {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
                         <IconButton onClick={() => setOpen(!open)}>
                             <ArrowDropDown />
                         </IconButton>
-                    </Grid>
+                    </Grid> */}
                 </Grid>
             </div>
             <Collapse in={open}>
