@@ -18,7 +18,7 @@ export interface ICrmLead {
     changedate: string;
     column_uuid: string;
     columnid: number;
-    conversationid: number;
+    conversationid: number | null;
     corpid: number;
     createby: string;
     createdate: string;

@@ -1,11 +1,11 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip } from '@material-ui/core';
 import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel } from 'common/helpers';
+import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel, getPaginatedPerson as getPersonListPaginated1 } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
@@ -13,13 +13,21 @@ import { useSelector } from 'hooks';
 import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
 import { ICrmLead, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
-import { Rating } from '@material-ui/lab';
+import { Autocomplete, Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { Add } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 
+const tagsOptions = [
+    { title: "Information"},
+    { title: "Design"},
+    { title: "Product"},
+    // crear mas
+];
+
+  
 const useLeadFormStyles = makeStyles(theme => ({
     root: {
         width: '100%',
@@ -72,19 +80,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const handleSubmit = useCallback(() => {
         // validate edit
-        const params = edit ? { ...lead.value, ...values, expected_revenue: '0', conversationid: 0, index: 0 } : { ...values, leadid: 0, status: 'ACTIVO', expected_revenue: '0', conversationid: 0, index: 0 };
+        const params = edit ?
+            { ...lead.value, ...values } :
+            { ...values, id: 0, status: "ACTIVO", type: "NINGUNO", conversationid: 0, username: null, index: 0, leadid: 0 };
         const body = insLead2(params, edit ? "UPDATE" : "INSERT");
         console.log(body);
         dispatch(saveLeadBody(body));
-        /**
-         * type
-status
-expected_revenue
-conversationid null
-username null
-index
-         */
     }, [lead, values, dispatch]);
+
+    const onTagsChange = (event: any, tags: string[]) => {
+        console.log(tags);
+        setValues(prev => ({ ...prev, tags: tags.join(',') }));
+    };
 
     useEffect(() => {
         if (edit === true) {
@@ -211,9 +218,17 @@ index
                     <Trans i18nKey={langKeys.save} />
                 </Button>
             </div>
-            {edit && <div className={classes.subtitle}>
-                <span className={classes.currency}>{values?.expected_revenue}</span>
-            </div>}
+            {edit ?
+                (<div className={classes.subtitle}>
+                    <span className={classes.currency}>{values?.expected_revenue}</span>
+                </div>) :
+                (<FieldEdit
+                    label="Expected revenue"
+                    className={classes.field}
+                    // valueDefault={lead.value?.expected_revenue || ""}
+                    onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
+                />)
+            }
             <div style={{ height: '1em' }} />
             <Grid container direction="row">
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
@@ -258,10 +273,28 @@ index
                             optionValue="userid"
                             onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
                         />
+                        <Autocomplete
+                            multiple
+                            freeSolo
+                            options={tagsOptions.map((option) => option.title)}
+                            defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                            onChange={onTagsChange}
+                            renderInput={params => (
+                                <TextField
+                                {...params}
+                                variant="standard"
+                                label="Tags"
+                                placeholder="Tags"
+                                margin="normal"
+                                fullWidth
+                                />
+                            )}
+                        />
                     </Grid>
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        <div className={classes.field}></div>
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Expected closing
@@ -293,12 +326,12 @@ index
                                 }}
                             />
                         </div>
-                        <FieldEdit
+                        {/* <FieldEdit
                             label="Tags"
                             className={classes.field}
                             valueDefault={lead.value?.tags || ""}
                             onChange={v => setValues(prev => ({ ...prev, tags: v }))}
-                        />
+                        /> */}
                     </Grid>
                 </Grid>
             </Grid>
@@ -379,8 +412,10 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
     );
 
     const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
-        dispatch(getPersonListPaginated(paginatedPersonWithoutDateSel({
+        dispatch(getPersonListPaginated(getPersonListPaginated1({
             skip: pageSize * pageIndex,
+            startdate: '2021-01-01',
+            enddate: '2025-01-01',
             take: pageSize,
             sorts: sorts,
             filters: filters,
