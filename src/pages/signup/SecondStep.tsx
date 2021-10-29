@@ -1,9 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Button, TextField, FormControl, FormGroup, FormControlLabel, Checkbox } from '@material-ui/core';
+import { makeStyles, Button, TextField} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { Dictionary } from "@types";
+import { Dictionary } from "@types"
+import { useSelector } from "hooks";
+import { useDispatch } from "react-redux";
+import { resetMain, getCollectionPublic } from 'store/main/actions';
+import MuiPhoneNumber from 'material-ui-phone-number';
+import { styled } from '@material-ui/core/styles';
+import { FieldMultiSelect } from "components";
+import { getValuesFromDomain } from "common/helpers/requestBodies";
+
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -15,12 +23,30 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
+const CssPhonemui = styled(MuiPhoneNumber)({
+    '& label.Mui-focused': {
+        color: '#7721ad',
+    },
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+    '& .MuiOutlinedInput-root': {
+        '&.Mui-focused fieldset': {
+            borderColor: '#7721ad',
+        },
+    },
+});
+
+
 export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void }> = ({ setMainData, mainData, setStep }) => {
+    
+    const dispatch = useDispatch();
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
         companybusinessname: "",
     });
     const [disablebutton, setdisablebutton] = useState(true);
+    const mainResult = useSelector(state => state.main);
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
     }, [mainData])
@@ -28,6 +54,14 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         setMainData((p: any) => ({ ...p, [field]: value }))
         setErrors(p => ({ ...p, [field]: !value ? t(langKeys.field_required) : "" }))
     }
+    const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
+    useEffect(() => {
+        fetchData();
+        return () => {
+            dispatch(resetMain());
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     return (
@@ -58,52 +92,32 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     helperText={errors.companybusinessname}
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />
-                <TextField
+                <CssPhonemui
                     variant="outlined"
                     margin="normal"
-                    type="number"
-                    fullWidth
                     size="small"
-                    defaultValue={mainData.mobilephone}
+                    disableAreaCodes={true}
+                    value={mainData.mobilephone}
                     label={t(langKeys.mobilephoneoptional)}
                     name="mobilephone"
-                    onChange={(e) => setMainData((p: any) => ({ ...p, mobilephone: e.target.value }))}
+                    fullWidth
+                    defaultCountry={'pe'}
+                    onChange={(e:any) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
                 />
                 <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
-                <FormControl component="fieldset" style={{ padding: '16px 0' }}>
-                    <FormGroup aria-label="position" row>
-                        <FormControlLabel
-                            style={{ fontSize: "20px!important" }}
-                            value="sales"
-                            control={<Checkbox
-                                checked={mainData.sales}
-                                onChange={e => setMainData((p: any) => ({ ...p, sales: !p.sales }))}
-                            />}
-                            label={t(langKeys.sales)}
-                            labelPlacement="end"
-                        />
-                        <FormControlLabel
-                            style={{ fontSize: "20px!important" }}
-                            value="customerservice"
-                            control={<Checkbox
-                                checked={mainData.customerservice}
-                                onChange={e => setMainData((p: any) => ({ ...p, customerservice: !p.customerservice }))}
-                            />}
-                            label={t(langKeys.customerservice)}
-                            labelPlacement="end"
-                        />
-                        <FormControlLabel
-                            style={{ fontSize: "20px!important" }}
-                            value="marketing"
-                            control={<Checkbox
-                                checked={mainData.marketing}
-                                onChange={e => setMainData((p: any) => ({ ...p, marketing: !p.marketing }))}
-                            />}
-                            label={t(langKeys.marketing)}
-                            labelPlacement="end"
-                        />
-                    </FormGroup>
-                </FormControl>
+                
+                <FieldMultiSelect
+                    uset={true}
+                    onChange={(value) => setMainData((p:any) => ({ ...p, join_reason: value.map((o: any) => o.domainvalue).join() }))}
+                    variant="outlined"
+                    className="col-6"
+                    style={{margin:"15px 0"}}
+                    valueDefault={mainData.join_reason}
+                    prefixTranslation="reason_"
+                    data={mainResult.mainData.data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
+                />
                 <Button
                     onClick={() => { setStep(3) }}
                     className={classes.button}

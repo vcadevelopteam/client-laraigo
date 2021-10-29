@@ -15,10 +15,12 @@ import { showSnackbar } from 'store/popus/actions';
 import { getCollectionDynamic, resetMainDynamic, exportDynamic, resetExportMainDynamic } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
-const arrayBread = [
-    { id: "view-1", name: "Designed reports" },
-    { id: "view-2", name: "Report detail" }
-];
+
+
+const getArrayBread = (nametmp: string) => ([
+    { id: "view-1", name: "Reports" },
+    { id: "view-2", name: nametmp }
+]);
 
 const useStyles = makeStyles((theme) => ({
     containerFilters: {
@@ -148,7 +150,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
-                breadcrumbs={arrayBread}
+                breadcrumbs={getArrayBread(description)}
                 handleClick={setViewSelected}
             />
             <div className={classes.containerFilters}>

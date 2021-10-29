@@ -1,11 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, Fragment, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { RightSideMenu } from './RightSideMenu';
 import Backdrop from '@material-ui/core/Backdrop';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import { CircularProgress } from '@material-ui/core';
+import { useHistory, useParams } from 'react-router';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'hooks';
+import { verifyPlan } from 'store/signup/actions';
 
 const useSignUpStyles = makeStyles(theme => ({
     purplecircle: {
@@ -75,6 +79,25 @@ const useSignUpStyles = makeStyles(theme => ({
 }));
 
 export const SignUp: FC = () => {
+    
+    const mainResult = useSelector(state => state.signup.verifyPlan)
+    const {token}: any = useParams();
+    const history = useHistory();
+    const [waitLoad, setWaitLoad] = useState(true);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(verifyPlan(token))
+    }, [])
+    useEffect(() => {
+        if(!mainResult.loading){
+            console.log(mainResult)
+            if(!mainResult.error){
+                setWaitLoad(false)
+            }else{
+                history.push('../sign-in')
+            }
+        }
+    }, [mainResult])
     const classes = useSignUpStyles();
     const [step, setStep] = useState(1);
     const [snackbar, setSnackbar] = useState({
@@ -116,7 +139,7 @@ export const SignUp: FC = () => {
             <div style={{ display: "flex", height: '100%' }}>
                 <div className={classes.containerLogo}> 
                     {/* //containerlogo tiene flex 1, para q se divida con el texto */}
-                    <img src="./Laraigo-vertical-logo-name.svg" style={{ width: '50%' }} alt="logo" />
+                    <img src="../Laraigo-vertical-logo-name.svg" style={{ width: '50%' }} alt="logo" />
                 </div>
                 <div style={{
                     display: 'flex',
@@ -126,12 +149,15 @@ export const SignUp: FC = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                 }}>
-                    <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
+                    {!waitLoad?
+                        <RightSideMenu //tiene flex 1, para q se ajuste con la imagen
                         setSnackbar={setSnackbar}
                         setBackdrop={setBackdrop}
                         setStep={setStep}
                         step={step}
-                    />
+                    />:""
+                    }
+                    
                 </div>
             </div>
         </div>

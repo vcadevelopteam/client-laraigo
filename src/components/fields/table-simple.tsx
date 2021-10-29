@@ -32,6 +32,7 @@ import BackupIcon from '@material-ui/icons/Backup';
 import { TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import Checkbox from '@material-ui/core/Checkbox';
 import {
     useTable,
@@ -104,9 +105,7 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
-        height: '48px',
         color: theme.palette.text.primary,
     },
     containerButtons: {
@@ -222,6 +221,7 @@ const TableZyx = React.memo(({
     ButtonsElement,
     pageSizeDefault = 20,
     importCSV,
+    handleTemplate,
     filterGeneral = true,
     loading = false,
     useSelection,
@@ -598,18 +598,20 @@ const TableZyx = React.memo(({
                                 ><Trans i18nKey={langKeys.import} />
                                 </Button>
                             </label>
-                            <label htmlFor="download-template">
+                            {
+                                handleTemplate && 
                                 <Button
                                     className={classes.button}
                                     variant="contained"
                                     component="span"
                                     color="primary"
                                     disabled={loading}
-                                    //startIcon={<BackupIcon color="secondary" />}
+                                    startIcon={<ListAltIcon color="secondary" />}
+                                    onClick={handleTemplate}
                                     style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.templatedownload} />
+                                ><Trans i18nKey={langKeys.template} />
                                 </Button>
-                            </label>
+                            }
                         </>
                     )}
                     {register && (

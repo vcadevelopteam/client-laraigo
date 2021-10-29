@@ -19,6 +19,7 @@ export interface TableConfig {
     methodexport?: string;
     exportPersonalized?(param?: any): void;
     importCSV?: (param?: any) => void
+    handleTemplate?: (param?: any) => void
     download?: boolean;
     register?: boolean;
     handleRegister?(param: any): void;

@@ -43,7 +43,8 @@ export const reportsImage = [
   ];
 
 export { ReactComponent as DashboardIcon } from 'icons/dashboard.svg';
-export { ReactComponent as ReportsIcon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as Reports2Icon } from 'icons/chart-bar-bargraph.svg';
+export { ReactComponent as ReportsIcon } from 'icons/reports.svg';
 export { ReactComponent as TicketIcon } from 'icons/ticket.svg';
 export { ReactComponent as EMailInboxIcon } from 'icons/email-mail-letter.svg';
 export { ReactComponent as MessageInboxIcon } from 'icons/chat-message-password-input.svg';
@@ -120,4 +121,28 @@ export { ReactComponent as SLAIcon } from './sla.svg';
 export { ReactComponent as AIModelsIcon } from './aimodels.svg';
 export { ReactComponent as MessageTemplateIcon2 } from './messagetemplate.svg';
 export { ReactComponent as WhitelistIcon } from './whitelist.svg';
+export { ReactComponent as HSMIcon } from './hsm.svg';
+
+export { ReactComponent as TipifyIcon } from './tipify.svg';
+export { ReactComponent as ReassignIcon } from './reassign.svg';
 export { ReactComponent as MessageTemplateIcon } from './message-template.svg';
+export { ReactComponent as InteractiveListIcon } from './interactive-list.svg';
+export { ReactComponent as SeenIcon } from './seen.svg';
+export { ReactComponent as ClientIcon } from './clients.svg';
+
+export { ReactComponent as DocNumberIcon } from './docnumber.svg';
+export { ReactComponent as DocTypeIcon } from './doctype.svg';
+export { ReactComponent as TelephoneIcon } from './telephone.svg';
+
+export { ReactComponent as LaraigoAnimalIcon } from './Laraigo-emojis_animal.svg';
+export { ReactComponent as LaraigoBanderaIcon } from './Laraigo-emojis_bandera.svg';
+export { ReactComponent as LaraigoCaraIcon } from './Laraigo-emojis_cara.svg';
+export { ReactComponent as LaraigoCarroIcon } from './Laraigo-emojis_carro.svg';
+export { ReactComponent as LaraigoComidaIcon } from './Laraigo-emojis_comida.svg';
+export { ReactComponent as LaraigoDeporteIcon } from './Laraigo-emojis_deporte.svg';
+export { ReactComponent as LaraigoFocoIcon } from './Laraigo-emojis_foco.svg';
+export { ReactComponent as LaraigoHashtagIcon } from './Laraigo-emojis_hashtag.svg';
+export { ReactComponent as LaraigoRecienteIcon } from './Laraigo-emojis_reciente.svg';
+export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.svg';
+export { ReactComponent as CRMIcon } from './crm.svg';
+export { ReactComponent as LeadIcon } from './Laraigo-emojis_blocked.svg';

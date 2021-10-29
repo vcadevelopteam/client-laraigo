@@ -1,4 +1,4 @@
-import { IAction } from "@types";
+import { IAction, IDomain } from "@types";
 import { IState, initialState } from './reducer';
 
 export const getPerson = (state: IState): IState => ({
@@ -93,6 +93,36 @@ export const getTicketListByPersonReset = (state: IState): IState => ({
     personTicketList: initialState.personTicketList,
 });
 
+export const getReferrerListByPerson = (state: IState): IState => ({
+    ...state,
+    personReferrerList: { ...state.personReferrerList, loading: true },
+});
+
+export const getReferrerListByPersonSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    personReferrerList: {
+        ...state.personReferrerList,
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getReferrerListByPersonFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    personReferrerList: {
+        ...state.personReferrerList,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error Obtener la lista"
+    },
+});
+
+export const getReferrerListByPersonReset = (state: IState): IState => ({
+    ...state,
+    personReferrerList: initialState.personReferrerList,
+});
+
 export const getChannelListByPerson = (state: IState): IState => ({
     ...state,
     personChannelList: { ...state.personChannelList, loading: true },
@@ -153,32 +183,114 @@ export const getAdditionalInfoByPersonReset = (state: IState): IState => ({
     personAdditionInfo: initialState.personAdditionInfo,
 });
 
-export const getOpportunitiesByPerson = (state: IState): IState => ({
+export const getLeadsByPerson = (state: IState): IState => ({
     ...state,
-    personOpportunityList: { ...state.personOpportunityList, loading: true },
+    personLeadList: { ...state.personLeadList, loading: true },
 });
 
-export const getOpportunitiesByPersonSuccess = (state: IState, action: IAction): IState => ({
+export const getLeadsByPersonSuccess = (state: IState, action: IAction): IState => ({
     ...state,
-    personOpportunityList: {
-        ...state.personOpportunityList,
+    personLeadList: {
+        ...state.personLeadList,
         data: action.payload.data || [],
         loading: false,
         error: false,
     },
 });
 
-export const getOpportunitiesByPersonFailure = (state: IState, action: IAction): IState => ({
+export const getLeadsByPersonFailure = (state: IState, action: IAction): IState => ({
     ...state,
-    personOpportunityList: {
-        ...state.personOpportunityList,
+    personLeadList: {
+        ...state.personLeadList,
         error: true,
         loading: false,
         message: action.payload?.message || "Ocurrio un error Obtener la lista"
     },
 });
 
-export const getOpportunitiesByPersonReset = (state: IState): IState => ({
+export const getLeadsByPersonReset = (state: IState): IState => ({
     ...state,
-    personOpportunityList: initialState.personOpportunityList,
+    personLeadList: initialState.personLeadList,
+});
+
+export const getDomainsByTypename = (state: IState): IState => ({
+    ...state,
+    editableDomains: { ...state.editableDomains, loading: true },
+});
+
+export const getDomainsByTypenameSuccess = (state: IState, action: IAction): IState => {
+    const genders = (action.payload.data as any[])[0].data as IDomain[] | null;
+    const docTypes = (action.payload.data as any[])[1].data as IDomain[] | null;
+    const occupations = (action.payload.data as any[])[2].data as IDomain[] | null;
+    const civilStatuses = (action.payload.data as any[])[3].data as IDomain[] | null;
+    const educationLevels = (action.payload.data as any[])[4].data as IDomain[] | null;
+    const personTypes = (action.payload.data as any[])[5].data as IDomain[] | null;
+    const groups = (action.payload.data as any[])[6].data as IDomain[] | null;
+    const personGenTypes = (action.payload.data as any[])[7].data as IDomain[] | null;
+    const channelTypes = (action.payload.data as any[])[8].data as IDomain[] | null;
+
+    return {
+        ...state,
+        editableDomains: {
+            ...state.editableDomains,
+            value: {
+                civilStatuses: civilStatuses || [],
+                docTypes: docTypes || [],
+                educationLevels: educationLevels || [],
+                genders: genders || [],
+                occupations: occupations || [],
+                personTypes: personTypes || [],
+                groups: groups || [],
+                personGenTypes: personGenTypes || [],
+                channelTypes: channelTypes || []
+            },
+            loading: false,
+            error: false,
+        },
+    };
+};
+
+export const getDomainsByTypenameFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    editableDomains: {
+        ...state.editableDomains,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error Obtener los dominios"
+    },
+});
+
+export const getDomainsByTypenameReset = (state: IState): IState => ({
+    ...state,
+    editableDomains: initialState.editableDomains,
+});
+
+export const editPerson = (state: IState): IState => ({
+    ...state,
+    editPerson: { ...state.editPerson, loading: true },
+});
+
+export const editPersonSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    editPerson: {
+        ...state.editPerson,
+        loading: false,
+        error: false,
+        success: true,
+    },
+});
+
+export const editPersonFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    editPerson: {
+        ...state.editPerson,
+        error: true,
+        loading: false,
+        message: action.payload?.message || "Ocurrio un error al editar la persona",
+    },
+});
+
+export const editPersonReset = (state: IState): IState => ({
+    ...state,
+    editPerson: initialState.editPerson,
 });

@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
     select: {
-        width: '180px'
+        width: '200px'
     },
     flexgrow1: {
         flexGrow: 1

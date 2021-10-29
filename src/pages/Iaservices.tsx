@@ -21,6 +21,34 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
 import DeleteIcon from '@material-ui/icons/Delete';
 
+const serviceTypes = [
+    {
+        type: 'ASSISTANT',
+        options: [
+            { value: 'RASA', description: 'RASA' },
+            { value: 'WATSON ASSISTANT', description: 'WATSON ASSISTANT' }
+        ]
+    },
+    {
+        type: 'CLASSIFIER',
+        options: [
+            { value: 'NATURAL LANGUAGE CLASSIFIER', description: 'NATURAL LANGUAGE CLASSIFIER' }
+        ]
+    },
+    {
+        type: 'NATURAL LANGUAGE UNDERSTANDING',
+        options: [
+            { value: 'NATURAL LANGUAGE UNDERSTANDING', description: 'NATURAL LANGUAGE UNDERSTANDING' }
+        ]
+    },
+    {
+        type: 'TONE ANALYZER',
+        options: [
+            { value: 'TONE ANALYZER', description: 'TONE ANALYZER' }
+        ]
+    }
+]
+
 const transtaltion_services = [
     {
         value: 'IBM',
@@ -38,7 +66,7 @@ const analysis_type = [
         description: 'DESACTIVADO'
     },
     {
-        value: 'BYINTERACCION',
+        value: 'BYINTERACTION',
         description: 'Por Interaccion'
     },
     {
@@ -46,6 +74,17 @@ const analysis_type = [
         description: 'Por Conversacion'
     }
 ];
+
+const service_type_tone = [
+    {
+        value: 'CUSTOMER',
+        description: 'Atención al cliente'
+    },
+    {
+        value: 'GENERAL',
+        description: 'General'
+    },
+]
 
 const nlu_fields = [
     {
@@ -77,6 +116,7 @@ const nlu_fields = [
         description: 'Sentimiento'
     }
 ]
+
 interface servicesData {
     service: string,
     intelligentmodelsid: number,
@@ -131,8 +171,6 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
-        height: '48px',
         color: theme.palette.text.primary,
     },
     mb2: {
@@ -153,7 +191,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-    const [dataToModel, setdataToModel] = useState<any>([]);
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -183,12 +220,14 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
     });
 
     const handlerNewColumn = () => fieldsAppend({
+        type_of_service: '',
         service: '',
         intelligentmodelsid: '',
         analyzemode: '',
         translationservice: '',
         analyzecustomer: false,
         analyzebot: false,
+        servicetype: '',
         analyzeuser: false,
         categories: false,
         concepts: false,
@@ -229,7 +268,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
 
     const onSubmit = handleSubmit((data) => {
         if (data.services.length === 0) {
-            dispatch(showSnackbar({ show: true, success: false, message: 'You must configure at least one service' }))
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.iaservice_must_select) }))
             return
         }
 
@@ -377,40 +416,73 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                     aria-controls="panel1a-content"
                                     id="panel1a-header"
                                 >
-                                    <Typography style={{ fontSize: '24px' }}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
+                                    <Typography style={{ fontSize: 16 }}>{(item.service) ? item.service : t(langKeys.newiaservice)}</Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
                                     <form onSubmit={onSubmit} style={{ width: '100%' }}>
                                         <div className="row-zyx">
                                             <div className="col-12">
-                                                <FieldSelect
+                                            <FieldSelect
                                                     fregister={{
-                                                        ...register(`services.${i}.service`, {
+                                                        ...register(`services.${i}.type_of_service`, {
                                                             validate: (value: any) => (value && value.length) || t(langKeys.field_required)
                                                         })
                                                     }}
                                                     onChange={(value) => {
-                                                        if (value) {
-                                                            if (fields.some((x: any) => x.service === value.domainvalue) && !row) {
-                                                                fieldUpdate(i, { ...fields[i], service: '' })
-                                                                dispatch(showSnackbar({ show: true, success: false, message: 'This service is already selected' }))
-                                                                return
-                                                            } 
-                                                            // else {
-                                                            //     setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
-                                                            // }
-                                                        }
-                                                        fieldUpdate(i, { ...fields[i], service: value ? value.domainvalue : '' })
+                                                        // if (value) {
+                                                        //     if (fields.some((x: any) => x.service === value.domainvalue) && !row) {
+                                                        //         fieldUpdate(i, { ...fields[i], service: '' })
+                                                        //         dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.iaservice_already_exist) }))
+                                                        //         return
+                                                        //     }
+                                                        //     // else {
+                                                        //     //     setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
+                                                        //     // }
+                                                        // }
+                                                        item.service = ''
+                                                        fieldUpdate(i, { ...fields[i], type_of_service: value ? value.type : '' })
                                                     }}
-                                                    triggerOnChangeOnFirst={true}
-                                                    label={t(langKeys.model_type)}
+                                                    // triggerOnChangeOnFirst={true}
+                                                    label={t(langKeys.type_service)}
                                                     className={classes.mb2}
-                                                    valueDefault={(item.service) ? item.service : ''}
-                                                    error={errors?.services?.[i]?.service?.message}
-                                                    data={dataModelType}
-                                                    optionDesc="domaindesc"
-                                                    optionValue="domainvalue"
+                                                    valueDefault={(item.type_of_service) ? item.type_of_service : ''}
+                                                    error={errors?.services?.[i]?.type_of_service?.message}
+                                                    data={serviceTypes}
+                                                    optionDesc="type"
+                                                    optionValue="type"
                                                 />
+                                                {getValues(`services.${i}.type_of_service`) !== '' && (
+                                                    <FieldSelect
+                                                        fregister={{
+                                                            ...register(`services.${i}.service`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        onChange={(value) => {
+                                                            if (value) {
+                                                                if (fields.some((x: any) => x.service === value.value) && !row) {
+                                                                    fieldUpdate(i, { ...fields[i], service: '' })
+                                                                    dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.iaservice_already_exist) }))
+                                                                    return
+                                                                }
+                                                                // else {
+                                                                //     setdataToModel(dataModels.filter(x => x.type === value.domainvalue))
+                                                                // }
+                                                            }
+                                                            fieldUpdate(i, { ...fields[i], service: value ? value.value : '' })
+                                                        }}
+                                                        triggerOnChangeOnFirst={true}
+                                                        label={t(langKeys.model_type)}
+                                                        className={classes.mb2}
+                                                        valueDefault={(item.service) ? item.service : ''}
+                                                        error={errors?.services?.[i]?.service?.message}
+                                                        // data={dataModelType}
+                                                        data={serviceTypes.filter((y: any) => y.type === getValues(`services.${i}.type_of_service`))[0].options}
+                                                        optionDesc="value"
+                                                        optionValue="value"
+                                                    />
+                                                )}
+
                                                 {getValues(`services.${i}.service`) !== '' && (
                                                     <FieldSelect
                                                         fregister={{
@@ -425,7 +497,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         label={t(langKeys.model)}
                                                         className={classes.mb2}
                                                         error={errors?.services?.[i]?.intelligentmodelsid?.message}
-                                                        data={dataModels.filter((y: any) => y.type === getValues(`services.${i}.service`))}
+                                                        data={dataModels.filter((y: any) => y.type.trim() === getValues(`services.${i}.service`))}
                                                         valueDefault={(item.intelligentmodelsid) ? item.intelligentmodelsid : ''}
                                                         optionDesc="description"
                                                         optionValue="intelligentmodelsid"
@@ -468,6 +540,26 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                         </div>
                                                     </div>
                                                 )}
+                                                {getValues(`services.${i}.service`) === 'TONE ANALYZER' && (
+                                                    <FieldSelect
+                                                        fregister={{
+                                                            ...register(`services.${i}.servicetype`, {
+                                                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                                            })
+                                                        }}
+                                                        onChange={(value) => {
+                                                            fieldUpdate(i, { ...fields[i], servicetype: value.value })
+                                                        }
+                                                        }
+                                                        label={'Service type'} //traduccion
+                                                        className={classes.mb2}
+                                                        valueDefault={(item.servicetype) ? item.servicetype : ''}
+                                                        error={errors?.services?.[i]?.servicetype?.message}
+                                                        data={service_type_tone}
+                                                        optionDesc="description"
+                                                        optionValue="value"
+                                                    />
+                                                )}
                                                 <FieldSelect
                                                     fregister={{
                                                         ...register(`services.${i}.analyzemode`, {
@@ -481,7 +573,6 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
                                                     onChange={(value) => {
                                                         fieldUpdate(i, { ...fields[i], analyzemode: value.value })
                                                     }}
-                                                    // onChange={(value) => setValue(`services.${i}.analysis_type`, value.value)}
                                                     data={analysis_type}
                                                     optionDesc="description"
                                                     optionValue="value"
@@ -643,8 +734,20 @@ const Iaservices: FC = () => {
     }
 
     const handleDelete = (row: Dictionary) => {
+        const data = {
+          channels: row.communicationchannelid,
+          id: row.intelligentmodelsconfigurationid,
+          operation: "DELETE",
+          description: row.description,
+          type: "NINGUNO",
+          color: row.color,
+          icontype: row.icontype,
+          services: row.parameters,
+          status: "ELIMINADO",
+        }
+
         const callback = () => {
-            dispatch(execute(insOrg({ description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
+            dispatch(execute(insInteligentModelConfiguration(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

@@ -44,10 +44,9 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         password: "",
         confirmpassword: "",
     });
-    const resLogin = useSelector(state => state.login.login);
     const rescheckuser = useSelector(state => state.signup);
+    const [waitSave, setwaitSave] = useState(false);
     const [disablebutton, setdisablebutton] = useState(true);
-    const [firstlaunch, setfirstlaunch] = useState(true);
     useEffect(() => {
         setdisablebutton(!(mainData.email !== "" && mainData.email.includes('@') && mainData.email.includes('.') && mainData.password !== "" && mainData.confirmpassword !== "" && mainData.confirmpassword === mainData.password))
     }, [mainData])
@@ -58,16 +57,16 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
     const classes = useChannelAddStyles();
 
     useEffect(() => {
-        if (!rescheckuser.loading) {
-            if (rescheckuser.isvalid) {
-                setStep(2)
-            } else {
-                if (!firstlaunch) {
-                    setSnackbar({ state: true, success: false, message: t(langKeys.useralreadyregistered) })
+        if(waitSave){
+            if (!rescheckuser.loading) {
+                if (rescheckuser.isvalid) {
+                    setStep(2)
+                    setwaitSave(false)
                 } else {
-                    setfirstlaunch(false)
+                    setSnackbar({ state: true, success: false, message: t(langKeys.useralreadyregistered) })
+                    setwaitSave(false)
                 }
-            }
+            }    
         }
     }, [rescheckuser])
 
@@ -81,6 +80,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                     "googleid": String(r.googleId)
                 }
             }
+            setwaitSave(true)
             setMainData((p: any) => ({ ...p, password: "" }))
             setMainData((p: any) => ({ ...p, email: "" }))
             setMainData((p: any) => ({ ...p, googleid: r.googleId }))
@@ -94,11 +94,12 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
             const content = {
                 "method": "UFN_USERIDBYUSER",
                 "parameters": {
-                    "usr": r.dt.Ot,
+                    "usr": r.email,
                     "facebookid": String(r.id),
                     "googleid": null
                 }
             }
+            setwaitSave(true)
             setMainData((p: any) => ({ ...p, password: "" }))
             setMainData((p: any) => ({ ...p, email: "" }))
             setMainData((p: any) => ({ ...p, facebookid: r.id }))
@@ -114,6 +115,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                 "googleid": null
             }
         }
+        setwaitSave(true)
         dispatch(executeCheckNewUser(content))
 
     }
@@ -126,6 +128,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
             <FacebookLogin
                 appId="1094526090706564"
                 callback={onAuthWithFacebook}
+                fields="name,email,picture"
                 buttonStyle={{
                     borderRadius: '3px', width: "400px", height: 50, display: 'flex', alignItems: 'center', 'fontSize': '24px', fontStyle: 'normal', fontWeight: 400, textTransform: 'none', justifyContent: 'center', marginBottom: 16
                 }}

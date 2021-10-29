@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, FieldEditMulti, DialogZyx } from 'components';
-import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree } from 'common/helpers';
+import { getParentSel, getValuesFromDomain, getClassificationSel, insClassification, uploadExcel, getValuesForTree, exportExcel, templateMaker } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,6 +33,7 @@ interface DetailTipificationProps {
     multiData: MultiData[];
     fetchData: () => void;
     externalUse?: boolean;
+    externalType?: string;
     externalSaveHandler?: ({...param}?: any) => void;
     externalCancelHandler?: ({...param}?: any) => void;
 }
@@ -133,7 +134,7 @@ const TreeItemsFromData: React.FC<{ dataClassTotal: Dictionary}> = ({ dataClassT
     )
 };
 
-export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalSaveHandler, externalCancelHandler }) => {
+export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, externalUse = false, externalType, externalSaveHandler, externalCancelHandler }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const [showAddAction, setShowAddAction] = useState(!!row?.jobplan || false);
@@ -148,18 +149,16 @@ export const DetailTipification: React.FC<DetailTipificationProps> = ({ data: { 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataParent = multiData[1] && multiData[1].success ? multiData[1].data : [];
 
-
     const datachannels = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
     
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
-            type: 'TIPIFICACION',
+            type: externalUse ? externalType : (row ? row?.type : 'TIPIFICACION'),
             id: row?.classificationid || 0,
             description: row?.description || '',
             title: row?.title || '',
             parent: row?.parentid || 0,
-            communicationchannel: row?.communicationchannelid || '',
+            communicationchannel: row?.communicationchannel || '',
             status: row?.status || 'ACTIVO',
             operation: row ? "EDIT" : "INSERT",
             path: row?.path || '',
@@ -615,25 +614,44 @@ const Tipifications: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
-
-            dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: null,
-                detail: data.map((x: any) => insClassification({
-                    ...x,
-                    title:x.classification,
-                    communicationchannel:x.channels,
-                    tags:x.tag,
-                    parent:0,
-                    operation:"INSERT",
-                    type: 'TIPIFICACION',
-                    status: "ACTIVO",
-                    id:0,
-                }))
-            }, true));
-            setWaitSave(true)
+            let data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.classification)
+                    && !['', null, undefined].includes(d.channels)    
+                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''})).includes('' + d.parent)
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: null,
+                    detail: data.map((x: any) => insClassification({
+                        ...x,
+                        title: x.classification,
+                        description: x.description,
+                        communicationchannel: x.channels,
+                        tags: x.tag || '',
+                        parent: x.parent || 0,
+                        operation: "INSERT",
+                        type: 'TIPIFICACION',
+                        status: x.status || "ACTIVO",
+                        id: 0,
+                    }))
+                }, true));
+                setWaitSave(true)
+            }
         }
+    }
+
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            mainResult.multiData.data[2].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domaindesc}), {}),
+            {},
+            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.title}), {0: ''}),
+            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {})
+        ];
+        const header = ['classification', 'description', 'channels', 'tag', 'parent', 'status'];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
     if (viewSelected === "view-1") {
@@ -652,6 +670,7 @@ const Tipifications: FC = () => {
                     download={true}
                     register={true}
                     importCSV={importCSV}
+                    handleTemplate={handleTemplate}
                     handleRegister={handleRegister}
                     ButtonsElement={()=>
                         <Button

@@ -32,9 +32,8 @@ const useStyles = makeStyles((theme) => ({
     },
     title: {
         fontSize: '22px',
-        lineHeight: '48px',
         fontWeight: 'bold',
-        height: '48px',
+        marginBottom: theme.spacing(1),
         color: theme.palette.text.primary,
     },
 
@@ -76,6 +75,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
+    
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {
@@ -220,7 +220,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData?.data[1])
+        if (multiData && multiData?.data[1])
             setAgentsConnected(multiData?.data[3].data)
     }, [multiData])
 
@@ -512,7 +512,7 @@ const Tickets = () => {
                 accessor: 'fechafin',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return convertLocalDate(row.fechafin).toLocaleString()
+                    return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
                 }
             },
             {
@@ -767,7 +767,7 @@ const Tickets = () => {
 
     useEffect(() => {
         if (!mainPaginated.loading && !mainPaginated.error) {
-            setPageCount(Math.ceil(mainPaginated.count / fetchDataAux.pageSize));
+            setPageCount(fetchDataAux.pageSize ? Math.ceil(mainPaginated.count / fetchDataAux.pageSize) : 0);
             settotalrow(mainPaginated.count);
         }
     }, [mainPaginated])

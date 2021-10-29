@@ -1,18 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, TemplateSwitch } from "components";
+import { ColorInput, FieldEdit, FieldSelect, IOSSwitch, } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
+import { InstagramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -35,6 +36,8 @@ export const ChannelAddInstagram: FC = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    const [coloricon, setcoloricon] = useState("#F56040");
+    const [enable, setenable] = useState(false);
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
@@ -51,6 +54,7 @@ export const ChannelAddInstagram: FC = () => {
             "other": "",
             "form": "",
             "apikey": "",
+            "coloricon": "#F56040",
         },
         "type": "INSTAGRAM",
         "service": {
@@ -67,21 +71,21 @@ export const ChannelAddInstagram: FC = () => {
         setViewSelected("main")
     }
     useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
+        if (!mainResult.loading && setins){
+            if (executeResult) {
                 setsetins(false)
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
+            } else if (!executeResult) {
                 const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             }
         }
-    }, [executeResult,waitSave])
+    }, [mainResult])
     useEffect(() => {
         if (waitSave) {
             dispatch(showBackdrop(false));
@@ -213,11 +217,33 @@ export const ChannelAddInstagram: FC = () => {
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            {t(langKeys.givechannelcolor)}
+                            </Box>
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <InstagramIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button

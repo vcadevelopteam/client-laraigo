@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useState, useEffect } from 'react'; // we need this to make JSX compile
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
@@ -13,16 +13,14 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
 import { getMultiCollection } from 'store/main/actions';
-import { getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
+import { getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
-import { AntTab } from 'components';
+import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
-import Badge, { BadgeProps } from '@material-ui/core/Badge';
 import { IAgent } from "@types";
 import clsx from 'clsx';
-import { ListItemSkeleton } from 'components'
 
 const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
     if (page === 0 && searchName === "") {
@@ -98,39 +96,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-interface BadgePropsTmp extends BadgeProps {
-    colortmp: any;
-}
-
-const StyledBadge = withStyles((theme) => ({
-    badge: (props: any) => ({
-        backgroundColor: props.colortmp,
-        color: props.colortmp,
-        boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
-        '&::after': {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            borderRadius: '50%',
-            animation: 'ripple 1.2s infinite ease-in-out',
-            border: '1px solid currentColor',
-            content: '""',
-        },
-    }),
-    '@keyframes ripple': {
-        '0%': {
-            transform: 'scale(.8)',
-            opacity: 1,
-        },
-        '100%': {
-            transform: 'scale(2.4)',
-            opacity: 0,
-        },
-    },
-}))(({ ...props }: BadgePropsTmp) => <Badge {...props} />);
-
 const CountTicket: FC<{ label: string, count: number, color: string }> = ({ label, count, color }) => (
     <div style={{ position: 'relative' }}>
         <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
@@ -146,7 +111,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, useridSelected, agent: { name, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -154,9 +119,9 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
     const handlerSelectAgent = () => dispatch(selectAgent(agent));
 
     return (
-        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === agent.userid) })} onClick={handlerSelectAgent}>
+        <div className={clsx(classes.containerItemAgent, { [classes.itemSelected]: (agentSelected?.userid === userid) })} onClick={handlerSelectAgent}>
             <div className={classes.agentUp}>
-                <StyledBadge
+                <BadgeGo
                     overlap="circular"
                     colortmp={isConnected ? "#44b700" : "#b41a1a"}
                     anchorOrigin={{
@@ -166,7 +131,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                     variant="dot"
                 >
                     <Avatar>{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
-                </StyledBadge>
+                </BadgeGo>
                 <div>
                     <div className={classes.agentName}>{name}</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -178,16 +143,28 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, user
                 </div>
             </div>
             <div className={classes.counterCount}>
-                <CountTicket
-                    label={t(langKeys.attending)}
-                    count={countAnwsered}
-                    color="#55BD84"
-                />
-                <CountTicket
-                    label={t(langKeys.pending)}
-                    count={countNotAnwsered || 0}
-                    color="#FB5F5F"
-                />
+
+                {(userid === 2 || userid === 3) &&
+                    <CountTicket
+                        label={t(langKeys.active) + "s"}
+                        count={countAnwsered + (countNotAnwsered || 0)}
+                        color="#55BD84"
+                    />
+                }
+                {userid !== 2 && userid !== 3 &&
+                    <>
+                        <CountTicket
+                            label={t(langKeys.attending)}
+                            count={countAnwsered}
+                            color="#55BD84"
+                        />
+                        <CountTicket
+                            label={t(langKeys.pending)}
+                            count={countNotAnwsered || 0}
+                            color="#FB5F5F"
+                        />
+                    </>
+                }
                 <CountTicket
                     label={t(langKeys.paused)}
                     count={countPaused}
@@ -309,7 +286,8 @@ const Supervisor: FC = () => {
             getClassificationLevel1("TIPIFICACION"),
             getValuesFromDomain("GRUPOS"),
             getListQuickReply(),
-            getMessageTemplateSel(0)
+            getMessageTemplateSel(0),
+            getCommChannelLst(),
         ]))
     }, [])
 

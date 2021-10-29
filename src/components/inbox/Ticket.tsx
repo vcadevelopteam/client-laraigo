@@ -2,21 +2,31 @@ import React, { useState } from 'react'
 import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
 import { styled } from '@material-ui/core/styles';
-
 import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
-
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
 
 const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; timer?: number }> = ({ label, color, timer, isTimer }) => {
+    const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? timer : -1);
-    if (!label) {
-        setTimeout(() => {
-            settime((time || 0) + 1)
-        }, 1000);
-    }
+
+    React.useEffect(() => {
+        isMounted.current = true;
+
+        let timer = !label ? setTimeout(() => {
+            if (isMounted.current)
+                settime((time || 0) + 1)
+        }, 1000) : null;
+
+        return () => {
+            timer && clearTimeout(timer);
+            isMounted.current = false;
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [time]);
+
     return (
         <div style={{ position: 'relative' }}>
             <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{isTimer ? secondsToTime(time || 0) : label}</div>
@@ -30,7 +40,7 @@ const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
     backgroundColor: '#b41a1a',
     height: 18,
     fontSize: 11,
-  }));
+}));
 
 const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, lastconversationdate = null, countnewmessages, status } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -43,7 +53,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 overlap="circular"
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 badgeContent={
-                    (countnewmessages || 0) > 0 ? <SmallAvatar>{countnewmessages > 9 ? '+9' : countnewmessages }</SmallAvatar> : null
+                    (countnewmessages || 0) > 0 ? <SmallAvatar>{countnewmessages > 9 ? '+9' : countnewmessages}</SmallAvatar> : null
                 }
             >
                 <Avatar src={imageurldef} />
@@ -54,13 +64,13 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <GetIcon channelType={communicationchanneltype} />
                     <div className={classes.name}>{displayname}</div>
                 </div>
-                <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: 240 }}>
+                <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: 230 }}>
                     {lastmessage}
                 </div>
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
                         label={ticketnum}
-                        color={status === 'ASIGNADO' ? "#55BD84" : "#ffbf00"}
+                        color={status === 'ASIGNADO' ? "#55BD84" : ( status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
                         isTimer={true}

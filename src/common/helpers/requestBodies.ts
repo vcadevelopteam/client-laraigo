@@ -1,4 +1,4 @@
-import { Dictionary, IChatWebAdd, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICRmSaveLead, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -220,6 +220,13 @@ export const getInappropriateWordsSel = (id: number): IRequestBody => ({
 export const insInappropriateWords = ({ id, description, status, type, username, operation, classification, defaultanswer }: Dictionary): IRequestBody => ({
     method: "UFN_INAPPROPRIATEWORDS_INS",
     parameters: { id, description, status, type, username, operation, classification, defaultanswer }
+});
+
+export const insarrayInappropriateWords = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INAPPROPRIATEWORDS_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
 });
 
 export const getIntelligentModelsSel = (id: number): IRequestBody => ({
@@ -760,12 +767,28 @@ export const getVariableConfigurationLst = (): IRequestBody => ({
     parameters: {}
 });
 
+export const getTicketsByFilter = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string ): IRequestBody => ({
+    method: "UFN_CONVERSATION_SEL_TICKETSBYUSER_FILTER",
+    parameters: {
+        lastmessage,
+        start_createticket,
+        end_createticket,
+        channels,
+        conversationstatus,
+        displayname,
+        phone
+    }
+});
+
+
 export const getVariableConfigurationSel = (id: string): IRequestBody => ({
     method: "UFN_VARIABLECONFIGURATION_SEL",
     parameters: {
         chatblockid: id
     }
 });
+
+
 
 export const insVariableConfiguration = ({
     corpid,
@@ -791,7 +814,14 @@ export const insVariableConfiguration = ({
         visible
     }
 });
-export const getInsertChatwebChannel = (name: string, auto: boolean, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
+export const insarrayVariableConfiguration = (table: Dictionary[]): IRequestBody => ({
+    method: "UFN_VARIABLECONFIGURATION_INS_ARRAY",
+    parameters: {
+        table: JSON.stringify(table)
+    }
+});
+
+export const getInsertChatwebChannel = (name: string, auto: boolean, iconColor: string, service: IChatWebAdd): IRequestBody<IChatWebAdd> => ({
     method: "UFN_COMMUNICATIONCHANNEL_INS",
     parameters: {
         id: 0,
@@ -801,11 +831,52 @@ export const getInsertChatwebChannel = (name: string, auto: boolean, service: IC
         communicationchannelowner: "id del canal",
         chatflowenabled: auto,
         integrationid: "",
-        color: "",
+        color: iconColor,
         icons: "",
         other: "",
         form: "",
         apikey: "",
+        coloricon: iconColor,
+    },
+    type: "CHATWEB",
+    service,
+});
+
+export const getEditChannel = (id: number, payload: IChannel, name: string, auto: boolean, iconColor: string): IRequestBody<IChannel> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...payload,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
+    },
+});
+
+export const getEditChatWebChannel = (id: number, channel: IChannel, service: IChatWebAdd, name: string, auto: boolean, iconColor: string): IRequestBody<IChatWebAdd> => ({
+    method: "UFN_COMMUNICATIONCHANNEL_INS",
+    parameters: {
+        ...channel,
+        operation: 'UPDATE',
+        id: id,
+        description: name,
+        chatflowenabled: auto,
+        color: iconColor,
+        coloricon: iconColor,
+        corpid: null,
+        orgid: null,
+        username: null,
+        apikey: "",
+        updintegration: null,
+        motive: "Edited from API",
     },
     type: "CHATWEB",
     service,
@@ -971,6 +1042,22 @@ export const getTicketListByPersonBody = (personId: ID, { filters, sorts, take, 
     },
 });
 
+export const getReferrerByPersonBody = (personId: ID) => ({
+    method: "UFN_PERSONREFERRER_SEL",
+    parameters: {
+        personid: personId,
+    },
+});
+
+export const insPersonUpdateLocked = ({personid, personcommunicationchannel, locked }: Dictionary) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
+    parameters: {
+        personid,
+        personcommunicationchannel,
+        locked
+    },
+});
+
 export const getChannelListByPersonBody = (personId: ID) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_SEL",
     parameters: {
@@ -987,6 +1074,7 @@ export const getAdditionalInfoByPersonBody = (personId: ID) => ({
     },
 });
 
+/**Person Leads */
 export const getOpportunitiesByPersonBody = (personId: ID) => ({
     method: "",
     parameters: {
@@ -1142,10 +1230,10 @@ export const getIntelligentModels = (): IRequestBody => ({
     parameters: {}
 });
 
-export const insInteligentModelConfiguration = ({channels, id, operation, description, type, status, color, icontype, services}: Dictionary): IRequestBody => ({
+export const insInteligentModelConfiguration = ({ channels, id, operation, description, type, status, color, icontype, services }: Dictionary): IRequestBody => ({
     method: 'UFN_INTELLIGENTMODELSCONFIGURATION_INS',
     key: "UFN_INTELLIGENTMODELSCONFIGURATION_INS",
-    parameters: { 
+    parameters: {
         communicationchannelid: channels,
         intelligentmodelsconfigurationid: id,
         operation,
@@ -1155,32 +1243,25 @@ export const insInteligentModelConfiguration = ({channels, id, operation, descri
         color,
         icontype,
         parameters: services
-     }
+    }
 });
-export const gerencialTMOsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialTMOsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL",
-    parameters: { 
-        startdate,
-        enddate,
-        channel,
-        group,
-        company,
-        level: 0,
-        closedby: "ASESOR,BOT",
-        min:0,
-        max:0,
-        target:0,
-        skipdown:0,
-        skipup:0,
-        bd: true,
-        offset: -5.00
-     }
+    parameters: {
+        startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialTMEsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialTMOselData = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL",
+    parameters: { startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialTMEsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
@@ -1188,89 +1269,164 @@ export const gerencialTMEsel = ({startdate, enddate, channel, group, company}: D
         company,
         level: 0,
         closedby: "ASESOR,BOT",
-        min:0,
-        max:0,
-        target:0,
-        skipdown:0,
-        skipup:0,
+        min: 0,
+        max: 0,
+        target: 0,
+        skipdown: 0,
+        skipup: 0,
         bd: true,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialsummarysel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialsummarysel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_SUMMARY_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         group,
         company,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialencuestasel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialsummaryseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_SUMMARY_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_SUMMARY_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialencuestasel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ENCUESTA_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ENCUESTA_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         group,
         company,
         closedby: "",
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 
 });
-export const gerencialconversationsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialencuestaseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ENCUESTA_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_ENCUESTA_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        closedby: "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+
+});
+export const gerencialconversationsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_CONVERSATION_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_CONVERSATION_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         group,
         company,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialinteractionsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialconversationseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_CONVERSATION_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_CONVERSATION_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialinteractionsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_INTERACTION_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_INTERACTION_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         group,
         company,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialetiquetassel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialinteractionseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_INTERACTION_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_INTERACTION_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialetiquetassel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         limit: 5,
         group,
         company,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
-export const gerencialasesoresconectadosbarsel = ({startdate, enddate, channel, group, company}: Dictionary): IRequestBody => ({
+export const gerencialetiquetasseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        limit: 5,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialasesoresconectadosbarsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL",
-    parameters: { 
+    parameters: {
         startdate,
         enddate,
         channel,
         group,
         company,
-        offset: -5.00
-     }
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
+export const gerencialasesoresconectadosbarseldata = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL',
+    key: "UFN_DATA_DASHBOARD_GERENCIAL_ASESORESCONECTADOSBAR_SEL",
+    parameters: {
+        startdate,
+        enddate,
+        channel,
+        group,
+        company,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
 });
 
 /// Settings tab (drawer)
@@ -1288,25 +1444,165 @@ export const getLabelsSel = (): IRequestBody => ({
     key: "UFN_LABEL_LST",
     parameters: {}
 });
-export const getdashboardPushHSMCATEGORYRANKSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
+export const getdashboardPushHSMCATEGORYRANKSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL',
     key: "UFN_DASHBOARD_PUSH_HSMCATEGORYRANK_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
-export const getdashboardPushSUMMARYSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
+export const getdashboardPushSUMMARYSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_SUMMARY_SEL',
     key: "UFN_DASHBOARD_PUSH_SUMMARY_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
-export const getdashboardPushHSMRANKSel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
+export const getdashboardPushHSMRANKSel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_HSMRANK_SEL',
     key: "UFN_DASHBOARD_PUSH_HSMRANK_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
-export const getdashboardPushMENSAJEXDIASel = ({startdate,enddate,channel,group,company,label,category,supervisor}: Dictionary): IRequestBody => ({
+export const getdashboardPushMENSAJEXDIASel = ({ startdate, enddate, channel, group, company, label, category, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL',
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
-    parameters: {startdate,enddate,channel,group,company,label,category,offset:-5.00,userid:supervisor}
+    parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
+});
+export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        level: 0,
+        closedby: "",
+        skipdown: 0,
+        skipup: 0,
+        bd: true,
+        min: "00:00:00",
+        max: "00:00:00",
+        target: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoTMOGENERALSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
+    key: "UFN_DATA_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        level: 0,
+        closedby: "",
+        skipdown: 0,
+        skipup: 0,
+        bd: true,
+        min: "00:00:00",
+        max: "00:00:00",
+        target: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        level: 0,
+        closedby: "",
+        skipdown: 0,
+        skipup: 0,
+        bd: true,
+        min: "00:00:00",
+        max: "00:00:00",
+        target: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoTMEGENERALSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
+    key: "UFN_DATA_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        level: 0,
+        closedby: "",
+        skipdown: 0,
+        skipup: 0,
+        bd: true,
+        min: "00:00:00",
+        max: "00:00:00",
+        target: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoSummarySel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        skipdowntmo: 0,
+        skipuptmo: 0,
+        skipdowntme: 0,
+        skipuptme: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoSummarySeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_OPERATIVO_SUMMARY_SEL',
+    key: "UFN_DATA_DASHBOARD_OPERATIVO_SUMMARY_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        skipdowntmo: 0,
+        skipuptmo: 0,
+        skipdowntme: 0,
+        skipuptme: 0,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoProdxHoraSel = ({ startdate, enddate, channel, group, company, label, supervisor, level }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        level,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoProdxHoraDistSel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoProdxHoraDistSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL',
+    key: "UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label,
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoEncuestaSel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label, closedby: "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoEncuestaSeldata = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DATA_DASHBOARD_OPERATIVO_ENCUESTA_SEL',
+    key: "UFN_DATA_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label, closedby: "",
+        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        supervisorid: supervisor
+    }
 });
 
 /// Settings tab (drawer)
@@ -1348,3 +1644,174 @@ export const getPropertyConfigurationsBody = (): IRequestBody[] => ([
         parameters: { propertyname: 'WAITINGREPETITIVEMESSAGE' },
     },
 ]);
+
+export const insPersonBody = (person: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const insPersonCommunicationChannel = (pcc: Dictionary): IRequestBody => ({
+    method: 'UFN_PERSONCOMMUNICATIONCHANNEL_INS',
+    parameters: {
+        ...pcc,
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const editPersonBody = (person: IPerson): IRequestBody => ({
+    method: 'UFN_PERSON_INS',
+    parameters: {
+        ...person,
+        id: person.personid,
+        operation: person.personid ? 'UPDATE' : 'INSERT',
+    },
+});
+
+// export const insLead = (lead: ILead, operation: string): IRequestBody => ({
+//     method: 'UFN_LEAD_INS',
+//     parameters: {
+//         ...lead,
+//         id: lead.leadid,
+//         operation
+//     },
+// });
+
+export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, email: string, phone: string, personid: number): IRequestBody => ({
+    method: 'UFN_LEAD_PERSON_INS',
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        firstname,
+        lastname,
+        email,
+        phone,
+        personid,
+    },
+});
+export const getColumnsSel = (id:number): IRequestBody => ({
+    method: "UFN_COLUMN_SEL",
+    key: "UFN_COLUMN_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
+
+export const getLeadsSel = (id:number): IRequestBody => ({
+    method: "UFN_LEAD_SEL",
+    key: "UFN_LEAD_SEL",
+    parameters: {
+        id: id,
+        all: true
+    }
+})
+
+export const insColumns = ({ id, description, type, status, edit, index, operation, delete_all = false }: Dictionary): IRequestBody => ({
+    method: 'UFN_COLUMN_INS',
+    key: "UFN_COLUMN_INS",
+    parameters: {
+        id,
+        description,
+        type,
+        status,
+        edit,
+        index,
+        operation,
+        delete_all
+    }
+});
+
+export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid }: Dictionary): IRequestBody => ({
+    method: 'UFN_UPDATE_LEADS',
+    key: "UFN_UPDATE_LEADS",
+    parameters: {
+        cards_startingcolumn, 
+        cards_finalcolumn, 
+        startingcolumn_uuid, 
+        finalcolumn_uuid
+    }
+});
+
+export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody => ({
+    method: 'UFN_UPDATE_COLUMNS',
+    key: "UFN_UPDATE_COLUMNS",
+    parameters: {
+        cards_uuid: columns_uuid, 
+    }
+});
+
+export const insLead = ({ leadid, description, status, type, expected_revenue, date_deadline, tags, personcommunicationchannel, priority, conversationid, columnid, column_uuid, index, operation, phone, email }: Dictionary): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    key: "UFN_LEAD_INS",
+    parameters: {
+        leadid,
+        description,
+        status,
+        type,
+        expected_revenue,
+        date_deadline,
+        tags,
+        personcommunicationchannel,
+        priority,
+        conversationid,
+        columnid,
+        column_uuid,
+        index,
+        phone,
+        email,
+        operation
+    }
+});
+
+export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    key: "UFN_LEAD_INS",
+    parameters: {
+        ...lead,
+        operation
+    },
+});
+
+export const getOneLeadSel = (id: string | number): IRequestBody => ({
+    method: "UFN_LEAD_SEL",
+    key: "UFN_LEAD_SEL",
+    parameters: {
+        id: id,
+        all: false
+    },
+});
+
+export const leadNotesSel = (): IRequestBody => ({
+    method: 'UFN_LEADNOTES_SEL',
+    key: "UFN_LEADNOTES_SEL",
+    parameters: {
+        leadid: 0,
+        leadnotesid: 0,
+        all: true,
+    },
+});
+
+export const adviserSel = (): IRequestBody => ({
+    method: 'UFN_ADVISERS_SEL',
+    key: "UFN_ADVISERS_SEL",
+    parameters: {},
+});
+
+//tabla paginada
+export const paginatedPersonWithoutDateSel = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PERSONWITHOUTDATE_SEL",
+    methodCount: "UFN_PERSONWITHOUTDATE_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

@@ -210,6 +210,7 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const checkValidation = () => {
         let valid = true;
         if (detaildata.messagetemplatetype === 'MULTIMEDIA'
+        && (detaildata?.messagetemplateheader?.type || '') !== ''
         && detaildata.messagetemplateheader?.value === '') {
             valid = false;
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.missing_header)}));
@@ -479,7 +480,8 @@ export const CampaignMessage: React.FC<DetailProps> = ({ row, edit, auxdata, det
                         onChange={(value) => setDetailData({...detaildata, subject: value})}
                     />
                 </div> : null}
-                {(detaildata.messagetemplatetype || 'STANDARD') !== 'STANDARD' ?
+                {(detaildata.messagetemplatetype === 'MULTIMEDIA'
+                && (detaildata?.messagetemplateheader?.type || '') !== '') ?
                 <div className="row-zyx">
                     <FieldEdit
                         label={t(langKeys.header)}

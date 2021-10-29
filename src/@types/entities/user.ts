@@ -35,4 +35,5 @@ export interface IUser {
     menu: ObjectApps;
     image: string | null;
     organizations: Organization[];
+    automaticConnection?: boolean;
 }

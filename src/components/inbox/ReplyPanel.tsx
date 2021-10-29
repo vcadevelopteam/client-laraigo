@@ -6,7 +6,7 @@ import { styled } from '@material-ui/core/styles';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import { useDispatch } from 'react-redux';
-import { emitEvent, replyTicket, goToBottom, reassignTicket } from 'store/inbox/actions';
+import { emitEvent, replyTicket, goToBottom, showGoToBottom, reassignTicket } from 'store/inbox/actions';
 import { uploadFile, resetUploadFile } from 'store/main/actions';
 import { manageConfirmation } from 'store/popus/actions';
 import InputBase from '@material-ui/core/InputBase';
@@ -26,7 +26,6 @@ import Badge from '@material-ui/core/Badge';
 import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { SearchIcon } from 'icons';
 import List from '@material-ui/core/List';
-// import ListItemButton from '@material-ui/core/but';
 import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -46,7 +45,7 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
     const [valuefile, setvaluefile] = useState('')
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
-
+    const { t } = useTranslation();
     const uploadResult = useSelector(state => state.main.uploadFile);
     const [idUpload, setIdUpload] = useState('');
 
@@ -89,10 +88,12 @@ const UploaderIcon: React.FC<{ classes: any, type: "image" | "file", setFiles: (
                 onChange={(e) => onSelectImage(e.target.files)}
             />
             <label htmlFor={`laraigo-upload-${type}`}>
-                {type === "image" ?
-                    <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
-                    <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
-                }
+                <Tooltip title={t(type === "image" ? langKeys.send_image : langKeys.send_file) + ""} arrow placement="top">
+                    {type === "image" ?
+                        <ImageIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} /> :
+                        <AttachFileIcon className={clsx(classes.iconResponse, { [classes.iconSendDisabled]: waitSave })} />
+                    }
+                </Tooltip>
             </label>
         </>
     )
@@ -125,7 +126,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     const handleClick = () => setOpen((prev) => !prev);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
-
+    const { t } = useTranslation();
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
@@ -160,7 +161,9 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
+                <Tooltip title={t(langKeys.send_quickreply) + ""} arrow placement="top">
+                    <QuickresponseIcon className={classes.iconResponse} onClick={handleClick} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -225,7 +228,7 @@ const QuickReplyIcon: React.FC<{ classes: any, setText: (param: string) => void 
 const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => void }> = ({ classes, setText }) => {
     const [open, setOpen] = React.useState(false);
     const dispatch = useDispatch();
-
+    const { t } = useTranslation();
     const [richResponseToShow, setRichResponseToShow] = useState<Dictionary[]>([])
     const handleClick = () => setOpen((prev) => !prev);
     const [showSearch, setShowSearch] = useState(false);
@@ -241,6 +244,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
 
     useEffect(() => {
         setRichResponseToShow(richResponseList)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [richResponseList])
 
     useEffect(() => {
@@ -249,6 +253,7 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
         } else {
             setRichResponseToShow(richResponseList.filter(x => x.title.toLowerCase().includes(search.toLowerCase())))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search])
 
     const reasignTicket = React.useCallback(() => {
@@ -312,7 +317,9 @@ const TmpRichResponseIcon: React.FC<{ classes: any, setText: (param: string) => 
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <div style={{ display: 'flex' }}>
-                <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                <Tooltip title={t(langKeys.send_enrich_response) + ""} arrow placement="top">
+                    <RichResponseIcon className={classes.iconResponse} onClick={handleClick} style={{ width: 22, height: 22 }} />
+                </Tooltip>
                 {open && (
                     <div style={{
                         position: 'absolute',
@@ -383,13 +390,14 @@ const SmallAvatar = styled(Avatar)(({ theme }: any) => ({
 const BottomGoToUnder: React.FC = () => {
     const dispatch = useDispatch();
     const isOnBottom = useSelector(state => state.inbox.isOnBottom);
+    const boolShowGoToBottom = useSelector(state => state.inbox.showGoToBottom);
     const triggerNewMessageClient = useSelector(state => state.inbox.triggerNewMessageClient);
     const [countNewMessage, setCountNewMessage] = useState(0)
 
     useEffect(() => {
         if (triggerNewMessageClient !== null) {
             if (isOnBottom || isOnBottom === null)
-                dispatch(goToBottom(null))
+                dispatch(goToBottom(isOnBottom ? null : true))
             else
                 setCountNewMessage(countNewMessage + 1)
         }
@@ -399,11 +407,13 @@ const BottomGoToUnder: React.FC = () => {
 
     useEffect(() => {
         if (isOnBottom) {
-            setCountNewMessage(0)
+            dispatch(showGoToBottom(false));
+            setCountNewMessage(0);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOnBottom])
 
-    if (isOnBottom || isOnBottom === null)
+    if (!boolShowGoToBottom || isOnBottom)
         return null;
 
     return (
@@ -417,7 +427,7 @@ const BottomGoToUnder: React.FC = () => {
             >
                 <Fab
                     size="small"
-                    onClick={() => dispatch(goToBottom(true))}>
+                    onClick={() => dispatch(goToBottom(isOnBottom ? null : true))}>
                     <DoubleArrowIcon style={{ color: '#2e2c34ba', transform: 'rotate(90deg)', width: 20, height: 20 }} />
                 </Fab>
             </Badge>
@@ -447,9 +457,14 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
     const [showReply, setShowReply] = useState(true);
 
     useEffect(() => {
-        if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
-            if (getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 360 > 24) {
+        if (ticketSelected?.status === "CERRADO")
+            setShowReply(false);
+        else if (channelsWhatsapp.includes(ticketSelected!!.communicationchanneltype)) {
+            const hoursWaiting = getSecondsUntelNow(convertLocalDate(ticketSelected?.personlastreplydate)) / 3600;
+            if (hoursWaiting >= 24) {
                 setShowReply(false);
+            } else {
+                setShowReply(true);
             }
         }
     }, [ticketSelected])
@@ -723,7 +738,7 @@ const ReplyPanel: React.FC<{ classes: any }> = ({ classes }) => {
                             <GifPickerZyx onSelect={(url: string) => setFiles(p => [...p, { type: 'image', url, id: new Date().toISOString() }])} />
                             <UploaderIcon type="file" classes={classes} setFiles={setFiles} />
                         </div>
-                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.length > 0) })} onClick={triggerReplyMessage}>
+                        <div className={clsx(classes.iconSend, { [classes.iconSendDisabled]: !(text || files.filter(x => !!x.url).length > 0) })} onClick={triggerReplyMessage}>
                             <SendIcon />
                         </div>
                     </div>

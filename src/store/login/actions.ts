@@ -12,7 +12,7 @@ export const login = (usr: string | null, password: string | null, facebookid?: 
     type: null,
 });
 
-export const resetLogin = (): IActionCall => ({type: actionTypes.LOGIN_RESET});
+export const resetLogin = (): IActionCall => ({ type: actionTypes.LOGIN_RESET });
 
 export const validateToken = (): IActionCall => ({
     callAPI: () => CommonService.validateToken(),
@@ -24,7 +24,7 @@ export const validateToken = (): IActionCall => ({
     type: null,
 });
 
-export const resetValidateToken = (): IActionCall => ({type: actionTypes.VALIDATE_TOKEN_RESET});
+export const resetValidateToken = (): IActionCall => ({ type: actionTypes.VALIDATE_TOKEN_RESET });
 
 
 export const changeOrganization = (newcorpid: number, neworgid: number, corpdesc: string, orgdesc: string): IActionCall => ({
@@ -37,7 +37,9 @@ export const changeOrganization = (newcorpid: number, neworgid: number, corpdesc
     type: null,
 });
 
-export const resetChangeOrganization = (): IActionCall => ({type: actionTypes.CHANGE_ORGANIZATION_RESET});
+export const updateUserInformation = (firstname: string, lastname: string, image: string): IActionCall => ({ type: actionTypes.CHANGE_DATA_USER, payload: { firstname, lastname, image } });
+
+export const resetChangeOrganization = (): IActionCall => ({ type: actionTypes.CHANGE_ORGANIZATION_RESET });
 
 
 

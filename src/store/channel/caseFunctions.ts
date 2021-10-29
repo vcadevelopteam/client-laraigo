@@ -10,12 +10,12 @@ export const getChannelsSuccessInsert = (state: IState, action: IAction): IState
     return{
         ...state,
         channelList: {
-            data: [],
+            data: [ { applicationId: action.payload?.applicationId, integrationId: action.payload?.integrationId }],
             count: 0,
             loading: false,
             error: false,
         },
-        successinsert:false
+        successinsert:true
     }
 }
 ;
@@ -83,4 +83,34 @@ export const insertChannelFailure = (state: IState, action: IAction): IState => 
 export const insertChannelReset = (state: IState): IState => ({
     ...state,
     insertChannel: initialState.insertChannel,
+});
+
+export const editChannel = (state: IState): IState => ({
+    ...state,
+    editChannel: { ...state.editChannel, loading: true, error: false },
+});
+
+export const editChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    editChannel: {
+        ...state.editChannel,
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const editChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    editChannel: {
+        success: false,
+        loading: false,
+        error: true,
+        message: action.payload?.message || "Ocurrio uun error al editar el canal"
+    },
+});
+
+export const editChannelReset = (state: IState): IState => ({
+    ...state,
+    editChannel: initialState.editChannel,
 });

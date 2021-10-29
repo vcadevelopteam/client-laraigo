@@ -8,17 +8,12 @@ import { FC, useEffect, useState } from 'react';
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { Dictionary } from '@types';
+import { Dictionary, IChannel } from '@types';
 import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
 import { deleteChannel } from 'store/channel/actions';
-
-interface RowSelected {
-    row: Dictionary | null,
-    edit: boolean
-}
 
 export const Channels: FC = () => {
     const dispatch = useDispatch();
@@ -26,19 +21,9 @@ export const Channels: FC = () => {
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.channel.channelList);
 
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
-    
 
-    const handleView = (row: Dictionary) => {
-        setRowSelected({ row, edit: false });
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setRowSelected({ row, edit: true });
-    }
-    
     const fetchData = () => dispatch(getCollection(getChannelSel(0)));
 
     useEffect(() => {
@@ -46,7 +31,7 @@ export const Channels: FC = () => {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
                 fetchData();
-                
+
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
                 //dispatch(getCollection(getChannelSel(0)));
@@ -63,10 +48,10 @@ export const Channels: FC = () => {
         const callback = () => {
             dispatch(deleteChannel({
                 method: "UFN_COMMUNICATIONCHANNEL_INS",
-                parameters:{
-                    ...row,id:row.communicationchannelid, description:row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO' 
+                parameters: {
+                    ...row, id: row.communicationchannelid, description: row.communicationchanneldesc, operation: 'DELETE', status: 'ELIMINADO'
                 }
-                }));
+            }));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -77,6 +62,17 @@ export const Channels: FC = () => {
             callback
         }))
     }
+
+    const handleEdit = (row: IChannel) => {
+        const pathname = row.type === "CHAZ" ?
+            paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
+            paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
+        history.push({
+            pathname,
+            state: row,
+        });
+    }
+
     const columns = React.useMemo(
         () => [
             {
@@ -89,7 +85,7 @@ export const Channels: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            viewFunction={() => { }}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -136,7 +132,7 @@ export const Channels: FC = () => {
             dispatch(resetMain());
         };
     }, []);
-    
+
     return (
         <TableZyx
             columns={columns}

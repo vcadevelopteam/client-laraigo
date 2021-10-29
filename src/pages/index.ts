@@ -27,6 +27,7 @@ export { default as InternalServererror } from './InternalServerError';
 export { default as Corporations } from './Corporations';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
+export { default as UserSettings } from './UserSettings';
 
 export * from './channels';
 export * from './signup';
@@ -35,3 +36,6 @@ export { default as BotDesigner } from './BotDesigner';
 export { default as Dashboard } from './Dashboard';
 
 export { default as Settings } from './Settings';
+export { default as Privacy } from './Privacy';
+export { default as ActivateUser } from './ActivateUser';
+export * from './crm';

@@ -7,12 +7,15 @@ import {ThirdStep} from './ThirdStep';
 import {LastStep} from './LastStep';
 import {ChannelAddFacebook} from './ChannelAddFacebook'
 import {ChannelAddInstagram} from './ChannelAddInstagram'
+import {ChannelAddInstagramDM} from './ChannelAddInstagramDM'
 import {ChannelAddMessenger} from './ChannelAddMessenger'
 import {ChannelAddWhatsapp} from './ChannelAddWhatsapp'
 import {ChannelAddTelegram} from './ChannelAddTelegram'
 import {ChannelAddTwitter} from './ChannelAddTwitter'
 import {ChannelAddTwitterDM} from './ChannelAddTwitterDM'
 import {ChannelAddChatWeb} from './ChannelAddChatWeb'
+import {ChannelAddAndroid} from './ChannelAddAndroid'
+import {ChannelAddIos} from './ChannelAddIos'
 
 
 export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any}> = ({setSnackbar,setBackdrop,setStep,step}) => {
@@ -25,9 +28,7 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         mobilephone: "",
         facebookid: "",
         googleid: "",
-        sales: false,
-        customerservice: false,
-        marketing: false,
+        join_reason: ""
     });
     const [requestchannels, setrequestchannels] = useState([]);
     const [sendchannels, setsendchannels] = useState(false);
@@ -44,6 +45,8 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         email: false,
         phone: false,
         sms: false,
+        android: false,
+        ios: false,
     });
 
     if(step===1){
@@ -78,6 +81,7 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
     else if(step===3&&sendchannels){
         if(listchannels.facebook) return <ChannelAddFacebook  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.instagram) return <ChannelAddInstagram  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.instagram) return <ChannelAddInstagramDM  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.messenger) return <ChannelAddMessenger setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.whatsapp) return <ChannelAddWhatsapp setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         if(listchannels.telegram) return <ChannelAddTelegram setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
@@ -87,6 +91,8 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         if(listchannels.email) return <div>email</div>
         if(listchannels.phone) return <div>phone</div>
         if(listchannels.sms) return <div>sms</div>
+        if(listchannels.android) return <ChannelAddAndroid setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.apple) return <ChannelAddIos setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
         else {
             setStep(4)
             return(<div>error no more channels</div>)

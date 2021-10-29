@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
-import { getInappropriateWordsSel, getValuesFromDomain, insInappropriateWords } from 'common/helpers';
+import { dictToArrayKV, exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -51,6 +51,13 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
 }));
+
+const dataClassification: Dictionary = {
+    INSULTS: 'INSULTS',
+    ENTITIES: 'ENTITIES',
+    LINKS: 'LINKS',
+    EMOTIONS: 'EMOTIONS',
+};
 
 const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
@@ -151,19 +158,15 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
+                                uset={true}    
                                 label={t(langKeys.classification)}
                                 className="col-12"
                                 valueDefault={row ? (row.classification || "") : ""}
                                 onChange={(value) => setValue('classification', (value?.domainvalue||""))}
                                 error={errors?.classification?.message}
-                                data={[
-                                    {domaindesc:t(langKeys.insults)?.toUpperCase(), domainvalue: "Insults"},
-                                    {domaindesc:t(langKeys.entities)?.toUpperCase(), domainvalue: "Entities"},
-                                    {domaindesc:t(langKeys.links)?.toUpperCase(), domainvalue: "Links"},
-                                    {domaindesc:t(langKeys.emotions)?.toUpperCase(), domainvalue: "Emotions"},
-                                ]}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                data={dictToArrayKV(dataClassification)}
+                                optionDesc="value"
+                                optionValue="key"
                             />
                             : <FieldView
                                 label={t(langKeys.classification)}
@@ -237,6 +240,7 @@ const InappropriateWords: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [waitImport, setWaitImport] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -318,6 +322,22 @@ const InappropriateWords: FC = () => {
         }
     }, [executeResult, waitSave])
 
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeResult, waitImport]);
+
     const handleRegister = () => {
         setViewSelected("view-2");
         setRowSelected({ row: null, edit: true });
@@ -346,6 +366,41 @@ const InappropriateWords: FC = () => {
         }))
     }
 
+    const handleUpload = async (files: any[]) => {
+        const file = files[0];
+        if (file) {
+            const data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.description)
+                    && Object.keys(dataClassification).includes(d.classification)
+                );
+            if (data.length > 0) {
+                const validpk = Object.keys(data[0]).includes('description');
+                const keys = Object.keys(data[0]);
+                dispatch(showBackdrop(true));
+                dispatch(execute(insarrayInappropriateWords(data.reduce((ad: any[], d: any) => {
+                    ad.push({
+                        ...d,
+                        id: d.id || 0,
+                        description: (validpk ? d.description : d[keys[0]]) || '',
+                        classification: (validpk ? d.classification : d[keys[1]]) || '',
+                        defaultanswer: (validpk ? d.defaultanswer : d[keys[2]]) || '',
+                        type: 'NINGUNO',
+                        status: d.status || 'ACTIVO',
+                        operation: d.operation || 'INSERT',
+                    })
+                    return ad;
+                }, []))));
+                setWaitImport(true)
+            }
+        }
+    }
+
+    const handleTemplate = () => {
+        const data = [dataClassification, {}, {}, mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}),{})];
+        const header = ['classification', 'description', 'defaultanswer', 'status'];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
+    }
+
     if (viewSelected === "view-1") {
 
         return (
@@ -357,7 +412,8 @@ const InappropriateWords: FC = () => {
                 loading={mainResult.mainData.loading}
                 register={true}
                 handleRegister={handleRegister}
-            // fetchData={fetchData}
+                importCSV={handleUpload}
+                handleTemplate={handleTemplate}
             />
         )
     }

@@ -1,11 +1,9 @@
 import React, { FC } from "react";
 import { changeOrganization } from 'store/login/actions';
-import { wsConnect } from "store/inbox/actions";
 
 import { FieldSelect } from 'components';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router';
 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
@@ -55,11 +53,10 @@ const ManageOrganization: FC = () => {
         <FieldSelect
             label="Organization"
             valueDefault={user?.orgid}
-            style={{ width: 200 }}
+            className="w-full"
             onChange={handleChangeOrganization}
             variant="outlined"
             disabled={resChangeOrganization.loading}
-            // triggerOnChangeOnFirst={true}
             data={user?.organizations!!}
             optionDesc="orgdesc"
             optionValue="orgid"

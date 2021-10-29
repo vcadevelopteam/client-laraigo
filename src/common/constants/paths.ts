@@ -9,7 +9,15 @@ const paths = {
     CORPORATIONS: '/corporations',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",
-    SIGNUP: "/sign-up",
+    SIGNUP: {
+        path: "/sign-up/:token",
+        resolve: (token: string) => `/sign-up/${token}`,
+    },
+    PRIVACY: "/privacy",
+    ACTIVATE_USER: {
+        path: '/activateuser/:token',
+        resolve: (token: string) => `/activateuser/${token}`
+    },
     CHANNELS: '/channels',
     CHANNELS_ADD_FACEBOOK: {
         path: '/channels/:id/add/facebook',
@@ -22,6 +30,10 @@ const paths = {
     CHANNELS_ADD_INSTAGRAM: {
         path: '/channels/:id/add/instagram',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/instagram`,
+    },
+    CHANNELS_ADD_INSTAGRAMDM: {
+        path: '/channels/:id/add/instagramdm',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/instagramdm`,
     },
     CHANNELS_ADD_WHATSAPP: {
         path: '/channels/:id/add/whatsapp',
@@ -39,8 +51,24 @@ const paths = {
         path: '/channels/:id/add/twitterdm',
         resolve: (channelId: string | number) => `/channels/${channelId}/add/twitterdm`,
     },
+    CHANNELS_ADD_ANDROID: {
+        path: '/channels/:id/add/ChannelAddAndroid',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddAndroid`,
+    },
+    CHANNELS_ADD_IOS: {
+        path: '/channels/:id/add/ChannelAddIos',
+        resolve: (channelId: string | number) => `/channels/${channelId}/add/ChannelAddIos`,
+    },
     CHANNELS_ADD: '/channels/add',
     CHANNELS_ADD_CHATWEB: '/channels/add/chatweb',
+    CHANNELS_EDIT: {
+        path: '/channels/edit/:id',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}`,
+    },
+    CHANNELS_EDIT_CHATWEB: {
+        path: '/channels/edit/:id/chatweb',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
@@ -49,6 +77,7 @@ const paths = {
     USERS: '/extras/users',
     GROUPCONFIG: '/extras/groupconfig',    
     WHITELIST: '/extras/whitelist',    
+    USERSETTINGS: '/usersettings',    
     INAPPROPRIATEWORDS: '/extras/inappropriatewords',
     INTELLIGENTMODELS: '/extras/intelligentmodels',
     SLA: '/extras/sla',
@@ -72,6 +101,15 @@ const paths = {
     IA: '/iaservices/ia',
 
     SETTINGS: '/settings',
+    CRM: '/crm',
+    CRM_ADD_LEAD: {
+        path : '/crm/columns/:columnid/uuid/:columnuuid/leads/add',
+        resolve: (columnid: string | number, uuid: string) => `/crm/columns/${columnid}/uuid/${uuid}/leads/add`,
+    },
+    CRM_EDIT_LEAD: {
+        path: '/crm/leads/:id',
+        resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
+    },
 };
 
 export default paths;

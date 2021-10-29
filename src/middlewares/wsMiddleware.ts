@@ -8,6 +8,7 @@ const eventsListeners = [
     { event: 'connectAgent', type: typesInbox.CONNECT_AGENT_WS },
     { event: 'newMessageFromClient', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
     { event: 'newMessageFromBot', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
+    { event: 'personSawChat', type: typesInbox.PERSON_SAW_CHAT, extra: {} },
 ]
 
 let socket = io(apiUrls.WS_URL, {

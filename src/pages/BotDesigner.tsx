@@ -5,13 +5,16 @@ import { chatblock_set } from 'store/botdesigner/actions';
 import { useHistory } from 'react-router-dom'
 import paths from 'common/constants/paths';
 import { apiUrls } from 'common/constants';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+const origin = new URL(apiUrls.CHATFLOW).origin;
+const pathname = new URL(apiUrls.CHATFLOW).pathname
+const url = `${origin}${pathname}`;
 
 const BotDesigner: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-
-    const origin = new URL(apiUrls.CHATFLOW).origin;
-    const pathname = new URL(apiUrls.CHATFLOW).pathname
 
     const receiveCrossDomainMessage = (event: any) => {
         if (event?.origin === origin) {
@@ -31,21 +34,26 @@ const BotDesigner: FC = () => {
     }
 
     const [frame, setFrame] = useState(false);
-    const [url, setUrl] = useState('');
 
     useEffect(() => {
-        postCrossDomainMessage(localStorage.getItem('accessToken'));
-        setUrl(`${origin}${pathname}`);
+        if (frame) {
+            postCrossDomainMessage(localStorage.getItem('accessToken'));
+        }
     }, [frame])
 
     return (
-        <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+            <Backdrop style={{ zIndex: 999999999, color: '#fff', position: 'absolute' }} open={!frame}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <iframe
                 id="ifr"
                 title='botdesigner'
                 src={url}
                 style={{ height: '100%', width: '100%', border: 'none' }}
-                onLoad={() => setFrame(true)}
+                onLoad={() => {
+                    setFrame(true);
+                }}
             >
             </iframe>
         </div>

@@ -9,31 +9,39 @@ export interface IPerson {
     orgdesc: string;
     personid: number;
     description?: string;
-    groups: any;
+    groups: any; // edit
     status: string;
     type: string;
     name: string;
-    persontype: string;
+    persontype: string; // edit
     personstatus: string;
-    phone?: string;
-    email?: string;
-    alternativephone?: string;
-    alternativeemail?: string;
+    phone?: string; // edit
+    email?: string; // edit
+    alternativephone?: string; // edit
+    alternativeemail?: string; // edit
     firstcontact: string;
     lastcontact: string;
     lastcommunicationchannelid: number;
     communicationchannelname?: string;
-    documenttype: string;
-    documentnumber: string;
+    documenttype: string; // edit
+    documentnumber: string; // edit
     firstname: string;
     lastname: string;
     imageurldef?: string;
-    sex: string;
+    sex: string; // edit
     gender?: string;
-    birthday: string;
-    civilstatus?: string;
-    occupation?: string;
-    educationlevel?: string;
+    genderdesc?: string;
+    birthday: string | null;
+    civilstatus?: string; // edit
+    civilstatusdesc?: string; // edit
+    address?: string;
+    addressreference?: string;
+    occupation?: string; // edit
+    occupationdesc?: string; // edit
+    educationlevel?: string; // edit
+    educationleveldesc?: string; // edit
+    lastcommunicationchannel?: string;
+    totaltickets?: number;
     country: string;
     region?: string;
     province?: string;
@@ -49,6 +57,42 @@ export interface IPerson {
     createdate: string;
     changeby: string;
     changedate: string;
+    personcommunicationchannel: string;
+}
+
+export interface IPersonCommunicationChannel {
+    channeltype: string;
+    personcommunicationchannel: string;
+    personcommunicationchannelowner: string;
+    displayname: string;
+}
+
+export interface IPersonImport extends IPerson, IPersonCommunicationChannel {
+    pcc: IPersonCommunicationChannel[];
+}
+
+export interface IPersonEdit {
+    groups: any;
+    persontype: string;
+    phone?: string;
+    email?: string;
+    alternativephone?: string;
+    alternativeemail?: string;
+    documenttype: string;
+    documentnumber: string;
+    sex: string;
+    civilstatus?: string;
+    civilstatusdesc?: string;
+    occupation?: string;
+    occupationdesc?: string;
+    educationlevel?: string;
+    educationleveldesc?: string;
+}
+
+export interface IPersonReferrer {
+    name: string;
+    documenttype: string;
+    documentnumber: string;
 }
 
 export interface IPersonChannel {
@@ -108,4 +152,20 @@ export interface IPersonConversation {
     totalpausaduration: string;
     firstreplytime: string;
     totalpauseduration: string;
+}
+
+export interface IPersonLead {
+    changeby: string;
+    changedate: string;
+    columnid: number;
+    corpid: number;
+    createby: string;
+    createdate: string;
+    description: string;
+    index: number;
+    orgid: number;
+    personcommunicationchannel: string;
+    personid: number;
+    status: string;
+    type: string;
 }

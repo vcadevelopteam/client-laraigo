@@ -1,24 +1,34 @@
-import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation } from "@types";
-import { createReducer, initialListPaginatedState, initialListState, initialObjectState } from "common/helpers";
+import { IListState, IListStatePaginated, IObjectState, IPerson, IPersonAdditionalInfo, IPersonChannel, IPersonConversation, IPersonDomains, IPersonLead, IPersonReferrer, IProcessState } from "@types";
+import { createReducer, initialListPaginatedState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
 export interface IState {
     personList: IListStatePaginated<IPerson>;
     personTicketList: IListStatePaginated<IPersonConversation>;
+    personReferrerList: IListState<IPersonReferrer>;
     personChannelList: IListState<IPersonChannel>;
     personAdditionInfo: IListState<IPersonAdditionalInfo>;
     person: IObjectState<IPerson>;
-    personOpportunityList: IListState<any>;
+    personLeadList: IListState<IPersonLead>;
+
+    /**GET_DOMAINS_BY_TYPENAME */
+    editableDomains: IObjectState<IPersonDomains>;
+
+    editPerson: IProcessState;
 }
 
 export const initialState: IState = {
     personList: initialListPaginatedState,
     personTicketList: initialListPaginatedState,
+    personReferrerList: initialListState,
     personChannelList: initialListState,
     personAdditionInfo: initialListState,
     person: initialObjectState,
-    personOpportunityList: initialListState,
+    personLeadList: initialListState,
+
+    editableDomains: initialObjectState,
+    editPerson: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -37,6 +47,11 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_TICKET_LIST_BY_PERSON_FAILURE]: caseFUnctions.getTicketListByPersonFailure,
     [actionTypes.GET_TICKET_LIST_BY_PERSON_RESET]: caseFUnctions.getTicketListByPersonReset,
 
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON]: caseFUnctions.getReferrerListByPerson,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getReferrerListByPersonSuccess,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_FAILURE]: caseFUnctions.getReferrerListByPersonFailure,
+    [actionTypes.GET_REFERRER_LIST_BY_PERSON_RESET]: caseFUnctions.getReferrerListByPersonReset,
+    
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON]: caseFUnctions.getChannelListByPerson,
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getChannelListByPersonSuccess,
     [actionTypes.GET_CHANNEL_LIST_BY_PERSON_FAILURE]: caseFUnctions.getChannelListByPersonFailure,
@@ -47,8 +62,18 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_FAILURE]: caseFUnctions.getAdditionalInfoByPersonFailure,
     [actionTypes.GET_ADDITIONAL_INFO_BY_PERSON_RESET]: caseFUnctions.getAdditionalInfoByPerson,
 
-    [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON]: caseFUnctions.getOpportunitiesByPerson,
-    [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getOpportunitiesByPersonSuccess,
-    [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_FAILURE]: caseFUnctions.getOpportunitiesByPersonFailure,
-    [actionTypes.GET_OPPORTUNITY_LIST_BY_PERSON_RESET]: caseFUnctions.getOpportunitiesByPersonReset,
+    [actionTypes.GET_LEAD_LIST_BY_PERSON]: caseFUnctions.getLeadsByPerson,
+    [actionTypes.GET_LEAD_LIST_BY_PERSON_SUCCESS]: caseFUnctions.getLeadsByPersonSuccess,
+    [actionTypes.GET_LEAD_LIST_BY_PERSON_FAILURE]: caseFUnctions.getLeadsByPersonFailure,
+    [actionTypes.GET_LEAD_LIST_BY_PERSON_RESET]: caseFUnctions.getLeadsByPersonReset,
+
+    [actionTypes.GET_DOMAINS_BY_TYPENAME]: caseFUnctions.getDomainsByTypename,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_SUCCESS]: caseFUnctions.getDomainsByTypenameSuccess,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_FAILURE]: caseFUnctions.getDomainsByTypenameFailure,
+    [actionTypes.GET_DOMAINS_BY_TYPENAME_RESET]: caseFUnctions.getDomainsByTypenameReset,
+
+    [actionTypes.EDIT_PERSON]: caseFUnctions.editPerson,
+    [actionTypes.EDIT_PERSON_SUCCESS]: caseFUnctions.editPersonSuccess,
+    [actionTypes.EDIT_PERSON_FAILURE]: caseFUnctions.editPersonFailure,
+    [actionTypes.EDIT_PERSON_RESET]: caseFUnctions.editPersonReset,
 });

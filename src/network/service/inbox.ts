@@ -1,9 +1,15 @@
 import { apiUrls } from '../../common/constants';
-import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams } from '@types';
+import { ICloseTicketsParams, ISendHSM, IReassignicketParams, IReplyTicketParams, IConnectAgentUIParams, IMassiveCloseTicketsParams, Dictionary } from '@types';
 import { APIManager } from '../manager';
 // import {  } from "common/helpers";
 
 
+export function updateUserSettings({ oldpassword,password,confirmpassword,lastname,firstname,image }: Dictionary) {
+    const data = {
+        oldpassword,password,confirmpassword,lastname,firstname,image
+    }
+    return APIManager.post(apiUrls.UPDATE_USER, { data: { data } }, true);
+}
 export function closeTicket({ conversationid, motive, observation, ticketnum, personcommunicationchannel, communicationchannelsite, communicationchanneltype, status, isAnswered }: ICloseTicketsParams) {
     const data = {
         p_conversationid: conversationid,

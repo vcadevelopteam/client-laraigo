@@ -49,10 +49,10 @@ const arrayBread = [
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
-        marginTop: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        padding: theme.spacing(2),
-        background: '#fff',
+        // marginTop: theme.spacing(2),
+        // marginRight: theme.spacing(2),
+        // padding: theme.spacing(2),
+        // background: '#fff',
         width: '100%'
     },
     button: {
@@ -74,7 +74,7 @@ const DetailValue: React.FC<ModalProps> = ({ data: { row, domainname, edit }, da
                 updateRecords && updateRecords((p: Dictionary[]) => p.map(x => x.domainvalue === row?.domainvalue || '' ? { ...x, ...data, operation: (x.operation || "UPDATE") } : x));
             else
                 updateRecords && updateRecords((p: Dictionary[]) => [...p, { ...data, organization: user?.orgdesc || '', status: row?.status || 'ACTIVO', operation: "INSERT" }]);
-    
+
             setOpenModal(false);
         }
     });
@@ -468,7 +468,6 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
 const Domains: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -600,19 +599,15 @@ const Domains: FC = () => {
         }
 
         return (
-            <div className={classes.containerDetail}>
-                {
-                    <TableZyx
-                        columns={columns}
-                        titlemodule={t(langKeys.domain_plural, { count: 2 })}
-                        data={mainResult.mainData.data}
-                        download={true}
-                        loading={mainResult.mainData.loading}
-                        register={true}
-                        handleRegister={handleRegister}
-                    />
-                }
-            </div>
+            <TableZyx
+                columns={columns}
+                titlemodule={t(langKeys.domain_plural, { count: 2 })}
+                data={mainResult.mainData.data}
+                download={true}
+                loading={mainResult.mainData.loading}
+                register={true}
+                handleRegister={handleRegister}
+            />
         )
     }
     else

@@ -40,6 +40,17 @@ export const loginReset = (state: IState): IState => ({
     login: initialState.login,
 });
 
+export const updateUserInformation = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        user: {
+            ...state.validateToken.user,
+            ...action.payload
+        },
+    }
+});
+
 export const validateToken = (state: IState): IState => ({
     ...state,
     validateToken: {

@@ -7,7 +7,7 @@ import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, 
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel } from 'common/helpers';
+import { getQuickrepliesSel, getValuesFromDomain, insQuickreplies, getValuesForTree, uploadExcel, getParentSel, exportExcel, templateMaker } from 'common/helpers';
 import { EmojiPickerZyx } from 'components'
 import AccountTreeIcon from '@material-ui/icons/AccountTree';
 import { Dictionary } from "@types";
@@ -467,6 +467,7 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     multiData={multiDataAuxRes.data}
                     fetchData={() => null}
                     externalUse={true}
+                    externalType="QUICKREPLY"
                     externalSaveHandler={handleClassificationSave}
                     externalCancelHandler={handleClassificationCancel}
                 />
@@ -603,25 +604,42 @@ const Quickreplies: FC = () => {
         setinsertexcel(true)
         const file = files[0];
         if (file) {
-            const data: any = await uploadExcel(file, undefined);
-
-            dispatch(showBackdrop(true));
-            dispatch(execute({
-                header: null,
-                detail: data.map((x: any) => insQuickreplies({
-                    ...x,
-                    description: x.summarize, 
-                    quickreply: x.detail, 
-                    status: x.status, 
-                    favorite: x.favorite,
-                    classificationid:1668,
-                    operation:"INSERT",
-                    type: 'NINGUNO',
-                    id:0,
-                }))
-            }, true));
-            setWaitSave(true)
+            let data: any = (await uploadExcel(file, undefined) as any[])
+                .filter((d: any) => !['', null, undefined].includes(d.summarize)
+                    && !['', null, undefined].includes(d.detail)
+                    && Object.keys(mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {})).includes('' + d.classificationid)
+                );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute({
+                    header: null,
+                    detail: data.map((x: any) => insQuickreplies({
+                        ...x,
+                        description: x.summarize, 
+                        quickreply: x.detail, 
+                        status: x.status || 'ACTIVO', 
+                        favorite: x.favorite || false,
+                        classificationid: x.classificationid,
+                        operation: "INSERT",
+                        type: 'NINGUNO',
+                        id: 0,
+                    }))
+                }, true));
+                setWaitSave(true)
+            }
         }
+    }
+
+    const handleTemplate = () => {
+        const data = [
+            mainResult.multiData.data[1].data.reduce((a,d) => ({...a, [d.classificationid]: d.description}), {}),
+            {false: false,true: true},
+            {},
+            {},
+            mainResult.multiData.data[0].data.reduce((a,d) => ({...a, [d.domainvalue]: d.domainvalue}), {}),
+        ];
+        const header = ['classificationid', 'favorite', 'summarize', 'detail', 'status', ];
+        exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
     if (viewSelected === "view-1") {
@@ -636,6 +654,7 @@ const Quickreplies: FC = () => {
                     loading={mainResult.mainData.loading}
                     register={true}
                     importCSV={importCSV}
+                    handleTemplate={handleTemplate}
                     handleRegister={handleRegister}
                     // fetchData={fetchData}
                     ButtonsElement={()=>

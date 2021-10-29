@@ -1,15 +1,17 @@
 import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
 import { Dictionary } from "@types";
 import { getCommChannelLst, getdashboardPushHSMCATEGORYRANKSel, getdashboardPushHSMRANKSel, getdashboardPushMENSAJEXDIASel, getdashboardPushSUMMARYSel, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, DialogZyx, FieldMultiSelect } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
 import { Range } from 'react-date-range';
+import ChatIcon from '@material-ui/icons/Chat';
+import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Scatter, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { getMultiCollection, getMultiCollectionAux, resetMain } from "store/main/actions";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 
@@ -228,6 +230,7 @@ const DashboardOperationalPush: FC = () => {
                 dataAsesor: asesor
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
 
     }, [dataPushSUMMARYSel])
     useEffect(() => {
@@ -246,6 +249,7 @@ const DashboardOperationalPush: FC = () => {
                 setWaitSave(false);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [remultiaux, waitSave])
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
@@ -257,6 +261,7 @@ const DashboardOperationalPush: FC = () => {
             setdataLabel(multiData[4] && multiData[4].success ? multiData[4].data : []);
             setdatacategoriaHSM(multiData[5] && multiData[5].success ? multiData[5].data : []);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResult])
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -271,6 +276,7 @@ const DashboardOperationalPush: FC = () => {
         return () => {
             dispatch(resetMain());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     return (
         <Fragment>
@@ -414,6 +420,7 @@ const DashboardOperationalPush: FC = () => {
                         style={{ backgroundColor: "#53a6fa", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <ChatIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle}>{t(langKeys.closedbyadviser)}</div>
                             <div className={classes.boxtitledata}>{dataSummary.dataAsesor}</div>    
                         </div>            
@@ -423,6 +430,7 @@ const DashboardOperationalPush: FC = () => {
                         style={{ backgroundColor: "#fdab29", display: 'flex', flex: 1, gap: 8 }}
                     >
                         <div className={classes.containerFieldsQuarter}>
+                            <AdbIcon style={{color:"white",margin: "3px 5px"}}/>
                             <div className={classes.boxtitle}>{t(langKeys.closedbybot)}</div>
                             <div className={classes.boxtitledata}>{dataSummary.dataBot}</div>    
                         </div>            
@@ -432,16 +440,17 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle}  style={{ width:"100%"}}> Distribution by category HSM</div>
+                        <div className={classes.boxtitle}  style={{ width:"100%"}}>{t(langKeys.distributionbycategoryHSM)}</div>
                         <div style={{ width: "100%", height: 240 }} >
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.3}>
                                 <PieChart>
                                     <Tooltip />
-                                    <Pie data={dataHSMCATEGORYRANK} dataKey="quantity" nameKey="categoria" cx="50%" cy="50%" innerRadius={60} fill="#8884d8">
+                                    <Pie data={dataHSMCATEGORYRANK} dataKey="quantity" nameKey="categoria" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
                                         {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
+                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
@@ -456,7 +465,7 @@ const DashboardOperationalPush: FC = () => {
                                 <YAxis />
                                 <Tooltip />
                                 <Bar dataKey="quantity" fill="#8884d8" >
-                                    {dataHSMCATEGORYRANK.map((entry: any, index: number) => (
+                                    {dataHSMRANK.map((entry: any, index: number) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Bar>
@@ -469,7 +478,7 @@ const DashboardOperationalPush: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.boxtitle}>Messages by day </div>
+                        <div className={classes.boxtitle}>{t(langKeys.messagesbyday)}</div>
                         <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>
                             <ComposedChart
                                 data={dataMENSAJEXDIA}

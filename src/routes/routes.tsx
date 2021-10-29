@@ -1,13 +1,14 @@
 import { RouteConfig } from "@types";
 import paths from "common/constants/paths";
 import {
-    DashboardIcon, TicketIcon, ReportsIcon, EMailInboxIcon, MessageInboxIcon, BillingSetupIcon, SupervisorIcon, OrganizationIcon, ConfigurationIcon, ExtrasIcon,
+    DashboardIcon, TicketIcon, ReportsIcon, MessageInboxIcon, SupervisorIcon, ConfigurationIcon, ExtrasIcon,
     BotDesignerIcon,
     IAServicesIcon,
     OutboundIcon,
     MessageTemplateIcon,
-    AIModelsIcon
-
+    AIModelsIcon,
+    ClientIcon,
+    CRMIcon
 } from 'icons';
 import { langKeys } from "lang/keys";
 import { Trans } from "react-i18next";
@@ -27,13 +28,13 @@ export const routes: RouteConfig[] = [
         path: paths.REPORTS,
         icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
     },
-    {
-        key: paths.REPORTDESIGNER,
-        description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes
-        tooltip: <Trans i18nKey={langKeys.report_designer} count={2} />,
-        path: paths.REPORTDESIGNER,
-        icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
-    },
+    // {
+    //     key: paths.REPORTDESIGNER,
+    //     description: <Trans i18nKey={langKeys.report_designer} count={2} />, // prop:count for plural purposes
+    //     tooltip: <Trans i18nKey={langKeys.report_designer} count={2} />,
+    //     path: paths.REPORTDESIGNER,
+    //     icon: (className) => <ReportsIcon style={{ width: 22, height: 22 }} className={className} />,
+    // },
     {
         key: paths.TICKETS,
         description: <Trans i18nKey={langKeys.ticket} count={2} />,
@@ -46,7 +47,7 @@ export const routes: RouteConfig[] = [
         description: <Trans i18nKey={langKeys.person} count={2} />,
         tooltip: <Trans i18nKey={langKeys.person} count={2} />,
         path: paths.PERSON,
-        icon: (className) => <ExtrasIcon style={{ width: 22, height: 22 }} className={className} />,
+        icon: (className) => <ClientIcon style={{ width: 22, height: 22 }} className={className} />,
     },
     // {
     //     key: paths.EMAIL_INBOX,
@@ -93,11 +94,11 @@ export const routes: RouteConfig[] = [
         path: paths.CONFIGURATION,
         icon: (className) => <ConfigurationIcon style={{ width: 22, height: 22 }} className={className} />,
     },
-    {
-        key: 'outbound-messages-label',
-        description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
-    },
+    // {
+    //     key: 'outbound-messages-label',
+    //     description: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
+    //     tooltip: <Trans i18nKey={langKeys.outboundMessage} count={2} />,
+    // },
     {
         key: paths.MESSAGETEMPLATE,
         description: <Trans i18nKey={langKeys.messagetemplate} count={2} />,
@@ -120,10 +121,17 @@ export const routes: RouteConfig[] = [
         icon: (className) => <BotDesignerIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     {
-        key: 'ia-services-label',
-        description: <Trans i18nKey={langKeys.iaservices} count={2} />,
-        tooltip: <Trans i18nKey={langKeys.iaservices} count={2} />,
+        key: paths.VARIABLECONFIGURATION,
+        description: <Trans i18nKey={langKeys.variableconfiguration_plural} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.variableconfiguration} />,
+        path: paths.VARIABLECONFIGURATION,
+        icon: (color) => <ExtrasIcon stroke={color} fill={color} />,
     },
+    // {
+    //     key: 'ia-services-label',
+    //     description: <Trans i18nKey={langKeys.iaservices} count={2} />,
+    //     tooltip: <Trans i18nKey={langKeys.iaservices} count={2} />,
+    // },
     {
         key: paths.INTELLIGENTMODELS,
         description: <Trans i18nKey={langKeys.iaModel} count={2} />,
@@ -137,6 +145,13 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.ia} />,
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
+    {
+        key: paths.CRM,
+        description: 'CRM',
+        tooltip: 'CRM',
+        path: paths.CRM,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,

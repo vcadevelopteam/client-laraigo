@@ -12,11 +12,17 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import ItemTicket from 'components/inbox/Ticket'
 import ChatPanel from 'components/inbox/ChatPanel'
 import InfoPanel from 'components/inbox/InfoPanel'
-import { resetGetTickets, getTickets, selectTicket, getDataTicket } from 'store/inbox/actions';
+import DrawerFilter from 'components/inbox/DrawerFilter'
+import { resetGetTickets, getTickets, selectTicket, getDataTicket, setIsFiltering } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import { ListItemSkeleton } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import Tooltip from '@material-ui/core/Tooltip';
+import { FixedSizeList } from 'react-window';
+import AutoSizer from 'react-virtualized-auto-sizer';
+import ClearIcon from '@material-ui/icons/Clear';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -26,10 +32,6 @@ const useStyles = makeStyles((theme) => ({
     titleTicketChat: {
         fontWeight: 'bold',
         fontSize: 15,
-        // '&:hover': {
-        //     cursor: 'pointer',
-        //     borderBottom: '1px solid #2E2C34'
-        // }
     },
     interactionAgent: {
         marginLeft: 'auto'
@@ -37,6 +39,10 @@ const useStyles = makeStyles((theme) => ({
     groupInteractionAgent: {
         marginLeft: 'auto',
         display: 'flex'
+    },
+    interactionFromPost: {
+        display: 'flex',
+        gap: 8
     },
     containerTickets: {
         flex: '0 0 300px',
@@ -66,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
         fontStyle: 'normal',
         fontWeight: 'normal',
         display: 'flex',
-        // gap: theme.spacing(1),
+        gap: theme.spacing(.5),
     },
     containerPostback: {
         width: 200,
@@ -116,7 +122,7 @@ const useStyles = makeStyles((theme) => ({
         width: 'fit-content',
         borderRadius: 12,
         borderBottomLeftRadius: 0,
-        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(.7)}px ${theme.spacing(1)}px`,
+        padding: `${theme.spacing(.5)}px ${theme.spacing(1)}px ${theme.spacing(1)}px ${theme.spacing(1)}px`,
         position: 'relative',
         maxWidth: 480,
         backgroundColor: '#FFF',
@@ -278,7 +284,6 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
-        // padding: theme.spacing(1)
     },
     headerQuickReply: {
         fontSize: 14,
@@ -304,7 +309,21 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: '#bd95d7',
             fontWeight: 500
         }
-    }
+    },
+    titleFilter: {
+        fontSize: 15,
+        fontWeight: 500
+    },
+    containerDrawer: {
+        width: 300,
+        padding: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: theme.spacing(2),
+    },
+    itemFilter: {
+        flex: 1,
+    },
 }));
 
 const filterAboutStatusName = (data: ITicket[], page: number, searchName: string): ITicket[] => {
@@ -315,10 +334,10 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 1 && searchName === "") {
-        return data.filter(item => item.isAnswered);
+        return data
     }
     if (page === 1 && searchName !== "") {
-        return data.filter(item => item.isAnswered && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
         return data.filter(item => item.status === "PAUSADO");
@@ -337,9 +356,11 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const [dataTickets, setDataTickets] = useState<ITicket[]>([])
     const [ticketsToShow, setTicketsToShow] = useState<ITicket[]>([]);
     const [search, setSearch] = useState("");
-
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const ticketList = useSelector(state => state.inbox.ticketList);
+    const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const isFiltering = useSelector(state => state.inbox.isFiltering);
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
@@ -369,10 +390,34 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
         return () => setTicketsToShow(dataTickets)
     }, [pageSelected, search])
 
+    const RenderRow = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketsToShow[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketsToShow]
+    )
+
+    const RenderRowFilterd = React.useCallback(
+        ({ index, style }) => {
+            const item = ticketFilteredList.data[index]
+            return (
+                <div style={style}>
+                    <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />
+                </div>
+            )
+        },
+        [ticketFilteredList.data]
+    )
+
     return (
         <div className={classes.containerTickets}>
             <div style={{ display: 'flex', width: '100%', borderBottom: '1px solid #EBEAED' }}>
-                {!showSearch ?
+                {!showSearch && !isFiltering ?
                     <>
                         <Tabs
                             value={pageSelected}
@@ -383,12 +428,14 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             onChange={(_, value) => setPageSelected(value)}
                         >
                             <AntTab label={t(langKeys.assigned)} />
-                            <AntTab label={t(langKeys.pending)} />
+                            <AntTab label={t(langKeys.all)} />
                             <AntTab label={t(langKeys.paused)} />
                         </Tabs>
-                        <IconButton style={{ width: '50px' }} size="small" onClick={() => setShowSearch(true)} edge="end">
-                            <SearchIcon />
-                        </IconButton>
+                        <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
+                            <IconButton size="small" onClick={() => setShowSearch(true)}>
+                                <SearchIcon />
+                            </IconButton>
+                        </div>
                     </>
                     :
                     <TextField
@@ -396,12 +443,34 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         fullWidth
                         autoFocus
                         style={{ margin: '8px 10px' }}
-                        onBlur={() => !search && setShowSearch(false)}
+                        onBlur={() => {
+                            setTimeout(() => {
+                                !search && setShowSearch(false)
+                            }, 200);
+                        }}
+                        placeholder={t(langKeys.search_inbox)}
                         onChange={onChangeSearchTicket}
                         InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    {isFiltering &&
+                                        <Tooltip title={t(langKeys.clean) + ""} arrow>
+                                            <IconButton size="small" onClick={() => dispatch(setIsFiltering(false))}>
+                                                <ClearIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    }
+                                    <Tooltip title={t(langKeys.advance_search) + ""} arrow>
+                                        <IconButton size="small" onClick={() => setDrawerOpen(true)}>
+                                            <FilterListIcon />
+                                        </IconButton>
+                                    </Tooltip>
+
+                                </InputAdornment>
+                            ),
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton>
+                                    <IconButton size="small">
                                         <SearchIcon />
                                     </IconButton>
                                 </InputAdornment>
@@ -410,11 +479,61 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                     />
                 }
             </div>
-            <div style={{ overflowY: 'auto' }}>
-                {ticketList.loading ? <ListItemSkeleton /> :
-                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
+            <div style={{ height: '100%', overflowY: 'hidden' }}>
+                {
+                    isFiltering ?
+                        <>
+                            <div style={{ fontWeight: 500, padding: 8, fontSize: 15, borderBottom: '1px solid rgb(235, 234, 237)' }}>
+                                {t(langKeys.search_result)}
+                            </div>
+                            {ticketFilteredList.loading ?
+                                <ListItemSkeleton />
+                                :
+                                (ticketFilteredList.data.length === 0 ?
+                                    <div style={{ padding: 8 }}>
+                                        {t(langKeys.without_result)}
+                                    </div>
+                                    :
+                                    <AutoSizer>
+                                        {({ height, width }: any) => (
+                                            <FixedSizeList
+                                                width={width}
+                                                height={height}
+                                                itemCount={ticketFilteredList.data.length}
+                                                itemSize={97}
+                                            >
+                                                {RenderRowFilterd}
+                                            </FixedSizeList>
+                                        )}
+                                    </AutoSizer>
+                                )
+
+                            }
+                        </>
+                        : (ticketList.loading ? <ListItemSkeleton /> :
+                            <AutoSizer>
+                                {({ height, width }: any) => (
+                                    <FixedSizeList
+                                        width={width}
+                                        height={height}
+                                        itemCount={ticketsToShow.length}
+                                        itemSize={97}
+                                    >
+                                        {RenderRow}
+                                    </FixedSizeList>
+                                )}
+                            </AutoSizer>
+                        )
                 }
+                {/* {ticketList.loading ? <ListItemSkeleton /> :
+                    ticketsToShow.map((item) => <ItemTicket key={item.conversationid} classes={classes} item={item} setTicketSelected={setTicketSelected} />)
+                } */}
             </div>
+            <DrawerFilter
+                drawerOpen={drawerOpen}
+                setDrawerOpen={setDrawerOpen}
+                classes={classes}
+            />
         </div>
     )
 }
@@ -432,7 +551,7 @@ const InboxPanel: React.FC<{ userType: "AGENT" | "SUPERVISOR" }> = ({ userType }
             />
             {ticketSelected &&
                 <>
-                    <ChatPanel ticket={ticketSelected} classes={classes} />
+                    <ChatPanel classes={classes} />
                     {showInfoPanel &&
                         <InfoPanel />
                     }

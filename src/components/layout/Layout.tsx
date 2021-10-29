@@ -11,6 +11,7 @@ import Popus from 'components/layout/Popus';
 
 const drawerWidth = 240;
 const drawerWidthCompressed = 73;
+const headerHeight = 54;
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,6 +24,8 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.leavingScreen,
         }),
         background: theme.palette.secondary.light,
+        minHeight: headerHeight,
+        height: headerHeight,
     },
     appBarShift: {
         marginLeft: drawerWidth,
@@ -31,7 +34,14 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
-        // border: '#EBEAED solid 1px',
+    },
+    appBarShift2: {
+        width: '100%',
+        transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        zIndex: theme.zIndex.drawer + 3,
     },
     menuButton: {
         marginRight: 36,
@@ -43,11 +53,11 @@ const useStyles = makeStyles((theme) => ({
         flexShrink: 0,
         whiteSpace: 'nowrap',
         color: theme.palette.text.primary,
+        borderColor: 'none',
     },
     drawerPaper: {
         width: drawerWidth,
         backgroundColor: theme.palette.secondary.light,
-        borderColor: '#EBEAED',
     },
     drawerLabel: {
         margin: '8px 20px;',
@@ -79,6 +89,7 @@ const useStyles = makeStyles((theme) => ({
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        border: 'none',
     },
     drawerClose: {
         transition: theme.transitions.create('width', {
@@ -90,6 +101,7 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9) + 1,
         },
+        border: 'none',
         backgroundColor: "#7721AD",
         zIndex: 1202,
     },
@@ -116,10 +128,19 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: theme.spacing(0, 1),
+        padding: theme.spacing(0, 1.5),
+        stroke: '#8F92A1',
+        fill: '#8F92A1',
+        backgroundColor: 'white',
+        height: headerHeight,
+        minHeight: headerHeight,
         // necessary for content to be below app bar
-        ...theme.mixins.toolbar,
+        // ...theme.mixins.toolbar,
+    },
+    toolbarClosed: {
+        // justifyContent: 'center',
+        stroke: 'white',
+        fill: 'white',
     },
     toolbar2: {
         display: 'flex',
@@ -185,9 +206,9 @@ const useStyles = makeStyles((theme) => ({
         flex: 1,
         // padding: theme.spacing(2),
         display: 'flex',
-        height: 'calc(100vh - 64px)',
-        minHeight: 'calc(100vh - 64px)',
-        maxHeight: 'calc(100vh - 64px)',
+        height: 'calc(100vh - 54px)',
+        minHeight: 'calc(100vh - 54px)',
+        maxHeight: 'calc(100vh - 54px)',
         // height: '100%'
     },
 }));
@@ -196,7 +217,6 @@ interface LayoutProps {
     mainClasses?: string;
 }
 
-/** Authorized layout */
 const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
     const theme = useTheme();
     const classes = useStyles(theme);
@@ -217,6 +237,7 @@ const Layout: FC<LayoutProps> = ({ children, mainClasses }) => {
                             routes={routes}
                             classes={classes}
                             theme={theme}
+                            headerHeight={headerHeight}
                         />
                         <main className={classes.content}>
                             <div className={classes.toolbar} />

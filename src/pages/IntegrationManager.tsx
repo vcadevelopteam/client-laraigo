@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -113,7 +113,7 @@ const dataLevel: Dictionary = {
     ORGANIZATION: 'organization',
 }
 
-const dataLevelKeys = ['corpid','orgid'];
+const dataLevelKeys = ['corpid','orgid','status'];
 
 const IntegrationManager: FC = () => {
     const dispatch = useDispatch();
@@ -324,7 +324,9 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             parameters: row ? (row.parameters || []) : [],
             variables: row ? (row.variables || []) : [],
             level: row ? (row.level || 'CORPORATION') : 'CORPORATION',
-            fields: row ? (row.fields || [{name: 'corpid', key: true}]) : [{name: 'corpid', key: true}],
+            fields: row
+            ? (row.fields || [{name: 'corpid', key: true}, {name: 'status', key: false}])
+            : [{name: 'corpid', key: true}, {name: 'status', key: false}],
             operation: row ? "EDIT" : "INSERT",
         }
     });
@@ -339,13 +341,18 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         name: "parameters",
     });
 
-    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate, insert: fieldsInsert } = useFieldArray({
+    const { fields, append: fieldsAppend, remove: fieldsRemove, update: fieldsUpdate } = useFieldArray({
         control,
         name: "fields",
     });
 
     React.useEffect(() => {
-        register('name', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
+        register('name', {
+            validate: {
+                value: (value: any) => (value && value.length) || t(langKeys.field_required),
+                basiclatin: (value: any) => getValues('type') !== 'CUSTOM' || validateBasicLatinFieldName(value) || t(langKeys.field_basiclatinlowercase),
+            }
+        });
         register('type', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
         register('method', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -379,8 +386,17 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
             }
             data.variables = v;
         }
-        else if (data.type === 'CUSTOM') {
-            data.url = `${apiUrls.INTEGRATION_URL}/integration_${user?.orgdesc?.toLowerCase()}_${data.name.toLowerCase()}`
+        else if (data.isnew && data.type === 'CUSTOM') {
+            if (data.fields.filter(d => !dataLevelKeys.includes(d.name) && d.key === true).length === 0) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.field_key_required) }))
+                return null;
+            }
+            let rex1 = new RegExp(/[^0-9a-zA-Z\s-_]/,'g');
+            let rex2 = new RegExp(/[\s-]/,'g');
+            let corpdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
+            let orgdesc = (user?.corpdesc || '').replace(rex1, '_').replace(rex2, '_').toLowerCase();
+            let name = data.name.replace(rex1, '').replace(rex2, '_').toLowerCase();
+            data.url = `${apiUrls.INTEGRATION_URL}/integration_${corpdesc}_${orgdesc}_${name}`;
         }
         
         const callback = () => {
@@ -477,18 +493,19 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         setValue('level', data?.key || '');
         await trigger('level');
         if (data?.key === 'CORPORATION') {
-            if (fields.findIndex(x => x.name === 'corpid') === -1) {
-                fieldsInsert(0, {name: 'corpid', key: true});
-            }
-            fieldsRemove(fields.findIndex(x => x.name === 'orgid'));
+            setValue('fields', [
+                { name: 'corpid', key: true },
+                { name: 'status', key: false },
+                ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
+            ])
         }
         if (data?.key === 'ORGANIZATION') {
-            if (fields.findIndex(x => x.name === 'corpid') === -1) {
-                fieldsInsert(0, {name: 'corpid', key: true});
-            }
-            if (fields.findIndex(x => x.name === 'orgid') === -1) {
-                fieldsInsert(1, {name: 'orgid', key: true});
-            }
+            setValue('fields', [
+                { name: 'corpid', key: true },
+                { name: 'orgid', key: true },
+                { name: 'status', key: false },
+                ...getValues('fields').filter(f => !dataLevelKeys.includes(f.name))
+            ])
         }
     }
 
@@ -505,7 +522,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     }
 
     const disableKeys = (field: FieldType, i: number) => {
-        if (dataLevelKeys.includes(field?.name) && [0,1].includes(i)) {
+        if (dataLevelKeys.includes(field?.name)) {
             return true;
         }
         else if (dataKeys.has(field?.id) && !getValues('isnew')) {
@@ -546,6 +563,39 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         dispatch(resetRequest());
     }
 
+    const onClickInfo = () => {
+        downloadJson("info",
+            {
+                "url": `${getValues('url')}/{operation}`,
+                "insert_one": {
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
+                },
+                "insert_many": {
+                    "data": [
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
+                        fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data2`)}), {})
+                    ]
+                },
+                "update": {
+                    "data": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data2`)}), {}),
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
+                },
+                "remove": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {})
+                },
+                "find_one": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
+                    "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {})
+                },
+                "find_many": {
+                    "filter": fields.reduce((a, d) => ({...a, [d.name]: d.name === 'corpid' ? user?.corpid : (d.name === 'orgid' ? user?.orgid : `${d.name}_data1`)}), {}),
+                    "sort": fields.reduce((a, d) => ({...a, [d.name]: "asc"}), {}),
+                    "limit": 10
+                }
+            }
+        );
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -568,6 +618,15 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             style={{ backgroundColor: "#7721AD" }}
                             onClick={() => onClickTest()}
                         >{t(langKeys.test)}</Button>
+                        }
+                        {getValues('type') === 'CUSTOM' &&
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            style={{ backgroundColor: "#7721AD" }}
+                            onClick={() => onClickInfo()}
+                        >{t(langKeys.info)}</Button>
                         }
                         <Button
                             variant="contained"

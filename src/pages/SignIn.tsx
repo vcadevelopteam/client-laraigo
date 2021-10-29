@@ -24,6 +24,7 @@ import { langKeys } from 'lang/keys';
 import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
+import { connectAgentUI } from 'store/inbox/actions';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -139,8 +140,8 @@ const SignIn = () => {
 
     useEffect(() => {
         if (!resLogin.error && resLogin.user && getAccessToken()) {
-            //redirect to page tickets
-            history.push(resLogin.user.redirect?resLogin.user.redirect:"/supervisor");
+            dispatch(connectAgentUI(resLogin.user.automaticConnection!!))
+            history.push(resLogin.user.redirect ? resLogin.user.redirect : "/supervisor");
         }
     }, [resLogin]);
 

@@ -3,8 +3,7 @@ import { BoxProps, makeStyles, Box, Grid, IconButton } from '@material-ui/core';
 import { Title } from 'components';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
-import { Facebook } from '@material-ui/icons';
-import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, OrganizationIcon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
+import { ChannelsIcon, ClassificationIcon, ConfigPropertiesIcon, DomainsIcon, EditPencilIcon, EmojiSadFaceIcon, ForbiddenWordsIcon, WhitelistIcon, IntegrationIcon, SLAIcon, InfoRoundedIcon, Corporation2Icon, OrganizationsIcon, QuickReplyIcon, UserGroupIcon } from 'icons';
 import { useDispatch } from 'react-redux';
 import { getPropertySettings, getSetting, resetGetPropertySettings, resetGetSetting } from 'store/setting/actions';
 import { getCountConfigurationsBody, getPropertyConfigurationsBody } from 'common/helpers';
@@ -364,7 +363,7 @@ const Settings: FC = () => {
                                 <ItemTile
                                     title={<Trans i18nKey={langKeys.corporation} count={2} />}
                                     subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
-                                    icon={<OrganizationIcon />}
+                                    icon={<Corporation2Icon />}
                                     helpText={
                                         <HelpText
                                             i18nKey={langKeys.manageCorporation}

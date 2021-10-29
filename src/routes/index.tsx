@@ -5,13 +5,12 @@ import Popus from 'components/layout/Popus';
 import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
-	Reports, ReportTemplate, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,
-	Corporations, Settings, Dashboard
+	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
-import { ExtrasLayout } from "components";
 import { makeStyles } from "@material-ui/core";
 import { useSelector } from 'hooks';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -40,6 +39,8 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
+	const resLogin = useSelector(state => state.login.login);
+
 	const applications = resValidateToken?.user?.menu;
 	const location = useLocation();
 
@@ -53,8 +54,9 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
+			const automaticConnection = resLogin.user?.automaticConnection || false;
 			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM' }));
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
 		}
 	}, [resValidateToken])
 
@@ -70,7 +72,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -88,18 +90,20 @@ const RouterApp: FC = () => {
 			<Switch>
 				<ProtectRoute exact path="/" />
 				<Route exact path={paths.SIGNIN} component={SignIn} />
-				<Route exact path={paths.SIGNUP} component={SignUp} />
+				<Route exact path={paths.SIGNUP.path} component={SignUp} />
+				<Route exact path={paths.PRIVACY} component={Privacy} />
+				<Route exact path={paths.ACTIVATE_USER.path} component={ActivateUser} />
 
 				<ProtectRoute exact path={paths.REPORTS}>
 					<Layout mainClasses={classes.main}>
 						<Reports />
 					</Layout>
 				</ProtectRoute>
-				<ProtectRoute exact path={paths.REPORTDESIGNER}>
+				{/* <ProtectRoute exact path={paths.REPORTDESIGNER}>
 					<Layout mainClasses={classes.main}>
 						<ReportTemplate />
 					</Layout>
-				</ProtectRoute>
+				</ProtectRoute> */}
 				<ProtectRoute exact path={paths.TICKETS}>
 					<Layout mainClasses={classes.main}>
 						<Tickets />
@@ -117,7 +121,7 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_CHATWEB}>
 					<Layout mainClasses={classes.main}>
-						<ChannelAddChatWeb />
+						<ChannelAddChatWeb edit={false} />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_FACEBOOK.path}>
@@ -133,6 +137,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddInstagram />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_INSTAGRAMDM.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddInstagramDM />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
@@ -153,6 +162,26 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TWITTERDM.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddTwitterDM />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_IOS.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddIos />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_ADD_ANDROID.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddAndroid />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_EDIT.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelEdit />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddChatWeb edit />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CORPORATIONS}>
@@ -194,6 +223,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.WHITELIST}>
 					<Layout mainClasses={classes.main}><Whitelist /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.USERSETTINGS}>
+					<Layout mainClasses={classes.main}><UserSettings /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.INAPPROPRIATEWORDS}>
 					<Layout mainClasses={classes.main}><InappropriateWords /></Layout>
@@ -241,6 +273,15 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CONFIGURATION}>
 					<Layout mainClasses={classes.main}><Settings /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM}>
+					<Layout mainClasses={classes.main}><CRM /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_ADD_LEAD.path}>
+					<Layout mainClasses={classes.main}><LeadForm /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
+					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />

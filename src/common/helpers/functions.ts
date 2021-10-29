@@ -88,6 +88,19 @@ export function downloadCSV(filename: string, data: Dictionary[]) {
     }
 }
 
+export const downloadJson = (filename: string, data: any) => {
+    const blob = new Blob([JSON.stringify(data, null, 4)], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        var url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
 export function uploadCSV(file: any, owner: any = {}) {
     var reader = new FileReader();
     reader.readAsText(file);
@@ -100,20 +113,14 @@ export function uploadCSV(file: any, owner: any = {}) {
                 let lines = [];
                 for (let i = 1; i < allTextLines.length; i++) {
                     if (allTextLines[i].split(';').length === headers.length) {
-                        // let data = { };
-                        // Object.keys(owner).forEach(o => {
-                        //     data[o] = owner[o];
-                        // });
-                        // let line = allTextLines[i].split(';')
-                        // headers.forEach((h: string, hi: string) => {
-                        //     data[h] = line[hi];
-                        // })
-                        // lines.push(data);
                         const line = allTextLines[i].split(';')
-                        const data = headers.map((key: any, j: number) => ({
-                            ...owner,
-                            [key]: line[j]
-                        }))
+                        const data = {
+                            ...headers.reduce((ad: any, key: any, j: number) => ({
+                                ...ad,
+                                [key]: line[j]
+                            }), {}),
+                            ...owner
+                        }
                         lines.push(data)
                     }
                 }
@@ -217,6 +224,39 @@ export const capitalize = (text: string) => {
     return text.charAt(0).toUpperCase() + lower.slice(1);
 }
 
+export const object_trimmer = (data: any) => {
+    if (!data) {
+        return Object.keys(data).reduce((k, v) => (
+            {
+                ...k,
+                [v]: typeof data[v] === 'string' ? data[v]?.trim() : data[v]
+            }
+        ), {})
+    }
+    else {
+        return {};
+    }
+}
+
+export const array_trimmer = (data: any[]) => {
+    if (Array.isArray(data)) {
+        return data.reduce((a: any[], e: any) => (
+            [
+                ...a,
+                Object.keys(e).reduce((k, v) => (
+                    {
+                        ...k,
+                        [v]: typeof e[v] === 'string' ? e[v]?.trim() : e[v]
+                    }
+                ), {})
+            ]
+        ), []);
+    }
+    else {
+        return [];
+    }
+}
+
 export const randomInterval = (min: number, max: number) => { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -242,4 +282,19 @@ export const randomText = (length = 8, use_upper = false, use_number = false, us
         r.push(c);
         return r;
     }, []).join('');
+}
+
+export const templateMaker = (data: any[], header: string[]) => {
+    const max = Math.max(...data.map((d: Dictionary) => Object.keys(d).length));
+    let temp: any[] = new Array(max).fill(0).map(() => ({}));
+    for (let i = 0; i < max; i++) {
+        header.forEach((d, j) => {
+            let datakey = Object.keys(data[j] || {})[i];
+            if (datakey === data[j][datakey])
+                temp[i][d] = Object.keys(data[j] || {})[i]
+            else
+                temp[i][d] = `${datakey} - ${data[j][datakey]}`
+        })
+    }
+    return temp;
 }

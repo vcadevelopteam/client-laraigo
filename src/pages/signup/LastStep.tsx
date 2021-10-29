@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC ,useEffect,useState} from "react";
-import { makeStyles, Button, TextField} from '@material-ui/core';
+import { makeStyles, Button} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 
@@ -8,6 +8,9 @@ import { useSelector } from 'hooks';
 import { useDispatch } from "react-redux";
 
 import { executeSubscription } from "store/signup/actions";
+import { useHistory } from "react-router-dom";
+import { getMultiCollectionPublic } from "store/main/actions";
+import {  FieldSelect } from "components";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -38,12 +41,29 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void}> = ({mainData,requestchannels,setSnackbar,setBackdrop}) => {
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
+    const history = useHistory();
     const dispatch = useDispatch();
+    const planData = useSelector(state => state.signup.verifyPlan)
     const [waitSave, setWaitSave] = useState(false);
-    const [disablebutton, setDisablebutton] = useState(false);
+    const [industryList, setindustryList] = useState<any>([]);
+    const [companySizeList, setcompanySizeList] = useState<any>([]);
+    const [roleList, setroleList] = useState<any>([]);
+    // const [disablebutton, setDisablebutton] = useState(false);
+    const multiResult = useSelector(state => state.main.multiData.data);
     const mainResult = useSelector(state => state.signup.channelList)
-    const executeResult = useSelector(state => state.signup.successinsert)
-    
+    const executeResult = useSelector(state => state.signup.insertChannel)
+    useEffect(() => {
+        dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));
+    }, []);
+    useEffect(() => {
+        if(multiResult.length){
+            setindustryList(multiResult[0].data)
+            setcompanySizeList(multiResult[1].data)
+            setroleList(multiResult[2].data)
+        }
+    }, [multiResult]);
+
+
     const [lastfields, setLastFields] = useState({
         industry: "",
         companysize: "",
@@ -62,32 +82,32 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 docnumber: "",
                 organizationname: mainData.companybusinessname,
                 phone: mainData.mobilephone,
-                sales: mainData.sales,
-                customerservice: mainData.customerservice,
-                marketing: mainData.marketing,
+                join_reason: mainData.join_reason,
                 facebookid: mainData.facebookid,
                 googleid: mainData.googleid,
                 industry: lastfields.industry,
                 companysize: lastfields.companysize,
                 rolecompany: lastfields.companyrole,
+                paymentplanid: planData.data[0].paymentplanid
             },
             channellist: requestchannels
         }
-        setBackdrop(true)
+        // setBackdrop(true)
         setWaitSave(true);
-        setDisablebutton(true);
+        // setDisablebutton(true);
         dispatch(executeSubscription(majorfield))
     }
     useEffect(() => {
         if (waitSave) {
-            if (!mainResult.loading && !mainResult.error) {
+            if (!executeResult.loading && !executeResult.error) {
                 setBackdrop(false)
-                setSnackbar({ state: true, success: true, message: t(langKeys.successful_register) })
+                setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
+                history.push('../sign-in')
                 setWaitSave(false);
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
                 setSnackbar({ state: true, success: false, message: errormessage })
-                setBackdrop(false)
+                // setBackdrop(false)
                 setWaitSave(false);
             }
         }
@@ -101,29 +121,44 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             </div>
             
             <div style={{padding:"20px"}}>
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
+                <FieldSelect    
+                    uset={true} 
+                    style={{marginBottom: "20px"}}
+                    variant="outlined" 
                     label={t(langKeys.industry)}
-                    name="industry"
-                    onChange={(e) => {setLastFields((p:any) =>({...p,industry:e.target.value}))}}
+                    className="col-12"
+                    valueDefault={lastfields.industry}
+                    onChange={(e) => {setLastFields((p:any) =>({...p,industry:e?.domainvalue||""}))}}
+                    data={industryList}
+                    prefixTranslation="industry_"
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
+                <FieldSelect     
+                    uset={true} 
+                    style={{marginBottom: "20px"}}
+                    variant="outlined" 
                     label={t(langKeys.companysize)}
-                    name="companysize"
-                    onChange={(e) => {setLastFields((p:any) =>({...p,companysize:e.target.value}))}}
+                    className="col-12"
+                    valueDefault={lastfields.companysize}
+                    onChange={(e) => {setLastFields((p:any) =>({...p,companysize:e?.domainvalue||""}))}}
+                    data={companySizeList}
+                    prefixTranslation="companysize_"
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
-                <TextField
-                    variant="outlined"
-                    margin="normal"
-                    fullWidth
+                <FieldSelect     
+                    uset={true} 
+                    style={{marginBottom: "20px"}}
+                    variant="outlined" 
                     label={t(langKeys.roleincompany)}
-                    name="roleincompany"
-                    onChange={(e) => {setLastFields((p:any) =>({...p,companyrole:e.target.value}))}}
+                    className="col-12"
+                    valueDefault={lastfields.companyrole}
+                    onChange={(e) => {setLastFields((p:any) =>({...p,companyrole:e?.domainvalue||""}))}}
+                    data={roleList}
+                    prefixTranslation="companyrole_"
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <div >
                     <Button
@@ -131,7 +166,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                         className={classes.button}
                         variant="contained"
                         color="primary"
-                        disabled={disablebutton}
+                        disabled={executeResult.loading}
                     >{t(langKeys.finishreg)}
                     </Button>
                 </div>

@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
-import { showBackdrop, showSnackbar } from 'store/popus/actions';
+import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, TemplateSwitch } from "components";
-import { useHistory } from "react-router";
-import paths from "common/constants/paths";
+import { FieldEdit, ColorInput, IOSSwitch } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
+import { TwitterIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -24,13 +23,12 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [waitSave, setWaitSave] = useState(false);
-    const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
+    const [enable, setenable] = useState(false);
+    const [coloricon, setcoloricon] = useState("#1D9BF0");
     const mainResult = useSelector(state => state.channel.channelList)
-    const executeResult = useSelector(state => state.channel.successinsert)
-    const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -49,6 +47,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
             "other": "",
             "form": "",
             "apikey": "",
+            "coloricon": "#1D9BF0",
         },
         "type": "TWITTER",
         "service": {
@@ -56,8 +55,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
             "consumersecret": "",
             "accesstoken": "",
             "accesssecret": "",
-            "devenvironment": "",
-            "siteid": "",
+            "devenvironment": ""
         }
     })
 
@@ -65,22 +63,6 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
         setrequestchannels((p:any)=>([...p,fields]))
         setlistchannels((p:any)=>({...p,twitter:false}))
     }
-    useEffect(() => {
-        if (waitSave && setins) {
-            if (mainResult.loading && !mainResult.error) {
-                setsetins(false)
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-                history.push(paths.CHANNELS)
-            } else if (mainResult.error) {
-                const errormessage = t(mainResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult,waitSave])
 
     useEffect(() => {
         if (waitSave) {
@@ -115,6 +97,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                                 partialf.service.consumerkey= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumerkey}
                             label={t(langKeys.consumerapikey)}
                             className="col-6"
                         />
@@ -128,6 +111,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                                 partialf.service.consumersecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.consumersecret}
                             label={t(langKeys.consumerapisecret)}
                             className="col-6"
                         />
@@ -141,6 +125,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                                 partialf.service.accesstoken= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesstoken}
                             label={t(langKeys.authenticationtoken)}
                             className="col-6"
                         />
@@ -154,6 +139,7 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                                 partialf.service.accesssecret= value
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.accesssecret}
                             label={t(langKeys.authenticationsecret)}
                             className="col-6"
                         />
@@ -189,27 +175,14 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                         <div className="col-3"></div>
                         <FieldEdit
                             onChange={(value) => {
-                                setNextbutton2(value===""||fields.parameters.communicationchannelowner==="")
+                                setNextbutton2(value==="")
                                 let partialf = fields;
-                                partialf.service.devenvironment= value
+                                partialf.parameters.communicationchannelowner = "";
+                                partialf.service.devenvironment= value;
                                 setFields(partialf)
                             }}
+                            valueDefault={fields.service.devenvironment}
                             label={t(langKeys.devenvironment)}
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => {
-                                setNextbutton2(value===""||fields.service.devenvironment==="")
-                                let partialf = fields;
-                                partialf.service.siteid= value
-                                partialf.parameters.communicationchannelowner = value
-                                partialf.parameters.communicationchannelsite = value
-                                setFields(partialf)
-                            }}
-                            label={t(langKeys.consumerpageid)}
                             className="col-6"
                         />
                     </div>
@@ -250,11 +223,33 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
                     </div>
                     <div className="row-zyx">
                         <div className="col-3"></div>
-                        <TemplateSwitch
-                            onChange={(value) => setvalField(value)}
-                            label={t(langKeys.enablechatflow)}
-                            className="col-6"
-                        />
+                        <div className="col-6">
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                            {t(langKeys.givechannelcolor)}
+                            </Box>
+                            <div style={{display:"flex",justifyContent:"space-around", alignItems: "center"}}>
+                                <TwitterIcon style={{fill: `${coloricon}`, width: "100px" }}/>
+                                <ColorInput
+                                    hex={fields.parameters.coloricon}
+                                    onChange={e => {
+                                        setFields(prev => ({
+                                            ...prev,
+                                            parameters: { ...prev.parameters, coloricon: e.hex, color: e.hex },
+                                        }));
+                                        setcoloricon(e.hex)
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <div className="col-3"></div>
+                        <div className="col-6" style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.enablechatflow)}</Box>
+                            <FormGroup>
+                                <FormControlLabel control={<IOSSwitch onChange={(e) => {setvalField(e.target.checked);setenable(e.target.checked)}}/>} label={enable?t(langKeys.enable):t(langKeys.disabled)} />
+                            </FormGroup>
+                        </div>
                     </div>
                     <div style={{ paddingLeft: "80%" }}>
                         <Button

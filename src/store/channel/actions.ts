@@ -1,4 +1,5 @@
-import { IActionCall, IChatWebAdd, IRequestBody } from "@types";
+import { IActionCall, IChannel, IChatWebAdd, IRequestBody } from "@types";
+import { isFuture } from "date-fns";
 import { ChannelsService, CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -94,4 +95,56 @@ export const insertChannel2 = (payload: IRequestBody<IChatWebAdd>): IActionCall 
     type: null,
 });
 
-export const reserInsertChannel = () => ({type: actionTypes.INSERT_CHANNEL_RESET });
+export const resetInsertChannel = () => ({type: actionTypes.INSERT_CHANNEL_RESET });
+
+export const editChannel = (payload: IRequestBody<IChannel | IChatWebAdd>, channelType?: string): IActionCall => ({
+    callAPI: async () => {
+        if (channelType === "CHAZ") {
+            const service = payload.service as IChatWebAdd;
+            let chatIcon = service.interface.iconbutton as File | string | null;
+            let headerIcon = service.interface.iconheader as File | string | null;
+            let botIcon = service.interface.iconbot as File | string | null;
+            let bubbleIcon = service.bubble.iconbubble as File | string | null;
+
+            if (chatIcon && typeof chatIcon === "object") {
+                const fd = new FormData();
+                fd.append('file', chatIcon, chatIcon.name);
+                chatIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
+            }
+
+            if (headerIcon && typeof headerIcon === "object") {
+                const fd = new FormData();
+                fd.append('file', headerIcon, headerIcon.name);
+                headerIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
+            }
+
+            if (botIcon && typeof botIcon === "object") {
+                const fd = new FormData();
+                fd.append('file', botIcon, botIcon.name);
+                botIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
+            }
+
+            if (bubbleIcon && typeof bubbleIcon === "object") {
+                const fd = new FormData();
+                fd.append('file', bubbleIcon, bubbleIcon.name);
+                bubbleIcon = (await CommonService.uploadFile(fd)).data["url"] as string;
+            }
+
+            (payload.service as IChatWebAdd).interface.iconbutton = chatIcon;
+            (payload.service as IChatWebAdd).interface.iconheader = headerIcon;
+            (payload.service as IChatWebAdd).interface.iconbot = botIcon;
+            (payload.service as IChatWebAdd).bubble.iconbubble = bubbleIcon;
+
+            return ChannelsService.editchnl(payload);
+        }
+        return CommonService.main(payload);
+    },
+    types: {
+        loading: actionTypes.EDIT_CHANNEL,
+        failure: actionTypes.EDIT_CHANNEL_FAILURE,
+        success: actionTypes.EDIT_CHANNEL_SUCCESS,
+    },
+    type: null,
+});
+
+export const resetEditChannel = () => ({type: actionTypes.EDIT_CHANNEL_RESET });

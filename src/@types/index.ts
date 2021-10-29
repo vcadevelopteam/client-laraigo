@@ -13,3 +13,6 @@ export * from './tableconfig';
 export * from './entities/agent';
 export * from './entities/chatweb';
 export * from './entities/setting';
+export * from './entities/domain';
+export * from './entities/channel';
+export * from './entities/lead';
