@@ -183,17 +183,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Link>
             </Breadcrumbs>
             <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                <FieldEdit
-                    label={edit ? undefined : "Descripción"}
-                    className={classes.field}
-                    valueDefault={values?.description || ""}
-                    onChange={v => setValues(prev => ({ ...prev, description: v }))}
-                    InputProps={{
-                        classes: {
-                            input: classes.titleInput,
-                        },
-                    }}
-                />
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
@@ -216,21 +205,28 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     <Trans i18nKey={langKeys.save} />
                 </Button>
             </div>
-            {edit ?
+            {/* {edit ?
                 (<div className={classes.subtitle}>
                     <span className={classes.currency}>{values?.expected_revenue}</span>
                 </div>) :
                 (<FieldEdit
                     label="Expected revenue"
                     className={classes.field}
+                    type="number"
                     // valueDefault={lead.value?.expected_revenue || ""}
                     onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
                 />)
-            }
+            } */}
             <div style={{ height: '1em' }} />
             <Grid container direction="row">
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
+                        <FieldEdit
+                            label={edit ? undefined : "Descripción"}
+                            className={classes.field}
+                            valueDefault={values?.description || ""}
+                            onChange={v => setValues(prev => ({ ...prev, description: v }))}
+                        />
                         {edit ? 
                             (<FieldView
                                 label="Customer"
@@ -276,6 +272,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             freeSolo
                             options={tagsOptions.map((option) => option.title)}
                             defaultValue={[lead.value?.tags || tagsOptions[0].title]}
+                            className={classes.field}
                             onChange={onTagsChange}
                             renderInput={params => (
                                 <TextField
@@ -292,7 +289,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Grid>
                 <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
                     <Grid container direction="column">
-                        <div className={classes.field}></div>
+                        <FieldEdit
+                            label="Expected revenue"
+                            className={classes.field}
+                            type="number"
+                            valueDefault={lead.value?.expected_revenue || ""}
+                            onChange={v => setValues(prev => ({ ...prev, expected_revenue: v }))}
+                        />
                         <div className={classes.field}>
                             <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                 Expected closing
@@ -316,7 +319,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </Box>
                             <Rating
                                 name="simple-controlled"
-                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : undefined}
+                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : 1}
                                 max={3}
                                 onChange={(event, newValue) => {
                                     const priority = newValue === 1 ? 'LOW' : newValue === 2 ? 'MEDIUM' : newValue === 3 ? 'HIGH' : undefined;
@@ -341,6 +344,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 ...prev,
                 personcommunicationchannel: v.personcommunicationchannel,
                 displayname: v.displayname,
+                email: v.email as string,
+                phone: v.phone as string,
             }))}
         />
         </MuiPickersUtilsProvider>
@@ -404,6 +409,14 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
             {
                 Header: t(langKeys.name),
                 accessor: 'displayname' as keyof IPerson,
+            },
+            {
+                Header: t(langKeys.email),
+                accessor: 'email' as keyof IPerson,
+            },
+            {
+                Header: t(langKeys.phone),
+                accessor: 'phone' as keyof IPerson,
             },
         ],
         []
