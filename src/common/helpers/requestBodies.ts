@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICRmSaveLead, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1762,5 +1762,55 @@ export const insLead = ({ leadid, description, status, type, expected_revenue, d
         column_uuid,
         index,
         operation
+    }
+});
+
+export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELETE" = "INSERT"): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    key: "UFN_LEAD_INS",
+    parameters: {
+        ...lead,
+        operation: 'UPDATE',
+        corpid: null,
+        orgid: null,
+    },
+});
+
+export const getOneLeadSel = (id: string | number): IRequestBody => ({
+    method: "UFN_LEAD_SEL",
+    key: "UFN_LEAD_SEL",
+    parameters: {
+        id: id,
+        all: false
+    },
+});
+
+export const leadNotesSel = (): IRequestBody => ({
+    method: 'UFN_LEADNOTES_SEL',
+    key: "UFN_LEADNOTES_SEL",
+    parameters: {
+        leadid: 0,
+        leadnotesid: 0,
+        all: true,
+    },
+});
+
+export const adviserSel = (): IRequestBody => ({
+    method: 'UFN_ADVISERS_SEL',
+    key: "UFN_ADVISERS_SEL",
+    parameters: {},
+});
+
+//tabla paginada
+export const paginatedPersonWithoutDateSel = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_PERSONWITHOUTDATE_SEL",
+    methodCount: "UFN_PERSONWITHOUTDATE_TOTALRECORDS",
+    parameters: {
+        skip,
+        take,
+        filters,
+        sorts,
+        origin: "person",
+        offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });

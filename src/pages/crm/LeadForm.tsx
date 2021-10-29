@@ -1,0 +1,429 @@
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox } from '@material-ui/core';
+import { FieldEdit, FieldMultiSelect, FieldSelect, FieldView, Title } from 'components';
+import { langKeys } from 'lang/keys';
+import paths from 'common/constants/paths';
+import { Trans, useTranslation } from 'react-i18next';
+import { useHistory, useRouteMatch } from 'react-router';
+import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel } from 'common/helpers';
+import ClearIcon from '@material-ui/icons/Clear';
+import SaveIcon from '@material-ui/icons/Save';
+import { useDispatch } from 'react-redux';
+import { useSelector } from 'hooks';
+import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
+import { ICrmLead, IFetchData, IPerson } from '@types';
+import { showSnackbar } from 'store/popus/actions';
+import { Rating } from '@material-ui/lab';
+import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
+import TableZyx from 'components/fields/table-paginated';
+import { Add } from '@material-ui/icons';
+import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
+
+const useLeadFormStyles = makeStyles(theme => ({
+    root: {
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        color: theme.palette.text.primary,
+    },
+    subtitle: {
+        padding: '0 8px',
+        fontSize: 22,
+        fontWeight: 500,
+    },
+    currency: {
+        '&::before': {
+            content: '"S/ "',
+        },
+    },
+    field: {
+        margin: theme.spacing(1),
+        minHeight: 58,
+    },
+    titleInput: {
+        fontSize: '22px',
+        fontWeight: 'bold',
+        color: theme.palette.text.primary,
+    },
+}));
+
+export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
+    const classes = useLeadFormStyles();
+    const dispatch = useDispatch();
+    const history = useHistory();
+    const match = useRouteMatch<{ id: string, columnid: string, columnuuid: string }>();
+    const [values, setValues] = useState<ICrmLead>({
+            column_uuid: match.params.columnuuid,
+            columnid: Number(match.params.columnid) } as ICrmLead
+    );
+    const [openPersonModal, setOpenPersonmodal] = useState(false);
+    const lead = useSelector(state => state.lead.lead);
+    const advisers = useSelector(state => state.lead.advisers);
+    const saveLead = useSelector(state => state.lead.saveLead);
+    
+    const datePickerFormat = (value: string): string => {
+        // "2017-05-24T10:30"
+        if (!value) return "";
+        const [date, time] = value.split(" ");
+        const [hours, minutes] = time.split(":");
+        return `${date}T${hours}:${minutes}`;
+    }
+
+    const handleSubmit = useCallback(() => {
+        // validate edit
+        const params = edit ? { ...lead.value, ...values } : { ...values, id: 0 };
+        const body = insLead2(params, edit ? "UPDATE" : "INSERT");
+        console.log(body);
+        dispatch(saveLeadBody(body));
+        /**
+         * type
+status
+expected_revenue
+conversationid null
+username null
+index
+         */
+    }, [lead, values, dispatch]);
+
+    useEffect(() => {
+        if (edit === true) {
+            const leadId = match.params.id;
+            dispatch(getLead(getOneLeadSel(leadId)));
+        }
+
+        dispatch(getAdvisers(adviserSel()));
+
+        return () => {
+            dispatch(resetGetLead());
+            dispatch(resetSaveLead());
+            dispatch(resetGetPersonListPaginated());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (!edit) return;
+        if (lead.loading) return;
+        if (lead.error) {
+            dispatch(showSnackbar({
+                success: false,
+                message: lead.message || "Error",
+                show: true,
+            }));
+        } else if (lead.value && edit) {
+            console.log("getOneLeadSel", lead.value);
+            setValues(lead.value!);
+        }
+    }, [lead, dispatch]);
+
+    useEffect(() => {
+        if (advisers.loading) return;
+        if (advisers.error) {
+            dispatch(showSnackbar({
+                success: false,
+                message: advisers.message || "Error",
+                show: true,
+            }));
+        }
+    }, [advisers, dispatch]);
+
+    useEffect(() => {
+        if (saveLead.loading) return;
+        if (saveLead.error) {
+            dispatch(showSnackbar({
+                success: false,
+                message: saveLead.message || "Error",
+                show: true,
+            }));
+        } else if (saveLead.success) {
+            dispatch(showSnackbar({
+                success: true,
+                message: "Se guardo la oportunidad con éxito",
+                show: true,
+            }));
+            if (!edit) history.push(paths.CRM);
+        }
+    }, [saveLead]);
+
+    if (edit === true && lead.loading) {
+        return <CircularProgress />;
+    } else if (edit === true && (lead.error || !lead.value)) {
+        return <div>ERROR</div>;
+    }
+
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <div className={classes.root}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link
+                    underline="hover"
+                    color="inherit"
+                    href="/"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        history.push(paths.CRM);
+                    }}
+                >
+                    CRM
+                </Link>
+                <Link
+                    underline="hover"
+                    color="textPrimary"
+                    href={history.location.pathname}
+                    onClick={(e) => e.preventDefault()}
+                >
+                    <Trans i18nKey={langKeys.opportunity} />
+                </Link>
+            </Breadcrumbs>
+            <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
+                <FieldEdit
+                    label={edit ? undefined : "Descripción"}
+                    className={classes.field}
+                    valueDefault={values?.description || ""}
+                    onChange={v => setValues(prev => ({ ...prev, description: v }))}
+                    InputProps={{
+                        classes: {
+                            input: classes.titleInput,
+                        },
+                    }}
+                />
+                <div style={{ flexGrow: 1 }} />
+                <Button
+                    variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => history.push(paths.CRM)}
+                >
+                    <Trans i18nKey={langKeys.back} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    onClick={handleSubmit}
+                    startIcon={<SaveIcon color="secondary" />}
+                    style={{ backgroundColor: "#55BD84" }}
+                >
+                    <Trans i18nKey={langKeys.save} />
+                </Button>
+            </div>
+            {edit && <div className={classes.subtitle}>
+                <span className={classes.currency}>{values?.expected_revenue}</span>
+            </div>}
+            <div style={{ height: '1em' }} />
+            <Grid container direction="row">
+                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                    <Grid container direction="column">
+                        {edit ? 
+                            (<FieldView
+                                label="Customer"
+                                className={classes.field}
+                                value={lead.value?.displayname}
+                            />) : 
+                            (<div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <div style={{ flexGrow: 1 }}>
+                                    <FieldView
+                                        label="Customer"
+                                        className={classes.field}
+                                        value={values?.displayname}
+                                    />
+                                </div>
+                                <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
+                                    <Add style={{ height: 22, width: 22 }} />
+                                </IconButton>
+                            </div>)
+                        }
+                        <FieldEdit
+                            label="Email"
+                            className={classes.field}
+                            valueDefault={lead.value?.email || ""}
+                            onChange={v => setValues(prev => ({ ...prev, email: v }))}
+                        />
+                        <FieldEdit
+                            label="Phone"
+                            className={classes.field}
+                            valueDefault={lead.value?.phone || ""}
+                            onChange={v => setValues(prev => ({ ...prev, phone: v }))}
+                        />
+                        <FieldSelect
+                            label="Advisor"
+                            className={classes.field}
+                            valueDefault={lead.value?.createby}
+                            data={advisers.data}
+                            optionDesc="firstname"
+                            optionValue="userid"
+                            onChange={v => setValues(prev => ({ ...prev, userid: v.userid }))}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                    <Grid container direction="column">
+                        <div className={classes.field}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                Expected closing
+                            </Box>
+                            <KeyboardDateTimePicker
+                                disableToolbar
+                                variant="inline"
+                                format="yyyy-MM-dd HH:mm:ss"
+                                id="date-picker-inline"
+                                value={values?.date_deadline || "" /*new Date('2014-08-18T21:11:54')*/}
+                                onChange={(_, v) => setValues(prev => ({ ...prev, date_deadline: v || "" }))}
+                                fullWidth
+                                KeyboardButtonProps={{
+                                    'aria-label': 'change date',
+                                }}
+                            />
+                        </div>
+                        <div className={classes.field}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                Priority
+                            </Box>
+                            <Rating
+                                name="simple-controlled"
+                                defaultValue={lead.value?.priority === 'LOW' ? 1 : lead.value?.priority === 'MEDIUM' ? 2 : lead.value?.priority === 'HIGH' ? 3 : undefined}
+                                max={3}
+                                onChange={(event, newValue) => {
+                                    const priority = newValue === 1 ? 'LOW' : newValue === 2 ? 'MEDIUM' : newValue === 3 ? 'HIGH' : undefined;
+                                    setValues(prev => ({ ...prev, priority }));
+                                }}
+                            />
+                        </div>
+                        <FieldEdit
+                            label="Tags"
+                            className={classes.field}
+                            valueDefault={lead.value?.tags || ""}
+                            onChange={v => setValues(prev => ({ ...prev, tags: v }))}
+                        />
+                    </Grid>
+                </Grid>
+            </Grid>
+        </div>
+        <SelectPersonModal
+            open={openPersonModal}
+            onClose={() => setOpenPersonmodal(false)}
+            onClick={(v) => setValues(prev => ({
+                ...prev,
+                personcommunicationchannel: v.personcommunicationchannel,
+                displayname: v.displayname,
+            }))}
+        />
+        </MuiPickersUtilsProvider>
+    );
+}
+
+export default LeadForm;
+
+interface SelectPersonModal {
+    open: boolean;
+    onClose: () => void;
+    onClick: (person: IPerson) => void;
+}
+
+const useSelectPersonModalStyles = makeStyles(theme => ({
+    root: {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: "80%",
+        maxHeight:"80%",
+        width: '80%',
+        backgroundColor: 'white',
+        padding: "16px",
+        overflowY: 'auto',
+    },
+}));
+
+const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const classes = useSelectPersonModalStyles();
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
+    const [pageSize, setPageSize] = useState(10);
+    const personList = useSelector(state => state.person.personList);
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'id',
+                NoFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <Checkbox
+                            color="primary"
+                            onClick={() => {
+                                onClick(row);
+                                onClose();
+                            }}
+                        />
+                    );
+                }
+            },
+            {
+                Header: t(langKeys.name),
+                accessor: 'displayname' as keyof IPerson,
+            },
+        ],
+        []
+    );
+
+    const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+        dispatch(getPersonListPaginated(paginatedPersonWithoutDateSel({
+            skip: pageSize * pageIndex,
+            take: pageSize,
+            sorts: sorts,
+            filters: filters,
+        })));
+    }, []);
+
+    useEffect(() => {
+        fetchData({ pageSize, pageIndex, filters: {}, sorts: {}, daterange: null });
+    }, [fetchData, dispatch]);
+
+    useEffect(() => {
+        if (personList.loading) return;
+        if (personList.error) {
+            dispatch(showSnackbar({
+                message: personList.message || "Error",
+                success: false,
+                show: true,
+            }));
+        } else {
+            setPageCount(Math.ceil(personList.count / pageSize));
+            settotalrow(personList.count);
+        }
+    }, [personList]);
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className={classes.root}>
+                <TableZyx
+                    columns={columns}
+                    titlemodule={t(langKeys.person, { count: 2 })}
+                    data={personList.data}
+                    loading={personList.loading}
+                    fetchData={fetchData}
+                    totalrow={totalrow}
+                    pageCount={pageCount}
+                    // pageSizeDefault={10}
+                    hoverShadow
+                    autotrigger
+                />
+            </Box>
+        </Modal>
+    );
+}

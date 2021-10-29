@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -72,7 +72,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person')) {
+	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
@@ -276,6 +276,12 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM}>
 					<Layout mainClasses={classes.main}><CRM /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_ADD_LEAD.path}>
+					<Layout mainClasses={classes.main}><LeadForm /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
+					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
 				</ProtectRoute>
 				<Route exact path="/403">
 					<Forbidden />
