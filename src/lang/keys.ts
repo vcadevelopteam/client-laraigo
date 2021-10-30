@@ -692,6 +692,7 @@ export const langKeys = {
     priority_medium: 'priority_medium',
     priority_low: 'priority_low',
     expected_revenue: 'expected_revenue',
+    tags: 'tags',
     newlead: 'newlead',
 
     variableconfiguration: 'variableconfiguration',
