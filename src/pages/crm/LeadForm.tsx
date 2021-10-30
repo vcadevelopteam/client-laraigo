@@ -348,7 +348,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 onChange={(value) => { setValue('tags', value.map((o: any) => o.title || o).join() ) }}
                                 error={errors?.tags?.message}
                                 loading={false}
-                                data={tagsOptions}
+                                data={tagsOptions.concat(getValues('tags').split(',').filter((i:any) => (tagsOptions.findIndex(x => x.title === i)) < 0).map((title:any) => ({title})))}
                                 optionDesc="title"
                                 optionValue="title"
                             />
