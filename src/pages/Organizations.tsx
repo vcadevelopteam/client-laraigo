@@ -14,6 +14,7 @@ import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
+import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 
 interface RowSelected {
@@ -28,7 +29,8 @@ interface DetailOrganizationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     multiData: MultiData[];
-    fetchData: () => void
+    fetchData: () => void,
+    dataCurrency: Dictionary[];
 }
 const arrayBread = [
     { id: "view-1", name: "Organizations" },
@@ -49,14 +51,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData ,dataCurrency}) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
+    
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -68,7 +70,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
             id: row ? row.orgid : 0,
-            operation: row ? "EDIT" : "INSERT"
+            operation: row ? "EDIT" : "INSERT",
+            currency: row?.currency || "",
         }
     });
 
@@ -76,6 +79,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -95,6 +99,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
+        console.log(data)
         const callback = () => {
             dispatch(execute(insOrg(data)));
             dispatch(showBackdrop(true));
@@ -223,6 +228,24 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.status || "") : ""}
                                 className="col-6"
                             />}
+                        {edit ?
+                            <FieldSelect
+                                label={t(langKeys.currency)}
+                                className="col-6"
+                                valueDefault={getValues('currency')}
+                                onChange={(value) => setValue('currency', value ? value.code : '')}
+                                error={errors?.currency?.message}
+                                data={dataCurrency}
+                                //uset={true}
+                                //prefixTranslation="status_"
+                                optionDesc="description"
+                                optionValue="code"
+                            />
+                            : <FieldView
+                                label={t(langKeys.currency)}
+                                value={row ? (row.currency || "") : ""}
+                                className="col-6"
+                            />}
                     </div>
                 </div>
             </form>
@@ -232,6 +255,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
 const Organizations: FC = () => {
     const dispatch = useDispatch();
+    const ressignup = useSelector(state => state.signup.currencyList);
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
@@ -284,6 +308,16 @@ const Organizations: FC = () => {
                     return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
                 }
             },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+                NoFilter: true,
+                /*prefixTranslation: 'status_',
+                Cell: (props: any) => {
+                    const { status } = props.cell.row.original;
+                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                }*/
+            },
         ],
         []
     );
@@ -292,6 +326,7 @@ const Organizations: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(getCurrencyList())
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOORG"),
@@ -335,7 +370,7 @@ const Organizations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({ description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid })));
+            dispatch(execute(insOrg({ description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -368,6 +403,7 @@ const Organizations: FC = () => {
                 setViewSelected={setViewSelected}
                 multiData={mainResult.multiData.data}
                 fetchData={fetchData}
+                dataCurrency={ressignup.data}
             />
         )
     } else

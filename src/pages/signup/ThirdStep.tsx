@@ -284,22 +284,6 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
 
         },
         {
-            icon: <PhoneIcon color="inherit" />,
-            label: 'Phone',
-            key: 'phone',
-            onClick: () => {
-                if(listchannels.phone){
-                    setselectedChannels(selectedChannels-1)
-                    setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
-                }
-                else if(limitChannels>selectedChannels){
-                    listchannels.phone?setselectedChannels(selectedChannels-1):setselectedChannels(selectedChannels+1);
-                    setlistchannels((p: any) => ({ ...p, phone: !p.phone }))
-                }
-            },
-            selected: listchannels.phone
-        },
-        {
             icon: <SmsIcon color="inherit" />,
             label: 'Sms',
             key: 'sms',

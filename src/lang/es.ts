@@ -329,6 +329,8 @@ const translation: LangKeys = {
     givechannelcolor: "Dale a tu canal un color de icono personalizado",
     enablechatflow: "Flujo conversacional automatizado",
     finishreg: "FINALIZAR REGISTRO",
+    currency: "Moneda",
+    country: "País",
     whatsapptitle: 'Para conectar un canal de whatsapp debes hacer clic en "Registrar cuenta de Whatsapp" y una vez que termines el registro, ingresar el número y la Clave API en este formulario',
     registerwhats: "Registrar cuenta de Whatsapp",
     whatsappinformation: "Información de Whatsapp",

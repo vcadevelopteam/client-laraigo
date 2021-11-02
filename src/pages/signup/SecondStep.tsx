@@ -9,8 +9,9 @@ import { useDispatch } from "react-redux";
 import { resetMain, getCollectionPublic } from 'store/main/actions';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
-import { FieldMultiSelect } from "components";
+import { FieldMultiSelect, FieldSelect } from "components";
 import { getValuesFromDomain } from "common/helpers/requestBodies";
+import { getCountryList } from "store/signup/actions";
 
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -41,12 +42,16 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void }> = ({ setMainData, mainData, setStep }) => {
     
     const dispatch = useDispatch();
+    const ressignup = useSelector(state => state.signup.countryList);
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
         companybusinessname: "",
     });
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
+    useEffect(() => {
+        dispatch(getCountryList())
+    }, [])
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
     }, [mainData])
@@ -117,6 +122,17 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     data={mainResult.mainData.data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
+                />
+                <FieldSelect
+                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "" }))}
+                    variant="outlined"
+                    className="col-6"
+                    style={{margin:"15px 0"}}
+                    label={t(langKeys.country)}
+                    valueDefault={mainData.country}
+                    data={ressignup.data}
+                    optionDesc="description"
+                    optionValue="code"
                 />
                 <Button
                     onClick={() => { setStep(3) }}

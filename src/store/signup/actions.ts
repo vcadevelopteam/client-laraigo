@@ -40,5 +40,24 @@ export const verifyPlan = (accessToken: String): IActionCall => ({
 });
 export const resetGetChannelsListSub = (): IActionCall => ({type: actionTypes.PAGELIST_RESET});
 
+export const getCurrencyList = (): IActionCall => ({
+    callAPI: () => ChannelsService.getCurrencyList(),
+    types: {
+        loading: actionTypes.CURRENCYLIST,
+        success: actionTypes.CURRENCYLIST_SUCCESS,
+        failure: actionTypes.CURRENCYLIST_FAILURE,
+    },
+    type: null,
+});
+export const getCountryList = (): IActionCall => ({
+    callAPI: () => ChannelsService.getCountryList(),
+    types: {
+        loading: actionTypes.COUNTRYLIST,
+        success: actionTypes.COUNTRYLIST_SUCCESS,
+        failure: actionTypes.COUNTRYLIST_FAILURE,
+    },
+    type: null,
+});
+
 
 
