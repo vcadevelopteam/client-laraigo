@@ -13,14 +13,19 @@ import React from 'react';
 import { TemplateIcons } from 'components';
 import { getCollection, resetMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
-import { deleteChannel } from 'store/channel/actions';
+import { checkPaymentPlan, deleteChannel } from 'store/channel/actions';
 
 export const Channels: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.channel.channelList);
 
+    const paymentPlanResult = useSelector(state => state.channel.checkPaymentPlan);
+    const executeResult = useSelector(state => state.channel.channelList);
+    const mainResult = useSelector(state => state.main);
+
+    const [typeWhatsApp, setTypeWhatsApp] = useState('DIALOG');
+    const [canRegister, setCanRegister] = useState(false);
+    const [waitCheck, setWaitCheck] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const history = useHistory();
 
@@ -71,6 +76,14 @@ export const Channels: FC = () => {
             pathname,
             state: row,
         });
+    }
+
+    const checkLimit = () => {
+        dispatch(checkPaymentPlan({
+            method: "",
+            parameters: {}
+        }));
+        setWaitCheck(true);
     }
 
     const columns = React.useMemo(
@@ -133,6 +146,34 @@ export const Channels: FC = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (waitCheck) {
+            if (!paymentPlanResult.loading && !paymentPlanResult.error) {
+                if (paymentPlanResult.value) {
+                    setTypeWhatsApp(paymentPlanResult.value.providerWhatsApp);
+                    setCanRegister(paymentPlanResult.value.createChannel);
+                    if (!paymentPlanResult.value.createChannel) {
+                        dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.channellimit) }))
+                        dispatch(showBackdrop(false));
+                        setWaitCheck(false);
+                    }
+                }
+            } else if (paymentPlanResult.error) {
+                const errormessage = t(paymentPlanResult.code || "error_unexpected_error", { module: t(langKeys.property).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitCheck(false);
+            }
+        }
+    }, [paymentPlanResult, waitCheck]);
+
+    useEffect(() => {
+        if (canRegister) {
+            setCanRegister(false);
+            history.push(paths.CHANNELS_ADD);
+        }
+    }, [canRegister]);
+
     return (
         <TableZyx
             columns={columns}
@@ -142,9 +183,7 @@ export const Channels: FC = () => {
             loading={mainResult.mainData.loading}
             register={true}
             hoverShadow={true}
-            handleRegister={() => history.push(paths.CHANNELS_ADD)}
+            handleRegister={() => checkLimit()}
         />
     );
 };
-
-

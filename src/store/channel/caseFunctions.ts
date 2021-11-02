@@ -106,11 +106,41 @@ export const editChannelFailure = (state: IState, action: IAction): IState => ({
         success: false,
         loading: false,
         error: true,
-        message: action.payload?.message || "Ocurrio uun error al editar el canal"
+        message: action.payload?.message || "Ocurrio un error al editar el canal"
     },
 });
 
 export const editChannelReset = (state: IState): IState => ({
     ...state,
     editChannel: initialState.editChannel,
+});
+
+export const checkPaymentPlan = (state: IState): IState => ({
+    ...state,
+    checkPaymentPlan: { ...state.checkPaymentPlan, loading: true, error: false },
+});
+
+export const checkPaymentPlanSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    checkPaymentPlan: {
+        ...state.checkPaymentPlan,
+        value: action.payload,
+        loading: false,
+        error: false,
+    },
+});
+
+export const checkPaymentPlanFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    checkPaymentPlan: {
+        value: undefined,
+        loading: false,
+        error: true,
+        message: action.payload?.message || "Ocurrio un error al obtener el plan"
+    },
+});
+
+export const checkPaymentPlanReset = (state: IState): IState => ({
+    ...state,
+    checkPaymentPlan: initialState.checkPaymentPlan,
 });
