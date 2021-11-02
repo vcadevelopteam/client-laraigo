@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBody } from "@types";
+import { IActionCall, ICrmLeadNoteSave, IRequestBody } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -75,7 +75,14 @@ export const saveLeadActivity = (body: IRequestBody): IActionCall => ({
 export const resetSaveLeadActivity = (): IActionCall => ({type: actionTypes.SAVE_LEADACTIVITY_RESET});
 
 export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.main(body),
+    callAPI: async () => {
+        const mediaFile: File = (body.parameters as ICrmLeadNoteSave).media as File;
+        const fd = new FormData();
+        fd.append('file', mediaFile, mediaFile.name);
+        const url = (await CommonService.uploadFile(fd)).data["url"] as string;
+        (body.parameters as ICrmLeadNoteSave).media = url;
+        return CommonService.main(body);
+    },
     types: {
         loading: actionTypes.SAVE_LEADNOIE,
         success: actionTypes.SAVE_LEADNOIE_SUCCESS,

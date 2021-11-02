@@ -80,6 +80,7 @@ export interface ICrmLeadNoteSave {
 	description: string;
 	type: string;
 	status: string;
+    media: string | File | null;
 	username: string | null | undefined;
 	operation: "UPDATE" | "INSERT" | "DELETE";
 }
@@ -95,6 +96,7 @@ export interface ICrmLeadNote {
     status: string;
     type: string;
     createby: string;
+    media: string | null;
 }
 
 export interface IcrmLeadActivity {

@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper } from '@material-ui/core';
 import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -17,12 +17,13 @@ import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
-import { Add, Clear, Create, Done, Info } from '@material-ui/icons';
+import { Add, AttachFile, Clear, Close, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
+import { DownloadIcon } from 'icons';
 
 const tagsOptions = [
     { title: "Information"},
@@ -607,6 +608,7 @@ const useTabPanelLogNoteStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'flex-start',
+        width: '100%',
     },
     paper: {
         backgroundColor: 'white',
@@ -640,6 +642,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
     const classes = useTabPanelLogNoteStyles();
     const dispatch = useDispatch();
     const [noteDescription, setNoteDescription] = useState("");
+    const [media, setMedia] = useState<File | null>(null);
     const leadNotes = useSelector(state => state.lead.leadLogNotes);
     const saveLeadNote = useSelector(state => state.lead.saveLeadNote);
 
@@ -677,11 +680,29 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
             description: noteDescription,
             type: "NINGUNO",
             status: "ACTIVO",
+            media,
             username: null,
             operation: "INSERT",
         });
         dispatch(saveLeadLogNote(body));
-    }, [noteDescription, dispatch]);
+    }, [noteDescription, media, dispatch]);
+
+    const handleInputMedia = useCallback(() => {
+        const input = document.getElementById('noteMediaInput');
+        input!.click();
+    }, []);
+
+    const onChangeMediaInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        setMedia(e.target.files[0]);
+    }, []);
+
+    const handleCleanMediaInput = () => {
+        if (media === null) return;
+        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        input.value = "";
+        setMedia(null);
+    }
 
     if (leadNotes.loading) {
         return <Loading />;
@@ -693,14 +714,35 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                 <div className={classes.row}>
                     <Avatar className={classes.avatar} />
                     <div style={{ width: '1em' }} />
-                    <TextField
-                        placeholder="Log an internal note"
-                        minRows={4}
-                        fullWidth
-                        value={noteDescription}
-                        onChange={e => setNoteDescription(e.target.value)}
-                        disabled={saveLeadNote.loading}
-                    />
+                    <div className={classes.column}>
+                        <TextField
+                            placeholder="Log an internal note"
+                            minRows={4}
+                            fullWidth
+                            value={noteDescription}
+                            onChange={e => setNoteDescription(e.target.value)}
+                            disabled={saveLeadNote.loading}
+                        />
+                        <div style={{ height: '0.7em' }} />
+                        {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
+                        {media && <div style={{ height: '0.5em' }} />}
+                        <input
+                            accept="file/*"
+                            style={{ display: 'none' }}
+                            id="noteMediaInput"
+                            type="file"
+                            onChange={onChangeMediaInput}
+                        />
+                        <div className={classes.row}>
+                            <IconButton onClick={handleInputMedia} color="primary">
+                                <Mood />
+                            </IconButton>
+                            <div style={{ width: '0.5em' }} />
+                            <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null}>
+                                <AttachFile />
+                            </IconButton>
+                        </div>
+                    </div>
                 </div>
                 <div style={{ height: 12 }} />
                 <div>
@@ -708,7 +750,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
-                        disabled={saveLeadNote.loading || noteDescription.length === 0}
+                        disabled={saveLeadNote.loading || (noteDescription.length === 0 && media === null)}
                     >
                         Log
                     </Button>
@@ -729,6 +771,8 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                 </div>
                                 <div style={{ height: 4 }} />
                                 <span>{note.description}</span>
+                                {note.media && <div style={{ height: 4 }} />}
+                                {note.media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
                             </div>
                         </div>
                     </div>
@@ -1142,5 +1186,76 @@ const Loading: FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
             <CircularProgress />
         </div>
+    );
+}
+
+interface FilePreviewProps {
+    src: File | string | null;
+    onClose?: () => void;
+}
+
+const useFilePreviewStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: 'white',
+        padding: theme.spacing(1),
+        borderRadius: 4,
+        display: 'flex',
+        flexDirection: 'row',
+        maxWidth: 300,
+        alignItems: 'center',
+        width: 'fit-content',
+    },
+    infoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+    },
+}));
+
+const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+    console.log('FilePreview', src);
+    const classes = useFilePreviewStyles();
+
+    const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
+
+    const getFileName = useCallback(() => {
+        if (isUrl()) {
+            const m = (src as string).match(/.*\/(.+?)\./);
+            return m && m.length > 1 ? m[1] : "";
+        };
+        return (src as File).name;
+    }, [isUrl, src]);
+
+    const getFileExt = useCallback(() => {
+        return getFileName().split('.').pop()?.toUpperCase() || "-";
+    }, [getFileName]);
+
+    return (
+        <Paper className={classes.root} elevation={2}>
+            <FileCopy />
+            <div style={{ width: '0.5em' }} />
+            <div className={classes.infoContainer}>
+                <span style={{ fontWeight: 'bold' }}>{getFileName()}</span>
+                <span>{getFileExt()}</span>
+            </div>
+            <div style={{ width: '0.5em' }} />
+            <div className={classes.btnContainer}>
+                {onClose && (
+                    <IconButton size="small" onClick={onClose}>
+                        <Close />
+                    </IconButton>
+                )}
+                {isUrl() && <div style={{ height: '10%' }} />}
+                {isUrl() && (
+                    <IconButton size="small">
+                        <DownloadIcon />
+                    </IconButton>
+                )}
+            </div>
+        </Paper>
     );
 }
