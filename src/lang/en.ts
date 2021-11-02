@@ -1297,6 +1297,14 @@ const translation: LangKeys = {
     logNote_plural: 'Log notes',
     scheduleActivity: 'Schedule activity',
     scheduleActivity_plural: 'Schedule activities',
+
+    type_activitylead_call: 'Call',
+    'type_activitylead_call for demo': 'Call for demo',
+    'type_activitylead_email: welcome demo': 'Email: Welcome demo',
+    'type_activitylead_follow-up quote': 'Follow-up quote',
+    'type_activitylead_make quote': 'Make quote',
+    type_activitylead_meeting: 'Meeting',
+    type_activitylead_email: 'Email',
 };
 
 const enResource: ResourceLanguage = {

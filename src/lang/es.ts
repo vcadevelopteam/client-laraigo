@@ -1288,6 +1288,14 @@ const translation: LangKeys = {
     logNote_plural: 'Notas de registro',
     scheduleActivity: 'Programa de actividad',
     scheduleActivity_plural: 'Programa de actividades',
+
+    type_activitylead_call: 'Llamada',
+    'type_activitylead_call for demo': 'Demo de llamada',
+    'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',
+    'type_activitylead_follow-up quote': 'Cotización de seguimiento',
+    'type_activitylead_make quote': 'Hacer cotización',
+    type_activitylead_meeting: 'Reunión',
+    type_activitylead_email: 'Correo',
 };
 
 const esResource: ResourceLanguage = {

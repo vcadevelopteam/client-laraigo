@@ -1,20 +1,20 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, Typography, IconButton, Checkbox, Chip, AppBar, Tabs, Tab, Avatar, Divider } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, Title, TitleDetail } from 'components';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar } from '@material-ui/core';
+import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, getPaginatedPerson, adviserSel, paginatedPersonWithoutDateSel, getPaginatedPerson as getPersonListPaginated1 } from 'common/helpers';
+import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { getAdvisers, getLead, resetGetLead, resetSaveLead, saveLead as saveLeadBody } from 'store/lead/actions';
-import { ICrmLead, ICRmSaveLead, IFetchData, IPerson } from '@types';
+import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
+import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
-import { Autocomplete, Rating } from '@material-ui/lab';
-import { MuiPickersUtilsProvider, KeyboardDateTimePicker } from '@material-ui/pickers';
+import { Rating } from '@material-ui/lab';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
 import { Add, Clear, Create, Done, Info } from '@material-ui/icons';
@@ -22,6 +22,7 @@ import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/perso
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
+import { getCollection, resetMain } from 'store/main/actions';
 
 const tagsOptions = [
     { title: "Information"},
@@ -258,7 +259,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [saveLead]);
 
     if (edit === true && lead.loading && advisers.loading) {
-        return <CircularProgress />;
+        return <Loading />;
     } else if (edit === true && (lead.error)) {
         console.log('error')
         return <div>ERROR</div>;
@@ -400,16 +401,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 valueDefault={getValues('phone')}
                                 error={errors?.phone?.message}
                             />
-                            <div className={classes.field}>
-                                <FieldEdit
-                                    label={t(langKeys.endDate)}
-                                    className={classes.field}
-                                    type={'date'}
-                                    onChange={(value) => setValue('date_deadline', value)}
-                                    valueDefault={getValues('date_deadline')?.substring(0,10)}
-                                    error={errors?.date_deadline?.message}
-                                />
-                            </div>
+                            <FieldEdit
+                                label={t(langKeys.endDate)}
+                                className={classes.field}
+                                type="date"
+                                onChange={(value) => setValue('date_deadline', value)}
+                                valueDefault={getValues('date_deadline')?.substring(0,10)}
+                                error={errors?.date_deadline?.message}
+                            />
                             <div className={classes.field}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                                     Priority
@@ -457,8 +456,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         />
                     </Tabs>
                 </AppBar>
-                <TabPanel value="0" index={tabIndex}><TabPanelLogNote /></TabPanel>
-                <TabPanel value="1" index={tabIndex}><TabPanelScheduleActivity /></TabPanel>
+                {lead.value && <TabPanel value="0" index={tabIndex}><TabPanelLogNote lead={lead.value!} /></TabPanel>}
+                {lead.value && <TabPanel value="1" index={tabIndex}><TabPanelScheduleActivity lead={lead.value!} /></TabPanel>}
             </>
             )}
             <SelectPersonModal
@@ -637,8 +636,56 @@ const useTabPanelLogNoteStyles = makeStyles(theme => ({
     },
 }));
 
-export const TabPanelLogNote: FC = () => {
+export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
     const classes = useTabPanelLogNoteStyles();
+    const dispatch = useDispatch();
+    const [noteDescription, setNoteDescription] = useState("");
+    const leadNotes = useSelector(state => state.lead.leadLogNotes);
+    const saveLeadNote = useSelector(state => state.lead.saveLeadNote);
+
+    useEffect(() => {
+        dispatch(getLeadLogNotes(leadLogNotesSel(lead.leadid)));
+        return () => {
+            dispatch(resetGetLeadLogNotes());
+            dispatch(resetSaveLeadLogNote());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (saveLeadNote.loading) return;
+        if (saveLeadNote.error) {
+            dispatch(showSnackbar({
+                message: saveLeadNote.message || "Error",
+                success: false,
+                show: true,
+            }));
+        } else if (saveLeadNote.success) {
+            dispatch(showSnackbar({
+                message: "Se registró la nota",
+                success: true,
+                show: true,
+            }));
+            dispatch(getLeadLogNotes(leadLogNotesSel(lead.leadid)));
+            setNoteDescription("");
+        }
+    }, [saveLeadNote]);
+
+    const handleSubmit = useCallback(() => {
+        const body = leadLogNotesIns({
+            leadid: lead.leadid,
+            leadnotesid: 0,
+            description: noteDescription,
+            type: "NINGUNO",
+            status: "ACTIVO",
+            username: null,
+            operation: "INSERT",
+        });
+        dispatch(saveLeadLogNote(body));
+    }, [noteDescription, dispatch]);
+
+    if (leadNotes.loading) {
+        return <Loading />;
+    }
 
     return (
         <div className={clsx(classes.root, classes.column)}>
@@ -650,47 +697,44 @@ export const TabPanelLogNote: FC = () => {
                         placeholder="Log an internal note"
                         minRows={4}
                         fullWidth
+                        value={noteDescription}
+                        onChange={e => setNoteDescription(e.target.value)}
+                        disabled={saveLeadNote.loading}
                     />
                 </div>
                 <div style={{ height: 12 }} />
                 <div>
-                    <Button variant="contained" color="primary">
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSubmit}
+                        disabled={saveLeadNote.loading || noteDescription.length === 0}
+                    >
                         Log
                     </Button>
                 </div>
             </div>
             <div style={{ height: '2.3em' }} />
-            <div className={classes.paper}>
-                <div className={classes.row}>
-                    <Avatar className={classes.avatar} />
-                    <div style={{ width: '1em' }} />
-                    <div className={classes.logTextContainer}>
-                        <div className={clsx(classes.row, classes.centerRow)}>
-                            <span className={classes.logOwnerName}>Mitchell Admin</span>
+            {leadNotes.data.map((note, index) => (
+                <div key={`lead_note_${index}`}>
+                    <div className={classes.paper}>
+                        <div className={classes.row}>
+                            <Avatar className={classes.avatar} />
                             <div style={{ width: '1em' }} />
-                            <span className={classes.logDate}>now</span>
+                            <div className={classes.logTextContainer}>
+                                <div className={clsx(classes.row, classes.centerRow)}>
+                                    <span className={classes.logOwnerName}>{note.createby}</span>
+                                    <div style={{ width: '1em' }} />
+                                    <span className={classes.logDate}>{note.createdate}</span>
+                                </div>
+                                <div style={{ height: 4 }} />
+                                <span>{note.description}</span>
+                            </div>
                         </div>
-                        <div style={{ height: 4 }} />
-                        <span>Log de prueba</span>
                     </div>
+                    {index !== leadNotes.data.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
                 </div>
-            </div>
-            <div style={{ backgroundColor: 'grey', height: 1 }} />
-            <div className={classes.paper}>
-                <div className={classes.row}>
-                    <Avatar className={classes.avatar} />
-                    <div style={{ width: '1em' }} />
-                    <div className={classes.logTextContainer}>
-                        <div className={clsx(classes.row, classes.centerRow)}>
-                            <span className={classes.logOwnerName}>Mitchell Admin</span>
-                            <div style={{ width: '1em' }} />
-                            <span className={classes.logDate}>now</span>
-                        </div>
-                        <div style={{ height: 4 }} />
-                        <span>Log de prueba</span>
-                    </div>
-                </div>
-            </div>
+            ))}
         </div>
     );
 }
@@ -730,84 +774,373 @@ const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
         fontWeight: 'bold',
         color: 'green',
     },
+    unselect: {
+        '-webkit-touch-callout': 'none', /* iOS Safari */
+        '-webkit-user-select': 'none', /* Safari */
+        '-khtml-user-select': 'none', /* Konqueror HTML */
+        '-moz-user-select': 'none', /* Old versions of Firefox */
+        '-ms-user-select': 'none', /* Internet Explorer/Edge */
+        userSelect: 'none',
+    },
+    hoverCursor: {
+        '&:hover': {
+            cursor: 'pointer',
+        }
+    },
+    header: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+    },
 }));
 
-export const TabPanelScheduleActivity: FC = () => {
+export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
     const classes = useTabPanelScheduleActivityStyles();
+    const dispatch = useDispatch();
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedActivity, setSelectedActivity] = useState<IcrmLeadActivity | null>(null);
+    const leadActivities = useSelector(state => state.lead.leadActivities);
+    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
+
+    useEffect(() => {
+        dispatch(getLeadActivities(leadActivitySel(lead.leadid)));
+        return () => {
+            dispatch(resetGetLeadActivities());
+        };
+    }, [dispatch]);
+
+    if (leadActivities.loading) {
+        return <Loading />;
+    }
 
     return (
         <div className={clsx(classes.root, classes.column)}>
-            <div className={classes.paper}>
-                <div className={classes.row}>
-                    <Avatar className={classes.avatar} />
-                    <div style={{ width: '1em' }} />
-                    <div className={classes.column}>
-                        <div className={clsx(classes.row, classes.centerRow)}>
-                            <span className={classes.activityDate}>Due in 2 days</span>
-                            <div style={{ width: '1em' }} />
-                            <span className={classes.activityName}>"call para seguimiento"</span>
-                            <div style={{ width: '1em' }} />
-                            <span className={classes.activityFor}>for Mitchell Admin</span>
-                            <div style={{ width: '0.5em' }} />
-                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
-                        </div>
-                        <div style={{ height: 4 }} />
+            <div className={classes.header}>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={saveActivity.loading}
+                    onClick={() => setOpenModal(true)}
+                >
+                    Nueva actividad
+                </Button>   
+            </div>
+            <div style={{ height: '1.34em' }} />
+            {leadActivities.data.map((activity, index) => (
+                <div key={`lead_activity${index}`}>
+                    <div className={classes.paper}>
                         <div className={classes.row}>
+                            <Avatar className={classes.avatar} />
                             <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Mark Done</span>
-                            </div>
-                            <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Edit</span>
-                            </div>
-                            <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Cancel</span>
+                            <div className={classes.column}>
+                                <div className={clsx(classes.row, classes.centerRow)}>
+                                    <span className={classes.activityDate}>{`Due in ${activity.duedate}`}</span>
+                                    <div style={{ width: '1em' }} />
+                                    <span className={classes.activityName}>{`"${activity.description}"`}</span>
+                                    <div style={{ width: '1em' }} />
+                                    <span className={classes.activityFor}>{`for ${activity.assignto}`}</span>
+                                    <div style={{ width: '0.5em' }} />
+                                    <Info style={{ height: 18, width: 18, fill: 'grey' }} />
+                                </div>
+                                <div style={{ height: 4 }} />
+                                <div className={clsx(classes.row, classes.unselect)}>
+                                    <div style={{ width: '1em' }} />
+                                    <div
+                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                        onClick={() => {
+                                            const body = leadActivityIns({
+                                                ...activity,
+                                                username: null,
+                                                status: "REALIZADO",
+                                                operation: "UPDATE",
+                                            });
+                                            dispatch(saveLeadActivity(body));
+                                        }}
+                                    >
+                                        <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                        <span>Mark Done</span>
+                                    </div>
+                                    <div style={{ width: '1em' }} />
+                                    <div
+                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                        onClick={() => setSelectedActivity(activity)}
+                                    >
+                                        <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                        <span>Edit</span>
+                                    </div>
+                                    <div style={{ width: '1em' }} />
+                                    <div
+                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                        onClick={() => {
+                                            const body = leadActivityIns({
+                                                ...activity,
+                                                username: null,
+                                                status: "DESCARTADO",
+                                                operation: "UPDATE",
+                                            });
+                                            dispatch(saveLeadActivity(body));
+                                        }}
+                                    >
+                                        <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                        <span>Cancel</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    {index !== leadActivities.data.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
                 </div>
-            </div>
-            <div style={{ backgroundColor: 'grey', height: 1 }} />
-            <div className={classes.paper}>
-                <div className={classes.row}>
-                    <Avatar className={classes.avatar} />
-                    <div style={{ width: '1em' }} />
-                    <div className={classes.column}>
-                        <div className={clsx(classes.row, classes.centerRow)}>
-                            <span className={classes.activityDate}>Due in 2 days</span>
-                            <div style={{ width: '1em' }} />
-                            <span className={classes.activityName}>"call para seguimiento"</span>
-                            <div style={{ width: '1em' }} />
-                            <span className={classes.activityFor}>for Mitchell Admin</span>
-                            <div style={{ width: '0.5em' }} />
-                            <Info style={{ height: 18, width: 18, fill: 'grey' }} />
-                        </div>
-                        <div style={{ height: 4 }} />
-                        <div className={classes.row}>
-                            <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Mark Done</span>
-                            </div>
-                            <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Edit</span>
-                            </div>
-                            <div style={{ width: '1em' }} />
-                            <div className={clsx(classes.activityFor, classes.row, classes.centerRow)}>
-                                <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                <span>Cancel</span>
-                            </div>
-                        </div>
-                    </div>
+            ))}
+            <SaveActivityModal
+                onSuccess={() => dispatch(getLeadActivities(leadActivitySel(lead.leadid)))}
+                onClose={() => {
+                    setOpenModal(false);
+                    setSelectedActivity(null);
+                }}
+                open={openModal}
+                activity={selectedActivity}
+                leadid={lead.leadid}
+            />
+        </div>
+    );
+}
+
+interface SaveActivityModalProps {
+    open: boolean;
+    activity: IcrmLeadActivity | null;
+    leadid: number;
+    onClose: () => void;
+    onSuccess: () => void;
+}
+
+const useSaveActivityModalStyles = makeStyles(theme => ({
+    field: {
+        margin: theme.spacing(1),
+        minHeight: 58,
+    },
+    footer: {
+        marginTop: '1em',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
+    },
+    footerBtn: {
+        marginRight: '0.6em',
+    },
+}));
+
+const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSuccess, activity, leadid }) => {
+    const modalClasses = useSelectPersonModalStyles();
+    const classes = useSaveActivityModalStyles();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const mustCloseOnSubmit = useRef<boolean>(true);
+    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
+    const advisers = useSelector(state => state.lead.advisers);
+    const domains = useSelector(state => state.main.mainData);
+
+    useEffect(() => {
+        dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
+        return () => {
+            dispatch(resetMain());
+            dispatch(resetSaveLeadActivity());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (saveActivity.loading) return;
+        if (saveActivity.error) {
+            dispatch(showSnackbar({
+                message: saveActivity.message || "Error",
+                success: false,
+                show: true,
+            }));
+        } else if (saveActivity.success) {
+            dispatch(showSnackbar({
+                message: "Se registró la actividad",
+                success: true,
+                show: true,
+            }));
+            onSuccess();
+            if (mustCloseOnSubmit.current) {
+                onClose();
+            } else {
+                resetValues();
+            }
+        }
+    }, [saveActivity]);
+
+    const { getValues, setValue, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
+        defaultValues: {
+            leadid: leadid,
+            leadactivityid: activity?.leadactivityid || 0,
+            description: activity?.description || "",
+            duedate: activity?.duedate || "",
+            assignto: activity?.assignto || "",
+            type: activity?.type || "",
+            status: activity?.status || "ACTIVO",
+            username: null,
+            operation: activity ? "UPDATE" : "INSERT",
+        },
+    });
+
+    useEffect(() => {
+        const mandatoryStrField = (value: string) => {
+            return value.length === 0 ? t(langKeys.field_required) : undefined;
+        }
+
+        register('description', { validate: mandatoryStrField });
+        register('duedate', { validate: mandatoryStrField });
+        register('assignto', { validate: mandatoryStrField });
+        register('type', { validate: mandatoryStrField });
+    }, [register, t]);
+
+    const resetValues = useCallback(() => {
+        reset({
+            leadid: leadid,
+            leadactivityid: 0,
+            description: "",
+            duedate: "",
+            assignto: "",
+            type: "NINGUNO",
+            status: "PROGRAMADO",
+            username: null,
+            operation: "INSERT",
+        });
+    }, []);
+
+    const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "DESCARTADO") => {
+        handleSubmit(() => {
+            const body = leadActivityIns({
+                ...getValues(),
+                status,
+            });
+            dispatch(saveLeadActivity(body));
+        })();
+    }, [dispatch]);
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className={modalClasses.root}>
+                <TitleDetail title="Schedule activity" />
+                <div style={{ height: '1em' }} />
+                <Grid container direction="row">
+                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <FieldSelect
+                                    uset
+                                    label="Activity type"
+                                    className={classes.field}
+                                    data={domains.data}
+                                    prefixTranslation="type_activitylead_"
+                                    optionDesc="domainvalue"
+                                    optionValue="domainvalue"
+                                    loading={domains.loading}
+                                    valueDefault={getValues('type')}
+                                    onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
+                                    error={errors?.type?.message}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <FieldEdit
+                                    label="Summary"
+                                    className={classes.field}
+                                    valueDefault={getValues('description')}
+                                    onChange={v => setValue('description', v)}
+                                    error={errors?.description?.message}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                        <Grid container direction="column">
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <FieldEdit
+                                    label="Due date"
+                                    className={classes.field}
+                                    type="date"
+                                    valueDefault={getValues('duedate')?.substring(0, 10)}
+                                    onChange={(value) => setValue('duedate', value)}
+                                    error={errors?.duedate?.message}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                <FieldSelect
+                                    label="Assigned to"
+                                    className={classes.field}
+                                    data={advisers.data}
+                                    optionDesc="firstname"
+                                    optionValue="firstname"
+                                    loading={advisers.loading}
+                                    valueDefault={getValues('assignto')}
+                                    onChange={v => setValue('assignto', v?.firstname || "")}
+                                    error={errors?.assignto?.message}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <div className={classes.footer}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.footerBtn}
+                        onClick={() => {
+                            mustCloseOnSubmit.current = true;
+                            handleSave("PROGRAMADO");
+                        }}
+                    >
+                        Schedule
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.footerBtn}
+                        onClick={() => {
+                            mustCloseOnSubmit.current = true;
+                            handleSave("REALIZADO");
+                        }}
+                    >
+                        Mark as Done
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.footerBtn}
+                        onClick={() => {
+                            mustCloseOnSubmit.current = false;
+                            handleSave("REALIZADO");
+                        }}
+                    >
+                        {'Done & Schedule next'}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.footerBtn}
+                        onClick={() => {
+                            onClose();
+                            resetValues();
+                        }}
+                    >
+                        Discard
+                    </Button>
                 </div>
-            </div>
+            </Box>
+        </Modal>
+    );
+}
+
+const Loading: FC = () => {
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+            <CircularProgress />
         </div>
     );
 }

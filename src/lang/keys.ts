@@ -1290,6 +1290,14 @@ export const langKeys = {
     logNote_plural: 'logNote_plural',
     scheduleActivity: 'scheduleActivity',
     scheduleActivity_plural: 'scheduleActivity_plural',
+
+    type_activitylead_call: 'type_activitylead_call',
+    'type_activitylead_call for demo': 'type_activitylead_call for demo',
+    'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',
+    'type_activitylead_follow-up quote': 'type_activitylead_follow-up quote',
+    'type_activitylead_make quote': 'type_activitylead_make quote',
+    type_activitylead_meeting: 'type_activitylead_meeting',
+    type_activitylead_email: 'type_activitylead_email',
 };
 
 export type LangKeys = typeof langKeys;
