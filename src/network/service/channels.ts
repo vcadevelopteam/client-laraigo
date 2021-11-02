@@ -19,6 +19,12 @@ export function execSub(requestBody: IRequestBody ) {
 export function validateNewUser(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.VALIDATE_NEW_USER, { data: requestBody }, true);
 }
+export function getCurrencyList( ) {
+    return APIManager.get(apiUrls.CURRENCYLIST, { data: {} }, true);
+}
+export function getCountryList( ) {
+    return APIManager.get(apiUrls.COUNTRYLIST, { data: {} }, true);
+}
 export function deletechnl(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.DELETE_CHANNEL, { data: requestBody }, true);
 }

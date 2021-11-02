@@ -88,7 +88,8 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 industry: lastfields.industry,
                 companysize: lastfields.companysize,
                 rolecompany: lastfields.companyrole,
-                paymentplanid: planData.data[0].paymentplanid
+                paymentplanid: planData.data[0].paymentplanid,
+                country: mainData.country
             },
             channellist: requestchannels
         }
@@ -102,7 +103,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             if (!executeResult.loading && !executeResult.error) {
                 setBackdrop(false)
                 
-                // history.push('/sign-in')
+                history.push('../sign-in')
                 setSnackbar({ state: true, success: true, message: t(langKeys.successful_sign_up) })
                 setWaitSave(false);
             } else if (executeResult.error) {
