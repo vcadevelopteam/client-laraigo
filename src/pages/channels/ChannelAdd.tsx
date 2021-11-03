@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { Box, makeStyles, Typography, Paper } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import paths from "common/constants/paths";
 import { AndroidIcon, AppleIcon, CallIcon, EmailIcon, FacebookMessengerIcon, FacebookWallIcon, InstagramIcon, SmsIcon, TelegramIcon, TwitterIcon, WhatsappIcon, ZyxmeMessengerIcon } from "icons";
 
@@ -79,8 +79,14 @@ const useChannelAddStyles = makeStyles(theme => ({
 
 export const ChannelAdd: FC = () => {
     const classes = useChannelAddStyles();
-    const { t } = useTranslation();
     const history = useHistory();
+    const location = useLocation();
+
+    const { t } = useTranslation();
+
+    if (typeof location?.state === 'undefined' || !location?.state) {
+        history.push(paths.CHANNELS);
+    }
 
     const socialMediaOptions: ChannelOption[] = [
         {
@@ -106,7 +112,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <WhatsappIcon className={c}/>,
             label: 'Whatsapp',
-            onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path, location.state)},
         },
         {
             icon: c => <TelegramIcon className={c} />,
