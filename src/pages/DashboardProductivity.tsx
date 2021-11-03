@@ -183,7 +183,10 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         styleicon:{
             width: "18px",
-            height: "18px"
+            height: "18px",
+            '&:hover': {
+                cursor: 'pointer',
+            }
         },
         containertitleboxes:{
             display: "flex",
