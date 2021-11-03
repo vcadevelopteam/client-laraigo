@@ -50,6 +50,7 @@ const Corporations: FC = () => {
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
+    const [openWarning, setOpenWarning] = React.useState(false);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });

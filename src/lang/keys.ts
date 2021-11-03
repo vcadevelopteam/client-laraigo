@@ -32,6 +32,7 @@ export const langKeys = {
     brandaddress: "brandaddress",
     industry_education: "industry_education",
     industry_institution: "industry_institution",
+    goback: "goback",
     desiredphonenumberwhatsappbusiness: "desiredphonenumberwhatsappbusiness",
     industry_entertainment: "industry_entertainment",
     industry_telecommunications: "industry_telecommunications",
@@ -816,6 +817,7 @@ export const langKeys = {
     closetype: 'closetype',
 
     today: 'today',
+    yes: 'yes',
     yesterday: 'yesterday',
     thisWeek: 'thisWeek',
     lastWeek: 'lastWeek',

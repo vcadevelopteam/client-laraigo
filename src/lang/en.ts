@@ -761,6 +761,8 @@ const translation: LangKeys = {
     currency: "Currency",
     givechannelname: "Give your channel a name",
     country: "Country",
+    goback: "Are you sure you want to go back? Some of the information will be lost",
+    yes: 'Yes',
     givechannelcolor: "Give your channel a custom icon color",
     enablechatflow: "Automated Conversational Flow",
     finishreg: "FINISH REGISTRATION",

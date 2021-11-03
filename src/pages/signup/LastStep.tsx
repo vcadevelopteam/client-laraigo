@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC ,useEffect,useState} from "react";
-import { makeStyles, Button} from '@material-ui/core';
+import { makeStyles, Button, Breadcrumbs, Link} from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 
@@ -38,7 +38,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void}> = ({mainData,requestchannels,setSnackbar,setBackdrop}) => {
+export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep: (param: any) => void,setsendchannels:(param:any)=>void,setOpenWarning:(param:any)=>void }> = 
+                                                                                            ({mainData,requestchannels,setSnackbar,setBackdrop,setStep,setsendchannels,setOpenWarning}) => {
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     const history = useHistory();
@@ -117,6 +118,11 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
 
     return (
         <div style={{ width: '100%' }}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    {"<< Previous"}
+                </Link>
+            </Breadcrumbs>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px" }}>{t(langKeys.laststepsignup)}</div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "1.1em", padding: "20px" }}>{t(langKeys.laststepsignup2)}</div>

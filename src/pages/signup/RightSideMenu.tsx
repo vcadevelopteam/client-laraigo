@@ -18,20 +18,8 @@ import {ChannelAddAndroid} from './ChannelAddAndroid'
 import {ChannelAddIos} from './ChannelAddIos'
 
 
-export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any}> = ({setSnackbar,setBackdrop,setStep,step}) => {
-    const [mainData, setMainData] = useState<Dictionary>({
-        email: "",
-        password: "",
-        confirmpassword: "",
-        firstandlastname: "",
-        companybusinessname: "",
-        mobilephone: "",
-        facebookid: "",
-        googleid: "",
-        join_reason: "",
-        country: "",
-    });
-    const [requestchannels, setrequestchannels] = useState([]);
+export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any,setMainData:(param:any)=>void,mainData:any,setOpenWarning:(param:any)=>void,requestchannels:any,setrequestchannels:(param:any)=>void}> = 
+    ({setSnackbar,setBackdrop,setStep,step,setMainData,mainData,setOpenWarning,requestchannels,setrequestchannels}) => {
     const [sendchannels, setsendchannels] = useState(false);
 
     const [listchannels, setlistchannels] = useState<Dictionary>({
@@ -65,6 +53,7 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
                 setMainData={setMainData}
                 mainData={mainData}
                 setStep={setStep}
+                setOpenWarning={setOpenWarning}
             >
             </SecondStep>
         )
@@ -75,6 +64,8 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
                 listchannels={listchannels}
                 setStep={setStep}
                 setsendchannels={setsendchannels}
+                setrequestchannels={setrequestchannels}
+                setOpenWarning={setOpenWarning}
             >
             </ThirdStep>
         )
@@ -106,6 +97,9 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
                 requestchannels={requestchannels}
                 setSnackbar={setSnackbar}
                 setBackdrop={setBackdrop}
+                setStep={setStep}
+                setsendchannels={setsendchannels}
+                setOpenWarning={setOpenWarning}
             ></LastStep>
         )
     }

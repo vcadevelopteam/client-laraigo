@@ -5,11 +5,14 @@ import { RightSideMenu } from './RightSideMenu';
 import Backdrop from '@material-ui/core/Backdrop';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import { CircularProgress } from '@material-ui/core';
+import { Button, CircularProgress, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
 import { useHistory, useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { verifyPlan } from 'store/signup/actions';
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
+import { Dictionary } from '@types';
 
 const useSignUpStyles = makeStyles(theme => ({
     purplecircle: {
@@ -83,14 +86,63 @@ export const SignUp: FC = () => {
     const mainResult = useSelector(state => state.signup.verifyPlan)
     const {token}: any = useParams();
     const history = useHistory();
-    const [waitLoad, setWaitLoad] = useState(true);
+    const [openWarning, setOpenWarning] = useState(false);
+    const [waitLoad, setWaitLoad] = useState(true);    
+    const { t } = useTranslation();
     const dispatch = useDispatch();
+    const [step, setStep] = useState(1);
+    const [snackbar, setSnackbar] = useState({
+        state: false,
+        success: true,
+        message: ""
+    });
+    const [requestchannels, setrequestchannels] = useState([]);
+    const [backdrop, setBackdrop] = useState(false);
+    const [mainData, setMainData] = useState<Dictionary>({
+        email: "",
+        password: "",
+        confirmpassword: "",
+        firstandlastname: "",
+        companybusinessname: "",
+        mobilephone: "",
+        facebookid: "",
+        googleid: "",
+        join_reason: "",
+        country: "",
+    });
+    function setDefaultMainData(){
+        setMainData({
+            email: "",
+            password: "",
+            confirmpassword: "",
+            firstandlastname: "",
+            companybusinessname: "",
+            mobilephone: "",
+            facebookid: "",
+            googleid: "",
+            join_reason: "",
+            country: "",
+        })
+    }
     useEffect(() => {
         dispatch(verifyPlan(token))
     }, [])
+    const handleClose = () => {
+        setOpenWarning(false);
+    };
+    const handleClose2 = () => {
+        if(step==2){
+            setDefaultMainData()
+        }
+        if(step==4){
+            setrequestchannels([])
+        }
+        setStep(step-1)
+        setOpenWarning(false);
+    };
+
     useEffect(() => {
         if(!mainResult.loading){
-            console.log(mainResult)
             if(!mainResult.error){
                 setWaitLoad(false)
             }else{
@@ -98,17 +150,27 @@ export const SignUp: FC = () => {
             }
         }
     }, [mainResult])
+
     const classes = useSignUpStyles();
-    const [step, setStep] = useState(1);
-    const [snackbar, setSnackbar] = useState({
-        state: false,
-        success: true,
-        message: ""
-    });
-    const [backdrop, setBackdrop] = useState(false);
 
     return (
         <div style={{ backgroundColor: '#F7F7F7', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+            <Dialog
+                open={openWarning}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{t(langKeys.goback)}</DialogTitle>
+                <DialogActions>
+                <Button onClick={handleClose} color="primary">
+                    No
+                </Button>
+                <Button onClick={handleClose2} color="primary" autoFocus>
+                    {t(langKeys.yes)}
+                </Button>
+                </DialogActions>
+            </Dialog>
             <Snackbar
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                 color="white"
@@ -155,6 +217,11 @@ export const SignUp: FC = () => {
                         setBackdrop={setBackdrop}
                         setStep={setStep}
                         step={step}
+                        setMainData={setMainData}
+                        mainData={mainData}
+                        setOpenWarning={setOpenWarning}
+                        requestchannels={requestchannels}
+                        setrequestchannels={setrequestchannels}
                     />:""
                     }
                     

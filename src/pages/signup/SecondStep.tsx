@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Button, TextField} from '@material-ui/core';
+import { makeStyles, Button, TextField, Breadcrumbs} from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { Dictionary } from "@types"
@@ -39,7 +40,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 });
 
 
-export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void }> = ({ setMainData, mainData, setStep }) => {
+export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setMainData, mainData, setStep,setOpenWarning }) => {
     
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);
@@ -67,10 +68,16 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
     return (
         <div >
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    {"<< Previous"}
+                </Link>
+            </Breadcrumbs>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad" }}>{t(langKeys.signupstep1title2)}</div>
             <div >
                 <TextField

@@ -111,7 +111,8 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels: any, setStep: (param: any) => void, setsendchannels: (param: any) => void }> = ({ setlistchannels, listchannels, setStep, setsendchannels }) => {
+export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels: any, setStep: (param: any) => void, setsendchannels: (param: any) => void,setrequestchannels: (param: any) => void ,setOpenWarning:(param:any)=>void
+}> = ({ setlistchannels, listchannels, setStep, setsendchannels,setrequestchannels,setOpenWarning }) => {
 
     const { t } = useTranslation();
     const planData = useSelector(state => state.signup.verifyPlan)
@@ -362,7 +363,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
         <>
             <div>
                     <Breadcrumbs aria-label="breadcrumb">
-                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setStep(2) }}>
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
                             {"<< Previous"}
                         </Link>
                     </Breadcrumbs>
@@ -383,7 +384,7 @@ export const ThirdStep: FC<{ setlistchannels: (param: any) => void, listchannels
                     {businessChannelOptions.map((e, i) => <Option key={`business_channel_option_${i}`} option={e} selected={listchannels[e.key]} />)}
                 </div>
                 <Button
-                    onClick={() => { setsendchannels(true) }}
+                    onClick={() => { setsendchannels(true); setrequestchannels([])}}
                     className={classes.button}
                     fullWidth
                     style={{ marginTop: 30 }}
