@@ -1298,6 +1298,11 @@ export const langKeys = {
     'type_activitylead_make quote': 'type_activitylead_make quote',
     type_activitylead_meeting: 'type_activitylead_meeting',
     type_activitylead_email: 'type_activitylead_email',
+    type_phaselead_cualificado: 'type_phaselead_cualificado',
+    type_phaselead_ganado: 'type_phaselead_ganado',
+    type_phaselead_nuevo: 'type_phaselead_nuevo',
+    type_phaselead_perdido: 'type_phaselead_perdido',
+    type_phaselead_propuesta: 'type_phaselead_propuesta',
 };
 
 export type LangKeys = typeof langKeys;

@@ -1305,6 +1305,11 @@ const translation: LangKeys = {
     'type_activitylead_make quote': 'Make quote',
     type_activitylead_meeting: 'Meeting',
     type_activitylead_email: 'Email',
+    type_phaselead_cualificado: 'Qualified',
+    type_phaselead_ganado: 'Won',
+    type_phaselead_nuevo: 'New',
+    type_phaselead_perdido: 'Lost',
+    type_phaselead_propuesta: 'Proposal',
 };
 
 const enResource: ResourceLanguage = {

@@ -39,6 +39,7 @@ export interface ICrmLead {
     email: string | null;
     /**asesor */
     userid: string | number | null;
+    phase: string | null;
 }
 
 export interface ICRmSaveLead {
@@ -59,6 +60,7 @@ export interface ICRmSaveLead {
 	phone: string;
 	email: string;
     userid: string | number | null;
+    phase: string;
 	operation: string;
 }
 

@@ -76,11 +76,14 @@ export const resetSaveLeadActivity = (): IActionCall => ({type: actionTypes.SAVE
 
 export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
     callAPI: async () => {
-        const mediaFile: File = (body.parameters as ICrmLeadNoteSave).media as File;
-        const fd = new FormData();
-        fd.append('file', mediaFile, mediaFile.name);
-        const url = (await CommonService.uploadFile(fd)).data["url"] as string;
-        (body.parameters as ICrmLeadNoteSave).media = url;
+        const mediaFile = (body.parameters as ICrmLeadNoteSave).media as File | null;
+        if (mediaFile) {
+            const fd = new FormData();
+            fd.append('file', mediaFile, mediaFile.name);
+            const uploadResult = await CommonService.uploadFile(fd);
+            const url = uploadResult.data["url"] as string;
+            (body.parameters as ICrmLeadNoteSave).media = url;
+        }
         return CommonService.main(body);
     },
     types: {
@@ -92,3 +95,15 @@ export const saveLeadLogNote = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetSaveLeadLogNote = (): IActionCall => ({type: actionTypes.SAVE_LEADNOIE_RESET});
+
+export const getLeadPhases = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_PHASES,
+        success: actionTypes.GET_PHASES_SUCCESS,
+        failure: actionTypes.GET_PHASES_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadPhases = (): IActionCall => ({type: actionTypes.GET_PHASES_RESET});

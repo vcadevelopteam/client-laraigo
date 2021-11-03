@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper } from '@material-ui/core';
-import { FieldEdit, FieldMultiSelect, FieldMultiSelectFreeSolo, FieldSelect, FieldView, TitleDetail } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
+import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
 import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
@@ -136,8 +136,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const lead = useSelector(state => state.lead.lead);
     const advisers = useSelector(state => state.lead.advisers);
     const saveLead = useSelector(state => state.lead.saveLead);
+    const phases = useSelector(state => state.lead.leadPhases);
 
-     const { control, register, handleSubmit, setValue, getValues, formState: { errors }, reset, trigger } = useForm<any>({
+     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
             leadid: 0,
             description: '',
@@ -155,7 +156,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             phone: '',
             email: '',
             operation: "INSERT",
-            userid: 0
+            userid: 0,
+            phase: '',
         }
     });
 
@@ -168,18 +170,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
-    }, [edit, register]);
+        register('phase', { validate: (value) => ((value && value.length) || t(langKeys.field_required) + "") });
+    }, [register, t]);
 
     const onSubmit = handleSubmit((data) => {
-        // dispatch(saveLeadBody(data));
+        console.log(data);
         const body = insLead2(data, data.operation);
         dispatch(saveLeadBody(body));
-    });
-
-    // const onTagsChange = (event: any, tags: string[]) => {
-    //     console.log(tags);
-    //     setValues(prev => ({ ...prev, tags: tags.join(',') }));
-    // };
+    }, e => console.log(e));
 
     useEffect(() => {
         if (edit === true) {
@@ -188,13 +186,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
 
         dispatch(getAdvisers(adviserSel()));
+        dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
 
         return () => {
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
             dispatch(resetGetPersonListPaginated());
+            dispatch(resetGetLeadPhases());
         };
-    }, [dispatch]);
+    }, [edit, match.params.id, dispatch]);
 
     useEffect(() => {
         if (!edit) return;
@@ -225,10 +225,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 columnid: lead.value?.columnid,
                 column_uuid: lead.value?.column_uuid,
                 leadid: match.params.id,
+                phase: lead.value?.phase,
             })
-            // dispatch(getAdvisers(adviserSel()));
         }
-    }, [lead, dispatch]);
+    }, [lead, edit, dispatch]);
 
     useEffect(() => {
         if (advisers.loading) return;
@@ -257,7 +257,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             if (!edit) history.push(paths.CRM);
         }
-    }, [saveLead]);
+    }, [saveLead, edit, history, dispatch]);
 
     if (edit === true && lead.loading && advisers.loading) {
         return <Loading />;
@@ -293,7 +293,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Breadcrumbs>
 
                 <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                    <TitleDetail title={edit ? t(langKeys.leadDetail) : t(langKeys.newLead)} />
+                    <TitleDetail title={edit ? getValues('description') : t(langKeys.newLead)} />
                     <div style={{ flexGrow: 1 }} />
                     <Button
                         variant="contained"
@@ -424,6 +424,19 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                 />
                             </div>
+                            <FieldSelect
+                                uset
+                                label="State"
+                                className={classes.field}
+                                data={phases.data}
+                                prefixTranslation="type_phaselead_"
+                                optionDesc="domainvalue"
+                                optionValue="domainvalue"
+                                loading={phases.loading}
+                                valueDefault={getValues('phase')}
+                                onChange={(v: IDomain) => setValue('phase', v?.domainvalue || "")}
+                                error={errors?.phase?.message}
+                            />
                         </Grid>
                     </Grid>
                 </Grid>
@@ -466,8 +479,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 onClose={() => setOpenPersonmodal(false)}
                 onClick={(value) => {
                     setValue('personcommunicationchannel', value.personcommunicationchannel)
-                    setValue('email', value.email)
-                    setValue('phone', value.phone)
+                    setValue('email', value.email || '')
+                    setValue('phone', value.phone || '')
                     setValues(prev => ({ ...prev, displayname: value.displayname }))
                 }}
             />
@@ -478,7 +491,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
 export default LeadForm;
 
-interface SelectPersonModal {
+interface SelectPersonModalProps {
     open: boolean;
     onClose: () => void;
     onClick: (person: IPerson) => void;
@@ -499,14 +512,14 @@ const useSelectPersonModalStyles = makeStyles(theme => ({
     },
 }));
 
-const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) => {
+const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const classes = useSelectPersonModalStyles();
-    const [pageIndex, setPageIndex] = useState(0);
+    const [pageIndex] = useState(0);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize] = useState(10);
     const personList = useSelector(state => state.person.personList);
 
     const columns = React.useMemo(
@@ -543,7 +556,7 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
                 accessor: 'phone' as keyof IPerson,
             },
         ],
-        []
+        [t],
     );
 
     const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
@@ -555,7 +568,7 @@ const SelectPersonModal: FC<SelectPersonModal> = ({ open, onClose, onClick }) =>
             sorts: sorts,
             filters: filters,
         })));
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         fetchData({ pageSize, pageIndex, filters: {}, sorts: {}, daterange: null });
@@ -734,9 +747,15 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                             onChange={onChangeMediaInput}
                         />
                         <div className={classes.row}>
-                            <IconButton onClick={handleInputMedia} color="primary">
-                                <Mood />
-                            </IconButton>
+                            <EmojiPickerZyx
+                                style={{ zIndex: 10 }}
+                                onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
+                                icon={onClick => (
+                                    <IconButton color="primary" onClick={onClick}>
+                                        <Mood />
+                                    </IconButton>
+                                )}
+                            />
                             <div style={{ width: '0.5em' }} />
                             <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null}>
                                 <AttachFile />
@@ -935,7 +954,6 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                 </div>
             ))}
             <SaveActivityModal
-                onSuccess={() => dispatch(getLeadActivities(leadActivitySel(lead.leadid)))}
                 onClose={() => {
                     setOpenModal(false);
                     setSelectedActivity(null);
@@ -953,7 +971,6 @@ interface SaveActivityModalProps {
     activity: IcrmLeadActivity | null;
     leadid: number;
     onClose: () => void;
-    onSuccess: () => void;
 }
 
 const useSaveActivityModalStyles = makeStyles(theme => ({
@@ -973,7 +990,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
-const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSuccess, activity, leadid }) => {
+const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -1005,14 +1022,14 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSucces
                 success: true,
                 show: true,
             }));
-            onSuccess();
+            dispatch(getLeadActivities(leadActivitySel(leadid)))
             if (mustCloseOnSubmit.current) {
                 onClose();
             } else {
                 resetValues();
             }
         }
-    }, [saveActivity]);
+    }, [saveActivity, leadid, dispatch]);
 
     const { getValues, setValue, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
         defaultValues: {
@@ -1051,17 +1068,17 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSucces
             username: null,
             operation: "INSERT",
         });
-    }, []);
+    }, [reset]);
 
-    const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "DESCARTADO") => {
+    const handleSave = useCallback((values: ICrmLeadActivitySave, status: "PROGRAMADO" | "REALIZADO" | "DESCARTADO") => {
         handleSubmit(() => {
             const body = leadActivityIns({
-                ...getValues(),
+                ...values,
                 status,
             });
             dispatch(saveLeadActivity(body));
         })();
-    }, [dispatch]);
+    }, [handleSubmit, dispatch]);
 
     return (
         <Modal
@@ -1137,7 +1154,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSucces
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
-                            handleSave("PROGRAMADO");
+                            handleSave(getValues(), "PROGRAMADO");
                         }}
                     >
                         Schedule
@@ -1148,7 +1165,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSucces
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
-                            handleSave("REALIZADO");
+                            handleSave(getValues(), "REALIZADO");
                         }}
                     >
                         Mark as Done
@@ -1159,7 +1176,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, onSucces
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = false;
-                            handleSave("REALIZADO");
+                            handleSave(getValues(), "REALIZADO");
                         }}
                     >
                         {'Done & Schedule next'}

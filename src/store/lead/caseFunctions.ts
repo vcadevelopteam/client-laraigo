@@ -213,3 +213,33 @@ export const saveLeadActivityReset = (state: IState): IState => ({
     ...state,
     saveLeadActivity: initialState.saveLeadActivity,
 });
+
+export const getPhases = (state: IState): IState => ({
+    ...state,
+    leadPhases: { ...state.leadPhases, loading: true, error: false },
+});
+
+export const getPhasesSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadPhases: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getPhasesFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadPhases: {
+        ...state.leadPhases,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getTicketsFailure:error',
+        message: action.payload.message || 'Error al cargar las fases',
+    },
+});
+
+export const getPhasesReset = (state: IState): IState => ({
+    ...state,
+    leadPhases: initialState.leadPhases,
+});

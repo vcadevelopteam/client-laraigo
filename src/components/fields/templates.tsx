@@ -759,6 +759,13 @@ export const ListItemSkeleton: React.FC = () => (
     </ListItem>
 )
 
+interface EmojiPickerZyxProps {
+    emojisNoShow?: string[];
+    onSelect: (e: any) => void;
+    style?: React.CSSProperties;
+    icon?: (onClick: () => void) => React.ReactNode;
+}
+
 const emojiPickerStyle = makeStyles({
     root: {
         cursor: 'pointer',
@@ -771,7 +778,7 @@ const emojiPickerStyle = makeStyles({
 });
 
 
-export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: any) => void, style?: any }> = ({ emojisNoShow, onSelect, style }) => {
+export const EmojiPickerZyx: React.FC<EmojiPickerZyxProps> = ({ emojisNoShow, onSelect, style, icon }) => {
     const [open, setOpen] = React.useState(false);
     const classes = emojiPickerStyle();
     const handleClick = () => setOpen((prev) => !prev);
@@ -781,9 +788,9 @@ export const EmojiPickerZyx: React.FC<{ emojisNoShow?: string[], onSelect: (e: a
     return (
         <ClickAwayListener onClickAway={handleClickAway}>
             <span style={style}>
-                <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
+                {icon?.(handleClick) || <Tooltip title={t(langKeys.send_emoji) + ""} arrow placement="top">
                     <EmojiICon className={classes.root} onClick={handleClick} />
-                </Tooltip>
+                </Tooltip>}
                 {open && (
                     <div style={{
                         position: 'absolute',

@@ -1296,6 +1296,11 @@ const translation: LangKeys = {
     'type_activitylead_make quote': 'Hacer cotización',
     type_activitylead_meeting: 'Reunión',
     type_activitylead_email: 'Correo',
+    type_phaselead_cualificado: 'Cualificado',
+    type_phaselead_ganado: 'Ganado',
+    type_phaselead_nuevo: 'Nuevo',
+    type_phaselead_perdido: 'Perdido',
+    type_phaselead_propuesta: 'Propuesta',
 };
 
 const esResource: ResourceLanguage = {
