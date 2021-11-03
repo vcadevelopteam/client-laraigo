@@ -17,13 +17,12 @@ import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
-import { Add, AttachFile, Clear, Close, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
+import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
-import { DownloadIcon } from 'icons';
 
 const tagsOptions = [
     { title: "Information"},
@@ -687,6 +686,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
     }, [saveLeadNote]);
 
     const handleSubmit = useCallback(() => {
+        handleCleanMediaInput();
         const body = leadLogNotesIns({
             leadid: lead.leadid,
             leadnotesid: 0,
@@ -791,7 +791,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                 <div style={{ height: 4 }} />
                                 <span>{note.description}</span>
                                 {note.media && <div style={{ height: 4 }} />}
-                                {note.media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
+                                {note.media && <FilePreview src={note.media} />}
                             </div>
                         </div>
                     </div>
@@ -859,8 +859,7 @@ const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
 export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
-    const [openModal, setOpenModal] = useState(false);
-    const [selectedActivity, setSelectedActivity] = useState<IcrmLeadActivity | null>(null);
+    const [openModal, setOpenModal] = useState<{ value: boolean, payload: IcrmLeadActivity | null }>({ value: false, payload: null });
     const leadActivities = useSelector(state => state.lead.leadActivities);
     const saveActivity = useSelector(state => state.lead.saveLeadActivity);
 
@@ -882,7 +881,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                     variant="contained"
                     color="primary"
                     disabled={saveActivity.loading}
-                    onClick={() => setOpenModal(true)}
+                    onClick={() => setOpenModal({ value: true, payload: null })}
                 >
                     Nueva actividad
                 </Button>   
@@ -907,37 +906,39 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                 <div style={{ height: 4 }} />
                                 <div className={clsx(classes.row, classes.unselect)}>
                                     <div style={{ width: '1em' }} />
+                                    {activity.status !== "ELIMINADO" && (
+                                        <div
+                                            className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                            onClick={() => {
+                                                const body = leadActivityIns({
+                                                    ...activity,
+                                                    username: null,
+                                                    status: "REALIZADO",
+                                                    operation: "UPDATE",
+                                                });
+                                                dispatch(saveLeadActivity(body));
+                                            }}
+                                            style={{ marginRight: '1em' }}
+                                        >
+                                            <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                            <span>Mark Done</span>
+                                        </div>
+                                    )}
                                     <div
                                         className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
-                                        onClick={() => {
-                                            const body = leadActivityIns({
-                                                ...activity,
-                                                username: null,
-                                                status: "REALIZADO",
-                                                operation: "UPDATE",
-                                            });
-                                            dispatch(saveLeadActivity(body));
-                                        }}
-                                    >
-                                        <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                        <span>Mark Done</span>
-                                    </div>
-                                    <div style={{ width: '1em' }} />
-                                    <div
-                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
-                                        onClick={() => setSelectedActivity(activity)}
+                                        onClick={() => setOpenModal({ value: true, payload: activity })}
+                                        style={{ marginRight: '1em' }}
                                     >
                                         <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
                                         <span>Edit</span>
                                     </div>
-                                    <div style={{ width: '1em' }} />
-                                    <div
+                                    {activity.status !== "ELIMINADO" && <div
                                         className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                         onClick={() => {
                                             const body = leadActivityIns({
                                                 ...activity,
                                                 username: null,
-                                                status: "DESCARTADO",
+                                                status: "ELIMINADO",
                                                 operation: "UPDATE",
                                             });
                                             dispatch(saveLeadActivity(body));
@@ -945,7 +946,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                     >
                                         <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
                                         <span>Cancel</span>
-                                    </div>
+                                    </div>}
                                 </div>
                             </div>
                         </div>
@@ -954,12 +955,9 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                 </div>
             ))}
             <SaveActivityModal
-                onClose={() => {
-                    setOpenModal(false);
-                    setSelectedActivity(null);
-                }}
-                open={openModal}
-                activity={selectedActivity}
+                onClose={() => setOpenModal({ value: false, payload: null })}
+                open={openModal.value}
+                activity={openModal.payload}
                 leadid={lead.leadid}
             />
         </div>
@@ -991,6 +989,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
 }));
 
 const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid }) => {
+    console.log('SaveActivityModal', activity);
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -1070,6 +1069,20 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
         });
     }, [reset]);
 
+    useEffect(() => {
+        reset({
+            leadid: leadid,
+            leadactivityid: activity?.leadactivityid || 0,
+            description: activity?.description || "",
+            duedate: activity?.duedate || "",
+            assignto: activity?.assignto || "",
+            type: activity?.type || "",
+            status: activity?.status || "ACTIVO",
+            username: null,
+            operation: activity ? "UPDATE" : "INSERT",
+        });
+    }, [activity, reset]);
+
     const handleSave = useCallback((values: ICrmLeadActivitySave, status: "PROGRAMADO" | "REALIZADO" | "DESCARTADO") => {
         handleSubmit(() => {
             const body = leadActivityIns({
@@ -1080,6 +1093,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
         })();
     }, [handleSubmit, dispatch]);
 
+    console.log("EER", getValues());
     return (
         <Modal
             open={open}
@@ -1207,7 +1221,7 @@ const Loading: FC = () => {
 }
 
 interface FilePreviewProps {
-    src: File | string | null;
+    src: File | string;
     onClose?: () => void;
 }
 
@@ -1230,11 +1244,11 @@ const useFilePreviewStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
+        color: 'lightgrey',
     },
 }));
 
 const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
-    console.log('FilePreview', src);
     const classes = useFilePreviewStyles();
 
     const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
@@ -1248,8 +1262,11 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     }, [isUrl, src]);
 
     const getFileExt = useCallback(() => {
-        return getFileName().split('.').pop()?.toUpperCase() || "-";
-    }, [getFileName]);
+        if (isUrl()) {
+            return (src as string).split('.').pop()?.toUpperCase() || "-";
+        }
+        return (src as File).name.split('.').pop()?.toUpperCase() || "-";
+    }, [isUrl, src]);
 
     return (
         <Paper className={classes.root} elevation={2}>
@@ -1268,9 +1285,11 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 )}
                 {isUrl() && <div style={{ height: '10%' }} />}
                 {isUrl() && (
-                    <IconButton size="small">
-                        <DownloadIcon />
-                    </IconButton>
+                    <a href={src as string} target="_blank" download={`${getFileName()}.${getFileExt()}`}>
+                        <IconButton size="small">
+                            <GetApp />
+                        </IconButton>
+                    </a>
                 )}
             </div>
         </Paper>
