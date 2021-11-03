@@ -72,7 +72,6 @@ export const ChannelAddWhatsapp: FC = () => {
     const [disablebutton, setdisablebutton] = useState(true);
     const [setins, setsetins] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
-    
    
     const executeResult = useSelector(state => state.channel.successinsert);
     const mainResult = useSelector(state => state.channel.channelList);
