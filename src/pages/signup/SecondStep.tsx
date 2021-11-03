@@ -43,16 +43,15 @@ const CssPhonemui = styled(MuiPhoneNumber)({
 export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, setStep: (param: any) => void,setOpenWarning: (param: any) => void}> = ({ setMainData, mainData, setStep,setOpenWarning }) => {
     
     const dispatch = useDispatch();
-    const ressignup = useSelector(state => state.signup.countryList);
+    const ressignup = useSelector(state => state.signup.countryList);    
+    const URL="https://ipapi.co/json/";
+    const [countrycode, setcountrycode] = useState("PE");
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
         companybusinessname: "",
     });
     const [disablebutton, setdisablebutton] = useState(true);
     const mainResult = useSelector(state => state.main);
-    useEffect(() => {
-        dispatch(getCountryList())
-    }, [])
     useEffect(() => {
         setdisablebutton(!(mainData.firstandlastname !== "" && mainData.companybusinessname !== ""))
     }, [mainData])
@@ -62,12 +61,22 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     }
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
+        dispatch(getCountryList())
+        fetch(URL,{method: "get"})
+            .then((response)=>response.json())
+            .then((data)=>{
+                setcountrycode(data.country_code);
+            })
         fetchData();
         return () => {
             dispatch(resetMain());
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+    useEffect(() => {
+        setMainData((p:any) => ({ ...p, country: countrycode }))
+    }, [countrycode]);
+
     
     const { t } = useTranslation();
     const classes = useChannelAddStyles();
@@ -103,6 +112,17 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     error={!!errors.companybusinessname}
                     helperText={errors.companybusinessname}
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
+                />                
+                <FieldSelect
+                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "" }))}
+                    variant="outlined"
+                    className="col-6"
+                    style={{margin:"15px 0"}}
+                    label={t(langKeys.country)}
+                    valueDefault={mainData.country}
+                    data={ressignup.data}
+                    optionDesc="description"
+                    optionValue="code"
                 />
                 <CssPhonemui
                     variant="outlined"
@@ -113,7 +133,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     label={t(langKeys.mobilephoneoptional)}
                     name="mobilephone"
                     fullWidth
-                    defaultCountry={'pe'}
+                    defaultCountry={countrycode.toLowerCase()}
                     onChange={(e:any) => setMainData((p: any) => ({ ...p, mobilephone: e }))}
                 />
                 <div style={{ paddingTop: 20, fontWeight: "bold", color: "#381052" }}>{t(langKeys.laraigouse)}</div>
@@ -129,17 +149,6 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     data={mainResult.mainData.data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
-                />
-                <FieldSelect
-                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "" }))}
-                    variant="outlined"
-                    className="col-6"
-                    style={{margin:"15px 0"}}
-                    label={t(langKeys.country)}
-                    valueDefault={mainData.country}
-                    data={ressignup.data}
-                    optionDesc="description"
-                    optionValue="code"
                 />
                 <Button
                     onClick={() => { setStep(3) }}
