@@ -160,17 +160,21 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
     });
 
-    React.useEffect(() => {
+    const registerFormFieldOptions = useCallback(() => {
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('expected_revenue', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('date_deadline', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        // register('phone', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        // register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('phase', { validate: (value) => ((value && value.length) || t(langKeys.field_required) + "") });
     }, [register, t]);
+
+    React.useEffect(() => {
+        registerFormFieldOptions();
+    }, [registerFormFieldOptions]);
 
     const onSubmit = handleSubmit((data) => {
         console.log(data);
@@ -225,7 +229,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 column_uuid: lead.value?.column_uuid,
                 leadid: match.params.id,
                 phase: lead.value?.phase,
-            })
+            });
+            registerFormFieldOptions();
         }
     }, [lead, edit, dispatch]);
 
@@ -989,7 +994,6 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
 }));
 
 const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid }) => {
-    console.log('SaveActivityModal', activity);
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -1038,13 +1042,13 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             duedate: activity?.duedate || "",
             assignto: activity?.assignto || "",
             type: activity?.type || "",
-            status: activity?.status || "ACTIVO",
+            status: activity?.status || "PROGRAMADO",
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
         },
     });
 
-    useEffect(() => {
+    const registerFormFieldOptions = useCallback(() => {
         const mandatoryStrField = (value: string) => {
             return value.length === 0 ? t(langKeys.field_required) : undefined;
         }
@@ -1054,6 +1058,10 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
         register('assignto', { validate: mandatoryStrField });
         register('type', { validate: mandatoryStrField });
     }, [register, t]);
+
+    useEffect(() => {
+        registerFormFieldOptions();
+    }, [registerFormFieldOptions]);
 
     const resetValues = useCallback(() => {
         reset({
@@ -1067,6 +1075,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             username: null,
             operation: "INSERT",
         });
+        registerFormFieldOptions();
     }, [reset]);
 
     useEffect(() => {
@@ -1077,14 +1086,17 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             duedate: activity?.duedate || "",
             assignto: activity?.assignto || "",
             type: activity?.type || "",
-            status: activity?.status || "ACTIVO",
+            status: activity?.status || "PROGRAMADO",
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
         });
-    }, [activity, reset]);
 
-    const handleSave = useCallback((values: ICrmLeadActivitySave, status: "PROGRAMADO" | "REALIZADO" | "DESCARTADO") => {
-        handleSubmit(() => {
+        registerFormFieldOptions();
+    }, [activity, reset, register]);
+
+    const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
+        handleSubmit((values) => {
+            console.log('AA', values);
             const body = leadActivityIns({
                 ...values,
                 status,
@@ -1093,7 +1105,6 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
         })();
     }, [handleSubmit, dispatch]);
 
-    console.log("EER", getValues());
     return (
         <Modal
             open={open}
@@ -1168,7 +1179,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
-                            handleSave(getValues(), "PROGRAMADO");
+                            handleSave("PROGRAMADO");
                         }}
                     >
                         Schedule
@@ -1179,7 +1190,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
-                            handleSave(getValues(), "REALIZADO");
+                            handleSave("REALIZADO");
                         }}
                     >
                         Mark as Done
@@ -1190,7 +1201,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         className={classes.footerBtn}
                         onClick={() => {
                             mustCloseOnSubmit.current = false;
-                            handleSave(getValues(), "REALIZADO");
+                            handleSave("REALIZADO");
                         }}
                     >
                         {'Done & Schedule next'}

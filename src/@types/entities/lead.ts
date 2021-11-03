@@ -71,7 +71,7 @@ export interface ICrmLeadActivitySave {
 	duedate: string;
 	assignto: string;
 	type: string;
-	status: string;
+	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
 	username: string | null;
 	operation: "UPDATE" | "INSERT" | "DELETE";
 }
@@ -108,5 +108,5 @@ export interface IcrmLeadActivity {
 	duedate: string;
 	assignto: string;
 	type: string;
-	status: string;
+	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
 }
