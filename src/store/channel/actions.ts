@@ -40,6 +40,16 @@ export const deleteChannel = (requestBody: IRequestBody): IActionCall => ({
     type: null,
 });
 
+export const checkPaymentPlan = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => ChannelsService.checkPaymentPlan(requestBody),
+    types: {
+        loading: actionTypes.CHECK_PAYMENTPLAN,
+        success: actionTypes.CHECK_PAYMENTPLAN_SUCCESS,
+        failure: actionTypes.CHECK_PAYMENTPLAN_FAILURE,
+    },
+    type: null,
+});
+
 export const resetGetChannelsList = (): IActionCall => ({type: actionTypes.CHANNELS_RESET});
 
 export const resetChannelInsert = (): IActionCall => ({type: actionTypes.CHANNELS_INSERTSUCCESS_RESET});

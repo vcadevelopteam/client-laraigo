@@ -68,6 +68,7 @@ export const apiUrls = {
     COUNTRYLIST: `${BASE_URL}/subscription/countrylist`,
     ACTIVATION_USER: `${BASE_URL}/subscription/activateuser`,
     DELETE_CHANNEL: `${BASE_URL}/channel/deletechannel`,
+    CHECK_PAYMENTPLAN: `${BASE_URL}/channel/checkpaymentplan`,
 
     PERSON: `${BASE_URL}/person`,
 

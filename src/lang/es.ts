@@ -1292,6 +1292,8 @@ const translation: LangKeys = {
     logNote_plural: 'Notas de registro',
     scheduleActivity: 'Programa de actividad',
     scheduleActivity_plural: 'Programa de actividades',
+
+    channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar'
 };
 
 const esResource: ResourceLanguage = {

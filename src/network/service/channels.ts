@@ -28,6 +28,9 @@ export function getCountryList( ) {
 export function deletechnl(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.DELETE_CHANNEL, { data: requestBody }, true);
 }
+export function checkPaymentPlan(requestBody: IRequestBody ) {
+    return APIManager.post(apiUrls.CHECK_PAYMENTPLAN, { data: requestBody }, true);
+}
 export function editchnl(requestBody: IRequestBody ) {
     const uri = `${apiUrls.CHANNELS}/updatechannel`;
     return APIManager.post(uri, { data: requestBody }, true);

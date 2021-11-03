@@ -7,6 +7,7 @@ export interface IState {
     channelList: IListStatePaginated<Dictionary>;
     successinsert: Boolean;
     insertChannel: IObjectState<{ success : boolean, integrationid: string }>;
+    checkPaymentPlan: IObjectState<{ success : boolean, createChannel : boolean, providerWhatsApp: string }>;
     editChannel: IProcessState;
 }
 
@@ -14,6 +15,7 @@ export const initialState: IState = {
     channelList: initialListPaginatedState,
     successinsert: false,
     insertChannel: initialObjectState,
+    checkPaymentPlan: initialObjectState,
     editChannel: initialProccessState,
 };
 
@@ -34,4 +36,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.EDIT_CHANNEL_SUCCESS]: caseFUnctions.editChannelSuccess,
     [actionTypes.EDIT_CHANNEL_FAILURE]: caseFUnctions.editChannelFailure,
     [actionTypes.EDIT_CHANNEL_RESET]: caseFUnctions.editChannelReset,
+
+    [actionTypes.CHECK_PAYMENTPLAN]: caseFUnctions.checkPaymentPlan,
+    [actionTypes.CHECK_PAYMENTPLAN_SUCCESS]: caseFUnctions.checkPaymentPlanSuccess,
+    [actionTypes.CHECK_PAYMENTPLAN_FAILURE]: caseFUnctions.checkPaymentPlanFailure,
+    [actionTypes.CHECK_PAYMENTPLAN_RESET]: caseFUnctions.checkPaymentPlanReset,
 });

@@ -1301,6 +1301,8 @@ const translation: LangKeys = {
     logNote_plural: 'Log notes',
     scheduleActivity: 'Schedule activity',
     scheduleActivity_plural: 'Schedule activities',
+
+    channellimit: 'Reached maximum number of channels, upgrade your plan to continue'
 };
 
 const enResource: ResourceLanguage = {

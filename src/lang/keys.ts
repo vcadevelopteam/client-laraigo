@@ -1294,6 +1294,8 @@ export const langKeys = {
     logNote_plural: 'logNote_plural',
     scheduleActivity: 'scheduleActivity',
     scheduleActivity_plural: 'scheduleActivity_plural',
+
+    channellimit: 'channellimit',
 };
 
 export type LangKeys = typeof langKeys;
