@@ -9,7 +9,7 @@ import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappIcon } from "icons";
 import { useSelector } from "hooks";
-import { Dictionary } from "@types"
+import { Dictionary } from "@types";
 
 const useChannelAddStyles = makeStyles(theme => ({
     centerbutton: {
@@ -418,6 +418,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             </div>
                         </div>
                     </div>
+
                     <div style={{ paddingLeft: "80%" }}>
                         <Button
                             onClick={() => { finishreg() }}
@@ -427,9 +428,7 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
                             color="primary"
                         >{t(langKeys.finishreg)}
                         </Button>
-
                     </div>
-
                 </div>
             </div>
         )

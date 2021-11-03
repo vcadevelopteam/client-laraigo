@@ -170,7 +170,7 @@ export const Channels: FC = () => {
     useEffect(() => {
         if (canRegister) {
             setCanRegister(false);
-            history.push(paths.CHANNELS_ADD);
+            history.push(paths.CHANNELS_ADD, typeWhatsApp);
         }
     }, [canRegister]);
 
