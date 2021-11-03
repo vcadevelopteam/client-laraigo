@@ -1293,7 +1293,19 @@ const translation: LangKeys = {
     scheduleActivity: 'Programa de actividad',
     scheduleActivity_plural: 'Programa de actividades',
 
-    channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar'
+    channellimit: 'Se alcanzo el maximo número de canales, mejora tu plan para continuar',
+    type_activitylead_call: 'Llamada',
+    'type_activitylead_call for demo': 'Demo de llamada',
+    'type_activitylead_email: welcome demo': 'Correo: Demostración de bienvenida',
+    'type_activitylead_follow-up quote': 'Cotización de seguimiento',
+    'type_activitylead_make quote': 'Hacer cotización',
+    type_activitylead_meeting: 'Reunión',
+    type_activitylead_email: 'Correo',
+    type_phaselead_cualificado: 'Cualificado',
+    type_phaselead_ganado: 'Ganado',
+    type_phaselead_nuevo: 'Nuevo',
+    type_phaselead_perdido: 'Perdido',
+    type_phaselead_propuesta: 'Propuesta',
 };
 
 const esResource: ResourceLanguage = {

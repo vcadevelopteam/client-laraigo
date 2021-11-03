@@ -1296,6 +1296,18 @@ export const langKeys = {
     scheduleActivity_plural: 'scheduleActivity_plural',
 
     channellimit: 'channellimit',
+    type_activitylead_call: 'type_activitylead_call',
+    'type_activitylead_call for demo': 'type_activitylead_call for demo',
+    'type_activitylead_email: welcome demo': 'type_activitylead_email: welcome demo',
+    'type_activitylead_follow-up quote': 'type_activitylead_follow-up quote',
+    'type_activitylead_make quote': 'type_activitylead_make quote',
+    type_activitylead_meeting: 'type_activitylead_meeting',
+    type_activitylead_email: 'type_activitylead_email',
+    type_phaselead_cualificado: 'type_phaselead_cualificado',
+    type_phaselead_ganado: 'type_phaselead_ganado',
+    type_phaselead_nuevo: 'type_phaselead_nuevo',
+    type_phaselead_perdido: 'type_phaselead_perdido',
+    type_phaselead_propuesta: 'type_phaselead_propuesta',
 };
 
 export type LangKeys = typeof langKeys;

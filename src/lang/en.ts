@@ -1302,7 +1302,19 @@ const translation: LangKeys = {
     scheduleActivity: 'Schedule activity',
     scheduleActivity_plural: 'Schedule activities',
 
-    channellimit: 'Reached maximum number of channels, upgrade your plan to continue'
+    channellimit: 'Reached maximum number of channels, upgrade your plan to continue',
+    type_activitylead_call: 'Call',
+    'type_activitylead_call for demo': 'Call for demo',
+    'type_activitylead_email: welcome demo': 'Email: Welcome demo',
+    'type_activitylead_follow-up quote': 'Follow-up quote',
+    'type_activitylead_make quote': 'Make quote',
+    type_activitylead_meeting: 'Meeting',
+    type_activitylead_email: 'Email',
+    type_phaselead_cualificado: 'Qualified',
+    type_phaselead_ganado: 'Won',
+    type_phaselead_nuevo: 'New',
+    type_phaselead_perdido: 'Lost',
+    type_phaselead_propuesta: 'Proposal',
 };
 
 const enResource: ResourceLanguage = {

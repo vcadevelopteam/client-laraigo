@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICRmSaveLead, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICRmSaveLead, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1773,7 +1773,9 @@ export const insLead2 = (lead: ICrmLead, operation: "UPDATE" | "INSERT" | "DELET
     key: "UFN_LEAD_INS",
     parameters: {
         ...lead,
-        operation
+        id: lead.leadid,
+        username: null,
+        operation,
     },
 });
 
@@ -1783,16 +1785,6 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
     parameters: {
         id: id,
         all: false
-    },
-});
-
-export const leadNotesSel = (): IRequestBody => ({
-    method: 'UFN_LEADNOTES_SEL',
-    key: "UFN_LEADNOTES_SEL",
-    parameters: {
-        leadid: 0,
-        leadnotesid: 0,
-        all: true,
     },
 });
 
@@ -1814,4 +1806,36 @@ export const paginatedPersonWithoutDateSel = ({ skip, take, filters, sorts }: Di
         origin: "person",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
+});
+
+export const leadActivityIns = (parameters: ICrmLeadActivitySave): IRequestBody => ({
+    key: "UFN_LEADACTIVITY_INS",
+    method: "UFN_LEADACTIVITY_INS",
+    parameters,
+});
+
+export const leadActivitySel = (leadid: string | number): IRequestBody => ({
+    key: "UFN_LEADACTIVITY_SEL",
+    method: "UFN_LEADACTIVITY_SEL",
+    parameters: {
+        leadid,
+        leadactivityid: 0,
+        all: true,
+    }
+});
+
+export const leadLogNotesSel = (leadid: string | number): IRequestBody => ({
+    key: "UFN_LEADNOTES_SEL",
+    method: "UFN_LEADNOTES_SEL",
+    parameters: {
+        leadid,
+        leadnotesid: 0,
+        all: true,
+    }
+});
+
+export const leadLogNotesIns = (parameters: ICrmLeadNoteSave): IRequestBody => ({
+    key: "UFN_LEADNOTES_INS",
+    method: "UFN_LEADNOTES_INS",
+    parameters,
 });
