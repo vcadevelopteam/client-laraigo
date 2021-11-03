@@ -14,7 +14,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import { useSelector } from 'hooks';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
+import Popus from 'components/layout/Popus';
 import { useDispatch } from 'react-redux';
 import { login } from 'store/login/actions';
 import { getAccessToken } from 'common/helpers';
@@ -25,6 +25,8 @@ import FacebookLogin from 'react-facebook-login';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
+import { showSnackbar } from 'store/popus/actions';
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -89,6 +91,7 @@ type IAuth = {
 const SignIn = () => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const location = useLocation();
 
     const history = useHistory();
 
@@ -133,6 +136,15 @@ const SignIn = () => {
     }
 
     useEffect(() => {
+        const ff = location.state || {} as any;
+        if (!!ff?.showSnackbar) {
+            dispatch(showSnackbar({ show: true, success: true, message: ff?.message || "" }))
+        }
+     }, [location]);
+
+    useEffect(() => {
+        
+
         if (getAccessToken()) {
             history.push('/');
         }
@@ -235,6 +247,7 @@ const SignIn = () => {
                     <Copyright />
                 </Box>
             </div>
+            <Popus />
         </Container>)
 }
 

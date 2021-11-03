@@ -51,14 +51,14 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData ,dataCurrency}) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    
+
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -153,24 +153,24 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         {edit ?
                             (
                                 !row && ['SUPERADMIN'].includes(user?.roledesc || "") ?
-                                <FieldSelect
-                                    label={t(langKeys.corporation)}
-                                    className="col-6"
-                                    valueDefault={getValues('corpid')}
-                                    onChange={(value) => setValue('corpid', value?.corpid)}
-                                    error={errors?.corpid?.message}
-                                    data={dataCorp}
-                                    disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
-                                    optionDesc="description"
-                                    optionValue="corpid"
-                                />
-                                :
-                                <FieldEdit
-                                    label={t(langKeys.corporation)} // "Corporation"
-                                    className="col-6"
-                                    valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
-                                    disabled={true}
-                                />
+                                    <FieldSelect
+                                        label={t(langKeys.corporation)}
+                                        className="col-6"
+                                        valueDefault={getValues('corpid')}
+                                        onChange={(value) => setValue('corpid', value?.corpid)}
+                                        error={errors?.corpid?.message}
+                                        data={dataCorp}
+                                        disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
+                                        optionDesc="description"
+                                        optionValue="corpid"
+                                    />
+                                    :
+                                    <FieldEdit
+                                        label={t(langKeys.corporation)} // "Corporation"
+                                        className="col-6"
+                                        valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
+                                        disabled={true}
+                                    />
                             )
                             : <FieldView
                                 label={t(langKeys.corporation)}
@@ -228,6 +228,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.status || "") : ""}
                                 className="col-6"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label={t(langKeys.currency)}
