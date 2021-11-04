@@ -90,7 +90,8 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 companysize: lastfields.companysize,
                 rolecompany: lastfields.companyrole,
                 paymentplanid: planData.data[0].paymentplanid,
-                country: mainData.country
+                country: mainData.country,
+                currency: mainData.currency,
             },
             channellist: requestchannels
         }
