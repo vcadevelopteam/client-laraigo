@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -26,8 +26,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormHelperText, useTheme } from '@material-ui/core';
-import { Divider, Grid, ListItem, ListItemText } from '@material-ui/core';
+import { FormHelperText, OutlinedInputProps, useTheme } from '@material-ui/core';
+import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { EmojiICon, GifIcon } from 'icons';
@@ -53,7 +53,8 @@ import {
     TelegramIcon
 } from 'icons';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
-
+import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import clsx from 'clsx';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -276,7 +277,7 @@ interface InputProps {
     prefixTranslation?: string;
     variant?: "standard" | "outlined" | "filled" | undefined;
     inputProps?: any;
-    InputProps?: any;
+    InputProps?: Partial<OutlinedInputProps>;
     size?: "small" | "medium" | undefined;
 }
 
@@ -566,7 +567,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                 }}
                 // onChange={onChange}
                 size="small"
-                getOptionLabel={option => option ? option[optionDesc] || option : ''}
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -1114,4 +1115,33 @@ export const FieldUploadImage: React.FC<InputProps> = ({ className, onChange, va
             }
         </div>
     )
+}
+
+const CssPhonemui = styled(MuiPhoneNumber)({
+    minHeight: 'unset',
+    '& .MuiInput-underline:after': {
+        borderBottomColor: '#7721ad',
+    },
+});
+
+interface PhoneFieldEditProps extends Omit<MaterialUiPhoneNumberProps, 'error'> {
+    error?: string;
+}
+
+export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, className, ...props }) => {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                {label}
+            </Box>
+            <CssPhonemui
+                variant="standard"
+                margin="none"
+                disableAreaCodes
+                error={!!error}
+                helperText={error || null}
+                {...props}
+            />
+        </div>
+    );
 }
