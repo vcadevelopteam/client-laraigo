@@ -195,14 +195,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 "nameassociatednumber": serviceField.nameassociatednumber,
                             }
                         });
+
+                        setdisablebutton(false);
                     }
                 }
             }
         }
     }, [setParameters])
-
-    useEffect(() => {
-    }, [fields])
 
     useEffect(() => {
         if (!mainResult.loading && setins){
@@ -301,12 +300,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.brandname}
                                     helperText={errors.brandname}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.brandname = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
                                                 || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.brandname}
                                 />
                                 <TextField
                                     className={classes.fields2}
@@ -319,12 +319,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.brandaddress}
                                     helperText={errors.brandaddress}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.brandaddress = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.firstname) || !(fields.service.lastname) || !(fields.service.email) 
                                                 || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.brandaddress}
                                 />
                             </div>
                             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.brandpointcontact)}</div>
@@ -342,12 +343,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.firstname}
                                     helperText={errors.firstname}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.firstname = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.lastname) || !(fields.service.email) 
                                                 || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.firstname}
                                 />
                                 <TextField
                                     className={classes.fields2}
@@ -361,12 +363,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.lastname}
                                     helperText={errors.lastname}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.lastname = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.email) 
                                                 || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.lastname}
                                 />
                             </div>
                             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
@@ -383,12 +386,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.email}
                                     helperText={errors.email}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.email = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
                                                 || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.email}
                                 />
                                 <CssPhonemui
                                     className={classes.fields2}
@@ -404,7 +408,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     fullWidth
                                     defaultCountry={'pe'}                                    
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.phone = e;
                                         setFields(partialf)
                                         setdisablebutton(!(e) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
@@ -427,12 +431,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.customerfacebookid}
                                     helperText={errors.customerfacebookid}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.customerfacebookid = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
                                                 || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.customerfacebookid}
                                 />
                             </div>
                             <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation2)}</div>
@@ -449,12 +454,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.phonenumberwhatsappbusiness}
                                     helperText={errors.phonenumberwhatsappbusiness}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.phonenumberwhatsappbusiness = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
                                                 || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.nameassociatednumber) )
                                     }}
+                                    value={fields.service.phonenumberwhatsappbusiness}
                                 />
                             </div>
                             <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation3)}</div>
@@ -471,12 +477,13 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                     error={!!errors.nameassociatednumber}
                                     helperText={errors.nameassociatednumber}
                                     onChange={(e) => {
-                                        let partialf = fields;
+                                        let partialf = {...fields};
                                         partialf.service.nameassociatednumber = e.target.value;
                                         setFields(partialf)
                                         setdisablebutton(!(e.target.value) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
                                                 || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) )
                                     }}
+                                    value={fields.service.nameassociatednumber}
                                 />
                             </div>
                             <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation4)}</div>
@@ -514,6 +521,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             onChange={(value) => setnameField(value)}
                             label={t(langKeys.givechannelname)}
                             className="col-6"
+                            valueDefault={fields.parameters.description}
                         />
                     </div>
                     <div className="row-zyx">
