@@ -397,6 +397,8 @@ export const langKeys = {
     status_inactivo: 'status_inactivo',
     status_bloqueado: 'status_bloqueado',
     status_ejecutando: 'status_ejecutando',
+    status_pendiente: 'status_pendiente',
+    status_pending: 'status_pending',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',

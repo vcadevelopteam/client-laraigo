@@ -12,6 +12,11 @@ interface ChannelOption {
     onClick: () => void;
 }
 
+interface whatsAppData {
+    typeWhatsApp?: string;
+    row?: any;
+}
+
 const useChannelAddStyles = makeStyles(theme => ({
     root: {
         // maxWidth: 815,
@@ -80,11 +85,13 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAdd: FC = () => {
     const classes = useChannelAddStyles();
     const history = useHistory();
-    const location = useLocation();
+    const location = useLocation<whatsAppData>();
+
+    const whatsAppData = location.state as whatsAppData | null;
 
     const { t } = useTranslation();
 
-    if (typeof location?.state === 'undefined' || !location?.state) {
+    if (typeof whatsAppData === 'undefined' || !whatsAppData) {
         history.push(paths.CHANNELS);
     }
 
@@ -112,7 +119,7 @@ export const ChannelAdd: FC = () => {
         {
             icon: c => <WhatsappIcon className={c}/>,
             label: 'Whatsapp',
-            onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path, location.state)},
+            onClick: () => {history.push(paths.CHANNELS_ADD_WHATSAPP.path, whatsAppData)},
         },
         {
             icon: c => <TelegramIcon className={c} />,

@@ -69,13 +69,24 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
-        const pathname = row.type === "CHAZ" ?
+        if (row.type === 'WHAT' && row.status === 'PENDING') {
+            var whatsAppData = {
+                typeWhatsApp: 'SMOOCH',
+                row: row
+            }
+
+            history.push(paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), whatsAppData);
+        }
+        else {
+            const pathname = row.type === "CHAZ" ?
             paths.CHANNELS_EDIT_CHATWEB.resolve(row.communicationchannelid) :
             paths.CHANNELS_EDIT.resolve(row.communicationchannelid);
-        history.push({
-            pathname,
-            state: row,
-        });
+
+            history.push({
+                pathname,
+                state: row,
+            });
+        }
     }
 
     const checkLimit = () => {
@@ -170,7 +181,13 @@ export const Channels: FC = () => {
     useEffect(() => {
         if (canRegister) {
             setCanRegister(false);
-            history.push(paths.CHANNELS_ADD, typeWhatsApp);
+
+            var restrictionInformation = {
+                typeWhatsApp: typeWhatsApp,
+                row: null
+            }
+
+            history.push(paths.CHANNELS_ADD, restrictionInformation);
         }
     }, [canRegister]);
 

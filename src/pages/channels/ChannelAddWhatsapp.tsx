@@ -63,6 +63,11 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
+interface whatsAppData {
+    typeWhatsApp?: string;
+    row?: any;
+}
+
 export const ChannelAddWhatsapp: FC = () => {
     const [enable, setenable] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
@@ -78,7 +83,9 @@ export const ChannelAddWhatsapp: FC = () => {
 
     const classes = useChannelAddStyles();
     const history = useHistory();
-    const location = useLocation();
+    const location = useLocation<whatsAppData>();
+
+    const whatsAppData = location.state as whatsAppData | null;
 
     const dispatch = useDispatch();
 
@@ -114,7 +121,7 @@ export const ChannelAddWhatsapp: FC = () => {
             "apikey": "",
             "coloricon": "#4AC959",
         },
-        "type": location.state==="DIALOG"?"WHATSAPP":"WHATSAPPSMOOCH",
+        "type": whatsAppData?.typeWhatsApp==="DIALOG"?"WHATSAPP":"WHATSAPPSMOOCH",
         "service": {
             "accesstoken": "",
             "brandname": "",
@@ -184,7 +191,7 @@ export const ChannelAddWhatsapp: FC = () => {
     }
 
     if(viewSelected==="view1"){
-        if(location.state==="DIALOG"){
+        if(whatsAppData?.typeWhatsApp==="DIALOG"){
             return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">

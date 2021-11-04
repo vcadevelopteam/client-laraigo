@@ -69,6 +69,10 @@ const paths = {
         path: '/channels/edit/:id/chatweb',
         resolve: (channelId: string | number) => `/channels/edit/${channelId}/chatweb`,
     },
+    CHANNELS_EDIT_WHATSAPP: {
+        path: '/channels/edit/:id/whatsapp',
+        resolve: (channelId: string | number) => `/channels/edit/${channelId}/whatsapp`,
+    },
     BILLING_SETUPS: '/billing_setups',
     CONFIGURATION: '/configuration',
     EXTRAS: '/extras',
