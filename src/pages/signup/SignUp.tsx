@@ -109,6 +109,7 @@ export const SignUp: FC = () => {
         googleid: "",
         join_reason: "",
         country: "",
+        currency: ""
     });
     function setDefaultMainData(){
         setMainData({

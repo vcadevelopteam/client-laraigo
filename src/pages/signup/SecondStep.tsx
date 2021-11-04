@@ -62,11 +62,15 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
         dispatch(getCountryList())
-        fetch(URL,{method: "get"})
-            .then((response)=>response.json())
-            .then((data)=>{
-                setcountrycode(data.country_code);
-            })
+        try{
+            fetch(URL,{method: "get"})
+                .then((response)=>response.json())
+                .then((data)=>{
+                    setcountrycode(data.country_code);
+                })
+        }catch (error) {
+            console.error("error");
+        }
         fetchData();
         return () => {
             dispatch(resetMain());
@@ -114,7 +118,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />                
                 <FieldSelect
-                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "" }))}
+                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "", currency: value?.currencycode || "" }))}
                     variant="outlined"
                     className="col-6"
                     style={{margin:"15px 0"}}
