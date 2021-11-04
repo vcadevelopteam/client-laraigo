@@ -69,7 +69,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     setcountrycode(data.country_code);
                 })
         }catch (error) {
-            console.error("fuck");
+            console.error("error");
         }
         fetchData();
         return () => {
@@ -118,7 +118,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />                
                 <FieldSelect
-                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "" }))}
+                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "", currency: value?.currencycode || "" }))}
                     variant="outlined"
                     className="col-6"
                     style={{margin:"15px 0"}}
