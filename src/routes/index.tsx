@@ -146,7 +146,7 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_WHATSAPP.path}>
 					<Layout mainClasses={classes.main}>
-						<ChannelAddWhatsapp />
+						<ChannelAddWhatsapp edit={false}/>
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CHANNELS_ADD_TELEGRAM.path}>
@@ -182,6 +182,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CHANNELS_EDIT_CHATWEB.path}>
 					<Layout mainClasses={classes.main}>
 						<ChannelAddChatWeb edit />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.CHANNELS_EDIT_WHATSAPP.path}>
+					<Layout mainClasses={classes.main}>
+						<ChannelAddWhatsapp edit />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CORPORATIONS}>

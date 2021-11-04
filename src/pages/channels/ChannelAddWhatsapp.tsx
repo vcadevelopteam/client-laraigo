@@ -68,7 +68,7 @@ interface whatsAppData {
     row?: any;
 }
 
-export const ChannelAddWhatsapp: FC = () => {
+export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [enable, setenable] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
