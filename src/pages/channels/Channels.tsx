@@ -75,7 +75,7 @@ export const Channels: FC = () => {
                 row: row
             }
 
-            history.push({pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state:row});
+            history.push({pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state:whatsAppData});
         }
         else {
             const pathname = row.type === "CHAZ" ?
