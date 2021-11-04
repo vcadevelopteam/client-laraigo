@@ -36,4 +36,6 @@ export interface IUser {
     image: string | null;
     organizations: Organization[];
     automaticConnection?: boolean;
+    countrycode: string;
+    currencysymbol: string;
 }
