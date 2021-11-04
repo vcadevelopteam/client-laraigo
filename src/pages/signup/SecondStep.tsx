@@ -62,11 +62,15 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const fetchData = () => dispatch(getCollectionPublic(getValuesFromDomain("REASONSSIGNUP")));
     useEffect(() => {
         dispatch(getCountryList())
-        fetch(URL,{method: "get"})
-            .then((response)=>response.json())
-            .then((data)=>{
-                setcountrycode(data.country_code);
-            })
+        try{
+            fetch(URL,{method: "get"})
+                .then((response)=>response.json())
+                .then((data)=>{
+                    setcountrycode(data.country_code);
+                })
+        }catch (error) {
+            console.error("fuck");
+        }
         fetchData();
         return () => {
             dispatch(resetMain());
