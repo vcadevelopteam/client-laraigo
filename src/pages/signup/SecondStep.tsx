@@ -67,6 +67,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                 .then((response)=>response.json())
                 .then((data)=>{
                     setcountrycode(data.country_code);
+                    setMainData((p:any) => ({ ...p, country: data.countrycode }))
                 })
         }catch (error) {
             console.error("error");

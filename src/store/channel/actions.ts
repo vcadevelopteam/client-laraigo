@@ -30,6 +30,15 @@ export const insertChannel = (requestBody: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+export const activateChannel = (requestBody: IRequestBody): IActionCall => ({
+    callAPI: () => ChannelsService.activateChannel(requestBody),
+    types: {
+        loading: actionTypes.ACTIVATECHANNEL,
+        success: actionTypes.ACTIVATECHANNEL_SUCCESS,
+        failure: actionTypes.ACTIVATECHANNEL_FAILURE,
+    },
+    type: null,
+});
 export const deleteChannel = (requestBody: IRequestBody): IActionCall => ({
     callAPI: () => ChannelsService.deletechnl(requestBody),
     types: {

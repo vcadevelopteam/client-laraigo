@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Button, Box, FormControlLabel, FormGroup, Breadcrumbs, Link } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { ColorInput, FieldEdit, IOSSwitch, } from "components";
@@ -16,7 +16,7 @@ const useChannelAddStyles = makeStyles(theme => ({
     },
 }));
 
-export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
+export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
@@ -55,6 +55,11 @@ export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchan
     }
     return (
         <div style={{ width: '100%' }}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    {"<< Previous"}
+                </Link>
+            </Breadcrumbs>
             <div>
                 <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.commchannelfinishreg)}</div>
 

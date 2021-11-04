@@ -1441,7 +1441,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
+export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndes] = useState('0');
@@ -1533,6 +1533,11 @@ export const ChannelAddChatWeb: FC<{setrequestchannels:(param:any)=>void,setlist
             [classes.root] : true,
             [classes.rootextras] : tabIndex==="4",
         })}>
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                    {"<< Previous"}
+                </Link>
+            </Breadcrumbs>
             <div style={{ display: showFinalStep ? 'none' : 'flex', flexDirection: 'column' }}>
                 <h2 className={classes.title}>
                     <Trans i18nKey={langKeys.activeLaraigoOnYourWebsite} />

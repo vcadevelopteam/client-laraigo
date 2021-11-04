@@ -144,3 +144,33 @@ export const checkPaymentPlanReset = (state: IState): IState => ({
     ...state,
     checkPaymentPlan: initialState.checkPaymentPlan,
 });
+
+export const activateChannel = (state: IState): IState => ({
+    ...state,
+    activateChannel: { ...state.activateChannel, loading: true, error: false },
+});
+
+export const activateChannelSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    activateChannel: {
+        ...state.activateChannel,
+        value: action.payload,
+        loading: false,
+        error: false,
+    },
+});
+
+export const activateChannelFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    activateChannel: {
+        value: undefined,
+        loading: false,
+        error: true,
+        message: action.payload?.message || "Ocurrio uun error al insertar el canal"
+    },
+});
+
+export const activateChannelReset = (state: IState): IState => ({
+    ...state,
+    activateChannel: initialState.activateChannel,
+});

@@ -62,6 +62,7 @@ export const apiUrls = {
     VERIFY_CHANNEL: `${BASE_URL}/subscription/get/contract`,
     GET_PAGELISTSUB: `${BASE_URL}/subscription/getpagelist`,
     INSERT_CHANNEL: `${BASE_URL}/channel/insertchannel`,
+    ACTIVATE_CHANNEL: `${BASE_URL}/channel/activatechannel`,
     EXEC_SUB: `${BASE_URL}/subscription/createsubscription`,
     VALIDATE_NEW_USER: `${BASE_URL}/subscription/validateusername`,
     CURRENCYLIST: `${BASE_URL}/subscription/currencylist`,

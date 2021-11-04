@@ -762,6 +762,8 @@ const translation: LangKeys = {
     disabled: "Disabled",
     currency: "Currency",
     givechannelname: "Give your channel a name",
+    activate360dialog: "Activate as 360 dialog",
+    activatesmooch: "Activate as smooch",
     country: "Country",
     goback: "Are you sure you want to go back? Some of the information will be lost",
     yes: 'Yes',

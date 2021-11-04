@@ -69,6 +69,7 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
+        console.log(row)
         if (row.type === 'WHAT' && row.status === 'PENDIENTE') {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',

@@ -18,25 +18,22 @@ import {ChannelAddAndroid} from './ChannelAddAndroid'
 import {ChannelAddIos} from './ChannelAddIos'
 
 
-export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param:any)=>void,setStep:(param:any)=>void,step:any,setMainData:(param:any)=>void,mainData:any,setOpenWarning:(param:any)=>void,requestchannels:any,setrequestchannels:(param:any)=>void}> = 
-    ({setSnackbar,setBackdrop,setStep,step,setMainData,mainData,setOpenWarning,requestchannels,setrequestchannels}) => {
-    const [sendchannels, setsendchannels] = useState(false);
-
-    const [listchannels, setlistchannels] = useState<Dictionary>({
-        facebook:false,
-        instagram: false,
-        messenger: false,
-        whatsapp: false,
-        telegram: false,
-        twitter: false,
-        twitterDM: false,
-        chatWeb: false,
-        email: false,
-        phone: false,
-        sms: false,
-        android: false,
-        ios: false,
-    });
+export const RightSideMenu: FC<{
+    setSnackbar:(param:any)=>void,
+    setBackdrop:(param:any)=>void,
+    setStep:(param:any)=>void,
+    step:any,
+    setMainData:(param:any)=>void,
+    mainData:any,
+    setOpenWarning:(param:any)=>void,
+    requestchannels:any,
+    setrequestchannels:(param:any)=>void,
+    sendchannels:any,
+    setsendchannels:(param:any)=>void,
+    listchannels:any,
+    setlistchannels:(param:any)=>void,
+}> = 
+    ({setSnackbar,setBackdrop,setStep,step,setMainData,mainData,setOpenWarning,requestchannels,setrequestchannels,sendchannels,setsendchannels,listchannels,setlistchannels}) => {
 
     if(step===1){
         return(
@@ -71,20 +68,20 @@ export const RightSideMenu: FC<{setSnackbar:(param:any)=>void,setBackdrop:(param
         )
     }
     else if(step===3&&sendchannels){
-        if(listchannels.facebook) return <ChannelAddFacebook  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.instagram) return <ChannelAddInstagram  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.instagram) return <ChannelAddInstagramDM  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.messenger) return <ChannelAddMessenger setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.whatsapp) return <ChannelAddWhatsapp setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.telegram) return <ChannelAddTelegram setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.twitter) return <ChannelAddTwitter setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.twitterDM) return <ChannelAddTwitterDM setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.chatWeb) return <ChannelAddChatWeb setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.facebook) return <ChannelAddFacebook  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.instagram) return <ChannelAddInstagram  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.instagram) return <ChannelAddInstagramDM  setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.messenger) return <ChannelAddMessenger setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.whatsapp) return <ChannelAddWhatsapp setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.telegram) return <ChannelAddTelegram setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.twitter) return <ChannelAddTwitter setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.twitterDM) return <ChannelAddTwitterDM setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.chatWeb) return <ChannelAddChatWeb setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
         if(listchannels.email) return <div>email</div>
         if(listchannels.phone) return <div>phone</div>
         if(listchannels.sms) return <div>sms</div>
-        if(listchannels.android) return <ChannelAddAndroid setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
-        if(listchannels.apple) return <ChannelAddIos setrequestchannels={setrequestchannels} setlistchannels={setlistchannels}/>
+        if(listchannels.android) return <ChannelAddAndroid setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
+        if(listchannels.apple) return <ChannelAddIos setrequestchannels={setrequestchannels} setlistchannels={setlistchannels} setOpenWarning={setOpenWarning}/>
         else {
             setStep(4)
             return(<div>error no more channels</div>)

@@ -13,6 +13,9 @@ export function getPagelistSub(accessToken: String) {
 export function insertchnl(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.INSERT_CHANNEL, { data: requestBody }, true);
 }
+export function activateChannel(requestBody: IRequestBody ) {
+    return APIManager.post(apiUrls.ACTIVATE_CHANNEL, { data: requestBody }, true);
+}
 export function execSub(requestBody: IRequestBody ) {
     return APIManager.post(apiUrls.EXEC_SUB, { data: requestBody }, true);
 }
