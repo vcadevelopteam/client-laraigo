@@ -77,6 +77,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [disablebutton, setdisablebutton] = useState(true);
     const [setins, setsetins] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
+    const [setParameters, setSetParameters] = useState(true);
    
     const executeResult = useSelector(state => state.channel.successinsert);
     const mainResult = useSelector(state => state.channel.channelList);
@@ -90,6 +91,14 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
+
+    useEffect(() => {
+        if (edit && !whatsAppData?.row) {
+            history.push(paths.CHANNELS);
+        } else if (edit && whatsAppData?.row && whatsAppData?.row.servicecredentials.length === 0) {
+            history.push(paths.CHANNELS);
+        }
+    }, [history]);
 
     const [errors, setErrors] = useState<Dictionary>({
         accesstoken: "",
@@ -148,6 +157,54 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     }
 
     useEffect(() => {
+        if (edit) {
+            if (setParameters) {
+                setSetParameters(false);
+                if (whatsAppData?.row) {
+                    if (whatsAppData && whatsAppData?.row.servicecredentials.length > 0) {
+                        var serviceField = JSON.parse(whatsAppData.row.servicecredentials);
+                
+                        setFields({
+                            "method": "UFN_COMMUNICATIONCHANNEL_INS",
+                            "parameters": {
+                                "id": whatsAppData.row.communicationchannelid,
+                                "description": whatsAppData.row.communicationchanneldesc,
+                                "type": whatsAppData.row.type,
+                                "communicationchannelsite": whatsAppData.row.communicationchannelsite,
+                                "communicationchannelowner": whatsAppData.row.communicationchannelowner,
+                                "chatflowenabled": whatsAppData.row.chatflowenabled,
+                                "integrationid": whatsAppData.row.integrationid,
+                                "color": whatsAppData.row.color,
+                                "icons": whatsAppData.row.icons,
+                                "other": whatsAppData.row.other,
+                                "form": whatsAppData.row.form,
+                                "apikey": whatsAppData.row.apikey,
+                                "coloricon": whatsAppData.row.coloricon,
+                            },
+                            "type": "WHATSAPPSMOOCH",
+                            "service": {
+                                "accesstoken": serviceField.accesstoken,
+                                "brandname": serviceField.brandname,
+                                "brandaddress": serviceField.brandaddress,
+                                "firstname": serviceField.firstname,
+                                "lastname": serviceField.lastname,
+                                "email": serviceField.email,
+                                "phone": serviceField.phone,
+                                "customerfacebookid": serviceField.customerfacebookid,
+                                "phonenumberwhatsappbusiness": serviceField.phonenumberwhatsappbusiness,
+                                "nameassociatednumber": serviceField.nameassociatednumber,
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }, [setParameters])
+
+    useEffect(() => {
+    }, [fields])
+
+    useEffect(() => {
         if (!mainResult.loading && setins){
             if (executeResult) {
                 setsetins(false)
@@ -188,6 +245,10 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         partialf.service.accesstoken = value;
         partialf.parameters.communicationchannelowner = "";
         setFields(partialf)
+    }
+
+    if (edit && !whatsAppData?.row) {
+        return <div />;
     }
 
     if(viewSelected==="view1"){

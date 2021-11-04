@@ -69,12 +69,11 @@ export const Channels: FC = () => {
     }
 
     const handleEdit = (row: IChannel) => {
-        if (row.type === 'WHAT' && row.status === 'PENDING') {
+        if (row.type === 'WHAT' && row.status === 'PENDIENTE') {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',
                 row: row
             }
-
             history.push({pathname: paths.CHANNELS_EDIT_WHATSAPP.resolve(row.communicationchannelid), state:whatsAppData});
         }
         else {
