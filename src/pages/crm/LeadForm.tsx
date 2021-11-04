@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, TitleDetail } from 'components';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment, styled } from '@material-ui/core';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -136,6 +136,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const advisers = useSelector(state => state.lead.advisers);
     const saveLead = useSelector(state => state.lead.saveLead);
     const phases = useSelector(state => state.lead.leadPhases);
+    const user = useSelector(state => state.login.validateToken.user);
 
      const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -269,7 +270,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         console.log('error')
         return <div>ERROR</div>;
     }
-    console.log('getValue', getValues('userid'))
+
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <div className={classes.root}>
@@ -346,6 +347,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 onChange={(value) => setValue('expected_revenue', value)}
                                 valueDefault={getValues('expected_revenue')}
                                 error={errors?.expected_revenue?.message}
+                                InputProps={{
+                                    startAdornment: !user ? null : (
+                                        <InputAdornment position="start">
+                                            {user!.currencysymbol}
+                                        </InputAdornment>
+                                    )
+                                }}
                             />
                             <FieldMultiSelectFreeSolo
                                 label={t(langKeys.tags)}
@@ -399,11 +407,22 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <div style={{ display: (errors?.personcommunicationchannel?.message) ? 'inherit' : 'none', color:'red', fontSize: '0.75rem' }}>{errors?.personcommunicationchannel?.message}</div>
                                 </div>)
                             }
-                            <FieldEdit
+                            {/* <FieldEdit
                                 label={t(langKeys.phone)}
                                 className={classes.field}
                                 onChange={(value) => setValue('phone', value)}
                                 valueDefault={getValues('phone')}
+                                error={errors?.phone?.message}
+                            /> */}
+                            <PhoneFieldEdit
+                                disableAreaCodes={true}
+                                value={getValues('phone')}
+                                label={t(langKeys.phone)}
+                                name="mobilephone"
+                                fullWidth
+                                defaultCountry={user!.countrycode.toLowerCase()}
+                                className={classes.field}
+                                onChange={(v: any) => setValue('phone', v)}
                                 error={errors?.phone?.message}
                             />
                             <FieldEdit
