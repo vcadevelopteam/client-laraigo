@@ -58,6 +58,7 @@ export interface IPerson {
     changeby: string;
     changedate: string;
     personcommunicationchannel: string;
+    havelead: boolean;
 }
 
 export interface IPersonCommunicationChannel {
