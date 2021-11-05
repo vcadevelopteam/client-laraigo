@@ -386,7 +386,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         <Grid container direction="column">
                             {edit ? 
                                 (<FieldView
-                                    label="Customer"
+                                    label={t(langKeys.customer)}
                                     className={classes.field}
                                     value={lead.value?.displayname}
                                 />) : 
@@ -394,7 +394,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                         <div style={{ flexGrow: 1 }}>
                                             <FieldView
-                                                label="Customer"
+                                                label={t(langKeys.customer)}
                                                 value={values?.displayname}
                                             />
                                         </div>
@@ -435,7 +435,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             />
                             <div className={classes.field}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                    Priority
+                                    <Trans i18nKey={langKeys.priority} />
                                 </Box>
                                 <Rating
                                     name="simple-controlled"
@@ -449,7 +449,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </div>
                             <FieldSelect
                                 uset
-                                label="State"
+                                label={t(langKeys.status)}
                                 className={classes.field}
                                 data={phases.data}
                                 prefixTranslation="type_phaselead_"
@@ -677,6 +677,7 @@ const useTabPanelLogNoteStyles = makeStyles(theme => ({
 export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
     const classes = useTabPanelLogNoteStyles();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const [noteDescription, setNoteDescription] = useState("");
     const [media, setMedia] = useState<File | null>(null);
     const leadNotes = useSelector(state => state.lead.leadLogNotes);
@@ -753,7 +754,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                     <div style={{ width: '1em' }} />
                     <div className={classes.column}>
                         <TextField
-                            placeholder="Log an internal note"
+                            placeholder={t(langKeys.logAnInternalNote)}
                             minRows={4}
                             fullWidth
                             value={noteDescription}
@@ -907,7 +908,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                     disabled={saveActivity.loading}
                     onClick={() => setOpenModal({ value: true, payload: null })}
                 >
-                    Nueva actividad
+                    <Trans i18nKey={langKeys.newActivity} />
                 </Button>   
             </div>
             <div style={{ height: '1.34em' }} />
@@ -945,7 +946,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                             style={{ marginRight: '1em' }}
                                         >
                                             <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                            <span>Mark Done</span>
+                                            <span><Trans i18nKey={langKeys.markDone} /></span>
                                         </div>
                                     )}
                                     <div
@@ -954,7 +955,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                         style={{ marginRight: '1em' }}
                                     >
                                         <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                        <span>Edit</span>
+                                        <span><Trans i18nKey={langKeys.edit} /></span>
                                     </div>
                                     {activity.status !== "ELIMINADO" && <div
                                         className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
@@ -969,7 +970,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                         }}
                                     >
                                         <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                        <span>Cancel</span>
+                                        <span><Trans i18nKey={langKeys.cancel} /></span>
                                     </div>}
                                 </div>
                             </div>
@@ -1140,7 +1141,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <FieldSelect
                                     uset
-                                    label="Activity type"
+                                    label={t(langKeys.activityType)}
                                     className={classes.field}
                                     data={domains.data}
                                     prefixTranslation="type_activitylead_"
@@ -1154,7 +1155,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <FieldEdit
-                                    label="Summary"
+                                    label={t(langKeys.summary)}
                                     className={classes.field}
                                     valueDefault={getValues('description')}
                                     onChange={v => setValue('description', v)}
@@ -1167,7 +1168,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         <Grid container direction="column">
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <FieldEdit
-                                    label="Due date"
+                                    label={t(langKeys.dueDate)}
                                     className={classes.field}
                                     type="date"
                                     valueDefault={getValues('duedate')?.substring(0, 10)}
@@ -1177,7 +1178,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             </Grid>
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <FieldSelect
-                                    label="Assigned to"
+                                    label={t(langKeys.assignedTo)}
                                     className={classes.field}
                                     data={advisers.data}
                                     optionDesc="firstname"
@@ -1201,7 +1202,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             handleSave("PROGRAMADO");
                         }}
                     >
-                        Schedule
+                        <Trans i18nKey={langKeys.schedule} />
                     </Button>
                     <Button
                         variant="contained"
@@ -1212,7 +1213,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             handleSave("REALIZADO");
                         }}
                     >
-                        Mark as Done
+                        <Trans i18nKey={langKeys.markAsDone} />
                     </Button>
                     <Button
                         variant="contained"
@@ -1223,7 +1224,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             handleSave("REALIZADO");
                         }}
                     >
-                        {'Done & Schedule next'}
+                        <Trans i18nKey={langKeys.doneAndScheduleNext} />
                     </Button>
                     <Button
                         variant="contained"
@@ -1234,7 +1235,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             resetValues();
                         }}
                     >
-                        Discard
+                        <Trans i18nKey={langKeys.discard} />
                     </Button>
                 </div>
             </Box>

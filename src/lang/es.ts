@@ -1310,6 +1310,19 @@ const translation: LangKeys = {
     type_phaselead_nuevo: 'Nuevo',
     type_phaselead_perdido: 'Perdido',
     type_phaselead_propuesta: 'Propuesta',
+
+    customer: 'Cliente',
+    logAnInternalNote: 'Registra una nota interna',
+    newActivity: 'Nueva actividad',
+    markDone: 'Hecho',
+    activityType: 'Tipo de actividad',
+    summary: 'Resumen',
+    dueDate: 'Fecha de vencimiento',
+    assignedTo: 'Asignado a',
+    schedule: 'Programado',
+    markAsDone: 'Marcar como hecho',
+    doneAndScheduleNext: 'Listo y programar a continuación',
+    discard: 'Descartar',
 };
 
 const esResource: ResourceLanguage = {
