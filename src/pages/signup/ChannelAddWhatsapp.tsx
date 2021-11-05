@@ -58,7 +58,7 @@ const CssPhonemui = styled(MuiPhoneNumber)({
     },
 });
 
-export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void}> = ({setrequestchannels,setlistchannels}) => {
+export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
@@ -139,6 +139,11 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         if(provider==="DIALOG"){
             return (
                 <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
                     <div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
     
@@ -165,6 +170,11 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
         }else{
             return (
                 <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); setOpenWarning(true) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
                     <div>    
                         <div >
                             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 15}}>{t(langKeys.signupstep1title2)}</div>

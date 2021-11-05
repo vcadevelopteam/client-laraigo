@@ -54,6 +54,7 @@ import {
 } from 'icons';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
+import clsx from 'clsx';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
@@ -566,7 +567,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                 }}
                 // onChange={onChange}
                 size="small"
-                getOptionLabel={option => option ? option[optionDesc] || option : ''}
+                getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
                 renderInput={(params) => (
                     <TextField
@@ -1127,10 +1128,10 @@ interface PhoneFieldEditProps extends Omit<MaterialUiPhoneNumberProps, 'error'> 
     error?: string;
 }
 
-export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, ...props }) => {
+export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, className, ...props }) => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} ml={1} color="textPrimary">
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }} className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
                 {label}
             </Box>
             <CssPhonemui

@@ -96,8 +96,25 @@ export const SignUp: FC = () => {
         success: true,
         message: ""
     });
+    const [sendchannels, setsendchannels] = useState(false);
     const [requestchannels, setrequestchannels] = useState([]);
     const [backdrop, setBackdrop] = useState(false);
+    const [listchannels, setlistchannels] = useState<Dictionary>({
+        facebook:false,
+        instagram: false,
+        messenger: false,
+        whatsapp: false,
+        telegram: false,
+        twitter: false,
+        twitterDM: false,
+        chatWeb: false,
+        email: false,
+        phone: false,
+        sms: false,
+        android: false,
+        ios: false,
+    });
+    
     const [mainData, setMainData] = useState<Dictionary>({
         email: "",
         password: "",
@@ -132,13 +149,33 @@ export const SignUp: FC = () => {
         setOpenWarning(false);
     };
     const handleClose2 = () => {
-        if(step==2){
-            setDefaultMainData()
-        }
-        if(step==4){
+        if(sendchannels){
             setrequestchannels([])
+            setsendchannels(false)
+            setlistchannels({
+                facebook:false,
+                instagram: false,
+                messenger: false,
+                whatsapp: false,
+                telegram: false,
+                twitter: false,
+                twitterDM: false,
+                chatWeb: false,
+                email: false,
+                phone: false,
+                sms: false,
+                android: false,
+                ios: false,
+            })
+        }else{
+            if(step==2){
+                setDefaultMainData()
+            }
+            if(step==4){
+                setrequestchannels([])
+            }
+            setStep(step-1)
         }
-        setStep(step-1)
         setOpenWarning(false);
     };
 
@@ -223,6 +260,10 @@ export const SignUp: FC = () => {
                         setOpenWarning={setOpenWarning}
                         requestchannels={requestchannels}
                         setrequestchannels={setrequestchannels}
+                        sendchannels={sendchannels}
+                        setsendchannels={setsendchannels}
+                        listchannels={listchannels}
+                        setlistchannels={setlistchannels}
                     />:""
                     }
                     
