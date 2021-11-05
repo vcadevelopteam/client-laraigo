@@ -1319,6 +1319,19 @@ const translation: LangKeys = {
     type_phaselead_nuevo: 'New',
     type_phaselead_perdido: 'Lost',
     type_phaselead_propuesta: 'Proposal',
+
+    customer: 'Customer',
+    logAnInternalNote: 'Log an internal note',
+    newActivity: 'New activity',
+    markDone: 'Mark done',
+    activityType: 'Activity type',
+    summary: 'Summary',
+    dueDate: 'Due date',
+    assignedTo: 'Assigned to',
+    schedule: 'Schedule',
+    markAsDone: 'Mark as done',
+    doneAndScheduleNext: 'Done and schedule next',
+    discard: 'Discard',
 };
 
 const enResource: ResourceLanguage = {

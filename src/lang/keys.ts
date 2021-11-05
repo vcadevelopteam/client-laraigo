@@ -1312,6 +1312,19 @@ export const langKeys = {
     type_phaselead_nuevo: 'type_phaselead_nuevo',
     type_phaselead_perdido: 'type_phaselead_perdido',
     type_phaselead_propuesta: 'type_phaselead_propuesta',
+
+    customer: 'customer',
+    logAnInternalNote: 'logAnInternalNote',
+    newActivity: 'newActivity',
+    markDone: 'markDone',
+    activityType: 'activityType',
+    summary: 'summary',
+    dueDate: 'dueDate',
+    assignedTo: 'assignedTo',
+    schedule: 'schedule',
+    markAsDone: 'markAsDone',
+    doneAndScheduleNext: 'doneAndScheduleNext',
+    discard: 'discard',
 };
 
 export type LangKeys = typeof langKeys;
