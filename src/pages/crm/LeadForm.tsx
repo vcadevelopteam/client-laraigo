@@ -178,7 +178,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [registerFormFieldOptions]);
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
         const body = insLead2(data, data.operation);
         dispatch(saveLeadBody(body));
     }, e => console.log(e));
@@ -210,6 +209,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         } else if (lead.value && edit) {
+            console.log(lead);
             setValues(lead.value!);
             reset({
                 description: lead.value?.description,
