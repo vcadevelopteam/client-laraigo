@@ -1,10 +1,9 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { IconButton, Box, Select, MenuItem, Theme, List } from '@material-ui/core';
 import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { FirstPage, LastPage, NavigateBefore, NavigateNext } from '@material-ui/icons';
-import NoDataImg from 'images/no_data.png';
 import Input from '@material-ui/core/Input';
 import { Dictionary } from '@types';
 import { SearchField } from 'components';
@@ -69,7 +68,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     },
 }));
 
-const useNoDataStyles = makeStyles(theme => ({
+/*const useNoDataStyles = makeStyles(theme => ({
     noDataRoot: {
         height: '100%',
         flexDirection: 'column',
@@ -83,7 +82,7 @@ const useNoDataStyles = makeStyles(theme => ({
         fontWeight: 600,
         color: '#DDE0E6',
     }
-}));
+}));*/
 
 function PaginatedList<T>(props: PaginatedListProps<T>): JSX.Element {
     const {

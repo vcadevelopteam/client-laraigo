@@ -1,5 +1,5 @@
 import { IActionCall } from "@types";
-import { ActivationUserService, CommonService } from "network";
+import { ActivationUserService } from "network";
 import actionTypes from "./actionTypes";
 
 export const sendActivation = (token: string): IActionCall => ({

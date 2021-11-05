@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket, ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
+import { ICloseTicketsParams, Dictionary, IReassignicketParams, ILead } from "@types";
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { CloseTicketIcon, HSMIcon, TipifyIcon, ReassignIcon, LeadIcon } from 'icons';

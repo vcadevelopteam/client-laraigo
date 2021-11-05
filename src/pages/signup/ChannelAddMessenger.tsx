@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormGroup, FormControlLabel } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, FieldSelect, ColorInput } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -26,7 +26,6 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddMessenger: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
-    const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#0078FF");
     const [channelreg, setChannelreg] = useState(true);
     const mainResult = useSelector(state => state.channel.channelList)

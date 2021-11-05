@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { TwitterIcon } from "icons";
@@ -26,7 +26,6 @@ export const ChannelAddTwitter: FC<{setrequestchannels:(param:any)=>void,setlist
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
-    const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#1D9BF0");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();

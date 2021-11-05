@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { TwitterIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -21,7 +21,6 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [nextbutton2, setNextbutton2] = useState(true);
-    const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#1D9BF0");
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();

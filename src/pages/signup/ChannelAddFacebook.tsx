@@ -1,12 +1,12 @@
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
 import { FacebookWallIcon } from "icons";
-import { FieldEdit, FieldSelect, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, FieldSelect, ColorInput } from "components";
 import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
@@ -27,7 +27,6 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
     const [waitSave, setWaitSave] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
-    const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#2d88ff");
     const mainResult = useSelector(state => state.channel.channelList)
     const dispatch = useDispatch();

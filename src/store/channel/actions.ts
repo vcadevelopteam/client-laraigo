@@ -1,5 +1,4 @@
 import { IActionCall, IChannel, IChatWebAdd, IRequestBody } from "@types";
-import { isFuture } from "date-fns";
 import { ChannelsService, CommonService } from "network";
 import actionTypes from "./actionTypes";
 

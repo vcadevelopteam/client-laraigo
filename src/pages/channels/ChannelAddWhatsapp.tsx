@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, Fragment, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup, TextField } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { styled } from '@material-ui/core/styles';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { useHistory, useLocation } from "react-router";
@@ -69,7 +69,6 @@ interface whatsAppData {
 }
 
 export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
-    const [enable, setenable] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
     const [viewSelected, setViewSelected] = useState("view1");
@@ -105,7 +104,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [history]);
 
-    const [errors, setErrors] = useState<Dictionary>({
+    const [errors] = useState<Dictionary>({
         accesstoken: "",
         brandName: "",
         brandAddress: "",

@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICRmSaveLead, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;

@@ -54,7 +54,6 @@ import {
 } from 'icons';
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import MuiPhoneNumber, { MaterialUiPhoneNumberProps } from 'material-ui-phone-number';
-import clsx from 'clsx';
 
 interface TemplateIconsProps {
     viewFunction?: (param: any) => void;

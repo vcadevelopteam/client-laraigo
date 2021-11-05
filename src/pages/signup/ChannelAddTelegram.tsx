@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { TelegramIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -25,7 +25,6 @@ const useChannelAddStyles = makeStyles(theme => ({
 export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlistchannels:(param:any)=>void,setOpenWarning:(param:any)=>void}> = ({setrequestchannels,setlistchannels,setOpenWarning}) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
-    const [enable, setenable] = useState(false);
     const [coloricon, setcoloricon] = useState("#207FDD");
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();

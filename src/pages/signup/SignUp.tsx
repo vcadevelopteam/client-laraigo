@@ -168,10 +168,10 @@ export const SignUp: FC = () => {
                 ios: false,
             })
         }else{
-            if(step==2){
+            if(step===2){
                 setDefaultMainData()
             }
-            if(step==4){
+            if(step===4){
                 setrequestchannels([])
             }
             setStep(step-1)

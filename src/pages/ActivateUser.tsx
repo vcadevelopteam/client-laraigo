@@ -10,7 +10,6 @@ import { sendActivation } from 'store/activationuser/actions';
 import { useSelector } from 'hooks';
 import paths from 'common/constants/paths';
 import clsx from 'clsx';
-import { LangKeys } from '../lang/keys';
 
 const useStyles = makeStyles(theme => ({
     titlecards:{

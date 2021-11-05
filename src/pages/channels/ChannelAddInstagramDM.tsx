@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch, } from "components";
+import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
@@ -37,7 +37,6 @@ export const ChannelAddInstagramDM: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#F56040");
-    const [enable, setenable] = useState(false);
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",
