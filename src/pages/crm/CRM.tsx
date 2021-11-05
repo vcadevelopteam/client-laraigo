@@ -167,7 +167,7 @@ const CRM: FC = () => {
       const [removed] = copiedItems!.splice(leadIndex, 1);
       const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
-      const data = { ...lead, status:'ELIMINADO',operation:'EDIT' }
+      const data = { ...lead, status:'ELIMINADO', operation:'UPDATE' }
       dispatch(execute(insLead(data)))
     }
     dispatch(manageConfirmation({
