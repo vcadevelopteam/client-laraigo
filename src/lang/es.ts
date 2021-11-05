@@ -1323,6 +1323,7 @@ const translation: LangKeys = {
     markAsDone: 'Marcar como hecho',
     doneAndScheduleNext: 'Listo y programar a continuación',
     discard: 'Descartar',
+    date_format_error: 'Ingrese una fecha válida',
 };
 
 const esResource: ResourceLanguage = {

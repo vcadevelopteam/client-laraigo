@@ -920,7 +920,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                             <div style={{ width: '1em' }} />
                             <div className={classes.column}>
                                 <div className={clsx(classes.row, classes.centerRow)}>
-                                    <span className={classes.activityDate}>{`Due in ${activity.duedate}`}</span>
+                                    <span className={classes.activityDate}>{`Due in ${activity.duedate.substring(0, 10)}`}</span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.activityName}>{`"${activity.description}"`}</span>
                                     <div style={{ width: '1em' }} />
@@ -1073,8 +1073,15 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             return value.length === 0 ? t(langKeys.field_required) : undefined;
         }
 
+        const validateDateFormat = (value: string) => {
+            if (value.length === 0) return t(langKeys.field_required);
+            if (value.split('-')[0].length > 4) return t(langKeys.date_format_error);
+
+            return undefined;
+        }
+
         register('description', { validate: mandatoryStrField });
-        register('duedate', { validate: mandatoryStrField });
+        register('duedate', { validate: validateDateFormat });
         register('assignto', { validate: mandatoryStrField });
         register('type', { validate: mandatoryStrField });
     }, [register, t]);
