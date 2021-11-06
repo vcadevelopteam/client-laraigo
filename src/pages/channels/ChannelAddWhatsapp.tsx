@@ -81,7 +81,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [setParameters, setSetParameters] = useState(true);
    
     const user = useSelector(state => state.login.validateToken.user);
-    const  roledesc = user?.roledesc || ""
+    const roledesc = user?.roledesc || "";
     const executeResult = useSelector(state => state.channel.successinsert);
     const executeActivationResult = useSelector(state => state.channel.activateChannel);
     const mainResult = useSelector(state => state.channel.channelList);
@@ -206,7 +206,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             }
                         });
 
-                        setdisablebutton(false);
+                        setdisablebutton(true);
                     }
                 }
             }
@@ -356,14 +356,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div>
                             <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
         
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={nextbutton}
-                                onClick={() => { setViewSelected("viewfinishreg") }}
-                            >{t(langKeys.registerwhats)}
-                            </Button>
+                            {
+                                edit ?
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS) }}
+                                    >{t(langKeys.close)}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={nextbutton}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
+                                    >{t(langKeys.registerwhats)}
+                                </Button>
+                            }
                             <div className="row-zyx">
                                 <div className="col-3"></div>
                                 <FieldEdit
@@ -612,6 +624,16 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation4)}</div>
                                 <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
                                     <div style={{ flex: "1", margin: "0px 15px"}}>
+                                        {edit ?
+                                        <Button
+                                            onClick={() => { history.push(paths.CHANNELS) }}
+                                            className={classes.button2}
+                                            disabled={false}
+                                            variant="contained"
+                                            color="primary"
+                                        >{t(langKeys.close)}
+                                        </Button>
+                                        :
                                         <Button
                                             onClick={() => { checkissues() }}
                                             className={classes.button2}
@@ -620,6 +642,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                             color="primary"
                                         >{t(langKeys.next)}
                                         </Button>
+                                        }
                                     </div>
                                     {
                                         roledesc === "SUPERADMIN"?

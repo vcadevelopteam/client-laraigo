@@ -22,6 +22,9 @@ export const Channels: FC = () => {
     const paymentPlanResult = useSelector(state => state.channel.checkPaymentPlan);
     const executeResult = useSelector(state => state.channel.channelList);
     const mainResult = useSelector(state => state.main);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const roledesc = user?.roledesc || "";
 
     const [typeWhatsApp, setTypeWhatsApp] = useState('DIALOG');
     const [canRegister, setCanRegister] = useState(false);
@@ -70,7 +73,7 @@ export const Channels: FC = () => {
 
     const handleEdit = (row: IChannel) => {
         console.log(row)
-        if (row.type === 'WHAT' && row.status === 'PENDIENTE') {
+        if (row.type === 'WHAT' && row.status === 'PENDIENTE' && roledesc === "SUPERADMIN") {
             var whatsAppData = {
                 typeWhatsApp: 'SMOOCH',
                 row: row
