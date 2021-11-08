@@ -382,6 +382,7 @@ const translation: LangKeys = {
     emotions: "Emociones",
     name: 'Nombre',
     name_plural: 'Nombres',
+    next_activity: 'Siguiente actividad',
 
     username: 'Usuario',
     password: 'Contraseña',
@@ -1161,7 +1162,7 @@ const translation: LangKeys = {
     salesperson: 'Vendedor/a',
     lastUpdate: 'Última actualización',
     phase: 'Fase',
-    expectedRevenue: 'Iingreso esperado',
+    expectedRevenue: 'Ingreso esperado',
     probability: 'Probabilidad',
     expectedClosing: 'Cierre esperado',
     priority: 'Prioridad',

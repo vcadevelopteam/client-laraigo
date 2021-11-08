@@ -1840,3 +1840,27 @@ export const leadLogNotesIns = (parameters: ICrmLeadNoteSave): IRequestBody => (
     method: "UFN_LEADNOTES_INS",
     parameters,
 });
+
+export const getPaginatedLead = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_SEL",
+    methodCount: "UFN_LEADGRID_TOTALRECORDS",
+    parameters: {
+        origin: "lead",
+        skip,
+        take,
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getLeadExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_LEADGRID_EXPORT",
+    key: "UFN_LEADGRID_EXPORT",
+    parameters: {
+        origin: "lead",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});

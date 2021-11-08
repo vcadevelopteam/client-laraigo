@@ -241,6 +241,7 @@ const translation: LangKeys = {
     actionplan: 'Action plan',
     role: 'Role',
     role_plural: 'Roles',
+    next_activity: 'Next activity',
 
     no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
 

@@ -286,6 +286,8 @@ export const langKeys = {
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
 
+    next_activity: 'next_activity',
+
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
 
