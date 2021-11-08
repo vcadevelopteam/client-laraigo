@@ -293,6 +293,7 @@ const TableZyx = React.memo(({
                             ?
                             <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     {...getToggleAllPageRowsSelectedProps()}
                                 />
@@ -300,6 +301,7 @@ const TableZyx = React.memo(({
                             :
                             <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     checked={filteredRows
                                         .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
@@ -319,6 +321,7 @@ const TableZyx = React.memo(({
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
                             ? <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
