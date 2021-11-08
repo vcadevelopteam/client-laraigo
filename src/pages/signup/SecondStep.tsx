@@ -67,9 +67,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                 .then((response)=>response.json())
                 .then((data)=>{
                     setcountrycode(data.country_code);
-                    setMainData((p:any) => ({ ...p, country: data.countrycode }))
                 })
-        }catch (error) {
+        }
+        catch (error) {
             console.error("error");
         }
         fetchData();
@@ -81,6 +81,13 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     useEffect(() => {
         setMainData((p:any) => ({ ...p, country: countrycode }))
     }, [countrycode]);
+    useEffect(() => {
+        if (ressignup.data?.length > 0) {
+            if (countrycode) {
+                setMainData((p:any) => ({ ...p, country: countrycode }))
+            }
+        }
+    }, [ressignup])
 
     
     const { t } = useTranslation();
