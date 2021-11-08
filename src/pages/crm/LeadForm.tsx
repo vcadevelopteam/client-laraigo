@@ -5,13 +5,13 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain } from 'common/helpers';
+import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
+import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -150,7 +150,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             personcommunicationchannel: '',
             priority: 'LOW',
             conversationid:  0,
-            columnid: match.params.columnid,
+            columnid: Number(match.params.columnid),
             column_uuid: match.params.columnuuid,
             index: 0,
             phone: '',
@@ -170,7 +170,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         // register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
-        register('phase', { validate: (value) => ((value && value.length) || t(langKeys.field_required) + "") });
+        register('columnid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required) + "") });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -189,7 +189,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
 
         dispatch(getAdvisers(adviserSel()));
-        dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
+        // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
+        dispatch(getLeadPhases(getColumnsSel(0, true)));
 
         return () => {
             dispatch(resetGetLead());
@@ -448,17 +449,20 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 />
                             </div>
                             <FieldSelect
-                                uset
                                 label={t(langKeys.status)}
                                 className={classes.field}
                                 data={phases.data}
-                                prefixTranslation="type_phaselead_"
-                                optionDesc="domainvalue"
-                                optionValue="domainvalue"
+                                optionDesc={"description" as keyof ICrmColumn}
+                                optionValue={"columnid" as keyof ICrmColumn}
                                 loading={phases.loading}
-                                valueDefault={getValues('phase')}
-                                onChange={(v: IDomain) => setValue('phase', v?.domainvalue || "")}
-                                error={errors?.phase?.message}
+                                valueDefault={getValues('columnid')}
+                                onChange={(v: ICrmColumn) => {
+                                    console.log('P', v);
+                                    if (!v) return;
+                                    setValue('column_uuid', v!.column_uuid);
+                                    setValue('columnid', v!.columnid);
+                                }}
+                                error={errors?.columnid?.message}
                             />
                         </Grid>
                     </Grid>

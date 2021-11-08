@@ -1693,13 +1693,13 @@ export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, 
         personid,
     },
 });
-export const getColumnsSel = (id:number): IRequestBody => ({
+export const getColumnsSel = (id:number, lost: boolean = false): IRequestBody => ({
     method: "UFN_COLUMN_SEL",
     key: "UFN_COLUMN_SEL",
     parameters: {
         id: id,
         all: true,
-        lost: false
+        lost
     }
 })
 

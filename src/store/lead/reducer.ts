@@ -1,4 +1,4 @@
-import { ICrmLead, IcrmLeadActivity, ICrmLeadNote, IDomain, IListState, IObjectState, IProcessState } from "@types";
+import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadNote, IListState, IObjectState, IProcessState } from "@types";
 import { createReducer, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -7,7 +7,7 @@ export interface IState {
     lead: IObjectState<ICrmLead>;
     saveLead: IProcessState;
     advisers: IListState<any>;
-    leadPhases: IListState<IDomain>;
+    leadPhases: IListState<ICrmColumn>;
     leadActivities: IListState<IcrmLeadActivity>;
     leadLogNotes: IListState<ICrmLeadNote>;
     saveLeadActivity: IProcessState;

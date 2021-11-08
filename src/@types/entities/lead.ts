@@ -110,3 +110,19 @@ export interface IcrmLeadActivity {
 	type: string;
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
 }
+
+export interface ICrmColumn {
+    changeby: string;
+    changedate: string;
+    column_uuid: string;
+    columnid: number;
+    corpid: number;
+    createby: string;
+    createdate: string;
+    description: string;
+    edit: boolean;
+    index: number;
+    orgid: number;
+    status: string;
+    type: string;
+}
