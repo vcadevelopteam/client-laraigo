@@ -206,7 +206,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             }
                         });
 
-                        setdisablebutton(true);
+                        setdisablebutton(false);
                     }
                 }
             }
