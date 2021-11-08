@@ -98,7 +98,7 @@ export const ChannelAddAndroid: FC<{setrequestchannels:(param:any)=>void,setlist
                         disabled={channelreg}
                         variant="contained"
                         color="primary"
-                    >{t(langKeys.finishreg)}
+                    >{t(langKeys.next)}
                     </Button>
 
                 </div>
