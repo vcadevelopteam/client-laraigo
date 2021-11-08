@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment, RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
 import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -448,7 +448,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                 />
                             </div>
-                            <FieldSelect
+                            {/* <FieldSelect
                                 label={t(langKeys.status)}
                                 className={classes.field}
                                 data={phases.data}
@@ -463,7 +463,35 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     setValue('columnid', v!.columnid);
                                 }}
                                 error={errors?.columnid?.message}
-                            />
+                            /> */}
+                            <div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                                    {t(langKeys.status)}
+                                </Box>
+                                <RadioGroup
+                                    aria-label="columnid"
+                                    value={Number(getValues('columnid'))}
+                                    name="radio-buttons-group-columnid"
+                                    row
+                                >
+                                    {phases.data.map((e, i) => {
+                                        return (
+                                            <FormControlLabel
+                                                key={i}
+                                                value={e.columnid}
+                                                control={<Radio color="primary" />}
+                                                label={e.description}
+                                                onChange={() => {
+                                                    console.log('FormControlLabel', Number(e.columnid));
+                                                    setValue('column_uuid', e.column_uuid);
+                                                    setValue('columnid', Number(e.columnid));
+                                                    setValues(prev => ({ ...prev })); // refrescar
+                                                }}
+                                            />
+                                        );
+                                    })}
+                                </RadioGroup>
+                            </div>
                         </Grid>
                     </Grid>
                 </Grid>
