@@ -5,13 +5,13 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain } from 'common/helpers';
+import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
+import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -150,7 +150,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             personcommunicationchannel: '',
             priority: 'LOW',
             conversationid:  0,
-            columnid: match.params.columnid,
+            columnid: Number(match.params.columnid),
             column_uuid: match.params.columnuuid,
             index: 0,
             phone: '',
@@ -170,7 +170,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         // register('email', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
-        register('phase', { validate: (value) => ((value && value.length) || t(langKeys.field_required) + "") });
+        register('columnid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required) + "") });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -189,7 +189,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
 
         dispatch(getAdvisers(adviserSel()));
-        dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
+        // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
+        dispatch(getLeadPhases(getColumnsSel(0, true)));
 
         return () => {
             dispatch(resetGetLead());
@@ -448,17 +449,20 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 />
                             </div>
                             <FieldSelect
-                                uset
                                 label={t(langKeys.status)}
                                 className={classes.field}
                                 data={phases.data}
-                                prefixTranslation="type_phaselead_"
-                                optionDesc="domainvalue"
-                                optionValue="domainvalue"
+                                optionDesc={"description" as keyof ICrmColumn}
+                                optionValue={"columnid" as keyof ICrmColumn}
                                 loading={phases.loading}
-                                valueDefault={getValues('phase')}
-                                onChange={(v: IDomain) => setValue('phase', v?.domainvalue || "")}
-                                error={errors?.phase?.message}
+                                valueDefault={getValues('columnid')}
+                                onChange={(v: ICrmColumn) => {
+                                    console.log('P', v);
+                                    if (!v) return;
+                                    setValue('column_uuid', v!.column_uuid);
+                                    setValue('columnid', v!.columnid);
+                                }}
+                                error={errors?.columnid?.message}
                             />
                         </Grid>
                     </Grid>
@@ -796,6 +800,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                         onClick={handleSubmit}
                         disabled={saveLeadNote.loading || (noteDescription.length === 0 && media === null)}
                     >
+                        {saveLeadNote.loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
                         Log
                     </Button>
                 </div>
@@ -811,7 +816,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                 <div className={clsx(classes.row, classes.centerRow)}>
                                     <span className={classes.logOwnerName}>{note.createby}</span>
                                     <div style={{ width: '1em' }} />
-                                    <span className={classes.logDate}>{note.createdate}</span>
+                                    <span className={classes.logDate}>{formatDate(note.createdate)}</span>
                                 </div>
                                 <div style={{ height: 4 }} />
                                 <span>{note.description}</span>
@@ -920,7 +925,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                             <div style={{ width: '1em' }} />
                             <div className={classes.column}>
                                 <div className={clsx(classes.row, classes.centerRow)}>
-                                    <span className={classes.activityDate}>{`Due in ${activity.duedate.substring(0, 10)}`}</span>
+                                    <span className={classes.activityDate}>{`Due in ${formatDate(activity.duedate, { withTime: false })}`}</span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.activityName}>{`"${activity.description}"`}</span>
                                     <div style={{ width: '1em' }} />
@@ -1271,7 +1276,7 @@ const useFilePreviewStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         maxWidth: 300,
-        maxHeight: 60,
+        maxHeight: 80,
         alignItems: 'center',
         width: 'fit-content',
         overflow: 'hidden'
@@ -1279,6 +1284,7 @@ const useFilePreviewStyles = makeStyles(theme => ({
     infoContainer: {
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
     },
     btnContainer: {
         display: 'flex',
@@ -1313,9 +1319,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             <FileCopy />
             <div style={{ width: '0.5em' }} />
             <div className={classes.infoContainer}>
-                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 'bold', maxLines: 2, wordWrap: 'break-word', flexGrow: 1 }}>
-                    <span>{getFileName()}</span>
-                </div>
+                <span style={{ fontWeight: 'bold', textOverflow: 'ellipsis', display: 'inline-block', overflow: 'hidden', maxLines: 2 }}>{getFileName()}</span>
                 <span>{getFileExt()}</span>
             </div>
             <div style={{ width: '0.5em' }} />
@@ -1336,4 +1340,19 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             </div>
         </Paper>
     );
+}
+
+interface Options {
+    withTime?: boolean;
+}
+
+const formatDate = (strDate: string, options: Options = { withTime: true }) => {
+    if (!strDate || strDate === '') return '';
+
+    const date = new Date(strDate);
+    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
+    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
+    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
+    const time = date.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+    return `${day}/${month}/${year}${options.withTime! ? time.split(',')[1] : ''}`;
 }

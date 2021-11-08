@@ -1693,12 +1693,13 @@ export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, 
         personid,
     },
 });
-export const getColumnsSel = (id:number): IRequestBody => ({
+export const getColumnsSel = (id:number, lost: boolean = false): IRequestBody => ({
     method: "UFN_COLUMN_SEL",
     key: "UFN_COLUMN_SEL",
     parameters: {
         id: id,
-        all: true
+        all: true,
+        lost
     }
 })
 
@@ -1726,14 +1727,15 @@ export const insColumns = ({ id, description, type, status, edit, index, operati
     }
 });
 
-export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid }: Dictionary): IRequestBody => ({
+export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid = null}: Dictionary): IRequestBody => ({
     method: 'UFN_UPDATE_LEADS',
     key: "UFN_UPDATE_LEADS",
     parameters: {
         cards_startingcolumn, 
         cards_finalcolumn, 
         startingcolumn_uuid, 
-        finalcolumn_uuid
+        finalcolumn_uuid,
+        leadid
     }
 });
 
@@ -1839,4 +1841,28 @@ export const leadLogNotesIns = (parameters: ICrmLeadNoteSave): IRequestBody => (
     key: "UFN_LEADNOTES_INS",
     method: "UFN_LEADNOTES_INS",
     parameters,
+});
+
+export const getPaginatedLead = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+    methodCollection: "UFN_LEADGRID_SEL",
+    methodCount: "UFN_LEADGRID_TOTALRECORDS",
+    parameters: {
+        origin: "lead",
+        skip,
+        take,
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+})
+
+export const getLeadExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+    method: "UFN_LEADGRID_EXPORT",
+    key: "UFN_LEADGRID_EXPORT",
+    parameters: {
+        origin: "lead",
+        filters,
+        sorts,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });

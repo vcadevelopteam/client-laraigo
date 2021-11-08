@@ -293,6 +293,7 @@ const TableZyx = React.memo(({
                             ?
                             <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     {...getToggleAllPageRowsSelectedProps()}
                                 />
@@ -300,6 +301,7 @@ const TableZyx = React.memo(({
                             :
                             <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     checked={filteredRows
                                         .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
@@ -319,6 +321,7 @@ const TableZyx = React.memo(({
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
                             ? <div>
                                 <Checkbox
+                                    color="primary"
                                     style={{ padding: '0 24px 0 16px' }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
@@ -596,12 +599,19 @@ const TableZyx = React.memo(({
                             <LastPage />
                         </IconButton>
                         <Box component="span" fontSize={14}>
-                            Página <Box fontWeight="700" component="span">{pageIndex + 1}</Box> de <Box fontWeight="700" component="span">{pageOptions.length}</Box>
+                            <Trans
+                                i18nKey={langKeys.tablePageOf}
+                                values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
+                                components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
+                            />
                         </Box >
 
                     </Box>
                     <Box>
-                        Mostrando {page.length} registros de {totalrow}
+                        <Trans
+                            i18nKey={langKeys.tableShowingRecordOf}
+                            values={{ itemCount: page.length, totalItems: totalrow }}
+                        />
                     </Box>
                     <Box>
                         <Select
@@ -619,7 +629,7 @@ const TableZyx = React.memo(({
                             ))}
                         </Select>
                         <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                            Registros por Página
+                        <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
                         </Box>
                     </Box>
                 </Box>
