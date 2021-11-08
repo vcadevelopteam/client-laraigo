@@ -234,7 +234,7 @@ export const ChannelAddTwitterDM: FC<{setrequestchannels:(param:any)=>void,setli
                             disabled={channelreg}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >{t(langKeys.next)}
                         </Button>
 
                     </div>

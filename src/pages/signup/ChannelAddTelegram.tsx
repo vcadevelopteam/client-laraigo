@@ -153,7 +153,7 @@ export const ChannelAddTelegram: FC<{setrequestchannels:(param:any)=>void,setlis
                             disabled={channelreg}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >{t(langKeys.next)}
                         </Button>
 
                     </div>

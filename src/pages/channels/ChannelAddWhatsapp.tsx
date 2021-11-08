@@ -275,6 +275,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         if(set360){
             return(
             <div style={{ width: '100%' }}>
+                <Breadcrumbs aria-label="breadcrumb">
+                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                        {"<< Previous"}
+                    </Link>
+                </Breadcrumbs>
                 <div>
                     <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
 
@@ -300,6 +305,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }else if(setsmooch){
             return(
                 <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
                     <div>
                         <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
     

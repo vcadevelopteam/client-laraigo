@@ -796,6 +796,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                         onClick={handleSubmit}
                         disabled={saveLeadNote.loading || (noteDescription.length === 0 && media === null)}
                     >
+                        {saveLeadNote.loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
                         Log
                     </Button>
                 </div>
@@ -811,7 +812,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
                                 <div className={clsx(classes.row, classes.centerRow)}>
                                     <span className={classes.logOwnerName}>{note.createby}</span>
                                     <div style={{ width: '1em' }} />
-                                    <span className={classes.logDate}>{note.createdate}</span>
+                                    <span className={classes.logDate}>{formatDate(note.createdate)}</span>
                                 </div>
                                 <div style={{ height: 4 }} />
                                 <span>{note.description}</span>
@@ -920,7 +921,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                             <div style={{ width: '1em' }} />
                             <div className={classes.column}>
                                 <div className={clsx(classes.row, classes.centerRow)}>
-                                    <span className={classes.activityDate}>{`Due in ${activity.duedate.substring(0, 10)}`}</span>
+                                    <span className={classes.activityDate}>{`Due in ${formatDate(activity.duedate, { withTime: false })}`}</span>
                                     <div style={{ width: '1em' }} />
                                     <span className={classes.activityName}>{`"${activity.description}"`}</span>
                                     <div style={{ width: '1em' }} />
@@ -1271,7 +1272,7 @@ const useFilePreviewStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         maxWidth: 300,
-        maxHeight: 60,
+        maxHeight: 80,
         alignItems: 'center',
         width: 'fit-content',
         overflow: 'hidden'
@@ -1279,6 +1280,7 @@ const useFilePreviewStyles = makeStyles(theme => ({
     infoContainer: {
         display: 'flex',
         flexDirection: 'column',
+        height: '100%',
     },
     btnContainer: {
         display: 'flex',
@@ -1313,9 +1315,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             <FileCopy />
             <div style={{ width: '0.5em' }} />
             <div className={classes.infoContainer}>
-                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 'bold', maxLines: 2, wordWrap: 'break-word', flexGrow: 1 }}>
-                    <span>{getFileName()}</span>
-                </div>
+                <span style={{ fontWeight: 'bold', textOverflow: 'ellipsis', display: 'inline-block', overflow: 'hidden', maxLines: 2 }}>{getFileName()}</span>
                 <span>{getFileExt()}</span>
             </div>
             <div style={{ width: '0.5em' }} />
@@ -1336,4 +1336,19 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             </div>
         </Paper>
     );
+}
+
+interface Options {
+    withTime?: boolean;
+}
+
+const formatDate = (strDate: string, options: Options = { withTime: true }) => {
+    if (!strDate || strDate === '') return '';
+
+    const date = new Date(strDate);
+    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
+    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
+    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
+    const time = date.toLocaleDateString("en-US", { hour: '2-digit', minute: '2-digit' });
+    return `${day}/${month}/${year}${options.withTime! ? time.split(',')[1] : ''}`;
 }
