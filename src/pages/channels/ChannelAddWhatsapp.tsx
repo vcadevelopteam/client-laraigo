@@ -74,6 +74,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [viewSelected, setViewSelected] = useState("view1");
     const [nextbutton, setNextbutton] = useState(true);
     const [disablebutton, setdisablebutton] = useState(true);
+    const [disablebutton2, setdisablebutton2] = useState(true);
     const [setins, setsetins] = useState(false);
     const [set360, setset360] = useState(false);
     const [setsmooch, setsetsmooch] = useState(false);
@@ -318,7 +319,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
 
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "apikeyid")}}
+                                    onChange={(e) => { setService(e.target.value, "apikeyid");setdisablebutton2(!!e.target.value && !!fields.service.apikeysecret && !!fields.service.appid)}}
                                     variant="outlined"
                                     label={"Apikey Id"}
                                 />
@@ -326,7 +327,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{width:"100%",padding: "10px 25%"}}>
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "apikeysecret")}}
+                                    onChange={(e) => { setService(e.target.value, "apikeysecret");setdisablebutton2(!!e.target.value && !!fields.service.apikeyid && !!fields.service.appid)}}
                                     variant="outlined"
                                     label={"Apikey Secret"}
                                 />
@@ -334,7 +335,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{width:"100%",padding: "10px 25%"}}>
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "appid")}}
+                                    onChange={(e) => { setService(e.target.value, "appid");setdisablebutton2(!!e.target.value && !!fields.service.apikeyid && !!fields.service.apikeysecret)}}
                                     variant="outlined"
                                     label={"App Id"}
                                 />
@@ -344,7 +345,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <Button
                                 onClick={() => { activateChannelfunc() }}
                                 className={classes.button2}
-                                disabled={disablebutton}
+                                disabled={disablebutton2}
                                 variant="contained"
                                 color="primary"
                             >{t(langKeys.finishreg)}
