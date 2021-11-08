@@ -131,7 +131,7 @@ const CRM: FC = () => {
         const cards_finalcolumn = destItems!.map(x => x.leadid).join(',')
         const startingcolumn_uuid = sourceColumn.column_uuid
         const finalcolumn_uuid = destColumn.column_uuid
-        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid})));
+        dispatch(execute(updateColumnsLeads({cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid: removed.leadid})));
       }
     }
   };
