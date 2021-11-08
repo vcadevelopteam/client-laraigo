@@ -17,6 +17,7 @@ import ViewListIcon from '@material-ui/icons/ViewList';
 import { IconButton } from "@material-ui/core";
 import { IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
+import { makeStyles } from '@material-ui/core/styles';
 
 interface dataBackend {
   columnid: number,
@@ -51,7 +52,16 @@ interface leadBackend {
   email: string
 }
 
+const useStyles = makeStyles((theme) => ({
+  containerDetail: {
+      marginTop: theme.spacing(2),
+      padding: theme.spacing(2),
+      background: '#fff',
+  }
+}));
+
 const CRM: FC = () => {
+  const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
@@ -60,6 +70,7 @@ const CRM: FC = () => {
   const [display, setDisplay] = useState('BOARD')
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
+  const classes = useStyles();
 
   useEffect(() => {
       dispatch(getMultiCollection([
@@ -282,6 +293,15 @@ const CRM: FC = () => {
           accessor: 'expected_revenue',
           type: 'number',
           sortType: 'number',
+          Cell: (props: any) => {
+            const column = props.cell.column;  
+            const row = props.cell.row.original;
+              return (
+                <div style={{ textAlign: 'right' }}>
+                  {user?.currencysymbol} {row[column.id]}
+                </div>  
+              )
+          }
         },
         {
           Header: t(langKeys.expectedClosing),
@@ -379,7 +399,7 @@ const CRM: FC = () => {
           </IconButton>
         </div>
         {display === 'BOARD' &&
-        <div style={{ display: "flex", justifyContent: "center", height: "100%", paddingTop: "35px"}}>
+        <div style={{ display: "flex", justifyContent: "center", height: "100%", marginTop: "35px"}}>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             {(dataColumn.length > 0) && 
               <Droppable droppableId="first-column" direction="horizontal" type="column" isDropDisabled>
@@ -568,18 +588,22 @@ const CRM: FC = () => {
         </div>
         }
         {display === 'GRID' &&
-        <TablePaginated
-          columns={columns}
-          data={mainPaginated.data}
-          totalrow={totalrow}
-          loading={mainPaginated.loading}
-          pageCount={pageCount}
-          download={true}
-          fetchData={fetchGridData}
-          exportPersonalized={triggerExportData}
-          autotrigger={true}
-      />
-
+        <div style={{ width: '100%' }}>
+          <div className={classes.containerDetail}>
+            <TablePaginated
+              columns={columns}
+              data={mainPaginated.data}
+              totalrow={totalrow}
+              loading={mainPaginated.loading}
+              pageCount={pageCount}
+              download={true}
+              fetchData={fetchGridData}
+              ButtonsElement={() => (<div></div>)}
+              exportPersonalized={triggerExportData}
+              autotrigger={true}
+            />
+          </div>
+        </div>
         }
       </React.Fragment>
     );
