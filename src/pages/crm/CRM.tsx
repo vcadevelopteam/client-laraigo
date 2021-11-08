@@ -163,8 +163,8 @@ const CRM: FC = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
-      //const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
-      //const [removed] = copiedItems!.splice(leadIndex, 1);
+      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
+      const [removed] = copiedItems!.splice(leadIndex, 1); //v
       const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
       const data = { ...lead, status:'ELIMINADO', operation:'UPDATE' }
@@ -409,7 +409,7 @@ const CRM: FC = () => {
             )}
           </Droppable>
         </DragDropContext>
-        <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} />
+        {/* <AddColumnTemplate onSubmit={(columnTitle) =>{ handleInsert(columnTitle,dataColumn, setDataColumn)}} /> */}
         <DialogZyx3Opt
           open={openDialog}
           title={t(langKeys.confirmation)}

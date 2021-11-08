@@ -1271,8 +1271,10 @@ const useFilePreviewStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         maxWidth: 300,
+        maxHeight: 60,
         alignItems: 'center',
         width: 'fit-content',
+        overflow: 'hidden'
     },
     infoContainer: {
         display: 'flex',
@@ -1311,7 +1313,9 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             <FileCopy />
             <div style={{ width: '0.5em' }} />
             <div className={classes.infoContainer}>
-                <span style={{ fontWeight: 'bold' }}>{getFileName()}</span>
+                <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 'bold', maxLines: 2, wordWrap: 'break-word', flexGrow: 1 }}>
+                    <span>{getFileName()}</span>
+                </div>
                 <span>{getFileExt()}</span>
             </div>
             <div style={{ width: '0.5em' }} />
@@ -1323,7 +1327,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 )}
                 {isUrl() && <div style={{ height: '10%' }} />}
                 {isUrl() && (
-                    <a href={src as string} target="_blank" download={`${getFileName()}.${getFileExt()}`}>
+                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
                         <IconButton size="small">
                             <GetApp />
                         </IconButton>

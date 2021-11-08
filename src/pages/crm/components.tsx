@@ -19,6 +19,7 @@ interface LeadCardContentProps extends BoxProps {
     snapshot: DraggableStateSnapshot;
     onDelete?: (value: string) => void;
     onClick?: (lead: any) => void;
+    onCloseLead?: (lead: any) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -97,7 +98,7 @@ const useLeadCardStyles = makeStyles(theme => ({
     },
 }));
 
-export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, ...boxProps }) => {
+export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
     const tags = (lead.tags) ? lead.tags.split(',') : []
@@ -123,6 +124,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         setAnchorEl(null);
         onDelete?.(lead);
     };
+
+    const handleCloseLead = () => {
+        setAnchorEl(null);
+        onCloseLead?.(lead);
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? `lead-card-popover-${String(lead)}` : undefined;
@@ -180,6 +186,16 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         className: classes.popoverPaper,
                     }}
                 >
+                    <Button
+                        variant="text"
+                        color="inherit"
+                        fullWidth
+                        type="button"
+                        onClick={handleCloseLead}
+                        style={{ fontWeight: "normal", textTransform: "uppercase" }}
+                    >
+                        <Trans i18nKey={langKeys.close} />
+                    </Button>
                     <Button
                         variant="text"
                         color="inherit"
@@ -405,7 +421,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         >
                             <Trans i18nKey={langKeys.edit} />
                         </Button>
-                        <Button
+                        {/* <Button
                             variant="text"
                             color="inherit"
                             fullWidth
@@ -414,7 +430,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                             style={{ fontWeight: "normal", textTransform: "uppercase" }}
                         >
                             <Trans i18nKey={langKeys.delete} />
-                        </Button>
+                        </Button> */}
                     </Popover>
                     <IconButton size="small" onClick={onAddCard}>
                         <Add style={{ height: 22, width: 22 }} />

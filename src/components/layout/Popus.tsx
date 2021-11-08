@@ -38,7 +38,7 @@ const Popus: React.FC = () => {
     const manageConfirmationTmp = () => dispatch(manageConfirmation({ ...popus.question, visible: false }));
 
     const manageLightBoxTmp = (lightboxtmp: any) => dispatch(manageLightBox(lightboxtmp));
-    console.log(popus.snackbar)
+    
     return (
         <>
             <Snackbar
