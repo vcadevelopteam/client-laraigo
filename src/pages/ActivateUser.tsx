@@ -112,6 +112,9 @@ export const ActivateUser: FC = () => {
         case true:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.containerHead}>
+                        <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                    </div>
                     <div className={classes.titlecards}>{t(langKeys.message_account_activated)}</div>
                     <Box className={classes.boxstyles}>
                         <p>{t(langKeys.message_click_to_login)}</p>
@@ -130,6 +133,9 @@ export const ActivateUser: FC = () => {
         case false:
             return (
                 <div style={{ width: "100%",marginTop:25}}>
+                    <div className={classes.containerHead}>
+                        <img src="/Laraigo-vertical-logo-name.svg" style={{ height: 200}} alt="logo" />
+                    </div>
                     <div className={classes.titlecards}>{t(langKeys.message_account_already_activated)}</div>
                     <Box className={classes.boxstyles}>
                         <p>{t(langKeys.message_click_to_login)}</p>
