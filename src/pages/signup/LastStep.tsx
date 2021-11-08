@@ -183,7 +183,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                         variant="contained"
                         color="primary"
                         disabled={executeResult.loading}
-                    >{t(langKeys.finishreg)}
+                    >{t(langKeys.next)}
                     </Button>
                 </div>
 

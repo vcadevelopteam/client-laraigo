@@ -206,7 +206,7 @@ export const ChannelAddInstagramDM: FC<{setrequestchannels:(param:any)=>void,set
                             disabled={channelreg}
                             variant="contained"
                             color="primary"
-                        >{t(langKeys.finishreg)}
+                        >{t(langKeys.next)}
                         </Button>
 
                     </div>
