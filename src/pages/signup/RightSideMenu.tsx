@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useState } from "react";
-import { Dictionary } from "@types";
+import { FC } from "react";
 import {FirstStep} from './FirstStep';
 import {SecondStep} from './SecondStep';
 import {ThirdStep} from './ThirdStep';

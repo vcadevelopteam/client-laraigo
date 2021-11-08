@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { FC, useEffect, useState } from 'react';
-import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs, FormControlLabel, FormGroup } from '@material-ui/core';
+import { AppBar, Box, Button, makeStyles, Link, Tab, Tabs, Typography, TextField, Grid, Select, IconButton, FormControl, MenuItem, Divider, Breadcrumbs } from '@material-ui/core';
 import { FieldEdit, IOSSwitch } from 'components';
 import { Trans, useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -1610,10 +1610,9 @@ const ChannelAddEnd: FC<ChannelAddEndProps> = ({ onClose, onSubmit, loading, int
     const classes = useFinalStepStyles();
     const history = useHistory();
     const [name, setName] = useState("");
-    const [enable, setenable] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#7721ad");
-    const [auto, setAuto] = useState(true);
+    const [auto] = useState(true);
     const [hexIconColor, setHexIconColor] = useState("#7721ad");
 
     const handleGoBack = (e: React.MouseEvent) => {

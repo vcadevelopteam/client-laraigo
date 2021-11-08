@@ -2213,7 +2213,7 @@ interface LeadItemProps {
 
 const LeadItem: FC<LeadItemProps> = ({ lead }) => {
     const classes = useLeadItemStyles();
-    const [open, setOpen] = useState(false);
+    const [open] = useState(false);
 
     return (
         <div className={classes.root}>

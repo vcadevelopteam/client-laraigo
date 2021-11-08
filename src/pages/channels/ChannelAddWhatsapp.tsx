@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, Fragment, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup, TextField } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import { styled } from '@material-ui/core/styles';
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { useHistory, useLocation } from "react-router";
@@ -69,7 +69,6 @@ interface whatsAppData {
 }
 
 export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
-    const [enable, setenable] = useState(false);
     const [channelreg, setChannelreg] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
     const [viewSelected, setViewSelected] = useState("view1");
@@ -82,7 +81,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [setParameters, setSetParameters] = useState(true);
    
     const user = useSelector(state => state.login.validateToken.user);
-    const  roledesc = user?.roledesc || ""
+    const roledesc = user?.roledesc || "";
     const executeResult = useSelector(state => state.channel.successinsert);
     const executeActivationResult = useSelector(state => state.channel.activateChannel);
     const mainResult = useSelector(state => state.channel.channelList);
@@ -105,7 +104,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [history]);
 
-    const [errors, setErrors] = useState<Dictionary>({
+    const [errors] = useState<Dictionary>({
         accesstoken: "",
         brandName: "",
         brandAddress: "",
@@ -357,14 +356,26 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         <div>
                             <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
         
-                            <Button
-                                className={classes.centerbutton}
-                                variant="contained"
-                                color="primary"
-                                disabled={nextbutton}
-                                onClick={() => { setViewSelected("viewfinishreg") }}
-                            >{t(langKeys.registerwhats)}
-                            </Button>
+                            {
+                                edit ?
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={false}
+                                    onClick={() => { history.push(paths.CHANNELS) }}
+                                    >{t(langKeys.close)}
+                                </Button>
+                                :
+                                <Button
+                                    className={classes.centerbutton}
+                                    variant="contained"
+                                    color="primary"
+                                    disabled={nextbutton}
+                                    onClick={() => { setViewSelected("viewfinishreg") }}
+                                    >{t(langKeys.registerwhats)}
+                                </Button>
+                            }
                             <div className="row-zyx">
                                 <div className="col-3"></div>
                                 <FieldEdit
@@ -431,6 +442,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.brandname}
+                                        disabled={edit}
                                     />
                                     <TextField
                                         className={classes.fields2}
@@ -450,6 +462,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.brandaddress}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad",marginBottom: 10}}>{t(langKeys.brandpointcontact)}</div>
@@ -474,6 +487,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.firstname}
+                                        disabled={edit}
                                     />
                                     <TextField
                                         className={classes.fields2}
@@ -494,6 +508,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.lastname}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", display:"flex"}}>
@@ -517,6 +532,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.email}
+                                        disabled={edit}
                                     />
                                     <CssPhonemui
                                         className={classes.fields2}
@@ -538,6 +554,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                             setdisablebutton(!(e) || !(fields.service.brandname) || !(fields.service.brandaddress) || !(fields.service.firstname) || !(fields.service.lastname) 
                                                     || !(fields.service.email) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.emailcondition)}</div>
@@ -562,6 +579,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.email) || !(fields.service.phone) || !(fields.service.phonenumberwhatsappbusiness) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.customerfacebookid}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation2)}</div>
@@ -585,6 +603,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.nameassociatednumber) )
                                         }}
                                         value={fields.service.phonenumberwhatsappbusiness}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation3)}</div>
@@ -608,11 +627,22 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                                     || !(fields.service.email) || !(fields.service.phone) || !(fields.service.customerfacebookid) || !(fields.service.phonenumberwhatsappbusiness) )
                                         }}
                                         value={fields.service.nameassociatednumber}
+                                        disabled={edit}
                                     />
                                 </div>
                                 <div style={{ textAlign: "left", fontWeight: 500, fontSize: 12, color: "grey",marginLeft: "15px",marginBottom: "15px"}}>{t(langKeys.whatsappinformation4)}</div>
                                 <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
                                     <div style={{ flex: "1", margin: "0px 15px"}}>
+                                        {edit ?
+                                        <Button
+                                            onClick={() => { history.push(paths.CHANNELS) }}
+                                            className={classes.button2}
+                                            disabled={false}
+                                            variant="contained"
+                                            color="primary"
+                                        >{t(langKeys.close)}
+                                        </Button>
+                                        :
                                         <Button
                                             onClick={() => { checkissues() }}
                                             className={classes.button2}
@@ -621,6 +651,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                             color="primary"
                                         >{t(langKeys.next)}
                                         </Button>
+                                        }
                                     </div>
                                     {
                                         roledesc === "SUPERADMIN"?

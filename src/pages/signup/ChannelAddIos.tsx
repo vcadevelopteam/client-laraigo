@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useState } from "react";
-import { makeStyles, Button, Box, FormControlLabel, FormGroup, Breadcrumbs, Link } from '@material-ui/core';
+import { makeStyles, Button, Box, Breadcrumbs, Link } from '@material-ui/core';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, IOSSwitch, } from "components";
+import { ColorInput, FieldEdit, } from "components";
 import { AppleIcon } from "icons";
 
 const useChannelAddStyles = makeStyles(theme => ({
@@ -20,7 +20,6 @@ export const ChannelAddIos: FC<{setrequestchannels:(param:any)=>void,setlistchan
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
     const [coloricon, setcoloricon] = useState("#000000");
-    const [enable, setenable] = useState(false);
     const classes = useChannelAddStyles();
     const [fields, setFields] = useState({
         "method": "UFN_COMMUNICATIONCHANNEL_INS",

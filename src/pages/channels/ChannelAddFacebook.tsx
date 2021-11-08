@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup } from '@material-ui/core';
+import { makeStyles, Breadcrumbs, Button, Box } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { Facebook as FacebookIcon} from "@material-ui/icons";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { ColorInput, FieldEdit, FieldSelect, IOSSwitch } from "components";
+import { ColorInput, FieldEdit, FieldSelect } from "components";
 import { useHistory } from "react-router";
 import paths from "common/constants/paths";
 import FacebookLogin from 'react-facebook-login';
@@ -31,7 +31,6 @@ export const ChannelAddFacebook: FC = () => {
     const [setins, setsetins] = useState(false);
     const [nextbutton, setNextbutton] = useState(true);
     const [channelreg, setChannelreg] = useState(true);
-    const [enable, setenable] = useState(false);
     const mainResult = useSelector(state => state.channel.channelList)
     const executeResult = useSelector(state => state.channel.successinsert)
     const history = useHistory();

@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
-import { makeStyles, Breadcrumbs, Button, Box, FormControlLabel, FormGroup, TextField } from '@material-ui/core';
+import { FC, useState } from "react";
+import { makeStyles, Breadcrumbs, Button, Box, TextField } from '@material-ui/core';
 import Link from '@material-ui/core/Link';
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { FieldEdit, ColorInput, IOSSwitch } from "components";
+import { FieldEdit, ColorInput } from "components";
 import MuiPhoneNumber from 'material-ui-phone-number';
 import { styled } from '@material-ui/core/styles';
 import { WhatsappIcon } from "icons";
@@ -63,12 +63,11 @@ export const ChannelAddWhatsapp: FC<{setrequestchannels:(param:any)=>void,setlis
     const planData = useSelector(state => state.signup.verifyPlan)
     const provider = planData.data[0].providerwhatsapp
     const [nextbutton, setNextbutton] = useState(true);
-    const [enable, setenable] = useState(false);
     const [disablebutton, setdisablebutton] = useState(true);
     const [coloricon, setcoloricon] = useState("#4AC959");
     const [channelreg, setChannelreg] = useState(true);
     const { t } = useTranslation();
-    const [errors, setErrors] = useState<Dictionary>({
+    const [errors] = useState<Dictionary>({
         accesstoken: "",
         brandName: "",
         brandAddress: "",

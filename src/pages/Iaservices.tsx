@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getValuesFromDomain, insInteligentModelConfiguration, insOrg } from 'common/helpers';
+import { getChannelsByOrg, getIntelligentModels, getIntelligentModelsConfigurations, getValuesFromDomain, insInteligentModelConfiguration } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -196,7 +196,7 @@ const DetailIaService: React.FC<DetailIaServiceProps> = ({ data: { row, edit }, 
 
     const dataModels = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataChannels = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataModelType = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    //const dataModelType = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const dataStatus = multiData[3] && multiData[3].success ? multiData[3].data : [];
 
     const { control, register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<any>({

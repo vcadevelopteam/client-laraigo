@@ -163,8 +163,8 @@ const CRM: FC = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
-      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
-      const [removed] = copiedItems!.splice(leadIndex, 1);
+      //const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+      //const [removed] = copiedItems!.splice(leadIndex, 1);
       const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
       const data = { ...lead, status:'ELIMINADO', operation:'UPDATE' }

@@ -51,8 +51,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
     const [roleList, setroleList] = useState<any>([]);
     // const [disablebutton, setDisablebutton] = useState(false);
     const multiResult = useSelector(state => state.main.multiData.data);
-    const mainResult = useSelector(state => state.signup.channelList)
-    const executeResult = useSelector(state => state.signup.insertChannel)
+    const executeResult = useSelector(state => state.signup.insertChannel);
     
     useEffect(() => {
         dispatch(getMultiCollectionPublic(["SignUpIndustry","SignUpCompanySize","SignUpRoles"]));

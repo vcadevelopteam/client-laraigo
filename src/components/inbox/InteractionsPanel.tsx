@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react'
 import 'emoji-mart/css/emoji-mart.css'
-import { ITicket } from "@types";
 import { useSelector } from 'hooks';
 import { goToBottom, showGoToBottom } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
