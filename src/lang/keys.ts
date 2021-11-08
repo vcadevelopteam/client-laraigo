@@ -286,6 +286,8 @@ export const langKeys = {
     enterbotname: "enterbotname",
     enterbotapikey: "enterbotapikey",
 
+    next_activity: 'next_activity',
+
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
 
@@ -796,6 +798,7 @@ export const langKeys = {
     confirmation: 'confirmation',
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
+    confirmation_close: 'confirmation_close',
     question_delete_all_items: 'question_delete_all_items',
     login_with_facebook: 'login_with_facebook',
     signup_with_facebook: 'signup_with_facebook',
