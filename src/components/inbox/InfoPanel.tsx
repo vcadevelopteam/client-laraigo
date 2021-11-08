@@ -148,7 +148,6 @@ const InfoTab: React.FC = () => {
     const [view, setView] = useState('view');
 
     const multiData = useSelector(state => state.main.multiDataAux);
-
     const { setValue, getValues, trigger, register, formState: { errors } } = useForm<any>({
         defaultValues: { ...person, birthday: person?.birthday || '' }
     });

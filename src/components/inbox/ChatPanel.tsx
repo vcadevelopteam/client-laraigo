@@ -9,7 +9,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
@@ -22,6 +22,8 @@ import IconButton from '@material-ui/core/IconButton';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Rating from '@material-ui/lab/Rating';
 import { Box } from '@material-ui/core';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import StarIcon from '@material-ui/icons/Star';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -417,7 +419,8 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
     const insLeadRes = useSelector(state => state.main.execute);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    const personSelected = useSelector(state => state.inbox.person);
+    const user = useSelector(state => state.login.validateToken.user);
+    const personSelected = useSelector(state => state.inbox.person.data);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -436,6 +439,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitInsLead(false);
+                dispatch(updatePerson({ ...personSelected!!, havelead: true }));
             } else if (insLeadRes.error) {
                 const message = t(insLeadRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message }))
@@ -451,10 +455,10 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 description: '',
                 expected_revenue: '',
                 priority: 1,
-                firstname: personSelected.data?.firstname,
-                lastname: personSelected.data?.lastname,
-                email: personSelected.data?.email,
-                phone: personSelected.data?.phone,
+                firstname: personSelected?.firstname,
+                lastname: personSelected?.lastname,
+                email: personSelected?.email,
+                phone: personSelected?.phone,
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
@@ -468,7 +472,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data.priority)
+
         const newLead: ILead = {
             leadid: 0,
             description: data.description,
@@ -486,7 +490,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
         dispatch(showBackdrop(true));
-        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected.data?.personid!!)))
+        dispatch(execute(insLeadPerson(newLead, firstname, lastname, email, phone, personSelected?.personid!!)))
         setWaitInsLead(true)
     });
 
@@ -547,10 +551,19 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                         error={errors?.expected_revenue?.message}
                         type="number"
                         onChange={(value) => setValue('expected_revenue', value)}
+
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    {user?.currencysymbol}
+                                </InputAdornment>
+                            )
+                        }}
                     />
                     <div style={{ flex: 1 }}>
                         <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">Prioridad</Box>
                         <Rating
+                            name="priority-start"
                             max={3}
                             value={getValues('priority')}
                             onChange={(event, newValue) => setValue('priority', newValue || 0, { shouldValidate: true })}
@@ -809,7 +822,8 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
 const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
     const dispatch = useDispatch();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    console.log(ticketSelected!!.displayname)
+    const person = useSelector(state => state.inbox.person.data);
+
     const showInfoPanelTrigger = () => dispatch(showInfoPanel())
 
     return (
@@ -819,7 +833,10 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                     <Avatar src={ticketSelected!!.imageurldef || ""} />
                     <div className={classes.titleTicketChat}>
-                        <div>{ticketSelected!!.displayname}</div>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {person?.havelead && <StarIcon fontSize="small" style={{ color: '#ffb400' }} />}
+                            {ticketSelected!!.displayname}
+                        </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
                             Ticket #{ticketSelected!!.ticketnum}
                         </div>
