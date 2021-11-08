@@ -736,6 +736,7 @@ const translation: LangKeys = {
     confirmation: 'Confirmation',
     confirmation_save: 'Are you sure to save the record?',
     confirmation_delete: 'Are you sure to delete the record?',
+    confirmation_close: 'Are you sure to close the record?',
     question_delete_all_items: 'Do you want to delete all items inside this element?',
     login_with_facebook: 'Login with Facebook',
     next: "Next",

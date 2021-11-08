@@ -175,6 +175,26 @@ const CRM: FC = () => {
     }
   }
 
+  const handleCloseLead = (lead:any) => {
+    const callback = () => {
+      const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
+      const column = dataColumn[index];
+      const copiedItems = [...column.items!!]
+      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
+      const [removed] = copiedItems!.splice(leadIndex, 1); //v
+      const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
+      const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
+      setDataColumn(newData);
+      const data = { ...lead, status:'CERRADO', operation:'UPDATE' }
+      dispatch(execute(insLead(data)))
+    }
+    dispatch(manageConfirmation({
+      visible: true,
+      question: t(langKeys.confirmation_close),
+      callback
+    }))
+  }
+
   const handleDelete = (lead:any) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
@@ -182,7 +202,8 @@ const CRM: FC = () => {
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
       const [removed] = copiedItems!.splice(leadIndex, 1); //v
-      const newData = Object.values({...dataColumn, [index]: {...column, items: copiedItems}}) as dataBackend[]
+      const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
+      const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
       const data = { ...lead, status:'ELIMINADO', operation:'UPDATE' }
       dispatch(execute(insLead(data)))
@@ -456,6 +477,7 @@ const CRM: FC = () => {
                                                     lead={item}
                                                     snapshot={snapshot}
                                                     onDelete={handleDelete}
+                                                    onCloseLead={handleCloseLead}
                                                   />
                                                 </div>
                                               )}
@@ -542,6 +564,7 @@ const CRM: FC = () => {
                                                             lead={item}
                                                             snapshot={snapshot}
                                                             onDelete={handleDelete}
+                                                            onCloseLead={handleCloseLead}
                                                           />
                                                         </div>
                                                       )}
