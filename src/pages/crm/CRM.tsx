@@ -54,8 +54,7 @@ interface leadBackend {
 
 const useStyles = makeStyles((theme) => ({
   containerDetail: {
-      marginTop: theme.spacing(2),
-      padding: theme.spacing(2),
+      marginTop: theme.spacing(3),
       background: '#fff',
   }
 }));
@@ -588,7 +587,7 @@ const CRM: FC = () => {
         </div>
         }
         {display === 'GRID' &&
-        <div style={{ width: '100%' }}>
+        <div style={{ width: '100%', paddingTop: '10px' }}>
           <div className={classes.containerDetail}>
             <TablePaginated
               columns={columns}
