@@ -88,8 +88,9 @@ const CRM: FC = () => {
   useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
-        const colum0 = {columnid: 0, column_uuid: '00000000-0000-0000-0000-000000000000', description: 'Backlog', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
-        const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
+        // const colum0 = {columnid: 0, column_uuid: '00000000-0000-0000-0000-000000000000', description: 'New', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
+        // const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
+        const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
         const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
         setDataColumn(
           columns.map((column) => {
@@ -421,7 +422,7 @@ const CRM: FC = () => {
         {display === 'BOARD' &&
         <div style={{ display: "flex", justifyContent: "center", height: "100%", marginTop: "35px"}}>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
-            {(dataColumn.length > 0) && 
+            {/* {(dataColumn.length > 0) && 
               <Droppable droppableId="first-column" direction="horizontal" type="column" isDropDisabled>
                 {(provided) => (
                   <div
@@ -500,7 +501,7 @@ const CRM: FC = () => {
                   </div>
                 )}
               </Droppable>
-            }
+            } */}
 
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (

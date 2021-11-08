@@ -155,7 +155,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         max={3}
                         readOnly
                     />
-                    <div style={{ width: 8 }} />
+                    {/* <div style={{ width: 8 }} />
                     {(lead.date_deadline) && (
                         <AccessTimeIcon
                             style={{
@@ -164,7 +164,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                                 fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
                             }}
                         />
-                    )}
+                    )} */}
                     <div style={{ flexGrow: 1 }} />
                     <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>

@@ -106,6 +106,8 @@ const useLeadFormStyles = makeStyles(theme => ({
         borderRadius: 6,
         backgroundColor: 'white',
         flexGrow: 1,
+        color: 'black',
+        fontWeight: 'bold',
     },
     activetab: {
         color: 'white',
@@ -474,7 +476,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     name="radio-buttons-group-columnid"
                                     row
                                 >
-                                    {phases.data.map((e, i) => {
+                                    {phases.data.sort((a, b) => a.index - b.index).map((e, i) => {
                                         return (
                                             <FormControlLabel
                                                 key={i}
@@ -1173,7 +1175,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             aria-describedby="modal-modal-description"
         >
             <Box className={modalClasses.root}>
-                <TitleDetail title="Schedule activity" />
+                <TitleDetail title={t(langKeys.scheduleActivity)} />
                 <div style={{ height: '1em' }} />
                 <Grid container direction="row">
                     <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
