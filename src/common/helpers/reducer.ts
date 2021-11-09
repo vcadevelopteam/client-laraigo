@@ -53,3 +53,5 @@ export const initialListState: IListState<any> = {
     error: false,
     message: undefined,
 };
+
+export const initialDisplayState: string = 'BOARD';

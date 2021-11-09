@@ -107,3 +107,10 @@ export const getLeadPhases = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetGetLeadPhases = (): IActionCall => ({type: actionTypes.GET_PHASES_RESET});
+
+export const setDisplay = (display: string): IActionCall => ({
+    payload: display,
+    type: actionTypes.DISPLAY_LEAD,
+});
+
+export const resetDisplay = (): IActionCall => ({type: actionTypes.DISPLAY_LEAD_RESET});
