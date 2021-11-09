@@ -319,7 +319,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
 
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "apikeyid");setdisablebutton2(!!e.target.value && !!fields.service.apikeysecret && !!fields.service.appid)}}
+                                    onChange={(e) => { setService(e.target.value, "apikeyid");setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)}}
                                     variant="outlined"
                                     label={"Apikey Id"}
                                 />
@@ -327,7 +327,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{width:"100%",padding: "10px 25%"}}>
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "apikeysecret");setdisablebutton2(!!e.target.value && !!fields.service.apikeyid && !!fields.service.appid)}}
+                                    onChange={(e) => { setService(e.target.value, "apikeysecret");setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)}}
                                     variant="outlined"
                                     label={"Apikey Secret"}
                                 />
@@ -335,7 +335,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                             <div style={{width:"100%",padding: "10px 25%"}}>
                                 <TextField
                                     style={{width:"100%"}}
-                                    onChange={(e) => { setService(e.target.value, "appid");setdisablebutton2(!!e.target.value && !!fields.service.apikeyid && !!fields.service.apikeysecret)}}
+                                    onChange={(e) => { setService(e.target.value, "appid");setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)}}
                                     variant="outlined"
                                     label={"App Id"}
                                 />
