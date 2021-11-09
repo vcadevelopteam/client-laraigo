@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
-import { AddColumnTemplate, DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
+import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
 import { getMultiCollection, resetMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Avatar, Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
-import { Add, MoreVert as MoreVertIcon, AccessTime as AccessTimeIcon } from '@material-ui/icons';
+import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
 import { Trans } from 'react-i18next';
@@ -155,16 +155,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         max={3}
                         readOnly
                     />
-                    {/* <div style={{ width: 8 }} />
-                    {(lead.date_deadline) && (
-                        <AccessTimeIcon
-                            style={{
-                                height: 18,
-                                width: 'auto',
-                                fill: (Math.floor(Math.random() * 6) + 1) % 2 ? 'rgba(0, 0, 0, 0.26)' : 'red',
-                            }}
-                        />
-                    )} */}
                     <div style={{ flexGrow: 1 }} />
                     <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>

@@ -1866,3 +1866,15 @@ export const getLeadExport = ({ filters, sorts }: Dictionary): IRequestBody => (
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+
+export const insArchiveLead = (lead: ICrmLead): IRequestBody => ({
+    method: 'UFN_LEAD_INS',
+    key: "UFN_LEAD_INS",
+    parameters: {
+        ...lead,
+        id: lead.leadid,
+        username: null,
+        status: "CERRADO",
+        operation: "UPDATE",
+    },
+});

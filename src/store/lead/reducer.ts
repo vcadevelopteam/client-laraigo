@@ -13,6 +13,7 @@ export interface IState {
     saveLeadActivity: IProcessState;
     saveLeadNote: IProcessState;
     display: string;
+    archiveLead: IProcessState;
 }
 
 export const initialState: IState = {
@@ -25,6 +26,7 @@ export const initialState: IState = {
     saveLeadActivity: initialProccessState,
     saveLeadNote: initialProccessState,
     display: initialDisplayState,
+    archiveLead: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -69,5 +71,10 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SAVE_LEADNOIE_RESET]: caseFUnctions.saveLeadNoteReset,
 
     [actionTypes.DISPLAY_LEAD]: caseFUnctions.displaySet,
-    [actionTypes.DISPLAY_LEAD_RESET]: caseFUnctions.displayReset
+    [actionTypes.DISPLAY_LEAD_RESET]: caseFUnctions.displayReset,
+
+    [actionTypes.ARCHIVE_LEAD]: caseFUnctions.archiveLead,
+    [actionTypes.ARCHIVE_LEAD_SUCCESS]: caseFUnctions.archiveLeadSuccess,
+    [actionTypes.ARCHIVE_LEAD_FAILURE]: caseFUnctions.archiveLeadFailure,
+    [actionTypes.ARCHIVE_LEAD_RESET]: caseFUnctions.archiveLeadReset,
 });
