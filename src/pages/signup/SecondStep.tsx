@@ -45,7 +45,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.countryList);    
     const URL="https://ipapi.co/json/";
+    const [countryname, setcountryname] = useState("PERU");
     const [countrycode, setcountrycode] = useState("PE");
+    const [currency, setcurrency] = useState("PEN");
     const [errors, setErrors] = useState<Dictionary>({
         firstandlastname: "",
         companybusinessname: "",
@@ -66,7 +68,9 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
             fetch(URL,{method: "get"})
                 .then((response)=>response.json())
                 .then((data)=>{
+                    setcountryname(data.country_name.toUpperCase());
                     setcountrycode(data.country_code);
+                    setcurrency(data.currency);
                 })
         }
         catch (error) {
@@ -78,13 +82,21 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
     useEffect(() => {
-        setMainData((p:any) => ({ ...p, country: countrycode }))
-    }, [countrycode]);
+        setMainData((p:any) => ({ ...p, country: countrycode, countryname: countryname, currency: currency }))
+    }, [countrycode, countryname, currency]);
+    
     useEffect(() => {
         if (ressignup.data?.length > 0) {
             if (countrycode) {
                 setMainData((p:any) => ({ ...p, country: countrycode }))
+            }
+            if (countryname) {
+                setMainData((p:any) => ({ ...p, countryname: countryname }))
+            }
+            if (currency) {
+                setMainData((p:any) => ({ ...p, currency: currency }))
             }
         }
     }, [ressignup])
