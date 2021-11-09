@@ -301,7 +301,7 @@ const CRM: FC = () => {
                 </div>
               : <div style={{ cursor: 'pointer' }}>
                 {
-                  column.sortType === "datetime"
+                  column.sortType === "datetime" && !!row[column.id]
                   ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",

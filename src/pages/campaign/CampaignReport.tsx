@@ -75,7 +75,7 @@ export const CampaignReport: React.FC<DetailProps> = ({ setViewSelected }) => {
                 setSelectedRow(row);
                 setOpenModal(true);
             }}>
-                {column.sortType === "datetime"
+                {column.sortType === "datetime" && !!row[column.id]
                 ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
