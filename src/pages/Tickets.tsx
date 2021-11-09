@@ -220,7 +220,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData && multiData?.data[1])
+        if (multiData && multiData?.data[3])
             setAgentsConnected(multiData?.data[3].data)
     }, [multiData])
 
@@ -454,7 +454,6 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: 'numeroticket',
-                NoFilter: true,
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return (
@@ -469,38 +468,34 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fecha),
-                NoFilter: true,
-                accessor: 'fecha'
+                accessor: 'fecha',
+                type: 'date',
             },
             {
                 Header: t(langKeys.ticket_firstusergroup),
-                NoFilter: true,
                 accessor: 'firstusergroup'
             },
             {
                 Header: t(langKeys.ticket_ticketgroup),
-                NoFilter: true,
                 accessor: 'ticketgroup'
             },
             {
                 Header: t(langKeys.ticket_communicationchanneldescription),
-                NoFilter: true,
                 accessor: 'communicationchanneldescription'
             },
             {
                 Header: t(langKeys.ticket_name),
-                NoFilter: true,
                 accessor: 'name'
             },
             {
                 Header: t(langKeys.ticket_canalpersonareferencia),
-                NoFilter: true,
                 accessor: 'canalpersonareferencia'
             },
             {
                 Header: t(langKeys.ticket_fechainicio),
-                NoFilter: true,
                 accessor: 'fechainicio',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return convertLocalDate(row.fechainicio).toLocaleString()
@@ -508,8 +503,9 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechafin),
-                NoFilter: true,
                 accessor: 'fechafin',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
@@ -517,8 +513,9 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechaprimeraconversacion),
-                NoFilter: true,
                 accessor: 'fechaprimeraconversacion',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechaprimeraconversacion ? convertLocalDate(row.fechaprimeraconversacion).toLocaleString() : ''
@@ -526,8 +523,9 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
-                NoFilter: true,
                 accessor: 'fechaultimaconversacion',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
@@ -535,8 +533,9 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
-                NoFilter: true,
                 accessor: 'fechahandoff',
+                type: 'date',
+                sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
@@ -544,138 +543,122 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_asesorinicial),
-                NoFilter: true,
                 accessor: 'asesorinicial'
             },
             {
                 Header: t(langKeys.ticket_asesorfinal),
-                NoFilter: true,
                 accessor: 'asesorfinal'
             },
             {
                 Header: t(langKeys.ticket_supervisor),
-                NoFilter: true,
                 accessor: 'supervisor'
             },
             {
                 Header: t(langKeys.ticket_empresa),
-                NoFilter: true,
                 accessor: 'empresa'
             },
             {
                 Header: t(langKeys.ticket_attentiongroup),
-                NoFilter: true,
                 accessor: 'attentiongroup'
             },
             {
                 Header: t(langKeys.ticket_classification),
-                NoFilter: true,
                 accessor: 'classification'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuesta),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuesta'
+                accessor: 'tiempopromediorespuesta',
+                type: 'time',
             },
             {
                 Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
-                NoFilter: true,
-                accessor: 'tiempoprimerarespuestaasesor'
+                accessor: 'tiempoprimerarespuestaasesor',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuestaasesor'
+                accessor: 'tiempopromediorespuestaasesor',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestapersona),
-                NoFilter: true,
-                accessor: 'tiempopromediorespuestapersona'
+                accessor: 'tiempopromediorespuestapersona',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duraciontotal),
-                NoFilter: true,
-                accessor: 'duraciontotal'
+                accessor: 'duraciontotal',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duracionreal),
-                NoFilter: true,
-                accessor: 'duracionreal'
+                accessor: 'duracionreal',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duracionpausa),
-                NoFilter: true,
-                accessor: 'duracionpausa'
+                accessor: 'duracionpausa',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tmoasesor),
-                NoFilter: true,
-                accessor: 'tmoasesor'
+                accessor: 'tmoasesor',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
-                NoFilter: true,
-                accessor: 'tiempoprimeraasignacion'
+                accessor: 'tiempoprimeraasignacion',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_estadoconversacion),
-                NoFilter: true,
                 accessor: 'estadoconversacion'
             },
             {
                 Header: t(langKeys.ticket_tipocierre),
-                NoFilter: true,
                 accessor: 'tipocierre'
             },
             {
                 Header: t(langKeys.ticket_tipification),
-                NoFilter: true,
                 accessor: 'tipification'
             },
             {
                 Header: t(langKeys.ticket_firstname),
-                NoFilter: true,
                 accessor: 'firstname'
             },
             {
                 Header: t(langKeys.ticket_contact),
-                NoFilter: true,
                 accessor: 'contact'
             },
             {
                 Header: t(langKeys.ticket_lastname),
-                NoFilter: true,
                 accessor: 'lastname'
             },
             {
                 Header: t(langKeys.ticket_email),
-                NoFilter: true,
                 accessor: 'email'
             },
             {
                 Header: t(langKeys.ticket_phone),
-                NoFilter: true,
                 accessor: 'phone'
             },
             {
                 Header: t(langKeys.ticket_balancetimes),
-                NoFilter: true,
-                accessor: 'balancetimes'
+                accessor: 'balancetimes',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.ticket_documenttype),
-                NoFilter: true,
                 accessor: 'documenttype'
             }
             ,
             {
                 Header: t(langKeys.ticket_dni),
-                NoFilter: true,
                 accessor: 'dni'
             },
             {
                 Header: t(langKeys.ticket_abandoned),
-                NoFilter: true,
                 accessor: 'abandoned',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -684,18 +667,16 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_enquiries),
-                NoFilter: true,
                 accessor: 'enquiries'
             },
             {
                 Header: t(langKeys.ticket_labels),
-                NoFilter: true,
                 accessor: 'labels'
             },
             {
                 Header: t(langKeys.ticket_tdatime),
-                NoFilter: true,
-                accessor: 'tdatime'
+                accessor: 'tdatime',
+                type: 'time'
             }
         ],
         []
