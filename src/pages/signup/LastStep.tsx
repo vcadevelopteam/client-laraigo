@@ -63,7 +63,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             setroleList(multiResult[2].data)
         }
     }, [multiResult]);
-    
+
     const [lastfields, setLastFields] = useState({
         industry: "",
         companysize: "",
@@ -89,6 +89,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
                 companysize: lastfields.companysize,
                 rolecompany: lastfields.companyrole,
                 paymentplanid: planData.data[0].paymentplanid,
+                countryname: mainData.countryname,
                 country: mainData.country,
                 currency: mainData.currency,
                 paymentplan: planData.data[0].plan,
