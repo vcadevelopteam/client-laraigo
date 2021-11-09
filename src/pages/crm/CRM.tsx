@@ -18,6 +18,7 @@ import { IconButton } from "@material-ui/core";
 import { IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
+import { setDisplay } from "store/lead/actions";
 
 interface dataBackend {
   columnid: number,
@@ -66,7 +67,7 @@ const CRM: FC = () => {
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteColumn, setDeleteColumn] = useState('')
-  const [display, setDisplay] = useState('BOARD')
+  const display = useSelector(state => state.lead.display);
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
   const classes = useStyles();
@@ -283,70 +284,89 @@ const CRM: FC = () => {
   const [totalrow, settotalrow] = useState(0);
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [waitExport, setWaitExport] = useState(false);
-  const columns = React.useMemo(
-    () => [
-        {
-            Header: t(langKeys.opportunity),
-            accessor: 'opportunity',
-        },
-        {
-            Header: t(langKeys.name),
-            accessor: 'contact_name',
-        },
-        {
-            Header: t(langKeys.email),
-            accessor: 'email',
-        },
-        {
-            Header: t(langKeys.phone),
-            accessor: 'phone',
-        },
-        {
-          Header: t(langKeys.salesperson),
-          accessor: 'sales_person',
-        },
-        {
-          Header: t(langKeys.next_activity),
-          accessor: 'next_activity',
-        },
-        {
-          Header: t(langKeys.expectedRevenue),
-          accessor: 'expected_revenue',
-          type: 'number',
-          sortType: 'number',
-          Cell: (props: any) => {
-            const column = props.cell.column;  
-            const row = props.cell.row.original;
-              return (
-                <div style={{ textAlign: 'right' }}>
-                  {user?.currencysymbol} {row[column.id]}
-                </div>  
-              )
+
+  const cell = (props: any) => {
+    const column = props.cell.column;
+    const row = props.cell.row.original;
+    return (
+        <div onClick={() => {
+          if (row.leadid) {
+            history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
           }
-        },
-        {
-          Header: t(langKeys.expectedClosing),
-          accessor: 'expected_closing',
-          type: 'date',
-          sortType: 'datetime',
-          Cell: (props: any) => {
-            const column = props.cell.column;  
-            const row = props.cell.row.original;
-              return (
-                  convertLocalDate(row[column.id]).toLocaleString(undefined, {
+        }}>
+            {
+              column.id === 'expected_revenue'
+              ? <div style={{ cursor: 'pointer', textAlign: 'right' }}>
+                  {user?.currencysymbol} {row[column.id]}
+                </div>
+              : <div style={{ cursor: 'pointer' }}>
+                {
+                  column.sortType === "datetime"
+                  ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                     year: "numeric",
                     month: "2-digit",
                     day: "2-digit",
                     hour: "numeric",
                     minute: "numeric",
                     second: "numeric"
-                })
-              )
-          }
+                  })
+                  : row[column.id]
+                }
+                </div>
+            }
+        </div>
+    )
+  }
+  const columns = React.useMemo(
+    () => [
+        {
+            Header: t(langKeys.opportunity),
+            accessor: 'opportunity',
+            Cell: cell
+        },
+        {
+            Header: t(langKeys.name),
+            accessor: 'contact_name',
+            Cell: cell
+        },
+        {
+            Header: t(langKeys.email),
+            accessor: 'email',
+            Cell: cell
+        },
+        {
+            Header: t(langKeys.phone),
+            accessor: 'phone',
+            Cell: cell
+        },
+        {
+          Header: t(langKeys.salesperson),
+          accessor: 'sales_person',
+          Cell: cell
+        },
+        {
+          Header: t(langKeys.next_activity),
+          accessor: 'next_activity',
+          Cell: cell
+        },
+        {
+          Header: t(langKeys.expectedRevenue),
+          accessor: 'expected_revenue',
+          type: 'number',
+          sortType: 'number',
+          Cell: cell
+        },
+        {
+          Header: t(langKeys.expectedClosing),
+          accessor: 'expected_closing',
+          type: 'date',
+          sortType: 'datetime',
+          Cell: cell
         },
         {
           Header: t(langKeys.phase),
           accessor: 'stage',
+          Cell: cell
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -405,7 +425,7 @@ const CRM: FC = () => {
           <IconButton
             color="default"
             disabled={display === 'BOARD'}
-            onClick={() => setDisplay('BOARD')}
+            onClick={() => dispatch(setDisplay('BOARD'))}
             style={{ padding: '5px' }}
           >
             <ViewColumnIcon />
@@ -413,7 +433,7 @@ const CRM: FC = () => {
           <IconButton
             color="default"
             disabled={display === 'GRID'}
-            onClick={() => setDisplay('GRID')}
+            onClick={() => dispatch(setDisplay('GRID'))}
             style={{ padding: '5px' }}
           >
             <ViewListIcon />

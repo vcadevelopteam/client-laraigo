@@ -1,5 +1,5 @@
 import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadNote, IListState, IObjectState, IProcessState } from "@types";
-import { createReducer, initialListState, initialObjectState, initialProccessState } from "common/helpers";
+import { createReducer, initialDisplayState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
@@ -12,6 +12,7 @@ export interface IState {
     leadLogNotes: IListState<ICrmLeadNote>;
     saveLeadActivity: IProcessState;
     saveLeadNote: IProcessState;
+    display: string;
 }
 
 export const initialState: IState = {
@@ -23,6 +24,7 @@ export const initialState: IState = {
     leadLogNotes: initialListState,
     saveLeadActivity: initialProccessState,
     saveLeadNote: initialProccessState,
+    display: initialDisplayState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -65,4 +67,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SAVE_LEADNOIE_SUCCESS]: caseFUnctions.saveLeadNoteSuccess,
     [actionTypes.SAVE_LEADNOIE_FAILURE]: caseFUnctions.saveLeadNoteFailure,
     [actionTypes.SAVE_LEADNOIE_RESET]: caseFUnctions.saveLeadNoteReset,
+
+    [actionTypes.DISPLAY_LEAD]: caseFUnctions.displaySet,
+    [actionTypes.DISPLAY_LEAD_RESET]: caseFUnctions.displayReset
 });

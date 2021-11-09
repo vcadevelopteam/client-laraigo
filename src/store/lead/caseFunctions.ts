@@ -243,3 +243,13 @@ export const getPhasesReset = (state: IState): IState => ({
     ...state,
     leadPhases: initialState.leadPhases,
 });
+
+export const displaySet = (state: IState, action: IAction): IState => ({
+    ...state,
+    display: action.payload
+});
+
+export const displayReset = (state: IState): IState => ({
+    ...state,
+    display: 'BOARD'
+});
