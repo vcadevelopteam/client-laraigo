@@ -46,7 +46,7 @@ import { Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { TextField } from '@material-ui/core';
-import { BooleanOptionsMenuComponent, OptionsMenuComponent } from './table-simple';
+import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -175,9 +175,30 @@ const TableZyxEditable = React.memo(({
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
+        const handleDate = (date: Date) => {
+            if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+                setValue(date?.toISOString() || '');
+                setFilter({
+                    value: date?.toISOString().split('T')[0] || '',
+                    operator,
+                    type
+                })
+            }
+        }
+        const handleTime = (date: Date) => {
+            if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+                setValue(date?.toISOString() || '');
+                setFilter({
+                    value: date?.toLocaleTimeString(),
+                    operator,
+                    type
+                })    
+            }
+        }
+
         useEffect(() => {
             switch (type) {
-                case "number": case "date": case "datetime-local":
+                case "number": case "date": case "datetime-local": case "time":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -218,6 +239,9 @@ const TableZyxEditable = React.memo(({
                 </React.Fragment>
                 :
                 <React.Fragment>
+                    {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                    {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                    {!['date','time'].includes(type) &&
                     <Input
                         // disabled={loading}
                         type={type === 'color' ? 'text' : type}
@@ -228,7 +252,7 @@ const TableZyxEditable = React.memo(({
                         onChange={e => {
                             setValue(e.target.value || '');
                         }}
-                    />
+                    />}
                     <IconButton
                         onClick={handleClickMenu}
                         size="small"

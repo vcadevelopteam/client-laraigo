@@ -44,8 +44,7 @@ import {
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
-import { BooleanOptionsMenuComponent, OptionsMenuComponent } from './table-simple';
-
+import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -124,7 +123,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date": case "datetime-local":
+            case "number": case "date": case "datetime-local": case "time":
                 setoperator("equals");
                 break;
             case "boolean":
@@ -171,6 +170,46 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleClickMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
+    const handleDate = (date: Date) => {
+        if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+            setValue(date?.toISOString() || '');
+            if (!!date || ['isnull','isnotnull'].includes(operator)) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: date?.toISOString().split('T')[0] || '',
+                        operator
+                    },
+                }, 0)
+            }
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
+        }
+    }
+    const handleTime = (date: Date) => {
+        if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+            setValue(date?.toISOString() || '');
+            if (!!date || ['isnull','isnotnull'].includes(operator)) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: date?.toLocaleTimeString(),
+                        operator
+                    },
+                }, 0)
+            }
+            else {
+                setFilters({
+                    ...filters,
+                    [header]: undefined,
+                }, 0)
+            }
+        }
+    }
 
     useEffect(() => {
         if (Object.keys(filters).length === 0) setValue('');
@@ -181,6 +220,9 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
             {type === 'boolean'
                 ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
                 : <React.Fragment>
+                    {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                    {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                    {!['date','time'].includes(type) &&
                     <Input
                         style={{ fontSize: '15px', minWidth: '100px' }}
                         type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
@@ -188,7 +230,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                         value={value}
                         onKeyDown={keyPress}
                         onChange={e => setValue(e.target.value)}
-                    />
+                    />}
                     <IconButton
                         onClick={handleClickMenu}
                         size="small"

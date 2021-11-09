@@ -7,7 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Menu from '@material-ui/core/Menu';
-import { exportExcel } from 'common/helpers';
+import { exportExcel, getLocaleDateString } from 'common/helpers';
 import {
     FirstPage,
     LastPage,
@@ -46,6 +46,13 @@ import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Skeleton } from '@material-ui/lab';
 import { FixedSizeList } from 'react-window';
+import DateFnsUtils from '@date-io/date-fns';
+import * as locale from "date-fns/locale";
+import {
+    MuiPickersUtilsProvider,
+    KeyboardTimePicker,
+    KeyboardDatePicker,
+} from '@material-ui/pickers';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -168,13 +175,42 @@ export const BooleanOptionsMenuComponent = (value: any, handleClickItemMenu: (ke
         <Select
             value={value || 'all'}
             onChange={(e) => handleClickItemMenu(e.target.value)}
-            >
+        >
             {booleanOptionsMenu.map((option) => (
                 <MenuItem key={option.key} value={option.key}>
                     {t(option.value)}
                 </MenuItem>
             ))}
         </Select>
+    )
+}
+
+export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
+            <KeyboardDatePicker
+                format={getLocaleDateString()}
+                value={value === '' ? null : value}
+                onChange={(e: any) => handleClickItemMenu(e)}
+                style={{ minWidth: '150px' }}
+            />
+        </MuiPickersUtilsProvider>
+    )
+}
+
+export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
+            <KeyboardTimePicker
+                ampm={false}
+                views={['hours','minutes','seconds']}
+                format="HH:mm:ss"
+                value={value === '' ? null : value}
+                onChange={(e: any) => handleClickItemMenu(e)}
+                style={{ minWidth: '150px' }}
+            />
+        </MuiPickersUtilsProvider>
+        
     )
 }
 
@@ -189,7 +225,7 @@ export const OptionsMenuComponent = (type: string, operator: string, handleClick
                     </MenuItem>
                 ))
             )
-        case "date": case "datetime-local":
+        case "date": case "datetime-local": case "time":
             return (
                 dateOptionsMenu.map((option) => (
                     <MenuItem key={option.key} selected={option.key === operator} onClick={() => handleClickItemMenu(option.key)}>
@@ -255,17 +291,36 @@ const TableZyx = React.memo(({
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
         };
-    
         const keyPress = React.useCallback((e) => {
             if (e.keyCode === 13) {
                 setFilter({ value, operator, type });
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [value])
+        const handleDate = (date: Date) => {
+            if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+                setValue(date?.toISOString() || '');
+                setFilter({
+                    value: date?.toISOString().split('T')[0] || '',
+                    operator,
+                    type
+                })
+            }
+        }
+        const handleTime = (date: Date) => {
+            if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
+                setValue(date?.toISOString() || '');
+                setFilter({
+                    value: date?.toLocaleTimeString(),
+                    operator,
+                    type
+                })    
+            }
+        }
     
         useEffect(() => {
             switch (type) {
-                case "number": case "date": case "datetime-local":
+                case "number": case "date": case "datetime-local": case "time":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -283,8 +338,11 @@ const TableZyx = React.memo(({
                 {type === 'boolean'
                 ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
                 : <React.Fragment>
+                    {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                    {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                    {!['date','time'].includes(type) &&
                     <Input
-                        // disabled={loading}
+                       // disabled={loading}
                         type={type}
                         style={{ fontSize: '15px', minWidth: '100px' }}
                         fullWidth
@@ -296,7 +354,7 @@ const TableZyx = React.memo(({
                                 setFilter({ value: e.target.value, operator, type });
                             }
                         }}
-                    />
+                    />}
                     <IconButton
                         onClick={handleClickMenu}
                         size="small"
@@ -360,7 +418,7 @@ const TableZyx = React.memo(({
                         default:
                             return cellvalue === Number(value);
                     }
-                case "date": case "datetime-local":
+                case "date": case "datetime-local": case "time":
                     switch (operator) {
                         case 'after':
                             return cellvalue > value;
