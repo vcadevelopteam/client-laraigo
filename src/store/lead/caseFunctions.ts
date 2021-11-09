@@ -253,3 +253,33 @@ export const displayReset = (state: IState): IState => ({
     ...state,
     display: 'BOARD'
 });
+
+export const archiveLead = (state: IState): IState => ({
+    ...state,
+    archiveLead: { ...state.archiveLead, loading: true, error: false },
+});
+
+export const archiveLeadSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    archiveLead: {
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const archiveLeadFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    archiveLead: {
+        success: false,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'archiveLeadFailure:error',
+        message: action.payload.message || 'Error al cerrar la oportunidad',
+    },
+});
+
+export const archiveLeadReset = (state: IState): IState => ({
+    ...state,
+    archiveLead: initialState.archiveLead,
+});

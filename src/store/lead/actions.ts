@@ -114,3 +114,16 @@ export const setDisplay = (display: string): IActionCall => ({
 });
 
 export const resetDisplay = (): IActionCall => ({type: actionTypes.DISPLAY_LEAD_RESET});
+
+/**Close lead -> (status = "CERRADO") */
+export const archiveLead = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.ARCHIVE_LEAD,
+        success: actionTypes.ARCHIVE_LEAD_SUCCESS,
+        failure: actionTypes.ARCHIVE_LEAD_FAILURE,
+    },
+    type: null,
+});
+
+export const resetArchiveLead = (): IActionCall => ({type: actionTypes.ARCHIVE_LEAD_RESET});
