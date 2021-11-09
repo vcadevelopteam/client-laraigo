@@ -486,6 +486,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             conversationid: ticketSelected?.conversationid!!,
             columnid: 0,
             index: 0,
+            userid: user?.userid || 0,
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;

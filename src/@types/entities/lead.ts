@@ -11,6 +11,9 @@ export interface ILead {
     conversationid: number | null;
     columnid: number;
     index: number;
+
+    /**asesor */
+    userid: string | number | null;
 }
 
 export interface ICrmLead {

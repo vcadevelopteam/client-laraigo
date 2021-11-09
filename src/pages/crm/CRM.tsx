@@ -531,9 +531,9 @@ const CRM: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => {
-                    if (column.columnid === 0) {
-                      return null
-                    }
+                    // if (column.columnid === 0) {
+                    //   return null
+                    // }
                     return (
                       <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
                         { (provided) => (
