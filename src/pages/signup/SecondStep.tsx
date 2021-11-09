@@ -126,7 +126,7 @@ export const SecondStep: FC<{ setMainData: (param: any) => void, mainData: any, 
                     onChange={(e) => maindataChange('companybusinessname', e.target.value)}
                 />                
                 <FieldSelect
-                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "", currency: value?.currencycode || "" }))}
+                    onChange={(value) => setMainData((p:any) => ({ ...p, country: value?.code || "", currency: value?.currencycode || "", countryname: value?.description }))}
                     variant="outlined"
                     className="col-6"
                     style={{margin:"15px 0"}}

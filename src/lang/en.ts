@@ -35,7 +35,7 @@ const translation: LangKeys = {
     industry_audiovisual: "Audiovisuales",
     industry_beauty: "Beauty and Relaxation",
     industry_construction: "Construction and Agro",
-    successful_sign_up: 'You have registered successfully, check your email to activate your account.',
+    successful_sign_up: 'You have registered successfully, check your email inbox to proceed with the activation of your account.',
     industry_education: "Education and Culture",
     industry_institution: "State and Institutions",
     industry_entertainment: "Games and Entertainment",
