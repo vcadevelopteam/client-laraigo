@@ -63,9 +63,7 @@ export const LastStep: FC<{mainData:any,requestchannels:any,setSnackbar:(param:a
             setroleList(multiResult[2].data)
         }
     }, [multiResult]);
-
-    console.log(JSON.stringify(mainData));
-
+    
     const [lastfields, setLastFields] = useState({
         industry: "",
         companysize: "",
