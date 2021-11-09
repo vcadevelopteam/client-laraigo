@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment, RadioGroup, FormControlLabel, Radio } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, TitleDetail } from 'components';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment } from '@material-ui/core';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
+import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -263,7 +263,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 message: "Se guardo la oportunidad con éxito",
                 show: true,
             }));
-            if (!edit) history.push(paths.CRM);
+            history.push(paths.CRM);
         }
     }, [saveLead, edit, history, dispatch]);
 
@@ -450,50 +450,24 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                 />
                             </div>
-                            {/* <FieldSelect
-                                label={t(langKeys.status)}
+                            <RadioGroudFieldEdit
+                                aria-label="columnid"
+                                value={Number(getValues('columnid'))}
+                                name="radio-buttons-group-columnid"
                                 className={classes.field}
+                                row
+                                optionDesc="description"
+                                optionValue="columnid"
                                 data={phases.data}
-                                optionDesc={"description" as keyof ICrmColumn}
-                                optionValue={"columnid" as keyof ICrmColumn}
-                                loading={phases.loading}
-                                valueDefault={getValues('columnid')}
-                                onChange={(v: ICrmColumn) => {
-                                    console.log('P', v);
-                                    if (!v) return;
-                                    setValue('column_uuid', v!.column_uuid);
-                                    setValue('columnid', v!.columnid);
+                                onChange={(e) => {
+                                    console.log('FormControlLabel', Number(e.columnid));
+                                    setValue('column_uuid', e.column_uuid);
+                                    setValue('columnid', Number(e.columnid));
+                                    setValues(prev => ({ ...prev })); // refrescar
                                 }}
+                                label={<Trans i18nKey={langKeys.status} />}
                                 error={errors?.columnid?.message}
-                            /> */}
-                            <div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
-                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
-                                    {t(langKeys.status)}
-                                </Box>
-                                <RadioGroup
-                                    aria-label="columnid"
-                                    value={Number(getValues('columnid'))}
-                                    name="radio-buttons-group-columnid"
-                                    row
-                                >
-                                    {phases.data.sort((a, b) => a.index - b.index).map((e, i) => {
-                                        return (
-                                            <FormControlLabel
-                                                key={i}
-                                                value={e.columnid}
-                                                control={<Radio color="primary" />}
-                                                label={e.description}
-                                                onChange={() => {
-                                                    console.log('FormControlLabel', Number(e.columnid));
-                                                    setValue('column_uuid', e.column_uuid);
-                                                    setValue('columnid', Number(e.columnid));
-                                                    setValues(prev => ({ ...prev })); // refrescar
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                </RadioGroup>
-                            </div>
+                            />
                         </Grid>
                     </Grid>
                 </Grid>

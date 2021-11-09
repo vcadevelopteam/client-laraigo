@@ -26,7 +26,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormHelperText, OutlinedInputProps, useTheme } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -1141,6 +1141,48 @@ export const PhoneFieldEdit: FC<PhoneFieldEditProps> = ({ label, error, classNam
                 helperText={error || null}
                 {...props}
             />
+        </div>
+    );
+}
+
+interface RadioGroudFieldEditProps<T = object> extends Omit<RadioGroupProps, 'onChange'> {
+    label: React.ReactNode;
+    data: T[];
+    optionDesc: keyof T;
+    optionValue: keyof T;
+    error?: string;
+    onChange?: (value: T) => void;
+}
+
+export function RadioGroudFieldEdit<T>({
+    className,
+    onChange,
+    label,
+    data,
+    optionDesc,
+    optionValue,
+    error,
+    ...props
+}: RadioGroudFieldEditProps<T>) {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column' }} className={className}>
+            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
+                {label}
+            </Box>
+            <RadioGroup {...props}>
+                {data.map((e, i) => {
+                    return (
+                        <FormControlLabel
+                            key={i}
+                            value={e[optionValue]}
+                            control={<Radio color="primary" />}
+                            label={e[optionDesc]}
+                            onChange={() => onChange?.(e)}
+                        />
+                    );
+                })}
+            </RadioGroup>
+            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </div>
     );
 }
