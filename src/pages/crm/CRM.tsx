@@ -285,6 +285,40 @@ const CRM: FC = () => {
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [waitExport, setWaitExport] = useState(false);
 
+  const CustomCellRender = ({column, row}: any) => {
+    switch (column.id) {
+      case 'expected_revenue':
+        return (
+          <div style={{ cursor: 'pointer', textAlign: 'right' }}>
+            {user?.currencysymbol} {row[column.id]}
+          </div>
+        )
+      case 'status':
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            {(t(`status_${row[column.id]}`.toLowerCase()) || "").toUpperCase()}
+          </div>
+        )
+      default:
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            {
+              column.sortType === "datetime" && !!row[column.id]
+              ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "numeric",
+                minute: "numeric",
+                second: "numeric"
+              })
+              : row[column.id]
+            }
+          </div>
+        )
+    }
+  }
+  
   const cell = (props: any) => {
     const column = props.cell.column;
     const row = props.cell.row.original;
@@ -294,79 +328,65 @@ const CRM: FC = () => {
             history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
           }
         }}>
-            {
-              column.id === 'expected_revenue'
-              ? <div style={{ cursor: 'pointer', textAlign: 'right' }}>
-                  {user?.currencysymbol} {row[column.id]}
-                </div>
-              : <div style={{ cursor: 'pointer' }}>
-                {
-                  column.sortType === "datetime" && !!row[column.id]
-                  ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric"
-                  })
-                  : row[column.id]
-                }
-                </div>
-            }
+          <CustomCellRender column={column} row={row} />
         </div>
     )
   }
   const columns = React.useMemo(
     () => [
-        {
-            Header: t(langKeys.opportunity),
-            accessor: 'opportunity',
-            Cell: cell
-        },
-        {
-            Header: t(langKeys.name),
-            accessor: 'contact_name',
-            Cell: cell
-        },
-        {
-            Header: t(langKeys.email),
-            accessor: 'email',
-            Cell: cell
-        },
-        {
-            Header: t(langKeys.phone),
-            accessor: 'phone',
-            Cell: cell
-        },
-        {
-          Header: t(langKeys.salesperson),
-          accessor: 'sales_person',
+      {
+          Header: t(langKeys.opportunity),
+          accessor: 'opportunity',
           Cell: cell
-        },
-        {
-          Header: t(langKeys.next_activity),
-          accessor: 'next_activity',
+      },
+      {
+          Header: t(langKeys.name),
+          accessor: 'contact_name',
           Cell: cell
-        },
-        {
-          Header: t(langKeys.expectedRevenue),
-          accessor: 'expected_revenue',
-          type: 'number',
-          sortType: 'number',
+      },
+      {
+          Header: t(langKeys.email),
+          accessor: 'email',
           Cell: cell
-        },
-        {
-          Header: t(langKeys.expectedClosing),
-          accessor: 'expected_closing',
-          type: 'date',
-          sortType: 'datetime',
+      },
+      {
+          Header: t(langKeys.phone),
+          accessor: 'phone',
           Cell: cell
-        },
-        {
-          Header: t(langKeys.phase),
-          accessor: 'stage',
-          Cell: cell
+      },
+      {
+        Header: t(langKeys.salesperson),
+        accessor: 'sales_person',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.next_activity),
+        accessor: 'next_activity',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.expectedRevenue),
+        accessor: 'expected_revenue',
+        type: 'number',
+        sortType: 'number',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.expectedClosing),
+        accessor: 'expected_closing',
+        type: 'date',
+        sortType: 'datetime',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.phase),
+        accessor: 'stage',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.status),
+        accessor: 'status',
+        Cell: cell
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps

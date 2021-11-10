@@ -403,6 +403,7 @@ export const langKeys = {
     status_ejecutando: 'status_ejecutando',
     status_pendiente: 'status_pendiente',
     status_pending: 'status_pending',
+    status_cerrado: 'status_cerrado',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',

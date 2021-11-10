@@ -405,6 +405,7 @@ const translation: LangKeys = {
     status_ejecutando: 'ejecutando',
     status_pendiente: 'pendiente',
     status_pending: 'pendiente',
+    status_cerrado: 'cerrado',
 
     type_corp_ninguno: 'Ninguno',
     type_corp_natural: 'Persona natural',
