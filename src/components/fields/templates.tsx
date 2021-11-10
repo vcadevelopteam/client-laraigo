@@ -286,6 +286,7 @@ interface TemplateAutocompleteProps extends InputProps {
     optionDesc: string;
     loading?: boolean;
     triggerOnChangeOnFirst?: boolean;
+    readOnly?: boolean;
 }
 
 export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabled = false, valueDefault = "", onChange, onBlur, error, type = "text", rows = 1, fregister = {}, inputProps = {}, InputProps = {}, variant = "standard" }) => {
@@ -389,7 +390,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     return <TelegramIcon style={{ color, width, height }} />
 }
 
-export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard" }) => {
+export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, className = null, style = null, triggerOnChangeOnFirst = false, loading = false, fregister = {}, uset = false, prefixTranslation = "", variant = "standard", readOnly = false }) => {
     const { t } = useTranslation();
     const [value, setValue] = useState<Dictionary | null>(null);
 
@@ -419,6 +420,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                 disabled={disabled}
                 value={data?.length > 0 ? value : null}
                 onChange={(_, newValue) => {
+                    if (readOnly) return;
                     setValue(newValue);
                     onChange && onChange(newValue);
                 }}
@@ -442,6 +444,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
                                     {params.InputProps.endAdornment}
                                 </React.Fragment>
                             ),
+                            readOnly,
                         }}
                     />
                 )}
@@ -521,7 +524,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
     )
 }
 
-export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
+export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", readOnly = false }) => {
 
     const [optionsSelected, setOptionsSelected] = useState<any[]>([]);
 
@@ -555,16 +558,16 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                             checkedIcon={checkedIcon}
                             style={{ marginRight: 8 }}
                             checked={selected}
+                            readOnly={readOnly}
                         />
                         {item[optionDesc]}
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
-                    // console.log('values',values)
+                    if (readOnly) return;
                     setOptionsSelected(values);
                     onChange && onChange(values, { action, option });
                 }}
-                // onChange={onChange}
                 size="small"
                 getOptionLabel={option => String(option ? option[optionDesc] || option : '')}
                 options={data}
@@ -581,6 +584,7 @@ export const FieldMultiSelectFreeSolo: React.FC<TemplateAutocompleteProps> = ({ 
                                     {params.InputProps.endAdornment}
                                 </React.Fragment>
                             ),
+                            readOnly,
                         }}
                         error={!!error}
                         helperText={error || null}
@@ -1151,6 +1155,8 @@ interface RadioGroudFieldEditProps<T = object> extends Omit<RadioGroupProps, 'on
     optionDesc: keyof T;
     optionValue: keyof T;
     error?: string;
+    readOnly?: boolean;
+    disabled?: boolean;
     onChange?: (value: T) => void;
 }
 
@@ -1162,6 +1168,8 @@ export function RadioGroudFieldEdit<T>({
     optionDesc,
     optionValue,
     error,
+    readOnly = false,
+    disabled = false,
     ...props
 }: RadioGroudFieldEditProps<T>) {
     return (
@@ -1177,7 +1185,8 @@ export function RadioGroudFieldEdit<T>({
                             value={e[optionValue]}
                             control={<Radio color="primary" />}
                             label={e[optionDesc]}
-                            onChange={() => onChange?.(e)}
+                            onChange={() => !readOnly && onChange?.(e)}
+                            disabled={disabled}
                         />
                     );
                 })}

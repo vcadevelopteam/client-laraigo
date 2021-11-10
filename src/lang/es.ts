@@ -1326,6 +1326,8 @@ const translation: LangKeys = {
     doneAndScheduleNext: 'Listo y programar a continuación',
     discard: 'Descartar',
     date_format_error: 'Ingrese una fecha válida',
+
+    noData: 'Sin registros',
 };
 
 const esResource: ResourceLanguage = {

@@ -1335,6 +1335,8 @@ const translation: LangKeys = {
     doneAndScheduleNext: 'Done and schedule next',
     discard: 'Discard',
     date_format_error: 'Please enter a valid date',
+
+    noData: 'No data',
 };
 
 const enResource: ResourceLanguage = {

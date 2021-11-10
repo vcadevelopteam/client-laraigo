@@ -34,6 +34,7 @@ export interface ICrmLead {
     orgid: number;
     personcommunicationchannel: string;
     priority: string | undefined;
+    /**ACTIVO, CERRADO, ELIMINADO */
     status: string;
     /**separado por comas */
     tags: string;

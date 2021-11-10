@@ -140,6 +140,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const phases = useSelector(state => state.lead.leadPhases);
     const user = useSelector(state => state.login.validateToken.user);
     const archiveLeadProcess = useSelector(state => state.lead.archiveLead);
+    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
+    const saveNote = useSelector(state => state.lead.saveLeadNote);
 
      const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -291,10 +293,22 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(archiveLead(insArchiveLead(lead.value!)));
     }, [lead, dispatch]);
 
+    const iSProcessLoading = useCallback(() => {
+        return (
+            saveLead.loading ||
+            archiveLeadProcess.loading ||
+            saveActivity.loading ||
+            saveNote.loading
+        );
+    }, [saveLead, archiveLeadProcess, saveActivity, saveNote]);
+
+    const isStatusClosed = useCallback(() => {
+        return lead.value?.status === "CERRADO";
+    }, [lead]);
+
     if (edit === true && lead.loading && advisers.loading) {
         return <Loading />;
     } else if (edit === true && (lead.error)) {
-        console.log('error')
         return <div>ERROR</div>;
     }
 
@@ -309,6 +323,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         href="/"
                         onClick={(e) => {
                             e.preventDefault();
+                            if (iSProcessLoading()) return;
                             history.push(paths.CRM);
                         }}
                     >
@@ -327,37 +342,40 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                     <TitleDetail title={edit ? getValues('description') : t(langKeys.newLead)} />
                     <div style={{ flexGrow: 1 }} />
-                    <Button
+                    {!isStatusClosed() && <Button
                         variant="contained"
                         type="button"
                         color="primary"
                         startIcon={<ClearIcon color="secondary" />}
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={() => history.push(paths.CRM)}
+                        disabled={iSProcessLoading()}
                     >
                         <Trans i18nKey={langKeys.back} />
-                    </Button>
-                    {(edit && lead.value) && (
+                    </Button>}
+                    {(edit && lead.value && !isStatusClosed()) && (
                         <Button
                             variant="contained"
                             type="button"
                             color="secondary"
                             startIcon={<ArchiveIcon />}
                             onClick={handleCloseLead}
+                            disabled={iSProcessLoading()}
                         >
                             <Trans i18nKey={langKeys.close} />
                         </Button>
                     )}
-                    <Button
+                    {!isStatusClosed() && <Button
                         className={classes.button}
                         variant="contained"
                         color="primary"
                         type="submit"
                         startIcon={<SaveIcon color="secondary" />}
                         style={{ backgroundColor: "#55BD84" }}
+                        disabled={iSProcessLoading()}
                     >
                         <Trans i18nKey={langKeys.save} />
-                    </Button>
+                    </Button>}
                 </div>
                 <div style={{ height: '1em' }} />
                 <Grid container direction="row" style={{ backgroundColor: 'white', padding: '16px' }}>
@@ -368,8 +386,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 className={classes.field}
                                 onChange={(value) => setValue('description', value)}
                                 valueDefault={getValues('description')}
-                                // valueDefault={values?.description || ""}
                                 error={errors?.description?.message}
+                                InputProps={{
+                                    readOnly: isStatusClosed() || iSProcessLoading(),
+                                }}
                             />
                             <FieldEdit
                                 label={t(langKeys.email)}
@@ -377,6 +397,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 onChange={(value) => setValue('email', value)}
                                 valueDefault={getValues('email')}
                                 error={errors?.email?.message}
+                                InputProps={{
+                                    readOnly: isStatusClosed() || iSProcessLoading(),
+                                }}
                             />
                             <FieldEdit
                                 label={t(langKeys.expected_revenue)}
@@ -390,7 +413,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         <InputAdornment position="start">
                                             {user!.currencysymbol}
                                         </InputAdornment>
-                                    )
+                                    ),
+                                    readOnly: isStatusClosed() || iSProcessLoading(),
                                 }}
                             />
                             <FieldMultiSelectFreeSolo
@@ -403,12 +427,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 data={tagsOptions.concat(getValues('tags').split(',').filter((i:any) => i !== '' && (tagsOptions.findIndex(x => x.title === i)) < 0).map((title:any) => ({title})))}
                                 optionDesc="title"
                                 optionValue="title"
+                                readOnly={isStatusClosed() || iSProcessLoading()}
                             />
                             { (!!getValues('userid') || !edit) && 
                                 <FieldSelect
                                     label={t(langKeys.advisor)}
                                     className={classes.field}
-                                    // valueDefault={(!advisers.loading && !lead.loading) ? getValues('userid') : ''}
                                     valueDefault={getValues('userid')}
                                     loading={advisers.loading}
                                     data={advisers.data}
@@ -416,6 +440,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="userid"
                                     onChange={(value) => setValue('userid', value ? value.userid : '')}
                                     error={errors?.userid?.message}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                             }
                         </Grid>
@@ -436,7 +461,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                                 value={values?.displayname}
                                             />
                                         </div>
-                                        <IconButton color="primary" onClick={() => setOpenPersonmodal(true)} size="small">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() => setOpenPersonmodal(true)}
+                                            size="small"
+                                            disabled={isStatusClosed() || iSProcessLoading()}
+                                        >
                                             <Add style={{ height: 22, width: 22 }} />
                                         </IconButton>
                                     </div>
@@ -455,6 +485,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 className={classes.field}
                                 onChange={(v: any) => setValue('phone', v)}
                                 error={errors?.phone?.message}
+                                InputProps={{
+                                    readOnly: isStatusClosed() || iSProcessLoading(),
+                                }}
                             />
                             <FieldEdit
                                 label={t(langKeys.endDate)}
@@ -463,6 +496,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 onChange={(value) => setValue('date_deadline', value)}
                                 valueDefault={getValues('date_deadline')?.substring(0,10)}
                                 error={errors?.date_deadline?.message}
+                                InputProps={{
+                                    readOnly: isStatusClosed() || iSProcessLoading(),
+                                }}
                             />
                             <div className={classes.field}>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">
@@ -476,6 +512,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         const priority =  (newValue) ? urgencyLevels[newValue] : 'LOW';
                                         setValue('priority', priority)
                                     }}
+                                    readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                             </div>
                             <RadioGroudFieldEdit
@@ -495,12 +532,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 }}
                                 label={<Trans i18nKey={langKeys.phase} />}
                                 error={errors?.columnid?.message}
+                                readOnly={isStatusClosed() || iSProcessLoading()}
                             />
                         </Grid>
                     </Grid>
                 </Grid>
             </form>
-            {/* </Grid> */}
             <div style={{ height: '1em' }} />
             {edit && (
             <>
@@ -529,8 +566,22 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         />
                     </Tabs>
                 </AppBar>
-                {lead.value && <TabPanel value="0" index={tabIndex}><TabPanelLogNote lead={lead.value!} /></TabPanel>}
-                {lead.value && <TabPanel value="1" index={tabIndex}><TabPanelScheduleActivity lead={lead.value!} /></TabPanel>}
+                {lead.value && (
+                    <TabPanel
+                        value="0"
+                        index={tabIndex}
+                    >
+                        <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
+                    </TabPanel>
+                )}
+                {lead.value && (
+                    <TabPanel
+                        value="1"
+                        index={tabIndex}
+                    >
+                        <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
+                    </TabPanel>
+                )}
             </>
             )}
             <SelectPersonModal
@@ -710,7 +761,7 @@ const useTabPanelLogNoteStyles = makeStyles(theme => ({
     },
 }));
 
-export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
+export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lead, readOnly }) => {
     const classes = useTabPanelLogNoteStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -726,6 +777,17 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
             dispatch(resetSaveLeadLogNote());
         };
     }, [dispatch]);
+
+    useEffect(() => {
+        if (leadNotes.loading) return;
+        if (leadNotes.error) {
+            dispatch(showSnackbar({
+                message: leadNotes.message || "Error",
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadNotes, dispatch]);
 
     useEffect(() => {
         if (saveLeadNote.loading) return;
@@ -778,67 +840,67 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead }> = ({ lead }) => {
         setMedia(null);
     }
 
-    if (leadNotes.loading) {
-        return <Loading />;
-    }
-
     return (
         <div className={clsx(classes.root, classes.column)}>
-            <div className={clsx(classes.paper, classes.column)}>
-                <div className={classes.row}>
-                    <Avatar className={classes.avatar} />
-                    <div style={{ width: '1em' }} />
-                    <div className={classes.column}>
-                        <TextField
-                            placeholder={t(langKeys.logAnInternalNote)}
-                            minRows={4}
-                            fullWidth
-                            value={noteDescription}
-                            onChange={e => setNoteDescription(e.target.value)}
-                            disabled={saveLeadNote.loading}
-                        />
-                        <div style={{ height: '0.7em' }} />
-                        {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
-                        {media && <div style={{ height: '0.5em' }} />}
-                        <input
-                            accept="file/*"
-                            style={{ display: 'none' }}
-                            id="noteMediaInput"
-                            type="file"
-                            onChange={onChangeMediaInput}
-                        />
-                        <div className={classes.row}>
-                            <EmojiPickerZyx
-                                style={{ zIndex: 10 }}
-                                onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
-                                icon={onClick => (
-                                    <IconButton color="primary" onClick={onClick}>
-                                        <Mood />
-                                    </IconButton>
-                                )}
+            {!readOnly && (
+                <div className={clsx(classes.paper, classes.column)}>
+                    <div className={classes.row}>
+                        <Avatar className={classes.avatar} />
+                        <div style={{ width: '1em' }} />
+                        <div className={classes.column}>
+                            <TextField
+                                placeholder={t(langKeys.logAnInternalNote)}
+                                minRows={4}
+                                fullWidth
+                                value={noteDescription}
+                                onChange={e => setNoteDescription(e.target.value)}
+                                disabled={saveLeadNote.loading}
                             />
-                            <div style={{ width: '0.5em' }} />
-                            <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null}>
-                                <AttachFile />
-                            </IconButton>
+                            <div style={{ height: '0.7em' }} />
+                            {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
+                            {media && <div style={{ height: '0.5em' }} />}
+                            <input
+                                accept="file/*"
+                                style={{ display: 'none' }}
+                                id="noteMediaInput"
+                                type="file"
+                                onChange={onChangeMediaInput}
+                            />
+                            <div className={classes.row}>
+                                <EmojiPickerZyx
+                                    style={{ zIndex: 10 }}
+                                    onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
+                                    icon={onClick => (
+                                        <IconButton color="primary" onClick={onClick} disabled={saveLeadNote.loading}>
+                                            <Mood />
+                                        </IconButton>
+                                    )}
+                                />
+                                <div style={{ width: '0.5em' }} />
+                                <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || saveLeadNote.loading}>
+                                    <AttachFile />
+                                </IconButton>
+                            </div>
                         </div>
                     </div>
+                    <div style={{ height: 12 }} />
+                    <div>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleSubmit}
+                            disabled={saveLeadNote.loading || leadNotes.loading || (noteDescription.length === 0 && media === null)}
+                        >
+                            {saveLeadNote.loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
+                            Log
+                        </Button>
+                    </div>
                 </div>
-                <div style={{ height: 12 }} />
-                <div>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleSubmit}
-                        disabled={saveLeadNote.loading || (noteDescription.length === 0 && media === null)}
-                    >
-                        {saveLeadNote.loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
-                        Log
-                    </Button>
-                </div>
-            </div>
-            <div style={{ height: '2.3em' }} />
-            {leadNotes.data.map((note, index) => (
+            )}
+            {!readOnly && <div style={{ height: '1.3em' }} />}
+            {leadNotes.loading ? <Loading /> :
+            (leadNotes.data.length === 0 && readOnly) ? <NoData /> :
+            leadNotes.data.map((note, index) => (
                 <div key={`lead_note_${index}`}>
                     <div className={classes.paper}>
                         <div className={classes.row}>
@@ -918,7 +980,7 @@ const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
     },
 }));
 
-export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
+export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lead, readOnly }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState<{ value: boolean, payload: IcrmLeadActivity | null }>({ value: false, payload: null });
@@ -932,24 +994,35 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
         };
     }, [dispatch]);
 
-    if (leadActivities.loading) {
-        return <Loading />;
-    }
+    useEffect(() => {
+        if (leadActivities.loading) return;
+        if (leadActivities.error) {
+            dispatch(showSnackbar({
+                message: leadActivities.message || "Error",
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadActivities, dispatch]);
 
     return (
         <div className={clsx(classes.root, classes.column)}>
-            <div className={classes.header}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={saveActivity.loading}
-                    onClick={() => setOpenModal({ value: true, payload: null })}
-                >
-                    <Trans i18nKey={langKeys.newActivity} />
-                </Button>   
-            </div>
-            <div style={{ height: '1.34em' }} />
-            {leadActivities.data.map((activity, index) => (
+            {!readOnly && (
+                <div className={classes.header}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={saveActivity.loading}
+                        onClick={() => setOpenModal({ value: true, payload: null })}
+                    >
+                        <Trans i18nKey={langKeys.newActivity} />
+                    </Button>   
+                </div>
+            )}
+            {!readOnly && <div style={{ height: '1.34em' }} />}
+            {leadActivities.loading ? <Loading /> :
+            leadActivities.data.length === 0 ? <NoData /> :
+            leadActivities.data.map((activity, index) => (
                 <div key={`lead_activity${index}`}>
                     <div className={classes.paper}>
                         <div className={classes.row}>
@@ -957,11 +1030,17 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead }> = ({ lead }) => {
                             <div style={{ width: '1em' }} />
                             <div className={classes.column}>
                                 <div className={clsx(classes.row, classes.centerRow)}>
-                                    <span className={classes.activityDate}>{`Due in ${formatDate(activity.duedate, { withTime: false })}`}</span>
+                                    <span className={classes.activityDate}>
+                                        {`Due in ${formatDate(activity.duedate, { withTime: false })}`}
+                                    </span>
                                     <div style={{ width: '1em' }} />
-                                    <span className={classes.activityName}>{`"${activity.description}"`}</span>
+                                    <span className={classes.activityName}>
+                                        {`"${activity.description}"`}
+                                    </span>
                                     <div style={{ width: '1em' }} />
-                                    <span className={classes.activityFor}>{`for ${activity.assignto}`}</span>
+                                    <span className={classes.activityFor}>
+                                        {`for ${activity.assignto}`}
+                                    </span>
                                     <div style={{ width: '0.5em' }} />
                                     <Info style={{ height: 18, width: 18, fill: 'grey' }} />
                                 </div>
@@ -1172,7 +1251,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
     return (
         <Modal
             open={open}
-            onClose={onClose}
+            onClose={saveActivity.loading ? undefined : onClose}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
@@ -1241,6 +1320,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         variant="contained"
                         color="primary"
                         className={classes.footerBtn}
+                        disabled={saveActivity.loading}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
                             handleSave("PROGRAMADO");
@@ -1252,6 +1332,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         variant="contained"
                         color="secondary"
                         className={classes.footerBtn}
+                        disabled={saveActivity.loading}
                         onClick={() => {
                             mustCloseOnSubmit.current = true;
                             handleSave("REALIZADO");
@@ -1263,6 +1344,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         variant="contained"
                         color="secondary"
                         className={classes.footerBtn}
+                        disabled={saveActivity.loading}
                         onClick={() => {
                             mustCloseOnSubmit.current = false;
                             handleSave("REALIZADO");
@@ -1274,6 +1356,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                         variant="contained"
                         color="secondary"
                         className={classes.footerBtn}
+                        disabled={saveActivity.loading}
                         onClick={() => {
                             onClose();
                             resetValues();
@@ -1291,6 +1374,14 @@ const Loading: FC = () => {
     return (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
             <CircularProgress />
+        </div>
+    );
+}
+
+const NoData: FC = () => {
+    return (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', minHeight: 100 }}>
+            <span style={{ color: 'grey' }}><Trans i18nKey={langKeys.noData} /></span>
         </div>
     );
 }

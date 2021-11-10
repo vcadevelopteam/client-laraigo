@@ -1329,6 +1329,8 @@ export const langKeys = {
     doneAndScheduleNext: 'doneAndScheduleNext',
     discard: 'discard',
     date_format_error: 'date_format_error',
+
+    noData: 'noData',
 };
 
 export type LangKeys = typeof langKeys;
