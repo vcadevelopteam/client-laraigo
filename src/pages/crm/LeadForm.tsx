@@ -119,6 +119,14 @@ const useLeadFormStyles = makeStyles(theme => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    badge: {
+        borderRadius: 12,
+        color: 'white',
+        backgroundColor: '#FFA000',
+        padding: '4px 6px',
+        fontWeight: 'bold',
+        fontSize: 10,
+    },
 }));
 
 export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
@@ -340,9 +348,24 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Breadcrumbs>
 
                 <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
-                    <TitleDetail title={edit ? getValues('description') : t(langKeys.newLead)} />
+                    <TitleDetail
+                        title={edit ?
+                            (
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <span>{getValues('description')}</span>
+                                    {isStatusClosed() && <div style={{ width: '0.63em' }} />}
+                                    {isStatusClosed() && (
+                                        <div className={classes.badge}>
+                                            <Trans i18nKey={langKeys.closed2} />
+                                        </div>
+                                    )}
+                                </div>
+                            ) :
+                            <Trans i18nKey={langKeys.newLead} />
+                        }
+                    />
                     <div style={{ flexGrow: 1 }} />
-                    {!isStatusClosed() && <Button
+                    {(!isStatusClosed() && !lead.loading) && <Button
                         variant="contained"
                         type="button"
                         color="primary"
@@ -365,7 +388,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             <Trans i18nKey={langKeys.close} />
                         </Button>
                     )}
-                    {!isStatusClosed() && <Button
+                    {(!isStatusClosed() && !lead.loading) && <Button
                         className={classes.button}
                         variant="contained"
                         color="primary"

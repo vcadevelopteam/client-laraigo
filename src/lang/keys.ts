@@ -1332,6 +1332,7 @@ export const langKeys = {
     date_format_error: 'date_format_error',
 
     noData: 'noData',
+    closed2: 'closed2',
 };
 
 export type LangKeys = typeof langKeys;

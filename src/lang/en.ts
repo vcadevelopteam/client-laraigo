@@ -1338,6 +1338,7 @@ const translation: LangKeys = {
     date_format_error: 'Please enter a valid date',
 
     noData: 'No data',
+    closed2: 'Closed',
 };
 
 const enResource: ResourceLanguage = {

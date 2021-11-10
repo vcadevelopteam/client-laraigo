@@ -139,7 +139,7 @@ export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadc
     );
 }
 
-export const TitleDetail: React.FC<{ title: string }> = ({ title }) => (
+export const TitleDetail: React.FC<{ title: React.ReactNode }> = ({ title }) => (
     <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
 

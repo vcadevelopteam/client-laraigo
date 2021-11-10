@@ -1329,6 +1329,7 @@ const translation: LangKeys = {
     date_format_error: 'Ingrese una fecha válida',
 
     noData: 'Sin registros',
+    closed2: 'Cerrado',
 };
 
 const esResource: ResourceLanguage = {
