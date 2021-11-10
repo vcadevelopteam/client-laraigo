@@ -27,6 +27,7 @@ import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
+import paths from 'common/constants/paths';
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -102,6 +103,8 @@ const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword(!showPassword);
+
+    const handleSignUp = () => history.push(paths.SIGNUPBASIC);
 
     const handleMouseDownPassword = (event: any) => event.preventDefault();
 
@@ -238,7 +241,10 @@ const SignIn = () => {
                         }
                         <Grid container>
                             <Grid item>
-                                <p><Trans i18nKey={langKeys.newRegisterMessage} /></p>
+                                <p>
+                                    <Trans i18nKey={langKeys.newRegisterMessage} />
+                                    <a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</a>
+                                </p>
                             </Grid>
                         </Grid>
                     </form>

@@ -303,6 +303,7 @@ export const langKeys = {
     offline: 'offline',
     logIn: 'logIn',
     newRegisterMessage: 'newRegisterMessage',
+    newRegisterMessage2: 'newRegisterMessage2',
     signoff: 'signoff',
 
     changePassword: 'changePassword',

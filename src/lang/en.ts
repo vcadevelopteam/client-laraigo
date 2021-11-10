@@ -102,7 +102,8 @@ const translation: LangKeys = {
     online: 'Online',
     offline: 'Offline',
     logIn: 'Log in',
-    newRegisterMessage: 'Don\'t have an account? Sign up',
+    newRegisterMessage: 'Don\'t have an account? ',
+    newRegisterMessage2: 'Sign up',
     signoff: 'Sign Off',
 
     changePassword: 'Change password',
