@@ -23,7 +23,8 @@ import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
-
+import { AntTab } from 'components';
+import NoteIcon from '@material-ui/icons/Note';
 const tagsOptions = [
     { title: "Information"},
     { title: "Design"},
@@ -140,7 +141,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             columnid: Number(match.params.columnid),
             priority: 'LOW', } as ICrmLead
     );
-    const [tabIndex, setTabIndes] = useState('0');
+    const [tabIndex, setTabIndex] = useState(0);
     const [openPersonModal, setOpenPersonmodal] = useState(false);
     const lead = useSelector(state => state.lead.lead);
     const advisers = useSelector(state => state.lead.advisers);
@@ -365,7 +366,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }
                     />
                     <div style={{ flexGrow: 1 }} />
-                    {(!isStatusClosed() && !lead.loading) && <Button
+                    {(!lead.loading) && <Button
                         variant="contained"
                         type="button"
                         color="primary"
@@ -564,46 +565,55 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             <div style={{ height: '1em' }} />
             {edit && (
             <>
-                <AppBar position="static" elevation={0}>
+                {/* <AppBar position="static" elevation={0}> */}
                     <Tabs
                         value={tabIndex}
-                        onChange={(_, i: string) => setTabIndes(i)}
+                        onChange={(_, i) => setTabIndex(i)}
                         className={classes.tabs}
-                        TabIndicatorProps={{ style: { display: 'none' } }}
+                        textColor="primary"
+                        indicatorColor="primary"
+                        variant="fullWidth"
+                        // TabIndicatorProps={{ style: { display: 'none' } }}
                     >
-                        <Tab
-                            className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
-                            label={<Trans i18nKey={langKeys.logNote} count={2} />}
-                            value="0"
-                        />
-                        <Tab
-                            className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
+                        <AntTab
+                            // className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
                             label={(
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <NoteIcon style={{ width: 22, height: 22 }} />
+                                    <Trans i18nKey={langKeys.logNote} count={2} />
+                                </div>
+                            )}
+                            // value="0"
+                        />
+                        <AntTab
+                            // className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
+                            label={(
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                     <AccessTimeIcon style={{ width: 22, height: 22 }} />
-                                    <div style={{ width: 6 }}  />
                                     <Trans i18nKey={langKeys.scheduleActivity} count={2} />
                                 </div>
                             )}
-                            value="1"
+                            // value="1"
                         />
                     </Tabs>
-                </AppBar>
-                {lead.value && (
-                    <TabPanel
-                        value="0"
-                        index={tabIndex}
-                    >
-                        <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
-                    </TabPanel>
+                {/* </AppBar> */}
+                {lead.value && tabIndex === 0 && (
+                    <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
+                    // <TabPanel
+                    //     value="0"
+                    //     index={tabIndex}
+                    // >
+                    //     <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
+                    // </TabPanel>
                 )}
-                {lead.value && (
-                    <TabPanel
-                        value="1"
-                        index={tabIndex}
-                    >
-                        <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
-                    </TabPanel>
+                {lead.value && tabIndex === 1 && (
+                    <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
+                    // <TabPanel
+                    //     value="1"
+                    //     index={tabIndex}
+                    // >
+                    //     <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
+                    // </TabPanel>
                 )}
             </>
             )}
@@ -748,7 +758,8 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
 
 const useTabPanelLogNoteStyles = makeStyles(theme => ({
     root: {
-        padding: theme.spacing(1),
+        // padding: theme.spacing(1),
+        paddingTop: theme.spacing(1)
     },
     column: {
         display: 'flex',
@@ -879,9 +890,9 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
                                 onChange={e => setNoteDescription(e.target.value)}
                                 disabled={saveLeadNote.loading}
                             />
-                            <div style={{ height: '0.7em' }} />
+                            <div style={{ height: 4 }} />
                             {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
-                            {media && <div style={{ height: '0.5em' }} />}
+                            {media && <div style={{ height: 4 }} />}
                             <input
                                 accept="file/*"
                                 style={{ display: 'none' }}
@@ -1042,7 +1053,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }>
                     </Button>   
                 </div>
             )}
-            {!readOnly && <div style={{ height: '1.34em' }} />}
+            {!readOnly && <div style={{ height: 12 }} />}
             {leadActivities.loading ? <Loading /> :
             leadActivities.data.length === 0 ? <NoData /> :
             leadActivities.data.map((activity, index) => (
