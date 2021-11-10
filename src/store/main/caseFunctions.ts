@@ -294,7 +294,7 @@ export const auxMultiMainReset = (state: IState): IState => ({
 
 export const execute = (state: IState): IState => ({
     ...state,
-    execute: { ...state.execute, loading: true, error: false }
+    execute: { ...state.execute, loading: true, error: false, success: undefined }
 });
 
 export const executeSuccess = (state: IState, action: IAction): IState => {
@@ -304,7 +304,8 @@ export const executeSuccess = (state: IState, action: IAction): IState => {
             data: action.payload.data || [],
             count: 0,
             loading: false,
-            error: false
+            error: false,
+            success: true,
         }
     }
 };
@@ -317,6 +318,7 @@ export const executeFailure = (state: IState, action: IAction): IState => ({
         error: true,
         code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
         message: action.payload.message || 'error_unexpected_error',
+        success: false,
     }
 });
 

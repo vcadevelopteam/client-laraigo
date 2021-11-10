@@ -11,7 +11,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, IDomain, IFetchData, IPerson } from '@types';
+import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -22,7 +22,7 @@ import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/perso
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain } from 'store/main/actions';
+import { execute, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import NoteIcon from '@material-ui/icons/Note';
 const tagsOptions = [
@@ -145,14 +145,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openPersonModal, setOpenPersonmodal] = useState(false);
     const lead = useSelector(state => state.lead.lead);
     const advisers = useSelector(state => state.lead.advisers);
-    const saveLead = useSelector(state => state.lead.saveLead);
+    // const saveLead = useSelector(state => state.lead.saveLead);
     const phases = useSelector(state => state.lead.leadPhases);
     const user = useSelector(state => state.login.validateToken.user);
     const archiveLeadProcess = useSelector(state => state.lead.archiveLead);
     const saveActivity = useSelector(state => state.lead.saveLeadActivity);
     const saveNote = useSelector(state => state.lead.saveLeadNote);
+    const leadActivities = useSelector(state => state.lead.leadActivities);
+    const leadNotes = useSelector(state => state.lead.leadLogNotes);
+    const saveLead = useSelector(state => state.main.execute);
 
-     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
+    const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
             leadid: 0,
             description: '',
@@ -172,6 +175,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             operation: "INSERT",
             userid: 0,
             phase: '',
+
+            activities: [] as ICrmLeadActivitySave[],
+            notes: [] as ICrmLeadNoteSave[],
         }
     });
 
@@ -191,14 +197,26 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
     const onSubmit = handleSubmit((data) => {
         console.log(data);
-        const body = insLead2(data, data.operation);
-        dispatch(saveLeadBody(body));
+        if (edit) {
+            dispatch(execute(insLead2(data, data.operation), false));
+        } else {
+            dispatch(execute({
+                header: insLead2(data, data.operation),
+                detail: [
+                    ...data.notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
+                    ...data.activities.map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
+                ],
+            }, true));
+        }
+        // dispatch(saveLeadBody(body));
     }, e => console.log(e));
 
     useEffect(() => {
         if (edit === true) {
             const leadId = match.params.id;
             dispatch(getLead(getOneLeadSel(leadId)));
+            dispatch(getLeadActivities(leadActivitySel(leadId)));
+            dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
         }
 
         dispatch(getAdvisers(adviserSel()));
@@ -206,11 +224,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadPhases(getColumnsSel(0, true)));
 
         return () => {
+            dispatch(resetExecute());
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
             dispatch(resetGetPersonListPaginated());
             dispatch(resetGetLeadPhases());
             dispatch(resetArchiveLead());
+            dispatch(resetGetLeadActivities());
+            dispatch(resetSaveLeadActivity());
+            dispatch(resetGetLeadLogNotes());
+            dispatch(resetSaveLeadLogNote());
         };
     }, [edit, match.params.id, dispatch]);
 
@@ -245,6 +268,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 column_uuid: lead.value?.column_uuid,
                 leadid: match.params.id,
                 phase: lead.value?.phase,
+
+                activities: [] as ICrmLeadActivitySave[],
+                notes: [] as ICrmLeadNoteSave[],
             });
             registerFormFieldOptions();
         }
@@ -264,12 +290,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (saveLead.loading) return;
         if (saveLead.error) {
+            const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
             dispatch(showSnackbar({
                 success: false,
-                message: saveLead.message || "Error",
+                message: errormessage,
                 show: true,
             }));
-        } else if (saveLead.success) {
+        } else if (saveLead.success === true) {
             dispatch(showSnackbar({
                 success: true,
                 message: "Se guardo la oportunidad con éxito",
@@ -296,6 +323,63 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             history.push(paths.CRM);
         }
     }, [archiveLeadProcess, history, dispatch]);
+
+    useEffect(() => {
+        if (leadActivities.loading) return;
+        if (leadActivities.error) {
+            dispatch(showSnackbar({
+                message: leadActivities.message || "Error",
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadActivities, dispatch]);
+
+    useEffect(() => {
+        if (saveActivity.loading) return;
+        if (saveActivity.error) {
+            dispatch(showSnackbar({
+                message: saveActivity.message || "Error",
+                success: false,
+                show: true,
+            }));
+        } else if (saveActivity.success) {
+            dispatch(showSnackbar({
+                message: "Se registró la actividad",
+                success: true,
+                show: true,
+            }));
+        }
+    }, [saveActivity, dispatch]);
+
+    useEffect(() => {
+        if (leadNotes.loading) return;
+        if (leadNotes.error) {
+            dispatch(showSnackbar({
+                message: leadNotes.message || "Error",
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadNotes, dispatch]);
+
+    useEffect(() => {
+        if (saveNote.loading) return;
+        if (saveNote.error) {
+            dispatch(showSnackbar({
+                message: saveNote.message || "Error",
+                success: false,
+                show: true,
+            }));
+        } else if (saveNote.success) {
+            dispatch(showSnackbar({
+                message: "Se registró la nota",
+                success: true,
+                show: true,
+            }));
+            dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
+        }
+    }, [saveNote, dispatch]);
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
@@ -563,59 +647,83 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 </Grid>
             </form>
             <div style={{ height: '1em' }} />
-            {edit && (
-            <>
-                {/* <AppBar position="static" elevation={0}> */}
-                    <Tabs
-                        value={tabIndex}
-                        onChange={(_, i) => setTabIndex(i)}
-                        className={classes.tabs}
-                        textColor="primary"
-                        indicatorColor="primary"
-                        variant="fullWidth"
-                        // TabIndicatorProps={{ style: { display: 'none' } }}
-                    >
-                        <AntTab
-                            // className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
-                            label={(
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                    <NoteIcon style={{ width: 22, height: 22 }} />
-                                    <Trans i18nKey={langKeys.logNote} count={2} />
-                                </div>
-                            )}
-                            // value="0"
-                        />
-                        <AntTab
-                            // className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
-                            label={(
-                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                    <AccessTimeIcon style={{ width: 22, height: 22 }} />
-                                    <Trans i18nKey={langKeys.scheduleActivity} count={2} />
-                                </div>
-                            )}
-                            // value="1"
-                        />
-                    </Tabs>
-                {/* </AppBar> */}
-                {lead.value && tabIndex === 0 && (
-                    <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
-                    // <TabPanel
-                    //     value="0"
-                    //     index={tabIndex}
-                    // >
-                    //     <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
-                    // </TabPanel>
-                )}
-                {lead.value && tabIndex === 1 && (
-                    <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
-                    // <TabPanel
-                    //     value="1"
-                    //     index={tabIndex}
-                    // >
-                    //     <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
-                    // </TabPanel>
-                )}
-            </>
+            <Tabs
+                value={tabIndex}
+                onChange={(_, i) => setTabIndex(i)}
+                className={classes.tabs}
+                textColor="primary"
+                indicatorColor="primary"
+                variant="fullWidth"
+                // TabIndicatorProps={{ style: { display: 'none' } }}
+            >
+                <AntTab
+                    // className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <NoteIcon style={{ width: 22, height: 22 }} />
+                            <Trans i18nKey={langKeys.logNote} count={2} />
+                        </div>
+                    )}
+                    // value="0"
+                />
+                <AntTab
+                    // className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
+                    label={(
+                        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                            <AccessTimeIcon style={{ width: 22, height: 22 }} />
+                            <Trans i18nKey={langKeys.scheduleActivity} count={2} />
+                        </div>
+                    )}
+                    // value="1"
+                />
+            </Tabs>
+            {tabIndex === 0 && (
+                <TabPanelLogNote
+                    readOnly={isStatusClosed()}
+                    loading={saveNote.loading || leadNotes.loading}
+                    notes={edit ? leadNotes.data : getValues('notes')}
+                    leadId={edit ? Number(match.params.id) : 0}
+                    onSubmit={(newNote) => {
+                        if (edit) {
+                            const body = leadLogNotesIns(newNote);
+                            dispatch(saveLeadLogNote(body));
+                        } else {
+                            newNote.createby = user?.firstname;
+                            newNote.createdate = Date.now();
+                            setValue('notes', [...getValues('notes'), newNote]);
+                            setValues(prev => ({ ...prev })); // refresh
+                        }
+                    }}
+                />
+                // <TabPanel
+                //     value="0"
+                //     index={tabIndex}
+                // >
+                //     <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
+                // </TabPanel>
+            )}
+            {tabIndex === 1 && (
+                <TabPanelScheduleActivity
+                    readOnly={isStatusClosed()}
+                    leadId={edit ? Number(match.params.id) : 0}
+                    loading={saveActivity.loading || leadActivities.loading}
+                    activities={edit ? leadActivities.data : getValues('activities')}
+                    onSubmit={(newActivity) => {
+                        if (edit) {
+                            const body = leadActivityIns(newActivity);
+                            dispatch(saveLeadActivity(body));
+                        } else {
+                            setValue('activities', [...getValues('activities'), newActivity]);
+                            setValues(prev => ({ ...prev })); // refresh
+                        }
+                    }}
+                />
+                // <TabPanel
+                //     value="1"
+                //     index={tabIndex}
+                // >
+                //     <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
+                // </TabPanel>
             )}
             <SelectPersonModal
                 open={openPersonModal}
@@ -795,57 +903,24 @@ const useTabPanelLogNoteStyles = makeStyles(theme => ({
     },
 }));
 
-export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lead, readOnly }) => {
+interface TabPanelLogNoteProps {
+    readOnly: boolean;
+    loading?: boolean;
+    notes: ICrmLeadNote[];
+    leadId: number;
+    onSubmit?: (newNote: ICrmLeadNoteSave) => void;
+}
+
+export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit }) => {
     const classes = useTabPanelLogNoteStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [noteDescription, setNoteDescription] = useState("");
     const [media, setMedia] = useState<File | null>(null);
-    const leadNotes = useSelector(state => state.lead.leadLogNotes);
-    const saveLeadNote = useSelector(state => state.lead.saveLeadNote);
-
-    useEffect(() => {
-        dispatch(getLeadLogNotes(leadLogNotesSel(lead.leadid)));
-        return () => {
-            dispatch(resetGetLeadLogNotes());
-            dispatch(resetSaveLeadLogNote());
-        };
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (leadNotes.loading) return;
-        if (leadNotes.error) {
-            dispatch(showSnackbar({
-                message: leadNotes.message || "Error",
-                success: false,
-                show: true,
-            }));
-        }
-    }, [leadNotes, dispatch]);
-
-    useEffect(() => {
-        if (saveLeadNote.loading) return;
-        if (saveLeadNote.error) {
-            dispatch(showSnackbar({
-                message: saveLeadNote.message || "Error",
-                success: false,
-                show: true,
-            }));
-        } else if (saveLeadNote.success) {
-            dispatch(showSnackbar({
-                message: "Se registró la nota",
-                success: true,
-                show: true,
-            }));
-            dispatch(getLeadLogNotes(leadLogNotesSel(lead.leadid)));
-            setNoteDescription("");
-        }
-    }, [saveLeadNote]);
 
     const handleSubmit = useCallback(() => {
-        handleCleanMediaInput();
-        const body = leadLogNotesIns({
-            leadid: lead.leadid,
+        const newNote: ICrmLeadNoteSave = {
+            leadid: leadId,
             leadnotesid: 0,
             description: noteDescription,
             type: "NINGUNO",
@@ -853,8 +928,10 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
             media,
             username: null,
             operation: "INSERT",
-        });
-        dispatch(saveLeadLogNote(body));
+        };
+        onSubmit?.(newNote);
+        handleCleanMediaInput();
+        setNoteDescription("");
     }, [noteDescription, media, dispatch]);
 
     const handleInputMedia = useCallback(() => {
@@ -888,7 +965,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
                                 fullWidth
                                 value={noteDescription}
                                 onChange={e => setNoteDescription(e.target.value)}
-                                disabled={saveLeadNote.loading}
+                                disabled={loading}
                             />
                             <div style={{ height: 4 }} />
                             {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
@@ -905,15 +982,17 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
                                     style={{ zIndex: 10 }}
                                     onSelect={e => setNoteDescription(prev => prev.concat(e.native))}
                                     icon={onClick => (
-                                        <IconButton color="primary" onClick={onClick} disabled={saveLeadNote.loading}>
+                                        <IconButton color="primary" onClick={onClick} disabled={loading}>
                                             <Mood />
                                         </IconButton>
                                     )}
                                 />
                                 <div style={{ width: '0.5em' }} />
-                                <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || saveLeadNote.loading}>
-                                    <AttachFile />
-                                </IconButton>
+                                {leadId !== 0 && (
+                                    <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
+                                        <AttachFile />
+                                    </IconButton>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -923,18 +1002,18 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            disabled={saveLeadNote.loading || leadNotes.loading || (noteDescription.length === 0 && media === null)}
+                            disabled={loading || (noteDescription.length === 0 && media === null)}
                         >
-                            {saveLeadNote.loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
+                            {loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
                             Log
                         </Button>
                     </div>
                 </div>
             )}
             {!readOnly && <div style={{ height: '1.3em' }} />}
-            {leadNotes.loading ? <Loading /> :
-            (leadNotes.data.length === 0 && readOnly) ? <NoData /> :
-            leadNotes.data.map((note, index) => (
+            {loading ? <Loading /> :
+            (notes.length === 0 && readOnly) ? <NoData /> :
+            notes.map((note, index) => (
                 <div key={`lead_note_${index}`}>
                     <div className={classes.paper}>
                         <div className={classes.row}>
@@ -953,7 +1032,7 @@ export const TabPanelLogNote: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lea
                             </div>
                         </div>
                     </div>
-                    {index !== leadNotes.data.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
+                    {index !== notes.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
                 </div>
             ))}
         </div>
@@ -1014,30 +1093,18 @@ const useTabPanelScheduleActivityStyles = makeStyles(theme => ({
     },
 }));
 
-export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }> = ({ lead, readOnly }) => {
+interface TabPanelScheduleActivityProps {
+    readOnly: boolean;
+    loading?: boolean;
+    activities: IcrmLeadActivity[];
+    leadId: number;
+    onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
+}
+
+export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ readOnly, activities, loading, leadId, onSubmit }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState<{ value: boolean, payload: IcrmLeadActivity | null }>({ value: false, payload: null });
-    const leadActivities = useSelector(state => state.lead.leadActivities);
-    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
-
-    useEffect(() => {
-        dispatch(getLeadActivities(leadActivitySel(lead.leadid)));
-        return () => {
-            dispatch(resetGetLeadActivities());
-        };
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (leadActivities.loading) return;
-        if (leadActivities.error) {
-            dispatch(showSnackbar({
-                message: leadActivities.message || "Error",
-                success: false,
-                show: true,
-            }));
-        }
-    }, [leadActivities, dispatch]);
 
     return (
         <div className={clsx(classes.root, classes.column)}>
@@ -1046,7 +1113,7 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }>
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={saveActivity.loading}
+                        disabled={loading}
                         onClick={() => setOpenModal({ value: true, payload: null })}
                     >
                         <Trans i18nKey={langKeys.newActivity} />
@@ -1054,9 +1121,9 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }>
                 </div>
             )}
             {!readOnly && <div style={{ height: 12 }} />}
-            {leadActivities.loading ? <Loading /> :
-            leadActivities.data.length === 0 ? <NoData /> :
-            leadActivities.data.map((activity, index) => (
+            {loading ? <Loading /> :
+            activities.length === 0 ? <NoData /> :
+            activities.map((activity, index) => (
                 <div key={`lead_activity${index}`}>
                     <div className={classes.paper}>
                         <div className={classes.row}>
@@ -1078,62 +1145,67 @@ export const TabPanelScheduleActivity: FC<{ lead: ICrmLead, readOnly: boolean }>
                                     <div style={{ width: '0.5em' }} />
                                     <Info style={{ height: 18, width: 18, fill: 'grey' }} />
                                 </div>
-                                <div style={{ height: 4 }} />
-                                <div className={clsx(classes.row, classes.unselect)}>
-                                    <div style={{ width: '1em' }} />
-                                    {activity.status !== "ELIMINADO" && (
-                                        <div
+                                {!readOnly && <div style={{ height: 4 }} />}
+                                {!readOnly && (
+                                    <div className={clsx(classes.row, classes.unselect)}>
+                                        <div style={{ width: '1em' }} />
+                                        {activity.status === "PROGRAMADO" && (
+                                            <div
+                                                className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                                onClick={() => {
+                                                    const body = leadActivityIns({
+                                                        ...activity,
+                                                        username: null,
+                                                        status: "REALIZADO",
+                                                        operation: "UPDATE",
+                                                    });
+                                                    dispatch(saveLeadActivity(body));
+                                                }}
+                                                style={{ marginRight: '1em' }}
+                                            >
+                                                <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                                <span><Trans i18nKey={langKeys.markDone} /></span>
+                                            </div>
+                                        )}
+                                        {activity.status === "PROGRAMADO" && (
+                                            <div
+                                                className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
+                                                onClick={() => setOpenModal({ value: true, payload: activity })}
+                                                style={{ marginRight: '1em' }}
+                                            >
+                                                <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                                <span><Trans i18nKey={langKeys.edit} /></span>
+                                            </div>
+                                        )}
+                                        {activity.status === "PROGRAMADO" && <div
                                             className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                             onClick={() => {
                                                 const body = leadActivityIns({
                                                     ...activity,
                                                     username: null,
-                                                    status: "REALIZADO",
+                                                    status: "ELIMINADO",
                                                     operation: "UPDATE",
                                                 });
                                                 dispatch(saveLeadActivity(body));
                                             }}
-                                            style={{ marginRight: '1em' }}
                                         >
-                                            <Done style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                            <span><Trans i18nKey={langKeys.markDone} /></span>
-                                        </div>
-                                    )}
-                                    <div
-                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
-                                        onClick={() => setOpenModal({ value: true, payload: activity })}
-                                        style={{ marginRight: '1em' }}
-                                    >
-                                        <Create style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                        <span><Trans i18nKey={langKeys.edit} /></span>
+                                            <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
+                                            <span><Trans i18nKey={langKeys.cancel} /></span>
+                                        </div>}
                                     </div>
-                                    {activity.status !== "ELIMINADO" && <div
-                                        className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
-                                        onClick={() => {
-                                            const body = leadActivityIns({
-                                                ...activity,
-                                                username: null,
-                                                status: "ELIMINADO",
-                                                operation: "UPDATE",
-                                            });
-                                            dispatch(saveLeadActivity(body));
-                                        }}
-                                    >
-                                        <Clear style={{ height: 18, width: 18, fill: 'grey', marginRight: 4 }} />
-                                        <span><Trans i18nKey={langKeys.cancel} /></span>
-                                    </div>}
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
-                    {index !== leadActivities.data.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
+                    {index !== activities.length - 1 && <div style={{ backgroundColor: 'grey', height: 1 }} />}
                 </div>
             ))}
             <SaveActivityModal
                 onClose={() => setOpenModal({ value: false, payload: null })}
                 open={openModal.value}
                 activity={openModal.payload}
-                leadid={lead.leadid}
+                leadid={leadId}
+                onSubmit={onSubmit}
             />
         </div>
     );
@@ -1144,6 +1216,7 @@ interface SaveActivityModalProps {
     activity: IcrmLeadActivity | null;
     leadid: number;
     onClose: () => void;
+    onSubmit?: (newActivity: ICrmLeadActivitySave) => void; 
 }
 
 const useSaveActivityModalStyles = makeStyles(theme => ({
@@ -1163,7 +1236,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
-const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid }) => {
+const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -1177,19 +1250,12 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
         return () => {
             dispatch(resetMain());
-            dispatch(resetSaveLeadActivity());
         };
     }, [dispatch]);
 
     useEffect(() => {
-        if (saveActivity.loading) return;
-        if (saveActivity.error) {
-            dispatch(showSnackbar({
-                message: saveActivity.message || "Error",
-                success: false,
-                show: true,
-            }));
-        } else if (saveActivity.success) {
+        if (saveActivity.loading || saveActivity.error) return;
+        if (saveActivity.success) {
             dispatch(showSnackbar({
                 message: "Se registró la actividad",
                 success: true,
@@ -1273,12 +1339,13 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
-            console.log('AA', values);
-            const body = leadActivityIns({
-                ...values,
-                status,
-            });
-            dispatch(saveLeadActivity(body));
+            values.status = status;
+            onSubmit?.(values);
+            if (leadid === 0 && mustCloseOnSubmit.current) {
+                onClose();
+            } else {
+                resetValues();
+            }
         })();
     }, [handleSubmit, dispatch]);
 

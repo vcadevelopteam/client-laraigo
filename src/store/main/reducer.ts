@@ -18,7 +18,7 @@ export interface IState {
     mainDynamic: IListStatePaginated<Dictionary>;
     multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
-    execute: IListStatePaginated<Dictionary>;
+    execute: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     mainAux: IListStatePaginated<Dictionary>;
     mainAux2: IListStatePaginated<Dictionary>;
     mainPaginated: IListStatePaginated<Dictionary>;
@@ -32,7 +32,7 @@ export const initialState: IState = {
     mainDynamic: initialListPaginatedState,
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
-    execute: initialListPaginatedState,
+    execute: { success: undefined, ...initialListPaginatedState },
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
     mainPaginated: initialListPaginatedState,

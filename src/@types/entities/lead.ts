@@ -89,6 +89,9 @@ export interface ICrmLeadNoteSave {
     media: string | File | null;
 	username: string | null | undefined;
 	operation: "UPDATE" | "INSERT" | "DELETE";
+
+    createby?: string;
+    createdate?: string | number;
 }
 
 export interface ICrmLeadNote {
