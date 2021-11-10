@@ -171,7 +171,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('tags', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
-        register('columnid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required) + "") });
+        register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -493,7 +493,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     setValue('columnid', Number(e.columnid));
                                     setValues(prev => ({ ...prev })); // refrescar
                                 }}
-                                label={<Trans i18nKey={langKeys.status} />}
+                                label={<Trans i18nKey={langKeys.phase} />}
                                 error={errors?.columnid?.message}
                             />
                         </Grid>
