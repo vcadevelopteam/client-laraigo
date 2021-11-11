@@ -11,9 +11,9 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
+import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
-import { Rating } from '@material-ui/lab';
+import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import TableZyx from 'components/fields/table-paginated';
@@ -221,7 +221,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLead(getOneLeadSel(leadId)));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
-            // dispatch(getLeadHistory(leadHistorySel(leadId)));
+            dispatch(getLeadHistory(leadHistorySel(leadId)));
         }
 
         dispatch(getAdvisers(adviserSel()));
@@ -697,14 +697,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </div>
                         )}
                     />
-                    {/* <AntTab
+                    <AntTab
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <AccessTimeIcon style={{ width: 22, height: 22 }} />
-                                <Trans i18nKey={langKeys.history} count={2} />
+                                <Trans i18nKey={langKeys.history} />
                             </div>
                         )}
-                    /> */}
+                    />
                 </Tabs>
                 {tabIndex === 0 && (
                     <TabPanelLogNote
@@ -742,9 +742,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }}
                     />
                 )}
-                {/* {tabIndex === 2 && (
-                    <div />
-                )} */}
+                {tabIndex === 2 && (
+                    <TabPanelLeadHistory
+                        history={leadHistory.data}
+                        loading={leadHistory.loading}
+                    />
+                )}
                 <SelectPersonModal
                     open={openPersonModal}
                     onClose={() => setOpenPersonmodal(false)}
@@ -1738,6 +1741,57 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
                 </div>
             </Box>
         </Modal>
+    );
+}
+
+interface TabPanelLeadHistoryProps {
+    history: ICrmLeadHistory[];
+    loading: boolean;
+}
+
+const useTabPanelLeadHistoryStyles = makeStyles(theme => ({
+    itemRoot: {
+        borderRadius: 12,
+        backgroundColor: 'lightgrey',
+        padding: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    timelineItemBefore: {
+        '&::before': {
+            content: '""',
+            flex: 0,
+            display: 'none',
+        }
+    }
+}));
+
+const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading }) => {
+    const classes = useTabPanelLeadHistoryStyles();
+
+    if (loading) {
+        return <Loading />
+    }
+    return (
+        <Box>
+            <Timeline align="left">
+                {history.map((item, i) => (
+                    <TimelineItem key={i} className={classes.timelineItemBefore}>
+                        <TimelineSeparator>
+                            <TimelineDot />
+                            <TimelineConnector />
+                        </TimelineSeparator>
+                        <TimelineContent>
+                            <div className={classes.itemRoot}>
+                                <span>{item.leadactivity}</span>
+                                <span>{item.leadactivity}</span>
+                                <span>{item.leadactivity}</span>
+                            </div>
+                        </TimelineContent>
+                    </TimelineItem>
+                ))}
+            </Timeline>
+        </Box>
     );
 }
 
