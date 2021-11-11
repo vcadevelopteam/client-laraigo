@@ -5,12 +5,12 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead } from 'common/helpers';
+import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
 import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
@@ -155,6 +155,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadActivities = useSelector(state => state.lead.leadActivities);
     const leadNotes = useSelector(state => state.lead.leadLogNotes);
     const saveLead = useSelector(state => state.main.execute);
+    const leadHistory = useSelector(state => state.lead.leadHistory);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -179,6 +180,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
             activities: [] as ICrmLeadActivitySave[],
             notes: [] as ICrmLeadNoteSave[],
+
+            feedback: '',
         }
     });
 
@@ -218,6 +221,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLead(getOneLeadSel(leadId)));
             dispatch(getLeadActivities(leadActivitySel(leadId)));
             dispatch(getLeadLogNotes(leadLogNotesSel(leadId)));
+            // dispatch(getLeadHistory(leadHistorySel(leadId)));
         }
 
         dispatch(getAdvisers(adviserSel()));
@@ -235,6 +239,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetSaveLeadActivity());
             dispatch(resetGetLeadLogNotes());
             dispatch(resetSaveLeadLogNote());
+            dispatch(resetGetLeadHistory());
         };
     }, [edit, match.params.id, dispatch]);
 
@@ -249,7 +254,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         } else if (lead.value && edit) {
-            console.log(lead);
             setValues(lead.value!);
             reset({
                 description: lead.value?.description,
@@ -273,6 +277,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
                 activities: [] as ICrmLeadActivitySave[],
                 notes: [] as ICrmLeadNoteSave[],
+
+                feedback: '',
             });
             registerFormFieldOptions();
         }
@@ -388,6 +394,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
         }
     }, [saveNote, dispatch]);
+
+    useEffect(() => {
+        if (leadHistory.loading) return;
+        if (leadHistory.error) {
+            const errormessage = t(leadHistory.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadHistory, dispatch]);
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
@@ -662,28 +680,31 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                     textColor="primary"
                     indicatorColor="primary"
                     variant="fullWidth"
-                // TabIndicatorProps={{ style: { display: 'none' } }}
                 >
                     <AntTab
-                        // className={clsx(classes.tab, tabIndex === "0" && classes.activetab)}
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <NoteIcon style={{ width: 22, height: 22 }} />
                                 <Trans i18nKey={langKeys.logNote} count={2} />
                             </div>
                         )}
-                    // value="0"
                     />
                     <AntTab
-                        // className={clsx(classes.tab, tabIndex === "1" && classes.activetab)}
                         label={(
                             <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                                 <AccessTimeIcon style={{ width: 22, height: 22 }} />
                                 <Trans i18nKey={langKeys.scheduleActivity} count={2} />
                             </div>
                         )}
-                    // value="1"
                     />
+                    {/* <AntTab
+                        label={(
+                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                <AccessTimeIcon style={{ width: 22, height: 22 }} />
+                                <Trans i18nKey={langKeys.history} count={2} />
+                            </div>
+                        )}
+                    /> */}
                 </Tabs>
                 {tabIndex === 0 && (
                     <TabPanelLogNote
@@ -703,12 +724,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             }
                         }}
                     />
-                    // <TabPanel
-                    //     value="0"
-                    //     index={tabIndex}
-                    // >
-                    //     <TabPanelLogNote lead={lead.value!} readOnly={isStatusClosed()} />
-                    // </TabPanel>
                 )}
                 {tabIndex === 1 && (
                     <TabPanelScheduleActivity
@@ -726,13 +741,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             }
                         }}
                     />
-                    // <TabPanel
-                    //     value="1"
-                    //     index={tabIndex}
-                    // >
-                    //     <TabPanelScheduleActivity lead={lead.value!} readOnly={isStatusClosed()} />
-                    // </TabPanel>
                 )}
+                {/* {tabIndex === 2 && (
+                    <div />
+                )} */}
                 <SelectPersonModal
                     open={openPersonModal}
                     onClose={() => setOpenPersonmodal(false)}
@@ -1201,6 +1213,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                                                             username: null,
                                                             status: "ELIMINADO",
                                                             operation: "UPDATE",
+                                                            feedback: '',
                                                         });
                                                         dispatch(saveLeadActivity(body));
                                                     }}
@@ -1237,6 +1250,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                         username: null,
                         status: "REALIZADO",
                         operation: "UPDATE",
+                        feedback,
                     });
                     dispatch(markDoneActivity(body));
                 }}
@@ -1317,6 +1331,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             status: activity?.status || "PROGRAMADO",
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
+            feedback: '',
         },
     });
 
@@ -1353,6 +1368,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             status: "PROGRAMADO",
             username: null,
             operation: "INSERT",
+            feedback: '',
         });
         registerFormFieldOptions();
     }, [reset]);
@@ -1368,6 +1384,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
             status: activity?.status || "PROGRAMADO",
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
+            feedback: '',
         });
 
         registerFormFieldOptions();

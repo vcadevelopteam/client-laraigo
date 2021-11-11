@@ -1333,6 +1333,7 @@ const translation: LangKeys = {
     closed2: 'Cerrado',
     done: 'Hecho',
     writeFeedback: 'Escribir comentario',
+    history: 'Historial',
 };
 
 const esResource: ResourceLanguage = {

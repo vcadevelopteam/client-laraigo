@@ -1336,6 +1336,7 @@ export const langKeys = {
     closed2: 'closed2',
     done: 'done',
     writeFeedback: 'writeFeedback',
+    history: 'history',
 };
 
 export type LangKeys = typeof langKeys;

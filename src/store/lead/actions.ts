@@ -140,3 +140,15 @@ export const markDoneActivity = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetMarkDoneActivity = (): IActionCall => ({type: actionTypes.MARK_DONE_ACTIVITY_RESET});
+
+export const getLeadHistory = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_LEAD_HISTORY,
+        success: actionTypes.GET_LEAD_HISTORY_SUCCESS,
+        failure: actionTypes.GET_LEAD_HISTORY_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadHistory = (): IActionCall => ({type: actionTypes.GET_LEAD_HISTORY_RESET});

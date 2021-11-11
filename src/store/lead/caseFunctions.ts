@@ -313,3 +313,33 @@ export const markDoneActivityReset = (state: IState): IState => ({
     ...state,
     markDoneActivity: initialState.markDoneActivity,
 });
+
+export const getLeadHistory = (state: IState): IState => ({
+    ...state,
+    leadHistory: { ...state.leadHistory, loading: true, error: false },
+});
+
+export const getLeadHistorySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadHistory: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadHistoryFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadHistory: {
+        ...state.leadHistory,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadHistoryFailure:error',
+        message: action.payload.message || 'Error al cargar el historial de la oportunidad',
+    },
+});
+
+export const getLeadHistoryReset = (state: IState): IState => ({
+    ...state,
+    leadHistory: initialState.leadHistory,
+});
