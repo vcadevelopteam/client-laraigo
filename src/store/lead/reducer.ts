@@ -1,4 +1,4 @@
-import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadNote, IListState, IObjectState, IProcessState } from "@types";
+import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadHistory, ICrmLeadNote, IListState, IObjectState, IProcessState } from "@types";
 import { createReducer, initialDisplayState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -15,7 +15,7 @@ export interface IState {
     display: string;
     archiveLead: IProcessState;
     markDoneActivity: IProcessState;
-    leadHistory: IListState<any>;
+    leadHistory: IListState<ICrmLeadHistory>;
 }
 
 export const initialState: IState = {
