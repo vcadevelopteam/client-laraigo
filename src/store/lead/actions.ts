@@ -127,3 +127,16 @@ export const archiveLead = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetArchiveLead = (): IActionCall => ({type: actionTypes.ARCHIVE_LEAD_RESET});
+
+/**Done lead -> (status = "REALIZADO") */
+export const markDoneActivity = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.MARK_DONE_ACTIVITY,
+        success: actionTypes.MARK_DONE_ACTIVITY_SUCCESS,
+        failure: actionTypes.MARK_DONE_ACTIVITY_FAILURE,
+    },
+    type: null,
+});
+
+export const resetMarkDoneActivity = (): IActionCall => ({type: actionTypes.MARK_DONE_ACTIVITY_RESET});

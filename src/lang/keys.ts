@@ -1334,6 +1334,8 @@ export const langKeys = {
 
     noData: 'noData',
     closed2: 'closed2',
+    done: 'done',
+    writeFeedback: 'writeFeedback',
 };
 
 export type LangKeys = typeof langKeys;

@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
 import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating } from '@material-ui/lab';
@@ -242,9 +242,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (!edit) return;
         if (lead.loading) return;
         if (lead.error) {
+            const errormessage = t(lead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 success: false,
-                message: lead.message || "Error",
+                message: errormessage,
                 show: true,
             }));
         } else if (lead.value && edit) {
@@ -280,9 +281,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (advisers.loading) return;
         if (advisers.error) {
+            const errormessage = t(advisers.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 success: false,
-                message: advisers.message || "Error",
+                message: errormessage,
                 show: true,
             }));
         }
@@ -291,7 +293,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (saveLead.loading) return;
         if (saveLead.error) {
-            const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() })
+            const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 success: false,
                 message: errormessage,
@@ -310,9 +312,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (archiveLeadProcess.loading) return;
         if (archiveLeadProcess.error) {
+            const errormessage = t(archiveLeadProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
                 success: false,
-                message: archiveLeadProcess.message || "Error",
+                message: errormessage,
                 show: true,
             }));
         } else if (archiveLeadProcess.success) {
@@ -328,8 +331,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (leadActivities.loading) return;
         if (leadActivities.error) {
+            const errormessage = t(leadActivities.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                message: leadActivities.message || "Error",
+                message: errormessage,
                 success: false,
                 show: true,
             }));
@@ -339,14 +343,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (saveActivity.loading) return;
         if (saveActivity.error) {
+            const errormessage = t(saveActivity.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                message: saveActivity.message || "Error",
+                message: errormessage,
                 success: false,
                 show: true,
             }));
         } else if (saveActivity.success) {
             dispatch(showSnackbar({
-                message: "Se registró la actividad",
+                message: "Se guardó la actividad",
                 success: true,
                 show: true,
             }));
@@ -356,8 +361,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (leadNotes.loading) return;
         if (leadNotes.error) {
+            const errormessage = t(leadNotes.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                message: leadNotes.message || "Error",
+                message: errormessage,
                 success: false,
                 show: true,
             }));
@@ -367,8 +373,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     useEffect(() => {
         if (saveNote.loading) return;
         if (saveNote.error) {
+            const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                message: saveNote.message || "Error",
+                message: errormessage,
                 success: false,
                 show: true,
             }));
@@ -829,8 +836,9 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
     useEffect(() => {
         if (personList.loading) return;
         if (personList.error) {
+            const errormessage = t(personList.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
             dispatch(showSnackbar({
-                message: personList.message || "Error",
+                message: errormessage,
                 success: false,
                 show: true,
             }));
@@ -1102,10 +1110,16 @@ interface TabPanelScheduleActivityProps {
     onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
 }
 
+interface OpenModal {
+    value: boolean;
+    payload: IcrmLeadActivity | null;
+}
+
 export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ readOnly, activities, loading, leadId, onSubmit }) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
-    const [openModal, setOpenModal] = useState<{ value: boolean, payload: IcrmLeadActivity | null }>({ value: false, payload: null });
+    const [openModal, setOpenModal] = useState<OpenModal>({ value: false, payload: null });
+    const [openDoneModal, setOpenDoneModal] = useState<OpenModal>({ value: false, payload: null });
 
     return (
         <div className={clsx(classes.root, classes.column)}>
@@ -1154,13 +1168,14 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                                                     <div
                                                         className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                                         onClick={() => {
-                                                            const body = leadActivityIns({
-                                                                ...activity,
-                                                                username: null,
-                                                                status: "REALIZADO",
-                                                                operation: "UPDATE",
-                                                            });
-                                                            dispatch(saveLeadActivity(body));
+                                                            setOpenDoneModal({ value: true, payload: activity });
+                                                            // const body = leadActivityIns({
+                                                            //     ...activity,
+                                                            //     username: null,
+                                                            //     status: "REALIZADO",
+                                                            //     operation: "UPDATE",
+                                                            // });
+                                                            // dispatch(saveLeadActivity(body));
                                                         }}
                                                         style={{ marginRight: '1em' }}
                                                     >
@@ -1207,6 +1222,24 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                 activity={openModal.payload}
                 leadid={leadId}
                 onSubmit={onSubmit}
+            />
+            <MarkDoneModal
+                open={openDoneModal.value}
+                onClose={() => setOpenDoneModal({ value: false, payload: null })}
+                onNext={() => setOpenModal({ value: true, payload: null })}
+                onSuccess={() => {
+                    if (leadId !== 0) dispatch(getLeadActivities(leadActivitySel(leadId)));
+                }}
+                onSubmit={(feedback, action) => {
+                    if (action === "DISCARD" || !openDoneModal.payload) return;
+                    const body = leadActivityIns({
+                        ...openDoneModal.payload,
+                        username: null,
+                        status: "REALIZADO",
+                        operation: "UPDATE",
+                    });
+                    dispatch(markDoneActivity(body));
+                }}
             />
         </div>
     );
@@ -1255,6 +1288,8 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
     }, [dispatch]);
 
     useEffect(() => {
+        if (open !== true) return;
+
         if (saveActivity.loading || saveActivity.error) return;
         if (saveActivity.success) {
             dispatch(showSnackbar({
@@ -1428,7 +1463,7 @@ const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity
                             handleSave("PROGRAMADO");
                         }}
                     >
-                        <Trans i18nKey={langKeys.schedule} />
+                        <Trans i18nKey={!activity ? langKeys.schedule : langKeys.save} />
                     </Button>
                     <Button
                         variant="contained"
@@ -1565,6 +1600,127 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 )}
             </div>
         </Paper>
+    );
+}
+
+interface MarkDoneModalProps {
+    open: boolean;
+    onClose: () => void;
+    onSubmit: (feedback: string, action: "DONE & NEXT" | "DONE" | "DISCARD") => void;
+    onSuccess?: () => void;
+    onNext: () => void;
+}
+
+const useMarkDoneModalStyles = makeStyles(theme => ({
+    footer: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+    footerBtn: {
+        marginRight: '0.6em',
+    },
+}));
+
+const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext, onSuccess }) => {
+    const classes = useMarkDoneModalStyles();
+    const modalClasses = useSelectPersonModalStyles();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const mustNext = useRef(false);
+    const [feedback, setFeedBack] = useState("");
+    const markDoneProcess = useSelector(state => state.lead.markDoneActivity);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMarkDoneActivity());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (open !== true) return;
+        
+        if (markDoneProcess.loading) return;
+        if (markDoneProcess.error) {
+            const errormessage = t(markDoneProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        } else if (markDoneProcess.success) {
+            dispatch(showSnackbar({
+                message: "Se marcó como hecho la actividad",
+                success: true,
+                show: true,
+            }));
+            onClose();
+            if (mustNext.current) onNext();
+            onSuccess?.();
+            setFeedBack("");
+            mustNext.current = false;
+        }
+    }, [markDoneProcess, dispatch]);
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+        >
+            <Box className={modalClasses.root}>
+                <TitleDetail title={<Trans i18nKey={langKeys.markDone} />} />
+                <div style={{ height: '1.34em' }} />
+                <FieldEdit
+                    label={t(langKeys.writeFeedback)}
+                    valueDefault={feedback}
+                    onChange={setFeedBack}
+                    InputProps={{
+                        readOnly: markDoneProcess.loading,
+                    }}
+                />
+                <div style={{ height: '2em' }} />
+                <div className={classes.footer}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.footerBtn}
+                        disabled={markDoneProcess.loading}
+                        onClick={() =>{
+                            mustNext.current = true;
+                            onSubmit(feedback, "DONE & NEXT");
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.doneAndScheduleNext} />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        className={classes.footerBtn}
+                        disabled={markDoneProcess.loading}
+                        onClick={() => {
+                            mustNext.current = false;
+                            onSubmit(feedback, "DONE");
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.done} />
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        className={classes.footerBtn}
+                        disabled={markDoneProcess.loading}
+                        onClick={() => {
+                            mustNext.current = false;
+                            setFeedBack("");
+                            onClose();
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.discard} />
+                    </Button>
+                </div>
+            </Box>
+        </Modal>
     );
 }
 

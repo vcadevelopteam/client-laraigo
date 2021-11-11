@@ -14,6 +14,7 @@ export interface IState {
     saveLeadNote: IProcessState;
     display: string;
     archiveLead: IProcessState;
+    markDoneActivity: IProcessState;
 }
 
 export const initialState: IState = {
@@ -27,6 +28,7 @@ export const initialState: IState = {
     saveLeadNote: initialProccessState,
     display: initialDisplayState,
     archiveLead: initialProccessState,
+    markDoneActivity: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -77,4 +79,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.ARCHIVE_LEAD_SUCCESS]: caseFUnctions.archiveLeadSuccess,
     [actionTypes.ARCHIVE_LEAD_FAILURE]: caseFUnctions.archiveLeadFailure,
     [actionTypes.ARCHIVE_LEAD_RESET]: caseFUnctions.archiveLeadReset,
+
+    [actionTypes.MARK_DONE_ACTIVITY]: caseFUnctions.markDoneActivity,
+    [actionTypes.MARK_DONE_ACTIVITY_SUCCESS]: caseFUnctions.markDoneActivitySuccess,
+    [actionTypes.MARK_DONE_ACTIVITY_FAILURE]: caseFUnctions.markDoneActivityFailure,
+    [actionTypes.MARK_DONE_ACTIVITY_RESET]: caseFUnctions.markDoneActivityReset,
 });
