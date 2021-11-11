@@ -207,8 +207,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(execute({
                 header: insLead2(data, data.operation),
                 detail: [
-                    ...data.notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
-                    ...data.activities.map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
+                    ...(data.notes || []).map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
+                    ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
                 ],
             }, true));
         }
@@ -727,7 +727,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 )}
                 {tabIndex === 1 && (
                     <TabPanelScheduleActivity
-                        readOnly={isStatusClosed()}
+                        readOnly={edit === false || isStatusClosed()}
                         leadId={edit ? Number(match.params.id) : 0}
                         loading={saveActivity.loading || leadActivities.loading}
                         activities={edit ? leadActivities.data : getValues('activities')}
