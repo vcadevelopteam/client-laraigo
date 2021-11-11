@@ -283,3 +283,63 @@ export const archiveLeadReset = (state: IState): IState => ({
     ...state,
     archiveLead: initialState.archiveLead,
 });
+
+export const markDoneActivity = (state: IState): IState => ({
+    ...state,
+    markDoneActivity: { ...state.markDoneActivity, loading: true, error: false },
+});
+
+export const markDoneActivitySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    markDoneActivity: {
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const markDoneActivityFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    markDoneActivity: {
+        success: false,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'archiveLeadFailure:error',
+        message: action.payload.message || 'Error al guardar la actividad',
+    },
+});
+
+export const markDoneActivityReset = (state: IState): IState => ({
+    ...state,
+    markDoneActivity: initialState.markDoneActivity,
+});
+
+export const getLeadHistory = (state: IState): IState => ({
+    ...state,
+    leadHistory: { ...state.leadHistory, loading: true, error: false },
+});
+
+export const getLeadHistorySuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadHistory: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadHistoryFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadHistory: {
+        ...state.leadHistory,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadHistoryFailure:error',
+        message: action.payload.message || 'Error al cargar el historial de la oportunidad',
+    },
+});
+
+export const getLeadHistoryReset = (state: IState): IState => ({
+    ...state,
+    leadHistory: initialState.leadHistory,
+});

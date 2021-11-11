@@ -1878,3 +1878,12 @@ export const insArchiveLead = (lead: ICrmLead): IRequestBody => ({
         operation: "UPDATE",
     },
 });
+
+export const leadHistorySel = (leadid: string | number): IRequestBody => ({
+    key: "UFN_LEADACTIVITYHISTORY_SEL",
+    method: "UFN_LEADACTIVITYHISTORY_SEL",
+    parameters: {
+        leadid,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});

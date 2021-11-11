@@ -1340,6 +1340,9 @@ const translation: LangKeys = {
 
     noData: 'No data',
     closed2: 'Closed',
+    done: 'Done',
+    writeFeedback: 'Write feedback',
+    history: 'History',
 };
 
 const enResource: ResourceLanguage = {
