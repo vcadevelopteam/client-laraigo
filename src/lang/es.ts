@@ -29,6 +29,8 @@ const translation: LangKeys = {
     model_plural: 'Modelos',
     newlead: 'Nueva oportunidad',
     successful_sign_up: 'Se registró correctamente, revise su bandeja de correo para proceder con la activación su cuenta.',
+    comments: 'Comentarios',
+    lastnote: 'Última nota',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
@@ -384,6 +386,7 @@ const translation: LangKeys = {
     name: 'Nombre',
     name_plural: 'Nombres',
     next_activity: 'Siguiente actividad',
+    nextprogramedactivity: 'Siguiente actividad programada',
 
     username: 'Usuario',
     password: 'Contraseña',

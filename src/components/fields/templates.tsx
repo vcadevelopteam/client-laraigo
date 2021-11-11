@@ -298,11 +298,14 @@ export const FieldEdit: React.FC<InputProps> = ({ label, size, className, disabl
 
     return (
         <div className={className}>
-            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            {variant === "standard" &&
+                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{label}</Box>
+            }
             <TextField
                 {...fregister}
                 color="primary"
                 fullWidth
+                label={variant !== "standard" && label}
                 disabled={disabled}
                 type={type}
                 value={value}

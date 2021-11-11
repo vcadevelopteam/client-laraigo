@@ -104,6 +104,7 @@ import {
             isComponent: true,
             activeOnHover: boolean,
             NoFilter: boolean,
+            NoSort: boolean,
             type: string,
             // id: string
         }

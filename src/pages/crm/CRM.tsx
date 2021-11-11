@@ -1,4 +1,4 @@
-import { convertLocalDate, getColumnsSel, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -11,14 +11,15 @@ import { useHistory } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { useTranslation } from "react-i18next";
-import { DialogZyx3Opt } from "components";
+import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import { IconButton } from "@material-ui/core";
-import { IFetchData } from "@types";
+import { Dictionary, IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
+import { Rating } from '@material-ui/lab';
 
 interface dataBackend {
   columnid: number,
@@ -57,8 +58,27 @@ const useStyles = makeStyles((theme) => ({
   containerDetail: {
       marginTop: theme.spacing(3),
       background: '#fff',
-  }
+  },
+  tag: {
+    backgroundColor: '#7721AD',
+    color: '#fff',
+    borderRadius: '20px',
+    padding: '2px 5px',
+    margin: '2px'
+  },
+  containerFilter: {
+    width: '100%',
+    marginBottom: theme.spacing(2),
+    display: 'flex',
+    gap: 16,
+    flexWrap: 'wrap'
+  },
+  filterComponent: {
+      width: '220px'
+  },
 }));
+
+const selectionKey = 'leadid';
 
 const CRM: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
@@ -76,6 +96,8 @@ const CRM: FC = () => {
       dispatch(getMultiCollection([
           getColumnsSel(1),
           getLeadsSel(1),
+          adviserSel(),
+          getCommChannelLst(),
       ]));
       return () => {
           dispatch(resetMain());
@@ -284,19 +306,59 @@ const CRM: FC = () => {
   const [totalrow, settotalrow] = useState(0);
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [waitExport, setWaitExport] = useState(false);
+  const [allParameters, setAllParameters] = useState<any>({
+    asesorid: mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? user?.userid : 0,
+  });
+  const [selectedRows, setSelectedRows] = useState<any>({});
 
   const CustomCellRender = ({column, row}: any) => {
     switch (column.id) {
-      case 'expected_revenue':
-        return (
-          <div style={{ cursor: 'pointer', textAlign: 'right' }}>
-            {user?.currencysymbol} {row[column.id]}
-          </div>
-        )
       case 'status':
         return (
           <div style={{ cursor: 'pointer' }}>
             {(t(`status_${row[column.id]}`.toLowerCase()) || "").toUpperCase()}
+          </div>
+        )
+      case 'contact_name':
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            <div>{row['contact_name']}</div>
+            <div>{row['email']}</div>
+            <div>tel: {row['phone']}</div>
+            <Rating
+                name="simple-controlled"
+                max={3}
+                defaultValue={row['priority'] === 'LOW' ? 1 : row['priority'] === 'MEDIUM' ? 2 : row['priority'] === 'HIGH' ? 3 : 1}
+                readOnly={true}
+            />
+            <div>{t(langKeys.assignedTo)}: {row['asesorname']}</div>
+          </div>
+        )
+      case 'tags':
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            {row[column.id] !== '' && row[column.id].split(',').map((t: string, i: number) => (
+              <span key={`lead${row['leadid']}${row[column.id]}${i}`} className={classes.tag}>{t}</span>
+            ))}
+          </div>
+        )
+      case 'comments':
+        return (
+          <div style={{ cursor: 'pointer' }}>
+            <div>
+              <b>{t(langKeys.lastnote)} ({convertLocalDate(row['notedate']).toLocaleString(undefined, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}):</b> {row['notedescription']}
+            </div>
+            <div>
+              <b>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(row['activitydate']).toLocaleString(undefined, {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+              })}):</b> {row['activitydescription']}
+            </div>
           </div>
         )
       default:
@@ -335,52 +397,26 @@ const CRM: FC = () => {
   const columns = React.useMemo(
     () => [
       {
-          Header: t(langKeys.opportunity),
-          accessor: 'opportunity',
-          Cell: cell
-      },
-      {
-          Header: t(langKeys.name),
-          accessor: 'contact_name',
-          Cell: cell
-      },
-      {
-          Header: t(langKeys.email),
-          accessor: 'email',
-          Cell: cell
-      },
-      {
-          Header: t(langKeys.phone),
-          accessor: 'phone',
-          Cell: cell
-      },
-      {
-        Header: t(langKeys.salesperson),
-        accessor: 'sales_person',
+        Header: t(langKeys.opportunity),
+        accessor: 'opportunity',
         Cell: cell
       },
       {
-        Header: t(langKeys.next_activity),
-        accessor: 'next_activity',
-        Cell: cell
-      },
-      {
-        Header: t(langKeys.expectedRevenue),
-        accessor: 'expected_revenue',
-        type: 'number',
-        sortType: 'number',
-        Cell: cell
-      },
-      {
-        Header: t(langKeys.expectedClosing),
-        accessor: 'expected_closing',
+        Header: t(langKeys.lastUpdate),
+        accessor: 'changedate',
         type: 'date',
         sortType: 'datetime',
+        Cell: cell,
+      },
+      {
+        Header: t(langKeys.customer),
+        accessor: 'contact_name',
+        NoFilter: true,
         Cell: cell
       },
       {
         Header: t(langKeys.phase),
-        accessor: 'stage',
+        accessor: 'phase',
         Cell: cell
       },
       {
@@ -388,19 +424,40 @@ const CRM: FC = () => {
         accessor: 'status',
         Cell: cell
       },
+      {
+        Header: t(langKeys.tags),
+        accessor: 'tags',
+        Cell: cell
+      },
+      {
+        Header: t(langKeys.comments),
+        accessor: 'comments',
+        NoFilter: true,
+        NoSort: true,
+        Cell: cell
+      },
+      {
+        accessor: 'actions',
+        NoFilter: true,
+        isComponent: true,
+        Cell: cell
+      },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  const fetchGridData = ({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
+  const fetchGridData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
     setfetchDataAux({...fetchDataAux, ...{ pageSize, pageIndex, filters, sorts }});
     dispatch(getCollectionPaginated(getPaginatedLead(
         {
-            sorts: sorts,
-            filters: filters,
-            take: pageSize,
-            skip: pageIndex * pageSize,
+          startdate: daterange.startDate!,
+          enddate: daterange.endDate!,
+          sorts: sorts,
+          filters: filters,
+          take: pageSize,
+          skip: pageIndex * pageSize,
+          ...allParameters
         }
     )));
   };
@@ -413,11 +470,14 @@ const CRM: FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mainPaginated]);
 
-  const triggerExportData = ({ filters, sorts }: IFetchData) => {
+  const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
     dispatch(exportData(getLeadExport(
       {
+        startdate: daterange.startDate!,
+        enddate: daterange.endDate!,
         sorts: sorts,
-        filters: filters
+        filters: filters,
+        ...allParameters
     })));  
     dispatch(showBackdrop(true));
     setWaitExport(true);
@@ -652,6 +712,33 @@ const CRM: FC = () => {
         }
         {display === 'GRID' &&
         <div style={{ width: '100%', paddingTop: '10px' }}>
+          <div className={classes.containerFilter}>
+            <FieldSelect
+                variant="outlined"
+                label={t(langKeys.user)}
+                className={classes.filterComponent}
+                onChange={(value) => setAllParameters({...allParameters, asesorid: value.userid})}
+                data={mainMulti.data[2].data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1)}
+                optionDesc={'fullname'}
+                optionValue={'userid'}
+            />
+            <FieldMultiSelect
+                variant="outlined"
+                label={t(langKeys.channel)}
+                className={classes.filterComponent}
+                onChange={(value) => setAllParameters({...allParameters, channel: value.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+                data={mainMulti.data[3].data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1)}
+                optionDesc={'communicationchanneldesc'}
+                optionValue={'communicationchannelid'}
+            />
+            <FieldEdit
+                size="small"
+                variant="outlined"
+                label={t(langKeys.customer)}
+                className={classes.filterComponent}
+                onChange={(value) => setAllParameters({...allParameters, contact: value})}
+            />
+          </div>
           <div className={classes.containerDetail}>
             <TablePaginated
               columns={columns}
@@ -659,11 +746,14 @@ const CRM: FC = () => {
               totalrow={totalrow}
               loading={mainPaginated.loading}
               pageCount={pageCount}
+              filterrange={true}
               download={true}
               fetchData={fetchGridData}
               ButtonsElement={() => (<div></div>)}
               exportPersonalized={triggerExportData}
-              autotrigger={true}
+              useSelection={true}
+              selectionKey={selectionKey}
+              setSelectedRows={setSelectedRows}
             />
           </div>
         </div>

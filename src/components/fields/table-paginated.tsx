@@ -553,7 +553,7 @@ const TableZyx = React.memo(({
                                                         <Box
                                                             component="div"
                                                             {...column.getHeaderProps()}
-                                                            onClick={() => handleClickSort(column.id)}
+                                                            onClick={() => !column.NoSort && handleClickSort(column.id)}
                                                             style={{
                                                                 whiteSpace: 'nowrap',
                                                                 wordWrap: 'break-word',
