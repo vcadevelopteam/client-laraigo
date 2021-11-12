@@ -1606,8 +1606,8 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             <FileCopy />
             <div style={{ width: '0.5em' }} />
             <div className={classes.infoContainer}>
-                <div style={{ display: 'inline-block' }}>
-                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', display: 'inline-block', overflow: 'hidden', maxWidth: 190 }}>{getFileName()}</div>{getFileExt()}
+                <div>
+                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
                 </div>
             </div>
             <div style={{ width: '0.5em' }} />

@@ -1835,8 +1835,6 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
     );
 }
 
-
-
 interface ConversationsTabProps {
     person: IPerson;
 }
