@@ -101,6 +101,7 @@ const paths = {
     EMOJIS: '/extras/emojis',
     DASHBOARDMANAGERIAL: '/dashboard/dashboardmanagerial',
     DASHBOARDOPERATIONALPUSH: '/dashboard/dashboardoperationalpush',
+    HEATMAP: '/dashboard/heatmap',
     IASERVICES: '/iaservices',
     // IAMODELS: '/extras/intelligentmodels',
     IA: '/iaservices/ia',

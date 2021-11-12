@@ -1878,3 +1878,26 @@ export const insArchiveLead = (lead: ICrmLead): IRequestBody => ({
         operation: "UPDATE",
     },
 });
+
+export const heatmapresumensel = ({ communicationchannel, startdate, enddate, closedby }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_RESUMEN_SEL",
+    method: "UFN_REPORT_HEATMAP_RESUMEN_SEL",
+    parameters: {
+        communicationchannel , 
+        startdate , 
+        enddate ,
+        closedby,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+export const heatmappage1 = ({ communicationchannel, startdate, enddate, closedby }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_PAGE1_SEL",
+    method: "UFN_REPORT_HEATMAP_PAGE1_SEL",
+    parameters: {
+        communicationchannel, 
+        startdate, 
+        enddate,
+        closedby,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
