@@ -1843,26 +1843,36 @@ export const leadLogNotesIns = (parameters: ICrmLeadNoteSave): IRequestBody => (
     parameters,
 });
 
-export const getPaginatedLead = ({ skip, take, filters, sorts }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedLead = ({ skip, take, filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_LEADGRID_SEL",
     methodCount: "UFN_LEADGRID_TOTALRECORDS",
     parameters: {
         origin: "lead",
+        startdate,
+        enddate,
         skip,
         take,
         filters,
         sorts,
+        asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        contact: allParameters['contact'] ? allParameters['contact'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
 
-export const getLeadExport = ({ filters, sorts }: Dictionary): IRequestBody => ({
+export const getLeadExport = ({ filters, sorts, startdate, enddate, ...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_LEADGRID_EXPORT",
     key: "UFN_LEADGRID_EXPORT",
     parameters: {
         origin: "lead",
+        startdate,
+        enddate,
         filters,
         sorts,
+        asesorid: allParameters['asesorid'] ? allParameters['asesorid'] : 0,
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
+        contact: allParameters['contact'] ? allParameters['contact'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
