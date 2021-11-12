@@ -22,7 +22,7 @@ import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/perso
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
-import { execute, getCollection, resetExecute, resetMain } from 'store/main/actions';
+import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import NoteIcon from '@material-ui/icons/Note';
 const tagsOptions = [
@@ -204,12 +204,22 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         if (edit) {
             dispatch(execute(insLead2(data, data.operation), false));
         } else {
-            dispatch(execute({
-                header: insLead2(data, data.operation),
-                detail: [
-                    ...(data.notes || []).map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
-                    ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
-                ],
+            dispatch(executeWithFiles(async (uploader) => {
+                const notes = (data.notes || []) as ICrmLeadNoteSave[];
+                for (let i = 0; i < notes.length; i++) {
+                    if (notes[i].media && typeof notes[i].media === "object") {
+                        const url = await uploader(notes[i].media as File);
+                        notes[i].media = url;
+                    }
+                }
+
+                return {
+                    header: insLead2(data, data.operation),
+                    detail: [
+                        ...notes.map((x: ICrmLeadNoteSave) => leadLogNotesIns(x)),
+                        ...(data.activities || []).map((x: ICrmLeadActivitySave) => leadActivityIns(x)),
+                    ],
+                };
             }, true));
         }
         // dispatch(saveLeadBody(body));
@@ -697,14 +707,16 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             </div>
                         )}
                     />
-                    <AntTab
-                        label={(
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <AccessTimeIcon style={{ width: 22, height: 22 }} />
-                                <Trans i18nKey={langKeys.history} />
-                            </div>
-                        )}
-                    />
+                    {edit && (
+                        <AntTab
+                            label={(
+                                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                                    <AccessTimeIcon style={{ width: 22, height: 22 }} />
+                                    <Trans i18nKey={langKeys.history} />
+                                </div>
+                            )}
+                        />
+                    )}
                 </Tabs>
                 {tabIndex === 0 && (
                     <TabPanelLogNote
@@ -719,7 +731,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             } else {
                                 newNote.createby = user?.firstname;
                                 newNote.createdate = Date.now();
-                                setValue('notes', [...getValues('notes'), newNote]);
+                                setValue('notes', [newNote, ...getValues('notes')]);
                                 setValues(prev => ({ ...prev })); // refresh
                             }
                         }}
@@ -727,7 +739,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 )}
                 {tabIndex === 1 && (
                     <TabPanelScheduleActivity
-                        readOnly={edit === false || isStatusClosed()}
+                        readOnly={isStatusClosed()}
                         leadId={edit ? Number(match.params.id) : 0}
                         loading={saveActivity.loading || leadActivities.loading}
                         activities={edit ? leadActivities.data : getValues('activities')}
@@ -742,7 +754,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         }}
                     />
                 )}
-                {tabIndex === 2 && (
+                {(edit && tabIndex === 2) && (
                     <TabPanelLeadHistory
                         history={leadHistory.data}
                         loading={leadHistory.loading}
@@ -890,7 +902,6 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
 
 const useTabPanelLogNoteStyles = makeStyles(theme => ({
     root: {
-        // padding: theme.spacing(1),
         paddingTop: theme.spacing(1)
     },
     column: {
@@ -1012,11 +1023,14 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                     )}
                                 />
                                 <div style={{ width: '0.5em' }} />
-                                {leadId !== 0 && (
+                                {/* {leadId !== 0 && (
                                     <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
                                         <AttachFile />
                                     </IconButton>
-                                )}
+                                )} */}
+                                <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
+                                    <AttachFile />
+                                </IconButton>
                             </div>
                         </div>
                     </div>
@@ -1176,7 +1190,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                                             <Info style={{ height: 18, width: 18, fill: 'grey' }} />
                                         </div>
                                         {!readOnly && <div style={{ height: 4 }} />}
-                                        {!readOnly && (
+                                        {(!readOnly && leadId !== 0) && (
                                             <div className={clsx(classes.row, classes.unselect)}>
                                                 <div style={{ width: '1em' }} />
                                                 {activity.status === "PROGRAMADO" && (
@@ -1184,13 +1198,6 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                                                         className={clsx(classes.activityFor, classes.row, classes.centerRow, classes.hoverCursor)}
                                                         onClick={() => {
                                                             setOpenDoneModal({ value: true, payload: activity });
-                                                            // const body = leadActivityIns({
-                                                            //     ...activity,
-                                                            //     username: null,
-                                                            //     status: "REALIZADO",
-                                                            //     operation: "UPDATE",
-                                                            // });
-                                                            // dispatch(saveLeadActivity(body));
                                                         }}
                                                         style={{ marginRight: '1em' }}
                                                     >
@@ -1752,10 +1759,13 @@ interface TabPanelLeadHistoryProps {
 const useTabPanelLeadHistoryStyles = makeStyles(theme => ({
     itemRoot: {
         borderRadius: 12,
-        backgroundColor: 'lightgrey',
+        backgroundColor: '#e9e8e8',
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
+
+        fontSize: 14,
+        fontWeight: 400,
     },
     timelineItemBefore: {
         '&::before': {
@@ -1763,7 +1773,25 @@ const useTabPanelLeadHistoryStyles = makeStyles(theme => ({
             flex: 0,
             display: 'none',
         }
-    }
+    },
+    timelineDot: {
+        height: 32,
+        width: 32,
+    },
+    itemHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    name: {
+        color: 'blue',
+        fontWeight: 'bold',
+    },
+    dateTime: {
+        fontSize: 11,
+        color: 'darkslategrey',
+    },
 }));
 
 const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading }) => {
@@ -1778,14 +1806,17 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                 {history.map((item, i) => (
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
-                            <TimelineDot />
+                            <TimelineDot className={classes.timelineDot} />
                             <TimelineConnector />
                         </TimelineSeparator>
                         <TimelineContent>
                             <div className={classes.itemRoot}>
-                                <span>{item.leadactivity}</span>
-                                <span>{item.leadactivity}</span>
-                                <span>{item.leadactivity}</span>
+                                <div className={classes.itemHeader}>
+                                    <span className={classes.name}>{item.type}</span>
+                                    <div style={{ width: '1em' }} />
+                                    <span className={classes.dateTime}>{formatDate(item.createdate)}</span>
+                                </div>
+                                <span>{item.description}</span>
                             </div>
                         </TimelineContent>
                     </TimelineItem>
