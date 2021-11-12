@@ -1353,8 +1353,9 @@ export const langKeys = {
     SENDMAIL: 'SENDMAIL', // lead history type
     SENDSMS: 'SENDSMS', // lead history type
     NEWTAG: 'NEWTAG', // lead history type
-    REMOETAG: 'REMOETAG', // lead history type
+    REMOVETAG: 'REMOVETAG', // lead history type
     ELIMINADO: 'ELIMINADO', // lead history type
+    CLOSEDLEAD: 'CLOSEDLEAD', // lead history type
 };
 
 export type LangKeys = typeof langKeys;

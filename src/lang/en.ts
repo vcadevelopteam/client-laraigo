@@ -1359,8 +1359,9 @@ const translation: LangKeys = {
     SENDMAIL: 'Mail sent',
     SENDSMS: 'SMS sent',
     NEWTAG: 'Tag added',
-    REMOETAG: 'Tag removed',
+    REMOVETAG: 'Tag removed',
     ELIMINADO: 'Deleted',
+    CLOSEDLEAD: 'Lead closed',
 };
 
 const enResource: ResourceLanguage = {

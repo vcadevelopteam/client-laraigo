@@ -343,3 +343,33 @@ export const getLeadHistoryReset = (state: IState): IState => ({
     ...state,
     leadHistory: initialState.leadHistory,
 });
+
+export const updateLeadTags = (state: IState): IState => ({
+    ...state,
+    updateLeadTags: { ...state.updateLeadTags, loading: true, error: false },
+});
+
+export const updateLeadTagsSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    updateLeadTags: {
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const updateLeadTagsFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    updateLeadTags: {
+        success: false,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'updateLeadTagsFailure:error',
+        message: action.payload.message || 'Error al guardar los tags',
+    },
+});
+
+export const updateLeadTagsReset = (state: IState): IState => ({
+    ...state,
+    updateLeadTags: initialState.updateLeadTags,
+});

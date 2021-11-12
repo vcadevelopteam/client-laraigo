@@ -1350,8 +1350,9 @@ const translation: LangKeys = {
     SENDMAIL: 'Correo enviado',
     SENDSMS: 'SMS enviado',
     NEWTAG: 'Tag agregado',
-    REMOETAG: 'Tag eliminado',
+    REMOVETAG: 'Tag eliminado',
     ELIMINADO: 'Eliminado',
+    CLOSEDLEAD: 'Oportunidad cerrada',
 };
 
 const esResource: ResourceLanguage = {

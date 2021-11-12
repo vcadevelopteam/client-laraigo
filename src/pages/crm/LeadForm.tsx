@@ -5,13 +5,13 @@ import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router';
-import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel } from 'common/helpers';
+import { insLead2, getOneLeadSel, adviserSel, getPaginatedPerson as getPersonListPaginated1, leadLogNotesSel, leadActivitySel, leadLogNotesIns, leadActivityIns, getValuesFromDomain, getColumnsSel, insArchiveLead, leadHistorySel, updateLeadTagsIns } from 'common/helpers';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, IDomain, IFetchData, IPerson } from '@types';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote, updateLeadTags } from 'store/lead/actions';
+import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -20,7 +20,7 @@ import TableZyx from 'components/fields/table-paginated';
 import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Folder as FolderIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
@@ -156,6 +156,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadNotes = useSelector(state => state.lead.leadLogNotes);
     const saveLead = useSelector(state => state.main.execute);
     const leadHistory = useSelector(state => state.lead.leadHistory);
+    const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -417,10 +418,36 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         }
     }, [leadHistory, dispatch]);
 
+    useEffect(() => {
+        if (updateLeadTagProcess.loading) return;
+        if (updateLeadTagProcess.error) {
+            const errormessage = t(updateLeadTagProcess.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [updateLeadTagProcess, dispatch]);
+
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
         dispatch(archiveLead(insArchiveLead(lead.value!)));
     }, [lead, dispatch]);
+
+    const handleUpdateLeadTags = useCallback((tags: string, value: string, action: "NEWTAG" | "REMOVETAG") => {
+        if (edit === false) return;
+
+        const data: ICrmLeadTagsSave = {
+            history_description: value,
+            history_status: "ACTIVO",
+            history_type: action,
+            leadid: Number(match.params.id),
+            tags,
+        };
+
+        dispatch(updateLeadTags(updateLeadTagsIns(data)));
+    }, [edit, dispatch]);
 
     const iSProcessLoading = useCallback(() => {
         return (
@@ -565,7 +592,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.tags)}
                                     className={classes.field}
                                     valueDefault={getValues('tags')}
-                                    onChange={(value) => { setValue('tags', value.map((o: any) => o.title || o).join()) }}
+                                    onChange={(value: ({title: string} | string)[], value2: {action: "create-option" | "remove-option", option: {option: string}}) => {
+                                        console.log('FieldMultiSelectFreeSolo:onChange', value, value2);
+                                        const tags = value.map((o: any) => o.title || o).join();
+                                        setValue('tags', tags);
+
+                                        if (value2.action === "create-option") {
+                                            handleUpdateLeadTags(tags, value2.option.option, "NEWTAG");
+                                        } else {
+                                            handleUpdateLeadTags(tags, value2.option.option, "REMOVETAG");
+                                        }
+                                    }}
                                     error={errors?.tags?.message}
                                     loading={false}
                                     data={tagsOptions.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (tagsOptions.findIndex(x => x.title === i)) < 0).map((title: any) => ({ title })))}
@@ -1791,8 +1828,15 @@ const useTabPanelLeadHistoryStyles = makeStyles(theme => ({
 const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading }) => {
     const classes = useTabPanelLeadHistoryStyles();
 
+    const Icon = useCallback(({ type }: { type: string }) => {
+        if (type === "CLOSEDLEAD") {
+            return <CancelIcon />;
+        }
+        return <FlagIcon />;
+    }, []);
+
     if (loading) {
-        return <Loading />
+        return <Loading />;
     }
     return (
         <Box>
@@ -1801,7 +1845,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
                             <TimelineDot className={classes.timelineDot}>
-                                <FolderIcon />
+                                <Icon type={item.type}  />
                             </TimelineDot>
                             <TimelineConnector className={classes.timelineDot} />
                         </TimelineSeparator>
@@ -1816,7 +1860,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                                         {formatDate(item.createdate)}
                                     </span>
                                 </div>
-                                <span>{item.description}</span>
+                                {item.description && <span>{item.description}</span>}
                             </div>
                         </TimelineContent>
                     </TimelineItem>
