@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, AppBar, Tabs, Tab, Avatar, Paper, InputAdornment } from '@material-ui/core';
+import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
 import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
@@ -20,7 +20,7 @@ import TableZyx from 'components/fields/table-paginated';
 import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Folder as FolderIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
@@ -1023,11 +1023,6 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                     )}
                                 />
                                 <div style={{ width: '0.5em' }} />
-                                {/* {leadId !== 0 && (
-                                    <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
-                                        <AttachFile />
-                                    </IconButton>
-                                )} */}
                                 <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
                                     <AttachFile />
                                 </IconButton>
@@ -1775,8 +1770,7 @@ const useTabPanelLeadHistoryStyles = makeStyles(theme => ({
         }
     },
     timelineDot: {
-        height: 32,
-        width: 32,
+        backgroundColor: 'blue',
     },
     itemHeader: {
         display: 'flex',
@@ -1806,15 +1800,21 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
                 {history.map((item, i) => (
                     <TimelineItem key={i} className={classes.timelineItemBefore}>
                         <TimelineSeparator>
-                            <TimelineDot className={classes.timelineDot} />
-                            <TimelineConnector />
+                            <TimelineDot className={classes.timelineDot}>
+                                <FolderIcon />
+                            </TimelineDot>
+                            <TimelineConnector className={classes.timelineDot} />
                         </TimelineSeparator>
                         <TimelineContent>
                             <div className={classes.itemRoot}>
                                 <div className={classes.itemHeader}>
-                                    <span className={classes.name}>{item.type}</span>
+                                    <span className={classes.name}>
+                                        <Trans i18nKey={item.type} />
+                                    </span>
                                     <div style={{ width: '1em' }} />
-                                    <span className={classes.dateTime}>{formatDate(item.createdate)}</span>
+                                    <span className={classes.dateTime}>
+                                        {formatDate(item.createdate)}
+                                    </span>
                                 </div>
                                 <span>{item.description}</span>
                             </div>

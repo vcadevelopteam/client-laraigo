@@ -1344,6 +1344,17 @@ export const langKeys = {
     done: 'done',
     writeFeedback: 'writeFeedback',
     history: 'history',
+
+    NEWLEAD: 'NEWLEAD', // lead history type
+    NEWNOTE: 'NEWNOTE', // lead history type
+    NEWACTIVITY: 'NEWACTIVITY', // lead history type
+    CHANGESTATUS: 'CHANGESTATUS', // lead history type
+    SENDHSM: 'SENDHSM', // lead history type
+    SENDMAIL: 'SENDMAIL', // lead history type
+    SENDSMS: 'SENDSMS', // lead history type
+    NEWTAG: 'NEWTAG', // lead history type
+    REMOETAG: 'REMOETAG', // lead history type
+    ELIMINADO: 'ELIMINADO', // lead history type
 };
 
 export type LangKeys = typeof langKeys;

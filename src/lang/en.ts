@@ -1350,6 +1350,17 @@ const translation: LangKeys = {
     done: 'Done',
     writeFeedback: 'Write feedback',
     history: 'History',
+
+    NEWLEAD: 'New lead',
+    NEWNOTE: 'New note',
+    NEWACTIVITY: 'New activity',
+    CHANGESTATUS: 'Change phase',
+    SENDHSM: 'HSM sent',
+    SENDMAIL: 'Mail sent',
+    SENDSMS: 'SMS sent',
+    NEWTAG: 'Tag added',
+    REMOETAG: 'Tag removed',
+    ELIMINADO: 'Deleted',
 };
 
 const enResource: ResourceLanguage = {
