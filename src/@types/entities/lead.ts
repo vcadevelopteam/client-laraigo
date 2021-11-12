@@ -78,6 +78,7 @@ export interface ICrmLeadActivitySave {
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
 	username: string | null;
 	operation: "UPDATE" | "INSERT" | "DELETE";
+    feedback: string;
 }
 
 export interface ICrmLeadNoteSave {
@@ -116,6 +117,7 @@ export interface IcrmLeadActivity {
 	assignto: string;
 	type: string;
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
+    feedback: string | null;
 }
 
 export interface ICrmColumn {
@@ -131,5 +133,12 @@ export interface ICrmColumn {
     index: number;
     orgid: number;
     status: string;
+    type: string;
+}
+
+export interface ICrmLeadHistory {
+    createdate: string;
+    description: string;
+    leadid: number;
     type: string;
 }

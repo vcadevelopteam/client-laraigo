@@ -291,6 +291,7 @@ export const langKeys = {
     enterbotapikey: "enterbotapikey",
 
     next_activity: 'next_activity',
+    nextprogramedactivity: 'nextprogramedactivity',
 
     quantity: 'quantity',
     quantity_plural: 'quantity_plural',
@@ -701,6 +702,8 @@ export const langKeys = {
     least_user_or_group: 'least_user_or_group',
     lead: 'lead',
     lead_plural: 'lead_plural',
+    comments: 'comments',
+    lastnote: 'lastnote',
 
     
     priority_high: 'priority_high',
@@ -1338,6 +1341,9 @@ export const langKeys = {
 
     noData: 'noData',
     closed2: 'closed2',
+    done: 'done',
+    writeFeedback: 'writeFeedback',
+    history: 'history',
 };
 
 export type LangKeys = typeof langKeys;

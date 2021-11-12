@@ -243,6 +243,7 @@ const translation: LangKeys = {
     role: 'Role',
     role_plural: 'Roles',
     next_activity: 'Next activity',
+    nextprogramedactivity: 'Next programed activity',
 
     no_reply_use_hsm: 'Conversation is closed or blocked for being out of the 24 hour sale.\nUse an HSM to contact the customer.',
 
@@ -712,6 +713,8 @@ const translation: LangKeys = {
     select: "Select",
     data: "Data",
     cancel: 'Cancel',
+    comments: 'Comments',
+    lastnote: 'Last note',
     default_application: 'Default application',
     default_organization: 'Default organization',
     password_required: 'Password is required',
@@ -1344,6 +1347,9 @@ const translation: LangKeys = {
 
     noData: 'No data',
     closed2: 'Closed',
+    done: 'Done',
+    writeFeedback: 'Write feedback',
+    history: 'History',
 };
 
 const enResource: ResourceLanguage = {

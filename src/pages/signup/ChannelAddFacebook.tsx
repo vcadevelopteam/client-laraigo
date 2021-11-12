@@ -111,7 +111,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                             autoLoad={false}
                             buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
                             fields="name,email,picture"
-                            scope="pages_messaging,pages_read_engagement,pages_manage_engagement,pages_read_user_content,pages_manage_metadata,pages_show_list,public_profile"
+                            scope="pages_manage_engagement,pages_manage_metadata,pages_messaging,pages_read_engagement,pages_read_user_content,pages_show_list,public_profile"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.linkfacebookpage)}
                             icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}

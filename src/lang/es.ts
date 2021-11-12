@@ -29,6 +29,8 @@ const translation: LangKeys = {
     model_plural: 'Modelos',
     newlead: 'Nueva oportunidad',
     successful_sign_up: 'Se registró correctamente, revise su bandeja de correo para proceder con la activación su cuenta.',
+    comments: 'Comentarios',
+    lastnote: 'Última nota',
 
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
@@ -388,6 +390,7 @@ const translation: LangKeys = {
     name: 'Nombre',
     name_plural: 'Nombres',
     next_activity: 'Siguiente actividad',
+    nextprogramedactivity: 'Siguiente actividad programada',
 
     username: 'Usuario',
     password: 'Contraseña',
@@ -1329,12 +1332,15 @@ const translation: LangKeys = {
     assignedTo: 'Asignado a',
     schedule: 'Programado',
     markAsDone: 'Marcar como hecho',
-    doneAndScheduleNext: 'Listo y programar a continuación',
+    doneAndScheduleNext: 'Hecho y programar siguiente',
     discard: 'Descartar',
     date_format_error: 'Ingrese una fecha válida',
 
     noData: 'Sin registros',
     closed2: 'Cerrado',
+    done: 'Hecho',
+    writeFeedback: 'Escribir comentario',
+    history: 'Historial',
 };
 
 const esResource: ResourceLanguage = {
