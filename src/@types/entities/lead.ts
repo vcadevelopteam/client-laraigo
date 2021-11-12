@@ -137,15 +137,8 @@ export interface ICrmColumn {
 }
 
 export interface ICrmLeadHistory {
-    column_createdate: string;
-    columnname: string;
-    corpid: number;
-    lead_createdate: string;
-    leadactivity: string;
-    leadactivitydate: string;
+    createdate: string;
+    description: string;
     leadid: number;
-    leadname: string;
-    leadnotes: string;
-    leadnotesdate: string;
-    orgid: number;
+    type: string;
 }

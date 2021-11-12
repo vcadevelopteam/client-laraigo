@@ -114,6 +114,7 @@ export const getCollectionAux = (requestBody: IRequestBody): IActionCall => ({
 
 export const resetMainAux = (): IActionCall => ({ type: actionTypes.AUX_MAIN_RESET });
 
+/**Action type = EXECUTE_MAIN */
 export const execute = (requestBody: IRequestBody | ITransaction, transaction: boolean = false): IActionCall => ({
     callAPI: () => CommonService.main(requestBody, transaction),
     types: {
@@ -124,6 +125,34 @@ export const execute = (requestBody: IRequestBody | ITransaction, transaction: b
     type: null,
 });
 
+type Url = string;
+/**Action type = EXECUTE_MAIN */
+export const executeWithFiles = (
+    build: (uploader: (file: File) => Promise<Url>) => Promise<IRequestBody | ITransaction>,
+    transaction: boolean = false,
+): IActionCall => {
+    const uploadCb = async (mediaFile: File): Promise<Url> => {
+        const fd = new FormData();
+        fd.append('file', mediaFile, mediaFile.name);
+        const uploadResult = await CommonService.uploadFile(fd);
+        return (uploadResult.data["url"] || '') as string;
+    };
+
+    return {
+        callAPI: async () => {
+            const requestBody = await build(uploadCb);
+            return CommonService.main(requestBody, transaction);
+        },
+        types: {
+            loading: actionTypes.EXECUTE_MAIN,
+            success: actionTypes.EXECUTE_MAIN_SUCCESS,
+            failure: actionTypes.EXECUTE_MAIN_FAILURE,
+        },
+        type: null,
+    };
+}
+
+/**Action type = EXECUTE_MAIN */
 export const resetExecute = (): IActionCall => ({ type: actionTypes.EXECUTE_MAIN_RESET });
 
 export const getMultiCollection = (requestBodies: IRequestBody[]): IActionCall => ({
