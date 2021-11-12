@@ -14,6 +14,7 @@ import { getCollection, getMultiCollection} from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
+import { DatePicker } from "@material-ui/pickers";
 
 const hours=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00","04:00 a 05:00","05:00 a 06:00","06:00 a 07:00","07:00 a 08:00","08:00 a 09:00","09:00 a 10:00","10:00 a 11:00","11:00 a 12:00",
                        "12:00 a 13:00","13:00 a 14:00","14:00 a 15:00","15:00 a 16:00","16:00 a 17:00","17:00 a 18:00","18:00 a 19:00","19:00 a 20:00","20:00 a 21:00","21:00 a 22:00","22:00 a 23:00","23:00 a 00:00","TOTAL"]
@@ -47,13 +48,16 @@ const MainHeatMap: React.FC = () => {
     
     const { t } = useTranslation();
     const classes = useStyles();
-    const [realizedsearch, setrealizedsearch] = useState(false); 
-    const [heatMapConversationsData, setheatMapConversationsData] = useState<any>([]);
+    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [realizedsearch, setrealizedsearch] = useState(false);
+    const [heatmapresumen, setheatmapresumen] = useState<any>([]);    
     const [heatMapConversations, setheatMapConversations] = useState<any>([]);
-    const [firstnavresult, setfirstnavresult] = useState<any>([]);
+    const [heatMapConversationsData, setheatMapConversationsData] = useState<any>([]);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
+    const [selectedDate, setselectedDate] = useState(new Date());
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
@@ -75,8 +79,9 @@ const MainHeatMap: React.FC = () => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
             dispatch(showBackdrop(false))
-            setfirstnavresult(multiData.data?multiData.data[0].data:[])
+            setheatmapresumen(multiData.data?multiData.data[0]:[])
             initAtencionesxFechaAsesorGrid()
+            initTotalDurationxFechaGrid()
         }
     }, [multiData])
     useEffect(() => {
@@ -91,7 +96,99 @@ const MainHeatMap: React.FC = () => {
         dispatch(getCollection(heatmappage1(dataMainHeatMap)))
     }
     function initAtencionesxFechaAsesorGrid(){
-        debugger
+        const totalsdays = {}
+        const LIMITHOUR = 24;
+        let arrayfree: any = [];
+        let backupdate = new Date(new Date().setDate(0))
+        let mes = dateRangeCreateDate.startDate?.getMonth()||backupdate.getMonth()+1
+        let year = dateRangeCreateDate.startDate?.getFullYear()||backupdate.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+        setheatMapConversations([])
+        setheatMapConversationsData([])
+
+        for(let i = 1; i <= LIMITHOUR+1; i++) {
+            const objectfree: Dictionary = {
+                hour: i,
+                hournum: hours[i - 1],
+            }
+            for(let j = 1; j <= dateend; j++) {
+                objectfree[`day${j}`] = 0;
+            }
+            objectfree[`totalcol`] = 0;
+            arrayfree.push(objectfree);
+        }
+        
+        heatmapresumen.forEach( (row:any) => {
+            const day = new Date(row.fecha).getDate();
+            const hour = row.hora;
+            arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({
+                ...x, 
+                [`day${day}`]: row.atencionesxfecha,
+                [`totalcol`]: x.totalcol + row.atencionesxfecha
+            }) : x) 
+            rowmax = row.atencionesxfecha>rowmax ? row.atencionesxfecha:rowmax;
+            arrayfree[24][`day${day}`] += row.atencionesxfecha;
+            arrayfree[24][`totalcol`] += row.atencionesxfecha;
+        });
+
+        let mid = rowmax/2;
+        let scale = 255 / (mid);
+        function gradient(num:number,rowcounter:number){
+            let number = "";
+            if ( rowcounter >= 24 ) {
+                return "FFFFFF";
+            }
+            if ( num <= 0 ) {
+                return "00FF99";
+            }
+            else if ( num >= rowmax ) {
+                return "FF0099";
+            }
+            else if ( num < mid ) {
+                number=(num * scale).toString(16)
+                return "00".slice(number.length) + number +  "FF99" 
+            }
+            else {
+                number= (255-(num-mid)* scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"99"  
+            }
+        }
+        
+        let rowcounter = 0;
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!="totalcol"){
+                    let color="white"
+                    if(props.data[rowcounter]){
+                        color = gradient(parseInt(props.data[rowcounter][key]),rowcounter)
+                    }
+                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.data[rowcounter][key])}</div>
+                    
+                }
+                else{
+                    rowcounter++;
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.data[rowcounter-1][key])}</div>
+                }
+            },
+        }));
+        setheatMapConversationsData(arrayfree)
+        setheatMapConversations([
+            {
+                Header: `Hora`,
+                accessor: "hournum",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initTotalDurationxFechaGrid(){
+
     }
     return (
         <div>
@@ -129,6 +226,18 @@ const MainHeatMap: React.FC = () => {
                     </Button>
                 </div>
             </div>
+            {
+                heatMapConversationsData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={heatMapConversations}
+                        titlemodule={t(langKeys.conversationheatmap)}
+                        data={heatMapConversationsData}
+                        download={true}
+                        pageSizeDefault={30}
+                    />
+                </div>:""
+            }
         </div>
     )
 }
