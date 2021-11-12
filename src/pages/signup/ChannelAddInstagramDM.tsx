@@ -103,7 +103,7 @@ export const ChannelAddInstagramDM: FC<{setrequestchannels:(param:any)=>void,set
                             autoLoad={false}
                             buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721AD", textTransform: "none" }}
                             fields="name,email,picture"
-                            scope="pages_show_list,instagram_basic,instagram_manage_comments,instagram_manage_insights,instagram_content_publish,pages_manage_metadata,public_profile"
+                            scope="instagram_basic,instagram_manage_comments,instagram_manage_messages,pages_manage_metadata,pages_read_engagement,pages_show_list,public_profile"
                             callback={processFacebookCallback}
                             textButton={t(langKeys.linkinstagrampage)}
                             onClick={(e: any) => {
