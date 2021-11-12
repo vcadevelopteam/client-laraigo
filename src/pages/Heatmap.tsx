@@ -14,7 +14,6 @@ import { getCollection, getMultiCollection} from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
-import { DatePicker } from "@material-ui/pickers";
 
 const hours=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00","04:00 a 05:00","05:00 a 06:00","06:00 a 07:00","07:00 a 08:00","08:00 a 09:00","09:00 a 10:00","10:00 a 11:00","11:00 a 12:00",
                        "12:00 a 13:00","13:00 a 14:00","14:00 a 15:00","15:00 a 16:00","16:00 a 17:00","17:00 a 18:00","18:00 a 19:00","19:00 a 20:00","20:00 a 21:00","21:00 a 22:00","22:00 a 23:00","23:00 a 00:00","TOTAL"]
@@ -48,8 +47,6 @@ const MainHeatMap: React.FC = () => {
     
     const { t } = useTranslation();
     const classes = useStyles();
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const [realizedsearch, setrealizedsearch] = useState(false);
     const [heatmapresumen, setheatmapresumen] = useState<any>([]);    
     const [heatMapConversations, setheatMapConversations] = useState<any>([]);
@@ -57,7 +54,6 @@ const MainHeatMap: React.FC = () => {
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
-    const [selectedDate, setselectedDate] = useState(new Date());
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
@@ -88,11 +84,14 @@ const MainHeatMap: React.FC = () => {
         search()
     }, [])
     function search(){
+        
+        setheatMapConversations([])
+        setheatMapConversationsData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
         dispatch(getMultiCollection([
             heatmappage1(dataMainHeatMap)
-        ]));
+        ]));        
         dispatch(getCollection(heatmappage1(dataMainHeatMap)))
     }
     function initAtencionesxFechaAsesorGrid(){
@@ -100,12 +99,10 @@ const MainHeatMap: React.FC = () => {
         const LIMITHOUR = 24;
         let arrayfree: any = [];
         let backupdate = new Date(new Date().setDate(0))
-        let mes = dateRangeCreateDate.startDate?.getMonth()||backupdate.getMonth()+1
-        let year = dateRangeCreateDate.startDate?.getFullYear()||backupdate.getFullYear()
+        let mes = dataMainHeatMap.startdate?.getMonth()||backupdate.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()||backupdate.getFullYear()
         let rowmax = 0;
         let dateend = new Date(year, mes, 0).getDate()
-        setheatMapConversations([])
-        setheatMapConversationsData([])
 
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary = {
