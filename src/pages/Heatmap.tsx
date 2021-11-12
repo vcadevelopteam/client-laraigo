@@ -79,7 +79,7 @@ const MainHeatMap: React.FC = () => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
             dispatch(showBackdrop(false))
-            setheatmapresumen(multiData.data?multiData.data[0]:[])
+            setheatmapresumen(multiData.data?multiData.data[0].data:[])
             initAtencionesxFechaAsesorGrid()
             initTotalDurationxFechaGrid()
         }
@@ -118,7 +118,7 @@ const MainHeatMap: React.FC = () => {
             objectfree[`totalcol`] = 0;
             arrayfree.push(objectfree);
         }
-        
+        console.log(heatmapresumen)
         heatmapresumen.forEach( (row:any) => {
             const day = new Date(row.fecha).getDate();
             const hour = row.hora;
@@ -172,7 +172,8 @@ const MainHeatMap: React.FC = () => {
                     
                 }
                 else{
-                    rowcounter++;
+                    if (rowcounter < 24)
+                        rowcounter++;
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.data[rowcounter-1][key])}</div>
                 }
             },
