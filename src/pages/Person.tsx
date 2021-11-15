@@ -152,9 +152,9 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => x.type === "HSM") || [])
+            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || [])
         }
-    }, [domains])
+    }, [domains, type])
 
     useEffect(() => {
         if (openModal) {
@@ -212,7 +212,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.send_hsm)}
+            title={t(langKeys.send_hsm).replace("HSM", type)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setOpenModal(false)}
@@ -221,7 +221,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.hsm_template)}
+                    label={t(langKeys.template)}
                     className="col-12"
                     valueDefault={getValues('hsmtemplateid')}
                     onChange={onSelectTemplate}
