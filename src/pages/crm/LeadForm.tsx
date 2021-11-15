@@ -372,6 +372,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 success: true,
                 show: true,
             }));
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
     }, [saveActivity, dispatch]);
 
@@ -405,7 +406,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-    }, [saveNote, dispatch]);
+    }, [saveNote, match.params.id, dispatch]);
 
     useEffect(() => {
         if (leadHistory.loading) return;
