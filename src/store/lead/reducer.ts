@@ -16,6 +16,7 @@ export interface IState {
     archiveLead: IProcessState;
     markDoneActivity: IProcessState;
     leadHistory: IListState<ICrmLeadHistory>;
+    updateLeadTags: IProcessState;
 }
 
 export const initialState: IState = {
@@ -31,6 +32,7 @@ export const initialState: IState = {
     archiveLead: initialProccessState,
     markDoneActivity: initialProccessState,
     leadHistory: initialListState,
+    updateLeadTags: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -91,4 +93,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.GET_LEAD_HISTORY_SUCCESS]: caseFUnctions.getLeadHistorySuccess,
     [actionTypes.GET_LEAD_HISTORY_FAILURE]: caseFUnctions.getLeadHistoryFailure,
     [actionTypes.GET_LEAD_HISTORY_RESET]: caseFUnctions.getLeadHistoryReset,
+
+    [actionTypes.UPDATE_LEAD_TAGS]: caseFUnctions.updateLeadTags,
+    [actionTypes.UPDATE_LEAD_TAGS_SUCCESS]: caseFUnctions.updateLeadTagsSuccess,
+    [actionTypes.UPDATE_LEAD_TAGS_FAILURE]: caseFUnctions.updateLeadTagsFailure,
+    [actionTypes.UPDATE_LEAD_TAGS_RESET]: caseFUnctions.updateLeadTagsReset,
 });

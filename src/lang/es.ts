@@ -1342,6 +1342,18 @@ const translation: LangKeys = {
     done: 'Hecho',
     writeFeedback: 'Escribir comentario',
     history: 'Historial',
+
+    NEWLEAD: 'Nueva oportunidad',
+    NEWNOTE: 'Nueva nota',
+    NEWACTIVITY: 'Nueva actividad',
+    CHANGESTATUS: 'Cambio de fase',
+    SENDHSM: 'HSM enviado',
+    SENDMAIL: 'Correo enviado',
+    SENDSMS: 'SMS enviado',
+    NEWTAG: 'Tag agregado',
+    REMOVETAG: 'Tag eliminado',
+    ELIMINADO: 'Eliminado',
+    CLOSEDLEAD: 'Oportunidad cerrada',
 };
 
 const esResource: ResourceLanguage = {

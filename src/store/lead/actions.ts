@@ -152,3 +152,15 @@ export const getLeadHistory = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetGetLeadHistory = (): IActionCall => ({type: actionTypes.GET_LEAD_HISTORY_RESET});
+
+export const updateLeadTags = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.UPDATE_LEAD_TAGS,
+        success: actionTypes.UPDATE_LEAD_TAGS_SUCCESS,
+        failure: actionTypes.UPDATE_LEAD_TAGS_FAILURE,
+    },
+    type: null,
+});
+
+export const resetUpdateLeadTags = (): IActionCall => ({type: actionTypes.UPDATE_LEAD_TAGS_RESET});

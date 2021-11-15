@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1918,4 +1918,10 @@ export const leadHistorySel = (leadid: string | number): IRequestBody => ({
         leadid,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
+});
+
+export const updateLeadTagsIns = (tags: ICrmLeadTagsSave): IRequestBody => ({
+    key: "UFN_UPDATE_LEAD_TAGS",
+    method: "UFN_UPDATE_LEAD_TAGS",
+    parameters: tags,
 });

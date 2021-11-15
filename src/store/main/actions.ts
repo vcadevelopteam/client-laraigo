@@ -135,7 +135,7 @@ export const executeWithFiles = (
         const fd = new FormData();
         fd.append('file', mediaFile, mediaFile.name);
         const uploadResult = await CommonService.uploadFile(fd);
-        return (uploadResult.data["url"] || '') as string;
+        return (uploadResult.data["url"] || '') as Url;
     };
 
     return {

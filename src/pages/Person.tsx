@@ -2,17 +2,16 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DateRangePicker, FieldSelect, ListPaginated, TemplateIcons, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonLead, IPersonReferrer } from "@types";
-import { Avatar, Box, Divider, Grid, ListItem, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
+import { DateRangePicker, FieldSelect, Title } from 'components';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonLead, IPersonReferrer, IFetchData } from "@types";
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PhoneIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { Range } from 'react-date-range';
-import { Skeleton } from '@material-ui/lab';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
 import { ArrowDropDown, Add as AddIcon } from '@material-ui/icons';
@@ -28,12 +27,10 @@ import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
 import { DialogInteractions } from 'components';
 import Rating from '@material-ui/lab/Rating';
+import TablePaginated from 'components/fields/table-paginated';
+import StarIcon from '@material-ui/icons/Star';
 
-interface PersonItemProps {
-    person: IPerson;
-}
-
-const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
+const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 interface SelectFieldProps {
     defaultValue?: string;
@@ -64,87 +61,6 @@ const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data,
     );
 }
 
-const useStyles = makeStyles((theme) => ({
-    containerDetail: {
-        marginTop: theme.spacing(2),
-        // maxWidth: '80%',
-        padding: theme.spacing(2),
-        background: '#fff',
-    },
-    mb2: {
-        marginBottom: theme.spacing(4),
-    },
-    personList: {
-        display: 'flex',
-        paddingLeft: theme.spacing(0),
-        paddingRight: theme.spacing(0),
-        paddingBottom: theme.spacing(1),
-    },
-    personItemRoot: {
-        padding: theme.spacing(2.5),
-        backgroundColor: 'white',
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-    },
-    itemRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexGrow: 1,
-        flexBasis: 0,
-        flexShrink: 1,
-        alignItems: 'center',
-    },
-    gridRow: {
-        alignItems: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'nowrap',
-        height: '100%',
-    },
-    itemColumn: {
-        display: 'flex',
-        flexDirection: 'column',
-        flexGrow: 1,
-        alignSelf: 'flex-start',
-    },
-    itemTop: {
-        justifyContent: 'space-between',
-        minWidth: 480,
-        flexWrap: 'wrap',
-    },
-    spacing: {
-        padding: theme.spacing(1),
-    },
-    label: {
-        overflowWrap: 'anywhere',
-        fontWeight: 400,
-        fontSize: 12,
-        color: '#B6B4BA',
-    },
-    value: {
-        fontSize: 14,
-        fontWeight: 400,
-        color: '#2E2C34',
-    },
-    propIcon: {
-        stroke: '#8F92A1',
-        width: 24,
-        height: 24,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    btn: {
-        minWidth: 56,
-        minHeight: 26,
-        maxHeight: 26,
-        maxWidth: 56,
-        padding: 0,
-        backgroundColor: '#55BD84',
-        float: 'right',
-    },
-}));
 
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
@@ -169,147 +85,9 @@ const Photo: FC<PhotoProps> = ({ src, radius }) => {
     return <Avatar alt={src} src={src} className={classes.accountPhoto} style={{ width, height }} />;
 }
 
-const PersonItem: FC<PersonItemProps> = ({ person }) => {
-    const classes = useStyles();
-    const history = useHistory();
+const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().substring(0, 10)
 
-    const goToPersonDetail = () => {
-        history.push({
-            pathname: paths.PERSON_DETAIL.resolve(person.personid),
-            state: person,
-        });
-    }
-
-    return (
-        <ListItem className={classes.personList}>
-            <Box className={classes.personItemRoot}>
-                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                    <TemplateIcons
-                        editFunction={goToPersonDetail}
-                    />
-                    <div style={{ width: 8 }} />
-                    <div style={{ flexGrow: 1, marginLeft: 8 }}>
-                        <Grid container direction="column">
-                            <Grid container direction="row" spacing={1}>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <Photo src={person.imageurldef} />
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={clsx(classes.label, classes.value)}>{person.name}</label>
-                                            <label className={classes.label}>{`ID# ${person.personid}`}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><EMailInboxIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.email} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.email || "-"}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PhoneIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.phone} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.phone || "-"}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PortfolioIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.department} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.region || '-'}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="row" className={classes.gridRow}>
-                                        <div className={classes.propIcon}><PinLocationIcon /></div>
-                                        <div style={{ width: 8 }} />
-                                        <div className={classes.itemColumn}>
-                                            <label className={classes.label}>
-                                                <Trans i18nKey={langKeys.address} />
-                                            </label>
-                                            <div style={{ height: 4 }} />
-                                            <label className={clsx(classes.label, classes.value)}>{person.address || '-'}</label>
-                                        </div>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Divider style={{ margin: '10px 0' }} />
-                            <Grid container direction="row" spacing={1}>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="column">
-                                        <label><Trans i18nKey={langKeys.firstConnection} />:</label>
-                                        <div style={{ height: 4 }} />
-                                        <label>{person.firstcontact ? new Date(person.firstcontact).toLocaleString() : "-"}</label>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={3} xl={3} xs={3} md={3} lg={3}>
-                                    <Grid container direction="column">
-                                        <label><Trans i18nKey={langKeys.lastConnection} />:</label>
-                                        <div style={{ height: 4 }} />
-                                        <label>{person.lastcontact ? new Date(person.lastcontact).toLocaleString() : "-"}</label>
-                                    </Grid>
-                                </Grid>
-                                <Grid item sm={4} xl={4} xs={4} md={4} lg={4} />
-                                <Grid item sm={2} xl={2} xs={2} md={2} lg={2}>
-                                    <Button className={classes.btn} variant="contained" color="primary" disableElevation>
-                                        <label style={{ fontSize: 10, fontWeight: 400 }}>
-                                            <Trans i18nKey={langKeys.active} />
-                                        </label>
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </div>
-                </div>
-            </Box>
-        </ListItem>
-    );
-}
-
-const PersonItemSkeleton: FC = () => {
-    const classes = useStyles();
-
-    return (
-        <ListItem className={classes.personList}>
-            <Box className={classes.personItemRoot}>
-                <Grid container direction="column">
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
-                    </Grid>
-                    <Divider style={{ margin: '10px 0' }} />
-                    <Grid container direction="row" spacing={1}>
-                        <Grid item sm={12} xl={12} xs={12} md={12} lg={12}>
-                            <Skeleton />
-                        </Grid>
-                    </Grid>
-                </Grid>
-            </Box>
-        </ListItem>
-    );
-}
+const selectionKey = 'personid';
 
 export const Person: FC = () => {
     const history = useHistory();
@@ -320,31 +98,128 @@ export const Person: FC = () => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    const [page, setPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [dateRange, setDateRange] = useState<Range>(initialDateRange);
-    const [filters, setFilters] = useState<Dictionary>({});
+    // const [page, setPage] = useState(0);
+    // const [pageSize, setPageSize] = useState(10);
+    const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+    // const [dateRange, setDateRange] = useState<Range>(initialDateRange);
+    // const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
     const domains = useSelector(state => state.person.editableDomains);
-
+    const [pageCount, setPageCount] = useState(0);
+    const [totalrow, settotalrow] = useState(0);
     const resExportData = useSelector(state => state.main.exportData);
     const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
     const [importPath, setImportPath] = useState('');
+    const [selectedRows, setSelectedRows] = useState<any>({});
+
+    const goToPersonDetail = (person: IPerson) => {
+        console.log("person", person)
+        history.push({
+            pathname: paths.PERSON_DETAIL.resolve(person.personid),
+            state: person,
+        });
+    }
 
     const columns = [
-        { Header: t(langKeys.name), accessor: 'name' },
-        { Header: t(langKeys.email), accessor: 'email' },
-        { Header: t(langKeys.phone), accessor: 'phone' },
-        { Header: t(langKeys.department), accessor: 'region' },
-        { Header: t(langKeys.province), accessor: 'province' },
-        { Header: t(langKeys.firstConnection), accessor: 'firstcontact' },
-        { Header: t(langKeys.lastConnection), accessor: 'lastcontact' }
+        { 
+            Header: t(langKeys.lead), 
+            accessor: 'havelead',
+            type: "boolean",
+            Cell: (props: any) => {
+                const { havelead } = props.cell.row.original;
+                if (havelead)
+                    return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
+
+                return <StarIcon color="action" fontSize="small" />
+            }
+        },
+        {
+            Header: t(langKeys.firstContactDate),
+            accessor: 'firstcontact',
+            type: 'date',
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
+            }
+        },
+        {
+            Header: t(langKeys.firstContactDate),
+            accessor: 'lastcontact',
+            type: 'date',
+            sortType: 'datetime',
+            Cell: (props: any) => {
+                const row = props.cell.row.original;
+                return row.lastcontact ? convertLocalDate(row.lastcontact).toLocaleString() : ""
+            }
+        },
+        {
+            Header: t(langKeys.customer),
+            accessor: 'name',
+            Cell: (props: any) => {
+                const { name, email, phone, priority, userlead } = props.cell.row.original;
+                return (
+                    <div >
+                        <div>{t(langKeys.name)}: {name}</div>
+                        <div>{t(langKeys.email)}: {email}</div>
+                        <div>{t(langKeys.phone)}: {phone}</div>
+                        {priority && 
+                        <>
+                            <Rating
+                                name="simple-controlled"
+                                max={3}
+                                defaultValue={priority === 'LOW' ? 1 : priority === 'MEDIUM' ? 2 : priority === 'HIGH' ? 3 : 0}
+                                readOnly={true}
+                            />
+                            <div>{t(langKeys.assignedTo)}: {userlead}</div>
+                        </>
+                        }
+                    </div>
+                )
+            }
+        },
+        { 
+            Header: t(langKeys.type), 
+            accessor: 'type',
+            prefixTranslation: 'type_persontype_',
+            Cell: (props: any) => {
+                const { type } = props.cell.row.original;
+                return type ? (t(`type_persontype_${type}`.toLowerCase()) || "").toUpperCase() : "";
+            }
+        },
+        {
+            Header: t(langKeys.status),
+            accessor: 'status',
+            prefixTranslation: 'status_',
+            Cell: (props: any) => {
+                const { status } = props.cell.row.original;
+                return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+            }
+        },
+        {
+            Header: t(langKeys.comments),
+            accessor: 'datenote',
+            Cell: (props: any) => {
+                const { datenote, note, dateactivity, leadactivity } = props.cell.row.original;
+                return (
+                    <div>
+                        {datenote && 
+                            <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>
+                        }
+                        {dateactivity &&
+                            <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>
+                        }
+                    </div>
+                )
+            }
+        },
     ]
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
+        fetchData(fetchDataAux)
     }, [])
 
     useEffect(() => {
@@ -353,29 +228,33 @@ export const Person: FC = () => {
         };
     }, [dispatch]);
 
-    const fetchData = () => {
+    useEffect(() => {
+        if (!personList.loading && !personList.error) {
+            setPageCount(Math.ceil(personList.count / fetchDataAux.pageSize));
+            settotalrow(personList.count);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [personList]);
+
+    const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
+        console.log(filters)
+        setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getPersonListPaginated(getPaginatedPerson({
-            startdate: format(dateRange.startDate!),
-            enddate: format(dateRange.endDate!),
-            skip: pageSize * page,
+            startdate: daterange?.startDate || format(new Date(new Date().setDate(1))),
+            enddate: daterange?.endDate || format(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
+            skip: pageSize * pageIndex,
             take: pageSize,
-            sorts: {},
+            sorts,
             filters: filters,
         })));
     }
 
-    useEffect(() => {
-        fetchData();
-    }, [dispatch, pageSize, page, dateRange, filters]);
-
-    const format = (date: Date) => date.toISOString().split('T')[0];
-
-    const triggerExportData = () => {
+    const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
         dispatch(exportData(getPersonExport(
             {
-                startdate: format(dateRange.startDate!),
-                enddate: format(dateRange.endDate!),
-                sorts: {},
+                startdate: daterange.startDate!,
+                enddate: daterange.endDate!,
+                sorts,
                 filters: filters
             })));
         dispatch(showBackdrop(true));
@@ -526,7 +405,7 @@ export const Person: FC = () => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
-                fetchData();
+                fetchData(fetchDataAux);
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeResult.error) {
@@ -545,8 +424,8 @@ export const Person: FC = () => {
                     <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
                 </Grid>
                 <Grid item>
-                    <Grid container direction="row-reverse" spacing={1}>
-                        <Button
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        {/* <Button
                             variant="contained"
                             color="primary"
                             disabled={personList.loading}
@@ -554,8 +433,7 @@ export const Person: FC = () => {
                             onClick={triggerExportData}
                         >
                             <Trans i18nKey={langKeys.download} />
-                        </Button>
-                        <div style={{ width: 9 }} />
+                        </Button> */}
                         <Button
                             variant="contained"
                             color="primary"
@@ -571,7 +449,6 @@ export const Person: FC = () => {
                         >
                             <Trans i18nKey={langKeys.register} />
                         </Button>
-                        <div style={{ width: 9 }} />
                         <Button
                             variant="contained"
                             color="primary"
@@ -582,7 +459,6 @@ export const Person: FC = () => {
                         >
                             <Trans i18nKey={langKeys.template} />
                         </Button>
-                        <div style={{ width: 9 }} />
                         <input
                             name="file"
                             accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
@@ -604,8 +480,7 @@ export const Person: FC = () => {
                                 <Trans i18nKey={langKeys.import} />
                             </Button>
                         </label>
-                        <div style={{ width: 9 }} />
-                        <DateRangePicker
+                        {/* <DateRangePicker
                             open={openDateRangeModal}
                             setOpen={setOpenDateRangeModal}
                             range={dateRange}
@@ -622,12 +497,26 @@ export const Person: FC = () => {
                             >
                                 {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
                             </Button>
-                        </DateRangePicker>
-                    </Grid>
+                        </DateRangePicker> */}
+                    </div>
                 </Grid>
             </Grid>
-            <div style={{ height: 30 }} />
-            <ListPaginated
+            <TablePaginated
+                columns={columns}
+                data={personList.data}
+                pageCount={pageCount}
+                totalrow={totalrow}
+                loading={personList.loading}
+                filterrange={true}
+                download={true}
+                exportPersonalized={triggerExportData}
+                fetchData={fetchData}
+                useSelection={true}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                onClickRow={goToPersonDetail}
+            />
+            {/* <ListPaginated
                 dateRange={dateRange}
                 currentPage={page}
                 columns={columns}
@@ -640,7 +529,7 @@ export const Person: FC = () => {
                 totalItems={personList.count}
                 builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
                 skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
-            />
+            /> */}
         </div>
     );
 }

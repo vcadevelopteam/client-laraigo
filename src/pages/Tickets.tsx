@@ -434,8 +434,8 @@ const Tickets = () => {
     const [openModal, setOpenModal] = useState(false);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
-    const [pageCount, setPageCount] = useState(0);
     const [waitSave, setWaitSave] = useState(false);
+    const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
 

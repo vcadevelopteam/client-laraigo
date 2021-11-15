@@ -142,3 +142,11 @@ export interface ICrmLeadHistory {
     leadid: number;
     type: string;
 }
+
+export interface ICrmLeadTagsSave {
+	leadid: number;
+	tags: string;
+	history_description: string;
+	history_type: "NEWTAG" | "REMOVETAG";
+	history_status: string;
+}
