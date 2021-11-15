@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { CalendarIcon } from '../icons/index';
 import { useDispatch } from 'react-redux';
 import { showBackdrop } from 'store/popus/actions';
-import { heatmappage1 } from 'common/helpers/requestBodies';
+import { getValuesFromDomain, heatmappage1 } from 'common/helpers/requestBodies';
 import { getCollection, getMultiCollection} from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
@@ -163,7 +163,7 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!="totalcol"){
+                if(key!=="totalcol"){
                     let color="white"
                     if(props.data[rowcounter]){
                         color = gradient(parseInt(props.data[rowcounter][key]),rowcounter)
@@ -274,14 +274,14 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!="totalcol"){
+                if(key!=="totalcol"){
                     let color="white"
                     if(props.data[rowcounter]){
                         color = gradient(props.data[rowcounter][key],rowcounter)
                     }
                     let timespenttotal = props.data[rowcounter][key].split(':')
-                    let hh = timespenttotal[0] == "00" ? "" : (timespenttotal[0] + "h ")
-                    let mm = timespenttotal[1] == "00" ? "" : (timespenttotal[1] + "m ")
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
                     return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>
                     
@@ -290,8 +290,8 @@ const MainHeatMap: React.FC = () => {
                 else{
                     if (rowcounter < 24)  rowcounter++;
                     let timespenttotal = props.data[rowcounter-1][key].split(':')
-                    let hh = timespenttotal[0] == "00" ? "" : (timespenttotal[0] + "h ")
-                    let mm = timespenttotal[1] == "00" ? "" : (timespenttotal[1] + "m ")
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
                 }
@@ -378,8 +378,21 @@ const HeatMapAsesor: React.FC = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
+    const [companydomain, setcompanydomain] = useState<any>([]);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
+    const dispatch = useDispatch();
+    const mainData = useSelector(state => state.main.mainData);
+    useEffect(() => {
+        dispatch(getCollection(getValuesFromDomain("EMPRESA")))
+        //search()
+    }, [])
+    useEffect(() => {
+        if(!mainData.loading){
+            setcompanydomain(mainData.data)
+        }
+        console.log(mainData)
+    }, [mainData])
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
@@ -418,7 +431,7 @@ const HeatMapAsesor: React.FC = () => {
                         variant="outlined"
                         //onChange={(value) => { setsearchfields(p => ({ ...p, queue: value.map((o: Dictionary) => o.domainvalue).join() })) }}
                         //valueDefault={searchfields.queue}
-                        data={dataAdvisor}
+                        data={companydomain}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
                     />
@@ -442,7 +455,6 @@ const HeatMapTicket: React.FC = () => {
     const classes = useStyles();
     const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
-    const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
@@ -479,8 +491,6 @@ const HeatMapTicket: React.FC = () => {
 const Heatmap: FC = () => {
     const [pageSelected, setPageSelected] = useState(0);
     const { t } = useTranslation();
-    let triggerMainGrid = true;
-    let rulesobj = null;
     return (
         <Fragment>
             <Tabs
