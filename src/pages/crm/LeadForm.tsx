@@ -403,6 +403,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
     }, [saveNote, dispatch]);
 
