@@ -3,14 +3,12 @@ import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@mater
 import { AntTab } from 'components';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState } from 'react';
-import { DateRangePicker, FieldMultiSelect } from "components";
-import { Range } from 'react-date-range';
+import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
-import { CalendarIcon } from '../icons/index';
 import { useDispatch } from 'react-redux';
 import { showBackdrop } from 'store/popus/actions';
-import { getValuesFromDomain, heatmappage1 } from 'common/helpers/requestBodies';
-import { getCollection, getMultiCollection} from 'store/main/actions';
+import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage2, heatmappage3 } from 'common/helpers/requestBodies';
+import {  getMultiCollection, getMultiCollectionAux} from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
@@ -22,12 +20,6 @@ const hoursProm=["00:00 a 01:00","01:00 a 02:00","02:00 a 03:00","03:00 a 04:00"
 
 
 const LIMITHOUR = 24;
-const initialRange = {
-    startDate: new Date(new Date().setDate(0)),
-    endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-    key: 'selection'
-}
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -44,6 +36,19 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     })
 )
+function capitalize(word:string){
+    let wordlower = word.toLowerCase()
+    const words = wordlower.split(" ");
+    let wordresult = "";
+    for (let i = 0; i < words.length; i++) {
+        if(words[i].trim()!==""){
+            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            wordresult = wordresult + words[i] + " ";
+        }
+    }
+    return wordresult
+
+}
 
 const MainHeatMap: React.FC = () => {
     
@@ -54,6 +59,12 @@ const MainHeatMap: React.FC = () => {
     const [heatMapConversationsData, setheatMapConversationsData] = useState<any>([]);
     const [averageHeatMapTMOTitle, setaverageHeatMapTMOTitle] = useState<any>([]);
     const [averageHeatMapTMOData, setaverageHeatMapTMOData] = useState<any>([]);
+    const [heatMapAverageadvisorTMETitle, setheatMapAverageadvisorTMETitle] = useState<any>([]);
+    const [heatMapAverageadvisorTMEData, setheatMapAverageadvisorTMEData] = useState<any>([]);
+    const [userAverageReplyTimexFechaTitle, setuserAverageReplyTimexFechaTitle] = useState<any>([]);
+    const [userAverageReplyTimexFechaData, setuserAverageReplyTimexFechaData] = useState<any>([]);
+    const [personAverageReplyTimexFechaTitle, setpersonAverageReplyTimexFechaTitle] = useState<any>([]);
+    const [personAverageReplyTimexFechaData, setpersonAverageReplyTimexFechaData] = useState<any>([]);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
@@ -81,6 +92,9 @@ const MainHeatMap: React.FC = () => {
 
             initAtencionesxFechaAsesorGrid(multiData.data[0].data)
             averageHeatMapTMO(multiData.data[0].data)
+            initUserFirstReplyTimexFechaGrid(multiData.data[0].data)
+            initUserAverageReplyTimexFechaGrid(multiData.data[0].data)
+            initPersonAverageReplyTimexFechaGrid(multiData.data[0].data)
         }
     }, [multiData,realizedsearch])
     useEffect(() => {
@@ -88,14 +102,16 @@ const MainHeatMap: React.FC = () => {
     }, [])
     function search(){
         
-        setheatMapConversations([])
         setheatMapConversationsData([])
+        setaverageHeatMapTMOData([])
+        setheatMapAverageadvisorTMEData([])
+        setuserAverageReplyTimexFechaData([])
+        setpersonAverageReplyTimexFechaData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
         dispatch(getMultiCollection([
             heatmappage1(dataMainHeatMap)
-        ]));        
-        dispatch(getCollection(heatmappage1(dataMainHeatMap)))
+        ]));
     }
     function initAtencionesxFechaAsesorGrid(data:any){
         let arrayfree: any = [];
@@ -146,7 +162,7 @@ const MainHeatMap: React.FC = () => {
             else if ( num >= rowmax ) {
                 return "FF0099";
             }
-            else if ( num < mid ) {
+            else if ( num <= mid ) {
                 number=Math.imul(num,scale).toString(16)
                 return "00".slice(number.length) + number +  "FF99" 
             }
@@ -192,8 +208,7 @@ const MainHeatMap: React.FC = () => {
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
         let dateend = new Date(year, mes, 0).getDate()
-        let rowmax = 0;
-        
+        let rowmax = 0;    
         let arrayfree:any = [];
         const LIMITHOUR = 24;
         for(let i = 1; i <= LIMITHOUR+1; i++) {
@@ -246,9 +261,12 @@ const MainHeatMap: React.FC = () => {
                 
         let mid = (rowmax/2);
         let scale = 255 / (mid);
-        function gradient(num:string,rowcounter:number){
-            if ( rowcounter >= 24 ) {
-                return "FFFFFF";
+        let n=0;
+        function gradient(num:string,key:string){
+            n++;
+            if(dateend*24<n){
+                if (key === "day30") n=0
+                return "FFFFFF"
             }
             let timespent = num.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
@@ -268,28 +286,23 @@ const MainHeatMap: React.FC = () => {
                 return  "FF" + '00'.slice(number.length) + number +"99"  
             }
         }
-        let rowcounter = 0;
+
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
                 if(key!=="totalcol"){
-                    let color="white"
-                    if(props.data[rowcounter]){
-                        color = gradient(props.data[rowcounter][key],rowcounter)
-                    }
-                    let timespenttotal = props.data[rowcounter][key].split(':')
+                    let color=gradient(props.cell.row.original[key],key)
+                    let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>
-                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
                     
                 }
                 else{
-                    if (rowcounter < 24)  rowcounter++;
-                    let timespenttotal = props.data[rowcounter-1][key].split(':')
+                    let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
@@ -297,9 +310,352 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
-        
-        console.log(arrayfree)
         setaverageHeatMapTMOTitle([
+            {
+                Header: `Hora`,
+                accessor: "hournum",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initUserFirstReplyTimexFechaGrid(data:any) {
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let dateend = new Date(year, mes, 0).getDate()
+        let rowmax = 0;    
+        let arrayfree:any = [];
+        const LIMITHOUR = 24;
+        for(let i = 1; i <= LIMITHOUR+1; i++) {
+            const objectfree: Dictionary  = {
+                hour: i,
+                hournum: hoursProm[i - 1],
+            }
+            for(let j = 1; j <= dateend; j++) {
+                objectfree[`day${j}`] = "00:00:00";
+            }
+            objectfree[`totalcol`] = "00:00:00";
+            arrayfree.push(objectfree);
+        }
+        data.forEach((row:any)=>{
+            const day = new Date(row.fecha).getDate();
+            const hour = row.hora;
+            let timespent = row.userfirstreplytimexfecha.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            
+            arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.userfirstreplytimexfecha}) : x) 
+            rowmax = seconds>rowmax ? seconds:rowmax;
+            let i = 0;
+            arrayfree.forEach((x:any) => {
+                    i++;
+                    if (x.hournum === hour){
+                        let timespenttotal = x["totalcol"].split(':')
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let hh= Math.floor(secondstotalnum/3600)
+                        let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                        let ss= secondstotalnum-hh*3600-mm*60
+                        x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+                        
+                    }
+                }
+            )
+            let timespenttotal = arrayfree[24][`day${day}`].split(':')
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let hh= Math.floor(secondstotalnum/3600)
+            let mm= Math.floor((secondstotalnum-hh*3600)/60)
+            let ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            timespenttotal = arrayfree[24].totalcol.split(':')
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            hh= Math.floor(secondstotalnum/3600)
+            mm= Math.floor((secondstotalnum-hh*3600)/60)
+            ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        setheatMapAverageadvisorTMEData(arrayfree)
+                
+        let mid = (rowmax/2);
+        let scale = 255 / (mid);
+        let n=0;
+        function gradient(num:string,key:string){
+            n++;
+            if(dateend*24<n){
+                if (key === "day30") n=0
+                return "FFFFFF"
+            }
+            let timespent = num.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            let number = ""
+            if ( seconds <= 0 ) {
+                return "00FF99";
+            }
+            else if ( seconds >= rowmax ) {
+                return "FF0099";
+            }
+            else if ( seconds < mid ) {
+                number = Math.imul(seconds, scale).toString(16);
+                return '00'.slice(number.length) + number +  "FF99" 
+            }
+            else {
+                number = Math.imul(255-(seconds-mid), scale).toString(16)
+                return  "FF" + '00'.slice(number.length) + number +"99"  
+            }
+        }
+
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key],key)
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
+                    
+                }
+                else{
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
+                }
+            },
+        }));
+        setheatMapAverageadvisorTMETitle([
+            {
+                Header: `Hora`,
+                accessor: "hournum",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initUserAverageReplyTimexFechaGrid(data:any) {
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let dateend = new Date(year, mes, 0).getDate()
+        let rowmax = 0;    
+        let arrayfree:any = [];
+        const LIMITHOUR = 24;
+        for(let i = 1; i <= LIMITHOUR+1; i++) {
+            const objectfree: Dictionary  = {
+                hour: i,
+                hournum: hoursProm[i - 1],
+            }
+            for(let j = 1; j <= dateend; j++) {
+                objectfree[`day${j}`] = "00:00:00";
+            }
+            objectfree[`totalcol`] = "00:00:00";
+            arrayfree.push(objectfree);
+        }
+        data.forEach((row:any)=>{
+            const day = new Date(row.fecha).getDate();
+            const hour = row.hora;
+            let timespent = row.useraveragereplytimexfecha.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            
+            arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.useraveragereplytimexfecha}) : x) 
+            rowmax = seconds>rowmax ? seconds:rowmax;
+            let i = 0;
+            arrayfree.forEach((x:any) => {
+                    i++;
+                    if (x.hournum === hour){
+                        let timespenttotal = x["totalcol"].split(':')
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let hh= Math.floor(secondstotalnum/3600)
+                        let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                        let ss= secondstotalnum-hh*3600-mm*60
+                        x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+                        
+                    }
+                }
+            )
+            let timespenttotal = arrayfree[24][`day${day}`].split(':')
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let hh= Math.floor(secondstotalnum/3600)
+            let mm= Math.floor((secondstotalnum-hh*3600)/60)
+            let ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            timespenttotal = arrayfree[24].totalcol.split(':')
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            hh= Math.floor(secondstotalnum/3600)
+            mm= Math.floor((secondstotalnum-hh*3600)/60)
+            ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        setuserAverageReplyTimexFechaData(arrayfree)
+                
+        let mid = (rowmax/2);
+        let scale = 255 / (mid);
+        let n=0;
+        function gradient(num:string,key:string){
+            n++;
+            if(dateend*24<n){
+                if (key === "day30") n=0
+                return "FFFFFF"
+            }
+            let timespent = num.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            let number = ""
+            if ( seconds <= 0 ) {
+                return "00FF99";
+            }
+            else if ( seconds >= rowmax ) {
+                return "FF0099";
+            }
+            else if ( seconds < mid ) {
+                number = Math.imul(seconds, scale).toString(16);
+                return '00'.slice(number.length) + number +  "FF99" 
+            }
+            else {
+                number = Math.imul(255-(seconds-mid), scale).toString(16)
+                return  "FF" + '00'.slice(number.length) + number +"99"  
+            }
+        }
+
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key],key)
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
+                    
+                }
+                else{
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
+                }
+            },
+        }));
+        setuserAverageReplyTimexFechaTitle([
+            {
+                Header: `Hora`,
+                accessor: "hournum",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initPersonAverageReplyTimexFechaGrid(data:any) {
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let dateend = new Date(year, mes, 0).getDate()
+        let rowmax = 0;    
+        let arrayfree:any = [];
+        const LIMITHOUR = 24;
+        for(let i = 1; i <= LIMITHOUR+1; i++) {
+            const objectfree: Dictionary  = {
+                hour: i,
+                hournum: hoursProm[i - 1],
+            }
+            for(let j = 1; j <= dateend; j++) {
+                objectfree[`day${j}`] = "00:00:00";
+            }
+            objectfree[`totalcol`] = "00:00:00";
+            arrayfree.push(objectfree);
+        }
+        data.forEach((row:any)=>{
+            const day = new Date(row.fecha).getDate();
+            const hour = row.hora;
+            let timespent = row.personaveragereplytimexfecha.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            
+            arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.personaveragereplytimexfecha}) : x) 
+            rowmax = seconds>rowmax ? seconds:rowmax;
+            let i = 0;
+            arrayfree.forEach((x:any) => {
+                    i++;
+                    if (x.hournum === hour){
+                        let timespenttotal = x["totalcol"].split(':')
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let hh= Math.floor(secondstotalnum/3600)
+                        let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                        let ss= secondstotalnum-hh*3600-mm*60
+                        x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+                        
+                    }
+                }
+            )
+            let timespenttotal = arrayfree[24][`day${day}`].split(':')
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let hh= Math.floor(secondstotalnum/3600)
+            let mm= Math.floor((secondstotalnum-hh*3600)/60)
+            let ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            timespenttotal = arrayfree[24].totalcol.split(':')
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            hh= Math.floor(secondstotalnum/3600)
+            mm= Math.floor((secondstotalnum-hh*3600)/60)
+            ss= secondstotalnum-hh*3600-mm*60
+            arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        setpersonAverageReplyTimexFechaData(arrayfree)
+                
+        let mid = (rowmax/2);
+        let scale = 255 / (mid);
+        let n=0;
+        function gradient(num:string,key:string){
+            n++;
+            if(dateend*24<n){
+                if (key === "day30") n=0
+                return "FFFFFF"
+            }
+            let timespent = num.split(':')
+            let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
+            let number = ""
+            if ( seconds <= 0 ) {
+                return "00FF99";
+            }
+            else if ( seconds >= rowmax ) {
+                return "FF0099";
+            }
+            else if ( seconds < mid ) {
+                number = Math.imul(seconds, scale).toString(16);
+                return '00'.slice(number.length) + number +  "FF99" 
+            }
+            else {
+                number = Math.imul(255-(seconds-mid), scale).toString(16)
+                return  "FF" + '00'.slice(number.length) + number +"99"  
+            }
+        }
+
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : "Promedio",
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key],key)
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
+                    
+                }
+                else{
+                    let timespenttotal = props.cell.row.original[key].split(':')
+                    let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
+                    let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
+                    let ss = timespenttotal[2]
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{`${hh}${mm}${ss}s`}</div>
+                }
+            },
+        }));
+        setpersonAverageReplyTimexFechaTitle([
             {
                 Header: `Hora`,
                 accessor: "hournum",
@@ -370,6 +726,45 @@ const MainHeatMap: React.FC = () => {
                     />
                 </div>:""
             }
+            {
+                heatMapAverageadvisorTMEData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={heatMapAverageadvisorTMETitle}
+                        titlemodule={t(langKeys.heatmapaverageadvisorTME)}
+                        data={heatMapAverageadvisorTMEData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                userAverageReplyTimexFechaData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={userAverageReplyTimexFechaTitle}
+                        titlemodule={t(langKeys.userAverageReplyTimexFecha)}
+                        data={userAverageReplyTimexFechaData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                personAverageReplyTimexFechaData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={personAverageReplyTimexFechaTitle}
+                        titlemodule={t(langKeys.personAverageReplyTimexFecha)}
+                        data={personAverageReplyTimexFechaData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
         </div>
     )
 }
@@ -377,48 +772,478 @@ const HeatMapAsesor: React.FC = () => {
     
     const { t } = useTranslation();
     const classes = useStyles();
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
     const [companydomain, setcompanydomain] = useState<any>([]);
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const [realizedsearch, setrealizedsearch] = useState(false);
+    const [advisersearch, setadvisersearch] = useState(false);
+    const [listadvisers, setlistadvisers] = useState<any>([]);
+    const [completadosxAsesorData, setCompletadosxAsesorData] = useState<any>([]);
+    const [abandonosxAsesorData, setabandonosxAsesorData] = useState<any>([]);
+    const [abandonosxAsesorTitle, setabandonosxAsesorTitle] = useState<any>([]);
+    const [tasaAbandonosxAsesorData, settasaAbandonosxAsesorData] = useState<any>([]);
+    const [tasaAbandonosxAsesorTitle, settasaAbandonosxAsesorTitle] = useState<any>([]);
+    const [efectividadxAsesorData, setefectividadxAsesorData] = useState<any>([]);
+    const [efectividadxAsesorTitle, setefectividadxAsesorTitle] = useState<any>([]);
+    const [ventasxAsesorData, setventasxAsesorData] = useState<any>([]);
+    const [ventasxAsesorTitle, setventasxAsesorTitle] = useState<any>([]);
+    const [completadosxAsesorTitle, setCompletadosxAsesorTitle] = useState<any>([]);
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
-    const mainData = useSelector(state => state.main.mainData);
+    //const mainData = useSelector(state => state.main.mainData);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const multiData = useSelector(state => state.main.multiData);
+    const [dataMainHeatMap, setdataMainHeatMap] = useState({
+        communicationchannel: "",
+        closedby: "ASESOR",
+        startdate: new Date(new Date().setDate(1)),
+        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+        company: ""
+    });
     useEffect(() => {
-        dispatch(getCollection(getValuesFromDomain("EMPRESA")))
-        //search()
+        setadvisersearch(true)
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomain("EMPRESA"),
+            getasesoresbyorgid()
+        ]))
+        search()
     }, [])
+    
     useEffect(() => {
-        if(!mainData.loading){
-            setcompanydomain(mainData.data)
+        if(!multiDataAux.loading && advisersearch){
+            setcompanydomain(multiDataAux.data[0]?.data||[])
+            setlistadvisers(multiDataAux.data[1]?.data||[])    
         }
-        console.log(mainData)
-    }, [mainData])
+    }, [multiDataAux,advisersearch])
+
+    useEffect(() => {
+
+        if(!multiData.loading && realizedsearch){
+            let mes = dataMainHeatMap.startdate?.getMonth()+1
+            let year = dataMainHeatMap.startdate?.getFullYear()
+            let dateend = new Date(year, mes, 0).getDate()
+            let arrayfree:any = []
+            listadvisers.forEach((row:any) => {
+                
+                const objectfree: Dictionary = {
+                    asesor: capitalize(row.userdesc),
+                    userid: row.userid,
+                }
+                for(let j = 1; j <= dateend; j++) {
+                    objectfree[`day${j}`] = 0;
+                }
+                objectfree[`totalcol`] = 0;
+                arrayfree.push(objectfree);
+            })
+            setrealizedsearch(false)
+            dispatch(showBackdrop(false))
+            initCompletadosxAsesorGrid(multiData.data[0].data,arrayfree)
+            initAbandonosxAsesorGrid(multiData.data[0].data,arrayfree)
+            initTasaAbandonosxAsesorGrid(multiData.data[0].data,arrayfree)
+            initVentasxAsesorGrid(multiData.data[0].data,arrayfree)            
+            initEfectividadxAsesorGrid(multiData.data[0].data,arrayfree)            
+        }
+    }, [multiData,realizedsearch])
+
+    function initCompletadosxAsesorGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+
+        const objectlast:any = { asesor: "TOTAL" , userid: 0};
+        for(let j = 1; j <= dateend; j++) {
+            objectlast[`day${j}`] = 0;
+        }
+        objectlast[`totalcol`] = 0;
+        arrayfree.push(objectlast)
+        
+        data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
+            const day = new Date(row.fecha).getDate();
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
+                ...x, 
+                [`day${day}`]: row.completadosxasesor,
+                [`totalcol`]: x.totalcol + row.completadosxasesor
+            }) : x) 
+            rowmax = row.completadosxasesor>rowmax ? row.completadosxasesor:rowmax;
+            arrayfree[listadvisers.length][`day${day}`] += row.completadosxasesor;
+            arrayfree[listadvisers.length][`totalcol`] += row.completadosxasesor;
+        })
+        
+        setCompletadosxAsesorData(arrayfree)
+
+        let mid = rowmax/2;
+        let scale = 255 / (mid);
+        let m=0;
+        
+        function gradient(num:number){
+            m++;
+            if ((listadvisers.length)*dateend<m){
+                return "00000000"
+            }
+            let number = "";
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key])
+                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    
+                }
+                else{
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
+                }
+            },
+        }));
+        arraytemplate.shift()
+        setCompletadosxAsesorTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initAbandonosxAsesorGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+
+        const objectlast:any = { asesor: "TOTAL" , userid: 0};
+        for(let j = 1; j <= dateend; j++) {
+            objectlast[`day${j}`] = 0;
+        }
+        objectlast[`totalcol`] = 0;
+        arrayfree.push(objectlast)
+        let listasesores = listadvisers.map((x:any) => x.userdesc);
+        data.filter((x:any) => listasesores.includes(x.asesor)).forEach((row:any) => {
+            const day = new Date(row.fecha).getDate();
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
+                ...x, 
+                [`day${day}`]: row.abandonosxasesor,
+                [`totalcol`]: x.totalcol + row.abandonosxasesor
+            }) : x) 
+            rowmax = row.abandonosxasesor>rowmax ? row.abandonosxasesor:rowmax;
+            arrayfree[listadvisers.length][`day${day}`] += row.abandonosxasesor;
+            arrayfree[listadvisers.length][`totalcol`] += row.abandonosxasesor;
+        })
+        console.log(arrayfree)
+        console.log(listadvisers)
+        console.log(data)
+        setabandonosxAsesorData(arrayfree)
+
+        let mid = rowmax/2;
+        let scale = 255 / (mid);
+        let m=0;
+        
+        function gradient(num:number){
+            m++;
+            if ((listadvisers.length)*dateend<m){
+                return "00000000"
+            }
+            let number = "";
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key])
+                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    
+                }
+                else{
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
+                }
+            },
+        }));
+        arraytemplate.shift()
+        setabandonosxAsesorTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initTasaAbandonosxAsesorGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let rowmax = 100;
+
+        data.forEach((row:any)=>{
+            const day = new Date(row.fecha).getDate();
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: row.tasaabandonosxasesor}) : x) 
+        })
+        
+        let mid = 50;
+        let scale = 255 / (50);
+        settasaAbandonosxAsesorData(arrayfree)
+        
+        function gradient(porcentage:number){
+            let number = "";
+            let num = porcentage*100;
+
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                let color=gradient(props.cell.row.original[key])
+                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
+            },
+        }));
+        arraytemplate.shift()
+        arraytemplate.pop()
+        settasaAbandonosxAsesorTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initVentasxAsesorGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+
+        const objectlast:any = { asesor: "TOTAL" , userid: 0};
+        for(let j = 1; j <= dateend; j++) {
+            objectlast[`day${j}`] = 0;
+        }
+        objectlast[`totalcol`] = 0;
+        arrayfree.push(objectlast)
+        
+        data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
+            const day = new Date(row.fecha).getDate();
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
+                ...x, 
+                [`day${day}`]: row.ventasxasesor,
+                [`totalcol`]: x.totalcol + row.ventasxasesor
+            }) : x) 
+            rowmax = row.ventasxasesor>rowmax ? row.ventasxasesor:rowmax;
+            arrayfree[listadvisers.length][`day${day}`] += row.ventasxasesor;
+            arrayfree[listadvisers.length][`totalcol`] += row.ventasxasesor;
+        })
+        
+        setventasxAsesorData(arrayfree)
+
+        let mid = rowmax/2;
+        let scale = 255 / (mid);
+        let m=0;
+        
+        function gradient(num:number){
+            m++;
+            if ((listadvisers.length)*dateend<m){
+                return "00000000"
+            }
+            let number = "";
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                if(key!=="totalcol"){
+                    let color=gradient(props.cell.row.original[key])
+                    
+                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                    
+                }
+                else{
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.cell.row.original[key])}</div>
+                }
+            },
+        }));
+        arraytemplate.shift()
+        setventasxAsesorTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function initEfectividadxAsesorGrid(data:any,arraything:any){
+        let arrayfree: any = [...arraything];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let rowmax = 100;
+
+        data.forEach((row:any)=>{
+            let efectividad = row.efectividadxasesor == null? 0: row.efectividadxasesor;
+            const day = new Date(row.fecha).getDate();
+            const hour = row.userid;
+            arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: efectividad}) : x) 
+        })
+        
+        let mid = 50;
+        let scale = 255 / (50);
+        setefectividadxAsesorData(arrayfree)
+        
+        function gradient(porcentage:number){
+            let number = "";
+            let num = porcentage*100;
+
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/asesor/gi.test(key)).map(([key, value]) => ({
+            Header: key.includes('day') ? `${key.split('day')[1]}/${mes}` : (key==="asesor" ? "ASESOR" : "TOTAL"),
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                let color=gradient(props.cell.row.original[key])
+                let number = `${(parseInt(props.cell.row.original[key])*100).toFixed(0)} %`
+                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{number}</div>
+            },
+        }));
+        arraytemplate.shift()
+        arraytemplate.pop()
+        setefectividadxAsesorTitle([
+            {
+                Header: `Adviser`,
+                accessor: "asesor",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
+    function search(){
+        setCompletadosxAsesorData([])
+        setabandonosxAsesorData([])
+        settasaAbandonosxAsesorData([])
+        setventasxAsesorData([])
+        setefectividadxAsesorData([])
+        setrealizedsearch(true)
+        dispatch(showBackdrop(true))
+        dispatch(getMultiCollection([
+            heatmappage2(dataMainHeatMap)
+        ]));
+    }
+    function handleDateChange(e: any){
+        let datetochange = new Date(e+"-02")
+        let mes = datetochange?.getMonth()+1
+        let year = datetochange?.getFullYear()
+        let startdate = new Date(year, mes-1, 1)
+        let enddate = new Date(year, mes, 0)
+        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+        setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+    }
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
-                <div style={{flex:1, paddingRight: "10px",}}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                        >
-                            {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
+            <div style={{flex:1, paddingRight: "10px",}}>
+                    <TextField
+                        id="date"
+                        className={classes.fieldsfilter}
+                        type="month"
+                        variant="outlined"
+                        onChange={(e)=>handleDateChange(e.target.value)}
+                        value={dataMainHeatMap.datetoshow}
+                        size="small"
+                    />
                 </div>
-                <div style={{flex:1, paddingRight: 10}}>
+                <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
                         label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        //onChange={(value) => { setsearchfields(p => ({ ...p, queue: value.map((o: Dictionary) => o.domainvalue).join() })) }}
-                        //valueDefault={searchfields.queue}
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, closedby: value.map((o: Dictionary) => o.domainvalue).join() })) }}
+                        valueDefault={dataMainHeatMap.closedby}
                         data={dataAdvisor}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
@@ -429,8 +1254,8 @@ const HeatMapAsesor: React.FC = () => {
                         label={t(langKeys.company)}
                         className={classes.fieldsfilter}
                         variant="outlined"
-                        //onChange={(value) => { setsearchfields(p => ({ ...p, queue: value.map((o: Dictionary) => o.domainvalue).join() })) }}
-                        //valueDefault={searchfields.queue}
+                        onChange={(value) => { setdataMainHeatMap(p => ({ ...p, company: value.map((o: Dictionary) => o.domainvalue).join() })) }}
+                        valueDefault={dataMainHeatMap.company}
                         data={companydomain}
                         optionDesc="domaindesc"
                         optionValue="domainvalue"
@@ -441,11 +1266,76 @@ const HeatMapAsesor: React.FC = () => {
                         variant="contained"
                         color="primary"
                         style={{ width: "100%", backgroundColor: "#007bff" }}
-                        //onClick={() => setOpenDialog(true)}
+                        onClick={() => search()}
                     >{t(langKeys.search)}
                     </Button>
                 </div>
             </div>
+            {
+                completadosxAsesorData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={completadosxAsesorTitle}
+                        titlemodule={t(langKeys.completadosxAsesor)}
+                        data={completadosxAsesorData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                abandonosxAsesorData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={abandonosxAsesorTitle}
+                        titlemodule={t(langKeys.abandonosxAsesor)}
+                        data={abandonosxAsesorData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                tasaAbandonosxAsesorData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={tasaAbandonosxAsesorTitle}
+                        titlemodule={t(langKeys.tasaAbandonosxAsesor)}
+                        data={tasaAbandonosxAsesorData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                ventasxAsesorData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={ventasxAsesorTitle}
+                        titlemodule={t(langKeys.ventasxAsesor)}
+                        data={ventasxAsesorData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
+            {
+                efectividadxAsesorData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={efectividadxAsesorTitle}
+                        titlemodule={t(langKeys.efectividadxAsesor)}
+                        data={efectividadxAsesorData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
         </div>
     )
 }
@@ -453,37 +1343,149 @@ const HeatMapTicket: React.FC = () => {
     
     const { t } = useTranslation();
     const classes = useStyles();
-    const [dateRangeCreateDate, setDateRangeCreateDate] = useState<Range>(initialRange);
-    const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
+    const dispatch = useDispatch();
+    const multiData = useSelector(state => state.main.multiData);
+    const [realizedsearch, setrealizedsearch] = useState(false);  
+    const [asesoresConectadosData, setasesoresConectadosData] = useState<any>([]);  
+    const [asesoresConectadosTitle, setasesoresConectadosTitle] = useState<any>([]);  
+    const [dataMainHeatMap, setdataMainHeatMap] = useState({
+        communicationchannel: "",
+        startdate: new Date(new Date().setDate(1)),
+        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+    });
+    useEffect(() => {
+        search()
+    }, [])
+    useEffect(() => {
+        if(!multiData.loading && realizedsearch){
+            setrealizedsearch(false)
+            dispatch(showBackdrop(false))
+            console.log(multiData)
+            initAsesoresConectadosGrid(multiData.data[0].data)
+        }
+    }, [multiData,realizedsearch])
+    function search(){
+        
+        setasesoresConectadosData([])
+        setrealizedsearch(true)
+        dispatch(showBackdrop(true))
+        dispatch(getMultiCollection([
+            heatmappage3(dataMainHeatMap)
+        ]));
+    }
+    function handleDateChange(e: any){
+        let datetochange = new Date(e+"-02")
+        let mes = datetochange?.getMonth()+1
+        let year = datetochange?.getFullYear()
+        let startdate = new Date(year, mes-1, 1)
+        let enddate = new Date(year, mes, 0)
+        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+        setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
+    }
+    function initAsesoresConectadosGrid(data:any){
+        let arrayfree: any = [];
+        let mes = dataMainHeatMap.startdate?.getMonth()+1
+        let year = dataMainHeatMap.startdate?.getFullYear()
+        let rowmax = 0;
+        let dateend = new Date(year, mes, 0).getDate()
+
+        const LIMITHOUR = 24;
+        for(let i = 1; i <= LIMITHOUR; i++) {
+            const objectfree:Dictionary = {
+                hour: i,
+                hournum: hours[i - 1],
+            }
+            for(let j = 1; j <= dateend; j++) {
+                objectfree[`day${j}`] = 0;
+            }
+            arrayfree.push(objectfree);
+        }
+
+        data.forEach((row:any)=>{
+            const day = new Date(row.fecha).getDate();
+            const hour = row.hora;
+            arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.value}) : x) 
+            rowmax = row.value>rowmax ? row.value:rowmax;
+        })
+
+        let mid = (rowmax/2);
+        let scale = 255 / (mid);
+
+        function gradient(num:number){
+            let number = "";
+            if ( num <= 0 ) {
+                return "00FF0099";
+            }
+            else if ( num >= rowmax ) {
+                return "FF000099";
+            }
+            else if ( num <= mid ) {
+                number=Math.imul(num, scale).toString(16)
+                return "00".slice(number.length) + number +  "FF0099" 
+            }
+            else {
+                number= Math.imul((255-(num-mid)),scale).toString(16)
+                return  "FF" +"00".slice(number.length) + number +"0099"  
+            }
+        }
+        
+        setasesoresConectadosData(arrayfree)
+        const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
+            Header: `${key.split('day')[1]}/${mes}`,
+            accessor: key,
+            NoFilter: true,
+            Cell: (props: any) => {
+                let color=gradient(props.cell.row.original[key])
+                console.log(color)
+                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+            },
+        }));
+        setasesoresConectadosTitle([
+            {
+                Header: `Hora`,
+                accessor: "hournum",
+                NoFilter: true,
+            },
+            ...arraytemplate
+        ])
+    }
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
                 <div style={{flex:1, paddingRight: "10px",}}>
-                    <DateRangePicker
-                        open={openDateRangeCreateDateModal}
-                        setOpen={setOpenDateRangeCreateDateModal}
-                        range={dateRangeCreateDate}
-                        onSelect={setDateRangeCreateDate}
-                    >
-                        <Button
-                            className={classes.itemDate}
-                            startIcon={<CalendarIcon />}
-                            onClick={() => setOpenDateRangeCreateDateModal(!openDateRangeCreateDateModal)}
-                        >
-                            {format(dateRangeCreateDate.startDate!) + " - " + format(dateRangeCreateDate.endDate!)}
-                        </Button>
-                    </DateRangePicker>
+                    <TextField
+                        id="date"
+                        className={classes.fieldsfilter}
+                        type="month"
+                        variant="outlined"
+                        onChange={(e)=>handleDateChange(e.target.value)}
+                        value={dataMainHeatMap.datetoshow}
+                        size="small"
+                    />
                 </div>
                 <div style={{flex:1, paddingLeft: 20}}>
                     <Button
                         variant="contained"
                         color="primary"
                         style={{ width: "100%", backgroundColor: "#007bff" }}
-                        //onClick={() => setOpenDialog(true)}
+                        onClick={() => search()}
                     >{t(langKeys.search)}
                     </Button>
                 </div>
             </div>
+            {
+                asesoresConectadosData.length?
+                <div style={{padding:10}}>
+                    <TableZyx
+                        columns={asesoresConectadosTitle}
+                        data={asesoresConectadosData}
+                        download={true}
+                        pageSizeDefault={50}
+                        filterGeneral={false}
+                    />
+                </div>:""
+            }
         </div>
     )
 }
