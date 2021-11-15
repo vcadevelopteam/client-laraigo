@@ -981,9 +981,10 @@ interface TabPanelLogNoteProps {
     notes: ICrmLeadNote[];
     leadId: number;
     onSubmit?: (newNote: ICrmLeadNoteSave) => void;
+    AdditionalButtons?: () => JSX.Element |null;
 }
 
-export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit }) => {
+export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, readOnly, leadId, onSubmit, AdditionalButtons }) => {
     const classes = useTabPanelLogNoteStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -1077,6 +1078,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                             {loading && <CircularProgress style={{ height: 28, width: 28, marginRight: '0.75em' }} />}
                             Log
                         </Button>
+                        {AdditionalButtons && <AdditionalButtons />}
                     </div>
                 </div>
             )}
@@ -1326,7 +1328,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
-const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
+export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
