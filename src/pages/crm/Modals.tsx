@@ -56,7 +56,6 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
             leadid={gridModalProps.payload?.leadid}
             onSubmit={submitActivitiesModal}
         />
-
     )
 }
 
@@ -67,13 +66,13 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal }
 
     useEffect(() => {
         if (gridModalProps.name === 'NOTE' && gridModalProps.open === true) {
-            // dispatch(getAdvisers(adviserSel()));
+
         }
     }, [dispatch, gridModalProps])
 
     const submitNotesModal = (data: any) => {
         dispatch(saveLeadLogNote(leadLogNotesIns(data)));
-        setGridModal({ name: '', open: false, payload: null })
+        setGridModal({ name: '', open: false, payload: null });
     }
     
     return (
@@ -83,8 +82,8 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal }
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
         >
-            <Box className={modalClasses.root}>
-                <TitleDetail title={t(langKeys.scheduleActivity)} />
+            <Box className={modalClasses.root} style={{ height: '480px' }}>
+                <TitleDetail title={t(langKeys.logNote_plural)} />
                 <div style={{ height: '1em' }} />
                 <TabPanelLogNote
                     readOnly={false}
