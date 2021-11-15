@@ -91,25 +91,25 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
-const variables = ['firstname','lastname','fullname','email','phone','documenttype','documentnumber','dateactivity','leadactivity','datenote','note','custom']
+const variables = ['firstname','lastname','displayname','email','phone','documenttype','documentnumber','dateactivity','leadactivity','datenote','note','custom']
 
 const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
-    
-    // const ticketSelected = useSelector(state => state.inbox.ticketSelected);
-    // const person = useSelector(state => state.inbox.person);
     const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
-    const [bodyCleaned, setBodyCleaned] = useState('');
+    // const [bodyCleaned, setBodyCleaned] = useState('');
     const domains = useSelector(state => state.person.editableDomains);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
+            communicationchannelid: 0,
+            communicationchanneltype: '',
             variables: []
         }
     });
@@ -154,7 +154,9 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
 
     useEffect(() => {
         if (!domains.error && !domains.loading) {
-            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || [])
+            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || []);
+            console.log(domains?.value?.channels, type, type === "HSM" ? "WHA" : type, domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)))
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
     }, [domains, type])
 
@@ -163,7 +165,9 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             setBodyMessage('')
             reset({
                 hsmtemplateid: 0,
-                variables: []
+                variables: [],
+                communicationchannelid: 0,
+                communicationchanneltype: ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
         }
@@ -175,7 +179,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             setValue('hsmtemplateid', value ? value.id : 0);
 
             const wordList = value.body?.split(/[\s,.;()!?¡]+/);
-            setBodyCleaned(value.body);
+            // setBodyCleaned(value.body);
             const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
 
@@ -200,36 +204,40 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         //     return body
         // })
 
-        const messagedata = persons.reduce((pc: Dictionary[], p: Dictionary) => ([
-            ...pc,
-            {
-                phone: p.phone,
-                hsmtemplateid: data.hsmtemplateid,
-                body: bodyCleaned,
-                parameters: data.variables.reduce((vc: any[], v: any) => ([
-                    ...vc,
-                    {
-                        type: "text",
-                        text: v.variable !== 'custom' ? p[v.variable] : v.text,
-                        name: v.variable
-                    }
-                ]),[])
-            }
-        ]), [])
-
-        const bb = {
+        // const messagedata = persons.reduce((pc: Dictionary[], p: Dictionary) => ([
+        //     ...pc,
+        //     {
+        //         phone: p.phone,
+        //         hsmtemplateid: data.hsmtemplateid,
+        //         body: bodyCleaned,
+        //         parameters: data.variables.reduce((vc: any[], v: any) => ([
+        //             ...vc,
+        //             {
+        //                 type: "text",
+        //                 text: v.variable !== 'custom' ? p[v.variable] : v.text,
+        //                 name: v.name
+        //             }
+        //         ]),[])
+        //     }
+        // ]), [])
+        console.log("persons", persons)
+        const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
-            // communicationchannelid: ticketSelected?.communicationchannelid!!,
-            // platformtype: ticketSelected?.communicationchannelsite!!,
-            // communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            listmembers: [{
-                // phone: person.data?.phone!! + "",
-                // firstname: person.data?.firstname + "",
-                // lastname: person.data?.lastname + "",
-                parameters: data.variables
-            }]
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.communicationchanneltype,
+            listmembers: persons.map(person => ({
+                phone: person.phone || "",
+                firstname: person.firstname || "",
+                lastname: person.lastname,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
+            }))
         }
-        // dispatch(sendHSM(bb))
+        dispatch(sendHSM(messagedata))
         dispatch(showBackdrop(true));
         setWaitClose(true)
     });
@@ -244,6 +252,21 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.channel)}
+                    className="col-12"
+                    valueDefault={getValues('communicationchannelid')}
+                    onChange={value => {
+                        setValue('communicationchannelid', value.communicationchannelid);
+                        setValue('communicationchanneltype', value.type);
+                    }}
+                    error={errors?.communicationchannelid?.message}
+                    data={channelList}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
+                />
+            </div>
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}

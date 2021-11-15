@@ -230,6 +230,7 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const channelTypes = (action.payload.data as any[])[8].data as IDomain[] | null;
     const agents = (action.payload.data as any[])[9].data as Dictionary[] | null;
     const templates = (action.payload.data as any[])[10].data as Dictionary[] | null;
+    const channels = (action.payload.data as any[])[11].data as Dictionary[] | null;
 
     return {
         ...state,
@@ -245,7 +246,9 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 groups: groups || [],
                 personGenTypes: personGenTypes || [],
                 channelTypes: channelTypes || [],
-                templates: templates || []
+                templates: templates || [],
+                agents: agents || [],
+                channels: channels || [],
             },
             loading: false,
             error: false,
