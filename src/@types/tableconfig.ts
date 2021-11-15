@@ -40,12 +40,14 @@ export interface TableConfig {
     allRowsSelected?: boolean;
     setAllRowsSelected?: (value: boolean) => void;
     autotrigger?: boolean;
+    onClickRow?: (param?: any) => void
 }
 
 export interface Pagination {
     sorts: Dictionary,
     filters: Dictionary,
-    pageIndex: number
+    pageIndex: number,
+    trigger?: boolean
 }
 
 export interface IFetchData {

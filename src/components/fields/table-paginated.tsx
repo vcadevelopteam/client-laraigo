@@ -285,6 +285,7 @@ const TableZyx = React.memo(({
     selectionFilter,
     initialSelectedRows,
     setSelectedRows,
+    onClickRow
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -382,11 +383,11 @@ const TableZyx = React.memo(({
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             const pageIndex = !page ? prev.pageIndex : page;
-            return { ...prev, filters, pageIndex: pageIndex }
+            return { ...prev, filters, pageIndex: pageIndex, trigger: true }
         });
     };
     const setPageIndex = (page: number) => {
-        setPagination(prev => ({ ...prev, pageIndex: page }));
+        setPagination(prev => ({ ...prev, pageIndex: page, trigger: true }));
     }
     const handleClickSort = (column: string) => {
         const newsorts: any = {
@@ -405,11 +406,11 @@ const TableZyx = React.memo(({
             newsorts[column] = currentsort
         }
 
-        setPagination(prev => ({ ...prev, sorts: newsorts }))
+        setPagination(prev => ({ ...prev, sorts: newsorts, trigger: true }))
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(0)),
+        startDate: new Date(new Date().setDate(1)),
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     });
@@ -423,7 +424,11 @@ const TableZyx = React.memo(({
     }
 
     useEffect(() => {
-        triggerSearch && triggertmp();
+        if (pagination?.trigger) {
+            triggertmp()
+        } else {
+            triggerSearch && triggertmp();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
 
@@ -590,7 +595,11 @@ const TableZyx = React.memo(({
                                 page.map((row: any) => {
                                     prepareRow(row);
                                     return (
-                                        <TableRow {...row.getRowProps()} hover>
+                                        <TableRow 
+                                            {...row.getRowProps()} 
+                                            hover
+                                            style={{cursor: onClickRow ? 'pointer' : 'default'}}
+                                        >
                                             {row.cells.map((cell: any, i: number) =>
                                                 <TableCell
                                                     {...cell.getCellProps({
@@ -602,6 +611,7 @@ const TableZyx = React.memo(({
                                                             whiteSpace: 'nowrap',
                                                         },
                                                     })}
+                                                    onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                 >
                                                     {headerGroups[0].headers[i].isComponent ?
                                                         cell.render('Cell')
