@@ -108,6 +108,8 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
+            communicationchannelid: 0,
+            communicationchanneltype: '',
             variables: []
         }
     });
@@ -182,6 +184,8 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             setValue('variables', []);
             setBodyMessage('');
             setValue('hsmtemplateid', 0);
+            setValue('communicationchannelid', 0);
+            setValue('communicationchanneltype', '');
         }
     }
 
@@ -195,7 +199,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
             // communicationchannelid: ticketSelected?.communicationchannelid!!,
-            // platformtype: ticketSelected?.communicationchannelsite!!,
+            // platformtype: ticketSelected?.communicationchanneltype!!,
             // communicationchanneltype: ticketSelected?.communicationchanneltype!!,
             listmembers: [{
                 // phone: person.data?.phone!! + "",

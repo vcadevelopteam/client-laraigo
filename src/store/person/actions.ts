@@ -1,5 +1,5 @@
 import { IActionCall, IRequestBody, IRequestBodyPaginated, ITransaction } from "@types";
-import { getValuesFromDomain, adviserSel, getMessageTemplateSel } from "common/helpers";
+import { getValuesFromDomain, adviserSel, getMessageTemplateSel, getCommChannelLst } from "common/helpers";
 import { CommonService, PersonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -105,6 +105,7 @@ export const getDomainsByTypename = (): IActionCall => ({
         getValuesFromDomain("TIPOCANAL"),
         adviserSel(),
         getMessageTemplateSel(0),
+        getCommChannelLst(),
     ]),
     types: {
         loading: actionTypes.GET_DOMAINS_BY_TYPENAME,

@@ -19,4 +19,5 @@ export interface IPersonDomains {
     channelTypes: IDomain[];
     agents?: Dictionary[];
     templates?: Dictionary[];
+    channels?: Dictionary[];
 }
