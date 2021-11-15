@@ -427,7 +427,6 @@ const MainHeatMap: React.FC = () => {
         }));
         setheatMapAverageadvisorTMETitle([
             {
-<<<<<<< HEAD
                 Header: `Hora`,
                 accessor: "hournum",
                 NoFilter: true,
@@ -446,19 +445,6 @@ const MainHeatMap: React.FC = () => {
             const objectfree: Dictionary  = {
                 hour: i,
                 hournum: hoursProm[i - 1],
-=======
-                averageHeatMapTMOData.length &&
-                <div style={{padding:10}}>
-                    <TableZyx
-                        columns={averageHeatMapTMOTitle}
-                        titlemodule={t(langKeys.averageheatmapTMOdata)}
-                        data={averageHeatMapTMOData}
-                        download={true}
-                        pageSizeDefault={50}
-                        filterGeneral={false}
-                    />
-                </div>
->>>>>>> 24fadfb96f23a5c93e449d42cd5d04bad13de887
             }
             for(let j = 1; j <= dateend; j++) {
                 objectfree[`day${j}`] = "00:00:00";
