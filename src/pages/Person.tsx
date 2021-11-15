@@ -91,6 +91,8 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
+const variables = ['firstname','lastname','fullname','email','phone','documenttype','documentnumber','dateactivity','leadactivity','datenote','note','custom']
+
 const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
@@ -104,7 +106,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     const [bodyCleaned, setBodyCleaned] = useState('');
     const domains = useSelector(state => state.person.editableDomains);
 
-    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+    const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
             hsmtemplateid: 0,
             observation: '',
@@ -186,12 +188,35 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     }
 
     const onSubmit = handleSubmit((data) => {
-        setBodyCleaned(body => {
-            data.variables.forEach((x: Dictionary) => {
-                body = body.replace(`{{${x.name}}}`, x.text)
-            })
-            return body
-        })
+        // setBodyCleaned(body => {
+        //     data.variables.forEach((x: Dictionary) => {
+        //         if (x.text !== 'custom') {
+        //             body = body.replace(`{{${x.name}}}`, `{{${x.variable}}}`)
+        //         }
+        //         else {
+        //             body = body.replace(`{{${x.name}}}`, x.text)
+        //         }
+        //     })
+        //     return body
+        // })
+
+        const messagedata = persons.reduce((pc: Dictionary[], p: Dictionary) => ([
+            ...pc,
+            {
+                phone: p.phone,
+                hsmtemplateid: data.hsmtemplateid,
+                body: bodyCleaned,
+                parameters: data.variables.reduce((vc: any[], v: any) => ([
+                    ...vc,
+                    {
+                        type: "text",
+                        text: v.variable !== 'custom' ? p[v.variable] : v.text,
+                        name: v.variable
+                    }
+                ]),[])
+            }
+        ]), [])
+
         const bb = {
             hsmtemplateid: data.hsmtemplateid,
             // communicationchannelid: ticketSelected?.communicationchannelid!!,
@@ -237,9 +262,30 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <FieldEditArray
-                        key={item.id}
+                    <>
+                    <FieldSelect
+                        key={"var_" + item.id}
+                        fregister={{
+                            ...register(`variables.${i}.variable`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
                         label={item.name}
+                        valueDefault={getValues(`variables.${i}.variable`)}
+                        onChange={(value) => {
+                            setValue(`variables.${i}.variable`, value.key)
+                            trigger(`variables.${i}.variable`)
+                        }}
+                        error={errors?.variables?.[i]?.text?.message}
+                        data={variables.map(v => ({key: v}))}
+                        uset={true}
+                        prefixTranslation=""
+                        optionDesc="key"
+                        optionValue="key"
+                    />
+                    {getValues(`variables.${i}.variable`) === 'custom' &&
+                    <FieldEditArray
+                        key={"custom_" + item.id}
                         fregister={{
                             ...register(`variables.${i}.text`, {
                                 validate: (value: any) => (value && value.length) || t(langKeys.field_required)
@@ -249,6 +295,8 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
                         error={errors?.variables?.[i]?.text?.message}
                         onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
                     />
+                    }
+                    </>
                 ))}
             </div>
         </DialogZyx>)
