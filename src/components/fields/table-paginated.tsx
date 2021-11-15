@@ -166,6 +166,16 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleClickItemMenu = (op: any) => {
         setAnchorEl(null);
         setoperator(op)
+        if (type === 'boolean') {
+            setValue(op);
+            setFilters({
+                ...filters,
+                [header]: {
+                    value: op,
+                    operator: op
+                },
+            }, 0)
+        }
     };
     const handleClickMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
