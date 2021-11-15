@@ -33,6 +33,7 @@ export const langKeys = {
     heatmapasesor: "heatmapasesor",
     heatmapticket: "heatmapticket",
     brandname: "brandname",
+    averageheatmapTMOdata: "averageheatmapTMOdata",
     brandaddress: "brandaddress",
     industry_education: "industry_education",
     industry_institution: "industry_institution",
