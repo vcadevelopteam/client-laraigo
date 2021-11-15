@@ -25,7 +25,7 @@ import NoteIcon from '@material-ui/icons/Note';
 import ChatIcon from '@material-ui/icons/Chat';
 import EmailIcon from '@material-ui/icons/Email';
 import WhatsAppIcon from '@material-ui/icons/WhatsApp';
-import { NewActivityModal, NewNoteModal } from "./Modals";
+import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 
 interface dataBackend {
   columnid: number,
@@ -463,10 +463,10 @@ const CRM: FC = () => {
                   aria-controls="long-menu"
                   aria-haspopup="true"
                   size="small"
-                  onClick={() => console.log(row)}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
                 >
-                  <ChatIcon
-                    titleAccess={t(langKeys.message)}
+                  <WhatsAppIcon
+                    titleAccess="Whatsapp"
                     style={{ color: '#7721AD' }}
                   />
                 </IconButton>
@@ -475,7 +475,7 @@ const CRM: FC = () => {
                   aria-controls="long-menu"
                   aria-haspopup="true"
                   size="small"
-                  onClick={() => console.log(row)}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
                 >
                   <EmailIcon
                     titleAccess={t(langKeys.email)}
@@ -487,10 +487,10 @@ const CRM: FC = () => {
                   aria-controls="long-menu"
                   aria-haspopup="true"
                   size="small"
-                  onClick={() => console.log(row)}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
                 >
-                  <WhatsAppIcon
-                    titleAccess="Whatsapp"
+                  <ChatIcon
+                    titleAccess={t(langKeys.message)}
                     style={{ color: '#7721AD' }}
                   />
                 </IconButton>
@@ -844,6 +844,10 @@ const CRM: FC = () => {
             setGridModal={setGridModal}
           />
           <NewNoteModal
+            gridModalProps={gridModal}
+            setGridModal={setGridModal}
+          />
+          <DialogSendTemplate
             gridModalProps={gridModal}
             setGridModal={setGridModal}
           />

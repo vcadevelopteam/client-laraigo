@@ -1,7 +1,7 @@
 import { IActionCall, IAgent, IInteraction, ITicket, ISendHSM, ICloseTicketsParams, IMassiveCloseTicketsParams, IReplyTicketParams, INewMessageParams, IReassignicketParams, IDeleteTicketParams, IPerson } from "@types";
 import { CommonService, InboxService } from "network";
 import actionTypes from "./actionTypes";
-import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2 } from 'common/helpers';
+import { getUsersBySupervisor, getTicketsByFilter, getBlocksUserFromChatfow, getConfigurationVariables, getTickets as getTicketRequestBody, getInteractionsByConversation, getInfoPerson, getTicketsByPerson, getClassificationLevel2, getCommChannelLst, getMessageTemplateSel } from 'common/helpers';
 
 export const getAgents = (): IActionCall => ({
     callAPI: () => CommonService.main(getUsersBySupervisor()),
@@ -154,6 +154,20 @@ export const sendHSM = (params: ISendHSM): IActionCall => ({
 
 export const resetSendHSM = (): IActionCall => ({ type: actionTypes.SEND_HSM_RESET });
 
+export const getDataForOutbound = (): IActionCall => ({
+    callAPI: async () => CommonService.multiMain([
+        getCommChannelLst(),
+        getMessageTemplateSel(0)
+    ]),
+    types: {
+        loading: actionTypes.GET_DATA_FOR_OUTBOUND,
+        failure: actionTypes.GET_DATA_FOR_OUTBOUND_FAILURE,
+        success: actionTypes.GET_DATA_FOR_OUTBOUND_SUCCESS,
+    },
+    type: null
+})
+
+export const resetGetDataForOutbount = () => ({type: actionTypes.GET_DATA_FOR_OUTBOUND_RESET });
 
 
 

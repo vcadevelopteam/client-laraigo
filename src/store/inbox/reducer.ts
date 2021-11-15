@@ -1,5 +1,5 @@
-import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary } from "@types";
-import { createReducer, initialListPaginatedState } from "common/helpers";
+import { IListStatePaginated, ITicket, IGroupInteraction, IPerson, IAgent, Dictionary, IObjectState } from "@types";
+import { createReducer, initialListPaginatedState, initialObjectState } from "common/helpers";
 import * as caseFunctions from './caseFunctions';
 import actionTypes from "./actionTypes";
 
@@ -49,6 +49,7 @@ export interface IState {
     triggerNewMessageClient: boolean;
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
+    outboundData: IObjectState<Dictionary>;
 }
 
 export const initialState: IState = {
@@ -79,6 +80,7 @@ export const initialState: IState = {
     showGoToBottom: false,
     triggerNewMessageClient: false,
     isFiltering: false,
+    outboundData: initialObjectState
 };
 
 export default createReducer<IState>(initialState, {
@@ -159,6 +161,13 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SEND_HSM_SUCCESS]: caseFunctions.sendHSMSuccess,
     [actionTypes.SEND_HSM_FAILURE]: caseFunctions.sendHSMFailure,
     [actionTypes.SEND_HSM_RESET]: caseFunctions.sendHSMReset,
+
+    
+
+    [actionTypes.GET_DATA_FOR_OUTBOUND]: caseFunctions.getDataForOutbound,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_SUCCESS]: caseFunctions.getDataForOutboundSuccess,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_FAILURE]: caseFunctions.getDataForOutboundFailure,
+    [actionTypes.GET_DATA_FOR_OUTBOUND_RESET]: caseFunctions.getDataForOutboundReset,
 
 
     [actionTypes.REASSIGN_TICKET]: caseFunctions.reassignTicket,

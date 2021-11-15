@@ -1304,6 +1304,16 @@ export const langKeys = {
     app_ia: "app_ia",
     app_privacy: "app_privacy",
 
+    lead_activitydate: 'lead_activitydate',
+    lead_activitydescription: 'lead_activitydescription',
+    lead_asesorname: 'lead_asesorname',
+    lead_contact_name: 'lead_contact_name',
+    lead_email: 'lead_email',
+    lead_notedate: 'lead_notedate',
+    lead_notedescription: 'lead_notedescription',
+    lead_phone: 'lead_phone',
+    lead_custom: 'lead_custom',
+
     formMandatoryFields: 'formMandatoryFields',
     newLead: 'newLead',
     leadDetail: 'leadDetail',

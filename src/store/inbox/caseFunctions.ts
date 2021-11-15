@@ -1,4 +1,4 @@
-import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams } from "@types";
+import { IAction, IInteraction, IGroupInteraction, ITicket, INewMessageParams, IDeleteTicketParams, IConnectAgentParams, Dictionary } from "@types";
 import { initialState, IState } from "./reducer";
 import { toTime24HR, convertLocalDate } from 'common/helpers';
 
@@ -813,6 +813,45 @@ export const sendHSMReset = (state: IState): IState => ({
 });
 
 
+
+export const getDataForOutbound = (state: IState): IState => ({
+    ...state,
+    outboundData: { ...state.outboundData, loading: true },
+});
+
+export const getDataForOutboundSuccess = (state: IState, action: IAction): IState => {
+    const channels = (action.payload.data as any[])[0].data as Dictionary[] | null;
+    const templates = (action.payload.data as any[])[1].data as Dictionary[] | null;
+
+    return {
+        ...state,
+        outboundData: {
+            ...state.outboundData,
+            value: {
+                channels: channels || [],
+                templates: templates || [],
+            },
+            loading: false,
+            error: false,
+        },
+    };
+};
+
+export const getDataForOutboundFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    outboundData: {
+        ...state.outboundData,
+        error: true,
+        loading: false,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    },
+});
+
+export const getDataForOutboundReset = (state: IState): IState => ({
+    ...state,
+    outboundData: initialState.outboundData,
+});
 
 
 

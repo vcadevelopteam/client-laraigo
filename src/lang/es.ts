@@ -1301,6 +1301,16 @@ const translation: LangKeys = {
     app_ia: "IA",
     app_privacy: "Privacidad",
 
+    lead_activitydate: 'Fecha actividad',
+    lead_activitydescription: 'Actividad',
+    lead_asesorname: 'Nombre asesor',
+    lead_contact_name: 'Nombre contacto',
+    lead_email: 'Email',
+    lead_notedate: 'Fecha nota',
+    lead_notedescription: 'Nota',
+    lead_phone: 'Teléfono',
+    lead_custom: 'Personalizado',
+
     formMandatoryFields: "Debe completar todos los campos",
     newLead: 'Nueva oportunidad',
     leadDetail: 'Detalle de la oportunidad',
