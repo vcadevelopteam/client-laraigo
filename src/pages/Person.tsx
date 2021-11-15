@@ -7,28 +7,31 @@ import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPers
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
-import { ArrowDropDown, Add as AddIcon } from '@material-ui/icons';
+import { ArrowDropDown } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import BackupIcon from '@material-ui/icons/Backup';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
-import { DialogInteractions, FieldMultiSelect } from 'components';
+import { DialogInteractions, FieldMultiSelect, FieldView, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
 import StarIcon from '@material-ui/icons/Star';
 import TableZyx from '../components/fields/table-simple';
+import Tooltip from '@material-ui/core/Tooltip';
+import MailIcon from '@material-ui/icons/Mail';
+import SmsIcon from '@material-ui/icons/Sms';
+import { emitEvent, sendHSM } from 'store/inbox/actions';
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
@@ -61,7 +64,6 @@ const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data,
     );
 }
 
-
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
         height: 40,
@@ -89,6 +91,169 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
+const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitClose, setWaitClose] = useState(false);
+    
+    // const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    // const person = useSelector(state => state.inbox.person);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+    const [bodyCleaned, setBodyCleaned] = useState('');
+    const domains = useSelector(state => state.person.editableDomains);
+
+    const { control, register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+
+                // const newInteractionSocket = {
+                // ...ticketSelected!!,
+                //     interactionid: 0,
+                //     typemessage: "text",
+                //     typeinteraction: null,
+                //     lastmessage: bodyCleaned,
+                //     createdate: new Date().toISOString(),
+                //     userid: 0,
+                //     usertype: "agent",
+                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
+                // }
+                // dispatch(emitEvent({
+                //     event: 'newMessageFromAgent',
+                //     data: newInteractionSocket
+                // }));
+
+                setWaitClose(false);
+            } else if (sendingRes.error) {
+
+                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [sendingRes, waitClose])
+
+    useEffect(() => {
+        if (!domains.error && !domains.loading) {
+            setTemplatesList(domains?.value?.templates?.filter(x => x.type === "HSM") || [])
+        }
+    }, [domains])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                variables: []
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+
+            const wordList = value.body?.split(/[\s,.;()!?¡]+/);
+            setBodyCleaned(value.body);
+            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        setBodyCleaned(body => {
+            data.variables.forEach((x: Dictionary) => {
+                body = body.replace(`{{${x.name}}}`, x.text)
+            })
+            return body
+        })
+        const bb = {
+            hsmtemplateid: data.hsmtemplateid,
+            // communicationchannelid: ticketSelected?.communicationchannelid!!,
+            // platformtype: ticketSelected?.communicationchannelsite!!,
+            // communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+            listmembers: [{
+                // phone: person.data?.phone!! + "",
+                // firstname: person.data?.firstname + "",
+                // lastname: person.data?.lastname + "",
+                parameters: data.variables
+            }]
+        }
+        // dispatch(sendHSM(bb))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.send_hsm)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.hsm_template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            <FieldView
+                label={t(langKeys.message)}
+                value={bodyMessage}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <FieldEditArray
+                        key={item.id}
+                        label={item.name}
+                        fregister={{
+                            ...register(`variables.${i}.text`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
+                        valueDefault={item.value}
+                        error={errors?.variables?.[i]?.text?.message}
+                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                    />
+                ))}
+            </div>
+        </DialogZyx>)
+}
+
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
@@ -104,9 +269,11 @@ export const Person: FC = () => {
     const [waitImport, setWaitImport] = useState(false);
     const [filterAgents, setFilterAgents] = useState('');
     const [filterChannelsType, setFilterChannelType] = useState('')
-    const [importPath, setImportPath] = useState('');
+    const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<any>({});
-
+    const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
+    const [typeTemplate, setTypeTemplate] = useState('');
+    
     const goToPersonDetail = (person: IPerson) => {
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
@@ -125,6 +292,56 @@ export const Person: FC = () => {
                     return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
 
                 return <StarIcon color="action" fontSize="small" />
+            }
+        },
+        {
+            Header: t(langKeys.action_plural),
+            accessor: 'leadid',
+            Cell: (props: any) => {
+                const person = props.cell.row.original as IPerson;
+                return (
+                    <>
+                        <Tooltip title={t(langKeys.SENDHSM) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("HSM");
+                                }}
+                            >
+                                <HSMIcon width={24} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={t(langKeys.SENDMAIL) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("MAIL");
+                                }}
+                            >
+                                <MailIcon color="action" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={t(langKeys.SENDSMS) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("SMS");
+                                }}
+                            >
+                                <SmsIcon color="action" />
+                            </IconButton>
+                        </Tooltip>
+                    </>
+                )
             }
         },
         {
@@ -197,12 +414,8 @@ export const Person: FC = () => {
                 const { datenote, note, dateactivity, leadactivity } = props.cell.row.original;
                 return (
                     <div>
-                        {datenote &&
-                            <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>
-                        }
-                        {dateactivity &&
-                            <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>
-                        }
+                        {datenote && <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>}
+                        {dateactivity && <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>}
                     </div>
                 )
             }
@@ -317,8 +530,8 @@ export const Person: FC = () => {
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
-    const handleUpload = async (e: any) => {
-        const file = e.target?.files?.item(0);
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
@@ -391,7 +604,6 @@ export const Person: FC = () => {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
             }
         }
-        setImportPath('');
     }
 
     useEffect(() => {
@@ -442,52 +654,6 @@ export const Person: FC = () => {
                 </Grid>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => {
-                                history.push({
-                                    pathname: paths.PERSON_DETAIL.resolve(0),
-                                    state: {},
-                                });
-                            }}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.register} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<ListAltIcon color="secondary" />}
-                            onClick={handleTemplate}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.template} />
-                        </Button>
-                        <input
-                            name="file"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                            id="laraigo-upload-csv-file"
-                            value={importPath}
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(e) => handleUpload(e)}
-                        />
-                        <label htmlFor="laraigo-upload-csv-file">
-                            <Button
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                disabled={personList.loading}
-                                startIcon={<BackupIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >
-                                <Trans i18nKey={langKeys.import} />
-                            </Button>
-                        </label>
                     </div>
                 </Grid>
             </Grid>
@@ -505,21 +671,31 @@ export const Person: FC = () => {
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
                 onClickRow={goToPersonDetail}
+                register={true}
+                ButtonsElement={() => (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={personList.loading}
+                        startIcon={<ListAltIcon color="secondary" />}
+                        onClick={handleTemplate}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.template} />
+                    </Button>
+                )}
+                importCSV={handleUpload}
+                handleRegister={() => history.push({
+                    pathname: paths.PERSON_DETAIL.resolve(0),
+                    state: {},
+                })}
             />
-            {/* <ListPaginated
-                dateRange={dateRange}
-                currentPage={page}
-                columns={columns}
-                data={personList.data as IPerson[]}
-                onFilterChange={setFilters}
-                onPageChange={setPage}
-                pageSize={pageSize}
-                onPageSizeChange={setPageSize}
-                loading={personList.loading}
-                totalItems={personList.count}
-                builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
-                skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
-            /> */}
+            <DialogSendTemplate
+                openModal={openDialogTemplate}
+                setOpenModal={setOpenDialogTemplate}
+                persons={personsSelected}
+                type={typeTemplate}
+            />
         </div>
     );
 }

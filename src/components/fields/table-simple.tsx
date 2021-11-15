@@ -621,7 +621,7 @@ const TableZyx = React.memo(({
                 {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (
-                        <Tooltip title="Refrescar">
+                        <Tooltip title="Refresh">
                             <Fab
                                 size="small"
                                 aria-label="add"

@@ -183,7 +183,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleDate = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull','isnotnull'].includes(operator)) {
+            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -203,7 +203,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleTime = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
-            if (!!date || ['isnull','isnotnull'].includes(operator)) {
+            if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
                 setFilters({
                     ...filters,
                     [header]: {
@@ -232,15 +232,15 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                 : <React.Fragment>
                     {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
                     {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
-                    {!['date','time'].includes(type) &&
-                    <Input
-                        style={{ fontSize: '15px', minWidth: '100px' }}
-                        type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
-                        fullWidth
-                        value={value}
-                        onKeyDown={keyPress}
-                        onChange={e => setValue(e.target.value)}
-                    />}
+                    {!['date', 'time'].includes(type) &&
+                        <Input
+                            style={{ fontSize: '15px', minWidth: '100px' }}
+                            type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
+                            fullWidth
+                            value={value}
+                            onKeyDown={keyPress}
+                            onChange={e => setValue(e.target.value)}
+                        />}
                     <IconButton
                         onClick={handleClickMenu}
                         size="small"
@@ -495,55 +495,57 @@ const TableZyx = React.memo(({
                             </DateRangePicker>
                         </div>
                     )}
-                    {ButtonsElement && <ButtonsElement />}
-                    {importCSV && (
-                        <>
-                            <input
-                                name="file"
-                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                                id="laraigo-upload-csv-file"
-                                type="file"
-                                style={{ display: 'none' }}
-                                onChange={(e) => importCSV(e.target.files)}
-                            />
-                            <label htmlFor="laraigo-upload-csv-file">
-                                <Button
-                                    className={classes.button}
-                                    variant="contained"
-                                    component="span"
-                                    color="primary"
-                                    disabled={loading}
-                                    startIcon={<BackupIcon color="secondary" />}
-                                    style={{ backgroundColor: "#55BD84" }}
-                                ><Trans i18nKey={langKeys.import} />
-                                </Button>
-                            </label>
-                        </>
-                    )}
-                    {register && (
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={handleRegister}
-                            style={{ backgroundColor: "#55BD84" }}
-                        ><Trans i18nKey={langKeys.register} />
-                        </Button>
-                    )}
-                    {download && (
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={loading}
-                            onClick={exportData}
-                            // exportPersonalized
-                            startIcon={<DownloadIcon />}
-                        ><Trans i18nKey={langKeys.download} />
-                        </Button>
-                    )}
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {ButtonsElement && <ButtonsElement />}
+                        {importCSV && (
+                            <>
+                                <input
+                                    name="file"
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                    id="laraigo-upload-csv-file"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => importCSV(e.target.files)}
+                                />
+                                <label htmlFor="laraigo-upload-csv-file">
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        disabled={loading}
+                                        startIcon={<BackupIcon color="secondary" />}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    ><Trans i18nKey={langKeys.import} />
+                                    </Button>
+                                </label>
+                            </>
+                        )}
+                        {register && (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={loading}
+                                startIcon={<AddIcon color="secondary" />}
+                                onClick={handleRegister}
+                                style={{ backgroundColor: "#55BD84" }}
+                            ><Trans i18nKey={langKeys.register} />
+                            </Button>
+                        )}
+                        {download && (
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={loading}
+                                onClick={exportData}
+                                // exportPersonalized
+                                startIcon={<DownloadIcon />}
+                            ><Trans i18nKey={langKeys.download} />
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </Box>
 
@@ -605,10 +607,10 @@ const TableZyx = React.memo(({
                                 page.map((row: any) => {
                                     prepareRow(row);
                                     return (
-                                        <TableRow 
-                                            {...row.getRowProps()} 
+                                        <TableRow
+                                            {...row.getRowProps()}
                                             hover
-                                            style={{cursor: onClickRow ? 'pointer' : 'default'}}
+                                            style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                         >
                                             {row.cells.map((cell: any, i: number) =>
                                                 <TableCell
@@ -691,7 +693,7 @@ const TableZyx = React.memo(({
                             ))}
                         </Select>
                         <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                        <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
+                            <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
                         </Box>
                     </Box>
                 </Box>

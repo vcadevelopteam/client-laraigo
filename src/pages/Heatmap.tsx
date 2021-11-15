@@ -345,7 +345,7 @@ const MainHeatMap: React.FC = () => {
                 </div>
             </div>
             {
-                heatMapConversationsData.length?
+                heatMapConversationsData.length &&
                 <div style={{padding:10}}>
                     <TableZyx
                         columns={heatMapConversations}
@@ -355,10 +355,10 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                     />
-                </div>:""
+                </div>
             }
             {
-                averageHeatMapTMOData.length?
+                averageHeatMapTMOData.length &&
                 <div style={{padding:10}}>
                     <TableZyx
                         columns={averageHeatMapTMOTitle}
@@ -368,7 +368,7 @@ const MainHeatMap: React.FC = () => {
                         pageSizeDefault={50}
                         filterGeneral={false}
                     />
-                </div>:""
+                </div>
             }
         </div>
     )
