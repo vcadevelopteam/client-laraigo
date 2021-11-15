@@ -335,9 +335,9 @@ const CRM: FC = () => {
       case 'contact_name':
         return (
           <div style={{ cursor: 'pointer' }}>
-            <div>{row['contact_name']}</div>
-            <div>{row['email']}</div>
-            <div>tel: {row['phone']}</div>
+            <div>{t(langKeys.name)}: {row['contact_name']}</div>
+            <div>{t(langKeys.email)}: {row['email']}</div>
+            <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
                 name="simple-controlled"
                 max={3}
