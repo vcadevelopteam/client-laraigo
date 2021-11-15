@@ -427,8 +427,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 success: false,
                 show: true,
             }));
+        } else if (updateLeadTagProcess.success && edit === true) {
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-    }, [updateLeadTagProcess, dispatch]);
+    }, [updateLeadTagProcess, match.params.id, edit, dispatch]);
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
