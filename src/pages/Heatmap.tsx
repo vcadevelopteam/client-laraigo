@@ -242,7 +242,6 @@ const MainHeatMap: React.FC = () => {
             ss= secondstotalnum-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
-        console.log(arrayfree)
         setaverageHeatMapTMOData(arrayfree)
                 
         let mid = (rowmax/2);
@@ -280,7 +279,6 @@ const MainHeatMap: React.FC = () => {
                     if(props.data[rowcounter]){
                         color = gradient(props.data[rowcounter][key],rowcounter)
                     }
-                    console.log(color)
                     let timespenttotal = props.data[rowcounter][key].split(':')
                     let hh = timespenttotal[0] == "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] == "00" ? "" : (timespenttotal[1] + "m ")
@@ -291,7 +289,7 @@ const MainHeatMap: React.FC = () => {
                 }
                 else{
                     if (rowcounter < 24)  rowcounter++;
-                    let timespenttotal = props.data[rowcounter][key].split(':')
+                    let timespenttotal = props.data[rowcounter-1][key].split(':')
                     let hh = timespenttotal[0] == "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] == "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
@@ -299,6 +297,8 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
+        
+        console.log(arrayfree)
         setaverageHeatMapTMOTitle([
             {
                 Header: `Hora`,
@@ -352,7 +352,7 @@ const MainHeatMap: React.FC = () => {
                         titlemodule={t(langKeys.conversationheatmap)}
                         data={heatMapConversationsData}
                         download={true}
-                        pageSizeDefault={30}
+                        pageSizeDefault={50}
                         filterGeneral={false}
                     />
                 </div>:""
@@ -365,7 +365,7 @@ const MainHeatMap: React.FC = () => {
                         titlemodule={t(langKeys.averageheatmapTMOdata)}
                         data={averageHeatMapTMOData}
                         download={true}
-                        pageSizeDefault={30}
+                        pageSizeDefault={50}
                         filterGeneral={false}
                     />
                 </div>:""
