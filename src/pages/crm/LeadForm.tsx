@@ -372,6 +372,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 success: true,
                 show: true,
             }));
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
     }, [saveActivity, dispatch]);
 
@@ -403,8 +404,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-    }, [saveNote, dispatch]);
+    }, [saveNote, match.params.id, dispatch]);
 
     useEffect(() => {
         if (leadHistory.loading) return;
@@ -427,8 +429,10 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 success: false,
                 show: true,
             }));
+        } else if (updateLeadTagProcess.success && edit === true) {
+            dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-    }, [updateLeadTagProcess, dispatch]);
+    }, [updateLeadTagProcess, match.params.id, edit, dispatch]);
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
