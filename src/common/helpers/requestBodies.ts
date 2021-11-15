@@ -688,6 +688,11 @@ export const getChannelSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+export const getasesoresbyorgid = (): IRequestBody => ({
+    method: "UFN_USER_ASESORBYORGID_LST",
+    parameters: {
+    }
+});
 
 export const getChatflowBlockLst = (): IRequestBody => ({
     method: "UFN_CHATFLOW_BLOCK_LST",
