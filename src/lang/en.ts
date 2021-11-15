@@ -768,6 +768,7 @@ const translation: LangKeys = {
     enable: "Enable",
     disabled: "Disabled",
     heatmap: "Heat map",
+    averageheatmapTMOdata: "Average heat map TMO data",
     conversationheatmap: "Conversation heat map",
     heatmapasesor: "Heat map by advisor",
     heatmapticket: "Heat map of advisors who have responded to at least one ticket",

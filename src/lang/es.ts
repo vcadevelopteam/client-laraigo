@@ -337,6 +337,7 @@ const translation: LangKeys = {
     heatmapasesor: "Mapa de calor por asesor",
     heatmapticket: "Mapa de calor de asesores que han respondido al menos un ticket",
     country: "País",    
+    averageheatmapTMOdata: "Mapa de Calor Promedio TMO",
     conversationheatmap: "Mapa de calor de conversaciones",
     goback: "¿Está seguro de que desea regresar? Se perderá parte de la información",
     yes: 'Sí',
