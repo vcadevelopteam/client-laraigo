@@ -20,6 +20,12 @@ import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
+import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
+import NoteIcon from '@material-ui/icons/Note';
+import ChatIcon from '@material-ui/icons/Chat';
+import EmailIcon from '@material-ui/icons/Email';
+import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import { NewActivityModal, NewNoteModal } from "./Modals";
 
 interface dataBackend {
   columnid: number,
@@ -79,6 +85,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const selectionKey = 'leadid';
+
+interface IModalProps {
+  name: string;
+  open: boolean;
+  payload: Dictionary | null;
+}
 
 const CRM: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
@@ -310,6 +322,7 @@ const CRM: FC = () => {
     asesorid: mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? user?.userid : 0,
   });
   const [selectedRows, setSelectedRows] = useState<any>({});
+  const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
 
   const CustomCellRender = ({column, row}: any) => {
     switch (column.id) {
@@ -322,9 +335,9 @@ const CRM: FC = () => {
       case 'contact_name':
         return (
           <div style={{ cursor: 'pointer' }}>
-            <div>{row['contact_name']}</div>
-            <div>{row['email']}</div>
-            <div>tel: {row['phone']}</div>
+            <div>{t(langKeys.name)}: {row['contact_name']}</div>
+            <div>{t(langKeys.email)}: {row['email']}</div>
+            <div>{t(langKeys.phone)}: {row['phone']}</div>
             <Rating
                 name="simple-controlled"
                 max={3}
@@ -440,7 +453,77 @@ const CRM: FC = () => {
         accessor: 'actions',
         NoFilter: true,
         isComponent: true,
-        Cell: cell
+        Cell: (props: any) => {
+          const row = props.cell.row.original;
+          return (
+            <React.Fragment>
+              <div style={{display: 'flex'}}>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  onClick={() => console.log(row)}
+                >
+                  <ChatIcon
+                    titleAccess={t(langKeys.message)}
+                    style={{ color: '#7721AD' }}
+                  />
+                </IconButton>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  onClick={() => console.log(row)}
+                >
+                  <EmailIcon
+                    titleAccess={t(langKeys.email)}
+                    style={{ color: '#7721AD' }}
+                  />
+                </IconButton>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  onClick={() => console.log(row)}
+                >
+                  <WhatsAppIcon
+                    titleAccess="Whatsapp"
+                    style={{ color: '#7721AD' }}
+                  />
+                </IconButton>
+              </div>
+              <div style={{display: 'flex'}}>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
+                >
+                  <AccessTimeIcon
+                    titleAccess={t(langKeys.activities)}
+                    style={{ color: '#7721AD' }}
+                  />
+                </IconButton>
+                <IconButton
+                  aria-label="more"
+                  aria-controls="long-menu"
+                  aria-haspopup="true"
+                  size="small"
+                  onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
+                >
+                  <NoteIcon
+                    titleAccess={t(langKeys.logNote)}
+                    style={{ color: '#7721AD' }}
+                  />
+                </IconButton>
+              </div>
+            </React.Fragment>
+          )
+      }
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -756,6 +839,14 @@ const CRM: FC = () => {
               setSelectedRows={setSelectedRows}
             />
           </div>
+          <NewActivityModal
+            gridModalProps={gridModal}
+            setGridModal={setGridModal}
+          />
+          <NewNoteModal
+            gridModalProps={gridModal}
+            setGridModal={setGridModal}
+          />
         </div>
         }
       </React.Fragment>

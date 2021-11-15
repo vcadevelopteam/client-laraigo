@@ -1,4 +1,4 @@
-import { IAction, IDomain } from "@types";
+import { Dictionary, IAction, IDomain } from "@types";
 import { IState, initialState } from './reducer';
 
 export const getPerson = (state: IState): IState => ({
@@ -228,6 +228,9 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
     const groups = (action.payload.data as any[])[6].data as IDomain[] | null;
     const personGenTypes = (action.payload.data as any[])[7].data as IDomain[] | null;
     const channelTypes = (action.payload.data as any[])[8].data as IDomain[] | null;
+    const agents = (action.payload.data as any[])[9].data as Dictionary[] | null;
+    const templates = (action.payload.data as any[])[10].data as Dictionary[] | null;
+    const channels = (action.payload.data as any[])[11].data as Dictionary[] | null;
 
     return {
         ...state,
@@ -242,7 +245,10 @@ export const getDomainsByTypenameSuccess = (state: IState, action: IAction): ISt
                 personTypes: personTypes || [],
                 groups: groups || [],
                 personGenTypes: personGenTypes || [],
-                channelTypes: channelTypes || []
+                channelTypes: channelTypes || [],
+                templates: templates || [],
+                agents: agents || [],
+                channels: channels || [],
             },
             loading: false,
             error: false,

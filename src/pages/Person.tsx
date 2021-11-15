@@ -2,33 +2,36 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { DateRangePicker, FieldSelect, Title } from 'components';
+import { FieldSelect, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
-import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonLead, IPersonReferrer, IFetchData } from "@types";
+import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, DownloadIcon, CalendarIcon, EMailInboxIcon, GenderIcon, PinLocationIcon, PortfolioIcon, TelephoneIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { Range } from 'react-date-range';
 import { useHistory, useLocation } from 'react-router';
 import paths from 'common/constants/paths';
-import { ArrowDropDown, Add as AddIcon } from '@material-ui/icons';
+import { ArrowDropDown } from '@material-ui/icons';
 import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import LockIcon from '@material-ui/icons/Lock';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import BackupIcon from '@material-ui/icons/Backup';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
-import { useForm, UseFormGetValues, UseFormSetValue } from 'react-hook-form';
+import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
-import { DialogInteractions } from 'components';
+import { DialogInteractions, FieldMultiSelect, FieldView, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
 import StarIcon from '@material-ui/icons/Star';
+import TableZyx from '../components/fields/table-simple';
+import Tooltip from '@material-ui/core/Tooltip';
+import MailIcon from '@material-ui/icons/Mail';
+import SmsIcon from '@material-ui/icons/Sms';
+import { emitEvent, sendHSM } from 'store/inbox/actions';
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
@@ -61,7 +64,6 @@ const DomainSelectField: FC<SelectFieldProps> = ({ defaultValue, onChange, data,
     );
 }
 
-
 const usePhotoClasses = makeStyles(theme => ({
     accountPhoto: {
         height: 40,
@@ -89,20 +91,245 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
-export const Person: FC = () => {
-    const history = useHistory();
-    const endDate = new Date();
-    const startDate = new Date(endDate.getFullYear(), endDate.getMonth() - 2, 0);
-    const initialDateRange: Range = { startDate, endDate, key: 'selection' };
+const variables = ['firstname','lastname','displayname','email','phone','documenttype','documentnumber','dateactivity','leadactivity','datenote','note','custom']
 
+const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
-    const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
-    // const [page, setPage] = useState(0);
-    // const [pageSize, setPageSize] = useState(10);
+    const [waitClose, setWaitClose] = useState(false);
+    const sendingRes = useSelector(state => state.inbox.triggerSendHSM);
+    const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
+    const [channelList, setChannelList] = useState<Dictionary[]>([]);
+    const [bodyMessage, setBodyMessage] = useState('');
+    // const [bodyCleaned, setBodyCleaned] = useState('');
+    const domains = useSelector(state => state.person.editableDomains);
+
+    const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
+        defaultValues: {
+            hsmtemplateid: 0,
+            observation: '',
+            communicationchannelid: 0,
+            communicationchanneltype: '',
+            variables: []
+        }
+    });
+
+    const { fields } = useFieldArray({
+        control,
+        name: 'variables',
+    });
+
+    useEffect(() => {
+        if (waitClose) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+
+                // const newInteractionSocket = {
+                // ...ticketSelected!!,
+                //     interactionid: 0,
+                //     typemessage: "text",
+                //     typeinteraction: null,
+                //     lastmessage: bodyCleaned,
+                //     createdate: new Date().toISOString(),
+                //     userid: 0,
+                //     usertype: "agent",
+                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
+                // }
+                // dispatch(emitEvent({
+                //     event: 'newMessageFromAgent',
+                //     data: newInteractionSocket
+                // }));
+
+                setWaitClose(false);
+            } else if (sendingRes.error) {
+
+                dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
+                dispatch(showBackdrop(false));
+                setWaitClose(false);
+            }
+        }
+    }, [sendingRes, waitClose])
+
+    useEffect(() => {
+        if (!domains.error && !domains.loading) {
+            setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || []);
+            console.log(domains?.value?.channels, type, type === "HSM" ? "WHA" : type, domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)))
+            setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
+        }
+    }, [domains, type])
+
+    useEffect(() => {
+        if (openModal) {
+            setBodyMessage('')
+            reset({
+                hsmtemplateid: 0,
+                variables: [],
+                communicationchannelid: 0,
+                communicationchanneltype: ''
+            })
+            register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+        }
+    }, [openModal])
+
+    const onSelectTemplate = (value: Dictionary) => {
+        if (value) {
+            setBodyMessage(value.body);
+            setValue('hsmtemplateid', value ? value.id : 0);
+
+            const wordList = value.body?.split(/[\s,.;()!?¡]+/);
+            // setBodyCleaned(value.body);
+            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
+
+            setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
+        } else {
+            setValue('variables', []);
+            setBodyMessage('');
+            setValue('hsmtemplateid', 0);
+        }
+    }
+
+    const onSubmit = handleSubmit((data) => {
+        // setBodyCleaned(body => {
+        //     data.variables.forEach((x: Dictionary) => {
+        //         if (x.text !== 'custom') {
+        //             body = body.replace(`{{${x.name}}}`, `{{${x.variable}}}`)
+        //         }
+        //         else {
+        //             body = body.replace(`{{${x.name}}}`, x.text)
+        //         }
+        //     })
+        //     return body
+        // })
+
+        // const messagedata = persons.reduce((pc: Dictionary[], p: Dictionary) => ([
+        //     ...pc,
+        //     {
+        //         phone: p.phone,
+        //         hsmtemplateid: data.hsmtemplateid,
+        //         body: bodyCleaned,
+        //         parameters: data.variables.reduce((vc: any[], v: any) => ([
+        //             ...vc,
+        //             {
+        //                 type: "text",
+        //                 text: v.variable !== 'custom' ? p[v.variable] : v.text,
+        //                 name: v.name
+        //             }
+        //         ]),[])
+        //     }
+        // ]), [])
+        console.log("persons", persons)
+        const messagedata = {
+            hsmtemplateid: data.hsmtemplateid,
+            communicationchannelid: data.communicationchannelid,
+            communicationchanneltype: data.communicationchanneltype,
+            platformtype: data.communicationchanneltype,
+            listmembers: persons.map(person => ({
+                phone: person.phone || "",
+                firstname: person.firstname || "",
+                lastname: person.lastname,
+                parameters: data.variables.map((v: any) => ({
+                    type: "text",
+                    text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
+                    name: v.name
+                }))
+            }))
+        }
+        dispatch(sendHSM(messagedata))
+        dispatch(showBackdrop(true));
+        setWaitClose(true)
+    });
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.send_hsm).replace("HSM", type)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.continue)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.channel)}
+                    className="col-12"
+                    valueDefault={getValues('communicationchannelid')}
+                    onChange={value => {
+                        setValue('communicationchannelid', value.communicationchannelid);
+                        setValue('communicationchanneltype', value.type);
+                    }}
+                    error={errors?.communicationchannelid?.message}
+                    data={channelList}
+                    optionDesc="communicationchanneldesc"
+                    optionValue="communicationchannelid"
+                />
+            </div>
+            <div className="row-zyx">
+                <FieldSelect
+                    label={t(langKeys.template)}
+                    className="col-12"
+                    valueDefault={getValues('hsmtemplateid')}
+                    onChange={onSelectTemplate}
+                    error={errors?.hsmtemplateid?.message}
+                    data={templatesList}
+                    optionDesc="name"
+                    optionValue="id"
+                />
+            </div>
+            <FieldView
+                label={t(langKeys.message)}
+                value={bodyMessage}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
+                {fields.map((item: Dictionary, i) => (
+                    <>
+                    <FieldSelect
+                        key={"var_" + item.id}
+                        fregister={{
+                            ...register(`variables.${i}.variable`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
+                        label={item.name}
+                        valueDefault={getValues(`variables.${i}.variable`)}
+                        onChange={(value) => {
+                            setValue(`variables.${i}.variable`, value.key)
+                            trigger(`variables.${i}.variable`)
+                        }}
+                        error={errors?.variables?.[i]?.text?.message}
+                        data={variables.map(v => ({key: v}))}
+                        uset={true}
+                        prefixTranslation=""
+                        optionDesc="key"
+                        optionValue="key"
+                    />
+                    {getValues(`variables.${i}.variable`) === 'custom' &&
+                    <FieldEditArray
+                        key={"custom_" + item.id}
+                        fregister={{
+                            ...register(`variables.${i}.text`, {
+                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                            })
+                        }}
+                        valueDefault={item.value}
+                        error={errors?.variables?.[i]?.text?.message}
+                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                    />
+                    }
+                    </>
+                ))}
+            </div>
+        </DialogZyx>)
+}
+
+export const Person: FC = () => {
+    const history = useHistory();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    // const [dateRange, setDateRange] = useState<Range>(initialDateRange);
-    // const [filters, setFilters] = useState<Dictionary>({});
     const personList = useSelector(state => state.person.personList);
     const domains = useSelector(state => state.person.editableDomains);
     const [pageCount, setPageCount] = useState(0);
@@ -111,11 +338,14 @@ export const Person: FC = () => {
     const executeResult = useSelector(state => state.main.execute);
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
-    const [importPath, setImportPath] = useState('');
+    const [filterAgents, setFilterAgents] = useState('');
+    const [filterChannelsType, setFilterChannelType] = useState('')
+    const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<any>({});
-
+    const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
+    const [typeTemplate, setTypeTemplate] = useState('');
+    
     const goToPersonDetail = (person: IPerson) => {
-        console.log("person", person)
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
@@ -123,8 +353,8 @@ export const Person: FC = () => {
     }
 
     const columns = [
-        { 
-            Header: t(langKeys.lead), 
+        {
+            Header: t(langKeys.lead),
             accessor: 'havelead',
             type: "boolean",
             Cell: (props: any) => {
@@ -133,6 +363,56 @@ export const Person: FC = () => {
                     return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
 
                 return <StarIcon color="action" fontSize="small" />
+            }
+        },
+        {
+            Header: t(langKeys.action_plural),
+            accessor: 'leadid',
+            Cell: (props: any) => {
+                const person = props.cell.row.original as IPerson;
+                return (
+                    <>
+                        <Tooltip title={t(langKeys.SENDHSM) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("HSM");
+                                }}
+                            >
+                                <HSMIcon width={24} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={t(langKeys.SENDMAIL) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("MAIL");
+                                }}
+                            >
+                                <MailIcon color="action" />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title={t(langKeys.SENDSMS) + ""}>
+                            <IconButton
+                                size="small"
+                                onClick={(e: any) => {
+                                    e.stopPropagation();
+                                    setPersonsSelected([person]);
+                                    setOpenDialogTemplate(true);
+                                    setTypeTemplate("SMS");
+                                }}
+                            >
+                                <SmsIcon color="action" />
+                            </IconButton>
+                        </Tooltip>
+                    </>
+                )
             }
         },
         {
@@ -165,23 +445,23 @@ export const Person: FC = () => {
                         <div>{t(langKeys.name)}: {name}</div>
                         <div>{t(langKeys.email)}: {email}</div>
                         <div>{t(langKeys.phone)}: {phone}</div>
-                        {priority && 
-                        <>
-                            <Rating
-                                name="simple-controlled"
-                                max={3}
-                                defaultValue={priority === 'LOW' ? 1 : priority === 'MEDIUM' ? 2 : priority === 'HIGH' ? 3 : 0}
-                                readOnly={true}
-                            />
-                            <div>{t(langKeys.assignedTo)}: {userlead}</div>
-                        </>
+                        {priority &&
+                            <>
+                                <Rating
+                                    name="simple-controlled"
+                                    max={3}
+                                    defaultValue={urgencyLevels.findIndex(x => x === priority)}
+                                    readOnly={true}
+                                />
+                                <div>{t(langKeys.assignedTo)}: {userlead}</div>
+                            </>
                         }
                     </div>
                 )
             }
         },
-        { 
-            Header: t(langKeys.type), 
+        {
+            Header: t(langKeys.type),
             accessor: 'type',
             prefixTranslation: 'type_persontype_',
             Cell: (props: any) => {
@@ -205,12 +485,8 @@ export const Person: FC = () => {
                 const { datenote, note, dateactivity, leadactivity } = props.cell.row.original;
                 return (
                     <div>
-                        {datenote && 
-                            <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>
-                        }
-                        {dateactivity &&
-                            <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>
-                        }
+                        {datenote && <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {note}</div>}
+                        {dateactivity && <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>}
                     </div>
                 )
             }
@@ -237,7 +513,6 @@ export const Person: FC = () => {
     }, [personList]);
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-        console.log(filters)
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getPersonListPaginated(getPaginatedPerson({
             startdate: daterange?.startDate || format(new Date(new Date().setDate(1))),
@@ -246,6 +521,8 @@ export const Person: FC = () => {
             take: pageSize,
             sorts,
             filters: filters,
+            userids: filterAgents,
+            channeltypes: filterChannelsType
         })));
     }
 
@@ -324,8 +601,8 @@ export const Person: FC = () => {
         exportExcel(t(langKeys.template), templateMaker(data, header));
     }
 
-    const handleUpload = async (e: any) => {
-        const file = e.target?.files?.item(0);
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
         if (file) {
             let excel: any = await uploadExcel(file, undefined);
             let data: IPersonImport[] = array_trimmer(excel);
@@ -398,7 +675,6 @@ export const Person: FC = () => {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
             }
         }
-        setImportPath('');
     }
 
     useEffect(() => {
@@ -419,85 +695,36 @@ export const Person: FC = () => {
 
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
-            <Grid container direction="row" justifyContent="space-between">
+            <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
+            <Grid container direction="row" justifyContent="space-between" style={{ marginBottom: 12, marginTop: 4 }}>
                 <Grid item>
-                    <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                        <FieldMultiSelect
+                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.domainvalue).join())}
+                            size="small"
+                            label={t(langKeys.channeltype)}
+                            style={{ maxWidth: 300, minWidth: 200 }}
+                            variant="outlined"
+                            loading={domains.loading}
+                            data={domains.value?.channelTypes || []}
+                            optionValue="domainvalue"
+                            optionDesc="domaindesc"
+                        />
+                        <FieldMultiSelect
+                            onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
+                            size="small"
+                            label={t(langKeys.user)}
+                            style={{ maxWidth: 300, minWidth: 200 }}
+                            variant="outlined"
+                            loading={domains.loading}
+                            data={domains.value?.agents || []}
+                            optionValue="userid"
+                            optionDesc="fullname"
+                        />
+                    </div>
                 </Grid>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
-                        {/* <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<DownloadIcon />}
-                            onClick={triggerExportData}
-                        >
-                            <Trans i18nKey={langKeys.download} />
-                        </Button> */}
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<AddIcon color="secondary" />}
-                            onClick={() => {
-                                history.push({
-                                    pathname: paths.PERSON_DETAIL.resolve(0),
-                                    state: {},
-                                });
-                            }}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.register} />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={personList.loading}
-                            startIcon={<ListAltIcon color="secondary" />}
-                            onClick={handleTemplate}
-                            style={{ backgroundColor: "#55BD84" }}
-                        >
-                            <Trans i18nKey={langKeys.template} />
-                        </Button>
-                        <input
-                            name="file"
-                            accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
-                            id="laraigo-upload-csv-file"
-                            value={importPath}
-                            type="file"
-                            style={{ display: 'none' }}
-                            onChange={(e) => handleUpload(e)}
-                        />
-                        <label htmlFor="laraigo-upload-csv-file">
-                            <Button
-                                variant="contained"
-                                component="span"
-                                color="primary"
-                                disabled={personList.loading}
-                                startIcon={<BackupIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >
-                                <Trans i18nKey={langKeys.import} />
-                            </Button>
-                        </label>
-                        {/* <DateRangePicker
-                            open={openDateRangeModal}
-                            setOpen={setOpenDateRangeModal}
-                            range={dateRange}
-                            onSelect={(e) => {
-                                setPage(0);
-                                setDateRange(e);
-                            }}
-                        >
-                            <Button
-                                disabled={personList.loading}
-                                style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                                startIcon={<CalendarIcon />}
-                                onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                            >
-                                {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                            </Button>
-                        </DateRangePicker> */}
                     </div>
                 </Grid>
             </Grid>
@@ -515,21 +742,31 @@ export const Person: FC = () => {
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
                 onClickRow={goToPersonDetail}
+                register={true}
+                ButtonsElement={() => (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={personList.loading}
+                        startIcon={<ListAltIcon color="secondary" />}
+                        onClick={handleTemplate}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.template} />
+                    </Button>
+                )}
+                importCSV={handleUpload}
+                handleRegister={() => history.push({
+                    pathname: paths.PERSON_DETAIL.resolve(0),
+                    state: {},
+                })}
             />
-            {/* <ListPaginated
-                dateRange={dateRange}
-                currentPage={page}
-                columns={columns}
-                data={personList.data as IPerson[]}
-                onFilterChange={setFilters}
-                onPageChange={setPage}
-                pageSize={pageSize}
-                onPageSizeChange={setPageSize}
-                loading={personList.loading}
-                totalItems={personList.count}
-                builder={(e, i) => <PersonItem person={e} key={`person_item_${i}`} />}
-                skeleton={i => <PersonItemSkeleton key={`person_item_skeleton_${i}`} />}
-            /> */}
+            <DialogSendTemplate
+                openModal={openDialogTemplate}
+                setOpenModal={setOpenDialogTemplate}
+                persons={personsSelected}
+                type={typeTemplate}
+            />
         </div>
     );
 }
@@ -2024,6 +2261,80 @@ interface OpportunitiesTabProps {
 const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const leads = useSelector(state => state.person.personLeadList);
+    const { t } = useTranslation();
+    const history = useHistory();
+
+    const goToLead = (lead: Dictionary) => {
+        history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
+    }
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.opportunity),
+                accessor: 'description',
+            },
+            {
+                Header: t(langKeys.lastUpdate),
+                accessor: 'changedate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.changedate ? convertLocalDate(row.changedate).toLocaleString() : ""
+                }
+            },
+            {
+                Header: t(langKeys.phase),
+                accessor: 'phase',
+            },
+            {
+                Header: t(langKeys.status),
+                accessor: 'status'
+            },
+            {
+                Header: t(langKeys.tags),
+                accessor: 'tags',
+                Cell: (props: any) => {
+                    const { tags } = props.cell.row.original;
+                    if (!tags)
+                        return null;
+                    return tags.split(",").map((t: string, i: number) => (
+                        <span key={`lead${i}`} style={{
+                            backgroundColor: '#7721AD',
+                            color: '#fff',
+                            borderRadius: '20px',
+                            padding: '2px 5px',
+                            margin: '2px'
+                        }}>{t}</span>
+                    ))
+                }
+            },
+            {
+                Header: t(langKeys.comments),
+                accessor: 'datenote',
+                NoFilter: true,
+                NoSort: true,
+                width: 300,
+                minWidth: 300,
+                Cell: (props: any) => {
+                    const { datenote, leadnote, dateactivity, leadactivity } = props.cell.row.original;
+                    return (
+                        <div>
+                            {datenote &&
+                                <div>{t(langKeys.lastnote)} ({convertLocalDate(datenote).toLocaleString()}) {leadnote}</div>
+                            }
+                            {dateactivity &&
+                                <div>{t(langKeys.nextprogramedactivity)} ({convertLocalDate(dateactivity).toLocaleString()}) {leadactivity}</div>
+                            }
+                        </div>
+                    )
+                }
+            },
+        ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        []
+    );
 
     useEffect(() => {
         dispatch(getLeadsByPerson(getOpportunitiesByPersonBody(person.personid)));
@@ -2032,14 +2343,21 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
         };
     }, [dispatch, person]);
 
-    useEffect(() => {
-        console.log(leads);
-    }, [leads]);
-
     return (
-        <div>
-            {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
-        </div>
+        <TableZyx
+            columns={columns}
+            // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+            filterGeneral={false}
+            data={leads.data}
+            download={false}
+            loading={leads.loading}
+            onClickRow={goToLead}
+            register={false}
+        // handleRegister={handleRegister}
+        />
+        // <div>
+        //     {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
+        // </div>
     );
 }
 const useLeadItemStyles = makeStyles(theme => ({
@@ -2094,156 +2412,157 @@ const useLeadItemStyles = makeStyles(theme => ({
     },
 }));
 
-interface LeadItemProps {
-    lead: IPersonLead;
-}
+// interface LeadItemProps {
+//     lead: IPersonLead;
+// }
 
-const LeadItem: FC<LeadItemProps> = ({ lead }) => {
-    const classes = useLeadItemStyles();
-    const [open] = useState(false);
+// const LeadItem: FC<LeadItemProps> = ({ lead }) => {
+//     const classes = useLeadItemStyles();
+//     const [open] = useState(false);
 
-    return (
-        <div className={classes.root}>
-            <div className={classes.rootItem}>
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title="Ticket #" subtitle={lead.ticketnum} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.expectedRevenue} />} subtitle={parseFloat(lead.expected_revenue || "0").toFixed(2)} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.expectedClosing} />} subtitle={lead.date_deadline ? new Date(lead.date_deadline).toLocaleString() : ''} />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={1} lg={1} xl={2}>
-                        <Property title={<Trans i18nKey={langKeys.priority} />} subtitle={(
-                            <Rating
-                                max={3}
-                                value={urgencyLevels.findIndex(x => x === lead.priority)}
-                            />
-                        )} />
-                    </Grid>
-                    {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-                        <IconButton onClick={() => setOpen(!open)}>
-                            <ArrowDropDown />
-                        </IconButton>
-                    </Grid> */}
-                </Grid>
-            </div>
-            <Collapse in={open}>
-                <div className={classes.collapseRoot}>
-                    <div style={{ height: 15 }} />
-                    <div className={classes.opportunityContainer}>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>$175</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.expectedRevenue} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>55%</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.probability} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>35:15</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.expectedClosing} /></label>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-                                <Box className={classes.opportunitySubContainer} m={1}>
-                                    <label className={classes.opportunityValue}>X</label>
-                                    <div style={{ width: '10%', minWidth: 4 }} />
-                                    <label><Trans i18nKey={langKeys.priority} /></label>
-                                </Box>
-                            </Grid>
-                        </Grid>
-                    </div>
-                    <div style={{ height: 15 }} />
-                    <div className={classes.rootItem}>
-                        <h3 className={clsx(classes.infoSubtitle, classes.infoTitle)}>
-                            <Trans i18nKey={langKeys.extraInformation} />
-                        </h3>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>
-                            <Trans i18nKey={langKeys.contactInformation} />
-                        </h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Company name" subtitle="NATURAL PRODUCTS" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Language" subtitle="English" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Mobile" subtitle="(456) 589 5621" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Address" subtitle="45 1st St.Louisiana" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Contact name" subtitle="Sam White" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Grid container direction="column">
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Website" subtitle="www.naturalproducts.net" m={1} />
-                                    </Grid>
-                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                        <Property title="Job position" subtitle="manager" m={1} />
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>MARKETING</h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Campaign" subtitle="Promotion" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Medium" subtitle="Social media" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Source" subtitle="Facebook" m={1} />
-                            </Grid>
-                        </Grid>
-                        <div style={{ height: 2 }} />
-                        <h4 className={classes.infoSubtitle}>MISC</h4>
-                        <Grid container direction="row">
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Days to assign" subtitle="0.00" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Days to close" subtitle="1.00" m={1} />
-                            </Grid>
-                            <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-                                <Property title="Referred by" subtitle="Website" m={1} />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </div>
-            </Collapse>
-        </div>
-    );
-}
+//     return (
+//         <div className={classes.root}>
+//             <div className={classes.rootItem}>
+//                 <Grid container direction="row">
+//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+//                         <Property title="Ticket #" subtitle={lead.ticketnum} />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+//                         <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+//                         <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+//                         <Property title={<Trans i18nKey={langKeys.expectedRevenue} />} subtitle={parseFloat(lead.expected_revenue || "0").toFixed(2)} />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
+//                         <Property title={<Trans i18nKey={langKeys.expectedClosing} />} subtitle={lead.date_deadline ? new Date(lead.date_deadline).toLocaleString() : ''} />
+//                     </Grid>
+//                     <Grid item xs={12} sm={12} md={1} lg={1} xl={2}>
+//                         <Property title={<Trans i18nKey={langKeys.priority} />} subtitle={(
+//                             <Rating
+//                                 name="simple-controlled-aa"
+//                                 max={3}
+//                                 value={urgencyLevels.findIndex(x => x === lead.priority)}
+//                             />
+//                         )} />
+//                     </Grid>
+//                     {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
+//                         <IconButton onClick={() => setOpen(!open)}>
+//                             <ArrowDropDown />
+//                         </IconButton>
+//                     </Grid> */}
+//                 </Grid>
+//             </div>
+//             <Collapse in={open}>
+//                 <div className={classes.collapseRoot}>
+//                     <div style={{ height: 15 }} />
+//                     <div className={classes.opportunityContainer}>
+//                         <Grid container direction="row">
+//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+//                                 <Box className={classes.opportunitySubContainer} m={1}>
+//                                     <label className={classes.opportunityValue}>$175</label>
+//                                     <div style={{ width: '10%', minWidth: 4 }} />
+//                                     <label><Trans i18nKey={langKeys.expectedRevenue} /></label>
+//                                 </Box>
+//                             </Grid>
+//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+//                                 <Box className={classes.opportunitySubContainer} m={1}>
+//                                     <label className={classes.opportunityValue}>55%</label>
+//                                     <div style={{ width: '10%', minWidth: 4 }} />
+//                                     <label><Trans i18nKey={langKeys.probability} /></label>
+//                                 </Box>
+//                             </Grid>
+//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+//                                 <Box className={classes.opportunitySubContainer} m={1}>
+//                                     <label className={classes.opportunityValue}>35:15</label>
+//                                     <div style={{ width: '10%', minWidth: 4 }} />
+//                                     <label><Trans i18nKey={langKeys.expectedClosing} /></label>
+//                                 </Box>
+//                             </Grid>
+//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
+//                                 <Box className={classes.opportunitySubContainer} m={1}>
+//                                     <label className={classes.opportunityValue}>X</label>
+//                                     <div style={{ width: '10%', minWidth: 4 }} />
+//                                     <label><Trans i18nKey={langKeys.priority} /></label>
+//                                 </Box>
+//                             </Grid>
+//                         </Grid>
+//                     </div>
+//                     <div style={{ height: 15 }} />
+//                     <div className={classes.rootItem}>
+//                         <h3 className={clsx(classes.infoSubtitle, classes.infoTitle)}>
+//                             <Trans i18nKey={langKeys.extraInformation} />
+//                         </h3>
+//                         <div style={{ height: 2 }} />
+//                         <h4 className={classes.infoSubtitle}>
+//                             <Trans i18nKey={langKeys.contactInformation} />
+//                         </h4>
+//                         <Grid container direction="row">
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Grid container direction="column">
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Company name" subtitle="NATURAL PRODUCTS" m={1} />
+//                                     </Grid>
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Language" subtitle="English" m={1} />
+//                                     </Grid>
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Mobile" subtitle="(456) 589 5621" m={1} />
+//                                     </Grid>
+//                                 </Grid>
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Grid container direction="column">
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Address" subtitle="45 1st St.Louisiana" m={1} />
+//                                     </Grid>
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Contact name" subtitle="Sam White" m={1} />
+//                                     </Grid>
+//                                 </Grid>
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Grid container direction="column">
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Website" subtitle="www.naturalproducts.net" m={1} />
+//                                     </Grid>
+//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+//                                         <Property title="Job position" subtitle="manager" m={1} />
+//                                     </Grid>
+//                                 </Grid>
+//                             </Grid>
+//                         </Grid>
+//                         <div style={{ height: 2 }} />
+//                         <h4 className={classes.infoSubtitle}>MARKETING</h4>
+//                         <Grid container direction="row">
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Campaign" subtitle="Promotion" m={1} />
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Medium" subtitle="Social media" m={1} />
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Source" subtitle="Facebook" m={1} />
+//                             </Grid>
+//                         </Grid>
+//                         <div style={{ height: 2 }} />
+//                         <h4 className={classes.infoSubtitle}>MISC</h4>
+//                         <Grid container direction="row">
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Days to assign" subtitle="0.00" m={1} />
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Days to close" subtitle="1.00" m={1} />
+//                             </Grid>
+//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
+//                                 <Property title="Referred by" subtitle="Website" m={1} />
+//                             </Grid>
+//                         </Grid>
+//                     </div>
+//                 </div>
+//             </Collapse>
+//         </div>
+//     );
+// }

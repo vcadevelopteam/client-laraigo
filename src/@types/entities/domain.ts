@@ -1,3 +1,5 @@
+import { Dictionary } from "@types";
+
 export interface IDomain {
     domainid: number;
     domainvalue: string;
@@ -15,4 +17,7 @@ export interface IPersonDomains {
     groups: IDomain[];
     personGenTypes: IDomain[];
     channelTypes: IDomain[];
+    agents?: Dictionary[];
+    templates?: Dictionary[];
+    channels?: Dictionary[];
 }
