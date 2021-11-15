@@ -519,7 +519,7 @@ export const insClassification = ({ id, title, description, parent, communicatio
     }
 })
 //tabla paginada
-export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate }: Dictionary): IRequestBodyPaginated => ({
+export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, enddate, userids = "", channeltypes = "" }: Dictionary): IRequestBodyPaginated => ({
     methodCollection: "UFN_PERSON_SEL",
     methodCount: "UFN_PERSON_TOTALRECORDS",
     parameters: {
@@ -530,6 +530,8 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
         filters,
         sorts,
         origin: "person",
+        userids,
+        channeltypes,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })

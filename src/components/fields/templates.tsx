@@ -148,8 +148,6 @@ export const Title: React.FC = ({ children }) => {
     const style: React.CSSProperties = {
         fontSize: '22px',
         fontWeight: 'bold',
-        lineHeight: '48px',
-        height: '48px',
         color: theme.palette.text.primary,
     };
     return <label style={style}>{children}</label>;
@@ -508,6 +506,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                         {...params}
                         label={variant !== "standard" && label}
                         variant={variant}
+                        size="small"
                         InputProps={{
                             ...params.InputProps,
                             endAdornment: (

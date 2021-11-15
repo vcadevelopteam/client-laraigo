@@ -265,7 +265,8 @@ const TableZyx = React.memo(({
     initialSelectedRows,
     setSelectedRows,
     allRowsSelected,
-    setAllRowsSelected
+    setAllRowsSelected,
+    onClickRow
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -782,6 +783,7 @@ const TableZyx = React.memo(({
                                                 component="div"
                                                 {...row.getRowProps()}
                                                 hover
+                                                style={{cursor: onClickRow ? 'pointer' : 'default'}}
                                             >
                                                 {row.cells.map((cell, i) =>
                                                     <TableCell
@@ -796,6 +798,7 @@ const TableZyx = React.memo(({
                                                                 whiteSpace: 'nowrap',
                                                             },
                                                         })}
+                                                        onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                     >
                                                         {headerGroups[0].headers[i].isComponent ?
                                                             cell.render('Cell')
