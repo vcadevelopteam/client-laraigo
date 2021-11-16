@@ -1,9 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, Fragment, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
 import { getCorpSel, getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -16,6 +16,8 @@ import { getCollection, resetMain, getMultiCollection, execute } from 'store/mai
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
+import { IconButton, InputAdornment, Tabs } from '@material-ui/core';
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -49,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '14px',
         textTransform: 'initial'
     },
+    mb2: {
+        marginBottom: theme.spacing(4),
+    },
 }));
 
 const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
@@ -57,7 +62,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
-    const { t } = useTranslation();
+    const { t } = useTranslation();    
+    const [pageSelected, setPageSelected] = useState(0);    
+    const [showPassword, setShowPassword] = useState(false);
+    const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
@@ -72,6 +80,12 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             id: row ? row.orgid : 0,
             operation: row ? "EDIT" : "INSERT",
             currency: row?.currency || "",
+            email: row?.email || "",
+            port: row?.port || 0,
+            password: row?.password || "",
+            host: row?.host || false,
+            ssl: row?.ssl || false,
+            default_credentials: row?.default_credentials || false,
         }
     });
 
@@ -80,6 +94,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('host');
+        register('ssl');
+        register('default_credentials');
     }, [edit, register]);
 
     useEffect(() => {
@@ -148,7 +165,18 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         }
                     </div>
                 </div>
-                <div className={classes.containerDetail}>
+                <Tabs
+                    value={pageSelected}
+                    indicatorColor="primary"
+                    variant="fullWidth"
+                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
+                    textColor="primary"
+                    onChange={(_, value) => setPageSelected(value)}
+                >
+                    <AntTab label={t(langKeys.informationorganization)}/>
+                    <AntTab label={t(langKeys.emailconfiguration)}/>
+                </Tabs>
+                {pageSelected === 0  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             (
@@ -179,10 +207,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             />}
                         {edit ?
                             <FieldEdit
-                                label={t(langKeys.description)} //transformar a multiselect
+                                label={t(langKeys.description)}
                                 className="col-6"
                                 onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.orgdesc || "") : ""}
+                                valueDefault={getValues("description")}
                                 error={errors?.description?.message}
                             />
                             : <FieldView
@@ -249,7 +277,130 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 className="col-6"
                             />}
                     </div>
-                </div>
+                </div>}
+                {pageSelected === 1 && 
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx">
+                            {edit ?
+                                <TemplateSwitch
+                                    label={t(langKeys.default_credentials)}
+                                    className="col-6"
+                                    valueDefault={showCredential}
+                                    onChange={(value) => {setValue('default_credentials', value);setShowCredential(value)}}
+                                /> :
+                                <FieldView
+                                    label={"default_credentials"}
+                                    value={row ? (row.default_credentials  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                    className="col-6"
+                                />
+                            }
+                        </div>
+                        {
+                            showCredential &&
+
+                            <Fragment>
+                                <div className="row-zyx">
+                                    {edit ?
+                                        <FieldEdit
+                                            label={t(langKeys.email)} //transformar a multiselect
+                                            className="col-6"
+                                            fregister={{
+                                                ...register("email",{
+                                                    validate: (value) => (value && value.length) && ((value.includes("@") && value.includes(".")) || t(langKeys.emailverification) )|| t(langKeys.field_required)
+                                                })
+                                            }}
+                                            error={errors?.email?.message}
+                                            onChange={(value) => setValue('email', value)}
+                                            valueDefault={getValues("email")}
+                                        />
+                                        : <FieldView
+                                            label={t(langKeys.email)}
+                                            value={row ? (row.email || "") : ""}
+                                            className="col-6"
+                                        />}
+                                    {edit ?
+                                        <FieldEdit
+                                            label={t(langKeys.port)} //transformar a multiselect
+                                            className="col-6"
+                                            type="number"
+                                            fregister={{
+                                                ...register("port",{
+                                                    validate: (value) => (value && value>0) || t(langKeys.validnumber) 
+                                                })
+                                            }}
+                                            error={errors?.port?.message}
+                                            onChange={(value) => setValue('port', value)}
+                                            valueDefault={getValues("port")}
+                                        />
+                                        : <FieldView
+                                            label={t(langKeys.port)}
+                                            value={row ? (row.port || 0) : 0}
+                                            className="col-6"
+                                        />}
+                                </div>
+                                <div className="row-zyx">
+                                    {edit ?
+                                        <FieldEdit
+                                            label={t(langKeys.password)} 
+                                            className="col-6"
+                                            type={showPassword ? 'text' : 'password'}
+                                            onChange={(value) => setValue('password', value)}
+                                            valueDefault={getValues("password")}
+                                            fregister={{
+                                                ...register("password"
+                                                    //,{ validate: (value) => (value && value.length) || t(langKeys.field_required)}
+                                                )
+                                            }}
+                                            error={errors?.password?.message}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => setShowPassword(!showPassword)}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                        : ""}
+                                </div>
+                                <div className="row-zyx">
+                                    {edit ?
+                                        <TemplateSwitch
+                                            label={t(langKeys.host)}
+                                            className="col-6"
+                                            valueDefault={getValues("host")}
+                                            onChange={(value) => setValue('host', value)}
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.host)}
+                                            value={row ? (row.host  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            className="col-6"
+                                        />
+                                    }
+                                    {edit ?
+                                        <TemplateSwitch
+                                            label={"SSL"}
+                                            className="col-6"
+                                            valueDefault={getValues("ssl")}
+                                            onChange={(value) => setValue('ssl', value)}
+                                        /> :
+                                        <FieldView
+                                            label={"SSL"}
+                                            value={row ? (row.ssl  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            className="col-6"
+                                        />
+                                    }
+                                </div>
+                            </Fragment>
+
+                        }
+                    </div>
+                }
             </form>
         </div>
     );
