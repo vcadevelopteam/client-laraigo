@@ -637,7 +637,7 @@ const translation: LangKeys = {
     flow: 'Flow',
     color: 'Color',
     bold: 'Bold',
-    tos: "By signing up you accept our terms of use and privacy policy",
+    tos: "By signing up you accept our terms of use and ",
     signupstep1title2: 'Complete Personal and Business Information',
     show: 'Show',
     submit: 'Submit',

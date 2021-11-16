@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react'; // we need this to make JSX compile
+import React, { useState, useEffect, Fragment } from 'react'; // we need this to make JSX compile
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -77,10 +77,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Copyright() {
+    const { t } = useTranslation();
     return (
-        <Typography variant="body2" color="textPrimary" align="center">
-            {'Copyright © '} Laraigo {new Date().getFullYear()}
-        </Typography>
+        <Fragment>
+            <Typography variant="body2" color="textPrimary" align="center">
+                {'Copyright © '} Laraigo {new Date().getFullYear()}
+            </Typography>
+            <Typography variant="body2" color="textPrimary" align="center">
+                <a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a>
+            </Typography>
+        </Fragment>
     );
 }
 

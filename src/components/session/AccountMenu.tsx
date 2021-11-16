@@ -84,6 +84,9 @@ const AccountMenu: FC = () => {
     const gotoSettings = () => {
         history.push('/usersettings');
     }
+    const openprivacypolicies = () => {
+        window.open("https://app.laraigo.com/privacy", '_blank');
+    }
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popoverxx' : undefined;
@@ -147,6 +150,15 @@ const AccountMenu: FC = () => {
                         style={{ fontWeight: "normal", textTransform: "uppercase" }}
                     >
                         <Trans i18nKey={langKeys.personalsettings} />
+                    </Button>
+                    <Button
+                        onClick={openprivacypolicies}
+                        variant="outlined"
+                        color="primary"
+                        fullWidth
+                        style={{ fontWeight: "normal"}}
+                    >
+                        <Trans i18nKey={langKeys.privacypoliciestitle} />
                     </Button>
                     <Button
                         variant="outlined"
