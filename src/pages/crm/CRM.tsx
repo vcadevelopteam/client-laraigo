@@ -10,11 +10,11 @@ import paths from "common/constants/paths";
 import { useHistory } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import ViewListIcon from '@material-ui/icons/ViewList';
-import { IconButton } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
@@ -74,10 +74,12 @@ const useStyles = makeStyles((theme) => ({
   },
   containerFilter: {
     width: '100%',
+    marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2),
     display: 'flex',
     gap: 16,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
   },
   filterComponent: {
       width: '220px'
@@ -317,11 +319,13 @@ const CRM: FC = () => {
   const [pageCount, setPageCount] = useState(0);
   const [totalrow, settotalrow] = useState(0);
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
   const [allParameters, setAllParameters] = useState<any>({
     asesorid: mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? user?.userid : 0,
   });
-  const [selectedRows, setSelectedRows] = useState<any>({});
+  const [selectedRows, setSelectedRows] = useState<Dictionary>({});
+  const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
   const [gridModal, setGridModal] = useState<IModalProps>({ name: '', open: false, payload: null });
 
   const CustomCellRender = ({column, row}: any) => {
@@ -398,7 +402,8 @@ const CRM: FC = () => {
     const column = props.cell.column;
     const row = props.cell.row.original;
     return (
-        <div onClick={() => {
+        <div onClick={(e) => {
+          e.stopPropagation();
           if (row.leadid) {
             history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
           }
@@ -455,72 +460,73 @@ const CRM: FC = () => {
         isComponent: true,
         Cell: (props: any) => {
           const row = props.cell.row.original;
-          return (
-            <React.Fragment>
-              <div style={{display: 'flex'}}>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
-                >
-                  <HSMIcon
-                    width={24}
-                    style={{ fill: '#7721AD' }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
-                >
-                  <MailIcon
-                    style={{ color: '#7721AD' }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
-                >
-                  <SmsIcon
-                    style={{ color: '#7721AD' }}
-                  />
-                </IconButton>
-              </div>
-              <div style={{display: 'flex'}}>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
-                >
-                  <AccessTimeIcon
-                    titleAccess={t(langKeys.activities)}
-                    style={{ color: '#7721AD' }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
-                >
-                  <NoteIcon
-                    titleAccess={t(langKeys.logNote)}
-                    style={{ color: '#7721AD' }}
-                  />
-                </IconButton>
-              </div>
-            </React.Fragment>
-          )
+          if (row.status === 'ACTIVO') {
+            return (
+              <React.Fragment>
+                <div style={{display: 'flex'}}>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
+                  >
+                    <HSMIcon
+                      width={24}
+                      style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
+                    />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
+                  >
+                    <MailIcon color="action" />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
+                  >
+                    <SmsIcon color="action" />
+                  </IconButton>
+                </div>
+                <div style={{display: 'flex'}}>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
+                  >
+                    <AccessTimeIcon
+                      titleAccess={t(langKeys.activities)}
+                      color="action" 
+                    />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
+                  >
+                    <NoteIcon
+                      titleAccess={t(langKeys.logNote)}
+                      color="action" 
+                    />
+                  </IconButton>
+                </div>
+              </React.Fragment>
+            )
+          }
+          else {
+            return null
+          }
       }
       },
     ],
@@ -580,28 +586,37 @@ const CRM: FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resExportData, waitExport]);
 
+  useEffect(() => {
+    if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
+        setPersonsSelected(p => Object.keys(selectedRows).map(x => mainPaginated.data.find(y => y.leadid === parseInt(x)) || p.find(y => y.leadid === parseInt(x)) || {}))
+    }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [selectedRows])
+
   return (
-      <React.Fragment>
-        <div style={{ position: 'fixed', right: '20px' }}>
-          <IconButton
-            color="default"
-            disabled={display === 'BOARD'}
-            onClick={() => dispatch(setDisplay('BOARD'))}
-            style={{ padding: '5px' }}
-          >
-            <ViewColumnIcon />
-          </IconButton>
-          <IconButton
-            color="default"
-            disabled={display === 'GRID'}
-            onClick={() => dispatch(setDisplay('GRID'))}
-            style={{ padding: '5px' }}
-          >
-            <ViewListIcon />
-          </IconButton>
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
+        <div style={{ marginBottom: '34px' }}>
+          <div style={{ position: 'fixed', right: '20px' }}>
+            <IconButton
+              color="default"
+              disabled={display === 'BOARD'}
+              onClick={() => dispatch(setDisplay('BOARD'))}
+              style={{ padding: '5px' }}
+            >
+              <ViewColumnIcon />
+            </IconButton>
+            <IconButton
+              color="default"
+              disabled={display === 'GRID'}
+              onClick={() => dispatch(setDisplay('GRID'))}
+              style={{ padding: '5px' }}
+            >
+              <ViewListIcon />
+            </IconButton>
+          </div>
         </div>
         {display === 'BOARD' &&
-        <div style={{ display: "flex", justifyContent: "center", height: "100%", marginTop: "35px"}}>
+        <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             {/* {(dataColumn.length > 0) && 
               <Droppable droppableId="first-column" direction="horizontal" type="column" isDropDisabled>
@@ -792,35 +807,65 @@ const CRM: FC = () => {
         </div>
         }
         {display === 'GRID' &&
-        <div style={{ width: '100%', paddingTop: '10px' }}>
+        <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
-            <FieldSelect
-                variant="outlined"
-                label={t(langKeys.user)}
-                className={classes.filterComponent}
-                onChange={(value) => setAllParameters({...allParameters, asesorid: value.userid})}
-                data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1) || []}
-                optionDesc={'fullname'}
-                optionValue={'userid'}
-            />
-            <FieldMultiSelect
-                variant="outlined"
-                label={t(langKeys.channel)}
-                className={classes.filterComponent}
-                onChange={(value) => setAllParameters({...allParameters, channel: value.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1) || []}
-                optionDesc={'communicationchanneldesc'}
-                optionValue={'communicationchannelid'}
-            />
-            <FieldEdit
-                size="small"
-                variant="outlined"
-                label={t(langKeys.customer)}
-                className={classes.filterComponent}
-                onChange={(value) => setAllParameters({...allParameters, contact: value})}
-            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <FieldSelect
+                  variant="outlined"
+                  label={t(langKeys.user)}
+                  className={classes.filterComponent}
+                  onChange={(value) => setAllParameters({...allParameters, asesorid: value.userid})}
+                  data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1) || []}
+                  optionDesc={'fullname'}
+                  optionValue={'userid'}
+              />
+              <FieldMultiSelect
+                  variant="outlined"
+                  label={t(langKeys.channel)}
+                  className={classes.filterComponent}
+                  onChange={(value) => setAllParameters({...allParameters, channel: value.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+                  data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1) || []}
+                  optionDesc={'communicationchanneldesc'}
+                  optionValue={'communicationchannelid'}
+              />
+              <FieldEdit
+                  size="small"
+                  variant="outlined"
+                  label={t(langKeys.customer)}
+                  className={classes.filterComponent}
+                  onChange={(value) => setAllParameters({...allParameters, contact: value})}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<HSMIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
+              >
+                  <Trans i18nKey={langKeys.SENDHSM} />
+              </Button>
+              <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' }}) }
+              >
+                  <Trans i18nKey={langKeys.SENDMAIL} />
+              </Button>
+              <Button
+                  variant="contained"
+                  color="primary"
+                  disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
+                  startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' }}) }
+              >
+                  <Trans i18nKey={langKeys.SENDSMS} />
+              </Button>
+            </div>
           </div>
-          <div className={classes.containerDetail}>
             <TablePaginated
               columns={columns}
               data={mainPaginated.data}
@@ -830,28 +875,32 @@ const CRM: FC = () => {
               filterrange={true}
               download={true}
               fetchData={fetchGridData}
+              autotrigger={true}
+              autoRefresh={{value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
               ButtonsElement={() => (<div></div>)}
               exportPersonalized={triggerExportData}
               useSelection={true}
+              selectionFilter={{ key: 'status', value: 'ACTIVO' }}
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
             />
-          </div>
-          <NewActivityModal
+          {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
-          <NewNoteModal
+            setAutoRefresh={setAutoRefresh}
+          />}
+          {gridModal.name === 'NOTE' && <NewNoteModal
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
-          <DialogSendTemplate
+            setAutoRefresh={setAutoRefresh}
+          />}
+          {gridModal.name === 'MESSAGE' && <DialogSendTemplate
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
+          />}
         </div>
         }
-      </React.Fragment>
+      </div>
     );
 };
 export default CRM;

@@ -20,11 +20,12 @@ import TableZyx from 'components/fields/table-paginated';
 import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
-import NoteIcon from '@material-ui/icons/Note';
+import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
+
 const tagsOptions = [
     { title: "Information" },
     { title: "Design" },
@@ -1835,10 +1836,19 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
     const classes = useTabPanelLeadHistoryStyles();
 
     const Icon = useCallback(({ type }: { type: string }) => {
-        if (type === "CLOSEDLEAD") {
-            return <CancelIcon />;
+        switch (type) {
+            case "NEWLEAD": return <StarIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWNOTE": return <NoteIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWACTIVITY": return <HistoryIcon width={24} style={{ fill: 'white' }} />;
+            case "CHANGESTATUS": return <LowPriorityIcon width={24} style={{ fill: 'white' }} />;
+            case "SENDHSM": return <HSMIcon width={24} style={{ fill: 'white' }} />;
+            case "SENDMAIL": return <EmailIcon width={24} style={{ fill: 'white' }} />;
+            case "SENDSMS": return <SmsIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
+            case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
+            case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
+            default: return <FlagIcon width={24} style={{ fill: 'white' }} />;
         }
-        return <FlagIcon />;
     }, []);
 
     if (loading) {

@@ -1954,3 +1954,16 @@ export const updateLeadTagsIns = (tags: ICrmLeadTagsSave): IRequestBody => ({
     method: "UFN_UPDATE_LEAD_TAGS",
     parameters: tags,
 });
+
+export const leadHistoryIns = ({ leadid, historyleadid, description, type, status, operation }: Dictionary): IRequestBody => ({
+    key: "UFN_HISTORYLEAD_INS",
+    method: "UFN_HISTORYLEAD_INS",
+    parameters: {
+        leadid,
+        historyleadid: historyleadid || 0,
+        description,
+        type,
+        status: status || 'ACTIVO',
+        operation
+    }
+});

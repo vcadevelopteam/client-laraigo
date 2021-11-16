@@ -135,6 +135,7 @@ const translation: LangKeys = {
     lastname: 'Lastname',
     fullname: 'Fullname',
     email: 'Email',
+    with: 'with',
     address: 'Address',
     department: 'Department',
     province: 'Province',
@@ -522,6 +523,7 @@ const translation: LangKeys = {
     column_plural: 'Columns',
     new_report_designer: 'New report',
     designed_reports: 'Personalized reports',
+    persons_selected: 'selected persons',
     filters: 'Filters',
 
     recordPerPage: 'Record per page',
