@@ -1837,17 +1837,17 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
 
     const Icon = useCallback(({ type }: { type: string }) => {
         switch (type) {
-            case "NEWLEAD": return <StarIcon />;
-            case "NEWNOTE": return <NoteIcon />;
-            case "NEWACTIVITY": return <HistoryIcon />;
-            case "CHANGESTATUS": return <LowPriorityIcon />;
+            case "NEWLEAD": return <StarIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWNOTE": return <NoteIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWACTIVITY": return <HistoryIcon width={24} style={{ fill: 'white' }} />;
+            case "CHANGESTATUS": return <LowPriorityIcon width={24} style={{ fill: 'white' }} />;
             case "SENDHSM": return <HSMIcon width={24} style={{ fill: 'white' }} />;
-            case "SENDMAIL": return <EmailIcon />;
-            case "SENDSMS": return <SmsIcon />;
-            case "NEWTAG": return <LocalOfferIcon />;
-            case "REMOVETAG": return <LocalOfferIcon />;
-            case "CLOSEDLEAD": return <CancelIcon />;
-            default: return <FlagIcon />;
+            case "SENDMAIL": return <EmailIcon width={24} style={{ fill: 'white' }} />;
+            case "SENDSMS": return <SmsIcon width={24} style={{ fill: 'white' }} />;
+            case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
+            case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
+            case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
+            default: return <FlagIcon width={24} style={{ fill: 'white' }} />;
         }
     }, []);
 
