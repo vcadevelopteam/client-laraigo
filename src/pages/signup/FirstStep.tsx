@@ -231,7 +231,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
                         ),
                     }}
                 />
-                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}</div>
+                <div style={{ textAlign: "center", padding: "20px" }}>{t(langKeys.tos)}<a href="https://app.laraigo.com/privacy" target="_blank" rel="noopener noreferrer">{t(langKeys.privacypoliciestitle)}</a></div>
                 <Button
                     onClick={() => { handlesubmit() }}
                     className={classes.button}

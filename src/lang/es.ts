@@ -306,7 +306,7 @@ const translation: LangKeys = {
     firstandlastname: "Nombres y apellidos",
     companybusinessname: "Nombre de la Empresa o Compañia",
     signupstep1title2: 'Complete su Información personal y comercial',
-    tos: "Al registrarte aceptas nuestras condiciones de uso y política de privacidad",
+    tos: "Al registrarte aceptas nuestras condiciones de uso y ",
     signupstep1title: '¡Registrate en menos de un minuto!',
     signupfacebookbutton: 'Registrate por Facebook',
     mobilephoneoptional: "Teléfono móvil (opcional)",
