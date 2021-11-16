@@ -290,12 +290,13 @@ const TableZyx = React.memo(({
     loading,
     importCSV,
     autotrigger = false,
+    autoRefresh,
     useSelection,
     selectionKey,
     selectionFilter,
     initialSelectedRows,
     setSelectedRows,
-    onClickRow
+    onClickRow,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -424,6 +425,7 @@ const TableZyx = React.memo(({
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     });
+
     const triggertmp = () => {
         fetchData && fetchData({
             ...pagination, pageSize, daterange: {
@@ -441,6 +443,14 @@ const TableZyx = React.memo(({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
+
+    useEffect(() => {
+        if (autoRefresh?.value) {
+            triggertmp();
+            autoRefresh?.callback(false);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoRefresh])
 
     useEffect(() => {
         setSelectedRows && setSelectedRows(selectedRowIds)

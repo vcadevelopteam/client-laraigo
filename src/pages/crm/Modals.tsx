@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Dictionary, ICrmGridPerson } from "@types";
 import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
-import { getAdvisers, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
+import { getAdvisers, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
 import { adviserSel, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
 import { Box, Button, makeStyles, Modal } from "@material-ui/core";
 import { DialogZyx, FieldEditArray, FieldSelect, FieldView, TitleDetail } from "components";
@@ -13,7 +13,7 @@ import { useSelector } from "hooks";
 import { useFieldArray, useForm } from "react-hook-form";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { getDataForOutbound, sendHSM } from "store/inbox/actions";
-import { execute } from "store/main/actions";
+import { execute, resetExecute } from "store/main/actions";
 
 interface IModalProps {
     name: string;
@@ -24,6 +24,7 @@ interface IModalProps {
 interface IFCModalProps {
     gridModalProps: IModalProps;
     setGridModal: (data: any) => void;
+    setAutoRefresh?: (value: boolean) => void;
 }
 
 const useSelectPersonModalStyles = makeStyles(theme => ({
@@ -41,17 +42,40 @@ const useSelectPersonModalStyles = makeStyles(theme => ({
     },
 }));
 
-export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal }) => {
+export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal, setAutoRefresh }) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const saveActivity = useSelector(state => state.lead.saveLeadActivity);
+
     useEffect(() => {
         if (gridModalProps.name === 'ACTIVITY' && gridModalProps.open === true) {
             dispatch(getAdvisers(adviserSel()));
         }
     }, [dispatch, gridModalProps])
 
+    useEffect(() => {
+        if (saveActivity.loading) return;
+        if (saveActivity.error) {
+            const errormessage = t(saveActivity.code || "error_unexpected_error", { module: t(langKeys.lead).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        } else if (saveActivity.success) {
+            dispatch(showSnackbar({
+                message: t(langKeys.successful_transaction),
+                success: true,
+                show: true,
+            }));
+            setGridModal({ name: '', open: false, payload: null });
+            setAutoRefresh && setAutoRefresh(true);
+            dispatch(resetSaveLeadActivity());
+        }
+    }, [saveActivity])
+    
     const submitActivitiesModal = (data: any) => {
         dispatch(saveLeadActivity(leadActivityIns(data)));
-        setGridModal({ name: '', open: false, payload: null })
     }
     
     return (
@@ -65,10 +89,11 @@ export const NewActivityModal: FC<IFCModalProps> = ({ gridModalProps, setGridMod
     )
 }
 
-export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal }) => {
+export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal, setAutoRefresh }) => {
     const dispatch = useDispatch();
     const modalClasses = useSelectPersonModalStyles();
     const { t } = useTranslation();
+    const saveNote = useSelector(state => state.lead.saveLeadNote);
 
     useEffect(() => {
         if (gridModalProps.name === 'NOTE' && gridModalProps.open === true) {
@@ -76,9 +101,29 @@ export const NewNoteModal: FC<IFCModalProps> = ({ gridModalProps, setGridModal }
         }
     }, [dispatch, gridModalProps])
 
+    useEffect(() => {
+        if (saveNote.loading) return;
+        if (saveNote.error) {
+            const errormessage = t(saveNote.code || "error_unexpected_error", { module: t(langKeys.lead).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        } else if (saveNote.success) {
+            dispatch(showSnackbar({
+                message: t(langKeys.successful_transaction),
+                success: true,
+                show: true,
+            }));
+            setGridModal({ name: '', open: false, payload: null });
+            setAutoRefresh && setAutoRefresh(true);
+            dispatch(resetSaveLeadLogNote());
+        }
+    }, [saveNote]);
+
     const submitNotesModal = (data: any) => {
         dispatch(saveLeadLogNote(leadLogNotesIns(data)));
-        setGridModal({ name: '', open: false, payload: null });
     }
     
     return (
@@ -164,6 +209,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
                 setGridModal({ name: '', open: false, payload: null });
                 dispatch(showBackdrop(false));
+                dispatch(resetExecute());
                 setWaitClose(false);
             } else if (sendingRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
@@ -271,6 +317,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                         setValue('communicationchanneltype', value.type);
                     }}
                     error={errors?.communicationchannelid?.message}
+                    loading={outboundData.loading}
                     data={channelList}
                     optionDesc="communicationchanneldesc"
                     optionValue="communicationchannelid"
@@ -283,6 +330,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                     valueDefault={getValues('hsmtemplateid')}
                     onChange={onSelectTemplate}
                     error={errors?.hsmtemplateid?.message}
+                    loading={outboundData.loading}
                     data={templatesList}
                     optionDesc="name"
                     optionValue="id"

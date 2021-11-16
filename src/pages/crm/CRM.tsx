@@ -319,6 +319,7 @@ const CRM: FC = () => {
   const [pageCount, setPageCount] = useState(0);
   const [totalrow, settotalrow] = useState(0);
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
   const [allParameters, setAllParameters] = useState<any>({
     asesorid: mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? user?.userid : 0,
@@ -401,7 +402,8 @@ const CRM: FC = () => {
     const column = props.cell.column;
     const row = props.cell.row.original;
     return (
-        <div onClick={() => {
+        <div onClick={(e) => {
+          e.stopPropagation();
           if (row.leadid) {
             history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
           }
@@ -458,68 +460,73 @@ const CRM: FC = () => {
         isComponent: true,
         Cell: (props: any) => {
           const row = props.cell.row.original;
-          return (
-            <React.Fragment>
-              <div style={{display: 'flex'}}>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
-                >
-                  <HSMIcon
-                    width={24}
-                    style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
-                >
-                  <MailIcon color="action" />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
-                >
-                  <SmsIcon color="action" />
-                </IconButton>
-              </div>
-              <div style={{display: 'flex'}}>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
-                >
-                  <AccessTimeIcon
-                    titleAccess={t(langKeys.activities)}
-                    color="action" 
-                  />
-                </IconButton>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  size="small"
-                  onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
-                >
-                  <NoteIcon
-                    titleAccess={t(langKeys.logNote)}
-                    color="action" 
-                  />
-                </IconButton>
-              </div>
-            </React.Fragment>
-          )
+          if (row.status === 'ACTIVO') {
+            return (
+              <React.Fragment>
+                <div style={{display: 'flex'}}>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
+                  >
+                    <HSMIcon
+                      width={24}
+                      style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
+                    />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
+                  >
+                    <MailIcon color="action" />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
+                  >
+                    <SmsIcon color="action" />
+                  </IconButton>
+                </div>
+                <div style={{display: 'flex'}}>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
+                  >
+                    <AccessTimeIcon
+                      titleAccess={t(langKeys.activities)}
+                      color="action" 
+                    />
+                  </IconButton>
+                  <IconButton
+                    aria-label="more"
+                    aria-controls="long-menu"
+                    aria-haspopup="true"
+                    size="small"
+                    onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
+                  >
+                    <NoteIcon
+                      titleAccess={t(langKeys.logNote)}
+                      color="action" 
+                    />
+                  </IconButton>
+                </div>
+              </React.Fragment>
+            )
+          }
+          else {
+            return null
+          }
       }
       },
     ],
@@ -868,24 +875,29 @@ const CRM: FC = () => {
               filterrange={true}
               download={true}
               fetchData={fetchGridData}
+              autotrigger={true}
+              autoRefresh={{value: autoRefresh, callback: (value) => setAutoRefresh(value) }}
               ButtonsElement={() => (<div></div>)}
               exportPersonalized={triggerExportData}
               useSelection={true}
+              selectionFilter={{ key: 'status', value: 'ACTIVO' }}
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
             />
-          <NewActivityModal
+          {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
-          <NewNoteModal
+            setAutoRefresh={setAutoRefresh}
+          />}
+          {gridModal.name === 'NOTE' && <NewNoteModal
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
-          <DialogSendTemplate
+            setAutoRefresh={setAutoRefresh}
+          />}
+          {gridModal.name === 'MESSAGE' && <DialogSendTemplate
             gridModalProps={gridModal}
             setGridModal={setGridModal}
-          />
+          />}
         </div>
         }
       </div>

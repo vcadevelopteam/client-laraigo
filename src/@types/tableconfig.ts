@@ -40,6 +40,7 @@ export interface TableConfig {
     allRowsSelected?: boolean;
     setAllRowsSelected?: (value: boolean) => void;
     autotrigger?: boolean;
+    autoRefresh?: {value: boolean, callback: (value: boolean) => void};
     onClickRow?: (param?: any) => void
 }
 
