@@ -1841,7 +1841,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "NEWNOTE": return <NoteIcon />;
             case "NEWACTIVITY": return <HistoryIcon />;
             case "CHANGESTATUS": return <LowPriorityIcon />;
-            case "SENDHSM": return <HSMIcon />;
+            case "SENDHSM": return <HSMIcon width={24} style={{ fill: 'white' }} />;
             case "SENDMAIL": return <EmailIcon />;
             case "SENDSMS": return <SmsIcon />;
             case "NEWTAG": return <LocalOfferIcon />;
