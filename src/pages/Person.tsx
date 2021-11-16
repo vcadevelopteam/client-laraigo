@@ -91,7 +91,7 @@ const format = (datex: Date) => new Date(datex.setHours(10)).toISOString().subst
 
 const selectionKey = 'personid';
 
-const variables = ['firstname','lastname','displayname','email','phone','documenttype','documentnumber','dateactivity','leadactivity','datenote','note','custom']
+const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
 
 const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
@@ -101,7 +101,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [channelList, setChannelList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
-    // const [bodyCleaned, setBodyCleaned] = useState('');
+    const [personWithData, setPersonWithData] = useState<IPerson[]>([])
     const domains = useSelector(state => state.person.editableDomains);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
@@ -125,23 +125,6 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
-
-                // const newInteractionSocket = {
-                // ...ticketSelected!!,
-                //     interactionid: 0,
-                //     typemessage: "text",
-                //     typeinteraction: null,
-                //     lastmessage: bodyCleaned,
-                //     createdate: new Date().toISOString(),
-                //     userid: 0,
-                //     usertype: "agent",
-                //     ticketWasAnswered: !ticketSelected!!.isAnswered,
-                // }
-                // dispatch(emitEvent({
-                //     event: 'newMessageFromAgent',
-                //     data: newInteractionSocket
-                // }));
-
                 setWaitClose(false);
             } else if (sendingRes.error) {
 
@@ -155,7 +138,6 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     useEffect(() => {
         if (!domains.error && !domains.loading) {
             setTemplatesList(domains?.value?.templates?.filter(x => x.type === type) || []);
-            console.log(domains?.value?.channels, type, type === "HSM" ? "WHA" : type, domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)))
             setChannelList(domains?.value?.channels?.filter(x => x.type.includes(type === "HSM" ? "WHA" : type)) || []);
         }
     }, [domains, type])
@@ -170,6 +152,12 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
                 communicationchanneltype: ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            if (type === "MAIL") {
+                setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else {
+                setPersonWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
         }
     }, [openModal])
 
@@ -177,9 +165,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
-
             const wordList = value.body?.split(/[\s,.;()!?¡]+/);
-            // setBodyCleaned(value.body);
             const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
 
@@ -192,41 +178,12 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     }
 
     const onSubmit = handleSubmit((data) => {
-        // setBodyCleaned(body => {
-        //     data.variables.forEach((x: Dictionary) => {
-        //         if (x.text !== 'custom') {
-        //             body = body.replace(`{{${x.name}}}`, `{{${x.variable}}}`)
-        //         }
-        //         else {
-        //             body = body.replace(`{{${x.name}}}`, x.text)
-        //         }
-        //     })
-        //     return body
-        // })
-
-        // const messagedata = persons.reduce((pc: Dictionary[], p: Dictionary) => ([
-        //     ...pc,
-        //     {
-        //         phone: p.phone,
-        //         hsmtemplateid: data.hsmtemplateid,
-        //         body: bodyCleaned,
-        //         parameters: data.variables.reduce((vc: any[], v: any) => ([
-        //             ...vc,
-        //             {
-        //                 type: "text",
-        //                 text: v.variable !== 'custom' ? p[v.variable] : v.text,
-        //                 name: v.name
-        //             }
-        //         ]),[])
-        //     }
-        // ]), [])
-        console.log("persons", persons)
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
-            listmembers: persons.map(person => ({
+            listmembers: personWithData.map(person => ({
                 phone: person.phone || "",
                 firstname: person.firstname || "",
                 lastname: person.lastname,
@@ -252,6 +209,9 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div style={{marginBottom: 8}}>
+                {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
+            </div>
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.channel)}
@@ -286,39 +246,39 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
                     <>
-                    <FieldSelect
-                        key={"var_" + item.id}
-                        fregister={{
-                            ...register(`variables.${i}.variable`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        label={item.name}
-                        valueDefault={getValues(`variables.${i}.variable`)}
-                        onChange={(value) => {
-                            setValue(`variables.${i}.variable`, value.key)
-                            trigger(`variables.${i}.variable`)
-                        }}
-                        error={errors?.variables?.[i]?.text?.message}
-                        data={variables.map(v => ({key: v}))}
-                        uset={true}
-                        prefixTranslation=""
-                        optionDesc="key"
-                        optionValue="key"
-                    />
-                    {getValues(`variables.${i}.variable`) === 'custom' &&
-                    <FieldEditArray
-                        key={"custom_" + item.id}
-                        fregister={{
-                            ...register(`variables.${i}.text`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        valueDefault={item.value}
-                        error={errors?.variables?.[i]?.text?.message}
-                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                    />
-                    }
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables.map(v => ({ key: v }))}
+                            uset={true}
+                            prefixTranslation=""
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                            <FieldEditArray
+                                key={"custom_" + item.id}
+                                fregister={{
+                                    ...register(`variables.${i}.text`, {
+                                        validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                    })
+                                }}
+                                valueDefault={item.value}
+                                error={errors?.variables?.[i]?.text?.message}
+                                onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                            />
+                        }
                     </>
                 ))}
             </div>
@@ -341,10 +301,10 @@ export const Person: FC = () => {
     const [filterAgents, setFilterAgents] = useState('');
     const [filterChannelsType, setFilterChannelType] = useState('')
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
-    const [selectedRows, setSelectedRows] = useState<any>({});
+    const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState('');
-    
+
     const goToPersonDetail = (person: IPerson) => {
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
@@ -693,6 +653,14 @@ export const Person: FC = () => {
         }
     }, [executeResult, waitImport])
 
+    useEffect(() => {
+        if (!(Object.keys(selectedRows).length === 0 && personsSelected.length === 0)) {
+            setPersonsSelected(p => Object.keys(selectedRows).map(x => personList.data.find(y => y.personid === parseInt(x)) || p.find(y => y.personid === parseInt(x)) || {} as IPerson))
+        }
+    }, [selectedRows])
+
+    console.log(selectedRows)
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
@@ -725,6 +693,42 @@ export const Person: FC = () => {
                 </Grid>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<HSMIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setOpenDialogTemplate(true);
+                                setTypeTemplate("HSM");
+                            }}
+                        >
+                            <Trans i18nKey={langKeys.SENDHSM} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setOpenDialogTemplate(true);
+                                setTypeTemplate("MAIL");
+                            }}
+                        >
+                            <Trans i18nKey={langKeys.SENDMAIL} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
+                            onClick={() => {
+                                setOpenDialogTemplate(true);
+                                setTypeTemplate("SMS");
+                            }}
+                        >
+                            <Trans i18nKey={langKeys.SENDSMS} />
+                        </Button>
                     </div>
                 </Grid>
             </Grid>

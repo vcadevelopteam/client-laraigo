@@ -1121,6 +1121,8 @@ export const langKeys = {
     uploadFile_plural: 'uploadFile_plural',
     uploadVideo: 'uploadVideo',
     uploadVideo_plural: 'uploadVideo_plural',
+    persons_selected: 'persons_selected',
+    with: 'with',
     sendLocation: 'sendLocation',
     uploadImage: 'uploadImage',
     uploadImage_plural: 'uploadImage_plural',

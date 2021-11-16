@@ -150,3 +150,24 @@ export interface ICrmLeadTagsSave {
 	history_type: "NEWTAG" | "REMOVETAG";
 	history_status: string;
 }
+
+export interface ICrmGridPerson {
+    corpid: number;
+    orgid: number;
+    leadid: number;
+    opportunity: string;
+    changedate: Date;
+    contact_name: string;
+    email: string;
+    phone: string;
+    priority: string;
+    asesorname: string;
+    phase: string;
+    status: string;
+    tags: string;
+    notedate: Date;
+    notedescription: string;
+    notemedia: string;
+    activitydate: Date;
+    activitydescription: string;
+}
