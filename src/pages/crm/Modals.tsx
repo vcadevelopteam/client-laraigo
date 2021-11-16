@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Dictionary, IPerson } from "@types";
+import { Dictionary, ICrmGridPerson } from "@types";
 import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
 import { getAdvisers, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
-import { adviserSel, leadActivityIns, leadLogNotesIns } from "common/helpers";
+import { adviserSel, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
 import { Box, Button, makeStyles, Modal } from "@material-ui/core";
 import { DialogZyx, FieldEditArray, FieldSelect, FieldView, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { useSelector } from "hooks";
 import { useFieldArray, useForm } from "react-hook-form";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { getDataForOutbound, sendHSM } from "store/inbox/actions";
+import { execute } from "store/main/actions";
 
 interface IModalProps {
     name: string;
@@ -133,6 +134,9 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     const [templatesList, setTemplatesList] = useState<Dictionary[]>([]);
     const [channelList, setChannelList] = useState<Dictionary[]>([]);
     const [bodyMessage, setBodyMessage] = useState('');
+    const persons: ICrmGridPerson[] = gridModalProps.payload?.persons || [];
+    const [personsWithData, setPersonsWithData] = useState<ICrmGridPerson[]>([])
+    const messagetype: string = gridModalProps.payload?.messagetype || "";
     const outboundData = useSelector(state => state.inbox.outboundData);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
@@ -171,10 +175,10 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
 
     useEffect(() => {
         if (!outboundData.error && !outboundData.loading) {
-            setChannelList(outboundData?.value?.channels?.filter((x: Dictionary) => x.type.includes(gridModalProps.payload?.messagetype === "HSM" ? "WHA" : gridModalProps.payload?.messagetype)) || []);
-            setTemplatesList(outboundData?.value?.templates?.filter((x: Dictionary) => x.type === gridModalProps.payload?.messagetype) || []);
+            setChannelList(outboundData?.value?.channels?.filter((x: Dictionary) => x.type.includes(messagetype === "HSM" ? "WHA" : messagetype)) || []);
+            setTemplatesList(outboundData?.value?.templates?.filter((x: Dictionary) => x.type === messagetype) || []);
         }
-    }, [outboundData, gridModalProps.payload?.messagetype])
+    }, [outboundData, messagetype])
 
     useEffect(() => {
         if (gridModalProps.open) {
@@ -186,6 +190,12 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 communicationchanneltype: ''
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+
+            if (messagetype === "MAIL") {
+                setPersonsWithData(persons.filter(x => x.email && x.email.length > 0))
+            } else {
+                setPersonsWithData(persons.filter(x => x.phone && x.phone.length > 0))
+            }
         }
     }, [gridModalProps.open])
 
@@ -210,10 +220,9 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
-            listmembers: gridModalProps.payload?.persons.map((person: IPerson) => ({
+            listmembers: personsWithData.map((person: Dictionary) => ({
                 phone: person.phone || "",
-                firstname: person.firstname || "",
-                lastname: person.lastname,
+                firstname: person.contact_name || "",
                 parameters: data.variables.map((v: any) => ({
                     type: "text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
@@ -221,7 +230,20 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 }))
             }))
         }
-        dispatch(sendHSM(messagedata))
+        dispatch(sendHSM(messagedata));
+        dispatch(execute({
+            header: null,
+            detail: [
+                ...personsWithData.map((x: Dictionary) => leadHistoryIns({
+                    leadid: x.leadid,
+                    description: data.variables.reduce((a: string, v: any, i: number) => (
+                        a.replace(`{{${i+1}}}`, v.variable !== 'custom' ? x[v.variable] : v.text)
+                    ), bodyMessage),
+                    type: `SEND${messagetype.toUpperCase()}`,
+                    operation: 'INSERT'
+                }))
+            ]
+        }, true));
         dispatch(showBackdrop(true));
         setWaitClose(true)
     });
@@ -229,13 +251,16 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     return (
         <DialogZyx
             open={gridModalProps.name === 'MESSAGE' && gridModalProps.open}
-            title={t(langKeys.send_hsm).replace("HSM", gridModalProps.payload?.messagetype)}
+            title={t(langKeys.send_hsm).replace("HSM", messagetype)}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setGridModal({ name: '', open: false, payload: null })}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
+            <div style={{marginBottom: 8}}>
+                {persons.length} {t(langKeys.persons_selected)}, {personsWithData.length} {t(langKeys.with)} {messagetype === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
+            </div>
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.channel)}
@@ -269,41 +294,40 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
-                    <>
-                    <FieldSelect
-                        key={"var_" + item.id}
-                        fregister={{
-                            ...register(`variables.${i}.variable`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        label={item.name}
-                        valueDefault={getValues(`variables.${i}.variable`)}
-                        onChange={(value) => {
-                            setValue(`variables.${i}.variable`, value.key)
-                            trigger(`variables.${i}.variable`)
-                        }}
-                        error={errors?.variables?.[i]?.text?.message}
-                        data={variables.map(v => ({key: v}))}
-                        uset={true}
-                        prefixTranslation="lead_"
-                        optionDesc="key"
-                        optionValue="key"
-                    />
-                    {getValues(`variables.${i}.variable`) === 'custom' &&
-                    <FieldEditArray
-                        key={"custom_" + item.id}
-                        fregister={{
-                            ...register(`variables.${i}.text`, {
-                                validate: (value: any) => (value && value.length) || t(langKeys.field_required)
-                            })
-                        }}
-                        valueDefault={item.value}
-                        error={errors?.variables?.[i]?.text?.message}
-                        onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
-                    />
-                    }
-                    </>
+                    <React.Fragment key={"param_" + item.id}>
+                        <FieldSelect
+                            key={"var_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.variable`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            label={item.name}
+                            valueDefault={getValues(`variables.${i}.variable`)}
+                            onChange={(value) => {
+                                setValue(`variables.${i}.variable`, value.key)
+                                trigger(`variables.${i}.variable`)
+                            }}
+                            error={errors?.variables?.[i]?.text?.message}
+                            data={variables.map(v => ({key: v}))}
+                            uset={true}
+                            prefixTranslation="lead_"
+                            optionDesc="key"
+                            optionValue="key"
+                        />
+                        {getValues(`variables.${i}.variable`) === 'custom' &&
+                        <FieldEditArray
+                            key={"custom_" + item.id}
+                            fregister={{
+                                ...register(`variables.${i}.text`, {
+                                    validate: (value: any) => (value && value.length) || t(langKeys.field_required)
+                                })
+                            }}
+                            valueDefault={item.value}
+                            error={errors?.variables?.[i]?.text?.message}
+                            onChange={(value) => setValue(`variables.${i}.text`, "" + value)}
+                        />}
+                    </React.Fragment>
                 ))}
             </div>
         </DialogZyx>)
