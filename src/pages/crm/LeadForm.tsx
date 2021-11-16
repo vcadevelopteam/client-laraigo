@@ -20,11 +20,12 @@ import TableZyx from 'components/fields/table-paginated';
 import { Add, AttachFile, Clear, Close, GetApp, Create, Done, FileCopy, Info, Mood } from '@material-ui/icons';
 import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/person/actions';
 import clsx from 'clsx';
-import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon } from '@material-ui/icons';
+import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
-import NoteIcon from '@material-ui/icons/Note';
+import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
+
 const tagsOptions = [
     { title: "Information" },
     { title: "Design" },
@@ -1835,10 +1836,19 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
     const classes = useTabPanelLeadHistoryStyles();
 
     const Icon = useCallback(({ type }: { type: string }) => {
-        if (type === "CLOSEDLEAD") {
-            return <CancelIcon />;
+        switch (type) {
+            case "NEWLEAD": return <StarIcon />;
+            case "NEWNOTE": return <NoteIcon />;
+            case "NEWACTIVITY": return <HistoryIcon />;
+            case "CHANGESTATUS": return <LowPriorityIcon />;
+            case "SENDHSM": return <HSMIcon />;
+            case "SENDMAIL": return <EmailIcon />;
+            case "SENDSMS": return <SmsIcon />;
+            case "NEWTAG": return <LocalOfferIcon />;
+            case "REMOVETAG": return <LocalOfferIcon />;
+            case "CLOSEDLEAD": return <CancelIcon />;
+            default: return <FlagIcon />;
         }
-        return <FlagIcon />;
     }, []);
 
     if (loading) {
