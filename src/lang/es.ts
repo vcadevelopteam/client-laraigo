@@ -85,9 +85,11 @@ const translation: LangKeys = {
 
     advance_search: 'Búsqueda avanzada',
     search_inbox: 'Buscar en la bandeja de entrada',
+    with: 'con',
 
     agent_message: 'Mensajes del Asesor',
     search_result: 'Resultado de búsqueda',
+    persons_selected: 'personas seleccionadas',
     without_result: 'Sin resultado',
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
