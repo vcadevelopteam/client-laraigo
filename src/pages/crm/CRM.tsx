@@ -22,10 +22,10 @@ import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
 import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
 import NoteIcon from '@material-ui/icons/Note';
-import ChatIcon from '@material-ui/icons/Chat';
-import EmailIcon from '@material-ui/icons/Email';
-import WhatsAppIcon from '@material-ui/icons/WhatsApp';
+import SmsIcon from '@material-ui/icons/Sms';
+import MailIcon from '@material-ui/icons/Mail';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
+import { HSMIcon } from "icons";
 
 interface dataBackend {
   columnid: number,
@@ -465,9 +465,9 @@ const CRM: FC = () => {
                   size="small"
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
                 >
-                  <WhatsAppIcon
-                    titleAccess="Whatsapp"
-                    style={{ color: '#7721AD' }}
+                  <HSMIcon
+                    width={24}
+                    style={{ fill: '#7721AD' }}
                   />
                 </IconButton>
                 <IconButton
@@ -477,8 +477,7 @@ const CRM: FC = () => {
                   size="small"
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
                 >
-                  <EmailIcon
-                    titleAccess={t(langKeys.email)}
+                  <MailIcon
                     style={{ color: '#7721AD' }}
                   />
                 </IconButton>
@@ -489,8 +488,7 @@ const CRM: FC = () => {
                   size="small"
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
                 >
-                  <ChatIcon
-                    titleAccess={t(langKeys.message)}
+                  <SmsIcon
                     style={{ color: '#7721AD' }}
                   />
                 </IconButton>
@@ -801,7 +799,7 @@ const CRM: FC = () => {
                 label={t(langKeys.user)}
                 className={classes.filterComponent}
                 onChange={(value) => setAllParameters({...allParameters, asesorid: value.userid})}
-                data={mainMulti.data[2].data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1)}
+                data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1) || []}
                 optionDesc={'fullname'}
                 optionValue={'userid'}
             />
@@ -810,7 +808,7 @@ const CRM: FC = () => {
                 label={t(langKeys.channel)}
                 className={classes.filterComponent}
                 onChange={(value) => setAllParameters({...allParameters, channel: value.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                data={mainMulti.data[3].data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1)}
+                data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1) || []}
                 optionDesc={'communicationchanneldesc'}
                 optionValue={'communicationchannelid'}
             />
