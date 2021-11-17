@@ -797,6 +797,7 @@ const TableZyx = React.memo(({
                                                                 overflow: 'hidden',
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
+                                                                ...(toolsFooter ? {} : { padding: '0px' }),
                                                             },
                                                         })}
                                                         onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
