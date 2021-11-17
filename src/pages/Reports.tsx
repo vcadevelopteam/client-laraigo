@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -28,6 +28,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
+import Heatmap from './Heatmap';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -378,6 +379,9 @@ const Reports: FC = () => {
         }))
     }
 
+    const handleSelectedString = (key:string) => {
+        setViewSelected(key);
+    }
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
@@ -418,6 +422,24 @@ const Reports: FC = () => {
                                 </Card>
                             </Grid>
                         ))}
+                        <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card >
+                                <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4SgTYos-jCFQS1NPSy5_gbSbSwOd-bMAv2w&usqp=CAU'}
+                                        title={t(langKeys.heatmap)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.heatmap)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
                         {allReports.filter(x => !x.image).map((report, index) => (
                             <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card style={{ position: 'relative' }}>
@@ -518,7 +540,22 @@ const Reports: FC = () => {
                 setViewSelected={setViewSelected}
             />
         )
-    } else {
+    } else if(viewSelected ==="heatmap"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread("Heatmap")}
+                        handleClick={handleSelectedString}
+                    />
+                    <Heatmap/>
+                </div>
+            </Fragment>
+        )
+    }
+    
+    else {
         return (
             <ReportItem
                 setViewSelected={setViewSelected}
