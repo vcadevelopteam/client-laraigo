@@ -710,6 +710,7 @@ const MainHeatMap: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -723,6 +724,7 @@ const MainHeatMap: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -736,6 +738,7 @@ const MainHeatMap: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -749,6 +752,7 @@ const MainHeatMap: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -762,6 +766,7 @@ const MainHeatMap: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1281,6 +1286,7 @@ const HeatMapAsesor: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1294,6 +1300,7 @@ const HeatMapAsesor: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1307,6 +1314,7 @@ const HeatMapAsesor: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1320,6 +1328,7 @@ const HeatMapAsesor: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1333,6 +1342,7 @@ const HeatMapAsesor: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }
@@ -1483,6 +1493,7 @@ const HeatMapTicket: React.FC = () => {
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
+                        toolsFooter={false}
                     />
                 </div>:""
             }

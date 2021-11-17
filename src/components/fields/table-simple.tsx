@@ -266,7 +266,8 @@ const TableZyx = React.memo(({
     setSelectedRows,
     allRowsSelected,
     setAllRowsSelected,
-    onClickRow
+    onClickRow,
+    toolsFooter = true
 }: TableConfig) => {
     const classes = useStyles();
 
@@ -822,67 +823,69 @@ const TableZyx = React.memo(({
                         </TableBody>
                     </Table>
                 </Box>
-                <Box className={classes.footerTable}>
-                    <Box>
-                        <IconButton
-                            onClick={() => gotoPage(0)}
-                            disabled={!canPreviousPage || loading}
-                        >
-                            <FirstPage />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => previousPage()}
-                            disabled={!canPreviousPage || loading}
-                        >
-                            <NavigateBefore />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => nextPage()}
-                            disabled={!canNextPage || loading}
-                        >
-                            <NavigateNext />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => gotoPage(pageCount - 1)}
-                            disabled={!canNextPage || loading}
-                        >
-                            <LastPage />
-                        </IconButton>
-                        <Box component="span" fontSize={14}>
+                {toolsFooter && (
+                    <Box className={classes.footerTable}>
+                        <Box>
+                            <IconButton
+                                onClick={() => gotoPage(0)}
+                                disabled={!canPreviousPage || loading}
+                            >
+                                <FirstPage />
+                            </IconButton>
+                            <IconButton
+                                onClick={() => previousPage()}
+                                disabled={!canPreviousPage || loading}
+                            >
+                                <NavigateBefore />
+                            </IconButton>
+                            <IconButton
+                                onClick={() => nextPage()}
+                                disabled={!canNextPage || loading}
+                            >
+                                <NavigateNext />
+                            </IconButton>
+                            <IconButton
+                                onClick={() => gotoPage(pageCount - 1)}
+                                disabled={!canNextPage || loading}
+                            >
+                                <LastPage />
+                            </IconButton>
+                            <Box component="span" fontSize={14}>
+                                <Trans
+                                    i18nKey={langKeys.tablePageOf}
+                                    values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
+                                    components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
+                                />
+                            </Box>
+                        </Box>
+                        <Box>
                             <Trans
-                                i18nKey={langKeys.tablePageOf}
-                                values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
-                                components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
+                                i18nKey={langKeys.tableShowingRecordOf}
+                                values={{ itemCount: page.length, totalItems: preGlobalFilteredRows.length }}
                             />
                         </Box>
-                    </Box>
-                    <Box>
-                        <Trans
-                            i18nKey={langKeys.tableShowingRecordOf}
-                            values={{ itemCount: page.length, totalItems: preGlobalFilteredRows.length }}
-                        />
-                    </Box>
-                    <Box>
-                        <Select
-                            disableUnderline
-                            style={{ display: 'inline-flex' }}
-                            value={pageSize}
-                            disabled={loading}
-                            onChange={e => {
-                                setPageSize(Number(e.target.value))
-                            }}
-                        >
-                            {[10, 20, 50, 100].map(pageSize => (
-                                <MenuItem key={pageSize} value={pageSize}>
-                                    {pageSize}
-                                </MenuItem >
-                            ))}
-                        </Select>
-                        <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
-                            <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
+                        <Box>
+                            <Select
+                                disableUnderline
+                                style={{ display: 'inline-flex' }}
+                                value={pageSize}
+                                disabled={loading}
+                                onChange={e => {
+                                    setPageSize(Number(e.target.value))
+                                }}
+                            >
+                                {[10, 20, 50, 100].map(pageSize => (
+                                    <MenuItem key={pageSize} value={pageSize}>
+                                        {pageSize}
+                                    </MenuItem >
+                                ))}
+                            </Select>
+                            <Box fontSize={14} display="inline" style={{ marginRight: '1rem' }}>
+                                <Trans i18nKey={langKeys.recordPerPage} count={pageSize} />
+                            </Box>
                         </Box>
                     </Box>
-                </Box>
+                )}
             </TableContainer>
         </Box>
     )
