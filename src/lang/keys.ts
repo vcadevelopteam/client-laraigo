@@ -1382,6 +1382,9 @@ export const langKeys = {
     REMOVETAG: 'REMOVETAG', // lead history type
     ELIMINADO: 'ELIMINADO', // lead history type
     CLOSEDLEAD: 'CLOSEDLEAD', // lead history type
+
+    repeatPassword: 'repeatPassword',
+    passwordsMustBeEqual: 'passwordsMustBeEqual',
 };
 
 export type LangKeys = typeof langKeys;

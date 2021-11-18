@@ -39,3 +39,4 @@ export { default as Settings } from './Settings';
 export { default as Privacy } from './Privacy';
 export { default as ActivateUser } from './ActivateUser';
 export * from './crm';
+export { default as ChangePwdFirstLogin } from './ChangePwdFirstLogin';

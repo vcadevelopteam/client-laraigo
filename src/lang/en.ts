@@ -1388,6 +1388,9 @@ const translation: LangKeys = {
     REMOVETAG: 'Tag removed',
     ELIMINADO: 'Deleted',
     CLOSEDLEAD: 'Lead closed',
+
+    repeatPassword: 'Repeat password',
+    passwordsMustBeEqual: 'Passwords must be equal',
 };
 
 const enResource: ResourceLanguage = {

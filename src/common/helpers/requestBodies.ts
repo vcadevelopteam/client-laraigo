@@ -1967,3 +1967,9 @@ export const leadHistoryIns = ({ leadid, historyleadid, description, type, statu
         operation
     }
 });
+
+export const changePasswordOnFirstLoginIns = (userid: number | string, password: string): IRequestBody => ({
+    key: "UFN_USERPASSWORD_UPDATE",
+    method: "UFN_USERPASSWORD_UPDATE",
+    parameters: { password, userid },
+});

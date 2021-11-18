@@ -1,4 +1,4 @@
-import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -219,7 +219,7 @@ const CRM: FC = () => {
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-      const [removed] = copiedItems!.splice(leadIndex, 1); //v
+      copiedItems!.splice(leadIndex, 1); //v
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
@@ -239,7 +239,7 @@ const CRM: FC = () => {
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-      const [removed] = copiedItems!.splice(leadIndex, 1); //v
+      copiedItems!.splice(leadIndex, 1); //v
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
@@ -253,9 +253,9 @@ const CRM: FC = () => {
     }))
   }
 
-  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+  /*const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
-    const uuid = uuidv4()
+    const uuid = uuidv4() // from common/helpers
 
     const data = {
       id: uuid,
@@ -280,7 +280,7 @@ const CRM: FC = () => {
 
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
-  }
+  }*/
 
   const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
     if (column_uuid === '00000000-0000-0000-0000-000000000000') return;

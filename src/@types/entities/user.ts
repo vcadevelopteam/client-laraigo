@@ -38,4 +38,5 @@ export interface IUser {
     automaticConnection?: boolean;
     countrycode: string;
     currencysymbol: string;
+    pwdchangefirstlogin: boolean;
 }
