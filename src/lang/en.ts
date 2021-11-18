@@ -118,6 +118,7 @@ const translation: LangKeys = {
     personalsettings: "Personal settings",
     personinformation: 'Person',
     default_credentials: "Default credentials",
+    private_mail: "Use private mail",
     ticketinformation: 'Ticket',
     AIservices: 'AI Services',
     systemvariables: 'System',

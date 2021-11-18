@@ -83,8 +83,9 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             email: row?.email || "",
             port: row?.port || 0,
             password: row?.password || "",
-            host: row?.host || false,
+            host: row?.host || "",
             ssl: row?.ssl || false,
+            private_mail: row?.private_mail || false,
             default_credentials: row?.default_credentials || false,
         }
     });
@@ -96,7 +97,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('host');
         register('ssl');
-        register('default_credentials');
+        register('private_mail');
     }, [edit, register]);
 
     useEffect(() => {
@@ -283,14 +284,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         <div className="row-zyx">
                             {edit ?
                                 <TemplateSwitch
-                                    label={t(langKeys.default_credentials)}
+                                    label={t(langKeys.private_mail)}
                                     className="col-6"
                                     valueDefault={showCredential}
-                                    onChange={(value) => {setValue('default_credentials', value);setShowCredential(value)}}
+                                    onChange={(value) => {setValue('private_mail', value);setShowCredential(value)}}
                                 /> :
                                 <FieldView
-                                    label={"default_credentials"}
-                                    value={row ? (row.default_credentials  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                    label={"private_mail"}
+                                    value={row ? (row.private_mail  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                     className="col-6"
                                 />
                             }
@@ -370,28 +371,47 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 </div>
                                 <div className="row-zyx">
                                     {edit ?
-                                        <TemplateSwitch
+                                        <FieldEdit
+                                        label={t(langKeys.host)}
+                                        className="col-6"
+                                        fregister={{
+                                            ...register("host",{
+                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                            })
+                                        }}
+                                        error={errors?.host?.message}
+                                        onChange={(value:any) => setValue('host', value)}
+                                        valueDefault={getValues("host")}
+                                        />
+                                        : <FieldView
                                             label={t(langKeys.host)}
-                                            className="col-6"
-                                            valueDefault={getValues("host")}
-                                            onChange={(value) => setValue('host', value)}
-                                        /> :
-                                        <FieldView
-                                            label={t(langKeys.host)}
-                                            value={row ? (row.host  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            value={row ? (row.host || "") : ""}
                                             className="col-6"
                                         />
                                     }
                                     {edit ?
                                         <TemplateSwitch
                                             label={"SSL"}
-                                            className="col-6"
+                                            className="col-3"
                                             valueDefault={getValues("ssl")}
                                             onChange={(value) => setValue('ssl', value)}
                                         /> :
                                         <FieldView
                                             label={"SSL"}
                                             value={row ? (row.ssl  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            className="col-6"
+                                        />
+                                    }
+                                    {edit ?
+                                        <TemplateSwitch
+                                            label={t(langKeys.default_credentials)}
+                                            className="col-3"
+                                            valueDefault={getValues("default_credentials")}
+                                            onChange={(value) => setValue('default_credentials', value)}
+                                        /> :
+                                        <FieldView
+                                            label={t(langKeys.default_credentials)}
+                                            value={row ? (row.default_credentials  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                             className="col-6"
                                         />
                                     }

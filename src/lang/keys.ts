@@ -45,6 +45,7 @@ export const langKeys = {
     brandname: "brandname",
     informationorganization: "informationorganization",
     heatmapaverageadvisorTME: "heatmapaverageadvisorTME",
+    private_mail: "private_mail",
     averageheatmapTMOdata: "averageheatmapTMOdata",
     brandaddress: "brandaddress",
     industry_education: "industry_education",

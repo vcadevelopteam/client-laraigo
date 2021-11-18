@@ -336,6 +336,7 @@ const translation: LangKeys = {
     finishreg: "FINALIZAR REGISTRO",    
     validnumber: "Por favor inserte un número válido",
     default_credentials: "Credenciales predeterminadas",
+    private_mail: "Usar correo privado",
     abandonosxAsesor: "Mapa de Calor de Cantidad de Abandonos",
     ventasxAsesor: "Mapa de Calor de Cantidad de Ventas",
     efectividadxAsesor: "Tasa de efectividad por asesor",
