@@ -1386,6 +1386,8 @@ export const langKeys = {
 
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',
+    noNotification: 'noNotification',
+    noNotification_plural: 'noNotification_plural',
 };
 
 export type LangKeys = typeof langKeys;

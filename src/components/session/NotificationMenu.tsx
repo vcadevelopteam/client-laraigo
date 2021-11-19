@@ -3,7 +3,9 @@ import { LeadActivityNotification } from "@types";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { BellNotificationIcon } from "icons";
+import { langKeys } from "lang/keys";
 import { FC, MouseEventHandler, useState } from "react";
+import { Trans } from "react-i18next";
 import { useHistory } from "react-router";
 
 const StyledBadge = styled(Badge)<BadgeProps>(() => ({
@@ -168,7 +170,7 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                     ) :
                     (
                         <div className={classes.noNotificationContainer}>
-                            <span>Sin notificaciones</span>
+                            <span><Trans i18nKey={langKeys.noNotification} count={2} /></span>
                         </div>
                     )}
                 </div>

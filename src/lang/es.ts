@@ -1384,6 +1384,8 @@ const translation: LangKeys = {
 
     repeatPassword: 'Repetir contraseña',
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',
+    noNotification: 'Sin notificación',
+    noNotification_plural: 'Sin notificaciones',
 };
 
 const esResource: ResourceLanguage = {
