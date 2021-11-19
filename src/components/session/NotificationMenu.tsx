@@ -1,27 +1,12 @@
-import { Badge, BadgeProps, Box, BoxProps, createStyles, IconButton, makeStyles, Popover, styled, Theme } from "@material-ui/core";
+import { Badge, BadgeProps, Box, BoxProps, createStyles, IconButton, List, ListItem, makeStyles, Popover, styled, Theme } from "@material-ui/core";
+import { LeadActivityNotification } from "@types";
+import paths from "common/constants/paths";
+import { useSelector } from "hooks";
 import { BellNotificationIcon } from "icons";
-import { FC, useState } from "react";
+import { FC, MouseEventHandler, useState } from "react";
+import { useHistory } from "react-router";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-        rootIcon: {
-            position: 'relative',
-            display: 'flex',
-            justifyContent: 'center',
-        },
-        containerPopover: {
-            display: 'flex',
-            alignItems: 'center',
-            padding: theme.spacing(2),
-            flexDirection: 'column',
-            gap: theme.spacing(1.5),
-            width: 270,
-            maxHeight: 500,
-        },
-    }),
-);
-
-const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+const StyledBadge = styled(Badge)<BadgeProps>(() => ({
     '& .MuiBadge-badge': {
         color: 'white',
         right: 4,
@@ -32,18 +17,93 @@ const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
     },
 }));
 
-const Notificaion: FC = () => {
+const useNotificaionStyles = makeStyles((theme: Theme) =>
+  createStyles({
+        root: {
+            width: '100%',
+            padding: theme.spacing(1),
+            backgroundColor: 'inherit',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            textAlign: 'start',
+        },
+        row: {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+        },
+        title: {
+            fontWeight: 'bold',
+        },
+        date: {
+            fontSize: 11,
+            color: 'grey',
+        },
+    }),
+);
+
+interface NotificaionListItemProps {
+    title: React.ReactNode;
+    description: React.ReactNode;
+    date: React.ReactNode;
+    onClick?: MouseEventHandler<HTMLDivElement>;
+}
+
+const NotificaionListItem: FC<NotificaionListItemProps> = ({ title, description, date, onClick }) => {
+    const classes = useNotificaionStyles();
+
     return (
-        <span>
-            zzz
-        </span>
+        <ListItem button className={classes.root} onClick={onClick}>
+            <div className={classes.row}>
+                <span className={classes.title}>{title}</span>
+                <span className={classes.date}>{date}</span>
+            </div>
+            <div style={{ height: 2 }} />
+            <span>{description}</span>
+        </ListItem>
     );
 }
 
+const useNotificationMenuStyles = makeStyles((theme: Theme) =>
+  createStyles({
+        rootIcon: {
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+        },
+        containerPopover: {
+            display: 'flex',
+            alignItems: 'center',
+            padding: 0,
+            flexDirection: 'column',
+            gap: theme.spacing(1.5),
+            width: 270,
+            maxHeight: 410,
+        },
+        list: {
+            padding: theme.spacing(1),
+            width: '100%',
+        },
+        noNotificationContainer: {
+            height: 90,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+    }),
+);
+
 const NotificationMenu: FC<BoxProps> = (boxProps) => {
-    const classes = useStyles();
+    const classes = useNotificationMenuStyles();
+    const history = useHistory();
 
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const resValidateToken = useSelector(state => state.login.validateToken);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -55,14 +115,20 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
 
     const open = Boolean(anchorEl);
     const id = open ? 'notification-list-menu-popover' : undefined;
+    const notifications = resValidateToken.loading ? [] : resValidateToken.user?.notifications || [];
+    const notificationCount = notifications.length;
 
     return (
         <Box {...boxProps}>
             <IconButton aria-label="bell-notification" onClick={handleClick}>
                 <div className={classes.rootIcon}>
-                    <StyledBadge badgeContent={4} color="secondary">
-                        <BellNotificationIcon />
-                    </StyledBadge>
+                    {notificationCount > 0 ?
+                    (
+                        <StyledBadge badgeContent={notificationCount} color="secondary">
+                            <BellNotificationIcon />
+                        </StyledBadge>
+                    ) :
+                    <BellNotificationIcon />}
                 </div>
             </IconButton>
             <Popover
@@ -76,7 +142,35 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                 }}
             >
                 <div className={classes.containerPopover}>
-                    <Notificaion />
+                    {notificationCount > 0 ?
+                    (
+                        <List component="nav" className={classes.list}>
+                            {notifications.map((e, i) => {
+                                if (e.notificationtype === "LEADACTIVITY") {
+                                    const not = e as LeadActivityNotification;
+                                    return (
+                                        <NotificaionListItem
+                                            key={i}
+                                            title={not.description}
+                                            description={not.leadname}
+                                            date={formatDate(not.duedate)}
+                                            onClick={() => {
+                                                handleClose();
+                                                history.push(paths.CRM_EDIT_LEAD.resolve(not.leadid));
+                                            }}
+                                        />
+                                    );
+                                }
+
+                                return <div style={{ display: 'none' }} />;
+                            })}
+                        </List>
+                    ) :
+                    (
+                        <div className={classes.noNotificationContainer}>
+                            <span>Sin notificaciones</span>
+                        </div>
+                    )}
                 </div>
             </Popover>
         </Box>
@@ -84,3 +178,14 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
 };
 
 export default NotificationMenu;
+
+const formatDate = (strDate: string) => {
+    if (!strDate || strDate === '') return '';
+
+    const date = new Date(strDate);
+    const day = date.toLocaleDateString("en-US", { day: '2-digit' });
+    const month = date.toLocaleDateString("en-US", { month: '2-digit' });
+    const year = date.toLocaleDateString("en-US", { year: 'numeric' });
+
+    return `${day}/${month}/${year}`;
+}
