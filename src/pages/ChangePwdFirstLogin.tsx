@@ -24,6 +24,7 @@ const ChangePwdFirstLogin: FC = () => {
     const [error, setError] = useState(false);
 
     const resValidateToken = useSelector(state => state.login.validateToken);
+    const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
     const changePwd = useSelector(state => state.main.execute);
 
     useEffect(() => {
@@ -34,7 +35,7 @@ const ChangePwdFirstLogin: FC = () => {
     
     useEffect(() => {
         const pwdchangefirstlogin = resValidateToken.user?.pwdchangefirstlogin;
-        if (pwdchangefirstlogin === true) {
+        if (!ignorePwdchangefirstloginValidation && pwdchangefirstlogin === true) {
             return;
         } else if (pwdchangefirstlogin === false) {
             history.push('/');

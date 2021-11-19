@@ -8,6 +8,7 @@ import { IconButton, makeStyles } from '@material-ui/core';
 import { Menu } from '@material-ui/icons';
 import { useDispatch } from 'react-redux';
 import { setOpenDrawer } from 'store/popus/actions';
+import NotificationMenu from 'components/session/NotificationMenu';
 
 type IProps = {
     classes: any;
@@ -24,7 +25,7 @@ const useToolbarStyles = makeStyles(theme => ({
     },
 }));
 
-const Header = ({ classes, drawerWidth }: IProps) => {
+const Header = ({ classes }: IProps) => {
     const dispatch = useDispatch();
     const myClasses = useToolbarStyles();
     const openDrawer = useSelector(state => state.popus.openDrawer);
@@ -33,10 +34,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
         <AppBar
             elevation={0}
             position="fixed"
-            className={clsx(classes.appBar, classes.appBarShift2/*{
-                [classes.appBarShift]: openDrawer,
-                [classes.appBarShift2]: !openDrawer,
-            }*/)}
+            className={clsx(classes.appBar, classes.appBarShift2)}
         >
             <Toolbar className={myClasses.toolbar}>
                 <IconButton onClick={() => dispatch(setOpenDrawer(!openDrawer))}>
@@ -50,8 +48,7 @@ const Header = ({ classes, drawerWidth }: IProps) => {
                 <div style={{ width: 73, display: openDrawer ? 'none' : 'block' }} />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                        {/* <StatusConnection /> */}
-                        {/* <ManageOrganization /> */}
+                        <NotificationMenu />
                         <AccountMenu />
                     </div>
                 </div>

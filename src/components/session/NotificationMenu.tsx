@@ -1,6 +1,6 @@
-import { createStyles, IconButton, makeStyles, Theme } from "@material-ui/core";
+import { Badge, BadgeProps, Box, BoxProps, createStyles, IconButton, makeStyles, Popover, styled, Theme } from "@material-ui/core";
 import { BellNotificationIcon } from "icons";
-import { FC } from "react";
+import { FC, useState } from "react";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -9,39 +9,77 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             justifyContent: 'center',
         },
-        counterGlobe: {
-            position: 'absolute',
-            top: -1,
-            right: -1,
-            height: 16,
-            width: 16,
-            backgroundColor: '#FF7301',
-            borderRadius: 8,
-            display: 'flex',
-            justifyContent: 'space-around',
-        },
-        counterText: {
-            fontWeight: 700,
-            fontSize: 8,
+        containerPopover: {
             display: 'flex',
             alignItems: 'center',
-            color: '#F1F1F1',
+            padding: theme.spacing(2),
+            flexDirection: 'column',
+            gap: theme.spacing(1.5),
+            width: 270,
+            maxHeight: 500,
         },
     }),
 );
 
-const NotificationMenu: FC = () => {
+const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+        color: 'white',
+        right: 4,
+        top: 4,
+        backgroundColor: '#FF7301',
+        border: `2px solid white`,
+        padding: '0 4px',
+    },
+}));
+
+const Notificaion: FC = () => {
+    return (
+        <span>
+            zzz
+        </span>
+    );
+}
+
+const NotificationMenu: FC<BoxProps> = (boxProps) => {
     const classes = useStyles();
 
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'notification-list-menu-popover' : undefined;
+
     return (
-        <IconButton>
-            <div className={classes.rootIcon}>
-                <BellNotificationIcon />
-                <div className={classes.counterGlobe}>
-                    <label className={classes.counterText}>1</label>
+        <Box {...boxProps}>
+            <IconButton aria-label="bell-notification" onClick={handleClick}>
+                <div className={classes.rootIcon}>
+                    <StyledBadge badgeContent={4} color="secondary">
+                        <BellNotificationIcon />
+                    </StyledBadge>
                 </div>
-            </div>
-        </IconButton>
+            </IconButton>
+            <Popover
+                id={id}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+            >
+                <div className={classes.containerPopover}>
+                    <Notificaion />
+                </div>
+            </Popover>
+        </Box>
     );
 };
 
