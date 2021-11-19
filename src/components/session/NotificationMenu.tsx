@@ -7,6 +7,7 @@ import { langKeys } from "lang/keys";
 import { FC, MouseEventHandler, useState } from "react";
 import { Trans } from "react-i18next";
 import { useHistory } from "react-router";
+import clsx from 'clsx';
 
 const StyledBadge = styled(Badge)<BadgeProps>(() => ({
     '& .MuiBadge-badge': {
@@ -34,7 +35,6 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between',
             width: '100%',
         },
         title: {
@@ -43,6 +43,13 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
         date: {
             fontSize: 11,
             color: 'grey',
+        },
+        textOneLine: {
+            flexGrow: 1,
+            overflow: 'hidden',
+        },
+        description: {
+            width: '100%',
         },
     }),
 );
@@ -60,11 +67,16 @@ const NotificaionListItem: FC<NotificaionListItemProps> = ({ title, description,
     return (
         <ListItem button className={classes.root} onClick={onClick}>
             <div className={classes.row}>
-                <span className={classes.title}>{title}</span>
+                <div className={classes.textOneLine}>
+                    <span className={classes.title}>{title}</span>
+                </div>
+                <div style={{ width: 12 }} />
                 <span className={classes.date}>{date}</span>
             </div>
             <div style={{ height: 2 }} />
-            <span>{description}</span>
+            <div className={clsx(classes.description, classes.textOneLine)}>
+                <span>{description}</span>
+            </div>
         </ListItem>
     );
 }
