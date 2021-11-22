@@ -604,6 +604,8 @@ export const insMessageTemplate = (
         footer,
         buttonsenabled,
         buttons,
+        priority,
+        attachment,
         operation
     }: Dictionary): IRequestBody => ({
 
@@ -626,6 +628,8 @@ export const insMessageTemplate = (
             footer,
             buttonsenabled,
             buttons: JSON.stringify(buttons),
+            priority,
+            attachment,
             operation
         }
     });

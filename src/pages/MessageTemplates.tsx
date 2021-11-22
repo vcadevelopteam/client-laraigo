@@ -2,7 +2,7 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { IconButton, Paper } from '@material-ui/core';
+import { CircularProgress, IconButton, Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
 import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain, convertLocalDate } from 'common/helpers';
@@ -298,8 +298,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
             buttons: row ? (row.buttons || []) : [],
-            priority: 2,
-            attachment: '',
+            priority: row?.priority || 2,
+            attachment: row?.attachment || '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -451,11 +451,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     }, [])
 
-    const handleCleanMediaInput = () => {
-        if (fileAttachment === null) return;
+    const handleCleanMediaInput = async () => {
         const input = document.getElementById('attachmentInput') as HTMLInputElement;
-        input.value = "";
+        if (input) {
+            input.value = "";
+        }
         setFileAttachment(null);
+        setValue('attachment', '');
+        await trigger('attachment');
     }
 
     return (
@@ -489,6 +492,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
+                                disabled={waitUploadFile}
                             >{t(langKeys.save)}
                             </Button>
                         }
@@ -874,7 +878,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     : null}
                     {getValues("type") === 'MAIL' &&
                     <div>
-                        {edit ?
+                        <FieldView label={t(langKeys.files)} />
+                        {edit && getValues("attachment") === '' ?
                             <React.Fragment>
                                 <input
                                     accept="file/*"
@@ -883,22 +888,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     type="file"
                                     onChange={(e) => onChangeAttachment(e.target.files)}
                                 />
-                                <IconButton
-                                    color="primary"
+                                {!fileAttachment && <IconButton
                                     onClick={onClickAttachment}
                                     disabled={fileAttachment !== null || waitUploadFile}
                                 >
-                                    <AttachFileIcon />
-                                </IconButton>
-                                {fileAttachment && <FilePreview src={fileAttachment} onClose={handleCleanMediaInput} />}
+                                    <AttachFileIcon color="primary" />
+                                </IconButton>}
+                                {fileAttachment && <FilePreview src={fileAttachment} />}
                             </React.Fragment>
                             :
                             <React.Fragment>
-                                <FieldView
-                                    label={t(langKeys.priority)}
-                                    value={row ? (row.priority || "") : ""}
-                                    className="col-6"
-                                />
+                                <FilePreview src={getValues("attachment")} onClose={handleCleanMediaInput} />
                             </React.Fragment>
                         }
                     </div>}
@@ -969,6 +969,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 </div>
             </div>
             <div style={{ width: '0.5em' }} />
+            {!isUrl() && !onClose && <CircularProgress color="primary" />}
             <div className={classes.btnContainer}>
                 {onClose && (
                     <IconButton size="small" onClick={onClose}>

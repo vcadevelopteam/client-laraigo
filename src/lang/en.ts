@@ -558,6 +558,7 @@ const translation: LangKeys = {
     body: 'Body',
     footer: 'Footer',
     buttons: 'Buttons',
+    files: 'Files',
     payload: 'Payload',
     message: 'Message',
     addbutton: 'Add button',

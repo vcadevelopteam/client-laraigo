@@ -696,6 +696,7 @@ const translation: LangKeys = {
     body: 'Cuerpo',
     footer: 'Pie',
     buttons: 'Botones',
+    files: 'Archivos',
     payload: 'Payload',
     message: 'Mensaje',
     supplier: "Proveedor",

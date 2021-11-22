@@ -661,6 +661,7 @@ export const langKeys = {
     body: 'body',
     footer: 'footer',
     buttons: 'buttons',
+    files: 'files',
     title: 'title',
     payload: 'payload',
     message: 'Mensaje',
