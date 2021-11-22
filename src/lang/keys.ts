@@ -638,6 +638,7 @@ export const langKeys = {
     messagetype: 'messagetype',
     sms: 'sms',
     hsm: 'hsm',
+    mail: 'mail',
     id: 'id',
     namespace: 'namespace',
     category: 'category',

@@ -673,6 +673,7 @@ const translation: LangKeys = {
     messagetype: 'Tipo de Mensaje',
     sms: 'SMS',
     hsm: 'HSM',
+    mail: 'CORREO',
     namespace: 'Espacio de nombres',
     category: 'Categoría',
     language: 'Idioma',

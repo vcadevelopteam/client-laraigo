@@ -537,6 +537,7 @@ const translation: LangKeys = {
     messagetype: 'Message Type',
     sms: 'SMS',
     hsm: 'HSM',
+    mail: 'MAIL',
     namespace: 'Namespace',
     category: 'Category',
     language: 'Language',
