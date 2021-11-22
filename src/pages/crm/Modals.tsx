@@ -206,7 +206,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_message) }))
                 setGridModal({ name: '', open: false, payload: null });
                 dispatch(showBackdrop(false));
                 dispatch(resetExecute());
@@ -276,6 +276,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             listmembers: personsWithData.map((person: Dictionary) => ({
                 phone: person.phone || "",
                 firstname: person.contact_name || "",
+                email: person.email || "",
                 parameters: data.variables.map((v: any) => ({
                     type: "text",
                     text: v.variable !== 'custom' ? (person as Dictionary)[v.variable] : v.text,
@@ -365,7 +366,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                                 setValue(`variables.${i}.variable`, value.key)
                                 trigger(`variables.${i}.variable`)
                             }}
-                            error={errors?.variables?.[i]?.text?.message}
+                            error={errors?.variables?.[i]?.variable?.message}
                             data={variables.map(v => ({key: v}))}
                             uset={true}
                             prefixTranslation="lead_"

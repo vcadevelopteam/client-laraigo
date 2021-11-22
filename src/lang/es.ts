@@ -72,6 +72,7 @@ const translation: LangKeys = {
     messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
 
     successful_send_hsm: 'HSM enviado satisfactoriamente',
+    successful_send_message: 'Mensaje enviado satisfactoriamente',
 
     send_quickreply: 'Enviar respuesta rápida',
     send_enrich_response: 'Enviar respuesta enriquecida',
