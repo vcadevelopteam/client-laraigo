@@ -1481,6 +1481,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             dispatch(resetInsertChannel());
             dispatch(resetEditChannel());
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [history, dispatch]);
 
     useEffect(() => {
@@ -1516,6 +1517,7 @@ export const ChannelAddChatWeb: FC<{ edit: boolean }> = ({ edit }) => {
             }));
             history.push(paths.CHANNELS);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch, editChannel]);
 
     const form: UseFormReturn<IChatWebAdd> = useForm<IChatWebAdd>({

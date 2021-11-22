@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLead as saveLeadBody, saveLeadActivity, saveLeadLogNote, updateLeadTags } from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, updateLeadTags } from 'store/lead/actions';
 import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
@@ -32,37 +32,6 @@ const tagsOptions = [
     { title: "Product" },
     // crear mas
 ];
-
-interface TabPanelProps {
-    value: string;
-    index: string;
-}
-
-const useTabPanelStyles = makeStyles(theme => ({
-    root: {
-        border: '#A59F9F 1px solid',
-        borderRadius: 6,
-    },
-}));
-
-const TabPanel: FC<TabPanelProps> = ({ children, value, index }) => {
-    const classes = useTabPanelStyles();
-
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            className={classes.root}
-            id={`wrapped-tabpanel-${index}`}
-            aria-labelledby={`wrapped-tab-${index}`}
-            style={{ display: value === index ? 'block' : 'none' }}
-        >
-            <Box p={1}>
-                {children}
-            </Box>
-        </div>
-    );
-}
 
 const urgencyLevels = ['', 'LOW', 'MEDIUM', 'HIGH']
 
@@ -294,6 +263,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             });
             registerFormFieldOptions();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lead, edit, dispatch]);
 
     useEffect(() => {
@@ -306,6 +276,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [advisers, dispatch]);
 
     useEffect(() => {
@@ -325,6 +296,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             history.push(paths.CRM);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveLead, history, dispatch]);
 
     useEffect(() => {
@@ -344,6 +316,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             history.push(paths.CRM);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [archiveLeadProcess, history, dispatch]);
 
     useEffect(() => {
@@ -356,6 +329,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [leadActivities, dispatch]);
 
     useEffect(() => {
@@ -375,6 +349,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveActivity, dispatch]);
 
     useEffect(() => {
@@ -387,6 +362,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [leadNotes, dispatch]);
 
     useEffect(() => {
@@ -407,6 +383,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveNote, match.params.id, dispatch]);
 
     useEffect(() => {
@@ -419,6 +396,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [leadHistory, dispatch]);
 
     useEffect(() => {
@@ -433,6 +411,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         } else if (updateLeadTagProcess.success && edit === true) {
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [updateLeadTagProcess, match.params.id, edit, dispatch]);
 
     const handleCloseLead = useCallback(() => {
@@ -452,6 +431,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         };
 
         dispatch(updateLeadTags(updateLeadTagsIns(data)));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [edit, dispatch]);
 
     const iSProcessLoading = useCallback(() => {
@@ -884,6 +864,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
                 accessor: 'phone' as keyof IPerson,
             },
         ],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         [t],
     );
 
@@ -900,6 +881,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
 
     useEffect(() => {
         fetchData({ pageSize, pageIndex, filters: {}, sorts: {}, daterange: null });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fetchData, dispatch]);
 
     useEffect(() => {
@@ -915,6 +897,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             setPageCount(Math.ceil(personList.count / pageSize));
             settotalrow(personList.count);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [personList]);
 
     return (
@@ -1010,6 +993,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
         onSubmit?.(newNote);
         handleCleanMediaInput();
         setNoteDescription("");
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noteDescription, media, dispatch]);
 
     const handleInputMedia = useCallback(() => {
@@ -1367,6 +1351,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 resetValues();
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveActivity, leadid, dispatch]);
 
     const { getValues, setValue, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
@@ -1420,6 +1405,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             feedback: '',
         });
         registerFormFieldOptions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reset]);
 
     useEffect(() => {
@@ -1437,6 +1423,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         });
 
         registerFormFieldOptions();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activity, reset, register]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
@@ -1449,6 +1436,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 resetValues();
             }
         })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handleSubmit, dispatch]);
 
     return (
@@ -1725,6 +1713,7 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
             setFeedBack("");
             mustNext.current = false;
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [markDoneProcess, dispatch]);
 
     return (

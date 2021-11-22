@@ -301,7 +301,7 @@ const CRM: FC = () => {
         newDestItems.map((item) => item.column_uuid = destColumn.column_uuid)
         console.log('newDestItems', newDestItems)
         const destTotalRevenue = newDestItems!.reduce((a,b) => a+ parseFloat(b.expected_revenue), 0)
-        newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, [0]: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
+        newColumn = Object.values({...columns, [sourceIndex]: {...sourceColumn, items: sourceItems}, 0: {...destColumn, total_revenue: destTotalRevenue, items: newDestItems}}) as dataBackend[]
       }
       setDataColumn(newColumn.filter(c => c.column_uuid !== column_uuid))
       dispatch(execute(insColumns({...sourceColumn, status: 'ELIMINADO', delete_all, id: sourceColumn.column_uuid, operation: 'DELETE'})));
