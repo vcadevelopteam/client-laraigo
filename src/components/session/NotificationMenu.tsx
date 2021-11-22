@@ -72,7 +72,6 @@ const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description,
                 <div style={{ width: 12 }} />
                 <span className={classes.date}>{date}</span>
             </div>
-            <div style={{ height: 2 }} />
             <div className={clsx(classes.description, classes.textOneLine)}>
                 <span>{description}</span>
             </div>
@@ -90,6 +89,7 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
         menu: {
             padding: theme.spacing(1),
             maxHeight: 410,
+            fontSize: 12,
         },
         noNotificationContainer: {
             height: 90,
