@@ -291,7 +291,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 ...personsWithData.map((x: Dictionary) => leadHistoryIns({
                     leadid: x.leadid,
                     description: data.variables.reduce((a: string, v: any, i: number) => (
-                        a.replace(`{{${i+1}}}`, v.variable !== 'custom' ? x[v.variable] : v.text)
+                        a.replace(`{{${v.name}}}`, v.variable !== 'custom' ? x[v.variable] : v.text)
                     ), bodyMessage),
                     type: `SEND${messagetype.toUpperCase()}`,
                     operation: 'INSERT'
