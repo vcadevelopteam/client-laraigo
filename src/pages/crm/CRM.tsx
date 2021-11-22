@@ -814,8 +814,8 @@ const CRM: FC = () => {
                   variant="outlined"
                   label={t(langKeys.user)}
                   className={classes.filterComponent}
-                  onChange={(value) => setAllParameters({...allParameters, asesorid: value.userid})}
-                  data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname.toLowerCase() > b?.fullname.toLowerCase() ? 1 : -1) || []}
+                  onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
+                  data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
                   optionDesc={'fullname'}
                   optionValue={'userid'}
               />
@@ -823,8 +823,8 @@ const CRM: FC = () => {
                   variant="outlined"
                   label={t(langKeys.channel)}
                   className={classes.filterComponent}
-                  onChange={(value) => setAllParameters({...allParameters, channel: value.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                  data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc.toLowerCase() > b?.communicationchanneldesc.toLowerCase() ? 1 : -1) || []}
+                  onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+                  data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
                   optionDesc={'communicationchanneldesc'}
                   optionValue={'communicationchannelid'}
               />
