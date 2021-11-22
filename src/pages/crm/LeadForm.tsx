@@ -407,6 +407,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [saveNote, match.params.id, dispatch]);
 
     useEffect(() => {

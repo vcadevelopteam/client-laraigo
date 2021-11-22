@@ -193,6 +193,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             listmembers: personWithData.map(person => ({
                 phone: person.phone || "",
                 firstname: person.firstname || "",
+                email: person.email || "",
                 lastname: person.lastname,
                 parameters: data.variables.map((v: any) => ({
                     type: "text",
