@@ -31,7 +31,7 @@ import TableZyx from '../components/fields/table-simple';
 import Tooltip from '@material-ui/core/Tooltip';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
-import { emitEvent, sendHSM } from 'store/inbox/actions';
+import { sendHSM } from 'store/inbox/actions';
 
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
@@ -153,6 +153,12 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
             } else {
@@ -212,21 +218,23 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             <div style={{marginBottom: 8}}>
                 {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
             </div>
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.channel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    onChange={value => {
-                        setValue('communicationchannelid', value.communicationchannelid);
-                        setValue('communicationchanneltype', value.type);
-                    }}
-                    error={errors?.communicationchannelid?.message}
-                    data={channelList}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value.communicationchannelid);
+                            setValue('communicationchanneltype', value.type);
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}
@@ -1881,10 +1889,8 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
     useEffect(() => {
         if (person.personid && person.personid !== 0) {
             dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
-            // dispatch(getAdditionalInfoByPerson(getAdditionalInfoByPersonBody(person.personid)));
             return () => {
                 dispatch(resetGetChannelListByPerson());
-                // dispatch(resetgetAdditionalInfoByPerson());
             };
         }
     }, [dispatch, person]);
@@ -2350,18 +2356,13 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     return (
         <TableZyx
             columns={columns}
-            // titlemodule={t(langKeys.organization_plural, { count: 2 })}
             filterGeneral={false}
             data={leads.data}
             download={false}
             loading={leads.loading}
             onClickRow={goToLead}
             register={false}
-        // handleRegister={handleRegister}
         />
-        // <div>
-        //     {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
-        // </div>
     );
 }
 const useLeadItemStyles = makeStyles(theme => ({
@@ -2415,158 +2416,3 @@ const useLeadItemStyles = makeStyles(theme => ({
         marginBottom: theme.spacing(2),
     },
 }));
-
-// interface LeadItemProps {
-//     lead: IPersonLead;
-// }
-
-// const LeadItem: FC<LeadItemProps> = ({ lead }) => {
-//     const classes = useLeadItemStyles();
-//     const [open] = useState(false);
-
-//     return (
-//         <div className={classes.root}>
-//             <div className={classes.rootItem}>
-//                 <Grid container direction="row">
-//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-//                         <Property title="Ticket #" subtitle={lead.ticketnum} />
-//                     </Grid>
-//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-//                         <Property title={<Trans i18nKey={langKeys.opportunity} />} subtitle={lead.description} />
-//                     </Grid>
-//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-//                         <Property title={<Trans i18nKey={langKeys.creationDate} />} subtitle={new Date(lead.createdate).toLocaleString()} />
-//                     </Grid>
-//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-//                         <Property title={<Trans i18nKey={langKeys.expectedRevenue} />} subtitle={parseFloat(lead.expected_revenue || "0").toFixed(2)} />
-//                     </Grid>
-//                     <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
-//                         <Property title={<Trans i18nKey={langKeys.expectedClosing} />} subtitle={lead.date_deadline ? new Date(lead.date_deadline).toLocaleString() : ''} />
-//                     </Grid>
-//                     <Grid item xs={12} sm={12} md={1} lg={1} xl={2}>
-//                         <Property title={<Trans i18nKey={langKeys.priority} />} subtitle={(
-//                             <Rating
-//                                 name="simple-controlled-aa"
-//                                 max={3}
-//                                 value={urgencyLevels.findIndex(x => x === lead.priority)}
-//                             />
-//                         )} />
-//                     </Grid>
-//                     {/* <Grid item xs={12} sm={12} md={1} lg={1} xl={1}>
-//                         <IconButton onClick={() => setOpen(!open)}>
-//                             <ArrowDropDown />
-//                         </IconButton>
-//                     </Grid> */}
-//                 </Grid>
-//             </div>
-//             <Collapse in={open}>
-//                 <div className={classes.collapseRoot}>
-//                     <div style={{ height: 15 }} />
-//                     <div className={classes.opportunityContainer}>
-//                         <Grid container direction="row">
-//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-//                                 <Box className={classes.opportunitySubContainer} m={1}>
-//                                     <label className={classes.opportunityValue}>$175</label>
-//                                     <div style={{ width: '10%', minWidth: 4 }} />
-//                                     <label><Trans i18nKey={langKeys.expectedRevenue} /></label>
-//                                 </Box>
-//                             </Grid>
-//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-//                                 <Box className={classes.opportunitySubContainer} m={1}>
-//                                     <label className={classes.opportunityValue}>55%</label>
-//                                     <div style={{ width: '10%', minWidth: 4 }} />
-//                                     <label><Trans i18nKey={langKeys.probability} /></label>
-//                                 </Box>
-//                             </Grid>
-//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-//                                 <Box className={classes.opportunitySubContainer} m={1}>
-//                                     <label className={classes.opportunityValue}>35:15</label>
-//                                     <div style={{ width: '10%', minWidth: 4 }} />
-//                                     <label><Trans i18nKey={langKeys.expectedClosing} /></label>
-//                                 </Box>
-//                             </Grid>
-//                             <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
-//                                 <Box className={classes.opportunitySubContainer} m={1}>
-//                                     <label className={classes.opportunityValue}>X</label>
-//                                     <div style={{ width: '10%', minWidth: 4 }} />
-//                                     <label><Trans i18nKey={langKeys.priority} /></label>
-//                                 </Box>
-//                             </Grid>
-//                         </Grid>
-//                     </div>
-//                     <div style={{ height: 15 }} />
-//                     <div className={classes.rootItem}>
-//                         <h3 className={clsx(classes.infoSubtitle, classes.infoTitle)}>
-//                             <Trans i18nKey={langKeys.extraInformation} />
-//                         </h3>
-//                         <div style={{ height: 2 }} />
-//                         <h4 className={classes.infoSubtitle}>
-//                             <Trans i18nKey={langKeys.contactInformation} />
-//                         </h4>
-//                         <Grid container direction="row">
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Grid container direction="column">
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Company name" subtitle="NATURAL PRODUCTS" m={1} />
-//                                     </Grid>
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Language" subtitle="English" m={1} />
-//                                     </Grid>
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Mobile" subtitle="(456) 589 5621" m={1} />
-//                                     </Grid>
-//                                 </Grid>
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Grid container direction="column">
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Address" subtitle="45 1st St.Louisiana" m={1} />
-//                                     </Grid>
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Contact name" subtitle="Sam White" m={1} />
-//                                     </Grid>
-//                                 </Grid>
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Grid container direction="column">
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Website" subtitle="www.naturalproducts.net" m={1} />
-//                                     </Grid>
-//                                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-//                                         <Property title="Job position" subtitle="manager" m={1} />
-//                                     </Grid>
-//                                 </Grid>
-//                             </Grid>
-//                         </Grid>
-//                         <div style={{ height: 2 }} />
-//                         <h4 className={classes.infoSubtitle}>MARKETING</h4>
-//                         <Grid container direction="row">
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Campaign" subtitle="Promotion" m={1} />
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Medium" subtitle="Social media" m={1} />
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Source" subtitle="Facebook" m={1} />
-//                             </Grid>
-//                         </Grid>
-//                         <div style={{ height: 2 }} />
-//                         <h4 className={classes.infoSubtitle}>MISC</h4>
-//                         <Grid container direction="row">
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Days to assign" subtitle="0.00" m={1} />
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Days to close" subtitle="1.00" m={1} />
-//                             </Grid>
-//                             <Grid item xs={12} sm={4} md={4} lg={4} xl={4}>
-//                                 <Property title="Referred by" subtitle="Website" m={1} />
-//                             </Grid>
-//                         </Grid>
-//                     </div>
-//                 </div>
-//             </Collapse>
-//         </div>
-//     );
-// }
