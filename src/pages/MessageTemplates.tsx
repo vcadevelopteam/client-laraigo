@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useEffect, useState } from 'react'; // we need this to make JSX compile
+import React, { FC, useCallback, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
+import { CircularProgress, IconButton, Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
 import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain, convertLocalDate } from 'common/helpers';
@@ -12,12 +13,14 @@ import CheckIcon from '@material-ui/icons/Check';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import SaveIcon from '@material-ui/icons/Save';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, uploadFile } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
+import { Close, FileCopy, GetApp } from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -85,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
 const dataMessageType = [
     { value: "SMS", text: "sms" },
     { value: "HSM", text: "hsm" },
+    { value: "MAIL", text: "mail" }
 ];
 
 const dataTemplateType = [
@@ -103,6 +107,12 @@ const dataButtonType = [
     { value: "url", text: "url" },
     { value: "quick_reply", text: "quickreply" },
 ];
+
+const dataPriority = [
+    { value: 1, text: "low" },
+    { value: 2, text: "medium" },
+    { value: 3, text: "high" },
+]
 
 const MessageTemplates: FC = () => {
     const dispatch = useDispatch();
@@ -288,6 +298,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
             buttons: row ? (row.buttons || []) : [],
+            priority: row?.priority || 2,
+            attachment: row?.attachment || '',
             operation: row ? "EDIT" : "INSERT"
         }
     });
@@ -298,8 +310,11 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         name: "buttons",
     });
 
-    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(getValues('type') === 'SMS');
+    const [templateTypeDisabled, setTemplateTypeDisabled] = useState(['SMS','MAIL'].includes(getValues('type')));
     
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
+    const uploadResult = useSelector(state => state.main.uploadFile);
+
     React.useEffect(() => {
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('name', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -326,6 +341,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     }, [executeRes, waitSave])
 
+    useEffect(() => {
+        if (waitUploadFile) {
+            if (!uploadResult.loading && !uploadResult.error) {
+                setValue('attachment', uploadResult?.url || '')
+                setWaitUploadFile(false);
+            } else if (uploadResult.error) {
+                setWaitUploadFile(false);
+            }
+        }
+    }, [waitUploadFile, uploadResult])
+
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             dispatch(execute(insMessageTemplate(data)));
@@ -343,7 +369,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const onChangeMessageType = (data: Dictionary) => {
         setValue('type', data?.value || '');
         switch (data?.value || 'SMS') {
-            case 'SMS':
+            case 'SMS': case 'MAIL':
                 onChangeTemplateType({ value: 'STANDARD' });
                 setTemplateTypeDisabled(true);
                 break;
@@ -407,6 +433,34 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         await trigger('buttons');
     }
 
+    const [fileAttachment, setFileAttachment] = useState<File | null>(null);
+    
+    const onClickAttachment = useCallback(() => {
+        const input = document.getElementById('attachmentInput');
+        input!.click();
+    }, []);
+    
+    const onChangeAttachment = useCallback((files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            setFileAttachment(file);
+            let fd = new FormData();
+            fd.append('file', file, file.name);
+            dispatch(uploadFile(fd));
+            setWaitUploadFile(true);
+        }
+    }, [])
+
+    const handleCleanMediaInput = async () => {
+        const input = document.getElementById('attachmentInput') as HTMLInputElement;
+        if (input) {
+            input.value = "";
+        }
+        setFileAttachment(null);
+        setValue('attachment', '');
+        await trigger('attachment');
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -438,6 +492,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 type="submit"
                                 startIcon={<SaveIcon color="secondary" />}
                                 style={{ backgroundColor: "#55BD84" }}
+                                disabled={waitUploadFile}
                             >{t(langKeys.save)}
                             </Button>
                         }
@@ -538,6 +593,33 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             </React.Fragment>
                         }
                     </div>
+                    {getValues("type") === 'MAIL' &&
+                    <div className="row-zyx">
+                        {edit ?
+                            <React.Fragment>
+                                <FieldSelect
+                                    uset={true}
+                                    label={t(langKeys.priority)}
+                                    className="col-6"
+                                    valueDefault={getValues('priority')}
+                                    onChange={(value) => setValue('priority', value?.value)}
+                                    error={errors?.priority?.message}
+                                    data={dataPriority}
+                                    prefixTranslation="priority_"
+                                    optionDesc="text"
+                                    optionValue="value"
+                                />
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <FieldView
+                                    label={t(langKeys.priority)}
+                                    value={row ? (row.priority || "") : ""}
+                                    className="col-6"
+                                />
+                            </React.Fragment>
+                        }
+                    </div>}
                     <div className="row-zyx">
                         {edit ?
                             <FieldSelect
@@ -597,6 +679,27 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 >{t(langKeys.buttons)}</Button>
                             </React.Fragment>
                         : null }
+                    </div>
+                    : null}
+                    {getValues('type') === 'MAIL' ?
+                    <div className="row-zyx">
+                        {edit ?
+                            <React.Fragment>
+                                <FieldEdit
+                                    label={t(langKeys.header)}
+                                    className="col-12"
+                                    valueDefault={getValues('header')}
+                                    onChange={(value) => setValue('header', value)}
+                                    error={errors?.header?.message}
+                                />
+                            </React.Fragment>
+                            :
+                            <FieldView
+                                label={t(langKeys.header)}
+                                value={row ? (row.header || "") : ""}
+                                className="col-12"
+                            />
+                        }
                     </div>
                     : null}
                     {(getValues('templatetype') === 'MULTIMEDIA'
@@ -772,14 +875,118 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             })
                         }
                     </div>
-                    
                     : null}
+                    {getValues("type") === 'MAIL' &&
+                    <div>
+                        <FieldView label={t(langKeys.files)} />
+                        {edit && getValues("attachment") === '' ?
+                            <React.Fragment>
+                                <input
+                                    accept="file/*"
+                                    style={{ display: 'none' }}
+                                    id="attachmentInput"
+                                    type="file"
+                                    onChange={(e) => onChangeAttachment(e.target.files)}
+                                />
+                                {!fileAttachment && <IconButton
+                                    onClick={onClickAttachment}
+                                    disabled={fileAttachment !== null || waitUploadFile}
+                                >
+                                    <AttachFileIcon color="primary" />
+                                </IconButton>}
+                                {fileAttachment && <FilePreview src={fileAttachment} />}
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <FilePreview src={getValues("attachment")} onClose={handleCleanMediaInput} />
+                            </React.Fragment>
+                        }
+                    </div>}
                 </div>
             </form>
         </div>
     );
 }
 
+interface FilePreviewProps {
+    src: File | string;
+    onClose?: () => void;
+}
 
+const useFilePreviewStyles = makeStyles(theme => ({
+    root: {
+        backgroundColor: 'white',
+        padding: theme.spacing(1),
+        borderRadius: 4,
+        display: 'flex',
+        flexDirection: 'row',
+        maxWidth: 300,
+        maxHeight: 80,
+        alignItems: 'center',
+        width: 'fit-content',
+        overflow: 'hidden'
+    },
+    infoContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+    },
+    btnContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        color: 'lightgrey',
+    },
+}));
+
+const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
+    const classes = useFilePreviewStyles();
+
+    const isUrl = useCallback(() => typeof src === "string" && src.includes('http'), [src]);
+
+    const getFileName = useCallback(() => {
+        if (isUrl()) {
+            const m = (src as string).match(/.*\/(.+?)\./);
+            return m && m.length > 1 ? m[1] : "";
+        };
+        return (src as File).name;
+    }, [isUrl, src]);
+
+    const getFileExt = useCallback(() => {
+        if (isUrl()) {
+            return (src as string).split('.').pop()?.toUpperCase() || "-";
+        }
+        return (src as File).name.split('.').pop()?.toUpperCase() || "-";
+    }, [isUrl, src]);
+
+    return (
+        <Paper className={classes.root} elevation={2}>
+            <FileCopy />
+            <div style={{ width: '0.5em' }} />
+            <div className={classes.infoContainer}>
+                <div>
+                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
+                </div>
+            </div>
+            <div style={{ width: '0.5em' }} />
+            {!isUrl() && !onClose && <CircularProgress color="primary" />}
+            <div className={classes.btnContainer}>
+                {onClose && (
+                    <IconButton size="small" onClick={onClose}>
+                        <Close />
+                    </IconButton>
+                )}
+                {isUrl() && <div style={{ height: '10%' }} />}
+                {isUrl() && (
+                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
+                        <IconButton size="small">
+                            <GetApp />
+                        </IconButton>
+                    </a>
+                )}
+            </div>
+        </Paper>
+    );
+}
 
 export default MessageTemplates;

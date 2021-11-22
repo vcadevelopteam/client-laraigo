@@ -89,12 +89,19 @@ const MainHeatMap: React.FC = () => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
             dispatch(showBackdrop(false))
-
-            initAtencionesxFechaAsesorGrid(multiData.data[0].data)
-            averageHeatMapTMO(multiData.data[0].data)
-            initUserFirstReplyTimexFechaGrid(multiData.data[0].data)
-            initUserAverageReplyTimexFechaGrid(multiData.data[0].data)
-            initPersonAverageReplyTimexFechaGrid(multiData.data[0].data)
+            if(multiData.data[0].key === "UFN_REPORT_HEATMAP_PAGE1_SEL"){
+                initAtencionesxFechaAsesorGrid(multiData.data[0]?.data||[])
+                averageHeatMapTMO(multiData.data[0]?.data||[])
+                initUserFirstReplyTimexFechaGrid(multiData.data[0]?.data||[])
+                initUserAverageReplyTimexFechaGrid(multiData.data[0]?.data||[])
+                initPersonAverageReplyTimexFechaGrid(multiData.data[0]?.data||[])
+            }else{
+                initAtencionesxFechaAsesorGrid([])
+                averageHeatMapTMO([])
+                initUserFirstReplyTimexFechaGrid([])
+                initUserAverageReplyTimexFechaGrid([])
+                initPersonAverageReplyTimexFechaGrid([]) 
+            }
         }
     }, [multiData,realizedsearch])
     useEffect(() => {
@@ -773,14 +780,11 @@ const MainHeatMap: React.FC = () => {
         </div>
     )
 }
-const HeatMapAsesor: React.FC = () => {
+const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({companydomain,listadvisers}) => {
     
     const { t } = useTranslation();
     const classes = useStyles();
-    const [companydomain, setcompanydomain] = useState<any>([]);
     const [realizedsearch, setrealizedsearch] = useState(false);
-    const [advisersearch, setadvisersearch] = useState(false);
-    const [listadvisers, setlistadvisers] = useState<any>([]);
     const [completadosxAsesorData, setCompletadosxAsesorData] = useState<any>([]);
     const [abandonosxAsesorData, setabandonosxAsesorData] = useState<any>([]);
     const [abandonosxAsesorTitle, setabandonosxAsesorTitle] = useState<any>([]);
@@ -794,7 +798,6 @@ const HeatMapAsesor: React.FC = () => {
     const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
     //const mainData = useSelector(state => state.main.mainData);
-    const multiDataAux = useSelector(state => state.main.multiDataAux);
     const multiData = useSelector(state => state.main.multiData);
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
@@ -805,20 +808,8 @@ const HeatMapAsesor: React.FC = () => {
         company: ""
     });
     useEffect(() => {
-        setadvisersearch(true)
-        dispatch(getMultiCollectionAux([
-            getValuesFromDomain("EMPRESA"),
-            getasesoresbyorgid()
-        ]))
         search()
     }, [])
-    
-    useEffect(() => {
-        if(!multiDataAux.loading && advisersearch){
-            setcompanydomain(multiDataAux.data[0]?.data||[])
-            setlistadvisers(multiDataAux.data[1]?.data||[])    
-        }
-    }, [multiDataAux,advisersearch])
 
     useEffect(() => {
 
@@ -841,11 +832,19 @@ const HeatMapAsesor: React.FC = () => {
             })
             setrealizedsearch(false)
             dispatch(showBackdrop(false))
-            initCompletadosxAsesorGrid(multiData.data[0].data,arrayfree)
-            initAbandonosxAsesorGrid(multiData.data[0].data,arrayfree)
-            initTasaAbandonosxAsesorGrid(multiData.data[0].data,arrayfree)
-            initVentasxAsesorGrid(multiData.data[0].data,arrayfree)            
-            initEfectividadxAsesorGrid(multiData.data[0].data,arrayfree)            
+            if(multiData.data[0].key === "UFN_REPORT_HEATMAP_PAGE3_SEL"){
+                initCompletadosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+                initAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+                initTasaAbandonosxAsesorGrid(multiData.data[0]?.data||[],arrayfree)
+                initVentasxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
+                initEfectividadxAsesorGrid(multiData.data[0]?.data||[],arrayfree)            
+            }else{
+                initCompletadosxAsesorGrid([],arrayfree)
+                initAbandonosxAsesorGrid([],arrayfree)
+                initTasaAbandonosxAsesorGrid([],arrayfree)
+                initVentasxAsesorGrid([],arrayfree)            
+                initEfectividadxAsesorGrid([],arrayfree)  
+            }
         }
     }, [multiData,realizedsearch])
 
@@ -956,9 +955,6 @@ const HeatMapAsesor: React.FC = () => {
             arrayfree[listadvisers.length][`day${day}`] += row.abandonosxasesor;
             arrayfree[listadvisers.length][`totalcol`] += row.abandonosxasesor;
         })
-        console.log(arrayfree)
-        console.log(listadvisers)
-        console.log(data)
         setabandonosxAsesorData(arrayfree)
 
         let mid = rowmax/2;
@@ -1371,8 +1367,11 @@ const HeatMapTicket: React.FC = () => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
             dispatch(showBackdrop(false))
-            console.log(multiData)
-            initAsesoresConectadosGrid(multiData.data[0].data)
+            if(multiData.data[0].key === "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL"){
+                initAsesoresConectadosGrid(multiData.data[0]?.data||[])
+            }else{
+                initAsesoresConectadosGrid([])
+            }
         }
     }, [multiData,realizedsearch])
     function search(){
@@ -1447,7 +1446,6 @@ const HeatMapTicket: React.FC = () => {
             NoFilter: true,
             Cell: (props: any) => {
                 let color=gradient(props.cell.row.original[key])
-                console.log(color)
                 return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
             },
         }));
@@ -1502,7 +1500,23 @@ const HeatMapTicket: React.FC = () => {
 }
 
 const Heatmap: FC = () => {
-    const [pageSelected, setPageSelected] = useState(0);
+    const [pageSelected, setPageSelected] = useState(0);    
+    const [listadvisers, setlistadvisers] = useState<any>([]);
+    const [companydomain, setcompanydomain] = useState<any>([]);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        if(!multiDataAux.loading){
+            setcompanydomain(multiDataAux.data[0]?.data||[])
+            setlistadvisers(multiDataAux.data[1]?.data||[])    
+        }
+    }, [multiDataAux])
+    useEffect(() => {
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomain("EMPRESA"),
+            getasesoresbyorgid()
+        ]))
+    }, [])
     const { t } = useTranslation();
     return (
         <Fragment>
@@ -1519,7 +1533,7 @@ const Heatmap: FC = () => {
                 <AntTab label={t(langKeys.heatmapticket)}/>
             </Tabs>
             {pageSelected === 0 && <MainHeatMap />}
-            {pageSelected === 1 && <HeatMapAsesor />}
+            {pageSelected === 1 && <HeatMapAsesor companydomain={companydomain} listadvisers={listadvisers}/>}
             {pageSelected === 2 && <HeatMapTicket />}
         </Fragment>
     )
