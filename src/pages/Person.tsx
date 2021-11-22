@@ -189,6 +189,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
+            type,
             listmembers: personWithData.map(person => ({
                 phone: person.phone || "",
                 firstname: person.firstname || "",
