@@ -153,6 +153,12 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
+            if (type === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
             if (type === "MAIL") {
                 setPersonWithData(persons.filter(x => x.email && x.email.length > 0))
             } else {
@@ -183,6 +189,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
+            type,
             listmembers: personWithData.map(person => ({
                 phone: person.phone || "",
                 firstname: person.firstname || "",
@@ -212,21 +219,23 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             <div style={{marginBottom: 8}}>
                 {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
             </div>
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.channel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    onChange={value => {
-                        setValue('communicationchannelid', value.communicationchannelid);
-                        setValue('communicationchanneltype', value.type);
-                    }}
-                    error={errors?.communicationchannelid?.message}
-                    data={channelList}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>
+            {type === "HSM" && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value.communicationchannelid);
+                            setValue('communicationchanneltype', value.type);
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}
@@ -1881,10 +1890,8 @@ const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setV
     useEffect(() => {
         if (person.personid && person.personid !== 0) {
             dispatch(getChannelListByPerson(getChannelListByPersonBody(person.personid)));
-            // dispatch(getAdditionalInfoByPerson(getAdditionalInfoByPersonBody(person.personid)));
             return () => {
                 dispatch(resetGetChannelListByPerson());
-                // dispatch(resetgetAdditionalInfoByPerson());
             };
         }
     }, [dispatch, person]);
@@ -2350,17 +2357,12 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     return (
         <TableZyx
             columns={columns}
-            // titlemodule={t(langKeys.organization_plural, { count: 2 })}
             filterGeneral={false}
             data={leads.data}
             download={false}
             loading={leads.loading}
             onClickRow={goToLead}
             register={false}
-        // handleRegister={handleRegister}
         />
-        // <div>
-        //     {leads.data.map((e, i) => <LeadItem lead={e} key={`leads_item_${i}`} />)}
-        // </div>
     );
 }

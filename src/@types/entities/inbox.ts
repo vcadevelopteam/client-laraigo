@@ -30,7 +30,8 @@ export interface ISendHSM {
     communicationchannelid: number;
     platformtype: string;
     communicationchanneltype: string;
-    listmembers: IMember[]
+    listmembers: IMember[];
+    type?: string;
 }
 
 export interface IReplyTicketParams extends ITicket {
