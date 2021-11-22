@@ -16,7 +16,6 @@ import { useDispatch } from 'react-redux';
 import { default as DashboardManagerial } from './DashboardManagerial';
 import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
-import { default as Heatmap } from './Heatmap';
 import { TemplateBreadcrumbs } from 'components';
 
 

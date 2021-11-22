@@ -307,7 +307,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                             className="col-6"
                                             fregister={{
                                                 ...register("email",{
-                                                    validate: (value) => (value && value.length) && ((value.includes("@") && value.includes(".")) || t(langKeys.emailverification) )|| t(langKeys.field_required)
+                                                    validate: (value) => (((value && value.length) && (value.includes("@") && value.includes("."))) || t(langKeys.emailverification))|| t(langKeys.field_required)
                                                 })
                                             }}
                                             error={errors?.email?.message}

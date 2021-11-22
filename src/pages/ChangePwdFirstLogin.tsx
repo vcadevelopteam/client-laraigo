@@ -1,5 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Box, Button, CircularProgress, Container, IconButton, InputAdornment, makeStyles, TextField } from '@material-ui/core';
+import { Box, Button, CircularProgress, Container, IconButton, InputAdornment, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { langKeys } from 'lang/keys';
@@ -43,6 +43,7 @@ const ChangePwdFirstLogin: FC = () => {
             dispatch(logout());
             history.push(paths.SIGNIN);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resValidateToken.user?.pwdchangefirstlogin, history, dispatch]);
 
     useEffect(() => {

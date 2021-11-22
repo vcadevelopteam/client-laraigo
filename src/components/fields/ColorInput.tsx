@@ -65,10 +65,12 @@ const ColorInput: FC<ColorInputProps> = ({ hex, onChange, disabled = false }) =>
 
     useEffect(() =>{
         if (disabled && open) setOpen(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [disabled]);
 
     const handleChange = useCallback((v: ColorResult, e: React.ChangeEvent<HTMLInputElement>) => {
         if (!disabled) onChange(v, e);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [disabled]);
 
     const handleOpen = useCallback(() => {
