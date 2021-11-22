@@ -237,6 +237,12 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             })
             register('hsmtemplateid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
 
+            if (messagetype === "HSM") {
+                register('communicationchannelid', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            } else {
+                register('communicationchannelid');
+            }
+
             if (messagetype === "MAIL") {
                 setPersonsWithData(persons.filter(x => x.email && x.email.length > 0))
             } else {
@@ -266,6 +272,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             communicationchannelid: data.communicationchannelid,
             communicationchanneltype: data.communicationchanneltype,
             platformtype: data.communicationchanneltype,
+            type: messagetype,
             listmembers: personsWithData.map((person: Dictionary) => ({
                 phone: person.phone || "",
                 firstname: person.contact_name || "",
@@ -307,22 +314,24 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             <div style={{marginBottom: 8}}>
                 {persons.length} {t(langKeys.persons_selected)}, {personsWithData.length} {t(langKeys.with)} {messagetype === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
             </div>
-            <div className="row-zyx">
-                <FieldSelect
-                    label={t(langKeys.channel)}
-                    className="col-12"
-                    valueDefault={getValues('communicationchannelid')}
-                    onChange={value => {
-                        setValue('communicationchannelid', value.communicationchannelid);
-                        setValue('communicationchanneltype', value.type);
-                    }}
-                    error={errors?.communicationchannelid?.message}
-                    loading={outboundData.loading}
-                    data={channelList}
-                    optionDesc="communicationchanneldesc"
-                    optionValue="communicationchannelid"
-                />
-            </div>
+            {messagetype === 'HSM' && (
+                <div className="row-zyx">
+                    <FieldSelect
+                        label={t(langKeys.channel)}
+                        className="col-12"
+                        valueDefault={getValues('communicationchannelid')}
+                        onChange={value => {
+                            setValue('communicationchannelid', value.communicationchannelid);
+                            setValue('communicationchanneltype', value.type);
+                        }}
+                        error={errors?.communicationchannelid?.message}
+                        loading={outboundData.loading}
+                        data={channelList}
+                        optionDesc="communicationchanneldesc"
+                        optionValue="communicationchannelid"
+                    />
+                </div>
+            )}
             <div className="row-zyx">
                 <FieldSelect
                     label={t(langKeys.template)}
