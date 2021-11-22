@@ -1,11 +1,9 @@
-import { Badge, BadgeProps, Box, BoxProps, createStyles, IconButton, List, ListItem, makeStyles, Popover, styled, Theme } from "@material-ui/core";
+import { Badge, BadgeProps, Box, BoxProps, createStyles, IconButton, makeStyles, Menu, MenuItem, styled, Theme } from "@material-ui/core";
 import { LeadActivityNotification } from "@types";
 import paths from "common/constants/paths";
 import { useSelector } from "hooks";
 import { BellNotificationIcon } from "icons";
-import { langKeys } from "lang/keys";
 import { FC, MouseEventHandler, useState } from "react";
-import { Trans } from "react-i18next";
 import { useHistory } from "react-router";
 import clsx from 'clsx';
 
@@ -23,13 +21,14 @@ const StyledBadge = styled(Badge)<BadgeProps>(() => ({
 const useNotificaionStyles = makeStyles((theme: Theme) =>
   createStyles({
         root: {
-            width: '100%',
             padding: theme.spacing(1),
             backgroundColor: 'inherit',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'flex-start',
             textAlign: 'start',
+            width: 270,
+            maxWidth: 270,
         },
         row: {
             display: 'flex',
@@ -54,18 +53,18 @@ const useNotificaionStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface NotificaionListItemProps {
+interface NotificaionMenuItemProps {
     title: React.ReactNode;
     description: React.ReactNode;
     date: React.ReactNode;
-    onClick?: MouseEventHandler<HTMLDivElement>;
+    onClick?: MouseEventHandler<HTMLLIElement>;
 }
 
-const NotificaionListItem: FC<NotificaionListItemProps> = ({ title, description, date, onClick }) => {
+const NotificaionMenuItem: FC<NotificaionMenuItemProps> = ({ title, description, date, onClick }) => {
     const classes = useNotificaionStyles();
 
     return (
-        <ListItem button className={classes.root} onClick={onClick}>
+        <MenuItem button className={classes.root} onClick={onClick}>
             <div className={classes.row}>
                 <div className={classes.textOneLine}>
                     <span className={classes.title}>{title}</span>
@@ -77,7 +76,7 @@ const NotificaionListItem: FC<NotificaionListItemProps> = ({ title, description,
             <div className={clsx(classes.description, classes.textOneLine)}>
                 <span>{description}</span>
             </div>
-        </ListItem>
+        </MenuItem>
     );
 }
 
@@ -88,18 +87,9 @@ const useNotificationMenuStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             justifyContent: 'center',
         },
-        containerPopover: {
-            display: 'flex',
-            alignItems: 'center',
-            padding: 0,
-            flexDirection: 'column',
-            gap: theme.spacing(1.5),
-            width: 270,
-            maxHeight: 410,
-        },
-        list: {
+        menu: {
             padding: theme.spacing(1),
-            width: '100%',
+            maxHeight: 410,
         },
         noNotificationContainer: {
             height: 90,
@@ -119,18 +109,18 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
 
     const resValidateToken = useSelector(state => state.login.validateToken);
 
+    const open = Boolean(anchorEl);
+    const notifications = resValidateToken.loading ? [] : resValidateToken.user?.notifications || [];
+    const notificationCount = notifications.length;
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        if (notificationCount === 0) return;
         setAnchorEl(event.currentTarget);
     };
   
     const handleClose = () => {
         setAnchorEl(null);
     };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'notification-list-menu-popover' : undefined;
-    const notifications = resValidateToken.loading ? [] : resValidateToken.user?.notifications || [];
-    const notificationCount = notifications.length;
 
     return (
         <Box {...boxProps}>
@@ -145,48 +135,37 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
                     <BellNotificationIcon />}
                 </div>
             </IconButton>
-            <Popover
-                id={id}
-                open={open}
+            <Menu
+                id="notification-list-menu-popover"
                 anchorEl={anchorEl}
+                open={open}
                 onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
+                className={classes.menu}
+                MenuListProps={{
+                    'aria-labelledby': 'lock-button',
+                    role: 'listbox',
                 }}
-            >
-                <div className={classes.containerPopover}>
-                    {notificationCount > 0 ?
-                    (
-                        <List component="nav" className={classes.list}>
-                            {notifications.map((e, i) => {
-                                if (e.notificationtype === "LEADACTIVITY") {
-                                    const not = e as LeadActivityNotification;
-                                    return (
-                                        <NotificaionListItem
-                                            key={i}
-                                            title={not.description}
-                                            description={not.leadname}
-                                            date={formatDate(not.duedate)}
-                                            onClick={() => {
-                                                handleClose();
-                                                history.push(paths.CRM_EDIT_LEAD.resolve(not.leadid));
-                                            }}
-                                        />
-                                    );
-                                }
-
-                                return <div style={{ display: 'none' }} />;
-                            })}
-                        </List>
-                    ) :
-                    (
-                        <div className={classes.noNotificationContainer}>
-                            <span><Trans i18nKey={langKeys.noNotification} count={2} /></span>
-                        </div>
-                    )}
-                </div>
-            </Popover>
+            >         
+                {notifications.map((e, i) => {
+                    if (e.notificationtype === "LEADACTIVITY") {
+                        const not = e as LeadActivityNotification;
+                        return (
+                            <NotificaionMenuItem
+                                key={i}
+                                title={not.description}
+                                description={not.leadname}
+                                date={formatDate(not.duedate)}
+                                onClick={() => {
+                                    handleClose();
+                                    history.push(paths.CRM_EDIT_LEAD.resolve(not.leadid));
+                                }}
+                            />
+                        );
+                    }
+                
+                    return <div style={{ display: 'none' }} />;
+                })}
+            </Menu>
         </Box>
     );
 };
