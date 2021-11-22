@@ -21,6 +21,7 @@ export interface IMassiveCloseTicketsParams {
 
 interface IMember {
     phone: string;
+    email?: string;
     firstname?: string | undefined;
     lastname?: string | undefined;
     parameters: Dictionary[];
