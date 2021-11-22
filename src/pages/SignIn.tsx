@@ -29,7 +29,7 @@ import { showSnackbar } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
 import paths from 'common/constants/paths';
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
     paper: {
         display: 'flex',
         flexDirection: 'column',
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-function Copyright() {
+export function Copyright() {
     const { t } = useTranslation();
     return (
         <Fragment>

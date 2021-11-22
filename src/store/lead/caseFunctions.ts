@@ -66,17 +66,14 @@ export const getAdvisers = (state: IState): IState => ({
     advisers: { ...state.advisers, loading: true, error: false },
 });
 
-export const getAdvisersSuccess = (state: IState, action: IAction): IState => {
-    console.log(action.payload);
-    return {
-        ...state,
-        advisers: {
-            data: action.payload.data || [],
-            loading: false,
-            error: false,
-        },
-    };
-}
+export const getAdvisersSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    advisers: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
 
 export const getAdvisersFailure = (state: IState, action: IAction): IState => ({
     ...state,

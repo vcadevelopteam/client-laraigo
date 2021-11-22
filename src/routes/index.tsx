@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -39,6 +39,7 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
 	const resValidateToken = useSelector(state => state.login.validateToken);
+	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const resLogin = useSelector(state => state.login.login);
 
 	const applications = resValidateToken?.user?.menu;
@@ -72,6 +73,8 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		);
 	} else if (resValidateToken.error) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
+	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
+		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
 	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm')) {
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
@@ -288,6 +291,9 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
 					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
 				</ProtectRoute>
+				<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
+					<ChangePwdFirstLogin />
+				</Route>
 				<Route exact path="/403">
 					<Forbidden />
 				</Route>

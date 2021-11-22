@@ -14,13 +14,15 @@ export interface IState {
     triggerChangeOrganization: ITemplate;
     validateToken: IUserTmp;
     logout: ITemplate;
+    ignorePwdchangefirstloginValidation: boolean;
 }
 
 export const initialState: IState = {
     login: { ...initialCommon, user: null },
     triggerChangeOrganization: initialCommon,
     validateToken: { ...initialCommon, user: null, loading: true },
-    logout: initialCommon
+    logout: initialCommon,
+    ignorePwdchangefirstloginValidation: false,
 };
 
 export default createReducer<IState>(initialState, {
@@ -44,4 +46,6 @@ export default createReducer<IState>(initialState, {
     [actionTypes.LOGOUT_SUCCESS]: caseFunctions.logoutSuccess,
     [actionTypes.LOGOUT_FAILURE]: caseFunctions.logoutFailure,
     [actionTypes.LOGOUT_RESET]: caseFunctions.logoutReset,
+
+    [actionTypes.CHANGE_PWD_FIRST_LOGIN]: caseFunctions.changePwdFirstLogin,
 });

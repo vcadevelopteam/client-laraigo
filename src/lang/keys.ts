@@ -25,6 +25,7 @@ export const langKeys = {
     currency: "currency",
     industry_foodsanddrinks: "industry_foodsanddrinks",
     industry_audiovisual: "industry_audiovisual",
+    default_credentials: "default_credentials",
     country: "country",
     industry_beauty: "industry_beauty",
     industry_construction: "industry_construction",
@@ -37,9 +38,14 @@ export const langKeys = {
     tasaAbandonosxAsesor: "tasaAbandonosxAsesor",
     ventasxAsesor: "ventasxAsesor",
     efectividadxAsesor: "efectividadxAsesor",
+    port: "port",
+    host: "host",
+    emailconfiguration: "emailconfiguration",
     heatmapticket: "heatmapticket",
     brandname: "brandname",
+    informationorganization: "informationorganization",
     heatmapaverageadvisorTME: "heatmapaverageadvisorTME",
+    private_mail: "private_mail",
     averageheatmapTMOdata: "averageheatmapTMOdata",
     brandaddress: "brandaddress",
     industry_education: "industry_education",
@@ -823,7 +829,7 @@ export const langKeys = {
     signup_with_facebook: 'signup_with_facebook',
     login_with_google: 'login_with_google',
     info: 'info',
-
+    validnumber: "validnumber",
     error_request_services: 'error_request_services',
     error_already_exists_record: 'error_already_exists_record',
     error_cos_unexpected: 'cos_unexpected',
@@ -1378,6 +1384,11 @@ export const langKeys = {
     REMOVETAG: 'REMOVETAG', // lead history type
     ELIMINADO: 'ELIMINADO', // lead history type
     CLOSEDLEAD: 'CLOSEDLEAD', // lead history type
+
+    repeatPassword: 'repeatPassword',
+    passwordsMustBeEqual: 'passwordsMustBeEqual',
+    noNotification: 'noNotification',
+    noNotification_plural: 'noNotification_plural',
 };
 
 export type LangKeys = typeof langKeys;

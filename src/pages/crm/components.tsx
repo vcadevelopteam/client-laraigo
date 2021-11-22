@@ -118,7 +118,7 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         history.push({
             pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid),
         });
-    }, [lead]);
+    }, [lead, history]);
 
     const handleDelete = () => {
         setAnchorEl(null);
@@ -368,10 +368,10 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
         setAnchorEl(null);
     }, []);
 
-    const handleDelete = useCallback(() => {
-        setAnchorEl(null);
-        onDelete?.(columnid);
-    }, []);
+    // const handleDelete = useCallback(() => {
+    //     setAnchorEl(null);
+    //     onDelete?.(columnid);
+    // }, []);
 
     const open = Boolean(anchorEl);
     const id = open ? `lead-column-popover-${title}` : undefined;

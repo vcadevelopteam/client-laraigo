@@ -1,4 +1,4 @@
-import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder, uuidv4 } from "common/helpers";
+import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -219,7 +219,7 @@ const CRM: FC = () => {
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-      const [removed] = copiedItems!.splice(leadIndex, 1); //v
+      copiedItems!.splice(leadIndex, 1); //v
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
@@ -239,7 +239,7 @@ const CRM: FC = () => {
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
       const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-      const [removed] = copiedItems!.splice(leadIndex, 1); //v
+      copiedItems!.splice(leadIndex, 1); //v
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
@@ -253,9 +253,9 @@ const CRM: FC = () => {
     }))
   }
 
-  const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
+  /*const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
-    const uuid = uuidv4()
+    const uuid = uuidv4() // from common/helpers
 
     const data = {
       id: uuid,
@@ -280,7 +280,7 @@ const CRM: FC = () => {
 
     dispatch(execute(insColumns(data)))
     setDataColumn(Object.values({...columns, newColumn}));
-  }
+  }*/
 
   const hanldeDeleteColumn = (column_uuid : string, delete_all:boolean = true) => {
     if (column_uuid === '00000000-0000-0000-0000-000000000000') return;
@@ -616,89 +616,8 @@ const CRM: FC = () => {
           </div>
         </div>
         {display === 'BOARD' &&
-        <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
+        <div style={{ display: "flex", /*justifyContent: "center",*/ height: "100%" }}>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
-            {/* {(dataColumn.length > 0) && 
-              <Droppable droppableId="first-column" direction="horizontal" type="column" isDropDisabled>
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    style={{display:'flex'}}
-                  >
-                    <Draggable draggableId={dataColumn[0].column_uuid} index={0} key={dataColumn[0].column_uuid} isDragDisabled={dataColumn[0].columnid === 0}>
-                      {(provided) => (
-                        <div
-                          {...provided.draggableProps}
-                          ref={provided.innerRef}
-                        >
-                          <DraggableLeadColumn 
-                            title={dataColumn[0].description}
-                            key={0}
-                            snapshot={null}
-                            provided={provided}
-                            columnid={dataColumn[0].column_uuid} 
-                            onDelete={hanldeDeleteColumn}
-                            total_revenue={dataColumn[0].total_revenue!}
-                            onAddCard={() => history.push(paths.CRM_ADD_LEAD.resolve(dataColumn[0].columnid, dataColumn[0].column_uuid))}
-                          >
-                            <Droppable droppableId={dataColumn[0].column_uuid} type="task">
-                              {(provided, snapshot) => (
-                                <div
-                                  {...provided.droppableProps}
-                                  ref={provided.innerRef}
-                                  style={{ overflow: 'hidden', width: '100%' }}
-                                >
-                                  <DroppableLeadColumnList snapshot={snapshot} itemCount={dataColumn[0].items?.length || 0}>
-                                  {dataColumn[0].items?.map((item, index) => {
-                                    return (
-                                      <Draggable
-                                        key={item.leadid}
-                                        draggableId={item.leadid.toString()}
-                                        index={index}
-                                      >
-                                        {(provided, snapshot) => {
-                                          return (
-                                            <NaturalDragAnimation
-                                              style={provided.draggableProps.style}
-                                              snapshot={snapshot}
-                                            >
-                                              {(style:any) => (
-                                                <div
-                                                  ref={provided.innerRef}
-                                                  {...provided.draggableProps}
-                                                  {...provided.dragHandleProps}
-                                                  style={{width: '100%', ...style}}
-                                                >
-                                                  <DraggableLeadCardContent
-                                                    lead={item}
-                                                    snapshot={snapshot}
-                                                    onDelete={handleDelete}
-                                                    onCloseLead={handleCloseLead}
-                                                  />
-                                                </div>
-                                              )}
-                                            </NaturalDragAnimation>
-                                          );
-                                        }}
-                                      </Draggable>
-                                    );
-                                  })}
-                                  </DroppableLeadColumnList>
-                                  {provided.placeholder}
-                                </div>
-                              )}
-                            </Droppable>
-                          </DraggableLeadColumn>
-                        </div>
-                      )}
-                    </Draggable>
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            } */}
-
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (
                 <div
@@ -707,9 +626,6 @@ const CRM: FC = () => {
                   style={{display:'flex'}}
                 >
                   {dataColumn.map((column, index) => {
-                    // if (column.columnid === 0) {
-                    //   return null
-                    // }
                     return (
                       <Draggable draggableId={column.column_uuid} index={index+1} key={column.column_uuid}>
                         { (provided) => (

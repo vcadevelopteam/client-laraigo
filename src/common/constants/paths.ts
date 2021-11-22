@@ -116,6 +116,7 @@ const paths = {
         path: '/crm/leads/:id',
         resolve: (leadId: string | number) => `/crm/leads/${leadId}`,
     },
+    CHNAGE_PWD_FIRST_LOGIN: '/changePasswordOnFirstLogin',
 };
 
 export default paths;

@@ -29,7 +29,7 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; time
 
     return (
         <div style={{ position: 'relative' }}>
-            <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{isTimer ? secondsToTime(time || 0) : label}</div>
+            <div style={{ color: color, padding: '3px 3px', whiteSpace: 'nowrap', fontSize: 13, fontFamily: 'Calibri' }}>{isTimer ? secondsToTime(time || 0) : label}</div>
             <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
         </div>
     )

@@ -66,49 +66,63 @@ export const Privacy: FC = () => {
             </div>
             <div className={classes.titlecards}>{t(langKeys.privacypoliciestitle)}</div>
             <Box className={classes.boxstyles}>
-                <p>Política de Privacidad de la Aplicación</p>
-                <p>Esta política de privacidad aplica al procesamiento de información identificable obtenida de su página o páginas de Facebook mediante la conexión con la aplicación asociada para el uso de la plataforma de mensajería centralizada Laraigo. La aplicación es provista por la empresa VCA Perú en coordinación con Facebook. Al enlazar o acceder de otra manera a esta aplicación, usted acepta las prácticas y políticas definidas en este documento.</p>
+                <p><b>Application Privacy Policy</b></p>
+                <p>VCA Perú operates the Conversation Management Platform Laraigo <a href="https://laraigo.com/">https://laraigo.com/</a>. In this page, we inform you of our policies regarding the collection, use and disclosure of personal information we receive from users of the site.</p>
+                <p>We use your personal information only for providing and improving the platform. By using Laraigo, you agree to the collection and use of information in accordance with this policy.</p>
+                <p><b>Information Collection and Use</b></p>
                 <ol>
                     <li>
-                        <p>¿Qué información personal es obtenida por la empresa VCA Perú?</p>
+                        <p><b>Personal Information:</b> While using Laraigo, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you. Personal identifiable information includes e-mail, name, last name, country, phone number and your current role in your company, all of which are asked as part of our sign-up process.</p>
+                        <p>We use this information as part of our user creation process. The user created in sign-up can be identified by the data provided and can be used to contact the person that registered it.</p>
+                    </li>
+                    <li>
+                        <p><b>Business Information:</b> While signing-up to Laraigo, we ask you to provide the following information about your business: Business or company name, industry field and business or company size.</p>
+                        <p>We use this information as part of our user creation process. Each user created in our sign-up process is linked to a corporation that contains the data provided. We use the information in order to identify the user and contact him if needed.</p>
+                    </li>
+                    <li>
+                        <p><b>Facebook Information:</b> In Laraigo, we offer the possibility to link your Facebook account to one of our apps in multiple occasions. In the following paragraphs we detail the information that is shared on each possible link and the way we use it.</p>
                         <ul>
-                            <li>Información provista de ustedes a nosotros: Recibiremos y almacenaremos información de su página de Facebook como nombre de página, rubro de la página, código de identificación externo.</li>
-                            <li>Información obtenida automáticamente: Recibiremos y almacenaremos información de los usuarios que interactúen con la página o páginas de Facebook enlazadas mediante el canal de Messenger y/o muro. Esta información incluye, pero no está limitada a nombres, apellidos, nombre de usuario, foto de perfil y la interacción misma que realizo. Asimismo, se obtendrá información de las publicaciones de la misma página o páginas de Facebook enlazadas.</li>
+                            <li>
+                                <p><b>Sign-up:</b> We offer the possibility to use your Facebook account in our sign-up process. If you agree to link your Facebook account as a mean to sign-up we receive the name of your account, e-mail and avatar picture.</p>
+                                <p>We use the information provided as part of our user creation process. The user created by sign-up with a Facebook account can be identified by the data provided and can be used to contact the person that registered It if needed.</p>
+                            </li>
+                            <li>
+                                <p><b>Channel Management:</b> We offer the possibility to link Facebook pages to our apps in our channel management module. In the linking process, we receive the following information of the page: The external id page and the name. In addition, by linking a Facebook page to our platform, you agree to share with us the following event-based information:</p>
+                                <ul>
+                                    <li>Posts created by the page</li>
+                                    <li>Comments created by the page or other users in posts of the page</li>
+                                    <li>Messages sent or received by the Messenger of the page</li>
+                                    <li>Basic profile information of the users that interacted with the page (Name and avatar picture)</li>
+                                </ul>
+                                <p>We use the information provided as part of our channel management module. The information of the page is used to create a channel where the incoming events (Posts, comments and messages) are registered in our platform and processed as tickets. Some select users of the platform can then send replies to these tickets which are then shown as replies in Facebook.</p>
+                            </li>
                         </ul>
                     </li>
                     <li>
-                        <p>¿Cómo utiliza VCA Perú la información que recolecta?</p>
-                        <p>VCA Perú utiliza la información descrita en esta política de privacidad para alimentar la plataforma de mensajería centralizada Laraigo, facilitando la entrada de mensajes de usuarios de una página o páginas de Facebook y la salida de mensajes de asesor o robot de chat al canal de Facebook correspondiente. Asimismo, se utiliza esta información internamente para analizar, desarrollar y mejorar los productos de VCA Perú.</p>
-                    </li>
-                    <li>
-                        <p>¿VCA Perú compartirá la información personal que reciba?</p>
-                        <p>Información personal de los usuarios es una parte integral de nuestro negocio. Nosotros no vendemos o rentamos su información personal con alguna tercera parte. La información personal obtenida estará disponible en nuestra plataforma de Laraigo para el uso de usted y sus trabajadores.</p>
-                    </li>
-                    <li>
-                        <p>¿Qué información personal puedo yo acceder?</p>
-                        <p>VCA Perú te permita acceder a la siguiente información para el propósito de observar y gestionar los canales de comunicación deseados de una página o páginas de Facebook mediante la plataforma de mensajería centralizada Laraigo.</p>
+                        <p><b>Instagram Information:</b> In Laraigo, we offer the possibility to link your Instagram account to one of our apps.</p>
                         <ul>
-                            <li>Información de las publicaciones de una página</li>
-                            <li>Mensajes entrantes de usuarios a una página</li>
-                            <li>Mensajes salientes de la plataforma de Laraigo a un canal de Facebook</li>
-                            <li>Interacción de los usuarios con la pagina o páginas de Facebook</li>
-                            <li>Data especifica de la aplicación</li>
-                        </ul>                         
+                            <li>
+                                <p><b>Channel Management:</b> We offer the possibility to link Instagram pages to our apps in our channel management module. In the linking process, we receive the following information of the page: The external id page and the name. We also receive information about the linked Instagram Business account, including the id. In addition, by linking an Instagram page to our platform, you agree to share with us the following event-based information:</p>
+                                <ul>
+                                    <li>Comments created by the page or other users in posts of the page</li>
+                                    <li>Messages sent or received by the Messenger of the page</li>
+                                    <li>Basic profile information of the users that interacted with the page (Only username)</li>
+                                </ul>
+                                <p>We use the information provided as part of our channel management module. The information of the page is used to create a channel where the incoming events (Comments and messages) are registered in our platform and processed as tickets.  Some select users of the platform can then send replies to these tickets which are then shown as replies in Facebook.</p>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <p>Condiciones de uso</p>
-                        <p>Si decide acceder o utilizar la aplicación, su acceso o cualquier disputa sobre la privacidad está ligada a esta política de privacidad y a nuestros términos de uso, incluyendo limitaciones en daños y arbitraje de disputas.</p>
-                    </li>
-                    <li>
-                        <p>Cambios a esta política de privacidad</p>
-                        <p>VCA Perú puede realizar cambios a esta política de privacidad. El uso de la información que recolectamos ahora está sujeta a la política de privacidad en efecto en la fecha donde la información fue usada. Si hacemos cambios en la forma en la que usamos la información personal, te notificaremos mediante un correo o una notificación en nuestro sitio web. </p>
-                    </li>
-                    <li>
-                        <p>Preguntas o preocupaciones</p>
-                        <p>Si tienes alguna pregunta o preocupación sobre nuestra política de privacidad, favor de enviarnos un mensaje detallado a laraigo@vcaperu.com para poder resolverla en nuestra mayor capacidad.</p>
-                    </li>
-                </ol> 
-                <p>Fecha efectiva: 01 de octubre, 2021</p>
+                </ol>
+                <p><b>Security</b></p>
+                <p>The security of your personal and business information is important to us. We don’t share or rent your information with third parties. The information submitted will only be available in our platform for you and the users you choose.</p>
+                <p><b>Deletion Request</b></p>
+                <p>We are open to any data deletion request if needed. To start the process, please contact us to the following e-mail: laraigo@vcaperu.com. Please, be clear in your request and provide the credentials that you have used in our sign-up process in order to identify the data that will be deleted. This process should take from 1 to 2 days.</p>
+                <p><b>Changes to This Privacy Policy</b></p>
+                <p>This Privacy Policy is effective as of 2021-11-17 and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.</p>
+                <p>We reserve the right to update or change our Privacy Policy as any time and you should check this Privacy Policy periodically.</p>
+                <p>If we make any changes to this Privacy Policy, we will notify either through the e-mail address you have provided us, or by placing a prominent notice in our website.</p>
+                <p><b>Contact Us</b></p>
+                <p>If you have any questions about this Privacy Policy, please contact us by using this e-mail: laraigo@vcaperu.com</p>
             </Box>
         </div>
     );

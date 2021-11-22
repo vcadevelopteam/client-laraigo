@@ -165,24 +165,6 @@ const Dashboard: FC = () => {
                                     </CardActionArea>
                                 </Card>
                             </Grid>
-                            <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                <Card >
-                                    <CardActionArea onClick={() => handleSelected("heatmap")}>
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            className={classes.media}
-                                            image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
-                                            title={t(langKeys.heatmap)}
-                                        />
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h6" component="div">
-                                                {t(langKeys.heatmap)}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
-                            </Grid>
                     </Grid>
                 </div>
             </div>
@@ -227,22 +209,7 @@ const Dashboard: FC = () => {
                 </div>
             </Fragment>
         )
-    }
-    else if(viewSelected === "heatmap"){
-        return(
-            
-            <Fragment>
-                <div style={{ width: '100%' }}>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={handleSelected}
-                    />
-                    <Heatmap/>
-                </div>
-            </Fragment>
-        )
-    }
-    
+    }    
     else{
         return (
             <div>error</div>

@@ -1,4 +1,4 @@
-import { IAction } from "@types";
+import { IAction, IUser } from "@types";
 import { initialState, IState } from "./reducer";
 import { saveAuthorizationToken, removeAuthorizationToken } from "common/helpers";
 
@@ -185,4 +185,16 @@ export const logoutFailure = (state: IState, action: IAction): IState => {
 export const logoutReset = (state: IState): IState => ({
     ...state,
     logout: initialState.logout,
+});
+
+export const changePwdFirstLogin = (state: IState, action: IAction): IState => ({
+    ...state,
+    validateToken: {
+        ...state.validateToken,
+        user: {
+            ...(state.validateToken.user || {} as IUser),
+            pwdchangefirstlogin: action.payload.value,
+        },
+    },
+    ignorePwdchangefirstloginValidation: action.payload.ignorePwdchangefirstloginValidation,
 });

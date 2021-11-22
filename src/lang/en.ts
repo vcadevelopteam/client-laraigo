@@ -117,6 +117,8 @@ const translation: LangKeys = {
     change_password_on_login: 'Change password on login',
     personalsettings: "Personal settings",
     personinformation: 'Person',
+    default_credentials: "Default credentials",
+    private_mail: "Use private mail",
     ticketinformation: 'Ticket',
     AIservices: 'AI Services',
     systemvariables: 'System',
@@ -126,7 +128,10 @@ const translation: LangKeys = {
     property_plural: 'Properties',
 
     groupconfig: "Group Configuration",
-
+    emailconfiguration: "Email configuration",
+    port: "Port",
+    host: "Host",
+    informationorganization: "Information organization",
     firstname: 'Firstname',
     lastname: 'Lastname',
     fullname: 'Fullname',
@@ -619,6 +624,7 @@ const translation: LangKeys = {
     reassign_ticket: 'Reassign ticket',
     typify: 'Typify',
     typify_ticket: 'Typify ticket',
+    validnumber: "Please insert a valid number",
     emailverification: 'The email must be valid',
     signup_with_facebook: "Sign up with Facebook",
     managerial: "Managerial",
@@ -1384,6 +1390,11 @@ const translation: LangKeys = {
     REMOVETAG: 'Tag removed',
     ELIMINADO: 'Deleted',
     CLOSEDLEAD: 'Lead closed',
+
+    repeatPassword: 'Repeat password',
+    passwordsMustBeEqual: 'Passwords must be equal',
+    noNotification: 'No notification',
+    noNotification_plural: 'No notifications',
 };
 
 const enResource: ResourceLanguage = {
