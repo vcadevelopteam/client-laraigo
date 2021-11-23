@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -22,6 +22,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { apiUrls } from 'common/constants';
 import { request_send, resetRequest } from 'store/integrationmanager/actions';
 import { dictToArrayKV, extractVariables, isJson } from 'common/helpers';
+import BackupIcon from '@material-ui/icons/Backup';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -301,6 +302,8 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
+
+    const [waitImport, setWaitImport] = useState(false);
 
     // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
@@ -596,6 +599,33 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
         );
     }
 
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            const data: any = await uploadExcel(file, undefined)
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                dispatch(execute(insarrayIntegrationManager(getValues('id'), data)));
+                setWaitImport(true);
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (waitImport) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_transaction) }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitImport(false);
+            }
+        }
+    }, [executeRes, waitImport]);
+
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -619,6 +649,27 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                             onClick={() => onClickTest()}
                         >{t(langKeys.test)}</Button>
                         }
+                        {!getValues('isnew') && getValues('type') === 'CUSTOM' && (
+                            <React.Fragment>
+                                <input
+                                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
+                                    id="uploadfile"
+                                    type="file"
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleUpload(e.target.files)}
+                                />
+                                <label htmlFor="uploadfile">
+                                    <Button
+                                        className={classes.button}
+                                        variant="contained"
+                                        component="span"
+                                        color="primary"
+                                        startIcon={<BackupIcon color="secondary" />}
+                                        style={{ backgroundColor: "#55BD84" }}
+                                    >{t(langKeys.import)}</Button>
+                                </label>
+                            </React.Fragment>
+                        )}
                         {getValues('type') === 'CUSTOM' &&
                         <Button
                             variant="contained"
