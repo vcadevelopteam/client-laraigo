@@ -73,7 +73,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            corpid: !row && ['SUPERADMIN'].includes(user?.roledesc || "") ? user?.corpid : null,
+            corpid: row ? row.corpid: user?.corpid,
             description: row ? (row.orgdesc || '') : '',
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
@@ -91,6 +91,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     });
 
     React.useEffect(() => {
+        register('corpid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
