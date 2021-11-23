@@ -214,6 +214,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             } else if (sendingRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(sendingRes.code || "error_unexpected_error") }))
                 dispatch(showBackdrop(false));
+                dispatch(resetExecute());
                 setWaitClose(false);
             }
         }
