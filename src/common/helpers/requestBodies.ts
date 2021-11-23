@@ -491,10 +491,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { id, description, type, status, logo, logotype, operation }
 });
-export const insOrg = ({ description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid ,description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { id, description, status, type, operation,currency,email,password,port: parseInt(port),host,ssl,default_credentials,private_mail }
+    parameters: { corpid, id, description, status, type, operation,currency,email,password,port: parseInt(port),host,ssl,default_credentials,private_mail }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
