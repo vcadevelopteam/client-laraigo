@@ -543,7 +543,7 @@ const Organizations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({ description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
+            dispatch(execute(insOrg({ ...row,description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
