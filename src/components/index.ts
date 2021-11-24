@@ -17,3 +17,5 @@ export { default as ColorInput } from './fields/ColorInput';
 export { default as SkeletonInteraction } from './skeletons/SkeletonInteraction';
 export { default as SkeletonReport } from './skeletons/SkeletonReport';
 export { default as BadgeGo } from './fields/BadgeGo';
+
+export { default as RichText } from './fields/RichText';
