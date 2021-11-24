@@ -491,10 +491,10 @@ export const insCorp = ({ id, description, type, status, logo, logotype, operati
     key: "UFN_CORP_INS",
     parameters: { id, description, type, status, logo, logotype, operation }
 });
-export const insOrg = ({ description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid ,description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { id, description, status, type, operation,currency,email,password,port: parseInt(port),host,ssl,default_credentials,private_mail }
+    parameters: { corpid, id, description, status, type, operation,currency,email,password,port: parseInt(port),host,ssl,default_credentials,private_mail }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -642,8 +642,27 @@ export const getIntegrationManagerSel = (id: number): IRequestBody => ({
     }
 });
 
-export const insIntegrationManager = (
-    {
+export const insIntegrationManager = ({
+    id,
+    description,
+    type,
+    status,
+    name,
+    method,
+    url,
+    authorization,
+    headers,
+    bodytype,
+    body,
+    parameters,
+    variables,
+    level,
+    fields,
+    apikey,
+    operation
+}: Dictionary): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_INS",
+    parameters: {
         id,
         description,
         type,
@@ -651,38 +670,26 @@ export const insIntegrationManager = (
         name,
         method,
         url,
-        authorization,
-        headers,
+        authorization: JSON.stringify(authorization),
+        headers: JSON.stringify(headers),
         bodytype,
-        body,
-        parameters,
-        variables,
+        body: body,
+        parameters: JSON.stringify(parameters),
+        variables: JSON.stringify(variables),
         level,
-        fields,
+        fields: JSON.stringify(fields),
         apikey,
         operation
-    }: Dictionary): IRequestBody => ({
-        method: "UFN_INTEGRATIONMANAGER_INS",
-        parameters: {
-            id,
-            description,
-            type,
-            status,
-            name,
-            method,
-            url,
-            authorization: JSON.stringify(authorization),
-            headers: JSON.stringify(headers),
-            bodytype,
-            body: body,
-            parameters: JSON.stringify(parameters),
-            variables: JSON.stringify(variables),
-            level,
-            fields: JSON.stringify(fields),
-            apikey,
-            operation
-        }
-    });
+    }
+});
+
+export const insarrayIntegrationManager = (id: number, table: Dictionary[]): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_IMPORT",
+    parameters: {
+        id: id,
+        table: JSON.stringify(table)
+    }
+});
 
 export const getChannelSel = (id: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
