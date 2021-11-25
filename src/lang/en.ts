@@ -1397,6 +1397,9 @@ const translation: LangKeys = {
     passwordsMustBeEqual: 'Passwords must be equal',
     noNotification: 'No notification',
     noNotification_plural: 'No notifications',
+
+    accept: 'Accept',
+    enterTheUrl: 'Enter the URL',
 };
 
 const enResource: ResourceLanguage = {
