@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Toolbar } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -11,12 +11,14 @@ import {
     FormatListBulleted as FormatListBulletedIcon,
     InsertPhoto as InsertPhotoIcon,
     Delete as DeleteIcon,
+    Close as CloseIcon,
 } from '@material-ui/icons';
-import { makeStyles } from '@material-ui/styles';
-import { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
 import { withHistory } from 'slate-history';
+import { Trans, useTranslation } from 'react-i18next';
+import { langKeys } from 'lang/keys';
 
 const LIST_TYPES = ['bulleted-list', 'numbered-list'];
 type ElemetType = 'paragraph' | 'block-quote' | 'heading-one' | 'heading-two' | 'list-item' | 'bulleted-list' | 'numbered-list' | 'image-src';
@@ -252,26 +254,89 @@ const BlockButton: FC<BlockButtonProps> = ({ format, children, onClick, ...props
     );
 }
 
+const useInsertImageButtonStyles = makeStyles(theme => ({
+    rootPopup: {
+        padding: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+        justifyContent: 'stretch',
+    },
+}));
+
 const InsertImageButton: FC = ({ children }) => {
     const editor = useSlateStatic();
-    
+    const { t } = useTranslation();
+    const classes = useInsertImageButtonStyles();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [url, setUrl] = useState('');
+    const open = Boolean(anchorEl);
+
+    const clearUrl = useCallback(() => setUrl(''), []);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
-        <IconButton
-            onMouseDown={event => {
-                event.preventDefault();
-                const url = window.prompt('Enter the URL of the image:');
-
-                if(!url) return;
-                if (url && !isUrl(url)) {
-                    alert('URL is not an image');
-                    return;
-                }
-
-                insertImage(editor, url);
-            }}
-        >
-            {children}
-        </IconButton>
+        <div>
+            <IconButton
+                aria-controls="insert-image-button-rich-text-popup"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onMouseDown={event => {
+                    event.preventDefault();
+                    handleClick(event);
+                }}
+            >
+                {children}
+            </IconButton>
+            <Menu
+                id="insert-image-button-rich-text-popup"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                MenuListProps={{
+                    'aria-labelledby': 'basic-button',
+                }}
+            >
+                <div className={classes.rootPopup}>
+                    <TextField
+                        placeholder={t(langKeys.enterTheUrl)}
+                        value={url}
+                        onChange={e => setUrl(e.target.value)}
+                        autoFocus
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton size="small" onClick={clearUrl}>
+                                        <CloseIcon />
+                                    </IconButton>
+                                </InputAdornment>
+                            )
+                        }}
+                    />
+                    <Button
+                        type="button"
+                        color="primary"
+                        variant="contained"
+                        size="small"
+                        onClick={e => {
+                            const currentUrl = url;
+                            if (currentUrl.length > 0 && isUrl(currentUrl)) {
+                                insertImage(editor, currentUrl);
+                                clearUrl();
+                            }
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.accept} />
+                    </Button>
+                </div>
+            </Menu>
+        </div>
     );
 }
 
@@ -283,6 +348,13 @@ const insertImage = (editor: BaseEditor & ReactEditor, url: string | null) => {
     const text: CustomText = { text: '' };
     const image: CustomElement = { type: 'image-src', url, children: [text] };
     Transforms.insertNodes(editor, image);
+
+    const nextNode = Editor.next(editor);
+    if (nextNode) return;
+
+    const endDummyText: CustomText = { text: '' };
+    const endDummyElement: CustomElement = { type: 'paragraph', url: undefined, children: [endDummyText] };
+    Transforms.insertNodes(editor, endDummyElement);
 }
 
 const useImageStyles = makeStyles(theme => ({

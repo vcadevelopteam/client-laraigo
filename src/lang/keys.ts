@@ -1391,6 +1391,9 @@ export const langKeys = {
     passwordsMustBeEqual: 'passwordsMustBeEqual',
     noNotification: 'noNotification',
     noNotification_plural: 'noNotification_plural',
+
+    accept: 'accept',
+    enterTheUrl: 'enterTheUrl',
 };
 
 export type LangKeys = typeof langKeys;
