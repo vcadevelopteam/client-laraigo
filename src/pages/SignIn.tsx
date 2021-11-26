@@ -27,6 +27,7 @@ import GoogleLogin from 'react-google-login';
 import { connectAgentUI } from 'store/inbox/actions';
 import { showSnackbar } from 'store/popus/actions';
 import { useLocation } from "react-router-dom";
+import { apiUrls } from 'common/constants';
 import paths from 'common/constants/paths';
 
 export const useStyles = makeStyles((theme) => ({
@@ -225,7 +226,7 @@ const SignIn = () => {
                                     <Trans i18nKey={langKeys.logIn} />
                                 </Button>
                                 <FacebookLogin
-                                    appId="1094526090706564"
+                                    appId={apiUrls.FACEBOOKAPP}
                                     callback={onAuthWithFacebook}
                                     buttonStyle={{ borderRadius: '3px', height: '48px', display: 'flex', alignItems: 'center', 'fontSize': '14px', fontStyle: 'normal', fontWeight: 600, textTransform: 'none', justifyContent: 'center', width: '100%', marginBottom: '16px' }}
 

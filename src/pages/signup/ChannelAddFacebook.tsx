@@ -11,6 +11,7 @@ import FacebookLogin from 'react-facebook-login';
 import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsListSub } from "store/channel/actions";
+import { apiUrls } from 'common/constants';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -53,7 +54,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
         "service": {
             "accesstoken": "",
             "siteid": "",
-            "appid": "1094526090706564"
+            "appid": apiUrls.FACEBOOKAPP
         }
     })
 
@@ -107,7 +108,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                     <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
     
                         <FacebookLogin
-                            appId="1094526090706564"
+                            appId={apiUrls.FACEBOOKAPP}
                             autoLoad={false}
                             buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
                             fields="name,email,picture"
@@ -117,7 +118,7 @@ export const ChannelAddFacebook: FC<{setrequestchannels:(param:any)=>void,setlis
                             icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
-                                    appId: '1094526090706564',
+                                    appId: apiUrls.FACEBOOKAPP,
                                     cookie: true,
                                     xfbml: true,
                                     version: 'v8.0'

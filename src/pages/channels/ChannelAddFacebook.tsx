@@ -14,6 +14,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
 import { FacebookWallIcon } from "icons";
+import { apiUrls } from "common/constants";
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -59,7 +60,7 @@ export const ChannelAddFacebook: FC = () => {
         "service": {
             "accesstoken": "",
             "siteid": "",
-            "appid": "1094526090706564"
+            "appid": apiUrls.FACEBOOKAPP
         }
     })
 
@@ -130,7 +131,7 @@ export const ChannelAddFacebook: FC = () => {
                     <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectface3)}</div>
     
                         <FacebookLogin
-                            appId="1094526090706564"
+                            appId={apiUrls.FACEBOOKAPP}
                             autoLoad={false}
                             buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721ad", textTransform: "none" }}
                             fields="name,email,picture"
@@ -140,7 +141,7 @@ export const ChannelAddFacebook: FC = () => {
                             icon={<FacebookIcon style={{ color: 'white', marginRight: '8px' }} />}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
-                                    appId: '1094526090706564',
+                                    appId: apiUrls.FACEBOOKAPP,
                                     cookie: true,
                                     xfbml: true,
                                     version: 'v8.0'
