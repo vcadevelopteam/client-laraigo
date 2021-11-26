@@ -19,16 +19,64 @@ import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeaf
 import { withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
+import ReactDomServer from 'react-dom/server';
+
+export const renderToString = (element: React.ReactElement) => {
+    return ReactDomServer.renderToString(element);
+}
+
+export const toElement = (value: Descendant[], root = ({ children }: { children: any }) => <div>{children}</div>): React.ReactElement => {
+    let children: React.ReactNode[] = [];
+
+    for (const item of value) {
+        if (item.hasOwnProperty('type') && item.hasOwnProperty('children')) {
+            const element = item as CustomElement;
+            const leafs: React.ReactNode[] = [];
+            for (let i = 0; i < element.children.length; i++) {
+                const childItem = element.children[i];
+                if (childItem.hasOwnProperty('type') && childItem.hasOwnProperty('children')) {
+                    leafs.push(toElement((childItem as CustomElement).children, ({ children }) => renderStaticElement({
+                        element: (childItem as CustomElement),
+                        children,
+                    })));
+                } else {
+                    const text = childItem as CustomText;
+                    leafs.push(renderLeaf({
+                        attributes: { "data-slate-leaf": true },
+                        leaf: text,
+                        text: text,
+                        children: text.text,
+                    }));
+                }
+            }
+            const ele = renderStaticElement({
+                element: element,
+                children: leafs,
+            });
+            children.push(ele);
+        } else {
+            const text = item as CustomText;
+            children.push(renderLeaf({
+                attributes: { "data-slate-leaf": true },
+                leaf: text,
+                text: text,
+                children: text.text,
+            }));
+        }
+    }
+
+    return root({ children });
+}
 
 const LIST_TYPES = ['bulleted-list', 'numbered-list'];
 type ElemetType = 'paragraph' | 'block-quote' | 'heading-one' | 'heading-two' | 'list-item' | 'bulleted-list' | 'numbered-list' | 'image-src';
-type CustomElement = {
+interface CustomElement extends Object {
     type: ElemetType;
-    children: CustomText[];
+    children: CustomElement[] | CustomText[];
     url?: string | null;
 }
 
-type CustomText = {
+interface CustomText extends Object {
     text: string;
     bold?: boolean;
     italic?: boolean;
@@ -53,6 +101,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
 
 type RenderElement = (props: RenderElementProps) => JSX.Element;
 type RenderLeaf = (props: RenderLeafProps) => JSX.Element;
+type StaticRenderElement = (props: { element: CustomElement, children: any }) => JSX.Element;
 
 const useRichTextStyles = makeStyles(theme => ({
     toolbar: {
@@ -135,6 +184,28 @@ const renderElement: RenderElement = ({ attributes, children, element }) => {
     }
 }
 
+const renderStaticElement: StaticRenderElement = ({ children, element }) => {
+    switch (element.type) {
+        case 'block-quote':
+            return <blockquote>{children}</blockquote>;
+        case 'bulleted-list':
+            return <ul>{children}</ul>;
+        case 'heading-one':
+            return <h1>{children}</h1>;
+        case 'heading-two':
+            return <h2>{children}</h2>;
+        case 'list-item':
+            return <li>{children}</li>;
+        case 'numbered-list':
+            return <ol>{children}</ol>;
+        case 'image-src':
+            return <StaticImage element={element} children={children} />;
+        default:
+            // element.type: paragraph
+            return <p>{children}</p>;
+    }
+}
+
 /**Renderiza el texto seleccionado con cierto formato */
 const renderLeaf: RenderLeaf = ({ attributes, children, leaf }) => {
     if (leaf.bold === true) {
@@ -153,7 +224,7 @@ const renderLeaf: RenderLeaf = ({ attributes, children, leaf }) => {
         children = <u>{children}</u>;
     }
   
-    return <span {...attributes}>{children}</span>;
+    return <span {...attributes} className="renderLeaf">{children}</span>;
 }
 
 /**Aplicar formato en bloque */
@@ -404,6 +475,23 @@ const Image: RenderElement = ({ children, element, attributes }) => {
             </IconButton>
         </div>
       </div>
+    );
+}
+
+const StaticImage: StaticRenderElement = ({ children, element }) => {
+    const classes = useImageStyles();
+
+    return (
+        <div>
+            {children}
+            <div contentEditable={false} className={classes.root}>
+                <img
+                    src={element.url || ''}
+                    alt="Imagen"
+                    className={classes.img}
+                />
+            </div>
+        </div>
     );
 }
 
