@@ -52,8 +52,8 @@ export const getTickets = (userid: number | null): IActionCall => ({
 export const resetGetTickets = (): IActionCall => ({ type: actionTypes.GET_TICKETS_RESET });
 
 
-export const getPerson = (personid: number): IActionCall => ({
-    callAPI: () => CommonService.main(getInfoPerson(personid)),
+export const getPerson = (personid: number, conversationid: number): IActionCall => ({
+    callAPI: () => CommonService.main(getInfoPerson(personid, conversationid)),
     types: {
         loading: actionTypes.GET_PERSON,
         success: actionTypes.GET_PERSON_SUCCESS,
@@ -91,7 +91,7 @@ export const resetGetInteractions = (): IActionCall => ({ type: actionTypes.GET_
 export const getDataTicket = (ticket: ITicket): IActionCall => ({
     callAPI: () => CommonService.multiMain([
         getInteractionsByConversation(ticket.conversationid, false, 0),
-        getInfoPerson(ticket.personid),
+        getInfoPerson(ticket.personid, ticket.conversationid),
         getConfigurationVariables(ticket.communicationchannelid),
         getBlocksUserFromChatfow(ticket.communicationchannelid),
     ]),

@@ -471,10 +471,11 @@ const Variables: React.FC = () => {
 
             {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
                 const variabletmp = variablecontext[variable];
+                console.log(variablecontext)
                 return (
                     <div key={index} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>
-                            <div className={classes.label}>{description}</div>
+                            <div className={classes.label}>{variable}</div>
                             <div style={{ color: fontcolor }}>{variabletmp?.Value || '-'}</div>
                         </div>
                     </div>
