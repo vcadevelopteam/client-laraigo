@@ -4,124 +4,125 @@ import { renderToString, toElement } from "components/fields/RichText";
 import { FC, useEffect, useMemo, useState } from "react";
 import { Descendant } from "slate";
 
-const useStyles = makeStyles(thee => ({
+const useStyles = makeStyles(theme => ({
     richText: {
         width: 300,
         height: 500,
     }
 }));
 
+const initialValue2: Descendant[] = [{ "type": "paragraph", "children": [{ "text": "aaaa" }] }];
 const initialValue: Descendant[] = [
     {
-        "type": "paragraph",
-        "children": [
+        type: "paragraph",
+        children: [
             {
-                "text": "A line of text in a "
+                text: "A line of text in a "
             },
             {
-                "text": "paragraph",
-                "bold": true
+                text: "paragraph",
+                bold: true
             },
             {
-                "text": "."
+                text: "."
             }
         ]
     },
     {
-        "type": "paragraph",
-        "children": [
+        type: "paragraph",
+        children: [
             {
-                "text": "sdsd",
-                "underline": true
+                text: "sdsd",
+                underline: true
             }
         ]
     },
     {
-        "type": "numbered-list",
-        "children": [
+        type: "numbered-list",
+        children: [
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "underline": true,
-                        "text": "qqqq",
-                        "bold": true
+                        underline: true,
+                        text: "qqqq",
+                        bold: true
                     }
                 ]
             },
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "underline": true,
-                        "bold": true,
-                        "text": "sddf"
+                        underline: true,
+                        bold: true,
+                        text: "sddf"
                     }
                 ]
             },
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "underline": true,
-                        "bold": true,
-                        "text": "dfdf"
+                        underline: true,
+                        bold: true,
+                        text: "dfdf"
                     }
                 ]
             }
         ]
     },
     {
-        "type": "image-src",
-        "url": "https://th.bing.com/th/id/OIP.gvv_i9XbYFxfWwacHe-VLAHaHa?w=180&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
-        "children": [
+        type: "image-src",
+        url: "https://th.bing.com/th/id/OIP.gvv_i9XbYFxfWwacHe-VLAHaHa?w=180&h=180&c=7&r=0&o=5&dpr=1.5&pid=1.7",
+        children: [
             {
-                "text": ""
+                text: ""
             }
         ]
     },
     {
-        "type": "paragraph",
-        "children": [
+        type: "paragraph",
+        children: [
             {
-                "text": "asdsdsdfcsv",
-                "code": true
+                text: "asdsdsdfcsv",
+                code: true
             },
             {
-                "code": true,
-                "text": "svs",
-                "bold": true
+                code: true,
+                text: "svs",
+                bold: true
             },
             {
-                "code": true,
-                "text": "vsd"
+                code: true,
+                text: "vsd"
             }
         ]
     },
     {
-        "type": "bulleted-list",
-        "children": [
+        type: "bulleted-list",
+        children: [
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "text": "sd"
+                        text: "sd"
                     }
                 ]
             },
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "text": "dfdf"
+                        text: "dfdf"
                     }
                 ]
             },
             {
-                "type": "list-item",
-                "children": [
+                type: "list-item",
+                children: [
                     {
-                        "text": "asd"
+                        text: "asd"
                     }
                 ]
             }
@@ -130,8 +131,8 @@ const initialValue: Descendant[] = [
 ];
 
 const RichTextExample: FC = () => {
-    const classes = useStyles();
-    const [value, setValue] = useState<Descendant[]>(initialValue);
+    // const classes = useStyles();
+    const [value, setValue] = useState<Descendant[]>(initialValue2);
     const ele = useMemo(() => toElement(value), [value]);
 
     useEffect(() => {

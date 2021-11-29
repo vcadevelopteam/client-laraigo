@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -39,6 +39,7 @@ export const toElement = (value: Descendant[], root: FC = ({ children }) => <div
                     element,
                     children,
                     isStatic: true,
+                    attributes: { key: element },
                 }),
             ));
         } else {
@@ -47,6 +48,7 @@ export const toElement = (value: Descendant[], root: FC = ({ children }) => <div
                 leaf: text,
                 text: text,
                 children: text.text,
+                attributes: { key: text },
             }));
         }
     }
@@ -82,6 +84,7 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     placeholder?: string;
     spellCheck?: boolean;
     value: Descendant[];
+    error?: string;
     onChange: (value: Descendant[]) => void;
 }
 
@@ -110,7 +113,7 @@ const useRichTextStyles = makeStyles(theme => ({
     },
 }));
 
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -157,6 +160,7 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
                     spellCheck={spellCheck}
                 />
             </Slate>
+            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </Box>
     );
 }
@@ -355,8 +359,9 @@ const InsertImageButton: FC = ({ children }) => {
     const addNewAttachedImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         // insertImage(editor, e.target.files[0]);
+        setAnchorEl(null);
         clearUrl();
-    }, [editor, clearUrl]);
+    }, [clearUrl]);
 
     return (
         <div>
