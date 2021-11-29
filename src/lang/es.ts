@@ -1392,6 +1392,7 @@ const translation: LangKeys = {
 
     accept: 'Aceptar',
     enterTheUrl: 'Ingresa la URL',
+    attached: 'Adjunto',
 };
 
 const esResource: ResourceLanguage = {

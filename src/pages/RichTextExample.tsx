@@ -132,7 +132,7 @@ const initialValue: Descendant[] = [
 const RichTextExample: FC = () => {
     const classes = useStyles();
     const [value, setValue] = useState<Descendant[]>(initialValue);
-    const ele = useMemo(() => toElement(initialValue), []);
+    const ele = useMemo(() => toElement(value), [value]);
 
     useEffect(() => {
         console.log(renderToString(ele));
