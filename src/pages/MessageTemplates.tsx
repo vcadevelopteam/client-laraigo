@@ -22,6 +22,7 @@ import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/acti
 import ClearIcon from '@material-ui/icons/Clear';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
 import { renderToString, toElement } from 'components/fields/RichText';
+import { Descendant } from "slate";
 
 interface RowSelected {
     row: Dictionary | null,
@@ -295,7 +296,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             headertype: row?.headertype || 'text',
             header: row?.header || '',
             body: row?.body || '',
-            bodyobject: row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }],
+            bodyobject: JSON.stringify(row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }]),
             footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : true,
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
@@ -356,7 +357,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             if (data.type === 'MAIL') {
-                data.body = renderToString(toElement(data.bodyobject));
+                data.body = renderToString(toElement(JSON.parse(data.bodyobject) as Descendant[]));
             }
             dispatch(execute(insMessageTemplate(data)));
             dispatch(showBackdrop(true));
@@ -372,7 +373,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues('type') === 'MAIL' && (data?.value || '') !== 'MAIL') {
-            setValue('body', richTextToString(getValues('bodyobject')))
+            setValue('body', richTextToString(JSON.parse(getValues('bodyobject'))))
         }
         setValue('type', data?.value || '');
         switch (data?.value || 'SMS') {
@@ -747,9 +748,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             <React.Fragment>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
                                 <RichText
-                                    value={getValues('bodyobject')}
+                                    value={JSON.parse(getValues('bodyobject'))}
                                     onChange={(value) => {
-                                        setValue('bodyobject', value)
+                                        setValue('bodyobject', JSON.stringify(value))
                                     }}
                                     spellCheck
                                 />

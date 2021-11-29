@@ -393,8 +393,8 @@ const InsertImageButton: FC = ({ children }) => {
                         indicatorColor="primary"
                         variant="fullWidth"
                     >
-                        <AntTab label="URL" />
-                        <AntTab label={<Trans i18nKey={langKeys.attached} />} />
+                        <AntTab value={0} label="URL" />
+                        <AntTab value={1} label={<Trans i18nKey={langKeys.attached} />} />
                     </Tabs>
                     <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
                         <TextField
