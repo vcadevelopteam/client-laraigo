@@ -95,14 +95,14 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     <LabelGo
                         isTimer={true}
                         // timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
-                        dateGo={firstconversationdate}
+                        dateGo={firstconversationdate || new Date().toISOString()}
                         color="#465a6ed9"
                     />
                     {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
                             // timer={getSecondsUntelNow(convertLocalDate(personlastreplydate, false))}
-                            dateGo={personlastreplydate || ""}
+                            dateGo={personlastreplydate || new Date().toISOString()}
                             color="#FB5F5F"
                         />
                     }
