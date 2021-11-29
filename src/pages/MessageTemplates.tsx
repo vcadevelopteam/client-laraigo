@@ -296,7 +296,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             headertype: row?.headertype || 'text',
             header: row?.header || '',
             body: row?.body || '',
-            bodyobject: JSON.stringify(row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }]),
+            bodyobject: row?.bodyobject as string || JSON.stringify([{"type": "paragraph", "children": [{"text": row?.body || ""}] }]),
             footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : true,
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
