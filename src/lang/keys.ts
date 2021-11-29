@@ -1394,6 +1394,7 @@ export const langKeys = {
 
     accept: 'accept',
     enterTheUrl: 'enterTheUrl',
+    attached: 'attached',
 };
 
 export type LangKeys = typeof langKeys;
