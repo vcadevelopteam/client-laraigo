@@ -2,10 +2,10 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'; // we need this to make JSX compile
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { CircularProgress, IconButton, Paper } from '@material-ui/core';
+import { Box, CircularProgress, IconButton, Paper } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti } from 'components';
-import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain, convertLocalDate } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, RichText } from 'components';
+import { getMessageTemplateSel, insMessageTemplate, getValuesFromDomain, convertLocalDate, richTextToString } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,6 +21,7 @@ import { getCollection, resetMain, getMultiCollection, execute, uploadFile } fro
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
+import { renderToString, toElement } from 'components/fields/RichText';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -278,7 +279,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const dataCategory = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataLanguage = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    
+   
     const { control, register, handleSubmit, setValue, getValues, unregister, trigger, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.id : 0,
@@ -294,6 +295,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             headertype: row?.headertype || 'text',
             header: row?.header || '',
             body: row?.body || '',
+            bodyobject: row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }],
             footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : true,
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
@@ -322,7 +324,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         register('category', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('language', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('templatetype', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('body', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -354,6 +355,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
+            if (data.type === 'MAIL') {
+                data.body = renderToString(toElement(data.bodyobject));
+            }
             dispatch(execute(insMessageTemplate(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
@@ -367,14 +371,17 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     });
 
     const onChangeMessageType = (data: Dictionary) => {
+        if (getValues('type') === 'MAIL' && (data?.value || '') !== 'MAIL') {
+            setValue('body', richTextToString(getValues('bodyobject')))
+        }
         setValue('type', data?.value || '');
         switch (data?.value || 'SMS') {
+            case 'HSM':
+                setTemplateTypeDisabled(false);
+                break;
             case 'SMS': case 'MAIL':
                 onChangeTemplateType({ value: 'STANDARD' });
                 setTemplateTypeDisabled(true);
-                break;
-            case 'HSM':
-                setTemplateTypeDisabled(false);    
                 break;
         }
     }
@@ -736,20 +743,35 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     </div>
                     : null}
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEditMulti
-                                label={t(langKeys.body)}
-                                className="col-12"
-                                valueDefault={getValues('body')}
-                                onChange={(value) => setValue('body', value)}
-                                error={errors?.body?.message}
-                                maxLength={1024}
-                            />
-                            : <FieldView
-                                label={t(langKeys.body)}
-                                value={row ? (row.body || "") : ""}
-                                className="col-12"
-                            />
+                        {getValues('type') === 'MAIL' &&
+                            <React.Fragment>
+                                <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
+                                <RichText
+                                    value={getValues('bodyobject')}
+                                    onChange={(value) => {
+                                        setValue('bodyobject', value)
+                                    }}
+                                    spellCheck
+                                />
+                            </React.Fragment>
+                        }
+                        {getValues('type') !== 'MAIL' &&
+                            (
+                                edit ?
+                                <FieldEditMulti
+                                    label={t(langKeys.body)}
+                                    className="col-12"
+                                    valueDefault={getValues('body')}
+                                    onChange={(value) => setValue('body', value)}
+                                    error={errors?.body?.message}
+                                    maxLength={1024}
+                                />
+                                : <FieldView
+                                    label={t(langKeys.body)}
+                                    value={row ? (row.body || "") : ""}
+                                    className="col-12"
+                                />
+                            )
                         }
                     </div>
                     {(getValues('templatetype') === 'MULTIMEDIA'
