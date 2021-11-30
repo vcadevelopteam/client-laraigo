@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -15,57 +15,45 @@ import {
 } from '@material-ui/icons';
 import React, { FC, useCallback, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
-import { Slate, Editable, withReact, ReactEditor, RenderElementProps, RenderLeafProps, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
+import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
 import { withHistory } from 'slate-history';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
+import { AntTab } from 'components';
+import clsx from 'clsx';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
 }
 
-export const toElement = (value: Descendant[], root = ({ children }: { children: any }) => <div>{children}</div>): React.ReactElement => {
+export const toElement = (value: Descendant[], root: FC = ({ children }) => <div>{children}</div>): React.ReactElement => {
     let children: React.ReactNode[] = [];
 
     for (const item of value) {
         if (item.hasOwnProperty('type') && item.hasOwnProperty('children')) {
             const element = item as CustomElement;
-            const leafs: React.ReactNode[] = [];
-            for (let i = 0; i < element.children.length; i++) {
-                const childItem = element.children[i];
-                if (childItem.hasOwnProperty('type') && childItem.hasOwnProperty('children')) {
-                    leafs.push(toElement((childItem as CustomElement).children, ({ children }) => renderStaticElement({
-                        element: (childItem as CustomElement),
-                        children,
-                    })));
-                } else {
-                    const text = childItem as CustomText;
-                    leafs.push(renderLeaf({
-                        attributes: { "data-slate-leaf": true },
-                        leaf: text,
-                        text: text,
-                        children: text.text,
-                    }));
-                }
-            }
-            const ele = renderStaticElement({
-                element: element,
-                children: leafs,
-            });
-            children.push(ele);
+            children.push(toElement(
+                element.children,
+                ({ children }) => renderElement({
+                    element,
+                    children,
+                    isStatic: true,
+                    attributes: { key: element },
+                }),
+            ));
         } else {
             const text = item as CustomText;
             children.push(renderLeaf({
-                attributes: { "data-slate-leaf": true },
                 leaf: text,
                 text: text,
                 children: text.text,
+                attributes: { key: text },
             }));
         }
     }
 
-    return root({ children });
+    return root({ children })!;
 }
 
 const LIST_TYPES = ['bulleted-list', 'numbered-list'];
@@ -96,7 +84,22 @@ interface RichTextProps extends Omit<BoxProps, 'onChange'> {
     placeholder?: string;
     spellCheck?: boolean;
     value: Descendant[];
+    error?: string;
     onChange: (value: Descendant[]) => void;
+}
+
+interface RenderElementProps {
+    attributes?: any;
+    children: React.ReactNode;
+    element: CustomElement;
+    isStatic?: boolean;
+}
+
+interface RenderLeafProps {
+    attributes?: any;
+    children: React.ReactNode;
+    leaf: Omit<CustomText, 'text'>;
+    text: CustomText;
 }
 
 type RenderElement = (props: RenderElementProps) => JSX.Element;
@@ -110,7 +113,7 @@ const useRichTextStyles = makeStyles(theme => ({
     },
 }));
 
-const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, ...boxProps })=> {
+const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
@@ -157,12 +160,13 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
                     spellCheck={spellCheck}
                 />
             </Slate>
+            {error && error !== '' && <FormHelperText error>{error}</FormHelperText>}
         </Box>
     );
 }
 
 /**Renderiza el texto seleccionado con cierto estilo */
-const renderElement: RenderElement = ({ attributes, children, element }) => {
+const renderElement: RenderElement = ({ attributes = {}, children, element, isStatic = false }) => {
     switch (element.type) {
         case 'block-quote':
             return <blockquote {...attributes}>{children}</blockquote>;
@@ -177,6 +181,7 @@ const renderElement: RenderElement = ({ attributes, children, element }) => {
         case 'numbered-list':
             return <ol {...attributes}>{children}</ol>;
         case 'image-src':
+            if (isStatic === true) return <StaticImage element={element} children={children} />;
             return <Image element={element} attributes={attributes} children={children} />;
         default:
             // element.type: paragraph
@@ -184,47 +189,25 @@ const renderElement: RenderElement = ({ attributes, children, element }) => {
     }
 }
 
-const renderStaticElement: StaticRenderElement = ({ children, element }) => {
-    switch (element.type) {
-        case 'block-quote':
-            return <blockquote>{children}</blockquote>;
-        case 'bulleted-list':
-            return <ul>{children}</ul>;
-        case 'heading-one':
-            return <h1>{children}</h1>;
-        case 'heading-two':
-            return <h2>{children}</h2>;
-        case 'list-item':
-            return <li>{children}</li>;
-        case 'numbered-list':
-            return <ol>{children}</ol>;
-        case 'image-src':
-            return <StaticImage element={element} children={children} />;
-        default:
-            // element.type: paragraph
-            return <p>{children}</p>;
-    }
-}
-
 /**Renderiza el texto seleccionado con cierto formato */
-const renderLeaf: RenderLeaf = ({ attributes, children, leaf }) => {
+const renderLeaf: RenderLeaf = ({ attributes = {}, children, leaf }) => {
     if (leaf.bold === true) {
         children = <strong>{children}</strong>;
     }
-  
+
     if (leaf.code === true) {
         children = <code>{children}</code>;
     }
-  
+
     if (leaf.italic === true) {
         children = <em>{children}</em>;
     }
-  
+
     if (leaf.underline === true) {
         children = <u>{children}</u>;
     }
-  
-    return <span {...attributes} className="renderLeaf">{children}</span>;
+    
+    return <span {...attributes}>{children}</span>;
 }
 
 /**Aplicar formato en bloque */
@@ -327,11 +310,19 @@ const BlockButton: FC<BlockButtonProps> = ({ format, children, onClick, ...props
 
 const useInsertImageButtonStyles = makeStyles(theme => ({
     rootPopup: {
+        width: 280,
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        justifyContent: 'stretch',
+    },
+    rootTab: {
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
-        justifyContent: 'stretch',
+    },
+    hidden: {
+        display: 'none',
     },
 }));
 
@@ -341,6 +332,7 @@ const InsertImageButton: FC = ({ children }) => {
     const classes = useInsertImageButtonStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
+    const [tabIndex, setTabIndex] = useState(0);
     const open = Boolean(anchorEl);
 
     const clearUrl = useCallback(() => setUrl(''), []);
@@ -351,6 +343,25 @@ const InsertImageButton: FC = ({ children }) => {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const addNewUrlImage = useCallback(() => {
+        if (url.length > 0 && isUrl(url)) {
+            insertImage(editor, url);
+            clearUrl();
+        }
+    }, [url, editor, clearUrl]);
+
+    const handleAttachImage = useCallback(() => {
+        const input = document.getElementById('richtextImageBtnInput');
+        input!.click();
+    }, []);
+
+    const addNewAttachedImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+        // insertImage(editor, e.target.files[0]);
+        setAnchorEl(null);
+        clearUrl();
+    }, [clearUrl]);
 
     return (
         <div>
@@ -375,36 +386,60 @@ const InsertImageButton: FC = ({ children }) => {
                 }}
             >
                 <div className={classes.rootPopup}>
-                    <TextField
-                        placeholder={t(langKeys.enterTheUrl)}
-                        value={url}
-                        onChange={e => setUrl(e.target.value)}
-                        autoFocus
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton size="small" onClick={clearUrl}>
-                                        <CloseIcon />
-                                    </IconButton>
-                                </InputAdornment>
-                            )
-                        }}
-                    />
-                    <Button
-                        type="button"
-                        color="primary"
-                        variant="contained"
-                        size="small"
-                        onClick={e => {
-                            const currentUrl = url;
-                            if (currentUrl.length > 0 && isUrl(currentUrl)) {
-                                insertImage(editor, currentUrl);
-                                clearUrl();
-                            }
-                        }}
+                    <Tabs
+                        value={tabIndex}
+                        onChange={(_, i) => setTabIndex(i)}
+                        textColor="primary"
+                        indicatorColor="primary"
+                        variant="fullWidth"
                     >
-                        <Trans i18nKey={langKeys.accept} />
-                    </Button>
+                        <AntTab value={0} label="URL" />
+                        <AntTab value={1} label={<Trans i18nKey={langKeys.attached} />} />
+                    </Tabs>
+                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
+                        <TextField
+                            placeholder={t(langKeys.enterTheUrl)}
+                            value={url}
+                            onChange={e => setUrl(e.target.value)}
+                            autoFocus
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton size="small" onClick={clearUrl}>
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            }}
+                        />
+                        <Button
+                            type="button"
+                            color="primary"
+                            variant="contained"
+                            size="small"
+                            onClick={addNewUrlImage}
+                        >
+                            <Trans i18nKey={langKeys.accept} />
+                        </Button>
+                    </div>
+                    <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 1 && classes.hidden)}>
+                        <input
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            id="richtextImageBtnInput"
+                            type="file"
+                            onChange={addNewAttachedImage}
+                        />
+                        <Button
+                            type="button"
+                            color="primary"
+                            variant="contained"
+                            size="small"
+                            onClick={handleAttachImage}
+                        >
+                            <Trans i18nKey={langKeys.select} />
+                        </Button>
+                    </div>
                 </div>
             </Menu>
         </div>

@@ -1400,6 +1400,7 @@ const translation: LangKeys = {
 
     accept: 'Accept',
     enterTheUrl: 'Enter the URL',
+    attached: 'Attached',
 };
 
 const enResource: ResourceLanguage = {
