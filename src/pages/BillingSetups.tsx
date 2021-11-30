@@ -449,9 +449,10 @@ const Organization: React.FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
+                            viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            extraOption="Duplicar"
                         />
                     )
                 }
