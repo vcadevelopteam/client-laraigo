@@ -10,6 +10,7 @@ import GoogleLogin from 'react-google-login';
 import { Facebook as FacebookIcon } from "@material-ui/icons";
 import { Dictionary } from "@types";
 import { useSelector } from 'hooks';
+import { apiUrls } from 'common/constants';
 
 import { executeCheckNewUser } from "store/signup/actions";
 const useChannelAddStyles = makeStyles(theme => ({
@@ -126,7 +127,7 @@ export const FirstStep: FC<{ setMainData: (param: any) => void, mainData: any, s
         <>
             <div style={{ textAlign: "center", fontWeight: 500, fontSize: 32, color: "#7721ad", marginBottom: 32 }}>{t(langKeys.signupstep1title)}</div>
             <FacebookLogin
-                appId="1094526090706564"
+                appId={apiUrls.FACEBOOKAPP}
                 callback={onAuthWithFacebook}
                 fields="name,email,picture"
                 buttonStyle={{

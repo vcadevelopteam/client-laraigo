@@ -53,10 +53,10 @@ export const getTickets = (userid: number | null): IRequestBody => ({
     parameters: { ...(userid && { userid }) }
 })
 
-export const getInfoPerson = (personid: ID): IRequestBody => ({
+export const getInfoPerson = (personid: ID, conversationid: number): IRequestBody => ({
     method: "UFN_CONVERSATION_PERSON_SEL",
     key: "UFN_CONVERSATION_PERSON_SEL",
-    parameters: { personid }
+    parameters: { personid, conversationid }
 })
 
 export const getTicketsByPerson = (personid: number, conversationid: number): IRequestBody => ({
@@ -600,6 +600,7 @@ export const insMessageTemplate = (
         headertype,
         header,
         body,
+        bodyobject,
         footerenabled,
         footer,
         buttonsenabled,
@@ -624,6 +625,7 @@ export const insMessageTemplate = (
             headertype,
             header,
             body,
+            bodyobject: JSON.stringify(bodyobject),
             footerenabled,
             footer,
             buttonsenabled,

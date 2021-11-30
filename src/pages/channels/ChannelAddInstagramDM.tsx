@@ -14,6 +14,7 @@ import { useSelector } from "hooks";
 import { useDispatch } from "react-redux";
 import { getChannelsList, insertChannel } from "store/channel/actions";
 import { InstagramIcon } from "icons";
+import { apiUrls } from 'common/constants';
 
 const useChannelAddStyles = makeStyles(theme => ({
     button: {
@@ -59,7 +60,7 @@ export const ChannelAddInstagramDM: FC = () => {
         "service": {
             "accesstoken": "",
             "siteid": "",
-            "appid": "1924971937716955"
+            "appid": apiUrls.INSTAGRAMAPP
         }
     })
 
@@ -130,7 +131,7 @@ export const ChannelAddInstagramDM: FC = () => {
                     <div style={{ textAlign: "center", padding: "20px", color: "#969ea5" }}>{t(langKeys.connectinsta3)}</div>
     
                         <FacebookLogin
-                            appId="1924971937716955"
+                            appId={apiUrls.INSTAGRAMAPP}
                             autoLoad={false}
                             buttonStyle={{ marginLeft: "calc(50% - 135px)", marginTop: "30px", marginBottom: "20px", backgroundColor: "#7721AD", textTransform: "none" }}
                             fields="name,email,picture"
@@ -139,7 +140,7 @@ export const ChannelAddInstagramDM: FC = () => {
                             textButton={t(langKeys.linkinstagrampage)}
                             onClick={(e: any) => {
                                 e.view.window.FB.init({
-                                    appId: '1924971937716955',
+                                    appId: apiUrls.INSTAGRAMAPP,
                                     cookie: true,
                                     xfbml: true,
                                     version: 'v8.0'

@@ -18,6 +18,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { uploadFile } from 'store/main/actions';
 import { updateUserSettings } from 'store/setting/actions';
+import RichTextExample from './RichTextExample';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -252,9 +253,9 @@ const UserSettings: FC = () => {
                             }}
                         />
                     </div>
-                    <div className="row-zyx">
-
-                    </div>
+                    {/* <div className="row-zyx">
+                        <RichTextExample />
+                    </div> */}
                 </div>
             </form>
         </div>

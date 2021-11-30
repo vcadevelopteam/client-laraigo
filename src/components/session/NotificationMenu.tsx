@@ -124,7 +124,13 @@ const NotificationMenu: FC<BoxProps> = (boxProps) => {
 
     return (
         <Box {...boxProps}>
-            <IconButton aria-label="bell-notification" onClick={handleClick}>
+            <IconButton
+                aria-label="bell-notification"
+                aria-controls="notification-list-menu-popover"
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleClick}
+            >
                 <div className={classes.rootIcon}>
                     {notificationCount > 0 ?
                     (

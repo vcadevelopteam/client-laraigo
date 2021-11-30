@@ -426,7 +426,7 @@ const translation: LangKeys = {
     inactive: 'Inactivo',
 
     status_activo: 'activo',
-    no_reply_use_hsm: 'La conversación está cerrada o bloqueada por estar fuera de la venta de 24 horas.\nUtilice un HSM para contactar al cliente.',
+    no_reply_use_hsm: 'The conversation is closed or blocked due to being outside the 24 hour window.\nUse an HSM to contact the customer.',
     status_inactivo: 'inactivo',
     status_bloqueado: 'bloqueado',
     status_ejecutando: 'ejecutando',
@@ -1389,6 +1389,10 @@ const translation: LangKeys = {
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',
     noNotification: 'Sin notificación',
     noNotification_plural: 'Sin notificaciones',
+
+    accept: 'Aceptar',
+    enterTheUrl: 'Ingresa la URL',
+    attached: 'Adjunto',
 };
 
 const esResource: ResourceLanguage = {

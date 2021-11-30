@@ -4,32 +4,44 @@ const APIS_URL = {
     DEVELOP: {
         API: 'https://apix.laraigo.com/api',
         WS: 'https://socket.laraigo.com',
-        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow'
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
+        FACEBOOKAPP: '1094526090706564',
+        INSTAGRAMAPP: '1924971937716955'
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
         WS: 'https://testsocket.laraigo.com',
-        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow'
+        CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
+        FACEBOOKAPP: '1094526090706564',
+        INSTAGRAMAPP: '1924971937716955'
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
         WS: 'https://broker.laraigo.com',
-        CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud'
+        CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
+        FACEBOOKAPP: '1980305408682607',
+        INSTAGRAMAPP: '1924971937716955'
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
         // WS: 'http://localhost:7070',
         WS: 'https://broker.laraigo.com',
-        CHATFLOW: 'https://localhost:4200'
+        CHATFLOW: 'https://localhost:4200',
+        FACEBOOKAPP: '1094526090706564',
+        INSTAGRAMAPP: '1924971937716955'
     }
 }
 
 const BASE_URL = APIS_URL[ENV].API
 const WS_URL = APIS_URL[ENV].WS
 const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
+const FACEBOOKAPP = APIS_URL[ENV].FACEBOOKAPP
+const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
 
 export const apiUrls = {
     WS_URL,
+    FACEBOOKAPP,
+    INSTAGRAMAPP,
     TICKET_URL: `${BASE_URL}/main`,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,

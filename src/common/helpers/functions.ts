@@ -36,6 +36,18 @@ export function dictToArrayKV(dict: Dictionary, key: string = 'key', value: stri
     }, []);
 }
 
+export function richTextToString(data: Dictionary[]) {
+    try {
+        return data.reduce((ac: Dictionary[], c: Dictionary) => (
+            [...ac, ...c?.children?.map((m: Dictionary) => (
+                m?.children ? `- ${m?.children[0]?.text}` : m?.text
+            ))]
+        ), []).join('\n')
+    } catch (error) {
+        return JSON.stringify(data)
+    }
+}
+
 export function filterPipe(items: Dictionary[], field: string, value: any, inv?: string) {
     // If there are not items return empty//
     if (!items) return [];
