@@ -377,6 +377,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "WEBM") return <WebMessengerIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TELE") return <TelegramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "INST") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
+    if (channelType === "INMS") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "INDM") return <InstagramIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "ANDR") return <AndroidIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "APPL") return <AppleIcon width={width} fill={color} stroke={color} height={height} color={color} />
