@@ -59,9 +59,10 @@ interface TemplateIconsProps {
     viewFunction?: (param: any) => void;
     deleteFunction?: (param: any) => void;
     editFunction?: (param: any) => void;
+    extraOption?: string;
 }
 
-export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, deleteFunction, editFunction }) => {
+export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewFunction, deleteFunction, editFunction }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
 
@@ -101,14 +102,16 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ viewFunction, dele
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
             >
-                {/* <MenuItem onClick={(e) => {
-                    setAnchorEl(null)
-                    editFunction && editFunction(e)
-                    }}><Trans i18nKey={langKeys.edit} /></MenuItem> */}
                 <MenuItem onClick={(e) => {
                     setAnchorEl(null)
                     deleteFunction && deleteFunction(e)
                 }}><Trans i18nKey={langKeys.delete} /></MenuItem>
+                {extraOption && 
+                    <MenuItem onClick={(e) => {
+                        setAnchorEl(null)
+                        viewFunction && viewFunction(e)
+                        }}>{extraOption}</MenuItem>
+                }
             </Menu>
         </div>
     )
