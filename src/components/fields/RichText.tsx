@@ -1,4 +1,4 @@
-import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText } from '@material-ui/core';
+import { Box, BoxProps, IconButton, IconButtonProps, Menu, TextField, Toolbar, makeStyles, Button, InputAdornment, Tabs, FormHelperText, CircularProgress } from '@material-ui/core';
 import {
     FormatBold as FormatBoldIcon,
     FormatItalic as FormatItalicIcon,
@@ -13,7 +13,7 @@ import {
     Delete as DeleteIcon,
     Close as CloseIcon,
 } from '@material-ui/icons';
-import React, { FC, useCallback, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { createEditor, BaseEditor, Descendant, Transforms, Editor, Element as SlateElement } from 'slate';
 import { Slate, Editable, withReact, ReactEditor, useSlate, useSlateStatic, useSelected, useFocused } from 'slate-react';
 import { withHistory } from 'slate-history';
@@ -22,6 +22,10 @@ import { langKeys } from 'lang/keys';
 import ReactDomServer from 'react-dom/server';
 import { AntTab } from 'components';
 import clsx from 'clsx';
+import { useSelector } from 'hooks';
+import { resetUploadFile, uploadFile } from 'store/main/actions';
+import { useDispatch } from 'react-redux';
+import { showSnackbar } from 'store/popus/actions';
 
 export const renderToString = (element: React.ReactElement) => {
     return ReactDomServer.renderToString(element);
@@ -117,6 +121,7 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
     const editor = useMemo(() => withImages(withHistory(withReact(createEditor()))), []);
+    const upload = useSelector(state => state.main.uploadFile);
 
     return (
         <Box {...boxProps}>
@@ -152,6 +157,12 @@ const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck,
                     <InsertImageButton>
                         <InsertPhotoIcon />
                     </InsertImageButton>
+                    {upload.loading && (
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <CircularProgress size={24} />
+                            <span><strong><Trans i18nKey={langKeys.loadingImage} />...</strong></span>
+                        </div>
+                    )}
                 </Toolbar>
                 <Editable
                     placeholder={placeholder}
@@ -324,16 +335,44 @@ const useInsertImageButtonStyles = makeStyles(theme => ({
     hidden: {
         display: 'none',
     },
+    attachTab: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 8,
+    },
 }));
 
 const InsertImageButton: FC = ({ children }) => {
     const editor = useSlateStatic();
+    const dispatch = useDispatch();
     const { t } = useTranslation();
     const classes = useInsertImageButtonStyles();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
     const [tabIndex, setTabIndex] = useState(0);
+    const upload = useSelector(state => state.main.uploadFile);
     const open = Boolean(anchorEl);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetUploadFile());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (upload.loading) return;
+        if (upload.error) {
+            const message = t(upload.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message,
+                show: true,
+                success: false,
+            }));
+        } else if (upload.url && upload.url.length > 0) {
+            insertImage(editor, upload.url);
+            dispatch(resetUploadFile());
+        }
+    }, [upload, dispatch]);
 
     const clearUrl = useCallback(() => setUrl(''), []);
 
@@ -358,10 +397,13 @@ const InsertImageButton: FC = ({ children }) => {
 
     const addNewAttachedImage = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        // insertImage(editor, e.target.files[0]);
+        const file = e.target.files[0];
+        const fd = new FormData();
+        fd.append('file', file, file.name);
+        dispatch(uploadFile(fd));
         setAnchorEl(null);
         clearUrl();
-    }, [clearUrl]);
+    }, [clearUrl, dispatch]);
 
     return (
         <div>
@@ -393,8 +435,21 @@ const InsertImageButton: FC = ({ children }) => {
                         indicatorColor="primary"
                         variant="fullWidth"
                     >
-                        <AntTab value={0} label="URL" />
-                        <AntTab value={1} label={<Trans i18nKey={langKeys.attached} />} />
+                        <AntTab
+                            disabled={upload.loading}
+                            value={0}
+                            label="URL"
+                        />
+                        <AntTab
+                            disabled={upload.loading}
+                            value={1}
+                            label={(
+                                <div className={classes.attachTab}>
+                                    {upload.loading && <CircularProgress size={24} />}
+                                    <Trans i18nKey={langKeys.attached} />
+                                </div>
+                            )}
+                        />
                     </Tabs>
                     <div role="tabpanel" className={clsx(classes.rootTab, tabIndex !== 0 && classes.hidden)}>
                         <TextField
@@ -402,6 +457,7 @@ const InsertImageButton: FC = ({ children }) => {
                             value={url}
                             onChange={e => setUrl(e.target.value)}
                             autoFocus
+                            disabled={upload.loading}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -417,6 +473,7 @@ const InsertImageButton: FC = ({ children }) => {
                             color="primary"
                             variant="contained"
                             size="small"
+                            disabled={upload.loading}
                             onClick={addNewUrlImage}
                         >
                             <Trans i18nKey={langKeys.accept} />
@@ -435,6 +492,7 @@ const InsertImageButton: FC = ({ children }) => {
                             color="primary"
                             variant="contained"
                             size="small"
+                            disabled={upload.loading}
                             onClick={handleAttachImage}
                         >
                             <Trans i18nKey={langKeys.select} />

@@ -1401,6 +1401,7 @@ const translation: LangKeys = {
     accept: 'Accept',
     enterTheUrl: 'Enter the URL',
     attached: 'Attached',
+    loadingImage: 'Loading image',
 };
 
 const enResource: ResourceLanguage = {

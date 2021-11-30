@@ -253,9 +253,9 @@ const UserSettings: FC = () => {
                             }}
                         />
                     </div>
-                    <div className="row-zyx">
+                    {/* <div className="row-zyx">
                         <RichTextExample />
-                    </div>
+                    </div> */}
                 </div>
             </form>
         </div>
