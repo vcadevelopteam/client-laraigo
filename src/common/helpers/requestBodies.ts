@@ -1986,3 +1986,20 @@ export const changePasswordOnFirstLoginIns = (userid: number | string, password:
     method: "UFN_USERPASSWORD_UPDATE",
     parameters: { password, userid },
 });
+
+
+export const getBillingSupportSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGSUPPORT_SEL",
+    key: "UFN_BILLINGSUPPORT_SEL",
+    parameters: { year,month,plan }
+})
+export const getPlanSel = (): IRequestBody => ({
+    method: "UFN_SUPPORTPLAN_SEL",
+    key: "UFN_SUPPORTPLAN_SEL",
+    parameters: { }
+})
+export const billingSupportIns = ({ year,month,plan,basicfee,starttime,finishtime,status,type,operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGSUPPORT_INS",
+    key: "UFN_BILLINGSUPPORT_INS",
+    parameters: { year,month,plan,basicfee,starttime,finishtime,status,type,operation }
+})

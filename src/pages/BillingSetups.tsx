@@ -3,8 +3,8 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { getCorpSel, getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
+import { billingSupportIns, getBillingSupportSel, getCorpSel, getOrgSel, getPlanSel, getValuesFromDomain, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,11 +12,11 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton, InputAdornment, Tabs } from '@material-ui/core';
+import { IconButton, InputAdornment, Tabs, TextField } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 interface RowSelected {
@@ -30,14 +30,15 @@ interface MultiData {
 interface DetailOrganizationProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
-    multiData: MultiData[];
     fetchData: () => void,
-    dataCurrency: Dictionary[];
+    dataPlan: any[];
 }
 const arrayBread = [
-    { id: "view-1", name: "Organizations" },
-    { id: "view-2", name: "Organization detail" }
+    { id: "view-1", name: "Support Plan" },
+    { id: "view-2", name: "Support Plan detail" }
 ];
+
+
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -54,51 +55,69 @@ const useStyles = makeStyles((theme) => ({
     mb2: {
         marginBottom: theme.spacing(4),
     },
+    itemDate: {
+        minHeight: 40,
+        height: 40,
+        border: '1px solid #bfbfc0',
+        borderRadius: 4,
+        width: "100%",
+        color: 'rgb(143, 146, 161)'
+    },
+    fieldsfilter: {
+        width: "100%",
+    },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData, dataCurrency }) => {
+const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [pageSelected, setPageSelected] = useState(0);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
 
-    const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
-    const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
-    const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
-
+    
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            corpid: row ? row.corpid : user?.corpid,
-            description: row ? (row.orgdesc || '') : '',
+            startdate: row?.startdate || new Date(new Date().setDate(1)),
+            enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+            datetoshow: row?.startdate || `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            plan: row?.plan||"",
+            basicfee: row?.basicfee||0,
+            starttime: row?.starttime || new Date().getTime(),
+            finishtime: row?.finishtime || new Date().getTime(),
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
-            id: row ? row.orgid : 0,
-            operation: row ? "EDIT" : "INSERT",
-            currency: row?.currency || "",
-            email: row?.email || "",
-            port: row?.port || 0,
-            password: row?.password || "",
-            host: row?.host || "",
-            ssl: row?.ssl || false,
-            private_mail: row?.private_mail || false,
-            default_credentials: row?.default_credentials || false,
+            operation: row ? "UPDATE" : "INSERT"
         }
     });
 
+    function handleDateChange(e: any){
+        let datetochange = new Date(e+"-02")
+        let mes = datetochange?.getMonth()+1
+        let year = datetochange?.getFullYear()
+        let startdate = new Date(year, mes-1, 1)
+        let enddate = new Date(year, mes, 0)
+        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+        setValue('startdate',startdate)
+        setValue('enddate',enddate)
+        setValue('datetoshow',datetoshow)
+        setValue('year',year)
+        setValue('month',mes)
+    }
+
     React.useEffect(() => {
-        register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('currency', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('host');
-        register('ssl');
-        register('private_mail');
+        register('type');
+        register('status');
+        register('year');
+        register('month');
+        register('operation');
+        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -118,9 +137,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     }, [executeRes, waitSave])
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data)
         const callback = () => {
-            dispatch(execute(insOrg(data)));
+            dispatch(execute(billingSupportIns(data)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -142,7 +160,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.orgdesc}` : t(langKeys.neworganization)}
+                            title={row ? `${row.orgdesc}` : t(langKeys.newsupportplan)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -167,53 +185,33 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                         }
                     </div>
                 </div>
-                <Tabs
-                    value={pageSelected}
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                    textColor="primary"
-                    onChange={(_, value) => setPageSelected(value)}
-                >
-                    <AntTab label={t(langKeys.informationorganization)} />
-                    <AntTab label={t(langKeys.emailconfiguration)} />
-                </Tabs>
-                {pageSelected === 0 && <div className={classes.containerDetail}>
+                <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
-                            (
-                                !row && ['SUPERADMIN'].includes(user?.roledesc || "") ?
-                                    <FieldSelect
-                                        label={t(langKeys.corporation)}
-                                        className="col-6"
-                                        valueDefault={getValues('corpid')}
-                                        onChange={(value) => setValue('corpid', value?.corpid)}
-                                        error={errors?.corpid?.message}
-                                        data={dataCorp}
-                                        disabled={!['SUPERADMIN'].includes(user?.roledesc || "")}
-                                        optionDesc="description"
-                                        optionValue="corpid"
-                                    />
-                                    :
-                                    <FieldEdit
-                                        label={t(langKeys.corporation)} // "Corporation"
-                                        className="col-6"
-                                        valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
-                                        disabled={true}
-                                    />
-                            )
+                            <TextField
+                                id="date"
+                                className="col-6"
+                                type="month"
+                                variant="outlined"
+                                onChange={(e)=>handleDateChange(e.target.value)}
+                                value={getValues("datetoshow")}
+                                size="small"
+                            />
                             : <FieldView
                                 label={t(langKeys.corporation)}
                                 value={user?.corpdesc}
                                 className="col-6"
                             />}
                         {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)}
+                            <FieldSelect
+                                label="Plan"
                                 className="col-6"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={getValues("description")}
-                                error={errors?.description?.message}
+                                valueDefault={getValues("plan")}
+                                onChange={(value) => setValue('plan',value.description)}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="description"
+                                error={errors?.plan?.message}
                             />
                             : <FieldView
                                 label={t(langKeys.description)}
@@ -223,17 +221,14 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     </div>
                     <div className="row-zyx">
                         {edit ?
-                            <FieldSelect
-                                uset={true}
-                                label={t(langKeys.type)}
+                            <FieldEdit
+                                label={t(langKeys.supportprice)}
+                                onChange={(value) => setValue('basicfee', value)}
+                                valueDefault={getValues('basicfee')}
+                                error={errors?.basicfee?.message}
+                                type="number"
                                 className="col-6"
-                                valueDefault={getValues('type')}
-                                onChange={(value) => setValue('type', value.domainvalue)}
-                                error={errors?.type?.message}
-                                data={dataType}
-                                prefixTranslation="type_org_"
-                                optionDesc="domainvalue"
-                                optionValue="domainvalue"
+                                //error={errors?.documentnumber?.message}
                             />
                             : <FieldView
                                 label={t(langKeys.type)}
@@ -241,17 +236,27 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 className="col-6"
                             />}
                         {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
+                            <FieldEdit
+                                type="time"
+                                label={t(langKeys.starttime)}
+                                error={errors?.starttime?.message}
                                 className="col-6"
-                                valueDefault={getValues('status')}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
+                                onChange={(value) => setValue('starttime', value)}
+                                valueDefault={getValues("starttime")}
+                            />
+                            : <FieldView
+                                label={t(langKeys.status)}
+                                value={row ? (row.status || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
+                            <FieldEdit
+                                type="time"
+                                label={t(langKeys.finishtime)}
+                                error={errors?.finishtime?.message}
+                                className="col-6"
+                                onChange={(value) => setValue('finishtime', value)}
+                                valueDefault={getValues("finishtime")}
                             />
                             : <FieldView
                                 label={t(langKeys.status)}
@@ -259,185 +264,52 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 className="col-6"
                             />}
                     </div>
-                    <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.currency)}
-                                className="col-6"
-                                valueDefault={getValues('currency')}
-                                onChange={(value) => setValue('currency', value ? value.code : '')}
-                                error={errors?.currency?.message}
-                                data={dataCurrency}
-                                //uset={true}
-                                //prefixTranslation="status_"
-                                optionDesc="description"
-                                optionValue="code"
-                            />
-                            : <FieldView
-                                label={t(langKeys.currency)}
-                                value={row ? (row.currency || "") : ""}
-                                className="col-6"
-                            />}
-                    </div>
-                </div>}
-                {pageSelected === 1 &&
-                    <div className={classes.containerDetail}>
-                        <div className="row-zyx">
-                            {edit ?
-                                <TemplateSwitch
-                                    label={t(langKeys.private_mail)}
-                                    className="col-6"
-                                    valueDefault={showCredential}
-                                    onChange={(value) => { setValue('private_mail', value); setShowCredential(value) }}
-                                /> :
-                                <FieldView
-                                    label={"private_mail"}
-                                    value={row ? (row.private_mail ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                    className="col-6"
-                                />
-                            }
-                        </div>
-                        {
-                            showCredential &&
-
-                            <Fragment>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.email)} //transformar a multiselect
-                                            className="col-6"
-                                            fregister={{
-                                                ...register("email", {
-                                                    validate: (value) => (((value && value.length) && (value.includes("@") && value.includes("."))) || t(langKeys.emailverification)) || t(langKeys.field_required)
-                                                })
-                                            }}
-                                            error={errors?.email?.message}
-                                            onChange={(value) => setValue('email', value)}
-                                            valueDefault={getValues("email")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.email)}
-                                            value={row ? (row.email || "") : ""}
-                                            className="col-6"
-                                        />}
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.port)} //transformar a multiselect
-                                            className="col-6"
-                                            type="number"
-                                            fregister={{
-                                                ...register("port", {
-                                                    validate: (value) => (value && value > 0) || t(langKeys.validnumber)
-                                                })
-                                            }}
-                                            error={errors?.port?.message}
-                                            onChange={(value) => setValue('port', value)}
-                                            valueDefault={getValues("port")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.port)}
-                                            value={row ? (row.port || 0) : 0}
-                                            className="col-6"
-                                        />}
-                                </div>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.password)}
-                                            className="col-6"
-                                            type={showPassword ? 'text' : 'password'}
-                                            onChange={(value) => setValue('password', value)}
-                                            valueDefault={getValues("password")}
-                                            fregister={{
-                                                ...register("password"
-                                                    //,{ validate: (value) => (value && value.length) || t(langKeys.field_required)}
-                                                )
-                                            }}
-                                            error={errors?.password?.message}
-                                            InputProps={{
-                                                endAdornment: (
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <Visibility /> : <VisibilityOff />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                        />
-                                        : ""}
-                                </div>
-                                <div className="row-zyx">
-                                    {edit ?
-                                        <FieldEdit
-                                            label={t(langKeys.host)}
-                                            className="col-6"
-                                            fregister={{
-                                                ...register("host", {
-                                                    validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                                })
-                                            }}
-                                            error={errors?.host?.message}
-                                            onChange={(value: any) => setValue('host', value)}
-                                            valueDefault={getValues("host")}
-                                        />
-                                        : <FieldView
-                                            label={t(langKeys.host)}
-                                            value={row ? (row.host || "") : ""}
-                                            className="col-6"
-                                        />
-                                    }
-                                    {edit ?
-                                        <TemplateSwitch
-                                            label={"SSL"}
-                                            className="col-3"
-                                            valueDefault={getValues("ssl")}
-                                            onChange={(value) => setValue('ssl', value)}
-                                        /> :
-                                        <FieldView
-                                            label={"SSL"}
-                                            value={row ? (row.ssl ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                            className="col-6"
-                                        />
-                                    }
-                                    {edit ?
-                                        <TemplateSwitch
-                                            label={t(langKeys.default_credentials)}
-                                            className="col-3"
-                                            valueDefault={getValues("default_credentials")}
-                                            onChange={(value) => setValue('default_credentials', value)}
-                                        /> :
-                                        <FieldView
-                                            label={t(langKeys.default_credentials)}
-                                            value={row ? (row.default_credentials ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                            className="col-6"
-                                        />
-                                    }
-                                </div>
-                            </Fragment>
-
-                        }
-                    </div>
-                }
+                </div>
             </form>
         </div>
     );
 }
 
-const Organization: React.FC = () => {
+const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
     const ressignup = useSelector(state => state.signup.currencyList);
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
-
+    const classes = useStyles();
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [dataMain, setdataMain] = useState({
+        startdate: new Date(new Date().setDate(1)),
+        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+        plan: "",
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1
+    });
 
+    function handleDateChange(e: any){
+        let datetochange = new Date(e+"-02")
+        let mes = datetochange?.getMonth()+1
+        let year = datetochange?.getFullYear()
+        let startdate = new Date(year, mes-1, 1)
+        let enddate = new Date(year, mes, 0)
+        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+        setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+    }
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingSupportSel(dataMain)))
+    }
+    useEffect(() => {
+        search()
+    }, [])
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
     const columns = React.useMemo(
         () => [
             {
@@ -458,49 +330,35 @@ const Organization: React.FC = () => {
                 }
             },
             {
-                Header: t(langKeys.description),
-                accessor: 'orgdesc',
+                Header: t(langKeys.month),
+                accessor: 'month',
             },
             {
-                Header: t(langKeys.type),
-                accessor: 'type',
-                prefixTranslation: 'type_org_',
-                Cell: (props: any) => {
-                    const { type } = props.cell.row.original;
-                    return (t(`type_org_${type}`.toLowerCase()) || "").toUpperCase()
-                }
+                Header: t(langKeys.year),
+                accessor: 'year',
             },
             {
-                Header: t(langKeys.status),
-                accessor: 'status',
-                prefixTranslation: 'status_',
-                Cell: (props: any) => {
-                    const { status } = props.cell.row.original;
-                    return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
-                }
+                Header: t(langKeys.supportplan),
+                accessor: 'plan',
             },
             {
-                Header: t(langKeys.currency),
-                accessor: 'currency'
+                Header: t(langKeys.supportprice),
+                accessor: 'basicfee',
+            },
+            {
+                Header: t(langKeys.starttime),
+                accessor: 'starttime',
+            },
+            {
+                Header: t(langKeys.finishtime),
+                accessor: 'finishtime',
             },
         ],
         []
     );
 
-    const fetchData = () => dispatch(getCollection(getOrgSel(0)));
+    const fetchData = () => dispatch(getCollection(getBillingSupportSel(dataMain)));
 
-    useEffect(() => {
-        fetchData();
-        dispatch(getCurrencyList())
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPOORG"),
-            getCorpSel(0)
-        ]));
-        return () => {
-            dispatch(resetMain());
-        };
-    }, []);
 
     useEffect(() => {
         if (waitSave) {
@@ -550,16 +408,55 @@ const Organization: React.FC = () => {
     if (viewSelected === "view-1") {
 
         return (
-            <TableZyx
-                columns={columns}
-                // titlemodule={t(langKeys.organization_plural, { count: 2 })}
-                data={mainResult.mainData.data}
-                filterGeneral={false}
-                download={true}
-                loading={mainResult.mainData.loading}
-                register={true}
-                handleRegister={handleRegister}
-            />
+            <Fragment>
+                <div>
+                    <div style={{width:"100%", display: "flex", padding: 10}}>
+                        <div style={{flex:1, paddingRight: "10px",}}>
+                            <TextField
+                                id="date"
+                                className={classes.fieldsfilter}
+                                type="month"
+                                variant="outlined"
+                                onChange={(e)=>handleDateChange(e.target.value)}
+                                value={dataMain.datetoshow}
+                                size="small"
+                            />
+                        </div>
+                        <div style={{flex:1, paddingRight: "10px",}}>
+                            <FieldSelect
+                                label="Plan"
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?value:""}))}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="description"
+                            />
+                        </div>
+                        <div style={{flex:1, paddingLeft: 20}}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <TableZyx
+                    columns={columns}
+                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
         )
     }
     else if (viewSelected === "view-2") {
@@ -567,9 +464,8 @@ const Organization: React.FC = () => {
             <DetailOrganization
                 data={rowSelected}
                 setViewSelected={setViewSelected}
-                multiData={mainResult.multiData.data}
                 fetchData={fetchData}
-                dataCurrency={ressignup.data}
+                dataPlan = {dataPlan}
             />
         )
     } else
@@ -577,9 +473,26 @@ const Organization: React.FC = () => {
 }
 
 const BillingSetup: FC = () => {
+    const dispatch = useDispatch();
     const { t } = useTranslation();
+    
+    const multiData = useSelector(state => state.main.multiData);
     const [pageSelected, setPageSelected] = useState(0);
-
+    const [sentfirstinfo, setsentfirstinfo] = useState(false);
+    const [dataPlan, setdataPlan] = useState<any>([]);
+    useEffect(() => {
+        if(!multiData.loading && sentfirstinfo){
+            setsentfirstinfo(false)
+            setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [])
+        }
+    }, [multiData])
+    useEffect(()=>{
+        setsentfirstinfo(true)
+        dispatch(getMultiCollection([
+            getPlanSel(),
+            getValuesFromDomain("ESTADOGENERICO"),
+        ]));
+    },[])
     return (
         <div style={{ width: '100%' }}>
             <Tabs
@@ -590,7 +503,7 @@ const BillingSetup: FC = () => {
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Plan de soporte" />
+                <AntTab label={t(langKeys.supportplan)} />
                 <AntTab label="Plan contratado/periodo" />
                 <AntTab label="Costo de conversación" />
                 <AntTab label="Costo por periodo" />
@@ -599,7 +512,7 @@ const BillingSetup: FC = () => {
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
-                    <Organization />
+                    <Organization dataPlan={dataPlan}/>
                 </div>
             }
             {pageSelected === 1 &&
