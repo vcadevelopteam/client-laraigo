@@ -113,7 +113,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
-            communicationchannelid: 0,
+            communicationchannelid: auxdata?.length > 0 ? auxdata[0].communicationchannelid : 0,
             communicationchanneltype: '',
             usergroup: '',
             type: 'TEXTO',
@@ -181,6 +181,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const setStepData = (data: Dictionary) => {
         setValue('id', data.id);
         setValue('communicationchannelid', data.communicationchannelid);
+        setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
         setValue('usergroup', data.usergroup);
         setValue('type', data.type);
         setValue('status', data.status);

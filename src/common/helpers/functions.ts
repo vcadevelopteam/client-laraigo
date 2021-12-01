@@ -58,8 +58,8 @@ export function filterPipe(items: Dictionary[], field: string, value: any, inv?:
     // If there are not filter value return all items//
     if (!value || value.length === 0) return [];
     // If the filter value is a number//
-    if (typeof items[0][field] === 'number') {
-        return items.filter(it => it[field] === value);
+    if (items.length > 0 && typeof items[0][field] === 'number') {
+        return items.filter(it => it[field].toString() === value.toString());
     }
     // If '%' contains wildcard is a string contains//
     else if (inv === '%') {
