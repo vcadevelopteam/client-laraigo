@@ -117,6 +117,7 @@ const useRichTextStyles = makeStyles(theme => ({
     },
 }));
 
+/**TODO: Validar que la URL de la imagen sea valida en el boton de insertar imagen */
 const RichText: FC<RichTextProps> = ({ value, onChange, placeholder, spellCheck, error, ...boxProps })=> {
     const classes = useRichTextStyles();
     // Create a Slate editor object that won't change across renders.
