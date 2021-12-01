@@ -1998,8 +1998,8 @@ export const getPlanSel = (): IRequestBody => ({
     key: "UFN_SUPPORTPLAN_SEL",
     parameters: { }
 })
-export const billingSupportIns = ({ year,month,plan,basicfee,starttime,finishtime,status,type,operation }: Dictionary): IRequestBody => ({
+export const billingSupportIns = ({ year,month,plan,basicfee,starttime,finishtime,status,description,id,type,operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_INS",
     key: "UFN_BILLINGSUPPORT_INS",
-    parameters: { year,month,plan,basicfee,starttime,finishtime,status,type,operation }
+    parameters: { year,month,plan,basicfee,starttime,finishtime,status,type,description,operation,id }
 })

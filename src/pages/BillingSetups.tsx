@@ -3,8 +3,8 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
-import { billingSupportIns, getBillingSupportSel, getCorpSel, getOrgSel, getPlanSel, getValuesFromDomain, insOrg } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab } from 'components';
+import { billingSupportIns, getBillingSupportSel, getPlanSel, getValuesFromDomain } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -12,22 +12,16 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton, InputAdornment, Tabs, TextField } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { Tabs, TextField } from '@material-ui/core';
 
 interface RowSelected {
     row: Dictionary | null,
     edit: boolean
 }
-interface MultiData {
-    data: Dictionary[];
-    success: boolean;
-}
-interface DetailOrganizationProps {
+interface DetailSupportPlanProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
     fetchData: () => void,
@@ -68,20 +62,22 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
+            id: row ? row.billingsupportid : 0,
             startdate: row?.startdate || new Date(new Date().setDate(1)),
             enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            datetoshow: row?.startdate || `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
             year: row?.year ||new Date().getFullYear(),
             month: row?.month ||new Date().getMonth() + 1,
             plan: row?.plan||"",
@@ -90,7 +86,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             finishtime: row?.finishtime || new Date().getTime(),
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
-            operation: row ? "UPDATE" : "INSERT"
+            description: row ? row.description : '',
+            operation: row ? "UPDATE" : "INSERT",
         }
     });
 
@@ -100,20 +97,21 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         let year = datetochange?.getFullYear()
         let startdate = new Date(year, mes-1, 1)
         let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
         setValue('startdate',startdate)
         setValue('enddate',enddate)
-        setValue('datetoshow',datetoshow)
+        setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
         setValue('year',year)
         setValue('month',mes)
     }
 
     React.useEffect(() => {
+        register('id');
         register('type');
         register('status');
         register('year');
         register('month');
         register('operation');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -160,7 +158,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.orgdesc}` : t(langKeys.newsupportplan)}
+                            title={row ? `${row.description}` : t(langKeys.newsupportplan)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -188,13 +186,27 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={getValues('description')}
+                                error={errors?.description?.message}
+                                className="col-6"
+                                //error={errors?.documentnumber?.message}
+                            />
+                            : <FieldView
+                                label={t(langKeys.type)}
+                                value={row ? (row.type || "") : ""}
+                                className="col-6"
+                            />}
+                        {edit ?
                             <TextField
                                 id="date"
                                 className="col-6"
                                 type="month"
                                 variant="outlined"
                                 onChange={(e)=>handleDateChange(e.target.value)}
-                                value={getValues("datetoshow")}
+                                value={datetoshow}
                                 size="small"
                             />
                             : <FieldView
@@ -202,6 +214,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={user?.corpdesc}
                                 className="col-6"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldSelect
                                 label="Plan"
@@ -218,8 +232,6 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.orgdesc || "") : ""}
                                 className="col-6"
                             />}
-                    </div>
-                    <div className="row-zyx">
                         {edit ?
                             <FieldEdit
                                 label={t(langKeys.supportprice)}
@@ -235,6 +247,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 value={row ? (row.type || "") : ""}
                                 className="col-6"
                             />}
+                    </div>
+                    <div className="row-zyx">
                         {edit ?
                             <FieldEdit
                                 type="time"
@@ -270,9 +284,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     );
 }
 
-const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
-    const ressignup = useSelector(state => state.signup.currencyList);
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
@@ -324,7 +337,7 @@ const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                             viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            extraOption="Duplicar"
+                            extraOption={t(langKeys.duplicate)}
                         />
                     )
                 }
@@ -382,8 +395,17 @@ const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
+        const callback = () => {
+            dispatch(execute(billingSupportIns({ ...row, type: row.type, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -393,7 +415,7 @@ const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({ ...row, description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
+            dispatch(execute(billingSupportIns({ ...row, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.billingsupportid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -461,7 +483,7 @@ const Organization: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
     else if (viewSelected === "view-2") {
         return (
-            <DetailOrganization
+            <DetailSupportPlan
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
@@ -504,7 +526,7 @@ const BillingSetup: FC = () => {
                 onChange={(_, value) => setPageSelected(value)}
             >
                 <AntTab label={t(langKeys.supportplan)} />
-                <AntTab label="Plan contratado/periodo" />
+                <AntTab label={t(langKeys.contractedplanbyperiod)} />
                 <AntTab label="Costo de conversación" />
                 <AntTab label="Costo por periodo" />
                 <AntTab label="Costo por periodo HSM" />
@@ -512,7 +534,7 @@ const BillingSetup: FC = () => {
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
-                    <Organization dataPlan={dataPlan}/>
+                    <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
             {pageSelected === 1 &&
