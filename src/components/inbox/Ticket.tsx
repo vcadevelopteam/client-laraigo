@@ -70,7 +70,6 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     React.useEffect(() => {
         if (!multiData.error && !multiData.loading &&  multiData?.data[6] && multiData.data[6].success) {
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
-            console.log(channelSelected)
             setIconColor(channelSelected?.coloricon || '#7721AD');
         }
     }, [multiData])
