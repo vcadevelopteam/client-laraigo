@@ -113,11 +113,11 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
         defaultValues: {
             isnew: row ? false : true,
             id: row ? row.id : 0,
-            communicationchannelid: 0,
+            communicationchannelid: auxdata?.length > 0 ? auxdata[0].communicationchannelid : 0,
             communicationchanneltype: '',
-            usergroup: '',
-            type: 'TEXTO',
-            status: 'ACTIVO',
+            usergroup: auxdata?.length > 0 ? auxdata[0].usergroup : '',
+            type: auxdata?.length > 0 ? auxdata[0].type : 'TEXTO',
+            status: auxdata?.length > 0 ? auxdata[0].status : 'ACTIVO',
             title: '',
             description: '',
             subject: '',
@@ -126,14 +126,14 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
             enddate: '',
             repeatable: false,
             frecuency: 0,
-            source: 'EXTERNAL',
-            messagetemplateid: 0,
+            source: auxdata?.length > 0 ? auxdata[0].source : 'EXTERNAL',
+            messagetemplateid:  auxdata?.length > 0 ? auxdata[0].messagetemplateid : 0,
             messagetemplatename: '',
             messagetemplatenamespace: '',
             messagetemplatetype: 'STANDARD',
             messagetemplateheader: {},
             messagetemplatebuttons: [],
-            executiontype: 'MANUAL',
+            executiontype: auxdata?.length > 0 ? auxdata[0].executiontype : 'MANUAL',
             batchjson: [],
             fields: new SelectedColumns(),
             operation: row ? "UPDATE" : "INSERT",
@@ -181,6 +181,7 @@ export const CampaignGeneral: React.FC<DetailProps> = ({ row, edit, auxdata, det
     const setStepData = (data: Dictionary) => {
         setValue('id', data.id);
         setValue('communicationchannelid', data.communicationchannelid);
+        setValue('communicationchanneltype', dataChannel.filter(d => d.communicationchannelid === data?.communicationchannelid)[0]?.type);
         setValue('usergroup', data.usergroup);
         setValue('type', data.type);
         setValue('status', data.status);

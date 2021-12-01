@@ -24,7 +24,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
     const dispatch = useDispatch();
     const auxResult = useSelector(state => state.main.mainAux);
     const [step, setStep] = useState("step-0");
-    const [auxData, setAuxData] = useState({});
+    const [auxData, setAuxData] = useState<Dictionary[]>([]);
     const [detailData, setDetailData] = useState<ICampaign>({});
     const [waitView, setWaitView] = useState(false);
     

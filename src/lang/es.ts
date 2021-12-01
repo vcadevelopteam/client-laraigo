@@ -252,6 +252,7 @@ const translation: LangKeys = {
     closedbyadviser: "Cerrado por asesor",
     closedbybot: "Cerrado por bot",
     phone: 'Teléfono',
+    contact: 'Contacto',
     title: 'Título',
     lastConnection: 'Última Conexión',
     ticketCreatedOn: 'Ticket Creado',

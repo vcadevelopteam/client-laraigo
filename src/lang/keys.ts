@@ -359,6 +359,7 @@ export const langKeys = {
     billingGroup: 'billingGroup',
     registerCode: 'registerCode',
     phone: 'phone',
+    contact: 'contact',
     department: 'department',
     province: 'province',
     address: 'address',
