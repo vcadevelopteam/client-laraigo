@@ -6,7 +6,7 @@ import { SaveActivityModal, TabPanelLogNote } from "./LeadForm";
 import { getAdvisers, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote } from "store/lead/actions";
 import { adviserSel, leadActivityIns, leadHistoryIns, leadLogNotesIns } from "common/helpers";
 import { Box, Button, makeStyles, Modal } from "@material-ui/core";
-import { DialogZyx, FieldEditArray, FieldSelect, FieldView, TitleDetail } from "components";
+import { DialogZyx, FieldEditArray, FieldEditMulti, FieldSelect, TitleDetail } from "components";
 import { useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { useSelector } from "hooks";
@@ -256,8 +256,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
         if (value) {
             setBodyMessage(value.body);
             setValue('hsmtemplateid', value ? value.id : 0);
-            const wordList = value.body?.split(/[\s,.;()!?¡]+/);
-            const variablesList = wordList.filter((x: string) => x.substring(0, 2) === "{{" && x.substring(x.length - 2) === "}}")
+            const variablesList = value.body.match(/({{)(.*?)(}})/g) || [];
             const varaiblesCleaned = variablesList.map((x: string) => x.substring(x.indexOf("{{") + 2, x.indexOf("}}")))
             setValue('variables', varaiblesCleaned.map((x: string) => ({ name: x, text: '', type: 'text' })));
         } else {
@@ -347,10 +346,20 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                     optionValue="id"
                 />
             </div>
-            <FieldView
-                label={t(langKeys.message)}
-                value={bodyMessage}
-            />
+            {messagetype === 'MAIL' &&
+                <React.Fragment>
+                    <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
+                    <div dangerouslySetInnerHTML={{__html: bodyMessage}} />
+                </React.Fragment>
+            }
+            {messagetype !== 'MAIL' &&
+                <FieldEditMulti
+                    label={t(langKeys.message)}
+                    valueDefault={bodyMessage}
+                    disabled={true}
+                    rows={1}
+                />
+            }
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 16 }}>
                 {fields.map((item: Dictionary, i) => (
                     <React.Fragment key={"param_" + item.id}>

@@ -296,7 +296,6 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             headertype: row?.headertype || 'text',
             header: row?.header || '',
             body: row?.body || '',
-            bodyobject: row?.bodyobject as string || JSON.stringify([{"type": "paragraph", "children": [{"text": row?.body || ""}] }]),
             footerenabled: ![null, undefined].includes(row?.footerenabled) ? row?.footerenabled : true,
             footer: row?.footer || '',
             buttonsenabled: ![null, undefined].includes(row?.buttonsenabled) ? row?.buttonsenabled : true,
@@ -306,6 +305,8 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
             operation: row ? "EDIT" : "INSERT"
         }
     });
+
+    const [bodyobject, setBodyobject] = useState<Descendant[]>(row?.bodyobject || [{"type": "paragraph", "children": [{"text": row?.body || ""}] }])
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { fields: buttons } = useFieldArray({
@@ -357,9 +358,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     const onSubmit = handleSubmit((data) => {
         const callback = () => {
             if (data.type === 'MAIL') {
-                data.body = renderToString(toElement(JSON.parse(data.bodyobject) as Descendant[]));
+                data.body = renderToString(toElement(bodyobject));
             }
-            dispatch(execute(insMessageTemplate(data)));
+            dispatch(execute(insMessageTemplate({...data, bodyobject: bodyobject})));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }
@@ -373,7 +374,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
     const onChangeMessageType = (data: Dictionary) => {
         if (getValues('type') === 'MAIL' && (data?.value || '') !== 'MAIL') {
-            setValue('body', richTextToString(JSON.parse(getValues('bodyobject'))))
+            setValue('body', richTextToString(bodyobject))
         }
         setValue('type', data?.value || '');
         switch (data?.value || 'SMS') {
@@ -748,9 +749,9 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                             <React.Fragment>
                                 <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.body)}</Box>
                                 <RichText
-                                    value={JSON.parse(getValues('bodyobject'))}
+                                    value={bodyobject}
                                     onChange={(value) => {
-                                        setValue('bodyobject', JSON.stringify(value))
+                                        setBodyobject(value)
                                     }}
                                     spellCheck
                                 />

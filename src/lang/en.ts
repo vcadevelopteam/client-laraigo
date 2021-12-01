@@ -141,6 +141,7 @@ const translation: LangKeys = {
     department: 'Department',
     province: 'Province',
     phone: 'Phone',
+    contact: 'Contact',
 
     lastConnection: 'Last connection',
     firstConnection: 'First connection',
