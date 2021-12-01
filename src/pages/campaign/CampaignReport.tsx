@@ -342,8 +342,8 @@ const ModalReport: React.FC<ModalProps> = ({ openModal, setOpenModal, row }) => 
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.phone),
-                accessor: 'phone',
+                Header: t(langKeys.contact),
+                accessor: 'contact',
             },
             {
                 Header: t(langKeys.status),
