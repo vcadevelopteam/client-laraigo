@@ -34,7 +34,7 @@ export * from './channels';
 export * from './signup';
 
 export { default as BotDesigner } from './BotDesigner';
-export { default as Dashboard } from './Dashboard';
+export * from './dashboard';
 
 export { default as Settings } from './Settings';
 export { default as Privacy } from './Privacy';

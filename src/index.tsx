@@ -8,6 +8,9 @@ import configureStore from 'store';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import 'react-image-lightbox/style.css'; // theme css file
+import 'react-grid-layout/css/styles.css';
+import 'react-resizable/css/styles.css';
+
 
 const store = configureStore();
 

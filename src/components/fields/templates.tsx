@@ -119,14 +119,14 @@ export const TemplateIcons: React.FC<TemplateIconsProps> = ({ extraOption, viewF
 
 interface TemplateBreadcrumbsProps {
     breadcrumbs: Array<{ id: string, name: string }>;
-    handleClick?: (param: any) => void;
+    handleClick?: (id: string) => void;
 }
 
 export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadcrumbs, handleClick }) => {
 
     const handleClickBreadcrumb = (event: any, id: string) => {
         event.preventDefault();
-        handleClick && handleClick(id)
+        handleClick?.(id)
     }
 
     return (
