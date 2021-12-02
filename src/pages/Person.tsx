@@ -23,7 +23,7 @@ import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPagin
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
 import { execute, exportData } from 'store/main/actions';
-import { DialogInteractions, FieldMultiSelect, FieldView, FieldEditArray, DialogZyx } from 'components';
+import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
 import StarIcon from '@material-ui/icons/Star';

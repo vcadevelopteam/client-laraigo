@@ -1988,18 +1988,78 @@ export const changePasswordOnFirstLoginIns = (userid: number | string, password:
 });
 
 
-export const getBillingSupportSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
-    method: "UFN_BILLINGSUPPORT_SEL",
-    key: "UFN_BILLINGSUPPORT_SEL",
-    parameters: { year,month,plan }
-})
+
 export const getPlanSel = (): IRequestBody => ({
     method: "UFN_SUPPORTPLAN_SEL",
     key: "UFN_SUPPORTPLAN_SEL",
     parameters: { }
 })
+
+export const getBillingSupportSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGSUPPORT_SEL",
+    key: "UFN_BILLINGSUPPORT_SEL",
+    parameters: { year,month,plan }
+})
+
 export const billingSupportIns = ({ year,month,plan,basicfee,starttime,finishtime,status,description,id,type,operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_INS",
     key: "UFN_BILLINGSUPPORT_INS",
     parameters: { year,month,plan,basicfee,starttime,finishtime,status,type,description,operation,id }
+})
+
+export const getBillingConfigurationSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGCONFIGURATION_SEL",
+    key: "UFN_BILLINGCONFIGURATION_SEL",
+    parameters: { year,month,plan }
+})
+
+export const billingConfigurationIns = ({ year,month,plan,id,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee=0,clientfreequantity,clientadditionalfee,allowhsm,hsmfee,description,status,type,operation}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGCONFIGURATION_INS",
+    key: "UFN_BILLINGCONFIGURATION_INS",
+    parameters: { year,month,plan,id,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,allowhsm,hsmfee,description,status,type,operation }
+})
+
+export const getBillingConversationSel = ({ year,month,countrycode="" }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGCONVERSATION_SEL",
+    key: "UFN_BILLINGCONVERSATION_SEL",
+    parameters: { year,month,countrycode:countrycode?countrycode:"" }
+})
+
+
+export const billingConversationIns = ({ year,month,countrycode,id,companystartfee,clientstartfee,c250000,c750000,c2000000,c3000000,c4000000,c5000000,c10000000,c25000000,description,status,type,operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGCONVERSATION_INS",
+    key: "UFN_BILLINGCONVERSATION_INS",
+    parameters: { year,month,countrycode,id,companystartfee,clientstartfee,c250000,c750000,c2000000,c3000000,c4000000,c5000000,c10000000,c25000000,description,status,type,operation }
+})
+
+export const getBillingPeriodSel = ({ corpid, orgid, year,month,billingplan, supportplan}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_SEL",
+    key: "UFN_BILLINGPERIOD_SEL",
+    parameters: { corpid, orgid, year,month,billingplan, supportplan }
+})
+export const billingPeriodUpd = ({ corpid,orgid,year,month,billingplan,supportplan,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,supportbasicfee,additionalservicename1,additionalservicefee1,additionalservicename2,additionalservicefee2,additionalservicename3,additionalservicefee3,force}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_UPD",
+    key: "UFN_BILLINGPERIOD_UPD",
+    parameters: { corpid,orgid,year,month,billingplan,supportplan,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,supportbasicfee,additionalservicename1,additionalservicefee1,additionalservicename2,additionalservicefee2,additionalservicename3,additionalservicefee3,force}
+})
+
+export const getBillingPeriodHSMSel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIODHSM_SEL",
+    key: "UFN_BILLINGPERIODHSM_SEL",
+    parameters: {  corpid,orgid,year,month}
+})
+export const billingPeriodHSMUpd = ({ corpid, orgid, year, month, hsmutilityfee, force}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIODHSM_UPD",
+    key: "UFN_BILLINGPERIODHSM_UPD",
+    parameters: {  corpid, orgid, year, month, hsmutilityfee, force}
+})
+export const getBillingPeriodSummarySel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_SUMMARYORG",
+    key: "UFN_BILLINGPERIOD_SUMMARYORG",
+    parameters: {  corpid,orgid:corpid===0?corpid:orgid,year,month,force:true}
+})
+export const getBillingPeriodSummarySelCorp = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGPERIOD_SUMMARYCORP",
+    key: "UFN_BILLINGPERIOD_SUMMARYCORP",
+    parameters: {  corpid,orgid:corpid===0?corpid:orgid,year,month,force:true}
 })
