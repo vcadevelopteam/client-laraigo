@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
+        gap: 8
     },
     iconOrder: {
         width: 20,
