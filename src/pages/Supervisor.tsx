@@ -239,12 +239,7 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
 }
 
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
-    const dispatch = useDispatch();
     const agentList = useSelector(state => state.inbox.agentList);
-
-    useEffect(() => {
-        dispatch(getAgents())
-    }, [])
 
     const onSearch = (pageSelected: number, search: string) => {
         setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
@@ -280,6 +275,7 @@ const Supervisor: FC = () => {
 
     useEffect(() => {
         dispatch(setOpenDrawer(false));
+        dispatch(getAgents())
         dispatch(getMultiCollection([
             getValuesFromDomain("MOTIVOCIERRE"),
             getListUsers(),

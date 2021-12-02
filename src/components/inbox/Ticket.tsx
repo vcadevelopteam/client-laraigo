@@ -62,8 +62,18 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const multiData = useSelector(state => state.main.multiData);
+    const [iconColor, setIconColor] = useState('#7721AD');
+    
+    React.useEffect(() => {
+        if (!multiData.error && !multiData.loading &&  multiData?.data[6] && multiData.data[6].success) {
+            const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
+            setIconColor(channelSelected?.coloricon || '#7721AD');
+        }
+    }, [multiData])
+
     return (
         <div
             className={clsx(classes.containerItemTicket, { [classes.itemSelected]: (ticketSelected?.conversationid === item.conversationid) })}
@@ -81,7 +91,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
 
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    <GetIcon channelType={communicationchanneltype} />
+                    <GetIcon channelType={communicationchanneltype} color={iconColor} />
                     <div className={classes.name}>{displayname}</div>
                 </div>
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: 230 }}>
@@ -94,14 +104,12 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                     />
                     <LabelGo
                         isTimer={true}
-                        // timer={getSecondsUntelNow(convertLocalDate(firstconversationdate, true))}
                         dateGo={firstconversationdate || new Date().toISOString()}
                         color="#465a6ed9"
                     />
                     {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
-                            // timer={getSecondsUntelNow(convertLocalDate(personlastreplydate, false))}
                             dateGo={personlastreplydate || new Date().toISOString()}
                             color="#FB5F5F"
                         />

@@ -760,7 +760,7 @@ const CRM: FC = () => {
                   startIcon={<HSMIcon width={24} style={{ fill: '#FFF' }} />}
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
               >
-                  <Trans i18nKey={langKeys.SENDHSM} />
+                  <Trans i18nKey={langKeys.send_hsm} />
               </Button>
               <Button
                   variant="contained"
@@ -769,7 +769,7 @@ const CRM: FC = () => {
                   startIcon={<MailIcon width={24} style={{ fill: '#FFF' }} />}
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'MAIL' }}) }
               >
-                  <Trans i18nKey={langKeys.SENDMAIL} />
+                  <Trans i18nKey={langKeys.send_mail} />
               </Button>
               <Button
                   variant="contained"
@@ -778,7 +778,7 @@ const CRM: FC = () => {
                   startIcon={<SmsIcon width={24} style={{ fill: '#FFF' }} />}
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'SMS' }}) }
               >
-                  <Trans i18nKey={langKeys.SENDSMS} />
+                  <Trans i18nKey={langKeys.send_sms} />
               </Button>
             </div>
           </div>

@@ -72,6 +72,8 @@ const translation: LangKeys = {
     messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
 
     successful_send_hsm: 'HSM enviado satisfactoriamente',
+    successful_send_sms: 'SMS enviado satisfactoriamente',
+    successful_send_mail: 'Correo enviado satisfactoriamente',
     successful_send_message: 'Mensaje enviado satisfactoriamente',
 
     send_quickreply: 'Enviar respuesta rápida',
@@ -663,6 +665,7 @@ const translation: LangKeys = {
     organizationclass: "Organización de Clasificaciones",
     editRecord: 'Editar registro',
     deleteRecord: 'Eliminar registro',
+    deletedata: 'Eliminar data',
     changeDate: 'Fecha de cambio',
     select: "Seleccionar",
     edit: 'Editar',
@@ -761,6 +764,8 @@ const translation: LangKeys = {
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
     send_hsm: 'Enviar HSM',
+    send_mail: 'Enviar Correo',
+    send_sms: 'Enviar SMS',
     observation: 'Observación',
     botdesigner: 'Diseñador de bots',
 
@@ -905,6 +910,7 @@ const translation: LangKeys = {
     confirmation_save: '¿Está seguro de guardar el registro?',
     confirmation_delete: '¿Está seguro de eliminar el registro?',
     confirmation_duplicate: '¿Está seguro de duplicar el registro?',
+    confirmation_delete_data: '¿Está seguro de eliminar toda la data?',
     confirmation_close: '¿Está seguro de cerrar el registro?',
     question_delete_all_items: '¿Quieres eliminar todos los items dentro de este elemento?',
     login_with_facebook: 'Iniciar sesión con Facebook',

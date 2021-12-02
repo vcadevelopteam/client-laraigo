@@ -122,7 +122,8 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_send_hsm) }))
+                const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
+                dispatch(showSnackbar({ show: true, success: true, message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitClose(false);
@@ -215,7 +216,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
-            <div style={{marginBottom: 8}}>
+            <div style={{ marginBottom: 8 }}>
                 {persons.length} {t(langKeys.persons_selected)}, {personWithData.length} {t(langKeys.with)} {type === "MAIL" ? t(langKeys.email).toLocaleLowerCase() : t(langKeys.phone).toLocaleLowerCase()}
             </div>
             {type === "HSM" && (
@@ -250,7 +251,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             {type === 'MAIL' &&
                 <React.Fragment>
                     <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={1} color="textPrimary">{t(langKeys.message)}</Box>
-                    <div dangerouslySetInnerHTML={{__html: bodyMessage}} />
+                    <div dangerouslySetInnerHTML={{ __html: bodyMessage }} />
                 </React.Fragment>
             }
             {type !== 'MAIL' &&
@@ -350,7 +351,7 @@ export const Person: FC = () => {
                 const person = props.cell.row.original as IPerson;
                 return (
                     <>
-                        <Tooltip title={t(langKeys.SENDHSM) + ""}>
+                        <Tooltip title={t(langKeys.send_hsm) + ""}>
                             <IconButton
                                 size="small"
                                 onClick={(e: any) => {
@@ -363,7 +364,7 @@ export const Person: FC = () => {
                                 <HSMIcon width={24} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title={t(langKeys.SENDMAIL) + ""}>
+                        <Tooltip title={t(langKeys.send_mail) + ""}>
                             <IconButton
                                 size="small"
                                 onClick={(e: any) => {
@@ -376,7 +377,7 @@ export const Person: FC = () => {
                                 <MailIcon color="action" />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title={t(langKeys.SENDSMS) + ""}>
+                        <Tooltip title={t(langKeys.send_sms) + ""}>
                             <IconButton
                                 size="small"
                                 onClick={(e: any) => {
@@ -677,12 +678,10 @@ export const Person: FC = () => {
         }
     }, [selectedRows])
 
-    console.log(selectedRows)
-
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-            <Grid container direction="row" justifyContent="space-between" style={{ marginBottom: 12, marginTop: 4 }}>
+            <Grid container direction="row" justifyContent="space-between" style={{ marginBottom: 12, marginTop: 4, gap: 8 }}>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
                         <FieldMultiSelect
@@ -692,7 +691,7 @@ export const Person: FC = () => {
                             style={{ maxWidth: 300, minWidth: 200 }}
                             variant="outlined"
                             loading={domains.loading}
-                            data={domains.value?.channelTypes || []}
+                            data={(domains.value?.channelTypes || []).filter(x => (domains.value?.channels || []).some(y => y.type === x.domainvalue))}
                             optionValue="domainvalue"
                             optionDesc="domaindesc"
                         />
@@ -721,7 +720,7 @@ export const Person: FC = () => {
                                 setTypeTemplate("HSM");
                             }}
                         >
-                            <Trans i18nKey={langKeys.SENDHSM} />
+                            <Trans i18nKey={langKeys.send_hsm} />
                         </Button>
                         <Button
                             variant="contained"
@@ -733,7 +732,7 @@ export const Person: FC = () => {
                                 setTypeTemplate("MAIL");
                             }}
                         >
-                            <Trans i18nKey={langKeys.SENDMAIL} />
+                            <Trans i18nKey={langKeys.send_mail} />
                         </Button>
                         <Button
                             variant="contained"
@@ -745,7 +744,7 @@ export const Person: FC = () => {
                                 setTypeTemplate("SMS");
                             }}
                         >
-                            <Trans i18nKey={langKeys.SENDSMS} />
+                            <Trans i18nKey={langKeys.send_sms} />
                         </Button>
                     </div>
                 </Grid>
@@ -954,7 +953,6 @@ export const PersonDetail: FC = () => {
 
 
     useEffect(() => {
-        console.log(person);
         if (!person) {
             history.push(paths.PERSON);
         } else {
@@ -1039,8 +1037,7 @@ export const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-                console.log("handleEditPerson", payload);
-
+                
                 dispatch(editPerson(payload.parameters.personid ? payload : {
                     header: editPersonBody({ ...person, ...values }),
                     detail: [
@@ -1891,10 +1888,9 @@ interface ChannelTabProps {
     domains: IObjectState<IPersonDomains>;
 }
 
-const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person, getValues, setValue, domains }) => {
+const CommunicationChannelsTab: FC<ChannelTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const channelList = useSelector(state => state.person.personChannelList);
-    // const additionalInfo = useSelector(state => state.person.personAdditionInfo);
 
     useEffect(() => {
         if (person.personid && person.personid !== 0) {
@@ -2025,7 +2021,6 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
                 if (!firstCall.current && list.length >= conversations.count) return;
                 if (conversations.loading) return;
                 if (myDiv.offsetHeight + myDiv.scrollTop + 1 >= myDiv.scrollHeight) {
-                    console.log("Scroll finalizó");
                     setPage(prevPage => prevPage + 1);
                 }
             };
@@ -2118,7 +2113,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const openDialogInteractions = useCallback((row: any) => {
         setOpenModal(true);
-        console.log(row)
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
 

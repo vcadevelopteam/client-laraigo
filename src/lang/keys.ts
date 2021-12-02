@@ -715,6 +715,7 @@ export const langKeys = {
     duplicate: 'duplicate',
     advance_search: 'advance_search',
     search_inbox: 'search_inbox',
+    deletedata: 'deletedata',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
@@ -779,6 +780,8 @@ export const langKeys = {
     typify_ticket: 'typify_ticket',
     
     send_hsm: 'send_hsm',
+    send_mail: 'send_mail',
+    send_sms: 'send_sms',
     
     send_quickreply: 'send_quickreply',
     send_enrich_response: 'send_enrich_response',
@@ -791,6 +794,8 @@ export const langKeys = {
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
     successful_send_hsm: 'successful_send_hsm',
+    successful_send_sms: 'successful_send_sms',
+    successful_send_mail: 'successful_send_hsm',
     successful_send_message: 'successful_send_message',
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',
@@ -905,6 +910,7 @@ export const langKeys = {
     confirmation_save: 'confirmation_save',
     confirmation_delete: 'confirmation_delete',
     confirmation_duplicate: 'confirmation_duplicate',
+    confirmation_delete_data: 'confirmation_delete_data',
     confirmation_close: 'confirmation_close',
     question_delete_all_items: 'question_delete_all_items',
     login_with_facebook: 'login_with_facebook',

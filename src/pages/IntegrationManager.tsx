@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldEditMulti, FieldCheckbox, DialogZyx } from 'components';
-import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager } from 'common/helpers';
+import { getIntegrationManagerSel, insIntegrationManager, getValuesFromDomain, uuidv4, extractVariablesFromArray, downloadJson, uploadExcel, insarrayIntegrationManager, deldataIntegrationManager } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -304,6 +304,7 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
     const { t } = useTranslation();
 
     const [waitImport, setWaitImport] = useState(false);
+    const [waitDelete, setWaitDelete] = useState(false);
 
     // const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     
@@ -618,13 +619,42 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inappropriatewords).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitImport(false);
             }
         }
     }, [executeRes, waitImport]);
+
+    const onDeleteData = () => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(deldataIntegrationManager(getValues('id'))));
+            setWaitDelete(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete_data),
+            callback
+        }))
+    }
+
+    useEffect(() => {
+        if (waitDelete) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.integrationmanager).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitDelete(false);
+            }
+        }
+    }, [executeRes, waitDelete]);
 
     return (
         <div style={{ width: '100%' }}>
@@ -651,6 +681,13 @@ const DetailIntegrationManager: React.FC<DetailProps> = ({ data: { row, edit }, 
                         }
                         {!getValues('isnew') && getValues('type') === 'CUSTOM' && (
                             <React.Fragment>
+                                <Button
+                                    variant="contained"
+                                    type="button"
+                                    color="primary"
+                                    style={{ backgroundColor: "#FB5F5F" }}
+                                    onClick={onDeleteData}
+                                >{t(langKeys.deletedata)}</Button>
                                 <input
                                     accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.csv"
                                     id="uploadfile"

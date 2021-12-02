@@ -693,6 +693,13 @@ export const insarrayIntegrationManager = (id: number, table: Dictionary[]): IRe
     }
 });
 
+export const deldataIntegrationManager = (id: number): IRequestBody => ({
+    method: "UFN_INTEGRATIONMANAGER_DELETEDATA",
+    parameters: {
+        id: id
+    }
+});
+
 export const getChannelSel = (id: number): IRequestBody => ({
     method: "UFN_COMMUNICATIONCHANNEL_SEL",
     parameters: {
