@@ -701,6 +701,8 @@ export const langKeys = {
     typify_ticket: 'typify_ticket',
     
     send_hsm: 'send_hsm',
+    send_mail: 'send_mail',
+    send_sms: 'send_sms',
     
     send_quickreply: 'send_quickreply',
     send_enrich_response: 'send_enrich_response',
@@ -713,6 +715,8 @@ export const langKeys = {
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
     successful_send_hsm: 'successful_send_hsm',
+    successful_send_sms: 'successful_send_sms',
+    successful_send_mail: 'successful_send_hsm',
     successful_send_message: 'successful_send_message',
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',

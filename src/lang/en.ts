@@ -849,8 +849,14 @@ const translation: LangKeys = {
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
     send_hsm: 'Send HSM',
+    send_mail: 'Send Mail',
+    send_sms: 'Send SMS',
     successful_close_ticket: 'Ticket closed successfully',
+    
     successful_send_hsm: 'HSM sent successfully',
+    successful_send_sms: 'SMS sent successfully',
+    successful_send_mail: 'Email sent successfully',
+
     successful_send_message: 'Message sent successfully',
     successful_tipify_ticket: 'Ticket tipified successfully',
     successful_reasign_ticket: 'Ticket reasigned successfully',

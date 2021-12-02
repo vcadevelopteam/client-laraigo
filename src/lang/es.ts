@@ -72,6 +72,8 @@ const translation: LangKeys = {
     messagessuccesfullydelivered: "Mensajes entregados satisfactoriamente",
 
     successful_send_hsm: 'HSM enviado satisfactoriamente',
+    successful_send_sms: 'SMS enviado satisfactoriamente',
+    successful_send_mail: 'Correo enviado satisfactoriamente',
     successful_send_message: 'Mensaje enviado satisfactoriamente',
 
     send_quickreply: 'Enviar respuesta rápida',
@@ -736,6 +738,8 @@ const translation: LangKeys = {
     typify: 'Tipificar',
     typify_ticket: 'Tipificar ticket',
     send_hsm: 'Enviar HSM',
+    send_mail: 'Enviar Correo',
+    send_sms: 'Enviar SMS',
     observation: 'Observación',
     botdesigner: 'Diseñador de bots',
 
