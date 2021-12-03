@@ -1471,6 +1471,7 @@ const translation: LangKeys = {
     REMOVETAG: 'Tag eliminado',
     ELIMINADO: 'Eliminado',
     CLOSEDLEAD: 'Oportunidad cerrada',
+    ACTIVITYCHANGESTATUS: 'Cambio de estado de la actividad',
 
     repeatPassword: 'Repetir contraseña',
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',

@@ -1473,6 +1473,7 @@ export const langKeys = {
     REMOVETAG: 'REMOVETAG', // lead history type
     ELIMINADO: 'ELIMINADO', // lead history type
     CLOSEDLEAD: 'CLOSEDLEAD', // lead history type
+    ACTIVITYCHANGESTATUS: 'ACTIVITYCHANGESTATUS', // lead history type
 
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',

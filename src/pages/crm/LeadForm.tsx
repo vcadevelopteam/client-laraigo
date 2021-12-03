@@ -782,16 +782,18 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         loading={leadHistory.loading}
                     />
                 )}
-                <SelectPersonModal
-                    open={openPersonModal}
-                    onClose={() => setOpenPersonmodal(false)}
-                    onClick={(value) => {
-                        setValue('personcommunicationchannel', value.personcommunicationchannel)
-                        setValue('email', value.email || '')
-                        setValue('phone', value.phone || '')
-                        setValues(prev => ({ ...prev, displayname: value.displayname }))
-                    }}
-                />
+                {edit === false && (
+                    <SelectPersonModal
+                        open={openPersonModal}
+                        onClose={() => setOpenPersonmodal(false)}
+                        onClick={(value) => {
+                            setValue('personcommunicationchannel', value.personcommunicationchannel)
+                            setValue('email', value.email || '')
+                            setValue('phone', value.phone || '')
+                            setValues(prev => ({ ...prev, displayname: value.displayname }))
+                        }}
+                    />
+                )}
             </div>
         </MuiPickersUtilsProvider>
     );
@@ -1836,6 +1838,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
+            case "ACTIVITYCHANGESTATUS":
             default: return <FlagIcon width={24} style={{ fill: 'white' }} />;
         }
     }, []);
