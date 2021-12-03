@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import {
-    getCollection, resetMain, getMultiCollection,
+    getCollection, resetAllMain, getMultiCollection,
     execute
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
@@ -302,7 +302,7 @@ const InappropriateWords: FC = () => {
         fetchData();
         dispatch(getMultiCollection([getValuesFromDomain("GRUPOS"), getValuesFromDomain("ESTADOGENERICO")]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

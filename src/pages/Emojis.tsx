@@ -11,7 +11,7 @@ import Tabs from "@material-ui/core/Tabs/Tabs";
 import Tab from "@material-ui/core/Tab/Tab";
 import { DialogZyx, FieldEdit, FieldMultiSelect, FieldSelect } from "components/fields/templates";
 import { useDispatch } from "react-redux";
-import { execute, getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetMain, resetMainAux, resetMultiMain } from "store/main/actions";
+import { execute, getCollection, getCollectionAux, getMultiCollection, getMultiCollectionAux, resetAllMain, resetMainAux } from "store/main/actions";
 import { getEmojiAllSel, getEmojiSel, getOrgsByCorp, getValuesFromDomain, insEmoji } from "common/helpers";
 import { useSelector } from 'hooks';
 import { Dictionary, MultiData } from "@types";
@@ -100,8 +100,7 @@ const Emojis: FC = () => {
         ]));
 
         return () => {
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
     useEffect(() => {
