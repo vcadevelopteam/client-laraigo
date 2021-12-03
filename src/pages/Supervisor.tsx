@@ -11,7 +11,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
-import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
+import { getAgents, selectAgent, emitEvent, cleanAlerts } from 'store/inbox/actions';
 import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
@@ -286,6 +286,7 @@ const Supervisor: FC = () => {
         ]))
         return () => {
             dispatch(resetAllMain());
+            dispatch(cleanAlerts());
         };
     }, [])
 

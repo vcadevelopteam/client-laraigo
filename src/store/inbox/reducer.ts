@@ -44,6 +44,8 @@ export interface IState {
     userType: "SUPERVISOR" | "AGENT" | null;
     wsConnected: boolean;
     userConnected: boolean;
+    aNewTicket: boolean | null;
+    aNewMessage: boolean | null;
     isOnBottom: boolean | null;
     showGoToBottom: boolean | null;
     triggerNewMessageClient: boolean;
@@ -72,6 +74,8 @@ export const initialState: IState = {
     triggerReassignTicket: initialTransaction,
     ticketSelected: null,
     agentSelected: null,
+    aNewTicket: null,
+    aNewMessage: null,
     showInfoPanel: false,
     userType: null,
     wsConnected: false,
@@ -195,4 +199,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SET_SHOW_GO_TO_BOTTOM]: caseFunctions.showGoToBottom,
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
     [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,
+    [actionTypes.CLEAN_ALERT]: caseFunctions.cleanAlerts,
 });
