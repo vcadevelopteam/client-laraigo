@@ -452,7 +452,7 @@ const InsertImageButton: FC = ({ children }) => {
                             value={1}
                             label={(
                                 <div className={classes.attachTab}>
-                                    {upload.loading && <CircularProgress size={24} />}
+                                    {waitUploadFile && upload.loading && <CircularProgress size={24} />}
                                     <Trans i18nKey={langKeys.attached} />
                                 </div>
                             )}

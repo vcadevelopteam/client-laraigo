@@ -919,14 +919,14 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     <AttachFileIcon color="primary" />
                                 </IconButton>}
                                 {getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview key={`file${i}`} src={f} onClose={handleCleanMediaInput} />
-                                    ))}
-                                {waitUploadFile && fileAttachment && <FilePreview src={fileAttachment} />}
+                                    <FilePreview key={`attachment-${i}`} src={f} onClose={handleCleanMediaInput} />
+                                ))}
+                                {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
                             </React.Fragment>
                             :
                             <React.Fragment>
                                 {getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview src={f} onClose={handleCleanMediaInput} />
+                                    <FilePreview key={`attachment-${i}`} src={f} onClose={handleCleanMediaInput} />
                                 ))}
                             </React.Fragment>
                         }
