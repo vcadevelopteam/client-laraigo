@@ -263,6 +263,12 @@ export const getOrgSel = (id: number): IRequestBody => ({
         all: id === 0,
     }
 });
+export const getOrgSelList = (id: number): IRequestBody => ({
+    method: "UFN_ORG_LIST",
+    parameters: {
+        corpid: id,
+    }
+});
 
 export const insSLA = ({ id, description, type, company, communicationchannelid, usergroup, status, totaltmo, totaltmomin, totaltmopercentmax, usertmo, usertmomin, usertmopercentmax,
     usertme, usertmepercentmax, productivitybyhour, operation }: Dictionary): IRequestBody => ({
@@ -2069,4 +2075,14 @@ export const getBillingPeriodSummarySelCorp = ({ corpid,orgid,year,month}: Dicti
     method: "UFN_BILLINGPERIOD_SUMMARYCORP",
     key: "UFN_BILLINGPERIOD_SUMMARYCORP",
     parameters: {  corpid,orgid:corpid===0?corpid:orgid,year,month,force:true}
+})
+export const billingpersonreportsel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_PERSON",
+    key: "UFN_BILLING_REPORT_PERSON",
+    parameters: {  corpid,orgid,year,month}
+})
+export const billinguserreportsel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+    method: "UFN_BILLING_REPORT_USER",
+    key: "UFN_BILLING_REPORT_USER",
+    parameters: {  corpid,orgid,year,month}
 })
