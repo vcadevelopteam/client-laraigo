@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
@@ -559,7 +559,7 @@ const Tipifications: FC = () => {
             getValuesForTree()
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

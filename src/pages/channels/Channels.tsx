@@ -11,7 +11,7 @@ import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/acti
 import { Dictionary, IChannel } from '@types';
 import React from 'react';
 import { TemplateIcons } from 'components';
-import { getCollection, resetMain } from 'store/main/actions';
+import { getCollection, resetAllMain } from 'store/main/actions';
 import { getChannelSel } from 'common/helpers/requestBodies';
 import { checkPaymentPlan, deleteChannel } from 'store/channel/actions';
 
@@ -156,7 +156,7 @@ export const Channels: FC = () => {
     useEffect(() => {
         fetchData();
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

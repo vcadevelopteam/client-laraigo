@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import AddIcon from '@material-ui/icons/Add';
@@ -698,7 +698,7 @@ const Iaservices: FC = () => {
             getValuesFromDomain("ESTADOGENERICO")
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

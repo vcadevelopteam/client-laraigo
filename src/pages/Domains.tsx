@@ -18,7 +18,7 @@ import { Dictionary, MultiData } from "@types";
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux, resetMultiMain } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 interface RowSelected {
@@ -542,8 +542,7 @@ const Domains: FC = () => {
         ]));
 
         return () => {
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
