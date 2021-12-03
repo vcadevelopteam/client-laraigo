@@ -17,7 +17,7 @@ import AttachFileIcon from '@material-ui/icons/AttachFile';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useFieldArray, useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, uploadFile } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, uploadFile, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Close, FileCopy, GetApp } from '@material-ui/icons';
@@ -192,7 +192,7 @@ const MessageTemplates: FC = () => {
             getValuesFromDomain("LANGUAGE")
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
