@@ -440,6 +440,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             ...state.ticketList,
             data: newticketList
         },
+        aNewTicket: data.newConversation ? !(state.aNewTicket || false) : state.aNewTicket,
+        aNewMessage: !data.newConversation ? !(state.aNewMessage || false) : state.aNewMessage,
         agentList: {
             data: newAgentList,
             count: action.payload.count,
@@ -496,6 +498,13 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         },
     };
 }
+// CLEAN_ALERT
+export const cleanAlerts = (state: IState): IState => ({
+    ...state,
+    aNewTicket: null,
+    aNewMessage: null,
+})
+
 export const personSawChat = (state: IState, action: IAction): IState => {
     const data: IDeleteTicketParams = action.payload;
     let newticketList = [...state.ticketList.data];
