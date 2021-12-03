@@ -263,6 +263,8 @@ export const connectAgentAPI = (connect: boolean, description: string | null = n
 
 export const resetConnectAgentAPI = (): IActionCall => ({ type: actionTypes.CONNECT_AGENT_API_RESET });
 
+export const cleanAlerts = (): IActionCall => ({ type: actionTypes.CLEAN_ALERT });
+
 
 
 

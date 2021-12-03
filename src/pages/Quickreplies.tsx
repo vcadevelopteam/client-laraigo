@@ -17,7 +17,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
+import { getCollection, resetAllMain, getMultiCollection, execute, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 
 import ClearIcon from '@material-ui/icons/Clear';
@@ -551,7 +551,7 @@ const Quickreplies: FC = () => {
         fetchData();
         fetchMultiData();
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

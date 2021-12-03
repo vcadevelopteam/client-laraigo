@@ -12,7 +12,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, resetMain, execute, getMultiCollection, resetMultiMain } from 'store/main/actions';
+import { getCollection, resetAllMain, execute, getMultiCollection } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 
@@ -324,8 +324,7 @@ const IntelligentModels: FC = () => {
         ]));
 
         return () => {
-            dispatch(resetMultiMain());
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

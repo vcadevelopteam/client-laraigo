@@ -190,3 +190,5 @@ export const getCollectionPaginated = (requestBody: IRequestBodyPaginated): IAct
 });
 
 export const resetCollectionPaginated = (): IActionCall => ({ type: actionTypes.PAGINATED_MAIN_RESET });
+
+export const resetAllMain = (): IActionCall => ({ type: actionTypes.RESET_ALL });

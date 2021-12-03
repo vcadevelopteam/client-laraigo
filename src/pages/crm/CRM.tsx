@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
-import { getMultiCollection, resetMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
+import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory } from "react-router";
@@ -114,7 +114,7 @@ const CRM: FC = () => {
           getCommChannelLst(),
       ]));
       return () => {
-          dispatch(resetMain());
+          dispatch(resetAllMain());
       };
   }, [dispatch]);
 
@@ -402,16 +402,16 @@ const CRM: FC = () => {
     const column = props.cell.column;
     const row = props.cell.row.original;
     return (
-        <div onClick={(e) => {
-          e.stopPropagation();
-          if (row.leadid) {
-            history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
-          }
-        }}>
-          <CustomCellRender column={column} row={row} />
-        </div>
+      <CustomCellRender column={column} row={row} />
     )
   }
+
+  const onClickRow = (row: any) => {
+    if (row.leadid) {
+      history.push({pathname: paths.CRM_EDIT_LEAD.resolve(row.leadid),});
+    }
+  }
+
   const columns = React.useMemo(
     () => [
       {
@@ -799,6 +799,7 @@ const CRM: FC = () => {
               selectionFilter={{ key: 'status', value: 'ACTIVO' }}
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
+              onClickRow={onClickRow}
             />
           {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}

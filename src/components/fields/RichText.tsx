@@ -351,6 +351,7 @@ const InsertImageButton: FC = ({ children }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [url, setUrl] = useState('');
     const [tabIndex, setTabIndex] = useState(0);
+    const [waitUploadFile, setWaitUploadFile] = useState(false);
     const upload = useSelector(state => state.main.uploadFile);
     const open = Boolean(anchorEl);
 
@@ -361,19 +362,23 @@ const InsertImageButton: FC = ({ children }) => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (upload.loading) return;
-        if (upload.error) {
-            const message = t(upload.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
-            dispatch(showSnackbar({
-                message,
-                show: true,
-                success: false,
-            }));
-        } else if (upload.url && upload.url.length > 0) {
-            insertImage(editor, upload.url);
-            dispatch(resetUploadFile());
+        if (waitUploadFile) {
+            if (upload.loading) return;
+            if (upload.error) {
+                const message = t(upload.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+                dispatch(showSnackbar({
+                    message,
+                    show: true,
+                    success: false,
+                }));
+                setWaitUploadFile(false);
+            } else if (upload.url && upload.url.length > 0) {
+                insertImage(editor, upload.url);
+                dispatch(resetUploadFile());
+                setWaitUploadFile(false);
+            }
         }
-    }, [upload, dispatch]);
+    }, [waitUploadFile, upload, dispatch]);
 
     const clearUrl = useCallback(() => setUrl(''), []);
 
@@ -402,6 +407,7 @@ const InsertImageButton: FC = ({ children }) => {
         const fd = new FormData();
         fd.append('file', file, file.name);
         dispatch(uploadFile(fd));
+        setWaitUploadFile(true);
         setAnchorEl(null);
         clearUrl();
     }, [clearUrl, dispatch]);
@@ -446,7 +452,7 @@ const InsertImageButton: FC = ({ children }) => {
                             value={1}
                             label={(
                                 <div className={classes.attachTab}>
-                                    {upload.loading && <CircularProgress size={24} />}
+                                    {waitUploadFile && upload.loading && <CircularProgress size={24} />}
                                     <Trans i18nKey={langKeys.attached} />
                                 </div>
                             )}
@@ -458,7 +464,7 @@ const InsertImageButton: FC = ({ children }) => {
                             value={url}
                             onChange={e => setUrl(e.target.value)}
                             autoFocus
-                            disabled={upload.loading}
+                            disabled={waitUploadFile || upload.loading}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
@@ -474,7 +480,7 @@ const InsertImageButton: FC = ({ children }) => {
                             color="primary"
                             variant="contained"
                             size="small"
-                            disabled={upload.loading}
+                            disabled={waitUploadFile || upload.loading}
                             onClick={addNewUrlImage}
                         >
                             <Trans i18nKey={langKeys.accept} />
@@ -493,7 +499,7 @@ const InsertImageButton: FC = ({ children }) => {
                             color="primary"
                             variant="contained"
                             size="small"
-                            disabled={upload.loading}
+                            disabled={waitUploadFile || upload.loading}
                             onClick={handleAttachImage}
                         >
                             <Trans i18nKey={langKeys.select} />

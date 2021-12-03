@@ -12,7 +12,7 @@ import TableZyxEditable from 'components/fields/table-editable';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, getCollectionAux, resetMainAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -142,7 +142,7 @@ const VariableConfiguration: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

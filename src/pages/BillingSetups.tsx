@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel, getBillingSupportSel, getPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSel, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -12,10 +12,10 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute,exportData } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Tabs, TextField } from '@material-ui/core';
+import { Box, Tabs, TextField } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -24,6 +24,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { DownloadIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1615,7 +1616,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?value:""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
@@ -1848,7 +1849,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?value:""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="description"
@@ -2406,7 +2407,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.billingplan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value:""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value.description:""}))}
                                 data={dataPlanList}
                                 optionDesc="description"
                                 optionValue="description"
@@ -2418,7 +2419,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.supportplan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,supportplan:value?value:""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,supportplan:value?value.description:""}))}
                                 data={dataPlanList}
                                 optionDesc="description"
                                 optionValue="description"
@@ -2669,7 +2670,9 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
-    const classes = useStyles();
+    const classes = useStyles();        
+    const [waitExport, setWaitExport] = useState(false);
+    const resExportData = useSelector(state => state.main.exportData);
     const [datareport, setdatareport] = useState<any>([])
     const [requesttipe, setrequesttipe] = useState(2)
     const [dataMain, setdataMain] = useState({
@@ -2705,13 +2708,38 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }, [])
     useEffect(() => {
         if (!mainResult.mainData.loading){
-            console.log(mainResult.mainData)
             if(mainResult.mainData.data.length){
                 setdatareport(mainResult.mainData.data[0])
             }
             dispatch(showBackdrop(false))
         }
     }, [mainResult])
+
+    const triggerExportDataPerson = () => {
+        dispatch(exportData(billingpersonreportsel(dataMain),"BillingPersonReport","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+    const triggerExportDataUser = () => {
+        dispatch(exportData(billinguserreportsel(dataMain),"BillingUserReport","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
     
 
     return (
@@ -2776,6 +2804,32 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </Button>
                     </div>
                 </div>
+                {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
+                <Box width={1} style={{ height: '100%' }}>
+                    <Box style={{display: 'flex'}} justifyContent="end" mb="30px">
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"                            
+                            style={{marginRight: 10}}
+                            disabled={resExportData.loading}
+                            onClick={() => triggerExportDataPerson()}
+                            startIcon={<DownloadIcon />}
+                        >
+                            {`${t(langKeys.report)} ${t(langKeys.person)}`}
+                        </Button>
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={resExportData.loading}
+                            onClick={() => triggerExportDataUser()}
+                            startIcon={<DownloadIcon />}
+                        >{`${t(langKeys.report)} ${t(langKeys.user_plural)}`}
+                        </Button>
+                    </Box>
+                </Box>)
+                }
             </div>
             {
                 !mainResult.mainData.loading && mainResult.mainData.data.length && (
@@ -2822,7 +2876,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            {datareport.basicfee?datareport.basicfee.toFixed(2):"0.00"}
+                                        $ {datareport.basicfee?datareport.basicfee.toFixed(2):"0.00"}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2839,12 +2893,12 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.useradditionalfee?datareport.useradditionalfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.useradditionalfee?datareport.useradditionalfee.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>                                            
-                                            <div>{datareport.useradditionalcharge ?datareport.useradditionalcharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.useradditionalcharge ?datareport.useradditionalcharge.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2863,14 +2917,14 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.channelwhatsappfee?datareport.channelwhatsappfee.toFixed(2):"0.00"}</div>
-                                            <div>{datareport.channelotherfee?datareport.channelotherfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelwhatsappfee?datareport.channelwhatsappfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelotherfee?datareport.channelotherfee.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.channelwhatsappcharge?datareport.channelwhatsappcharge.toFixed(2):"0.00"}</div>
-                                            <div>{datareport.channelothercharge?datareport.channelothercharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelwhatsappcharge?datareport.channelwhatsappcharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelothercharge?datareport.channelothercharge.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2890,13 +2944,13 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.clientadditionalfee?datareport.clientadditionalfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.clientadditionalfee?datareport.clientadditionalfee.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.clientadditionalcharge?datareport.clientadditionalcharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.clientadditionalcharge?datareport.clientadditionalcharge.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2922,9 +2976,9 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            <div>{datareport.additionalservicefee1?datareport.additionalservicefee1.toFixed(2):"0.00"}</div>
-                                            <div>{datareport.additionalservicefee2?datareport.additionalservicefee2.toFixed(2):"0.00"}</div>
-                                            <div>{datareport.additionalservicefee3?datareport.additionalservicefee3.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.additionalservicefee1?datareport.additionalservicefee1.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.additionalservicefee2?datareport.additionalservicefee2.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.additionalservicefee3?datareport.additionalservicefee3.toFixed(2):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2936,7 +2990,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            {datareport.totalcharge?datareport.totalcharge.toFixed(2):"0.00"}
+                                        $ {datareport.totalcharge?datareport.totalcharge.toFixed(2):"0.00"}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                 </TableBody>
@@ -2991,7 +3045,6 @@ const BillingSetup: FC = () => {
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
     const [dataPlan, setdataPlan] = useState<any>([]);
     const [countryList, setcountryList] = useState<any>([]);
-    console.log(user)
     useEffect(() => {
         if(!multiData.loading && sentfirstinfo){
             setsentfirstinfo(false)
@@ -3008,7 +3061,7 @@ const BillingSetup: FC = () => {
         dispatch(getCountryList())
         dispatch(getMultiCollection([
             getPlanSel(),
-            getOrgSel(0),
+            getOrgSelList(0),
             getCorpSel(0),
         ]));
     },[])

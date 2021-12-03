@@ -22,7 +22,7 @@ import ListAltIcon from '@material-ui/icons/ListAlt';
 import { getChannelListByPerson, getPersonListPaginated, resetGetPersonListPaginated, resetGetChannelListByPerson, getTicketListByPerson, resetGetTicketListByPerson, getLeadsByPerson, resetGetLeadsByPerson, getDomainsByTypename, resetGetDomainsByTypename, resetEditPerson, editPerson, getReferrerListByPerson, resetGetReferrerListByPerson } from 'store/person/actions';
 import { manageConfirmation, showBackdrop, showSnackbar } from 'store/popus/actions';
 import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react-hook-form';
-import { execute, exportData } from 'store/main/actions';
+import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
@@ -122,7 +122,9 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
+                console.log(type)
                 const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
+                console.log(message)
                 dispatch(showSnackbar({ show: true, success: true, message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -474,14 +476,13 @@ export const Person: FC = () => {
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
-        fetchData(fetchDataAux)
-    }, [])
-
-    useEffect(() => {
+        fetchData(fetchDataAux);
+        
         return () => {
             dispatch(resetGetPersonListPaginated());
+            dispatch(resetAllMain());
         };
-    }, [dispatch]);
+    }, [])
 
     useEffect(() => {
         if (!personList.loading && !personList.error) {
@@ -678,6 +679,8 @@ export const Person: FC = () => {
         }
     }, [selectedRows])
 
+    console.log(domains.value?.channels)
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
@@ -685,15 +688,15 @@ export const Person: FC = () => {
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
                         <FieldMultiSelect
-                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.domainvalue).join())}
+                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
                             size="small"
-                            label={t(langKeys.channeltype)}
+                            label={t(langKeys.channel)}
                             style={{ maxWidth: 300, minWidth: 200 }}
                             variant="outlined"
                             loading={domains.loading}
-                            data={(domains.value?.channelTypes || []).filter(x => (domains.value?.channels || []).some(y => y.type === x.domainvalue))}
-                            optionValue="domainvalue"
-                            optionDesc="domaindesc"
+                            data={domains.value?.channels || []}
+                            optionValue="type"
+                            optionDesc="communicationchanneldesc"
                         />
                         <FieldMultiSelect
                             onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}

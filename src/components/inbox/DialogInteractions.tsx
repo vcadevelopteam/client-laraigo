@@ -245,7 +245,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         gap: theme.spacing(1),
         alignItems: 'center',
-        padding: `${theme.spacing(2)}px ${theme.spacing(1)}px`,
+        padding: theme.spacing(1),
         borderBottom: '1px solid #EBEAED',
         cursor: 'pointer',
         '&:hover': {
