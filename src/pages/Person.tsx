@@ -679,6 +679,8 @@ export const Person: FC = () => {
         }
     }, [selectedRows])
 
+    console.log(domains.value?.channels)
+
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
@@ -686,15 +688,15 @@ export const Person: FC = () => {
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
                         <FieldMultiSelect
-                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.domainvalue).join())}
+                            onChange={(value) => setFilterChannelType(value.map((o: any) => o.type).join())}
                             size="small"
-                            label={t(langKeys.channeltype)}
+                            label={t(langKeys.channel)}
                             style={{ maxWidth: 300, minWidth: 200 }}
                             variant="outlined"
                             loading={domains.loading}
-                            data={(domains.value?.channelTypes || []).filter(x => (domains.value?.channels || []).some(y => y.type === x.domainvalue))}
-                            optionValue="domainvalue"
-                            optionDesc="domaindesc"
+                            data={domains.value?.channels || []}
+                            optionValue="type"
+                            optionDesc="communicationchanneldesc"
                         />
                         <FieldMultiSelect
                             onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
