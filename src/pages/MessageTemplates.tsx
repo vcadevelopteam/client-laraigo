@@ -460,13 +460,13 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
         }
     }, [])
 
-    const handleCleanMediaInput = async () => {
+    const handleCleanMediaInput = async (f: string) => {
         const input = document.getElementById('attachmentInput') as HTMLInputElement;
         if (input) {
             input.value = "";
         }
         setFileAttachment(null);
-        setValue('attachment', '');
+        setValue('attachment', getValues('attachment').split(',').filter((a: string) => a !== f).join(','));
         await trigger('attachment');
     }
 
@@ -918,15 +918,15 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                 >
                                     <AttachFileIcon color="primary" />
                                 </IconButton>}
-                                {getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview key={`attachment-${i}`} src={f} onClose={handleCleanMediaInput} />
+                                {!!getValues("attachment") && getValues("attachment").split(',').map((f: string, i: number) => (
+                                    <FilePreview key={`attachment-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
                                 ))}
                                 {waitUploadFile && fileAttachment && <FilePreview key={`attachment-x`} src={fileAttachment} />}
                             </React.Fragment>
                             :
                             <React.Fragment>
                                 {getValues("attachment").split(',').map((f: string, i: number) => (
-                                    <FilePreview key={`attachment-${i}`} src={f} onClose={handleCleanMediaInput} />
+                                    <FilePreview key={`attachment-view-${i}`} src={f} onClose={(f) => handleCleanMediaInput(f)} />
                                 ))}
                             </React.Fragment>
                         }
@@ -939,7 +939,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
 
 interface FilePreviewProps {
     src: File | string;
-    onClose?: () => void;
+    onClose?: (f: string) => void;
 }
 
 const useFilePreviewStyles = makeStyles(theme => ({
@@ -986,7 +986,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
         if (isUrl()) {
             return (src as string).split('.').pop()?.toUpperCase() || "-";
         }
-        return (src as File).name.split('.').pop()?.toUpperCase() || "-";
+        return (src as File).name?.split('.').pop()?.toUpperCase() || "-";
     }, [isUrl, src]);
 
     return (
@@ -1002,7 +1002,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             {!isUrl() && !onClose && <CircularProgress color="primary" />}
             <div className={classes.btnContainer}>
                 {onClose && (
-                    <IconButton size="small" onClick={onClose}>
+                    <IconButton size="small" onClick={() => onClose(src as string)}>
                         <Close />
                     </IconButton>
                 )}
