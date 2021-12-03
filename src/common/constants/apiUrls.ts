@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "LOCAL";
 
 const APIS_URL = {
     DEVELOP: {
@@ -25,7 +25,7 @@ const APIS_URL = {
     LOCAL: {
         API: 'http://localhost:6065/api',
         // WS: 'http://localhost:7070',
-        WS: 'https://broker.laraigo.com',
+        WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1924971937716955'
