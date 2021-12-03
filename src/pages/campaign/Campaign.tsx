@@ -10,7 +10,7 @@ import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, resetMain, getMultiCollection, execute, getCollectionAux } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from 'pages';
 import { Blacklist } from './Blacklist';
@@ -182,7 +182,7 @@ export const Campaign: FC = () => {
             getMessageTemplateSel(0)
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
