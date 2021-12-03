@@ -347,7 +347,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
     useEffect(() => {
         if (waitUploadFile) {
             if (!uploadResult.loading && !uploadResult.error) {
-                setValue('attachment', uploadResult?.url || '')
+                setValue('attachment', [getValues('attachment'), uploadResult?.url || ''].join(','))
                 setWaitUploadFile(false);
             } else if (uploadResult.error) {
                 setWaitUploadFile(false);
@@ -903,7 +903,7 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                     {getValues("type") === 'MAIL' &&
                     <div>
                         <FieldView label={t(langKeys.files)} />
-                        {edit && getValues("attachment") === '' ?
+                        {edit ?
                             <React.Fragment>
                                 <input
                                     accept="file/*"
@@ -912,17 +912,22 @@ const DetailMessageTemplates: React.FC<DetailProps> = ({ data: { row, edit }, se
                                     type="file"
                                     onChange={(e) => onChangeAttachment(e.target.files)}
                                 />
-                                {!fileAttachment && <IconButton
+                                {<IconButton
                                     onClick={onClickAttachment}
-                                    disabled={fileAttachment !== null || waitUploadFile}
+                                    disabled={waitUploadFile}
                                 >
                                     <AttachFileIcon color="primary" />
                                 </IconButton>}
-                                {fileAttachment && <FilePreview src={fileAttachment} />}
+                                {getValues("attachment").split(',').map((f: string, i: number) => (
+                                    <FilePreview key={`file${i}`} src={f} onClose={handleCleanMediaInput} />
+                                    ))}
+                                {waitUploadFile && fileAttachment && <FilePreview src={fileAttachment} />}
                             </React.Fragment>
                             :
                             <React.Fragment>
-                                <FilePreview src={getValues("attachment")} onClose={handleCleanMediaInput} />
+                                {getValues("attachment").split(',').map((f: string, i: number) => (
+                                    <FilePreview src={f} onClose={handleCleanMediaInput} />
+                                ))}
                             </React.Fragment>
                         }
                     </div>}
@@ -940,6 +945,7 @@ interface FilePreviewProps {
 const useFilePreviewStyles = makeStyles(theme => ({
     root: {
         backgroundColor: 'white',
+        margin: theme.spacing(1),
         padding: theme.spacing(1),
         borderRadius: 4,
         display: 'flex',
