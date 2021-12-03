@@ -1474,7 +1474,10 @@ export const langKeys = {
     ELIMINADO: 'ELIMINADO', // lead history type
     CLOSEDLEAD: 'CLOSEDLEAD', // lead history type
     ACTIVITYCHANGESTATUS: 'ACTIVITYCHANGESTATUS', // lead history type
-
+    ACTIVITYDONE: 'ACTIVITYDONE',
+    ACTIVITYDISCARD: 'ACTIVITYDISCARD',
+    ACTIVITYUPDATE: 'ACTIVITYUPDATE',
+    
     repeatPassword: 'repeatPassword',
     passwordsMustBeEqual: 'passwordsMustBeEqual',
     noNotification: 'noNotification',

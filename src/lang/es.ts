@@ -1472,6 +1472,9 @@ const translation: LangKeys = {
     ELIMINADO: 'Eliminado',
     CLOSEDLEAD: 'Oportunidad cerrada',
     ACTIVITYCHANGESTATUS: 'Cambio de estado de la actividad',
+    ACTIVITYDONE: 'Actividad programada completada',
+    ACTIVITYDISCARD: 'Actividad programada cancelada',
+    ACTIVITYUPDATE: 'Actividad actualizada',
 
     repeatPassword: 'Repetir contraseña',
     passwordsMustBeEqual: 'Las contraseñas deben ser iguales',

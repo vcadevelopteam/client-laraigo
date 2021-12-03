@@ -7,7 +7,29 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
 import { Close as CloseIcon } from "@material-ui/icons";
-import { FieldErrors, useForm, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
+import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { getCollection, resetExecute, resetMain } from "store/main/actions";
+import { getReportTemplateSel } from "common/helpers";
+import { useSelector } from "hooks";
+import { graphTypes, groupingType } from "./constants";
+
+interface ReportTemplate {
+    columnjson: string; // array json
+    createdate: string;
+    description: string;
+    filterjson: string; // json
+    reporttemplateid: number;
+    status: string;
+    type: string;
+}
+
+interface ColumnTemplate {
+    filter: string;
+    hasFilter: boolean;
+    key: string;
+    value: string;
+}
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -51,7 +73,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
 }));
 
 interface Item {
-    report: string;
+    reporttemplateid: number;
     grouping: string;
     graph: string;
     column: string;
@@ -63,46 +85,44 @@ interface Items {
 
 const DashboardAdd: FC = () => {
     const classes = useDashboardAddStyles();
+    const dispatch = useDispatch();
     const history = useHistory();
     const now = Date.now().toString();
     const [layout, setLayout] = useState<RGL.Layout[]>([
         {i: now, x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
-        // {i: '1', x: 3, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
-        // {i: '2', x: 6, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
     ]);
+    const reportTemplates = useSelector(state => state.main.mainData);
 
-    const { register, unregister, formState: { errors }, setValue, handleSubmit } = useForm<Items>({
-        defaultValues: {
-            [now]: { report: '', grouping: '', column: '', graph: '' },
-        },
-    });
+    useEffect(() => {
+        dispatch(getCollection(getReportTemplateSel()));
+
+        return () => {
+            resetMain();
+            resetExecute();
+        };
+    }, [dispatch]);
+
+    const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit } = useForm<Items>();
 
     const addItemOnClick = useCallback(() => {
         const newKey = Date.now().toString();
-        setLayout(prevLayout => {
-            setValue(newKey, { report: '', grouping: '', column: '', graph: '' });
-            return [
-                ...prevLayout,
-                {
-                    i: newKey,
-                    x: (prevLayout.length * 3) % 12,
-                    y: Infinity,
-                    w: 3,
-                    h: 2,
-                    minW: 2,
-                    minH: 1,
-                    static: false,
-                },
-            ];
-        });
-    }, [setValue]);
+        setLayout(prev => ([
+            ...prev,
+            {
+                i: newKey,
+                x: (prev.length * 3) % 12,
+                y: Infinity,
+                w: 3,
+                h: 2,
+                minW: 2,
+                minH: 1,
+                static: false,
+            },
+        ]));
+    }, []);
 
     const deleteItemOnClick = useCallback((key: string) => {
-        setLayout(prevLayout => {
-            // unregister
-            // form.setValue(key, undefined);
-            return prevLayout.filter(e => e.i !== key);
-        });
+        setLayout(prev => prev.filter(e => e.i !== key));
     }, []);
 
     const onSubmit = handleSubmit((data) => {
@@ -149,8 +169,11 @@ const DashboardAdd: FC = () => {
                     <div key={e.i}>
                         <LayoutItem
                             layoutKey={e.i}
+                            templates={reportTemplates.data as ReportTemplate[]}
+                            loading={reportTemplates.loading}
                             register={register}
                             unregister={unregister}
+                            getValues={getValues}
                             setValue={setValue}
                             errors={errors}
                             onDelete={() => deleteItemOnClick(e.i)}
@@ -164,7 +187,10 @@ const DashboardAdd: FC = () => {
 
 interface LayoutItemProps {
     layoutKey: string;
+    templates: ReportTemplate[];
+    loading?: boolean;
     errors: FieldErrors<Items>;
+    getValues: UseFormGetValues<Items>;
     setValue: UseFormSetValue<Items>;
     register: UseFormRegister<Items>;
     unregister: UseFormUnregister<Items>;
@@ -193,27 +219,48 @@ const useLayoutItemStyles = makeStyles(theme => ({
     },
 }));
 
-const LayoutItem: FC<LayoutItemProps> = ({ layoutKey: key, errors, setValue, register, unregister, onDelete }) => {
+const LayoutItem: FC<LayoutItemProps> = ({
+    layoutKey: key,
+    loading = false,
+    templates = [],
+    errors,
+    getValues,
+    setValue,
+    register,
+    unregister,
+    onDelete,
+}) => {
     const classes = useLayoutItemStyles();
     const { t } = useTranslation();
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const [columns, setColumns] = useState<ColumnTemplate[]>([]);
 
     useEffect(() => {
         const mandatoryStrField = (value: string) => {
             return !value || value.length === 0 ? t(langKeys.field_required) : undefined;
         }
 
-        register(`${key}.report`, { validate: mandatoryStrField/*, value: {}*/ });
-        register(`${key}.grouping`, { validate: mandatoryStrField });
-        register(`${key}.graph`, { validate: mandatoryStrField });
-        register(`${key}.column`, { validate: mandatoryStrField });
+        const mandatoryNumField = (value: number) => {
+            return value === 0 ? t(langKeys.field_required) : undefined;
+        }
+
+        register(`${key}.reporttemplateid`, { validate: mandatoryNumField, value: 0 });
+        register(`${key}.grouping`, { validate: mandatoryStrField, value: '' });
+        register(`${key}.graph`, { validate: mandatoryStrField, value: '' });
+        register(`${key}.column`, { validate: mandatoryStrField, value: '' });
 
         return () => {
-            unregister(`${key}.report`);
-            unregister(`${key}.grouping`);
-            unregister(`${key}.graph`);
-            unregister(`${key}.column`);
+            unregister(key);
         };
     }, [register, unregister, t, key]);
+
+    useEffect(() => {
+        if (selectedIndex === -1) {
+            setColumns([]);
+            return;
+        }
+        setColumns(JSON.parse(templates[selectedIndex].columnjson) as ColumnTemplate[]);
+    }, [selectedIndex, templates]);
 
     return (
         <div className={classes.root}>
@@ -222,32 +269,50 @@ const LayoutItem: FC<LayoutItemProps> = ({ layoutKey: key, errors, setValue, reg
             </IconButton>
             <FieldSelect
                 label="Reporte"
-                data={[{key: '1'}]}
-                optionDesc="key"
-                optionValue="key"
-                onChange={v => setValue(`${key}.report`, v)}
-                error={errors[key]?.report?.message}
+                data={templates}
+                optionDesc="description"
+                optionValue="reporttemplateid"
+                valueDefault={getValues(`${key}.reporttemplateid`)}
+                onChange={(v: ReportTemplate) => {
+                    const reporttemplateid = v?.reporttemplateid || 0;
+                    setSelectedIndex(!v ? -1 : templates.findIndex(e => e === v));
+                    setValue(`${key}.reporttemplateid`, reporttemplateid);
+                    if (reporttemplateid === 0) {
+                        setValue(`${key}.column`, '');
+                    }
+                }}
+                error={errors[key]?.reporttemplateid?.message}
+                disabled={loading}
             />
             <FieldSelect
                 label="Agrupamiento"
-                data={[]}
-                optionDesc=""
-                optionValue=""
+                data={groupingType}
+                optionDesc="key"
+                optionValue="key"
+                valueDefault={getValues(`${key}.grouping`)}
+                onChange={(v: typeof groupingType[number]) => setValue(`${key}.grouping`, v?.key || '')}
                 error={errors[key]?.grouping?.message}
+                disabled={loading}
             />
             <FieldSelect
                 label="Tipo de grafico"
-                data={[]}
-                optionDesc=""
-                optionValue=""
+                data={graphTypes}
+                optionDesc="key"
+                optionValue="key"
+                valueDefault={getValues(`${key}.graph`)}
+                onChange={(v: typeof graphTypes[number]) => setValue(`${key}.graph`, v?.key || '')}
                 error={errors[key]?.graph?.message}
+                disabled={loading}
             />
             <FieldSelect
                 label="Column"
-                data={[]}
-                optionDesc=""
-                optionValue=""
+                data={columns}
+                optionDesc="key"
+                optionValue="value"
+                valueDefault={getValues(`${key}.column`)}
+                onChange={(v: ColumnTemplate) => setValue(`${key}.column`, v?.value || '')}
                 error={errors[key]?.column?.message}
+                disabled={loading || columns.length === 0}
             />
         </div>
     );
