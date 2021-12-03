@@ -92,4 +92,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.DATA_EXPORT_DYNAMIC_SUCCESS]: caseFunctions.exportDataDynamicSuccess,
     [actionTypes.DATA_EXPORT_DYNAMIC_FAILURE]: caseFunctions.exportDataDynamicFailure,
     [actionTypes.DATA_EXPORT_DYNAMIC_RESET]: caseFunctions.exportDataDynamicReset,
+    [actionTypes.RESET_ALL]: caseFunctions.resetAll,
 });

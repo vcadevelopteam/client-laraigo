@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList } from "./components";
-import { getMultiCollection, resetMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
+import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
 import { useHistory } from "react-router";
@@ -114,7 +114,7 @@ const CRM: FC = () => {
           getCommChannelLst(),
       ]));
       return () => {
-          dispatch(resetMain());
+          dispatch(resetAllMain());
       };
   }, [dispatch]);
 

@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import { uploadFile } from 'store/main/actions';
 import {
-    getCollection, resetMain, getMultiCollection,
+    getCollection, resetAllMain, getMultiCollection,
     execute, getCollectionAux, resetMainAux, getMultiCollectionAux
 } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
@@ -1101,7 +1101,7 @@ const Users: FC = () => {
             getRolesByOrg(), //formulario orguser
         ]));
         return () => {
-            dispatch(resetMain());
+            dispatch(resetAllMain());
         };
     }, []);
 

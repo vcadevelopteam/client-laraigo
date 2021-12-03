@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { setUserType, emitEvent } from 'store/inbox/actions';
 import { useDispatch } from 'react-redux';
 import InboxPanel from 'components/inbox/InboxPanel'
-import { getMultiCollection } from 'store/main/actions';
+import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getMessageTemplateSel, getValuesFromDomain, getListUsers, getClassificationLevel1, getListQuickReply } from 'common/helpers';
 
 const MessageInbox: React.FC = () => {
@@ -21,6 +21,9 @@ const MessageInbox: React.FC = () => {
             getListQuickReply(),
             getMessageTemplateSel(0)
         ]))
+        return () => {
+            dispatch(resetAllMain());
+        };
     }, [])
 
     useEffect(() => {

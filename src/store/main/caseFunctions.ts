@@ -70,8 +70,6 @@ export const mainDynamicReset = (state: IState): IState => ({
     mainDynamic: initialState.mainDynamic,
 });
 
-
-
 export const exportDataDynamic = (state: IState): IState => ({
     ...state,
     exportDynamicData: { ...state.exportDynamicData, loading: true, error: false }
@@ -358,4 +356,8 @@ export const mainPaginatedFailure = (state: IState, action: IAction): IState => 
 export const mainPaginatedReset = (state: IState): IState => ({
     ...state,
     mainPaginated: initialState.mainPaginated,
+});
+
+export const resetAll = (state: IState): IState => ({
+    ...initialState,
 });

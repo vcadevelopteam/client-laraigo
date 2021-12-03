@@ -795,7 +795,7 @@ export const langKeys = {
     successful_close_ticket: 'successful_close_ticket',
     successful_send_hsm: 'successful_send_hsm',
     successful_send_sms: 'successful_send_sms',
-    successful_send_mail: 'successful_send_hsm',
+    successful_send_mail: 'successful_send_mail',
     successful_send_message: 'successful_send_message',
     successful_tipify_ticket: 'successful_tipify_ticket',
     successful_reasign_ticket: 'successful_reasign_ticket',

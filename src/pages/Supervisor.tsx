@@ -12,7 +12,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent } from 'store/inbox/actions';
-import { getMultiCollection } from 'store/main/actions';
+import { getMultiCollection, resetAllMain } from 'store/main/actions';
 import { getValuesFromDomain, getCommChannelLst, getListUsers, getClassificationLevel1, getListQuickReply, getMessageTemplateSel } from 'common/helpers';
 import { setOpenDrawer } from 'store/popus/actions';
 import { langKeys } from 'lang/keys';
@@ -111,7 +111,7 @@ const ChannelTicket: FC<{ channelName: string, channelType: string, color: strin
     </div>
 )
 
-const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
+const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agent: { name, userid, image, isConnected, countPaused, countClosed, countNotAnwsered, countPending, countAnwsered, channels } }) => {
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -130,7 +130,7 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                     }}
                     variant="dot"
                 >
-                    <Avatar>{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
+                    <Avatar src={image || undefined} >{name?.split(" ").reduce((acc, item) => acc + (acc.length < 2 ? item.substring(0, 1).toUpperCase() : ""), "")}</Avatar>
                 </BadgeGo>
                 <div>
                     <div className={classes.agentName}>{name}</div>
@@ -143,7 +143,6 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
                 </div>
             </div>
             <div className={classes.counterCount}>
-
                 {(userid === 2 || userid === 3) &&
                     <CountTicket
                         label={t(langKeys.active) + "s"}
@@ -285,6 +284,9 @@ const Supervisor: FC = () => {
             getMessageTemplateSel(0),
             getCommChannelLst(),
         ]))
+        return () => {
+            dispatch(resetAllMain());
+        };
     }, [])
 
     useEffect(() => {
