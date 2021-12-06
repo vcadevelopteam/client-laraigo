@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -2086,3 +2086,18 @@ export const billinguserreportsel = ({ corpid,orgid,year,month}: Dictionary): IR
     key: "UFN_BILLING_REPORT_USER",
     parameters: {  corpid,orgid,year,month}
 })
+
+export const getDashboardTemplateSel = (dashboardtemplateId: number | string = 0) => ({
+    method: "UFN_DASHBOARDTEMPLATE_SEL",
+    key: "UFN_DASHBOARDTEMPLATE_SEL",
+    parameters: {
+        id: dashboardtemplateId,
+        all: dashboardtemplateId === 0 || dashboardtemplateId === '0',
+    },
+});
+
+export const getDashboardTemplateIns = (parameters: DashboardTemplateSave) => ({
+    method: "UFN_DASHBOARDTEMPLATE_INS",
+    key: "UFN_DASHBOARDTEMPLATE_INS",
+    parameters,
+});

@@ -16,3 +16,4 @@ export * from './entities/setting';
 export * from './entities/domain';
 export * from './entities/channel';
 export * from './entities/lead';
+export * from './entities/dashboardtemplate';
