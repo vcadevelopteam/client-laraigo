@@ -2308,6 +2308,8 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
             {
                 Header: t(langKeys.priority),
                 accessor: 'priority',
+                type: "select",
+                listSelectFilter: [{ key: t(langKeys.priority_low), value: "LOW" }, { key: t(langKeys.priority_medium), value: "MEDIUM" }, { key: t(langKeys.priority_high), value: "HIGH" }],
                 Cell: (props: any) => {
                     const { priority } = props.cell.row.original;
                     return (

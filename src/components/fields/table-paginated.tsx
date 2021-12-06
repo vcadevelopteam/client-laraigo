@@ -228,8 +228,11 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     return (
         <div style={{ display: 'flex', alignItems: 'center' }}>
-            {type === 'boolean'
-                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
+            {type === 'boolean' ?
+                <BooleanOptionsMenuComponent
+                    value={value}
+                    handleClickItemMenu={handleClickItemMenu}
+                />
                 : <React.Fragment>
                     {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
                     {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
@@ -450,7 +453,7 @@ const TableZyx = React.memo(({
             triggertmp();
             autoRefresh?.callback(false);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [autoRefresh])
 
     useEffect(() => {

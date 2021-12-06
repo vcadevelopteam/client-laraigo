@@ -29,7 +29,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
-import { TableConfig } from '@types'
+import { Dictionary, TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -171,8 +171,9 @@ export const booleanOptionsMenu = [
     { key: 'isnotnull', value: 'isnotnull' },
 ];
 
-export const BooleanOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+export const BooleanOptionsMenuComponent: React.FC<{ value: any; handleClickItemMenu: (key: any) => void }> = ({ value, handleClickItemMenu }) => {
     const { t } = useTranslation();
+
     return (
         <Select
             value={value || 'all'}
@@ -181,6 +182,26 @@ export const BooleanOptionsMenuComponent = (value: any, handleClickItemMenu: (ke
             {booleanOptionsMenu.map((option) => (
                 <MenuItem key={option.key} value={option.key}>
                     {t(option.value)}
+                </MenuItem>
+            ))}
+        </Select>
+    )
+}
+
+export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickItemMenu: (key: any) => void }> = ({ value, data, handleClickItemMenu }) => {
+    const { t } = useTranslation();
+    console.log("valueX", value)
+    return (
+        <Select
+            value={value || 'all'}
+            onChange={(e) => handleClickItemMenu(e.target.value)}
+        >
+            <MenuItem value='all'>
+                {t(langKeys.all)}
+            </MenuItem>
+            {data.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                    {t(option.key)}
                 </MenuItem>
             ))}
         </Select>
@@ -274,8 +295,9 @@ const TableZyx = React.memo(({
     const classes = useStyles();
 
     const DefaultColumnFilter = ({
-        column: { setFilter, type = "string" },
+        column: { setFilter, listSelectFilter = [], type = "string" },
     }: any) => {
+
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
@@ -289,8 +311,13 @@ const TableZyx = React.memo(({
             setoperator(op)
             if (type === 'boolean') {
                 setValue(operator);
+                setFilter({ value, operator, type });
+            } else if (type === "select") {
+                setValue(op);
+                setFilter({ value: op, operator, type });
+            } else {
+                setFilter({ value, operator, type });
             }
-            setFilter({ value, operator, type });
         };
         const handleClickMenu = (event: any) => {
             setAnchorEl(event.currentTarget);
@@ -324,7 +351,11 @@ const TableZyx = React.memo(({
 
         useEffect(() => {
             switch (type) {
-                case "number": case "date": case "datetime-local": case "time":
+                case "number": 
+                case "date": 
+                case "datetime-local": 
+                case "time":
+                case "select":
                     setoperator("equals");
                     break;
                 case "boolean":
@@ -339,54 +370,64 @@ const TableZyx = React.memo(({
 
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
-                {type === 'boolean'
-                    ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
-                    : <React.Fragment>
-                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
-                        {!['date', 'time'].includes(type) &&
-                            <Input
-                                // disabled={loading}
-                                type={type}
-                                style={{ fontSize: '15px', minWidth: '100px' }}
-                                fullWidth
-                                value={value}
-                                onKeyDown={keyPress}
-                                onChange={e => {
-                                    setValue(e.target.value || '');
-                                    if (['date'].includes(type)) {
-                                        setFilter({ value: e.target.value, operator, type });
-                                    }
+                {type === 'boolean' ? (
+                    <BooleanOptionsMenuComponent
+                        value={value}
+                        handleClickItemMenu={handleClickItemMenu}
+                    />)
+                    : (type === "select" ?
+                        <SelectFilterTmp
+                            value={value}
+                            handleClickItemMenu={handleClickItemMenu}
+                            data={listSelectFilter}
+                        /> :
+                        <React.Fragment>
+                            {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                            {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                            {!['date', 'time'].includes(type) &&
+                                <Input
+                                    // disabled={loading}
+                                    type={type}
+                                    style={{ fontSize: '15px', minWidth: '100px' }}
+                                    fullWidth
+                                    value={value}
+                                    onKeyDown={keyPress}
+                                    onChange={e => {
+                                        setValue(e.target.value || '');
+                                        if (['date'].includes(type)) {
+                                            setFilter({ value: e.target.value, operator, type });
+                                        }
+                                    }}
+                                />}
+                            <IconButton
+                                onClick={handleClickMenu}
+                                size="small"
+                            >
+                                <MoreVertIcon
+                                    style={{ cursor: 'pointer' }}
+                                    aria-label="more"
+                                    aria-controls="long-menu"
+                                    aria-haspopup="true"
+                                    color="action"
+                                    fontSize="small"
+                                />
+                            </IconButton>
+                            <Menu
+                                id="long-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleCloseMenu}
+                                PaperProps={{
+                                    style: {
+                                        maxHeight: 48 * 4.5,
+                                        width: '20ch',
+                                    },
                                 }}
-                            />}
-                        <IconButton
-                            onClick={handleClickMenu}
-                            size="small"
-                        >
-                            <MoreVertIcon
-                                style={{ cursor: 'pointer' }}
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                color="action"
-                                fontSize="small"
-                            />
-                        </IconButton>
-                        <Menu
-                            id="long-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleCloseMenu}
-                            PaperProps={{
-                                style: {
-                                    maxHeight: 48 * 4.5,
-                                    width: '20ch',
-                                },
-                            }}
-                        >
-                            {OptionsMenuComponent(type, operator, handleClickItemMenu)}
-                        </Menu>
-                    </React.Fragment>}
+                            >
+                                {OptionsMenuComponent(type, operator, handleClickItemMenu)}
+                            </Menu>
+                        </React.Fragment>)
+                }
             </div>
         );
     }
