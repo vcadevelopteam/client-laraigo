@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, DateRangePicker } from 'components';
+import { TemplateIcons, DateRangePicker } from 'components';
 import { getRecordHSMList, getRecordHSMReport } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -14,6 +14,7 @@ import { getCollection, getCollectionAux, resetAllMain } from 'store/main/action
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
+import ClearIcon from '@material-ui/icons/Clear';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
@@ -26,10 +27,6 @@ interface DetailRecordHSMRecordProps {
     data: RowSelected;
     setViewSelected: (view: string) => void;
 }
-const arrayBread = [
-    { id: "view-1", name: "Record HSM Report" },
-    { id: "view-2", name: "Record HSM Report Detail" }
-];
 
 const format = (date: Date) => date.toISOString().split('T')[0];
 
@@ -162,17 +159,19 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
 
     return (
         <div style={{width: '100%'}}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div>
-                    <TemplateBreadcrumbs
-                        breadcrumbs={arrayBread}
-                        handleClick={setViewSelected}
-                    />
-                </div>
-            </div>
             <div className={classes.containerDetail}>
                 <TableZyx
                     titlemodule={row?.campaigname||`${t(langKeys.recordhsmreport)} ${t(langKeys.detail)}`}
+                    ButtonsElement={() => (
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                    )}
                     columns={columns}
                     data={mainResult.mainAux.data}
                     download={true}
