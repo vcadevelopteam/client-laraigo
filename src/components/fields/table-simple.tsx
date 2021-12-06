@@ -619,7 +619,7 @@ const TableZyx = React.memo(({
     return (
         <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span></span>}
+                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span style={{flex: 1}}></span>}
                 <span className={classes.containerButtons}>
                     {fetchData && (
                         <Tooltip title="Refresh">

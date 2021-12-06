@@ -2806,7 +2806,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 </div>
                 {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
                 <Box width={1} style={{ height: '100%' }}>
-                    <Box style={{display: 'flex'}} justifyContent="end" mb="30px">
+                    <Box style={{display: 'flex'}} justifyContent="end" mb={.5}>
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -3093,32 +3093,32 @@ const BillingSetup: FC = () => {
                 <AntTab label={t(langKeys.periodreport)} />
             </Tabs>
             {pageSelected === 0 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
             {pageSelected === 1 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <ContractedPlanByPeriod dataPlan={dataPlan}/>
                 </div>
             }
             {pageSelected === 2 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <ConversationCost dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 3 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <CostPerPeriod dataPlan={multiData}/>
                 </div>
             }
             {pageSelected === 4 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <CostPerHSMPeriod dataPlan={multiData}/>
                 </div>
             }
             {pageSelected === 5 &&
-                <div style={{ marginTop: 16 }}>
+                <div style={{ marginTop: 8 }}>
                     <PeriodReport dataPlan={multiData}/>
                 </div>
             }
