@@ -745,6 +745,19 @@ export const AntTab = withStyles((theme) => ({
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);
 
+interface AntTabPanelProps {
+    index: number;
+    currentIndex: number;
+}
+
+export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
+    return (
+        <div role="tabpanel" style={{ display: index === currentIndex ? 'block' : 'none' }}>
+            {children}
+        </div>
+    );
+}
+
 export const ListItemSkeleton: React.FC = () => (
     <ListItem style={{ display: 'flex', paddingLeft: 0, paddingRight: 0, paddingBottom: 8 }}>
         <Box style={{ padding: 20, backgroundColor: 'white', display: 'flex', flexDirection: 'column', flexGrow: 1, }}>

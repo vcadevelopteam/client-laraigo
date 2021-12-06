@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -741,7 +741,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                         />
                     )}
                 </Tabs>
-                {tabIndex === 0 && (
+                <AntTabPanel index={0} currentIndex={tabIndex}>
                     <TabPanelLogNote
                         readOnly={isStatusClosed()}
                         loading={saveNote.loading || leadNotes.loading}
@@ -759,8 +759,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             }
                         }}
                     />
-                )}
-                {tabIndex === 1 && (
+                </AntTabPanel>
+                <AntTabPanel index={1} currentIndex={tabIndex}>
                     <TabPanelScheduleActivity
                         readOnly={isStatusClosed()}
                         leadId={edit ? Number(match.params.id) : 0}
@@ -776,13 +776,13 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             }
                         }}
                     />
-                )}
-                {(edit && tabIndex === 2) && (
+                </AntTabPanel>
+                <AntTabPanel index={2} currentIndex={tabIndex}>
                     <TabPanelLeadHistory
                         history={leadHistory.data}
                         loading={leadHistory.loading}
                     />
-                )}
+                </AntTabPanel>
                 {edit === false && (
                     <SelectPersonModal
                         open={openPersonModal}
