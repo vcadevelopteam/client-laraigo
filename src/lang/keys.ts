@@ -230,6 +230,7 @@ export const langKeys = {
     new_report_designer: 'new_report_designer',
     designed_reports: 'designed_reports',
     filters: 'filters',
+    pay: 'pay',
 
     personinformation: 'personinformation',
     ticketinformation: 'ticketinformation',
