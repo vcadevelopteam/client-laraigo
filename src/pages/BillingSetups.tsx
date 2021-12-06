@@ -24,7 +24,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { DownloadIcon } from 'icons';
+import { DownloadIcon, SearchIcon } from 'icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -1624,9 +1624,11 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </div>
                         <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
@@ -1859,7 +1861,8 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
@@ -2096,7 +2099,8 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
@@ -2429,7 +2433,8 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
@@ -2633,7 +2638,8 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
