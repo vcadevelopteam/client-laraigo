@@ -24,7 +24,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { DownloadIcon, SearchIcon } from 'icons';
+import { DownloadIcon } from 'icons';
+import {
+    Search as SearchIcon,
+} from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -798,7 +801,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [pageSelected, setPageSelected] = useState(0);    
+    const [pageSelected, setPageSelected] = useState(0);
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {            
@@ -1027,19 +1030,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactivesupervisors)}
-                            value={getValues("supervisorquantity")}
+                            value={String(getValues("supervisorquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveadvisers)}
-                            value={getValues("asesorquantity")}
+                            value={String(getValues("asesorquantity"))}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveagents)}
-                            value={getValues("userquantity")}
+                            value={String(getValues("userquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1054,7 +1057,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge")}
+                            value={getValues("useradditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1081,12 +1084,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelwhatsappquantity)}
-                            value={getValues("channelwhatsappquantity")}
+                            value={getValues("channelwhatsappquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelwhatsappcharge)}
-                            value={getValues("channelwhatsappcharge")}
+                            value={getValues("channelwhatsappcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1101,19 +1104,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelotherquantity)}
-                            value={getValues("channelotherquantity")}
+                            value={getValues("channelotherquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelothercharge)}
-                            value={getValues("channelothercharge")}
+                            value={getValues("channelothercharge").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge")}
+                            value={getValues("channelcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1130,7 +1133,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientquantity)}
-                            value={getValues("clientquantity")}
+                            value={getValues("clientquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1145,7 +1148,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge")}
+                            value={getValues("clientadditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1154,55 +1157,55 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationquantity)}
-                            value={getValues("conversationquantity")}
+                            value={getValues("conversationquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatquantity)}
-                            value={getValues("conversationcompanywhatquantity")}
+                            value={getValues("conversationcompanywhatquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee")}
+                            value={getValues("conversationcompanywhatfee").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge")}
+                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatquantity)}
-                            value={getValues("conversationclientwhatquantity")}
+                            value={getValues("conversationclientwhatquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee")}
+                            value={getValues("conversationclientwhatfee").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge")}
+                            value={getValues("conversationclientwhatcharge").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge")}
+                            value={getValues("conversationwhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.interactionquantity)}
-                            value={getValues("interactionquantity")}
+                            value={getValues("interactionquantity").toString()}
                         />
                     </div>
                 </div>}
@@ -1414,12 +1417,12 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.hsmquantity)}
-                            value={getValues("hsmquantity")}
+                            value={getValues("hsmquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.wacost)}
-                            value={getValues("hsmcost")}
+                            value={getValues("hsmcost").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1434,14 +1437,14 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.vcacommissioncost)}
-                            value={getValues("hsmutility")}
+                            value={getValues("hsmutility").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.hsmshippingcost)}
-                            value={getValues("hsmcharge")}
+                            value={getValues("hsmcharge").toFixed(2)}
                         />
                     </div>
                 </div>
@@ -1859,6 +1862,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </div>
                         <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2097,6 +2101,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </div>
                         <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2431,6 +2436,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </div>
                         <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2636,6 +2642,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                         </div>
                         <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
