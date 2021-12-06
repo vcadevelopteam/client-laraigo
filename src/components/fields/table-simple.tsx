@@ -122,6 +122,8 @@ const useStyles = makeStyles((theme) => ({
     },
     containerHeader: {
         display: 'block',
+        flexWrap: 'wrap',
+        gap: 8,
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -203,14 +205,14 @@ export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
             <KeyboardTimePicker
                 ampm={false}
-                views={['hours','minutes','seconds']}
+                views={['hours', 'minutes', 'seconds']}
                 format="HH:mm:ss"
                 value={value === '' ? null : value}
                 onChange={(e: any) => handleClickItemMenu(e)}
                 style={{ minWidth: '150px' }}
             />
         </MuiPickersUtilsProvider>
-        
+
     )
 }
 
@@ -278,7 +280,7 @@ const TableZyx = React.memo(({
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState("contains");
-        
+
         const handleCloseMenu = () => {
             setAnchorEl(null);
         };
@@ -316,10 +318,10 @@ const TableZyx = React.memo(({
                     value: date?.toLocaleTimeString(),
                     operator,
                     type
-                })    
+                })
             }
         }
-    
+
         useEffect(() => {
             switch (type) {
                 case "number": case "date": case "datetime-local": case "time":
@@ -334,57 +336,57 @@ const TableZyx = React.memo(({
                     break;
             }
         }, [type]);
-    
+
         return (
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 {type === 'boolean'
-                ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
-                : <React.Fragment>
-                    {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                    {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
-                    {!['date','time'].includes(type) &&
-                    <Input
-                       // disabled={loading}
-                        type={type}
-                        style={{ fontSize: '15px', minWidth: '100px' }}
-                        fullWidth
-                        value={value}
-                        onKeyDown={keyPress}
-                        onChange={e => {
-                            setValue(e.target.value || '');
-                            if (['date'].includes(type)) {
-                                setFilter({ value: e.target.value, operator, type });
-                            }
-                        }}
-                    />}
-                    <IconButton
-                        onClick={handleClickMenu}
-                        size="small"
-                    >
-                        <MoreVertIcon
-                            style={{ cursor: 'pointer' }}
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            color="action"
-                            fontSize="small"
-                        />
-                    </IconButton>
-                    <Menu
-                        id="long-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleCloseMenu}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: '20ch',
-                            },
-                        }}
-                    >
-                        {OptionsMenuComponent(type, operator, handleClickItemMenu)}
-                    </Menu>
-                </React.Fragment>}
+                    ? BooleanOptionsMenuComponent(value, handleClickItemMenu)
+                    : <React.Fragment>
+                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                        {!['date', 'time'].includes(type) &&
+                            <Input
+                                // disabled={loading}
+                                type={type}
+                                style={{ fontSize: '15px', minWidth: '100px' }}
+                                fullWidth
+                                value={value}
+                                onKeyDown={keyPress}
+                                onChange={e => {
+                                    setValue(e.target.value || '');
+                                    if (['date'].includes(type)) {
+                                        setFilter({ value: e.target.value, operator, type });
+                                    }
+                                }}
+                            />}
+                        <IconButton
+                            onClick={handleClickMenu}
+                            size="small"
+                        >
+                            <MoreVertIcon
+                                style={{ cursor: 'pointer' }}
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                color="action"
+                                fontSize="small"
+                            />
+                        </IconButton>
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleCloseMenu}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: '20ch',
+                                },
+                            }}
+                        >
+                            {OptionsMenuComponent(type, operator, handleClickItemMenu)}
+                        </Menu>
+                    </React.Fragment>}
             </div>
         );
     }
@@ -396,7 +398,7 @@ const TableZyx = React.memo(({
             const cellvalue = row.values[id];
             if (cellvalue === null || cellvalue === undefined)
                 return false;
-            if (!(['isempty','isnotempty','isnull','isnotnull'].includes(operator) || type === 'boolean')
+            if (!(['isempty', 'isnotempty', 'isnull', 'isnotnull'].includes(operator) || type === 'boolean')
                 && (value || '') === '')
                 return true;
             switch (type) {
@@ -443,9 +445,9 @@ const TableZyx = React.memo(({
                 case "boolean":
                     switch (operator) {
                         case 'istrue':
-                            return typeof(cellvalue) === 'string' ? cellvalue === 'true' : cellvalue === true;
+                            return typeof (cellvalue) === 'string' ? cellvalue === 'true' : cellvalue === true;
                         case 'isfalse':
-                            return typeof(cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
+                            return typeof (cellvalue) === 'string' ? cellvalue === 'false' : cellvalue === false;
                         case 'isnull':
                             return cellvalue == null;
                         case 'isnotnull':
@@ -619,7 +621,9 @@ const TableZyx = React.memo(({
     return (
         <Box width={1} >
             <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : <span style={{flex: 1}}></span>}
+                {titlemodule ? <span className={classes.title}>{titlemodule}</span> : (<div>
+                    {ButtonsElement && <ButtonsElement />}
+                </div>)}
                 <span className={classes.containerButtons}>
                     {fetchData && (
                         <Tooltip title="Refresh">
@@ -635,7 +639,7 @@ const TableZyx = React.memo(({
                             </Fab>
                         </Tooltip>
                     )}
-                    {ButtonsElement && <ButtonsElement />}
+                    {(ButtonsElement && !!titlemodule) && <ButtonsElement />}
                     {importCSV && (
                         <>
                             <input
@@ -659,7 +663,7 @@ const TableZyx = React.memo(({
                                 </Button>
                             </label>
                             {
-                                handleTemplate && 
+                                handleTemplate &&
                                 <Button
                                     className={classes.button}
                                     variant="contained"
@@ -784,7 +788,7 @@ const TableZyx = React.memo(({
                                                 component="div"
                                                 {...row.getRowProps()}
                                                 hover
-                                                style={{cursor: onClickRow ? 'pointer' : 'default'}}
+                                                style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                             >
                                                 {row.cells.map((cell, i) =>
                                                     <TableCell
