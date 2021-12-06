@@ -347,6 +347,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 success: true,
                 show: true,
             }));
+            dispatch(getLeadActivities(leadActivitySel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1276,7 +1277,10 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                 onClose={() => setOpenDoneModal({ value: false, payload: null })}
                 onNext={() => setOpenModal({ value: true, payload: null })}
                 onSuccess={() => {
-                    if (leadId !== 0) dispatch(getLeadActivities(leadActivitySel(leadId)));
+                    if (leadId !== 0) {
+                        dispatch(getLeadActivities(leadActivitySel(leadId)));
+                        dispatch(getLeadHistory(leadHistorySel(leadId)));
+                    }
                 }}
                 onSubmit={(feedback, action) => {
                     if (action === "DISCARD" || !openDoneModal.payload) return;
