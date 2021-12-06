@@ -636,19 +636,7 @@ const TableZyx = React.memo(({
                                                     })}
                                                     onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
                                                 >
-                                                    {headerGroups[0].headers[i].isComponent ?
-                                                        cell.render('Cell')
-                                                        :
-                                                        (cell.value?.length > 50 ?
-                                                            <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                                                <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                                                    {cell.render('Cell')}
-                                                                </div>
-                                                            </Tooltip>
-                                                            :
-                                                            cell.render('Cell')
-                                                        )
-                                                    }
+                                                    {cell.render('Cell')}
                                                 </TableCell>
                                             )}
                                         </TableRow>
