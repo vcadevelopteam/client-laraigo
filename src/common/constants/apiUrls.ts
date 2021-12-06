@@ -6,21 +6,24 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '1094526090706564',
-        INSTAGRAMAPP: '1924971937716955'
+        INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
         WS: 'https://testsocket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
-        INSTAGRAMAPP: '1924971937716955'
+        INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
         WS: 'https://broker.laraigo.com',
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
-        INSTAGRAMAPP: '1924971937716955'
+        INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -28,7 +31,8 @@ const APIS_URL = {
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '1094526090706564',
-        INSTAGRAMAPP: '1924971937716955'
+        INSTAGRAMAPP: '1924971937716955',
+        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
     }
 }
 
@@ -37,11 +41,13 @@ const WS_URL = APIS_URL[ENV].WS
 const CHATFLOW_URL = APIS_URL[ENV].CHATFLOW
 const FACEBOOKAPP = APIS_URL[ENV].FACEBOOKAPP
 const INSTAGRAMAPP = APIS_URL[ENV].INSTAGRAMAPP
+const CULQIKEY = APIS_URL[ENV].CULQIKEY
 
 export const apiUrls = {
     WS_URL,
     FACEBOOKAPP,
     INSTAGRAMAPP,
+    CULQIKEY,
     TICKET_URL: `${BASE_URL}/main`,
     LOGIN_URL: `${BASE_URL}/auth`,
     CONNECT_INBOX: `${BASE_URL}/auth/connect`,
@@ -85,6 +91,7 @@ export const apiUrls = {
 
     PERSON: `${BASE_URL}/person`,
 
+    CULQI:  `${BASE_URL}/payment`,
 
     CHATFLOW: `${CHATFLOW_URL}`,
 };

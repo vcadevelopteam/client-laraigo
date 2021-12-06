@@ -724,6 +724,7 @@ const translation: LangKeys = {
     file_without_data: 'File without data',
     too_many_records: 'Too many records',
     file_incompatbile_with_previous_one: 'File incompatbile with previous one',
+    pay: 'Pay',
 
     signupstep1title: 'Sign up in less than a minute!',
     signupfacebookbutton: 'Sign up with Facebook',
