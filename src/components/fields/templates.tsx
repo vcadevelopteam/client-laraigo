@@ -752,7 +752,7 @@ interface AntTabPanelProps {
 
 export const AntTabPanel: FC<AntTabPanelProps> = ({ index, currentIndex, children }) => {
     return (
-        <div role="tabpanel" style={{ display: index === currentIndex  ? 'block' : 'none' }}>
+        <div role="tabpanel" style={{ display: index === currentIndex ? 'block' : 'none' }}>
             {children}
         </div>
     );
