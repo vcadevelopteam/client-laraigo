@@ -1,4 +1,4 @@
-import { Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -2086,3 +2086,40 @@ export const billinguserreportsel = ({ corpid,orgid,year,month}: Dictionary): IR
     key: "UFN_BILLING_REPORT_USER",
     parameters: {  corpid,orgid,year,month}
 })
+export const getInputValidationSel = (id: number): IRequestBody => ({
+    method: "UFN_INPUTVALIDATION_SEL",
+    key: "UFN_INPUTVALIDATION_SEL",
+    parameters: {  id}
+})
+export const inputValidationins = ({ id, operation, description, inputvalue, type, status}: Dictionary): IRequestBody => ({
+    method: "UFN_INPUTVALIDATION_INS",
+    key: "UFN_INPUTVALIDATION_INS",
+    parameters: {  id, operation, description, inputvalue, type, status}
+})
+export const getRecordHSMList = ({ startdate,enddate}: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_LST",
+    key: "UFN_HSMHISTORY_LST",
+    parameters: { startdate,enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1}
+})
+export const getRecordHSMReport = ({ campaignname, date}: Dictionary): IRequestBody => ({
+    method: "UFN_HSMHISTORY_REPORT",
+    key: "UFN_HSMHISTORY_REPORT",
+    parameters: { campaignname, date,
+        offset: (new Date().getTimezoneOffset() / 60) * -1}
+})
+
+export const getDashboardTemplateSel = (dashboardtemplateId: number | string = 0) => ({
+    method: "UFN_DASHBOARDTEMPLATE_SEL",
+    key: "UFN_DASHBOARDTEMPLATE_SEL",
+    parameters: {
+        id: dashboardtemplateId,
+        all: dashboardtemplateId === 0 || dashboardtemplateId === '0',
+    },
+});
+
+export const getDashboardTemplateIns = (parameters: DashboardTemplateSave) => ({
+    method: "UFN_DASHBOARDTEMPLATE_INS",
+    key: "UFN_DASHBOARDTEMPLATE_INS",
+    parameters,
+});

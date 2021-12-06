@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, makeStyles } from "@material-ui/core";
+import { Box, Button, IconButton, makeStyles, Modal, Typography, TextField } from "@material-ui/core";
 import paths from "common/constants/paths";
 import { FieldSelect, TemplateBreadcrumbs, TitleDetail } from "components";
 import { FC, useCallback, useEffect, useState } from "react";
@@ -6,13 +6,14 @@ import { useHistory } from "react-router";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { Trans, useTranslation } from "react-i18next";
 import { langKeys } from "lang/keys";
-import { Close as CloseIcon } from "@material-ui/icons";
+import { Close as CloseIcon, Clear as ClearIcon } from "@material-ui/icons";
 import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { getCollection, resetExecute, resetMain } from "store/main/actions";
-import { getReportTemplateSel } from "common/helpers";
+import { execute, getCollection, resetExecute, resetMain } from "store/main/actions";
+import { getDashboardTemplateIns, getReportTemplateSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { graphTypes, groupingType } from "./constants";
+import { showSnackbar } from "store/popus/actions";
 
 interface ReportTemplate {
     columnjson: string; // array json
@@ -56,7 +57,6 @@ const useDashboardAddStyles = makeStyles(theme => ({
         flexDirection: 'column',
         height: 'inherit',
         width: 250,
-        // margin: 6,
     },
     item: {
         backgroundColor: 'blue',
@@ -69,6 +69,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
     header: {
         display: 'flex',
         flexDirection: 'row',
+        gap: '1em',
     },
 }));
 
@@ -84,23 +85,45 @@ interface Items {
 }
 
 const DashboardAdd: FC = () => {
+    const { t } = useTranslation();
     const classes = useDashboardAddStyles();
     const dispatch = useDispatch();
     const history = useHistory();
     const now = Date.now().toString();
+    const [openModal, setOpenModal] = useState(false);
     const [layout, setLayout] = useState<RGL.Layout[]>([
         {i: now, x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
     ]);
     const reportTemplates = useSelector(state => state.main.mainData);
+    const dashboardSave = useSelector(state => state.main.execute);
 
     useEffect(() => {
         dispatch(getCollection(getReportTemplateSel()));
 
         return () => {
-            resetMain();
-            resetExecute();
+            dispatch(resetMain());
+            dispatch(resetExecute());
         };
     }, [dispatch]);
+
+    useEffect(() => {
+        if (dashboardSave.loading) return;
+        if (dashboardSave.error) {
+            const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        } else if (dashboardSave.success === true) {
+            dispatch(showSnackbar({
+                message: "Se guardó el dashboard",
+                success: true,
+                show: true,
+            }));
+            history.push(paths.DASHBOARD);
+        }
+    }, [dashboardSave, history, t, dispatch]);
 
     const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit } = useForm<Items>();
 
@@ -125,9 +148,25 @@ const DashboardAdd: FC = () => {
         setLayout(prev => prev.filter(e => e.i !== key));
     }, []);
 
-    const onSubmit = handleSubmit((data) => {
-        console.log(data);
-    }, e => console.log('errores', e));
+    const onContinue = useCallback(() => {
+        handleSubmit((data) => {
+            console.log(data);
+            setOpenModal(true);
+        }, e => console.log('errores', e))();
+    }, [handleSubmit]);
+
+    const onSubmit = useCallback((description: string) => {
+        const data = getValues();
+        dispatch(execute(getDashboardTemplateIns({
+            id: 0,
+            description,
+            detailjson: JSON.stringify(data),
+            layoutjson: JSON.stringify(layout),
+            status: 'ACTIVO',
+            type: 'NINGUNO',
+            operation: 'INSERT',
+        })));
+    }, [layout, getValues, dispatch]);
 
     return (
         <Box className={classes.root}>
@@ -143,18 +182,27 @@ const DashboardAdd: FC = () => {
                 <div style={{ flexGrow: 1 }} />
                 <Button
                     variant="contained"
+                    type="button"
+                    color="primary"
+                    startIcon={<ClearIcon color="secondary" />}
+                    style={{ backgroundColor: "#FB5F5F" }}
+                    onClick={() => history.push(paths.DASHBOARD)}
+                >
+                    <Trans i18nKey={langKeys.back} />
+                </Button>
+                <Button
+                    variant="contained"
                     color="primary"
                     onClick={addItemOnClick}
                 >
                     <Trans i18nKey={langKeys.add} />
                 </Button>
-                <div style={{ width: '1em' }} />
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={onSubmit}
+                    onClick={onContinue}
                 >
-                    <Trans i18nKey={langKeys.save} />
+                    <Trans i18nKey={langKeys.continue} />
                 </Button>
             </div>
             <div style={{ height: '1em' }} />
@@ -181,7 +229,76 @@ const DashboardAdd: FC = () => {
                     </div>
                 ))}
             </ReactGridLayout>
+            <SubmitModal
+                open={openModal}
+                loading={dashboardSave.loading}
+                onClose={() => setOpenModal(false)}
+                onSubmit={onSubmit}
+            />
         </Box>
+    );
+}
+
+interface SubmitModalProps {
+    open: boolean;
+    loading: boolean;
+    onSubmit: (description: string) => void;
+    onClose: () => void;
+}
+
+const useSubmitModalStyles = makeStyles(theme => ({
+    root: {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: "80%",
+        maxHeight: "80%",
+        width: '80%',
+        backgroundColor: 'white',
+        padding: "16px",
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1em',
+    },
+}));
+
+const SubmitModal: FC<SubmitModalProps> = ({ open, loading, onClose, onSubmit }) => {
+    const classes = useSubmitModalStyles();
+    const [description, setDescription] = useState('');
+
+    return (
+        <Modal
+            open={open}
+            onClose={(_, reason) => {
+                if (loading) return;
+                onClose();
+            }}
+            aria-labelledby="dashboard-submit-modal-title"
+            aria-describedby="dashboard-submit-modal-description"
+        >
+            <Box className={classes.root}>
+                <Typography id="dashboard-submit-modal-title" variant="h6" component="h2">
+                    Descripción
+                </Typography>
+                <TextField
+                    id="dashboard-submit-modal-description"
+                    placeholder="Ingrese la descripción"
+                    value={description}
+                    onChange={e => setDescription(e.target.value)}
+                    InputProps={{ readOnly: loading }}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                    onClick={() => onSubmit(description)}
+                >
+                    <Trans i18nKey={langKeys.save} />
+                </Button>
+            </Box>
+        </Modal>
     );
 }
 

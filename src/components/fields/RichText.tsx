@@ -378,7 +378,7 @@ const InsertImageButton: FC = ({ children }) => {
                 setWaitUploadFile(false);
             }
         }
-    }, [waitUploadFile, upload, dispatch]);
+    }, [waitUploadFile, upload, editor, t, dispatch]);
 
     const clearUrl = useCallback(() => setUrl(''), []);
 

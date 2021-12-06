@@ -590,7 +590,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.name)}
+                                                    placeholder={t(langKeys.label)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
@@ -612,7 +612,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.enterYourName)}
+                                                    placeholder="Placeholder"
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
@@ -632,7 +632,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                                             </Grid>
                                             <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>
                                                 <TextField
-                                                    placeholder={t(langKeys.pleaseEnterYourName)}
+                                                    placeholder={t(langKeys.errorText)}
                                                     variant="outlined"
                                                     size="small"
                                                     fullWidth
@@ -657,7 +657,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
                                 <TextField
-                                    placeholder="regex"
+                                    placeholder={t(langKeys.inputValidation)}
                                     variant="outlined"
                                     size="small"
                                     fullWidth
@@ -677,7 +677,7 @@ const NameTemplate: FC<{ onClose: () => void, title: React.ReactNode, data: ICha
                             </Grid>
                             <Grid item xs={12} sm={9} md={9} lg={9} xl={10}>
                                 <TextField
-                                    placeholder="regex"
+                                    placeholder={t(langKeys.validationOnKeychange)}
                                     variant="outlined"
                                     size="small"
                                     fullWidth
