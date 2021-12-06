@@ -102,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgb(143, 146, 161)'
     },
     fieldsfilter: {
-        width: "100%",
+        width: 220,
     },
 }));
 
@@ -1600,20 +1600,26 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
+                {/* <div>
                     <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+                        
+                    </div>
+                </div> */}
+
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
                                 type="month"
+                                // style={{width: 200}}
                                 variant="outlined"
                                 onChange={(e)=>handleDateChange(e.target.value)}
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label="Plan"
                                 className={classes.fieldsfilter}
@@ -1624,8 +1630,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
+                        
                             <Button
                                 disabled={mainResult.mainData.loading}
                                 variant="contained"
@@ -1636,11 +1641,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
+                    )}
                     // titlemodule={t(langKeys.organization_plural, { count: 2 })}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
@@ -2819,7 +2820,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 </div>
                 {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
                 <Box width={1} style={{ height: '100%' }}>
-                    <Box style={{display: 'flex'}} justifyContent="end" mb="30px">
+                    <Box style={{display: 'flex'}} justifyContent="end" mb={.5}>
                         <Button
                             className={classes.button}
                             variant="contained"
