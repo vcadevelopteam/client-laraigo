@@ -80,11 +80,6 @@ const Dashboard: FC = () => {
     const dashboardtemplates = useSelector(state => state.main.mainData) as IListStatePaginated<DashboardTemplate>;
 
     useEffect(() => {
-        // dispatch(resetMainAux());
-        // dispatch(resetCollectionPaginated());
-        // dispatch(resetMultiMain());
-
-        // dispatch(getCollection(getReportSel('')))
         dispatch(getCollection(getDashboardTemplateSel()));
 
         return () => {
@@ -106,7 +101,7 @@ const Dashboard: FC = () => {
                 show: true,
             }));
         }
-    }, [dashboardtemplates, dispatch]);
+    }, [dashboardtemplates, t, dispatch]);
 
     const handleSelected = (key:string) => {
         setViewSelected(key);
