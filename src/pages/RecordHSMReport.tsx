@@ -113,12 +113,12 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                 NoFilter: true
             },
             {
-                Header: `%${t(langKeys.channel)}`,
+                Header: `${t(langKeys.channel)}`,
                 accessor: 'channel',
                 NoFilter: true
             },
             {
-                Header: `%${t(langKeys.origin)}`,
+                Header: `${t(langKeys.origin)}`,
                 accessor: 'origin',
                 NoFilter: true
             },
@@ -238,12 +238,12 @@ const RecordHSMRecord: FC = () => {
                 NoFilter: true
             },
             {
-                Header: `%${t(langKeys.success)}`,
+                Header: `% ${t(langKeys.success)}`,
                 accessor: 'successp',
                 NoFilter: true
             },
             {
-                Header: `%${t(langKeys.failed)}`,
+                Header: `% ${t(langKeys.failed)}`,
                 accessor: 'failedp',
                 NoFilter: true
             },
