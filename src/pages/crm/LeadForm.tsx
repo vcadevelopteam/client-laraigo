@@ -1838,7 +1838,10 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "REMOVETAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
             case "CLOSEDLEAD": return <CancelIcon width={24} style={{ fill: 'white' }} />;
+            case "ACTIVITYDONE":
+            case "ACTIVITYDISCARD":
             case "ACTIVITYCHANGESTATUS":
+            case "ACTIVITYUPDATE":
             default: return <FlagIcon width={24} style={{ fill: 'white' }} />;
         }
     }, []);

@@ -393,7 +393,7 @@ export const GetIcon: React.FC<IconProps> = ({ channelType, width = 15, height =
     if (channelType === "SMSI") return <SmsIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWIT") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
     if (channelType === "TWMS") return <TwitterIcon width={width} fill={color} stroke={color} height={height} color={color} />
-    console.log(channelType)
+
     return <TelegramIcon style={{ color, width, height }} />
 }
 

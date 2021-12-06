@@ -18,6 +18,11 @@ interface Organization {
     corpdesc: string;
 }
 
+interface Properties {
+    alertTicketNew: boolean | undefined;
+    alertMessageIn: boolean | undefined;
+}
+
 export interface IUser {
     email: string;
     firstname: string;
@@ -36,6 +41,7 @@ export interface IUser {
     image: string | null;
     organizations: Organization[];
     automaticConnection?: boolean;
+    properties: Properties;
     countrycode: string;
     currencysymbol: string;
     pwdchangefirstlogin: boolean;

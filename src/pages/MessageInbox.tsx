@@ -9,23 +9,32 @@ import { getMessageTemplateSel, getValuesFromDomain, getListUsers, getClassifica
 
 const MessageInbox: React.FC = () => {
     const dispatch = useDispatch();
+
     const wsConnected = useSelector(state => state.inbox.wsConnected);
+    const user = useSelector(state => state.login.validateToken.user);
     const aNewTicket = useSelector(state => state.inbox.aNewTicket);
     const aNewMessage = useSelector(state => state.inbox.aNewMessage);
-
+    const [initial, setinitial] = React.useState(true);
     const audioNewTicket = useRef<HTMLAudioElement>(null);
     const audioNewMessage = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        if (aNewTicket !== null) {
-            audioNewTicket.current?.play();
+        if (aNewTicket !== null && !initial) {
+            if (!!user?.properties.alertTicketNew) {
+                audioNewTicket.current?.play();
+            } else {
+                audioNewMessage.current?.play();
+            }
         }
     }, [aNewTicket])
 
     useEffect(() => {
-        if (aNewMessage !== null) {
-            audioNewMessage.current?.play();
+        if (aNewMessage !== null && !initial) {
+            if (!!user?.properties.alertMessageIn) {
+                audioNewMessage.current?.play();
+            }
         }
+        setinitial(false)
     }, [aNewMessage])
 
     useEffect(() => {
@@ -38,6 +47,7 @@ const MessageInbox: React.FC = () => {
             getListQuickReply(),
             getMessageTemplateSel(0)
         ]))
+        setinitial(false)
         return () => {
             dispatch(resetAllMain());
             dispatch(cleanAlerts());

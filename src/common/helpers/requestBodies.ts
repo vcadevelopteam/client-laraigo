@@ -1119,11 +1119,11 @@ export const getTagsChatflow = () => ({
     method: "UFN_CHATFLOW_TAG_SEL",
     parameters: {},
 });
-export const getReportTemplate = (reporttemplateid: number, all: boolean) => ({
+export const getReportTemplateSel = (reporttemplateid = 0) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
     parameters: {
         reporttemplateid,
-        all
+        all: reporttemplateid === 0,
     },
 });
 export const insertReportTemplate = (

@@ -1482,6 +1482,9 @@ const translation: LangKeys = {
     ELIMINADO: 'Deleted',
     CLOSEDLEAD: 'Lead closed',
     ACTIVITYCHANGESTATUS: 'Activity status change',
+    ACTIVITYDONE: 'Scheduled activity completed',
+    ACTIVITYDISCARD: 'Discarded scheduled activity',
+    ACTIVITYUPDATE: 'Activity update',
 
     repeatPassword: 'Repeat password',
     passwordsMustBeEqual: 'Passwords must be equal',
