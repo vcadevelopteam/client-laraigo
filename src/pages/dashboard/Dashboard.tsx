@@ -1,9 +1,9 @@
 import { FC, Fragment, useEffect, useState } from 'react';
-import { Box, Card, CardActionArea, CardContent, CardMedia, Grid, makeStyles, Typography } from '@material-ui/core';
+import { Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getReportSel } from 'common/helpers';
+import { getDashboardTemplateSel } from 'common/helpers';
 import { getCollection, resetMain, resetCollectionPaginated, resetMultiMain, resetMainAux } from 'store/main/actions';
 import { useDispatch } from 'react-redux';
 import { default as DashboardManagerial } from './DashboardManagerial';
@@ -12,6 +12,9 @@ import { default as DashboardOperationalPush } from './DashboardOperationalPush'
 import { TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
+import { useSelector } from 'hooks';
+import { showSnackbar } from 'store/popus/actions';
+import { DashboardTemplate, IListStatePaginated } from '@types';
 
 
 const arrayBread = [
@@ -74,13 +77,10 @@ const Dashboard: FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [viewSelected, setViewSelected] = useState("view-1");
+    const dashboardtemplates = useSelector(state => state.main.mainData) as IListStatePaginated<DashboardTemplate>;
 
     useEffect(() => {
-        // dispatch(resetMainAux());
-        // dispatch(resetCollectionPaginated());
-        // dispatch(resetMultiMain());
-
-        dispatch(getCollection(getReportSel('')))
+        dispatch(getCollection(getDashboardTemplateSel()));
 
         return () => {
             dispatch(resetMainAux());
@@ -91,8 +91,28 @@ const Dashboard: FC = () => {
 
     }, [dispatch]);
 
+    useEffect(() => {
+        if (dashboardtemplates.loading) return;
+        if (dashboardtemplates.error) {
+            const error = t(dashboardtemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [dashboardtemplates, t, dispatch]);
+
     const handleSelected = (key:string) => {
         setViewSelected(key);
+    }
+
+    if (dashboardtemplates.loading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+                <CircularProgress />
+            </div>
+        );
     }
 
     if (viewSelected === "view-1") {
@@ -159,6 +179,26 @@ const Dashboard: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>
+                        {dashboardtemplates.data.map((e, i) => (
+                            <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
+                                <Card>
+                                    <CardActionArea onClick={() => {}}>
+                                        <CardMedia
+                                            component="img"
+                                            height="140"
+                                            className={classes.media}
+                                            image="https://www.datacrm.com/upload/article/b201902121011569.jpg"
+                                            title={e.description}
+                                        />
+                                        <CardContent>
+                                            <Typography gutterBottom variant="h6" component="div">
+                                                {e.description}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
                         <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card style={{ height: '100%', minHeight: 211 }}>
                                 <CardActionArea

@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute,exportData } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, Tabs, TextField } from '@material-ui/core';
+import { Tabs, TextField } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -25,6 +25,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { DownloadIcon } from 'icons';
+import {
+    Search as SearchIcon,
+} from '@material-ui/icons';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -99,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'rgb(143, 146, 161)'
     },
     fieldsfilter: {
-        width: "100%",
+        width: 220,
     },
 }));
 
@@ -798,7 +801,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const [pageSelected, setPageSelected] = useState(0);    
+    const [pageSelected, setPageSelected] = useState(0);
     
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {            
@@ -1027,19 +1030,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactivesupervisors)}
-                            value={getValues("supervisorquantity")}
+                            value={String(getValues("supervisorquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveadvisers)}
-                            value={getValues("asesorquantity")}
+                            value={String(getValues("asesorquantity"))}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveagents)}
-                            value={getValues("userquantity")}
+                            value={String(getValues("userquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1054,7 +1057,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge")}
+                            value={getValues("useradditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1081,12 +1084,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelwhatsappquantity)}
-                            value={getValues("channelwhatsappquantity")}
+                            value={getValues("channelwhatsappquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelwhatsappcharge)}
-                            value={getValues("channelwhatsappcharge")}
+                            value={getValues("channelwhatsappcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1101,19 +1104,19 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelotherquantity)}
-                            value={getValues("channelotherquantity")}
+                            value={getValues("channelotherquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelothercharge)}
-                            value={getValues("channelothercharge")}
+                            value={getValues("channelothercharge").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge")}
+                            value={getValues("channelcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1130,7 +1133,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientquantity)}
-                            value={getValues("clientquantity")}
+                            value={getValues("clientquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1145,7 +1148,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge")}
+                            value={getValues("clientadditionalcharge").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -1154,55 +1157,55 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationquantity)}
-                            value={getValues("conversationquantity")}
+                            value={getValues("conversationquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatquantity)}
-                            value={getValues("conversationcompanywhatquantity")}
+                            value={getValues("conversationcompanywhatquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee")}
+                            value={getValues("conversationcompanywhatfee").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge")}
+                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatquantity)}
-                            value={getValues("conversationclientwhatquantity")}
+                            value={getValues("conversationclientwhatquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee")}
+                            value={getValues("conversationclientwhatfee").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge")}
+                            value={getValues("conversationclientwhatcharge").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge")}
+                            value={getValues("conversationwhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.interactionquantity)}
-                            value={getValues("interactionquantity")}
+                            value={getValues("interactionquantity").toString()}
                         />
                     </div>
                 </div>}
@@ -1414,12 +1417,12 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.hsmquantity)}
-                            value={getValues("hsmquantity")}
+                            value={getValues("hsmquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.wacost)}
-                            value={getValues("hsmcost")}
+                            value={getValues("hsmcost").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1434,14 +1437,14 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         <FieldView
                             className="col-6"
                             label={t(langKeys.vcacommissioncost)}
-                            value={getValues("hsmutility")}
+                            value={getValues("hsmutility").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
                             label={t(langKeys.hsmshippingcost)}
-                            value={getValues("hsmcharge")}
+                            value={getValues("hsmcharge").toFixed(2)}
                         />
                     </div>
                 </div>
@@ -1597,20 +1600,26 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
+                {/* <div>
                     <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+                        
+                    </div>
+                </div> */}
+
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
                                 type="month"
+                                // style={{width: 200}}
                                 variant="outlined"
                                 onChange={(e)=>handleDateChange(e.target.value)}
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label="Plan"
                                 className={classes.fieldsfilter}
@@ -1621,21 +1630,18 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
+                        
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
+                    )}
                     // titlemodule={t(langKeys.organization_plural, { count: 2 })}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
@@ -1830,9 +1836,10 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() =>(
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
@@ -1842,8 +1849,6 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label="Plan"
                                 className={classes.fieldsfilter}
@@ -1854,22 +1859,17 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
-                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    )}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -2067,9 +2067,10 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+                <TableZyx
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
@@ -2079,8 +2080,6 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.country)}
                                 className={classes.fieldsfilter}
@@ -2091,22 +2090,17 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="code"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
-                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    )}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -2364,9 +2358,12 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+                
+
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
@@ -2376,8 +2373,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.corporation)}
                                 className={classes.fieldsfilter}
@@ -2388,8 +2383,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="corpid"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.organization)}
                                 className={classes.fieldsfilter}
@@ -2400,8 +2393,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.billingplan)}
                                 className={classes.fieldsfilter}
@@ -2412,8 +2403,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.supportplan)}
                                 className={classes.fieldsfilter}
@@ -2424,22 +2413,17 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="description"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
-                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    )}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -2592,9 +2576,11 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         return (
             <Fragment>
-                <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        <div style={{flex:1, paddingRight: "10px",}}>
+
+                <TableZyx
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                             <TextField
                                 id="date"
                                 className={classes.fieldsfilter}
@@ -2604,8 +2590,6 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 value={dataMain.datetoshow}
                                 size="small"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.corporation)}
                                 className={classes.fieldsfilter}
@@ -2616,8 +2600,6 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="description"
                                 optionValue="corpid"
                             />
-                        </div>
-                        <div style={{flex:1, paddingRight: "10px",}}>
                             <FieldSelect
                                 label={t(langKeys.organization)}
                                 className={classes.fieldsfilter}
@@ -2628,22 +2610,17 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="orgdesc"
                                 optionValue="orgid"
                             />
-                        </div>
-                        <div style={{flex:1, paddingLeft: 20}}>
                             <Button
+                                disabled={mainResult.mainData.loading}
                                 variant="contained"
                                 color="primary"
-                                style={{ width: "100%", backgroundColor: "#007bff" }}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 onClick={() => search()}
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                    </div>
-                </div>
-
-                <TableZyx
-                    columns={columns}
-                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    )}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -2745,91 +2722,80 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     return (
         <Fragment>
             <div>
-                <div style={{width:"100%", display: "flex", padding: 10}}>
-                    <div style={{flex:1, paddingRight: "10px",}}>
-                        <TextField
-                            id="date"
-                            className={classes.fieldsfilter}
-                            type="month"
-                            variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
-                            value={dataMain.datetoshow}
-                            size="small"
-                        />
-                    </div>
-                    <div style={{flex:1, paddingRight: "10px",}}>
-                        <FieldSelect
-                            label={t(langKeys.corporation)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.corpid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
-                            data={dataCorpList}
-                            optionDesc="description"
-                            optionValue="corpid"
-                        />
-                    </div>
-                    <div style={{flex:1, paddingRight: "10px",}}>
-                        <FieldSelect
-                            label={t(langKeys.organization)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.orgid}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
-                            data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
-                            optionDesc="orgdesc"
-                            optionValue="orgid"
-                        />
-                    </div>
-                    <div style={{flex:1, paddingRight: "10px",}}>
-                        <FieldSelect
-                            label={t(langKeys.totalize)}
-                            className={classes.fieldsfilter}
-                            valueDefault={dataMain.totalize}
-                            variant="outlined"
-                            onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value||0}))}
-                            data={datatotalize}
-                            optionDesc="description"
-                            optionValue="value"
-                        />
-                    </div>
-                    <div style={{flex:1, paddingLeft: 20}}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={!dataMain.totalize}
-                            style={{ width: "100%", backgroundColor: "#007bff" }}
-                            onClick={() => search()}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
+                <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                    <TextField
+                        id="date"
+                        className={classes.fieldsfilter}
+                        type="month"
+                        variant="outlined"
+                        onChange={(e)=>handleDateChange(e.target.value)}
+                        value={dataMain.datetoshow}
+                        size="small"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.corporation)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.corpid}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                        data={dataCorpList}
+                        optionDesc="description"
+                        optionValue="corpid"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.organization)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.orgid}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                        data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                        optionDesc="orgdesc"
+                        optionValue="orgid"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.totalize)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.totalize}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value||0}))}
+                        data={datatotalize}
+                        optionDesc="description"
+                        optionValue="value"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainResult.mainData.loading}
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                        onClick={() => search()}
+                    >{t(langKeys.search)}
+                    </Button>
+                    {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
+                        <Fragment>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"                            
+                                style={{marginRight: 10}}
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataPerson()}
+                                startIcon={<DownloadIcon />}
+                            >
+                                {`${t(langKeys.report)} ${t(langKeys.person)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataUser()}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.user_plural)}`}
+                            </Button>
+                        </Fragment>)
+                    }
                 </div>
-                {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
-                <Box width={1} style={{ height: '100%' }}>
-                    <Box style={{display: 'flex'}} justifyContent="end" mb="30px">
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"                            
-                            style={{marginRight: 10}}
-                            disabled={resExportData.loading}
-                            onClick={() => triggerExportDataPerson()}
-                            startIcon={<DownloadIcon />}
-                        >
-                            {`${t(langKeys.report)} ${t(langKeys.person)}`}
-                        </Button>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={resExportData.loading}
-                            onClick={() => triggerExportDataUser()}
-                            startIcon={<DownloadIcon />}
-                        >{`${t(langKeys.report)} ${t(langKeys.user_plural)}`}
-                        </Button>
-                    </Box>
-                </Box>)
-                }
             </div>
             {
                 !mainResult.mainData.loading && mainResult.mainData.data.length && (

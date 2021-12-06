@@ -29,6 +29,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import ReportPersonalized from 'components/personalizedreport/ReportPersonalized'
 import Heatmap from './Heatmap';
+import RecordHSMRecord from './RecordHSMReport';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -440,6 +441,24 @@ const Reports: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>
+                        <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Card >
+                                <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                                    <CardMedia
+                                        component="img"
+                                        height="140"
+                                        className={classes.media}
+                                        image={'https://www.seekpng.com/png/detail/301-3019211_history-comments-history-icon-png.png'}
+                                        title={t(langKeys.recordhsmreport)}
+                                    />
+                                    <CardContent>
+                                        <Typography gutterBottom variant="h6" component="div">
+                                            {t(langKeys.recordhsmreport)}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
                         {allReports.filter(x => !x.image).map((report, index) => (
                             <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card style={{ position: 'relative' }}>
@@ -550,6 +569,19 @@ const Reports: FC = () => {
                         handleClick={handleSelectedString}
                     />
                     <Heatmap/>
+                </div>
+            </Fragment>
+        )
+    } else if(viewSelected ==="recordhsmreport"){
+        return(
+            
+            <Fragment>
+                <div style={{ width: '100%' }}>
+                    <TemplateBreadcrumbs
+                        breadcrumbs={getArrayBread("recordhsmreport")}
+                        handleClick={handleSelectedString}
+                    />
+                    <RecordHSMRecord/>
                 </div>
             </Fragment>
         )
