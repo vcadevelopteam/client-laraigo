@@ -11,6 +11,7 @@ import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
+import InputIcon from '@material-ui/icons/Input';
 
 interface ItemTileProps extends Omit<BoxProps, 'title'> {
     title: React.ReactNode;
@@ -445,6 +446,21 @@ const Settings: FC = () => {
                                         i18nKey={langKeys.manageClassification}
                                         count={2}
                                         onClick={() => history.push(paths.TIPIFICATIONS)}
+                                    />
+                                }
+                                m={2}
+                            />
+                        </Grid>                        
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <ItemTile
+                                title={<Trans i18nKey={langKeys.inputvalidation} count={2} />}
+                                subtitle={<SubtitleText value={value?.num_inputvalidation} i18nKey={langKeys.inputvalidation} />}
+                                icon={<InputIcon fill="inherit" stroke="inherit" />}
+                                helpText={
+                                    <HelpText
+                                        i18nKey={langKeys.manageInputValidation}
+                                        count={2}
+                                        onClick={() => history.push(paths.INPUTVALIDATION)}
                                     />
                                 }
                                 m={2}
