@@ -578,7 +578,7 @@ const Reports: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread("recordhsmreport")}
+                        breadcrumbs={getArrayBread("Record HSM Report")}
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord/>
