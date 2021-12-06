@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -252,6 +252,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.TIPIFICATIONS}>
 					<Layout mainClasses={classes.main}><Tipifications /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.INPUTVALIDATION}>
+					<Layout mainClasses={classes.main}><InputValidation /></Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.DOMAINS}>
 					<Layout mainClasses={classes.main}><Domains /></Layout>
