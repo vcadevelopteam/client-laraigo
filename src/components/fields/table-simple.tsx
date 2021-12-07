@@ -308,14 +308,15 @@ const TableZyx = React.memo(({
         };
         const handleClickItemMenu = (op: any) => {
             setAnchorEl(null);
-            setoperator(op)
             if (type === 'boolean') {
+                setoperator(op)
                 setValue(operator);
                 setFilter({ value, operator, type });
             } else if (type === "select") {
                 setValue(op);
                 setFilter({ value: op, operator, type });
             } else {
+                setoperator(op)
                 setFilter({ value, operator, type });
             }
         };
@@ -496,6 +497,11 @@ const TableZyx = React.memo(({
                         case 'all':
                         default:
                             return true;
+                    }
+                case "select":
+                    switch (operator) {
+                        default:
+                            return value === 'all' ? true : cellvalue === value;
                     }
                 case "string":
                 default:
