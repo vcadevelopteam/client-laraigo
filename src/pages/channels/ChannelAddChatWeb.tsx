@@ -669,6 +669,7 @@ const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
+const CONTACT = "CONTACT";
 
 const templates: { [x: string]: FieldTemplate } = {
     [FIRSTNAME_FIELD]: {
@@ -800,6 +801,29 @@ const templates: { [x: string]: FieldTemplate } = {
         },
         data: {
             field: "SUPPLYNUMBER",
+            type: "text",
+            required: true,
+            label: "",
+            placeholder: "",
+            validationtext: "",
+            inputvalidation: "",
+            keyvalidation: "",
+        },
+    },
+    [CONTACT]: {
+        text: "Contact",
+        node: (onClose, data) => {
+            return (
+                <NameTemplate
+                    data={data}
+                    onClose={() => onClose(CONTACT)}
+                    key={CONTACT}
+                    title={"Contact"}
+                />
+            );
+        },
+        data: {
+            field: "CONTACT",
             type: "text",
             required: true,
             label: "",

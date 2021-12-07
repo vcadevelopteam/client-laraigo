@@ -1471,7 +1471,7 @@ const translation: LangKeys = {
 
     NEWLEAD: 'Nueva oportunidad',
     NEWNOTE: 'Nueva nota',
-    NEWACTIVITY: 'Nueva actividad',
+    NEWACTIVITY: 'Nueva actividad programada',
     CHANGESTATUS: 'Cambio de fase',
     SENDHSM: 'HSM enviado',
     SENDMAIL: 'Correo enviado',
