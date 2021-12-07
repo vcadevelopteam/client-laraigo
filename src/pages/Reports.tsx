@@ -448,7 +448,7 @@ const Reports: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://files.slack.com/files-pri/T018Y505ZTK-F02PHSA0KM4/enviocomunicaciones.png'}
+                                        image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/enviocomunicaciones.png"
                                         title={t(langKeys.recordhsmreport)}
                                     />
                                     <CardContent>
