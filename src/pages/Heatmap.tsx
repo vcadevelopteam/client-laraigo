@@ -141,7 +141,7 @@ const MainHeatMap: React.FC = () => {
         
         data.forEach( (row:any) => {
             
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({
                 ...x, 
@@ -230,7 +230,7 @@ const MainHeatMap: React.FC = () => {
             arrayfree.push(objectfree);
         }
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             let timespent = row.totaldurationxfecha.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
@@ -345,7 +345,7 @@ const MainHeatMap: React.FC = () => {
             arrayfree.push(objectfree);
         }
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             let timespent = row.userfirstreplytimexfecha.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
@@ -460,7 +460,7 @@ const MainHeatMap: React.FC = () => {
             arrayfree.push(objectfree);
         }
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             let timespent = row.useraveragereplytimexfecha.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
@@ -575,7 +575,7 @@ const MainHeatMap: React.FC = () => {
             arrayfree.push(objectfree);
         }
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             let timespent = row.personaveragereplytimexfecha.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
@@ -863,7 +863,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         arrayfree.push(objectlast)
         
         data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
                 ...x, 
@@ -944,7 +944,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         arrayfree.push(objectlast)
         let listasesores = listadvisers.map((x:any) => x.userdesc);
         data.filter((x:any) => listasesores.includes(x.asesor)).forEach((row:any) => {
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
                 ...x, 
@@ -1015,7 +1015,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         let rowmax = 100;
 
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: row.tasaabandonosxasesor}) : x) 
         })
@@ -1080,7 +1080,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         arrayfree.push(objectlast)
         
         data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
                 ...x, 
@@ -1153,7 +1153,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
 
         data.forEach((row:any)=>{
             let efectividad = row.efectividadxasesor == null? 0: row.efectividadxasesor;
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({...x, [`day${day}`]: efectividad}) : x) 
         })
@@ -1412,7 +1412,7 @@ const HeatMapTicket: React.FC = () => {
         }
 
         data.forEach((row:any)=>{
-            const day = new Date(row.fecha).getDate();
+            const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.value}) : x) 
             rowmax = row.value>rowmax ? row.value:rowmax;
