@@ -1,4 +1,4 @@
-import { IActionCall, ICrmLeadNoteSave, IRequestBody } from "@types";
+import { IActionCall, ICrmLeadNoteSave, IRequestBody, ITransaction } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -14,8 +14,8 @@ export const getLead = (body: IRequestBody): IActionCall => ({
 
 export const resetGetLead = (): IActionCall => ({type: actionTypes.GET_LEAD_RESET});
 
-export const saveLead = (body: IRequestBody): IActionCall => ({
-    callAPI: () => CommonService.main(body),
+export const saveLead = (body: IRequestBody | ITransaction, transaction: boolean = false): IActionCall => ({
+    callAPI: () => CommonService.main(body, transaction),
     types: {
         loading: actionTypes.SAVE_LEAD,
         success: actionTypes.SAVE_LEAD_SUCCESS,
@@ -23,6 +23,32 @@ export const saveLead = (body: IRequestBody): IActionCall => ({
     },
     type: null,
 });
+
+type Url = string;
+export const saveLeadWithFiles = (
+    build: (uploader: (file: File) => Promise<Url>) => Promise<IRequestBody | ITransaction>,
+    transaction: boolean = false,
+): IActionCall => {
+    const uploadCb = async (mediaFile: File): Promise<Url> => {
+        const fd = new FormData();
+        fd.append('file', mediaFile, mediaFile.name);
+        const uploadResult = await CommonService.uploadFile(fd);
+        return (uploadResult.data["url"] || '') as Url;
+    };
+
+    return {
+        callAPI: async () => {
+            const requestBody = await build(uploadCb);
+            return CommonService.main(requestBody, transaction);
+        },
+        types: {
+            loading: actionTypes.SAVE_LEAD,
+            success: actionTypes.SAVE_LEAD_SUCCESS,
+            failure: actionTypes.SAVE_LEAD_FAILURE,
+        },
+        type: null,
+    };
+}
 
 export const resetSaveLead = (): IActionCall => ({type: actionTypes.SAVE_LEAD_RESET});
 
