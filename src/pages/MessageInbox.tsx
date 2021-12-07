@@ -21,8 +21,16 @@ const MessageInbox: React.FC = () => {
     useEffect(() => {
         if (aNewTicket !== null && !initial) {
             if (!!user?.properties.alertTicketNew) {
+                audioNewTicket.current?.pause();
+                if (audioNewTicket.current) {
+                    audioNewTicket.current.currentTime = 0;
+                }
                 audioNewTicket.current?.play();
             } else {
+                audioNewMessage.current?.pause();
+                if (audioNewMessage.current) {
+                    audioNewMessage.current.currentTime = 0;
+                }
                 audioNewMessage.current?.play();
             }
         }
@@ -31,6 +39,10 @@ const MessageInbox: React.FC = () => {
     useEffect(() => {
         if (aNewMessage !== null && !initial) {
             if (!!user?.properties.alertMessageIn) {
+                audioNewMessage.current?.pause();
+                if (audioNewMessage.current) {
+                    audioNewMessage.current.currentTime = 0;
+                }
                 audioNewMessage.current?.play();
             }
         }
