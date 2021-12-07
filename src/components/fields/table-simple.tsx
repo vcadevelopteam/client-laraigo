@@ -193,10 +193,10 @@ export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickIte
     console.log("valueX", value)
     return (
         <Select
-            value={value || 'all'}
+            value={value || '_ALL'}
             onChange={(e) => handleClickItemMenu(e.target.value)}
         >
-            <MenuItem value='all'>
+            <MenuItem value='_ALL'>
                 {t(langKeys.all)}
             </MenuItem>
             {data.map((option) => (
@@ -501,7 +501,7 @@ const TableZyx = React.memo(({
                 case "select":
                     switch (operator) {
                         default:
-                            return value === 'all' ? true : cellvalue === value;
+                            return value === '_ALL' ? true : cellvalue === value;
                     }
                 case "string":
                 default:
