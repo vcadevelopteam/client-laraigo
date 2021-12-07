@@ -477,7 +477,7 @@ export const Person: FC = () => {
     useEffect(() => {
         dispatch(getDomainsByTypename());
         fetchData(fetchDataAux);
-        
+
         return () => {
             dispatch(resetGetPersonListPaginated());
             dispatch(resetAllMain());
@@ -1040,7 +1040,7 @@ export const PersonDetail: FC = () => {
             const values = getValues();
             const callback = () => {
                 const payload = editPersonBody(values);
-                
+
                 dispatch(editPerson(payload.parameters.personid ? payload : {
                     header: editPersonBody({ ...person, ...values }),
                     detail: [
@@ -2306,6 +2306,23 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
                 accessor: 'phase',
             },
             {
+                Header: t(langKeys.priority),
+                accessor: 'priority',
+                type: "select",
+                listSelectFilter: [{ key: t(langKeys.priority_low), value: "LOW" }, { key: t(langKeys.priority_medium), value: "MEDIUM" }, { key: t(langKeys.priority_high), value: "HIGH" }],
+                Cell: (props: any) => {
+                    const { priority } = props.cell.row.original;
+                    return (
+                        <Rating
+                            name="simple-controlled"
+                            max={3}
+                            defaultValue={urgencyLevels.findIndex(x => x === priority)}
+                            readOnly={true}
+                        />
+                    )
+                }
+            },
+            {
                 Header: t(langKeys.status),
                 accessor: 'status'
             },
@@ -2332,8 +2349,6 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
                 accessor: 'datenote',
                 NoFilter: true,
                 NoSort: true,
-                width: 300,
-                minWidth: 300,
                 Cell: (props: any) => {
                     const { datenote, leadnote, dateactivity, leadactivity } = props.cell.row.original;
                     return (

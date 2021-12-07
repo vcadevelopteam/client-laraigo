@@ -26,7 +26,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme } from '@material-ui/core';
+import { FormControlLabel, FormHelperText, OutlinedInputProps, Radio, RadioGroup, RadioGroupProps, useTheme, TypographyVariant } from '@material-ui/core';
 import { Divider, Grid, ListItem, ListItemText, styled } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -142,8 +142,13 @@ export const TemplateBreadcrumbs: React.FC<TemplateBreadcrumbsProps> = ({ breadc
     );
 }
 
-export const TitleDetail: React.FC<{ title: React.ReactNode }> = ({ title }) => (
-    <Typography style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
+interface TitleDetailProps {
+    title: React.ReactNode;
+    variant?: TypographyVariant;
+}
+
+export const TitleDetail: React.FC<TitleDetailProps> = ({ title, variant }) => (
+    <Typography variant={variant} style={{ fontSize: 32 }} color="textPrimary">{title}</Typography>
 )
 
 export const Title: React.FC = ({ children }) => {

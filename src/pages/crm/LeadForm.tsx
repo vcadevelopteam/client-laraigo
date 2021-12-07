@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, updateLeadTags } from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction } from 'store/lead/actions';
 import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
@@ -22,7 +22,7 @@ import { getPersonListPaginated, resetGetPersonListPaginated } from 'store/perso
 import clsx from 'clsx';
 import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon, Cancel as CancelIcon, Note as NoteIcon, LocalOffer as LocalOfferIcon, LowPriority as LowPriorityIcon, Star as StarIcon, History as HistoryIcon } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
-import { execute, executeWithFiles, getCollection, resetExecute, resetMain } from 'store/main/actions';
+import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
 
@@ -124,7 +124,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const saveNote = useSelector(state => state.lead.saveLeadNote);
     const leadActivities = useSelector(state => state.lead.leadActivities);
     const leadNotes = useSelector(state => state.lead.leadLogNotes);
-    const saveLead = useSelector(state => state.main.execute);
+    const saveLead = useSelector(state => state.lead.saveLead);
     const leadHistory = useSelector(state => state.lead.leadHistory);
     const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
 
@@ -173,9 +173,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const onSubmit = handleSubmit((data) => {
         console.log(data);
         if (edit) {
-            dispatch(execute(insLead2(data, data.operation), false));
+            dispatch(saveLeadAction(insLead2(data, data.operation), false));
         } else {
-            dispatch(executeWithFiles(async (uploader) => {
+            dispatch(saveLeadWithFiles(async (uploader) => {
                 const notes = (data.notes || []) as ICrmLeadNoteSave[];
                 for (let i = 0; i < notes.length; i++) {
                     if (notes[i].media && typeof notes[i].media === "object") {
@@ -210,7 +210,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getLeadPhases(getColumnsSel(0, true)));
 
         return () => {
-            dispatch(resetExecute());
             dispatch(resetGetLead());
             dispatch(resetSaveLead());
             dispatch(resetGetPersonListPaginated());
@@ -280,6 +279,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, dispatch]);
 
     useEffect(() => {
+        console.log(saveLead);
         if (saveLead.loading) return;
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -483,6 +483,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <TitleDetail
+                            variant="h1"
                             title={edit ?
                                 (
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
