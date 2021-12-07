@@ -448,7 +448,7 @@ const Reports: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://www.seekpng.com/png/detail/301-3019211_history-comments-history-icon-png.png'}
+                                        image={'https://files.slack.com/files-pri/T018Y505ZTK-F02PHSA0KM4/enviocomunicaciones.png'}
                                         title={t(langKeys.recordhsmreport)}
                                     />
                                     <CardContent>
