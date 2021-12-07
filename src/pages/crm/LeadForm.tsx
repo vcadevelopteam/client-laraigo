@@ -483,6 +483,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
 
                     <div style={{ display: 'flex', gap: '10px', flexDirection: 'row' }}>
                         <TitleDetail
+                            variant="h1"
                             title={edit ?
                                 (
                                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
