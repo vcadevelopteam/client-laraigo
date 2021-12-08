@@ -669,7 +669,7 @@ const PHONE_FIELD = "PHONE_FIELD";
 const EMAIL_FIELD = "EMAIL_FIELD";
 const DOCUMENT_FIELD = "DOCUMENT_FIELD";
 const SUPPLYNUMBER_FIELD = "SUPPLYNUMBER_FIELD";
-const CONTACT = "CONTACT";
+const CONTACT = "CONTACT_FIELD";
 
 const templates: { [x: string]: FieldTemplate } = {
     [FIRSTNAME_FIELD]: {
@@ -873,7 +873,7 @@ const TabPanelForm: FC<{ form: UseFormReturn<IChatWebAdd> }> = ({ form }) => {
         }
         return temp;
     }
-
+    console.log(fields)
     return (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Grid container direction="column">
