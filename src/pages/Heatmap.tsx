@@ -245,7 +245,7 @@ const MainHeatMap: React.FC = () => {
                         let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
-                        let ss= secondstotalnum-hh*3600-mm*60
+                        let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                         x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
                         
                     }
@@ -360,7 +360,7 @@ const MainHeatMap: React.FC = () => {
                         let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
-                        let ss= secondstotalnum-hh*3600-mm*60
+                        let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                         x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
                         
                     }
@@ -475,7 +475,7 @@ const MainHeatMap: React.FC = () => {
                         let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
-                        let ss= secondstotalnum-hh*3600-mm*60
+                        let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                         x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
                         
                     }
@@ -590,7 +590,7 @@ const MainHeatMap: React.FC = () => {
                         let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
-                        let ss= secondstotalnum-hh*3600-mm*60
+                        let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                         x["totalcol"] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
                         
                     }
