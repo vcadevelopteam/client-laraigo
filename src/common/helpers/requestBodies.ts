@@ -2007,6 +2007,14 @@ export const getPlanSel = (): IRequestBody => ({
     key: "UFN_SUPPORTPLAN_SEL",
     parameters: { }
 })
+export const getPaymentPlanSel = (): IRequestBody => ({
+    method: "UFN_PAYMENTPLAN_SEL",
+    key: "UFN_PAYMENTPLAN_SEL",
+    parameters: { 
+        code:0,
+        all:true
+    }
+})
 
 export const getBillingSupportSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_SEL",

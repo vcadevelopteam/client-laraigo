@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -38,6 +38,12 @@ interface DetailSupportPlanProps {
     setViewSelected: (view: string) => void;
     fetchData: () => void,
     dataPlan: any[];
+}
+interface DetailSupportPlanProps2 {
+    data: RowSelected;
+    setViewSelected: (view: string) => void;
+    fetchData: () => void,
+    dataPlan: any;
 }
 
 const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
@@ -419,7 +425,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         <FieldEdit
-                            label={t(langKeys.description)}
+                            label="Plan"
                             onChange={(value) => setValue('description', value)}
                             valueDefault={getValues('description')}
                             error={errors?.description?.message}
@@ -437,13 +443,13 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                     </div>
                     <div className="row-zyx">
                         <FieldSelect
-                            label="Plan"
+                            label={t(langKeys.supportplan)}
                             className="col-6"
                             valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan',value.description)}
+                            onChange={(value) => setValue('plan',value.plan)}
                             data={dataPlan}
-                            optionDesc="description"
-                            optionValue="description"
+                            optionDesc="plan"
+                            optionValue="plan"
                             error={errors?.plan?.message}
                         />
                         <FieldEdit
@@ -795,7 +801,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
         </div>
     );
 }
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
@@ -803,6 +809,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
     const { t } = useTranslation();
     const [pageSelected, setPageSelected] = useState(0);
     
+    
+    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
+    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {            
             corpid: row?.corpid||0,
@@ -988,11 +998,11 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             className="col-6"
                             valueDefault={getValues("billingplan")}
                             variant="outlined"
-                            onChange={(value) => setValue('billingplan',value.description)}
-                            data={dataPlan}
+                            onChange={(value) => setValue('billingplan',value.plan)}
+                            data={dataPaymentPlanList}
                             error={errors?.billingplan?.message}
-                            optionDesc="description"
-                            optionValue="description"
+                            optionDesc="plan"
+                            optionValue="plan"
                         />
                         <FieldSelect
                             label={t(langKeys.supportplan)}
@@ -1000,7 +1010,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, ed
                             valueDefault={getValues("supportplan")}
                             variant="outlined"
                             onChange={(value) => setValue('supportplan',value.description)}
-                            data={dataPlan}
+                            data={dataPlanList}
                             error={errors?.supportplan?.message}
                             optionDesc="description"
                             optionValue="description"
@@ -1621,7 +1631,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 size="small"
                             />
                             <FieldSelect
-                                label="Plan"
+                                label={t(langKeys.supportplan)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
@@ -1732,7 +1742,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 accessor: 'year',
             },
             {
-                Header: t(langKeys.supportplan),
+                Header: "Plan",
                 accessor: 'plan',
             },
             {
@@ -1854,10 +1864,10 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.plan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.plan||""}))}
                                 data={dataPlan}
-                                optionDesc="description"
-                                optionValue="description"
+                                optionDesc="plan"
+                                optionValue="plan"
                             />
                             <Button
                                 disabled={mainResult.mainData.loading}
@@ -2143,9 +2153,10 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         month: new Date().getMonth() + 1,
     });
 
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
+    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
+    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
 
     function handleDateChange(e: any){
         let datetochange = new Date(e+"-02")
@@ -2398,10 +2409,10 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.billingplan}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value.description:""}))}
-                                data={dataPlanList}
-                                optionDesc="description"
-                                optionValue="description"
+                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value.plan:""}))}
+                                data={dataPaymentPlanList}
+                                optionDesc="plan"
+                                optionValue="plan"
                             />
                             <FieldSelect
                                 label={t(langKeys.supportplan)}
@@ -2439,7 +2450,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 data={rowSelected}
                 setViewSelected={setViewSelected}
                 fetchData={fetchData}
-                dataPlan = {dataPlanList}
+                dataPlan = {dataPlan}
             />
         )
     } else
@@ -3010,11 +3021,13 @@ const BillingSetup: FC = () => {
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:5);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
     const [dataPlan, setdataPlan] = useState<any>([]);
+    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [countryList, setcountryList] = useState<any>([]);
     useEffect(() => {
         if(!multiData.loading && sentfirstinfo){
             setsentfirstinfo(false)
             setdataPlan(multiData.data[0] && multiData.data[0].success? multiData.data[0].data : [])
+            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : [])
         }
     }, [multiData])
     useEffect(() => {
@@ -3029,6 +3042,7 @@ const BillingSetup: FC = () => {
             getPlanSel(),
             getOrgSelList(0),
             getCorpSel(0),
+            getPaymentPlanSel(),
         ]));
     },[])
     return (
@@ -3065,7 +3079,7 @@ const BillingSetup: FC = () => {
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPlan}/>
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
                 </div>
             }
             {pageSelected === 2 &&
