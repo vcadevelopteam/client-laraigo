@@ -60,3 +60,34 @@ export const getDashboardTemplateReset = (state: IState): IState => ({
     ...state,
     dashboardtemplate: initialState.dashboardtemplate,
 });
+
+export const saveDashboardTemplate = (state: IState): IState => ({
+    ...state,
+    dashboardtemplateSave: { ...state.dashboardtemplateSave, loading: true, error: false },
+});
+
+export const saveDashboardTemplateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    dashboardtemplateSave: {
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const saveDashboardTemplateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    dashboardtemplateSave: {
+        success: false,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'saveDashboardTemplateFailure:error',
+        message: action.payload.message || 'Error al guardar el dashboardtemplate',
+    },
+});
+
+export const saveDashboardTemplateReset = (state: IState): IState => ({
+    ...state,
+    dashboardtemplateSave: initialState.dashboardtemplateSave,
+});
+

@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { Box, Button, CircularProgress, makeStyles } from "@material-ui/core";
 import { Clear as ClearIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
@@ -13,8 +13,6 @@ import { showSnackbar } from "store/popus/actions";
 import { getDashboardTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps } from 'recharts';
-import { useCallback } from "react";
-import { useRef } from "react";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -77,7 +75,6 @@ const DashboardLayout: FC = () => {
     }, [dateRange, match.params.id, dispatch]);
 
     useEffect(() => {
-        console.log('dashboardtemplate:', dashboardtemplate);
         if (dashboardtemplate.loading) return;
         if (dashboardtemplate.error) {
             const error = t(dashboardtemplate.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -88,13 +85,11 @@ const DashboardLayout: FC = () => {
             }));
         } else if (dashboardtemplate.value) {
             detailJson.current = JSON.parse(dashboardtemplate.value.detailjson);
-            console.log('detailJson:', detailJson.current);
             setLayout(JSON.parse(dashboardtemplate.value.layoutjson));
         }
     }, [dashboardtemplate, t, dispatch]);
 
     useEffect(() => {
-        console.log('dashboard:', dashboard);
         if (dashboard.loading) return;
         if (dashboard.error) {
             const error = t(dashboard.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -148,7 +143,10 @@ const DashboardLayout: FC = () => {
             <ReactGridLayout
                 className={classes.layout}
                 layout={layout}
-                onLayoutChange={setLayout}
+                onLayoutChange={(l) => {
+                    console.log('onLayoutChange');
+                    setLayout(l);
+                }}
                 cols={12}
                 rowHeight={140}
             >
@@ -189,6 +187,7 @@ const useLayoutItemStyles = makeStyles(theme => ({
     label: {
         fontWeight: 'bold',
         fontSize: 16,
+        paddingBottom: '1em',
     },
     reponsiveContainer: {
         flexGrow: 1,
@@ -205,7 +204,7 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type }) => {
             case 'pie': return <LayoutPie data={dataGraph} className={classes.reponsiveContainer} />;
             default: return null;
         }
-    }, [dataGraph, classes]);
+    }, [dataGraph, type, classes]);
 
     return (
         <div className={classes.root}>
@@ -226,7 +225,7 @@ interface LayoutBarProps extends Omit<ResponsiveContainerProps, 'children'> {
 
 const LayoutBar: FC<LayoutBarProps> = ({ data, ...props }) => {
     return (
-        <ResponsiveContainer aspect={4.0 / 1.0} {...props}>
+        <ResponsiveContainer {...props}>
             <BarChart data={data}>
                 <XAxis dataKey="label" />
                 <YAxis />
