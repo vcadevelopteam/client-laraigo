@@ -255,13 +255,13 @@ const MainHeatMap: React.FC = () => {
             let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
-            let ss= secondstotalnum-hh*3600-mm*60
+            let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
             secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
-            ss= secondstotalnum-hh*3600-mm*60
+            ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
         setaverageHeatMapTMOData(arrayfree)
@@ -370,13 +370,13 @@ const MainHeatMap: React.FC = () => {
             let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
-            let ss= secondstotalnum-hh*3600-mm*60
+            let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
             secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
-            ss= secondstotalnum-hh*3600-mm*60
+            ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
         setheatMapAverageadvisorTMEData(arrayfree)
@@ -485,13 +485,13 @@ const MainHeatMap: React.FC = () => {
             let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
-            let ss= secondstotalnum-hh*3600-mm*60
+            let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
             secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
-            ss= secondstotalnum-hh*3600-mm*60
+            ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
         setuserAverageReplyTimexFechaData(arrayfree)
@@ -600,13 +600,13 @@ const MainHeatMap: React.FC = () => {
             let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
-            let ss= secondstotalnum-hh*3600-mm*60
+            let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
             secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
-            ss= secondstotalnum-hh*3600-mm*60
+            ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
         setpersonAverageReplyTimexFechaData(arrayfree)
