@@ -32,3 +32,15 @@ export const getDashboardTemplate = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetGetDashboardTemplate = (): IActionCall => ({type: actionTypes.GET_DASHBOARDTEMPLATE_RESET});
+
+export const saveDashboardTemplate = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.SAVE_DASHBOARDTEMPLATE,
+        success: actionTypes.SAVE_DASHBOARDTEMPLATE_SUCCESS,
+        failure: actionTypes.SAVE_DASHBOARDTEMPLATE_FAILURE,
+    },
+    type: null,
+});
+
+export const resetSaveDashboardTemplate = (): IActionCall => ({type: actionTypes.SAVE_DASHBOARDTEMPLATE_RESET});

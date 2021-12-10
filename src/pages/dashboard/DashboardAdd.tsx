@@ -9,11 +9,12 @@ import { langKeys } from "lang/keys";
 import { Close as CloseIcon, Clear as ClearIcon } from "@material-ui/icons";
 import { FieldErrors, useForm, UseFormGetValues, UseFormRegister, UseFormSetValue, UseFormUnregister } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { execute, getCollection, resetExecute, resetMain } from "store/main/actions";
+import { getCollection, resetMain } from "store/main/actions";
 import { getDashboardTemplateIns, getReportTemplateSel } from "common/helpers";
 import { useSelector } from "hooks";
 import { graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
+import { resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 
 interface ReportTemplate {
     columnjson: string; // array json
@@ -95,14 +96,14 @@ const DashboardAdd: FC = () => {
         {i: now, x: 0, y: 0, w: 3, h: 2, minW: 2, minH: 1, static: false},
     ]);
     const reportTemplates = useSelector(state => state.main.mainData);
-    const dashboardSave = useSelector(state => state.main.execute);
+    const dashboardSave = useSelector(state => state.dashboard.dashboardtemplateSave);
 
     useEffect(() => {
         dispatch(getCollection(getReportTemplateSel()));
 
         return () => {
             dispatch(resetMain());
-            dispatch(resetExecute());
+            dispatch(resetSaveDashboardTemplate());
         };
     }, [dispatch]);
 
@@ -169,7 +170,7 @@ const DashboardAdd: FC = () => {
 
     const onSubmit = useCallback((description: string) => {
         const data = getValues();
-        dispatch(execute(getDashboardTemplateIns({
+        dispatch(saveDashboardTemplate(getDashboardTemplateIns({
             id: 0,
             description,
             detailjson: JSON.stringify(data),
