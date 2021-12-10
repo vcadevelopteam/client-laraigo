@@ -275,6 +275,7 @@ const Reports: FC = () => {
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const [allReports, setAllReports] = useState<Dictionary[]>([]);
+    const [allReportsToShow, setallReportsToShow] = useState<Dictionary[]>([]);
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
         dispatch(getCollectionAux(getReportTemplateSel()))
@@ -284,14 +285,16 @@ const Reports: FC = () => {
         if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error) {
             if (searchValue === null || searchValue.trim().length === 0) {
                 if (allReports.length === 0) {
-                    setAllReports([...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
+                    const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
                         ...x,
                         columns: x.columnjson ? JSON.parse(x.columnjson) : [],
                         ...(x.filterjson ? JSON.parse(x.filterjson) : {})
-                    }))]);
+                    }))];
+                    setAllReports(rr);
+                    setallReportsToShow(rr);
                 }
             } else {
-                setAllReports([
+                setallReportsToShow([
                     ...allReports.filter(report => !!report.image && t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())),
                     ...allReports.filter(r => !r.image && r.description.toLowerCase().includes(searchValue.toLowerCase())).map(x => ({
                         ...x,
@@ -303,6 +306,9 @@ const Reports: FC = () => {
         }
     }, [searchValue, reportsResult.mainAux, reportsResult.mainData])
 
+    useEffect(() => {
+        setallReportsToShow(allReports);
+    }, [viewSelected])
 
     useEffect(() => {
         dispatch(resetMainAux());
@@ -411,7 +417,7 @@ const Reports: FC = () => {
                 </Box>
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3} >
-                        {allReports.filter(x => !!x.image).map((report, index) => (
+                        {allReportsToShow.filter(x => !!x.image).map((report, index) => (
                             <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card >
                                     <CardActionArea onClick={() => handleSelected(report, report.filters)}>
@@ -467,7 +473,7 @@ const Reports: FC = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>
-                        {allReports.filter(x => !x.image).map((report, index) => (
+                        {allReportsToShow.filter(x => !x.image).map((report, index) => (
                             <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card style={{ position: 'relative' }}>
                                     <CardActionArea
