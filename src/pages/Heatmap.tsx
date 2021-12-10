@@ -239,10 +239,10 @@ const MainHeatMap: React.FC = () => {
             rowmax = seconds>rowmax ? seconds:rowmax;
             let i = 0;
             arrayfree.forEach((x:any) => {
-                    i++;
+                i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -252,13 +252,13 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -357,7 +357,7 @@ const MainHeatMap: React.FC = () => {
                     i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -367,13 +367,13 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -472,7 +472,7 @@ const MainHeatMap: React.FC = () => {
                     i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -482,13 +482,13 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -587,7 +587,7 @@ const MainHeatMap: React.FC = () => {
                     i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -597,13 +597,13 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
