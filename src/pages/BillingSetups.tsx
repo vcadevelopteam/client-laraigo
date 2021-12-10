@@ -156,7 +156,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
         register('operation');
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
         register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
@@ -2085,7 +2085,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.countrycode}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value?value:""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value?.code||""}))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="code"
