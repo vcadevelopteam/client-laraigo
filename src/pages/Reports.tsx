@@ -198,11 +198,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
             <div style={{ height: 10 }}></div>
             {multiData.length > 0 ?
                 <>
-                    {/* <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                        <span className={classes.title}>
-                            {t('report_' + row?.origin)}
-                        </span>
-                    </Box> */}
                     {customReport ?
                         <AssessorProductivity
                             row={row}
@@ -279,25 +274,35 @@ const Reports: FC = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
-
+    const [allReports, setAllReports] = useState<Dictionary[]>([]);
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
         dispatch(getCollectionAux(getReportTemplateSel()))
     };
 
-    const allReports = useMemo(() => {
+    useEffect(() => {
         if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error) {
             if (searchValue === null || searchValue.trim().length === 0) {
-                return [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
-                    ...x,
-                    columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                    ...(x.filterjson ? JSON.parse(x.filterjson) : {})
-                }))];
+                if (allReports.length === 0) {
+                    setAllReports([...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
+                        ...x,
+                        columns: x.columnjson ? JSON.parse(x.columnjson) : [],
+                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
+                    }))]);
+                }
+            } else {
+                setAllReports([
+                    ...allReports.filter(report => !!report.image && t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())),
+                    ...allReports.filter(r => !r.image && r.description.toLowerCase().includes(searchValue.toLowerCase())).map(x => ({
+                        ...x,
+                        columns: x.columnjson ? JSON.parse(x.columnjson) : [],
+                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
+                    }))
+                ])
             }
-            return [...reportsResult.mainData.data.filter(report => t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())), ...reportsResult.mainAux.data.filter(r => r.description.toLowerCase().includes(searchValue.toLowerCase()))]
         }
-        return [];
-    }, [searchValue, reportsResult.mainAux, reportsResult.mainData]);
+    }, [searchValue, reportsResult.mainAux, reportsResult.mainData])
+
 
     useEffect(() => {
         dispatch(resetMainAux());
@@ -367,9 +372,12 @@ const Reports: FC = () => {
         }
     }, [executeRes, waitSave])
 
-    const handleDelete = (row: Dictionary) => {
+    const handleDelete = (row: Dictionary | null) => {
+        setAnchorEl(null)
+        if (!row)
+            return null;
         const callback = () => {
-            dispatch(execute(insertReportTemplate({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.reporttemplateid })));
+            dispatch(execute(insertReportTemplate({ ...row!!, operation: 'DELETE', status: 'ELIMINADO', id: row!!.reporttemplateid })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -380,7 +388,7 @@ const Reports: FC = () => {
         }))
     }
 
-    const handleSelectedString = (key:string) => {
+    const handleSelectedString = (key: string) => {
         setViewSelected(key);
     }
     if (viewSelected === "view-1") {
@@ -460,12 +468,12 @@ const Reports: FC = () => {
                             </Card>
                         </Grid>
                         {allReports.filter(x => !x.image).map((report, index) => (
-                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                            <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                 <Card style={{ position: 'relative' }}>
                                     <CardActionArea
                                         onClick={() => {
-                                            setViewSelected("view-4");
                                             console.log(report)
+                                            setViewSelected("view-4");
                                             setRowReportSelected({ row: report, edit: true });
                                         }}
                                     >
@@ -488,40 +496,40 @@ const Reports: FC = () => {
                                         aria-describedby={`${report?.reporttemplateid}reporttemplate`}
                                         aria-haspopup="true"
                                         style={{ position: 'absolute', right: 0, top: 0 }}
-                                        onClick={(e) => setAnchorEl(e.currentTarget)}
+                                        onClick={(e) => {
+                                            setRowReportSelected({ row: report, edit: true });
+                                            setAnchorEl(e.currentTarget)
+                                        }}
                                     >
                                         <MoreVertIcon />
                                     </IconButton>
                                 </Card>
-                                <Menu
-                                    id={`${report?.reporttemplateid}reporttemplate`}
-                                    anchorEl={anchorEl}
-                                    getContentAnchorEl={null}
-                                    keepMounted
-                                    anchorOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'right',
-                                    }}
-                                    transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                    open={Boolean(anchorEl)}
-                                    onClose={() => setAnchorEl(null)}
-                                >
-                                    <MenuItem
-                                        onClick={() => {
-                                            setAnchorEl(null)
-                                            setViewSelected("view-3");
-                                            setRowReportSelected({ row: report, edit: true });
-                                        }}
-                                    >
-                                        {t(langKeys.edit)}
-                                    </MenuItem>
-                                    <MenuItem onClick={(e) => handleDelete(report)}>{t(langKeys.delete)}</MenuItem>
-                                </Menu>
                             </Grid>
                         ))}
+                        <Menu
+                            anchorEl={anchorEl}
+                            getContentAnchorEl={null}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={Boolean(anchorEl)}
+                            onClose={() => setAnchorEl(null)}
+                        >
+                            <MenuItem
+                                onClick={() => {
+                                    setAnchorEl(null)
+                                    setViewSelected("view-3");
+                                }}
+                            >
+                                {t(langKeys.edit)}
+                            </MenuItem>
+                            <MenuItem onClick={(e) => handleDelete(rowReportSelected?.row)}>{t(langKeys.delete)}</MenuItem>
+                        </Menu>
                         <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card style={{ height: '100%', minHeight: 211 }}>
                                 <CardActionArea
@@ -559,34 +567,34 @@ const Reports: FC = () => {
                 setViewSelected={setViewSelected}
             />
         )
-    } else if(viewSelected ==="heatmap"){
-        return(
-            
+    } else if (viewSelected === "heatmap") {
+        return (
+
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread("Heatmap")}
                         handleClick={handleSelectedString}
                     />
-                    <Heatmap/>
+                    <Heatmap />
                 </div>
             </Fragment>
         )
-    } else if(viewSelected ==="recordhsmreport"){
-        return(
-            
+    } else if (viewSelected === "recordhsmreport") {
+        return (
+
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread("recordhsmreport")}
                         handleClick={handleSelectedString}
                     />
-                    <RecordHSMRecord/>
+                    <RecordHSMRecord />
                 </div>
             </Fragment>
         )
     }
-    
+
     else {
         return (
             <ReportItem

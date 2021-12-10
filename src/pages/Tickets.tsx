@@ -689,7 +689,15 @@ const Tickets = () => {
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
         dispatch(exportData(getTicketExport({
-            filters,
+            filters: {
+                ...filters,
+                ...(filterStatus ? {
+                    estadoconversacion: {
+                        value: filterStatus,
+                        operator: "equals"
+                    }
+                } : {})
+            },
             sorts,
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,

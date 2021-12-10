@@ -1550,7 +1550,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
