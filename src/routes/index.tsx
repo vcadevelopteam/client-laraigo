@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation, DashboardLayout
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -291,6 +291,11 @@ const RouterApp: FC = () => {
 				<ProtectRoute exact path={paths.DASHBOARD_ADD}>
 					<Layout mainClasses={classes.main}>
 						<DashboardAdd />
+					</Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.DASHBOARD_LAYOUT.path}>
+					<Layout mainClasses={classes.main}>
+						<DashboardLayout />
 					</Layout>
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CONFIGURATION}>

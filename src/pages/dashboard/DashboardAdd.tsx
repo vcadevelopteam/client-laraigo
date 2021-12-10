@@ -107,6 +107,18 @@ const DashboardAdd: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
+        if (reportTemplates.loading) return;
+        if (reportTemplates.error) {
+            const error = t(reportTemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [reportTemplates, t, dispatch]);
+
+    useEffect(() => {
         if (dashboardSave.loading) return;
         if (dashboardSave.error) {
             const error = t(dashboardSave.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });

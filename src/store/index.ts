@@ -16,6 +16,7 @@ import settingReducer, { IState as ISetting } from './setting/reducer';
 import activationUserReducer, { IState as IActivationUser } from './activationuser/reducer';
 import leadReducer, { IState as ILead } from './lead/reducer';
 import culqiReducer, { IState as ICulqi } from './culqi/reducer';
+import dashboardReducer, { IState as IDashboard } from './dashboard/reducer';
 
 export interface IRootState {
     ticket: ITicketState;
@@ -32,6 +33,7 @@ export interface IRootState {
     activationuser: IActivationUser;
     lead: ILead;
     culqi: ICulqi;
+    dashboard: IDashboard;
 }
 
 declare global {
@@ -55,6 +57,7 @@ const rootReducer = combineReducers<IRootState>({
     activationuser: activationUserReducer,
     lead: leadReducer,
     culqi: culqiReducer,
+    dashboard: dashboardReducer,
 });
 
 export default function configureStore(preloadedState?: IRootState) {

@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useState } from 'react';
+import { FC, Fragment, useCallback, useEffect, useState } from 'react';
 import { Box, Card, CardActionArea, CardContent, CardMedia, CircularProgress, Grid, makeStyles, Typography } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import { useTranslation } from 'react-i18next';
@@ -103,6 +103,10 @@ const Dashboard: FC = () => {
         }
     }, [dashboardtemplates, t, dispatch]);
 
+    const goToDashboardLayout = useCallback((dashboardtemplateid: number) => {
+        history.push(paths.DASHBOARD_LAYOUT.resolve(dashboardtemplateid));
+    }, [history]);
+
     const handleSelected = (key:string) => {
         setViewSelected(key);
     }
@@ -182,7 +186,7 @@ const Dashboard: FC = () => {
                         {dashboardtemplates.data.map((e, i) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <Card>
-                                    <CardActionArea onClick={() => {}}>
+                                    <CardActionArea onClick={() => goToDashboardLayout(e.dashboardtemplateid)}>
                                         <CardMedia
                                             component="img"
                                             height="140"
