@@ -2,7 +2,7 @@ import { FC, useEffect, useMemo, useState, useCallback } from "react";
 import { Box, Button, CircularProgress, IconButton, makeStyles, Tooltip } from "@material-ui/core";
 import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
-import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate } from "store/dashboard/actions";
+import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
 import { TemplateBreadcrumbs, TitleDetail } from "components";
 import { useHistory, useRouteMatch } from "react-router";
@@ -134,6 +134,11 @@ const DashboardLayout: FC = () => {
                 show: true,
             }));
         } else if (dashboardtemplateDelete.success) {
+            dispatch(showSnackbar({
+                message: "Se eliminó el dashboard",
+                success: true,
+                show: true,
+            }));
             history.push(paths.DASHBOARD);
         }
     }, [dashboardtemplateDelete, history, t, dispatch]);
@@ -152,7 +157,7 @@ const DashboardLayout: FC = () => {
     const onSave = useCallback(() => {
         if (!dashboardtemplate.value) return;
 
-        dispatch(deleteDashboardTemplate(getDashboardTemplateIns({
+        dispatch(saveDashboardTemplate(getDashboardTemplateIns({
             ...dashboardtemplate.value!,
             id: match.params.id,
             operation: 'UPDATE',
@@ -267,11 +272,12 @@ const useLayoutItemStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: '1em',
     },
     label: {
         fontWeight: 'bold',
         fontSize: 16,
-        paddingBottom: '1em',
     },
     reponsiveContainer: {
         flexGrow: 1,
@@ -293,10 +299,10 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
             ...detail,
             [key]: {
                 ...detail![key],
-                graph,
+                graph: newType,
             },
         });
-    }, [graph, canChange, detail, onDetailChange]);
+    }, [graph, canChange, key, detail, onDetailChange]);
 
     const renderGraph = useCallback(() => {
         switch(graph) {
