@@ -91,3 +91,32 @@ export const saveDashboardTemplateReset = (state: IState): IState => ({
     dashboardtemplateSave: initialState.dashboardtemplateSave,
 });
 
+export const deleteDashboardTemplate = (state: IState): IState => ({
+    ...state,
+    dashboardtemplateDelete: { ...state.dashboardtemplateDelete, loading: true, error: false },
+});
+
+export const deleteDashboardTemplateSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    dashboardtemplateDelete: {
+        success: true,
+        loading: false,
+        error: false,
+    },
+});
+
+export const deleteDashboardTemplateFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    dashboardtemplateDelete: {
+        success: false,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'deleteDashboardTemplateFailure:error',
+        message: action.payload.message || 'Error al eliminar el dashboardtemplate',
+    },
+});
+
+export const deleteDashboardTemplateReset = (state: IState): IState => ({
+    ...state,
+    dashboardtemplateDelete: initialState.dashboardtemplateDelete,
+});

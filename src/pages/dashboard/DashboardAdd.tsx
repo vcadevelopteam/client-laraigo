@@ -305,7 +305,7 @@ const SubmitModal: FC<SubmitModalProps> = ({ open, loading, onClose, onSubmit })
                 <Button
                     variant="contained"
                     color="primary"
-                    disabled={loading}
+                    disabled={loading || description.length === 0}
                     onClick={() => onSubmit(description)}
                 >
                     <Trans i18nKey={langKeys.save} />

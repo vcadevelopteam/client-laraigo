@@ -16,12 +16,14 @@ export interface IState {
     dashboard: IObjectState<IDashboardData>;
     dashboardtemplate: IObjectState<DashboardTemplate>;
     dashboardtemplateSave: IProcessState;
+    dashboardtemplateDelete: IProcessState;
 }
 
 export const initialState: IState = {
     dashboard: initialObjectState,
     dashboardtemplate: initialObjectState,
     dashboardtemplateSave: initialProccessState,
+    dashboardtemplateDelete: initialProccessState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -39,4 +41,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SAVE_DASHBOARDTEMPLATE_SUCCESS]: caseFUnctions.saveDashboardTemplateSuccess,
     [actionTypes.SAVE_DASHBOARDTEMPLATE_FAILURE]: caseFUnctions.saveDashboardTemplateFailure,
     [actionTypes.SAVE_DASHBOARDTEMPLATE_RESET]: caseFUnctions.saveDashboardTemplateReset,
+
+    [actionTypes.DELETE_DASHBOARDTEMPLATE]: caseFUnctions.deleteDashboardTemplate,
+    [actionTypes.DELETE_DASHBOARDTEMPLATE_SUCCESS]: caseFUnctions.deleteDashboardTemplateSuccess,
+    [actionTypes.DELETE_DASHBOARDTEMPLATE_FAILURE]: caseFUnctions.deleteDashboardTemplateFailure,
+    [actionTypes.DELETE_DASHBOARDTEMPLATE_RESET]: caseFUnctions.deleteDashboardTemplateReset,
 });
