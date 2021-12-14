@@ -2131,3 +2131,10 @@ export const getDashboardTemplateIns = (parameters: DashboardTemplateSave) => ({
     key: "UFN_DASHBOARDTEMPLATE_INS",
     parameters,
 });
+export const getBillingPeriodCalc = ({ corpid, year, month}: Dictionary) => ({
+    method: "UFN_BILLINGPERIOD_CALC",
+    key: "UFN_BILLINGPERIOD_CALC",
+    parameters:{
+        corpid, year, month, force: true
+    },
+});

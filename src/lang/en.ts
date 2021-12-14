@@ -1323,6 +1323,8 @@ const translation: LangKeys = {
     manageInputValidation: 'Manage input validation',
     manageInputValidation_plural: 'Manage input validations',
     recordhsmreport: "Record HSM report",
+    unitaryprice:"Unit price",
+    calculate:"Calculate",
     parameters:"Parameters",
     manageClassification: 'Manage classification',
     manageClassification_plural: 'Manage classifications',

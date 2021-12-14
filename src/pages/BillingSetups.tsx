@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -23,6 +23,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import clsx from 'clsx';
 import Paper from '@material-ui/core/Paper';
 import { DownloadIcon } from 'icons';
 import {
@@ -82,6 +83,16 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
 }))(TableRow);
 
+function formatNumber(num: number) {
+    if (num)
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+function formatNumberNoDecimals(num: number) {
+    if (num)
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0"
+}
 
 
 const useStyles = makeStyles((theme) => ({
@@ -110,6 +121,9 @@ const useStyles = makeStyles((theme) => ({
     fieldsfilter: {
         width: 220,
     },
+    transparent: {
+        color:"transparent"
+    }
 }));
 
 const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
@@ -2658,6 +2672,8 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainResult = useSelector(state => state.main);
+    const executeCalculate = useSelector(state => state.main.execute);
+    const [waitCalculate, setWaitCalculate] = useState(false);
     const classes = useStyles();        
     const [waitExport, setWaitExport] = useState(false);
     const resExportData = useSelector(state => state.main.exportData);
@@ -2701,7 +2717,21 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             }
             dispatch(showBackdrop(false))
         }
-    }, [mainResult])
+    }, [mainResult.mainData])
+    useEffect(() => {
+        if (waitCalculate) {
+            if (!executeCalculate.loading && !executeCalculate.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                dispatch(showBackdrop(false));
+                setWaitCalculate(false);
+            } else if (executeCalculate.error) {
+                const message = t(executeCalculate.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitCalculate(false);
+            }
+        }
+    }, [executeCalculate,waitCalculate])
 
     const triggerExportDataPerson = () => {
         dispatch(exportData(billingpersonreportsel(dataMain),"BillingPersonReport","excel",true))
@@ -2712,6 +2742,11 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         dispatch(exportData(billinguserreportsel(dataMain),"BillingUserReport","excel",true))
         dispatch(showBackdrop(true));
         setWaitExport(true);
+    };
+    const triggerExportDataCalc = () => {
+        dispatch(showBackdrop(true));
+        dispatch(execute(getBillingPeriodCalc(dataMain)))
+        setWaitCalculate(true);
     };
 
     useEffect(() => {
@@ -2804,12 +2839,21 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.user_plural)}`}
                             </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataCalc()}
+                                //startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.calculate)}`}
+                            </Button>
                         </Fragment>)
                     }
                 </div>
             </div>
             {
-                !mainResult.mainData.loading && mainResult.mainData.data.length && (
+                !mainResult.mainData.loading && (
                 <div style={{width:"100%"}}>
                     <div className={classes.containerDetail}>
                         <div className="row-zyx" >
@@ -2839,7 +2883,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 <TableRow>
                                     <StyledTableCell>Item</StyledTableCell>
                                     <StyledTableCell align="right">{t(langKeys.quantity)}</StyledTableCell>
-                                    <StyledTableCell align="right">{t(langKeys.rate)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.unitaryprice)}</StyledTableCell>
                                     <StyledTableCell align="right">{t(langKeys.amount)}</StyledTableCell>
                                 </TableRow>
                                 </TableHead>
@@ -2853,7 +2897,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                        $ {datareport.basicfee?datareport.basicfee.toFixed(2):"0.00"}
+                                        $ {datareport.basicfee?formatNumber(datareport.basicfee):"0.00"}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2864,18 +2908,18 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.userfreequantity}</div>
-                                            <div>{datareport.useradditionalquantity}</div>
+                                            <div>{formatNumberNoDecimals(datareport.userfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.useradditionalquantity)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.useradditionalfee?datareport.useradditionalfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.useradditionalfee?formatNumber(datareport.useradditionalfee):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>                                            
-                                            <div>$ {datareport.useradditionalcharge ?datareport.useradditionalcharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.useradditionalcharge ?formatNumber(datareport.useradditionalcharge):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2887,21 +2931,21 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.channelfreequantity}</div>
-                                            <div>{datareport.channelwhatsappquantity}</div>
-                                            <div>{datareport.channelotherquantity}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelotherquantity)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappfee?datareport.channelwhatsappfee.toFixed(2):"0.00"}</div>
-                                            <div>$ {datareport.channelotherfee?datareport.channelotherfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelwhatsappfee?formatNumber(datareport.channelwhatsappfee):"0.00"}</div>
+                                            <div>$ {datareport.channelotherfee?formatNumber(datareport.channelotherfee):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.channelwhatsappcharge?datareport.channelwhatsappcharge.toFixed(2):"0.00"}</div>
-                                            <div>$ {datareport.channelothercharge?datareport.channelothercharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.channelwhatsappcharge?formatNumber(datareport.channelwhatsappcharge):"0.00"}</div>
+                                            <div>$ {datareport.channelothercharge?formatNumber(datareport.channelothercharge):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2913,21 +2957,21 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>{datareport.clientfreequantity}</div>
-                                            <div>{datareport.clientquantity}</div>
-                                            <div>{datareport.clientadditionalquantity}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientadditionalquantity)}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.clientadditionalfee?datareport.clientadditionalfee.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.clientadditionalfee?formatNumber(datareport.clientadditionalfee):"0.00"}</div>
                                         </StyledTableCell>
                                         <StyledTableCell align="right">
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
                                             <div style={{color:"transparent"}}>.</div>
-                                            <div>$ {datareport.clientadditionalcharge?datareport.clientadditionalcharge.toFixed(2):"0.00"}</div>
+                                            <div>$ {datareport.clientadditionalcharge?formatNumber(datareport.clientadditionalcharge):"0.00"}</div>
                                         </StyledTableCell>
                                     </StyledTableRow>
                                     <StyledTableRow>
@@ -2939,25 +2983,27 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            {datareport.supportbasicfee?datareport.supportbasicfee.toFixed(2):"0.00"}
+                                            $ {datareport.supportbasicfee?formatNumber(datareport.supportbasicfee):"0.00"}
                                         </StyledTableCell>
                                     </StyledTableRow>
+                                    { (datareport.additionalservicefee1>0 || datareport.additionalservicefee2>0 || datareport.additionalservicefee3>0) &&
                                     <StyledTableRow>
                                         <StyledTableCell >
-                                            <div>{datareport.additionalservicename1}</div>
-                                            <div>{datareport.additionalservicename2}</div>
-                                            <div>{datareport.additionalservicename3}</div>
+                                            {datareport.additionalservicefee1>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename1===""})}>{datareport.additionalservicename1===""?'.':datareport.additionalservicename1}</div>:""}
+                                            {datareport.additionalservicefee2>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename2===""})}>{datareport.additionalservicename2===""?'.':datareport.additionalservicename2}</div>:""}
+                                            {datareport.additionalservicefee3>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename3===""})}>{datareport.additionalservicename3===""?'.':datareport.additionalservicename3}</div>:""}
                                         </StyledTableCell>
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                            <div>$ {datareport.additionalservicefee1?datareport.additionalservicefee1.toFixed(2):"0.00"}</div>
-                                            <div>$ {datareport.additionalservicefee2?datareport.additionalservicefee2.toFixed(2):"0.00"}</div>
-                                            <div>$ {datareport.additionalservicefee3?datareport.additionalservicefee3.toFixed(2):"0.00"}</div>
+                                            {datareport.additionalservicefee1>0? <div>$ {datareport.additionalservicefee1?formatNumber(datareport.additionalservicefee1):"0.00"}</div>:""}
+                                            {datareport.additionalservicefee2>0? <div>$ {datareport.additionalservicefee2?formatNumber(datareport.additionalservicefee2):"0.00"}</div>:""}
+                                            {datareport.additionalservicefee3>0? <div>$ {datareport.additionalservicefee3?formatNumber(datareport.additionalservicefee3):"0.00"}</div>:""}
                                         </StyledTableCell>
                                     </StyledTableRow>
+                                    }
                                     <StyledTableRow>
                                         <StyledTableCell >
                                             <b>{t(langKeys.periodamount)}</b>
@@ -2967,7 +3013,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                         <StyledTableCell >
                                         </StyledTableCell>
                                         <StyledTableCell  align="right">
-                                        $ {datareport.totalcharge?datareport.totalcharge.toFixed(2):"0.00"}
+                                        $ {datareport.totalcharge?formatNumber(datareport.totalcharge):"0.00"}
                                         </StyledTableCell>
                                     </StyledTableRow>
                                 </TableBody>
