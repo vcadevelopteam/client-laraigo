@@ -1431,6 +1431,8 @@ const translation: LangKeys = {
     newLead: 'Nueva oportunidad',
     leadDetail: 'Detalle de la oportunidad',
     logNote: 'Nota de registro',
+    calculate:"Calcular",
+    unitaryprice:"Precio unitario",
     logNote_plural: 'Notas de registro',
     scheduleActivity: 'Programa de actividad',
     scheduleActivity_plural: 'Programa de actividades',
