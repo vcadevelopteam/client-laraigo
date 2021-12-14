@@ -18,7 +18,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { uploadFile } from 'store/main/actions';
 import { updateUserSettings } from 'store/setting/actions';
-
+import CulqiModal from 'components/fields/CulqiModal';
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -132,6 +132,13 @@ const UserSettings: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
+            <CulqiModal
+                type="CHARGE"
+                title="Basic plan"
+                description=""
+                currency="USD"
+                amount={10000}
+            ></CulqiModal>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{
