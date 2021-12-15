@@ -440,8 +440,8 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             ...state.ticketList,
             data: newticketList
         },
-        aNewTicket: data.newConversation ? !(state.aNewTicket || false) : state.aNewTicket,
-        aNewMessage: !data.newConversation ? !(state.aNewMessage || false) : state.aNewMessage,
+        aNewTicket: (data.newConversation && data.usertype !== "agent") ? !(state.aNewTicket || false) : state.aNewTicket,
+        aNewMessage: (!data.newConversation && data.usertype !== "agent") ? !(state.aNewMessage || false) : state.aNewMessage,
         agentList: {
             data: newAgentList,
             count: action.payload.count,
