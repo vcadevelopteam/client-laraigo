@@ -389,6 +389,8 @@ const translation: LangKeys = {
     yes: 'Sí',
     activate360dialog: "Activar como 360 dialog",
     activatesmooch: "Activar como smooch",
+    register360dialog: "Registrar como 360 dialog",
+    registersmooch: "Registrar como smooch",
     whatsapptitle: 'Para conectar un canal de whatsapp debes hacer clic en "Registrar cuenta de Whatsapp" y una vez que termines el registro, ingresar el número y la Clave API en este formulario',
     registerwhats: "Registrar cuenta de Whatsapp",
     whatsappinformation: "Información de Whatsapp",

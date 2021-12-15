@@ -78,6 +78,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
     const [setins, setsetins] = useState(false);
     const [set360, setset360] = useState(false);
     const [setsmooch, setsetsmooch] = useState(false);
+    const [setRegisterSmooch, setSetRegisterSmooch] = useState(false);
+    const [setRegister360, setSetRegister360] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [setParameters, setSetParameters] = useState(true);
    
@@ -285,6 +287,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         dispatch(showBackdrop(true));
         dispatch(activateChannel(fields))
     }
+
     useEffect(() => {
         if(!executeActivationResult.loading && (set360||setsmooch)){
             dispatch(showBackdrop(false));
@@ -297,39 +300,203 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         }
     }, [executeActivationResult]);
 
-    if(viewSelected==="view1"){
-        if(set360){
-            return(
-            <div style={{ width: '100%' }}>
-                <Breadcrumbs aria-label="breadcrumb">
-                    <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
-                        {"<< Previous"}
-                    </Link>
-                </Breadcrumbs>
-                <div>
-                    <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
-
-                    <Button
-                        className={classes.centerbutton}
-                        variant="contained"
-                        color="primary"
-                        disabled={nextbutton}
-                        onClick={activateChannelfunc}
-                    >{t(langKeys.registerwhats)}
-                    </Button>
-                    <div className="row-zyx">
-                        <div className="col-3"></div>
-                        <FieldEdit
-                            onChange={(value) => setService(value, "accesstoken")}
-                            label={t(langKeys.enterapikey)}
-                            className="col-6"
-                        />
+    if (viewSelected==="view1") {
+        if (setRegister360) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+                        {
+                            edit ?
+                            <Button
+                                className={classes.centerbutton}
+                                variant="contained"
+                                color="primary"
+                                disabled={false}
+                                onClick={() => { history.push(paths.CHANNELS) }}
+                                >{t(langKeys.close)}
+                            </Button>
+                            :
+                            <Button
+                                className={classes.centerbutton}
+                                variant="contained"
+                                color="primary"
+                                disabled={nextbutton}
+                                onClick={() => { setViewSelected("viewfinishreg") }}
+                                >{t(langKeys.registerwhats)}
+                            </Button>
+                        }
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => setService(value, "accesstoken")}
+                                label={t(langKeys.enterapikey)}
+                                className="col-6"
+                            />
+                        </div>
+    
                     </div>
-
                 </div>
-            </div>)
-        }else if(setsmooch){
-            return(
+            )
+        }
+        else if (setRegisterSmooch) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+                        {
+                            edit ?
+                            <Button
+                                className={classes.centerbutton}
+                                variant="contained"
+                                color="primary"
+                                disabled={false}
+                                onClick={() => { history.push(paths.CHANNELS) }}
+                                >{t(langKeys.close)}
+                            </Button>
+                            :
+                            <Button
+                                className={classes.centerbutton}
+                                variant="contained"
+                                color="primary"
+                                disabled={nextbutton}
+                                onClick={() => { setViewSelected("viewfinishreg") }}
+                                >{t(langKeys.registerwhats)}
+                            </Button>
+                        }
+                        <div className="row-zyx">
+                            <div style={{width:"100%",padding: "10px 25%"}}>
+                                <TextField
+                                    style={{width:"100%"}}
+                                    onChange={(e) => {
+                                        setApiKeyId(e.target.value, "apikeyid");
+                                        setdisablebutton2(!e.target.value || !fields.service.apikeysecret || !fields.service.appid)
+                                    }}
+                                    variant="outlined"
+                                    label={"Apikey Id"}
+                                />
+                            </div>
+                            <div style={{width:"100%",padding: "10px 25%"}}>
+                                <TextField
+                                    style={{width:"100%"}}
+                                    onChange={(e) => {
+                                        setApiKeySecret(e.target.value, "apikeysecret");
+                                        setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.appid)
+                                    }}
+                                    variant="outlined"
+                                    label={"Apikey Secret"}
+                                />
+                            </div>
+                            <div style={{width:"100%",padding: "10px 25%"}}>
+                                <TextField
+                                    style={{width:"100%"}}
+                                    onChange={(e) => {
+                                        setAppId(e.target.value, "appid");
+                                        setdisablebutton2(!e.target.value || !fields.service.apikeyid || !fields.service.apikeysecret)
+                                    }}
+                                    variant="outlined"
+                                    label={"App Id"}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+        else if (roledesc === "SUPERADMIN" && !edit) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <div style={{ width: '100%' }}>
+                        <Breadcrumbs aria-label="breadcrumb">
+                            <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                                {"<< Previous"}
+                            </Link>
+                        </Breadcrumbs>
+                    </div>
+                    <div style={{ width: "100%", marginTop: "20px", alignItems: "center", display: "flex"}}>
+                        <div style={{ flex: "1", margin: "0px 15px"}}>
+                            <Button
+                                onClick={() => {
+                                    setSetRegister360(true);
+                                
+                                    let partialField = fields;
+                                    partialField.type = "WHATSAPP";
+                                
+                                    setFields(partialField);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.register360dialog)}
+                            </Button>
+                        </div>
+                        <div style={{ flex: "1", margin: "0px 15px"}}>
+                            <Button
+                                onClick={() => {
+                                    setSetRegisterSmooch(true);
+                                
+                                    let partialField = fields;
+                                    partialField.type = "WHATSAPPSMOOCHINSERT";
+                                
+                                    setFields(partialField);
+                                }}
+                                className={classes.button2}
+                                disabled={false}
+                                variant="contained"
+                                color="primary"
+                            >{t(langKeys.registersmooch)}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                
+            )
+        }
+        else if (set360) {
+            return (
+                <div style={{ width: '100%' }}>
+                    <Breadcrumbs aria-label="breadcrumb">
+                        <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
+                            {"<< Previous"}
+                        </Link>
+                    </Breadcrumbs>
+                    <div>
+                        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: "2em", color: "#7721ad", padding: "20px", marginLeft: "auto", marginRight: "auto", maxWidth: "800px" }}>{t(langKeys.whatsapptitle)}</div>
+
+                        <Button
+                            className={classes.centerbutton}
+                            variant="contained"
+                            color="primary"
+                            disabled={nextbutton}
+                            onClick={activateChannelfunc}
+                        >{t(langKeys.registerwhats)}
+                        </Button>
+                        <div className="row-zyx">
+                            <div className="col-3"></div>
+                            <FieldEdit
+                                onChange={(value) => setService(value, "accesstoken")}
+                                label={t(langKeys.enterapikey)}
+                                className="col-6"
+                            />
+                        </div>
+
+                    </div>
+                </div>
+            )
+        }
+        else if (setsmooch) {
+            return (
                 <div style={{ width: '100%' }}>
                     <Breadcrumbs aria-label="breadcrumb">
                         <Link color="textSecondary" key={"mainview"} href="/" onClick={(e) => { e.preventDefault(); history.push(paths.CHANNELS_ADD) }}>
@@ -387,10 +554,11 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                         </div>
     
                     </div>
-                </div>)
+                </div>
+            )
         }    
-        else{
-            if(whatsAppData?.typeWhatsApp==="DIALOG"){
+        else {
+            if (whatsAppData?.typeWhatsApp==="DIALOG") {
                 return (
                     <div style={{ width: '100%' }}>
                         <Breadcrumbs aria-label="breadcrumb">
@@ -432,7 +600,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
         
                         </div>
                         {
-                            roledesc === "SUPERADMIN"?
+                            (roledesc === "SUPERADMIN" && edit) ?
                             <div style={{ width: "100%", alignItems: "center", display: "flex"}}>
                             <div style={{ flex: "1", margin: "0px 15px"}}>
                                 <Button
@@ -458,11 +626,12 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                 </Button>
                             </div>
                             </div>
-                            :""
+                            : ""
                         }
                     </div>
                 )
-            }else{
+            }
+            else {
                 return (
                     <div style={{ width: '100%' }}>
                         <div>    
@@ -699,7 +868,7 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                                         }
                                     </div>
                                     {
-                                        roledesc === "SUPERADMIN"?
+                                        (roledesc === "SUPERADMIN" && edit) ?
                                         <Fragment>
                                         <div style={{ flex: "1", margin: "0px 15px"}}>
                                             <Button
@@ -736,8 +905,8 @@ export const ChannelAddWhatsapp: FC<{ edit: boolean }> = ({ edit }) => {
                 )
             }
         }
-        
-    }else{
+    }
+    else {
         return (
             <div style={{ width: '100%' }}>
                 <Breadcrumbs aria-label="breadcrumb">

@@ -113,6 +113,8 @@ export const langKeys = {
     industry_institution: "industry_institution",
     activate360dialog: "activate360dialog",
     activatesmooch: "activatesmooch",
+    register360dialog: "register360dialog",
+    registersmooch: "registersmooch",
     goback: "goback",
     personAverageReplyTimexFecha: "personAverageReplyTimexFecha",
     desiredphonenumberwhatsappbusiness: "desiredphonenumberwhatsappbusiness",
