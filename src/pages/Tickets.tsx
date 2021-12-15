@@ -470,6 +470,10 @@ const Tickets = () => {
                 Header: t(langKeys.ticket_fecha),
                 accessor: 'fecha',
                 type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fecha.split(" ")[0]
+                }
             },
             {
                 Header: t(langKeys.ticket_firstusergroup),

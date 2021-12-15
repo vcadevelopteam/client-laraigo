@@ -1,4 +1,4 @@
-import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadHistory, ICrmLeadNote, IListState, IObjectState, IProcessState } from "@types";
+import { ICrmColumn, ICrmLead, IcrmLeadActivity, ICrmLeadHistory, ICrmLeadNote, IDomain, IListState, IObjectState, IProcessState } from "@types";
 import { createReducer, initialDisplayState, initialListState, initialObjectState, initialProccessState } from "common/helpers";
 import * as caseFUnctions from './caseFunctions';
 import actionTypes from "./actionTypes";
@@ -17,6 +17,7 @@ export interface IState {
     markDoneActivity: IProcessState;
     leadHistory: IListState<ICrmLeadHistory>;
     updateLeadTags: IProcessState;
+    leadProductsDomain: IListState<IDomain>;
 }
 
 export const initialState: IState = {
@@ -33,6 +34,7 @@ export const initialState: IState = {
     markDoneActivity: initialProccessState,
     leadHistory: initialListState,
     updateLeadTags: initialProccessState,
+    leadProductsDomain: initialListState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -98,4 +100,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UPDATE_LEAD_TAGS_SUCCESS]: caseFUnctions.updateLeadTagsSuccess,
     [actionTypes.UPDATE_LEAD_TAGS_FAILURE]: caseFUnctions.updateLeadTagsFailure,
     [actionTypes.UPDATE_LEAD_TAGS_RESET]: caseFUnctions.updateLeadTagsReset,
+
+    [actionTypes.GET_LEAD_PRODUCTS_DOMAIN]: caseFUnctions.getLeadProductsDomain,
+    [actionTypes.GET_LEAD_PRODUCTS_DOMAIN_SUCCESS]: caseFUnctions.getLeadProductsDomainSuccess,
+    [actionTypes.GET_LEAD_PRODUCTS_DOMAIN_FAILURE]: caseFUnctions.getLeadProductsDomainFailure,
+    [actionTypes.GET_LEAD_PRODUCTS_DOMAIN_RESET]: caseFUnctions.getLeadProductsDomainReset,
 });

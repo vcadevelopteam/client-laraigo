@@ -306,6 +306,14 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
         </DialogZyx>)
 }
 
+const CountTicket: FC<{ label: string, count: string, color: string }> = ({ label, count, color }) => (
+    <div style={{ position: 'relative' }}>
+        <div style={{ color: color, padding: '3px 4px', whiteSpace: 'nowrap', fontSize: '12px' }}>{label}: <span style={{ fontWeight: 'bold' }}>{count}</span></div>
+        <div style={{ backgroundColor: color, width: '100%', height: '24px', opacity: '0.1', position: 'absolute', top: 0, left: 0 }}></div>
+    </div>
+)
+
+
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
@@ -335,20 +343,8 @@ export const Person: FC = () => {
 
     const columns = [
         {
-            Header: t(langKeys.lead),
-            accessor: 'havelead',
-            type: "boolean",
-            Cell: (props: any) => {
-                const { havelead } = props.cell.row.original;
-                if (havelead)
-                    return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
-
-                return <StarIcon color="action" fontSize="small" />
-            }
-        },
-        {
-            Header: t(langKeys.action_plural),
             accessor: 'leadid',
+            isComponent: true,
             Cell: (props: any) => {
                 const person = props.cell.row.original as IPerson;
                 return (
@@ -397,17 +393,34 @@ export const Person: FC = () => {
             }
         },
         {
-            Header: t(langKeys.firstContactDate),
-            accessor: 'firstcontact',
-            type: 'date',
-            sortType: 'datetime',
-            Cell: (props: any) => {
-                const row = props.cell.row.original;
-                return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
-            }
+            Header: t(langKeys.name),
+            accessor: 'name',
         },
         {
-            Header: t(langKeys.firstContactDate),
+            Header: t(langKeys.phone),
+            accessor: 'phone',
+        },
+        {
+            Header: t(langKeys.email),
+            accessor: 'email',
+        },
+        // {
+        //     Header: t(langKeys.name),
+        //     accessor: 'name',
+        // },
+
+        // {
+        //     Header: t(langKeys.firstContactDate),
+        //     accessor: 'firstcontact',
+        //     type: 'date',
+        //     sortType: 'datetime',
+        //     Cell: (props: any) => {
+        //         const row = props.cell.row.original;
+        //         return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
+        //     }
+        // },
+        {
+            Header: t(langKeys.lastContactDate),
             accessor: 'lastcontact',
             type: 'date',
             sortType: 'datetime',
@@ -417,39 +430,85 @@ export const Person: FC = () => {
             }
         },
         {
-            Header: t(langKeys.customer),
-            accessor: 'name',
+            Header: t(langKeys.lastuser),
+            accesor: 'lastuser',
+        },
+        // {
+        //     Header: t(langKeys.lead),
+        //     accessor: 'havelead',
+        //     type: "boolean",
+        //     Cell: (props: any) => {
+        //         const { havelead } = props.cell.row.original;
+        //         if (havelead)
+        //             return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
+
+        //         return <StarIcon color="action" fontSize="small" />
+        //     }
+        // },
+        {
+            Header: t(langKeys.lead),
+            accessor: 'phasejson',
+            type: "select",
+            listSelectFilter: [
+                { key: t(langKeys.new), value: "New" },
+                { key: t(langKeys.qualified), value: "Qualified" },
+                { key: t(langKeys.proposition), value: "Proposition" },
+                { key: t(langKeys.won), value: "Won" },
+                { key: t(langKeys.lost), value: "Lost" },
+            ],
             Cell: (props: any) => {
-                const { name, email, phone, priority, userlead } = props.cell.row.original;
+                const { phasejson } = props.cell.row.original;
+                if (!phasejson)
+                    return null;
                 return (
-                    <div >
-                        <div>{t(langKeys.name)}: {name}</div>
-                        <div>{t(langKeys.email)}: {email}</div>
-                        <div>{t(langKeys.phone)}: {phone}</div>
-                        {priority &&
-                            <>
-                                <Rating
-                                    name="simple-controlled"
-                                    max={3}
-                                    defaultValue={urgencyLevels.findIndex(x => x === priority)}
-                                    readOnly={true}
-                                />
-                                <div>{t(langKeys.assignedTo)}: {userlead}</div>
-                            </>
-                        }
+                    <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
+                        {Object.entries(phasejson).map(([key, value]) => (
+                            <CountTicket
+                                label={key}
+                                count={value + ""}
+                                color="#55BD84"
+                            />
+                        ))}
                     </div>
                 )
+
+                // return <StarIcon color="action" fontSize="small" />
             }
         },
-        {
-            Header: t(langKeys.type),
-            accessor: 'type',
-            prefixTranslation: 'type_persontype_',
-            Cell: (props: any) => {
-                const { type } = props.cell.row.original;
-                return type ? (t(`type_persontype_${type}`.toLowerCase()) || "").toUpperCase() : "";
-            }
-        },
+        // {
+        //     Header: t(langKeys.customer),
+        //     accessor: 'email',
+        //     Cell: (props: any) => {
+        //         const { name, email, phone, priority, userlead } = props.cell.row.original;
+        //         return (
+        //             <div >
+        //                 <div>{t(langKeys.name)}: {name}</div>
+        //                 <div>{t(langKeys.email)}: {email}</div>
+        //                 <div>{t(langKeys.phone)}: {phone}</div>
+        //                 {priority &&
+        //                     <>
+        //                         <Rating
+        //                             name="simple-controlled"
+        //                             max={3}
+        //                             defaultValue={urgencyLevels.findIndex(x => x === priority)}
+        //                             readOnly={true}
+        //                         />
+        //                         <div>{t(langKeys.assignedTo)}: {userlead}</div>
+        //                     </>
+        //                 }
+        //             </div>
+        //         )
+        //     }
+        // },
+        // {
+        //     Header: t(langKeys.type),
+        //     accessor: 'type',
+        //     prefixTranslation: 'type_persontype_',
+        //     Cell: (props: any) => {
+        //         const { type } = props.cell.row.original;
+        //         return type ? (t(`type_persontype_${type}`.toLowerCase()) || "").toUpperCase() : "";
+        //     }
+        // },
         {
             Header: t(langKeys.status),
             accessor: 'status',

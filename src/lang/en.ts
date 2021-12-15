@@ -1453,6 +1453,7 @@ const translation: LangKeys = {
     type_activitylead_call: 'Call',
     'type_activitylead_call for demo': 'Call for demo',
     'type_activitylead_email: welcome demo': 'Email: Welcome demo',
+    lastuser: 'Last user',
     'type_activitylead_follow-up quote': 'Follow-up quote',
     'type_activitylead_make quote': 'Make quote',
     type_activitylead_meeting: 'Meeting',
@@ -1462,6 +1463,12 @@ const translation: LangKeys = {
     type_phaselead_nuevo: 'New',
     type_phaselead_perdido: 'Lost',
     type_phaselead_propuesta: 'Proposal',
+
+    new: 'New',
+    qualified: 'Qualified',
+    proposition: 'Proposition',
+    won: 'Won',
+    lost: 'Lost',
 
     customer: 'Customer',
     logAnInternalNote: 'Log an internal note',
@@ -1508,6 +1515,9 @@ const translation: LangKeys = {
     enterTheUrl: 'Enter the URL',
     attached: 'Attached',
     loadingImage: 'Loading image',
+
+    product: 'Product',
+    product_plural: 'Products',
 };
 
 const enResource: ResourceLanguage = {

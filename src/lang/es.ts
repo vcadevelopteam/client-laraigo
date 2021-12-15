@@ -786,7 +786,7 @@ const translation: LangKeys = {
     blacklist: 'Blacklist',
     executiontype: 'Tipo de ejecución',
     manual: 'Manual',
-    scheduled: 'Programado',
+    scheduled: 'Programar',
     source: 'Fuente',
     bdinternal: 'Base interna',
     bdexternal: 'Base externa',
@@ -1462,8 +1462,8 @@ const translation: LangKeys = {
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
     schedule: 'Programado',
-    markAsDone: 'Marcar como hecho',
-    doneAndScheduleNext: 'Hecho y programar siguiente',
+    markAsDone: 'Marcar como realizado',
+    doneAndScheduleNext: 'Marcar como realizado y programar siguiente actividad',
     discard: 'Descartar',
     date_format_error: 'Ingrese una fecha válida',
 
@@ -1474,6 +1474,15 @@ const translation: LangKeys = {
     history: 'Historial',
 
     NEWLEAD: 'Nueva oportunidad',
+    
+    lastuser: 'Último asesor',
+    
+    new: 'Nuevo',
+    qualified: 'Calificado',
+    proposition: 'Propuesto',
+    won: 'Ganado',
+    lost: 'Perdido',
+
     NEWNOTE: 'Nueva nota',
     NEWACTIVITY: 'Nueva actividad programada',
     CHANGESTATUS: 'Cambio de fase',
@@ -1498,6 +1507,9 @@ const translation: LangKeys = {
     enterTheUrl: 'Ingresa la URL',
     attached: 'Adjunto',
     loadingImage: 'Cargando imagen',
+
+    product: 'Producto',
+    product_plural: 'Productos',
 };
 
 const esResource: ResourceLanguage = {
