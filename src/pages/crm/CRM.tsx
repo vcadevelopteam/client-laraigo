@@ -15,7 +15,7 @@ import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "compone
 import ViewColumnIcon from '@material-ui/icons/ViewColumn';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import { Button, IconButton } from "@material-ui/core";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary, ICrmLead, IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
@@ -36,28 +36,7 @@ interface dataBackend {
   globalid: string,
   index: number,
   total_revenue?: number | null,
-  items?: leadBackend[] | null
-}
-
-interface leadBackend {
-  leadid: number,
-  description: string,
-  status: string,
-  type: string,
-  expected_revenue: string,
-  date_deadline: string,
-  tags: string,
-  personcommunicationchannel: number,
-  priority: string,
-  conversationid: number,
-  columnid: number,
-  column_uuid: string,
-  displayname: string,
-  globalid: number,
-  edit: string,
-  index: number,
-  phone: string,
-  email: string
+  items?: ICrmLead[] | null
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -128,7 +107,7 @@ const CRM: FC = () => {
         // const colum0 = {columnid: 0, column_uuid: '00000000-0000-0000-0000-000000000000', description: 'New', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
         // const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
-        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
+        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
         setDataColumn(
           columns.map((column) => {
             column.items = leads.filter( x => x.column_uuid === column.column_uuid);
@@ -213,7 +192,7 @@ const CRM: FC = () => {
     }
   }
 
-  const handleCloseLead = (lead:any) => {
+  const handleCloseLead = (lead: ICrmLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
@@ -233,7 +212,7 @@ const CRM: FC = () => {
     }))
   }
 
-  const handleDelete = (lead:any) => {
+  const handleDelete = (lead: ICrmLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];

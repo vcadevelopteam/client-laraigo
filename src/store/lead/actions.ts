@@ -190,3 +190,15 @@ export const updateLeadTags = (body: IRequestBody): IActionCall => ({
 });
 
 export const resetUpdateLeadTags = (): IActionCall => ({type: actionTypes.UPDATE_LEAD_TAGS_RESET});
+
+export const getLeadProductsDomain = (body: IRequestBody): IActionCall => ({
+    callAPI: () => CommonService.main(body),
+    types: {
+        loading: actionTypes.GET_LEAD_PRODUCTS_DOMAIN,
+        success: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_SUCCESS,
+        failure: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_FAILURE,
+    },
+    type: null,
+});
+
+export const resetGetLeadProductsDomain = (): IActionCall => ({type: actionTypes.GET_LEAD_PRODUCTS_DOMAIN_RESET});
