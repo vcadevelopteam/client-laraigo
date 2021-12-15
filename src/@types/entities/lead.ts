@@ -44,6 +44,12 @@ export interface ICrmLead {
     /**asesor */
     userid: string | number | null;
     phase: string | null;
+
+    /**separado por comas */
+    leadproduct: string;
+    campaignid: number;
+    /**descripción de la campaña (campaignid) */
+    campaign: string;
 }
 
 export interface ICRmSaveLead {
@@ -66,6 +72,9 @@ export interface ICRmSaveLead {
     userid: string | number | null;
     phase: string;
 	operation: string;
+    /**seperado por comas */
+    leadproduct: string;
+    campaignid: number;
 }
 
 export interface ICrmLeadActivitySave {

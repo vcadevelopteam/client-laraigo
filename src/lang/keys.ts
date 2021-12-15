@@ -1507,6 +1507,9 @@ export const langKeys = {
     enterTheUrl: 'enterTheUrl',
     attached: 'attached',
     loadingImage: 'loadingImage',
+
+    product: 'product',
+    product_plural: 'product_plural',
 };
 
 export type LangKeys = typeof langKeys;
