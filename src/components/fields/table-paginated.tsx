@@ -38,7 +38,6 @@ import {
     useGlobalFilter,
     usePagination,
     useRowSelect,
-    TableInstance
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
