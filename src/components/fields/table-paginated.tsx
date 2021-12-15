@@ -51,10 +51,6 @@ declare module "react-table" {
     }
 }
 
-interface customtable extends TableInstance {
-    a: number;
-}
-
 const useStyles = makeStyles((theme) => ({
     footerTable: {
         display: 'block',
