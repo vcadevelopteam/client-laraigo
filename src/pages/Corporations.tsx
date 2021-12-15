@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
-import { getCorpSel, getValuesFromDomain, insCorp } from 'common/helpers';
+import { getCorpSel, getPaymentPlanSel, getValuesFromDomain, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -108,7 +108,8 @@ const Corporations: FC = () => {
         fetchData();
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
-            getValuesFromDomain("TIPOCORP")
+            getValuesFromDomain("TIPOCORP"),
+            getPaymentPlanSel(),
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -204,6 +205,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
+    const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
@@ -213,6 +215,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             status: row?.status || 'ACTIVO',
             logo: row ? row.logo : '',
             logotype: row ? row.logotype : '',
+            paymentplanid: row?.paymentplanid||0,
             operation: row ? "UPDATE" : "INSERT"
         }
     });
@@ -221,6 +224,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('paymentplanid');
     }, [edit, register]);
 
     useEffect(() => {
@@ -242,12 +246,12 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const onSubmit = handleSubmit((data) => {
         const callback = async () => {
             dispatch(showBackdrop(true));
-            if (typeof data.logo === 'object') {
+            if (typeof data.logo === 'object' && !!data.logo) {
                 const fd = new FormData();
                 fd.append('file', data.logo, data.logo.name);
                 data.logo = (await CommonService.uploadFile(fd)).data["url"];
             }
-            if (typeof data.logotype === 'object') {
+            if (typeof data.logotype === 'object' && !!data.logotype) {
                 const fd = new FormData();
                 fd.append('file', data.logotype, data.logotype.name);
                 data.logotype = (await CommonService.uploadFile(fd)).data["url"];
@@ -341,24 +345,28 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             />}
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-6"
-                                valueDefault={getValues('status')}
-                                onChange={(value) => setValue('status', value?.domainvalue)}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domainvalue"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row?.status || ""}
-                                className="col-6"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-6"
+                            valueDefault={getValues('status')}
+                            onChange={(value) => setValue('status', value?.domainvalue)}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domainvalue"
+                            optionValue="domainvalue"
+                        />
+                        <FieldSelect
+                            label={t(langKeys.billingplan)}
+                            className="col-6"
+                            valueDefault={getValues("paymentplanid")}
+                            onChange={(value) => setValue('paymentplanid',value?.paymentplanid||0)}
+                            data={dataPaymentPlan}
+                            error={errors?.paymentplanid?.message}
+                            optionDesc="plan"
+                            optionValue="paymentplanid"
+                        />
                     </div>
                     <div className="row-zyx">
                         {edit ?

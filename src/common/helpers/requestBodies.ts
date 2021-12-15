@@ -492,10 +492,10 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation }: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation,paymentplanid = 0}: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { id, description, type, status, logo, logotype, operation }
+    parameters: { id, description, type, status, logo, logotype, operation,paymentplanid }
 });
 export const insOrg = ({ corpid ,description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
