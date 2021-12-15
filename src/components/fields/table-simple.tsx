@@ -190,7 +190,7 @@ export const BooleanOptionsMenuComponent: React.FC<{ value: any; handleClickItem
 
 export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickItemMenu: (key: any) => void }> = ({ value, data, handleClickItemMenu }) => {
     const { t } = useTranslation();
-    console.log("valueX", value)
+    console.log("datatt", data)
     return (
         <Select
             value={value || '_ALL'}

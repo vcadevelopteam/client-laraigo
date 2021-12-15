@@ -44,7 +44,7 @@ import {
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
-import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
@@ -116,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
 
 const format = (date: Date) => date.toISOString().split('T')[0];
 
-const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: any) => {
+const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -124,7 +124,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
 
     useEffect(() => {
         switch (type) {
-            case "number": case "date": case "datetime-local": case "time":
+            case "number": case "date": case "datetime-local": case "time": case "select":
                 setoperator("equals");
                 break;
             case "boolean":
@@ -167,6 +167,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
     const handleClickItemMenu = (op: any) => {
         setAnchorEl(null);
         setoperator(op)
+        console.log(op)
         if (type === 'boolean') {
             setValue(op);
             setFilters({
@@ -174,6 +175,15 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                 [header]: {
                     value: op,
                     operator: op
+                },
+            }, 0)
+        } else if (type === "select") {
+            setValue(op);
+            setFilters({
+                ...filters,
+                [header]: op === "_ALL" ? undefined : {
+                    value: op,
+                    operator: "equals"
                 },
             }, 0)
         }
@@ -233,46 +243,54 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue }: 
                     value={value}
                     handleClickItemMenu={handleClickItemMenu}
                 />
-                : <React.Fragment>
-                    {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
-                    {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
-                    {!['date', 'time'].includes(type) &&
-                        <Input
-                            style={{ fontSize: '15px', minWidth: '100px' }}
-                            type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
-                            fullWidth
-                            value={value}
-                            onKeyDown={keyPress}
-                            onChange={e => setValue(e.target.value)}
-                        />}
-                    <IconButton
-                        onClick={handleClickMenu}
-                        size="small"
-                    >
-                        <MoreVertIcon
-                            style={{ cursor: 'pointer' }}
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            color="action"
-                            fontSize="small"
-                        />
-                    </IconButton>
-                    <Menu
-                        id="long-menu"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleCloseMenu}
-                        PaperProps={{
-                            style: {
-                                maxHeight: 48 * 4.5,
-                                width: '20ch',
-                            },
-                        }}
-                    >
-                        {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
-                    </Menu>
-                </React.Fragment>}
+                :
+                (type === "select" ?
+                    <SelectFilterTmp
+                        value={value}
+                        handleClickItemMenu={handleClickItemMenu}
+                        data={listSelectFilter}
+                    /> :
+
+                    <React.Fragment>
+                        {type === 'date' && DateOptionsMenuComponent(value, handleDate)}
+                        {type === 'time' && TimeOptionsMenuComponent(value, handleTime)}
+                        {!['date', 'time'].includes(type) &&
+                            <Input
+                                style={{ fontSize: '15px', minWidth: '100px' }}
+                                type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
+                                fullWidth
+                                value={value}
+                                onKeyDown={keyPress}
+                                onChange={e => setValue(e.target.value)}
+                            />}
+                        <IconButton
+                            onClick={handleClickMenu}
+                            size="small"
+                        >
+                            <MoreVertIcon
+                                style={{ cursor: 'pointer' }}
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                color="action"
+                                fontSize="small"
+                            />
+                        </IconButton>
+                        <Menu
+                            id="long-menu"
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleCloseMenu}
+                            PaperProps={{
+                                style: {
+                                    maxHeight: 48 * 4.5,
+                                    width: '20ch',
+                                },
+                            }}
+                        >
+                            {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
+                        </Menu>
+                    </React.Fragment>)}
         </div>
     )
 }
@@ -602,6 +620,7 @@ const TableZyx = React.memo(({
                                                         {!column.NoFilter &&
                                                             <DefaultColumnFilter
                                                                 header={column.id}
+                                                                listSelectFilter={column.listSelectFilter || []}
                                                                 type={column.type}
                                                                 firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}

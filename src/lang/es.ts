@@ -1472,6 +1472,15 @@ const translation: LangKeys = {
     history: 'Historial',
 
     NEWLEAD: 'Nueva oportunidad',
+    
+    lastuser: 'Último asesor',
+    
+    new: 'Nuevo',
+    qualified: 'Calificado',
+    proposition: 'Propuesto',
+    won: 'Ganado',
+    lost: 'Perdido',
+
     NEWNOTE: 'Nueva nota',
     NEWACTIVITY: 'Nueva actividad programada',
     CHANGESTATUS: 'Cambio de fase',

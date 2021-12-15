@@ -22,6 +22,14 @@ export const langKeys = {
     period: "period",
     tos: "tos",
     tag: 'tag',
+    
+
+    new: 'new',
+    qualified: 'qualified',
+    proposition: 'proposition',
+    won: 'won',
+    lost: 'lost',
+
     highestTMO: "highestTMO",
     currency: "currency",
     useradditionalfee: "useradditionalfee",
@@ -1289,6 +1297,7 @@ export const langKeys = {
     totalTime: 'totalTime',
     salesperson: 'salesperson',
     lastUpdate: 'lastUpdate',
+    lastuser: 'lastuser',
     phase: 'phase',
     expectedRevenue: 'expectedRevenue',
     probability: 'probability',
