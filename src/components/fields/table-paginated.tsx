@@ -10,10 +10,8 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
-import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
-import { TableConfig, Pagination } from '@types'
+import { TableConfig, Pagination, Dictionary } from '@types'
 import { Trans } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
@@ -39,12 +37,23 @@ import {
     useFilters,
     useGlobalFilter,
     usePagination,
-    useRowSelect
+    useRowSelect,
+    TableInstance
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+
+declare module "react-table" {
+    interface UseTableColumnProps<D extends object> {
+        listSelectFilter: Dictionary;
+    }
+}
+
+interface customtable extends TableInstance {
+    a: number;
+}
 
 const useStyles = makeStyles((theme) => ({
     footerTable: {
