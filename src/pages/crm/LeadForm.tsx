@@ -634,13 +634,15 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     />
                                 }
                                 <FieldMultiSelect
-                                    label="OPORTUNIDADPRODUCTOS"
+                                    label={t(langKeys.product, { count: 2 })}
                                     className={classes.field}
+                                    valueDefault={getValues('leadproduct')}
                                     onChange={(v) => setValue('leadproduct', v?.map((o: Dictionary) => o['domainvalue']).join(',') || '')}
                                     data={leadProductsDomain.data}
                                     loading={leadProductsDomain.loading}
                                     optionDesc="domaindesc"
                                     optionValue="domainvalue"
+                                    error={errors?.leadproduct?.message}
                                 />
                             </Grid>
                         </Grid>

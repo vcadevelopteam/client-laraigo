@@ -1513,6 +1513,9 @@ const translation: LangKeys = {
     enterTheUrl: 'Enter the URL',
     attached: 'Attached',
     loadingImage: 'Loading image',
+
+    product: 'Product',
+    product_plural: 'Products',
 };
 
 const enResource: ResourceLanguage = {
