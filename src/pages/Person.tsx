@@ -1881,14 +1881,38 @@ interface ChannelItemProps {
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
-
+    const nameschannel: Dictionary = {
+        "WHAT": "WHATSAPP",
+        "WHAD": "WHATSAPP",
+        "WHAP": "WHATSAPP",
+        "WHAC": "WHATSAPP",
+        "FBMS": "FACEBOOK MESSENGER",
+        "FBDM": "FACEBOOK MESSENGER",
+        "FBWA": "FACEBOOK MURO",
+        "WEBM": "WEB MESSENGER",
+        "TELE": "TELEGRAM",
+        "INST": "INSTAGRAM",
+        "INMS": "INSTAGRAM",
+        "INDM": "INSTAGRAM",
+        "ANDR": "ANDROID",
+        "APPL": "IOS",
+        "CHATZ": "WEB MESSENGER",
+        "CHAZ": "WEB MESSENGER",
+        "MAIL": "EMAIL",
+        "YOUT": "YOUTUBE",
+        "LINE": "LINE",
+        "SMS": "SMS",
+        "SMSI": "SMS",
+        "TWIT": "TWITTER",
+        "TWMS": "TWITTER",
+    }
     return (
         <div className={classes.root}>
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={channel.typedesc}
+                        subtitle={nameschannel[channel.type]}
                         m={1}
                     />
                 </Grid>
@@ -1982,14 +2006,14 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             subtitle={`${person.communicationchannelname || ''}`}
                             m={1}
                         />
-                    </Grid>                     
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.createdBy} />}
                             subtitle={person.createby}
                             m={1}
                         />
-                    </Grid>       
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.creationDate} />}
@@ -2007,7 +2031,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             subtitle={new Date(person.firstcontact).toLocaleString()}
                             m={1}
                         />
-                    </Grid>                                
+                    </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.lastContactDate} />}
@@ -2028,7 +2052,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             subtitle={new Date(person.changedate).toLocaleString()}
                             m={1}
                         />
-                    </Grid>                    
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>
@@ -2141,42 +2165,42 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
         }
     }, [conversations, setList, dispatch]);
 
-    function filterList(e:any){
+    function filterList(e: any) {
         setsearchFilter(e)
-        if(e===""){
+        if (e === "") {
             setfilteredList(list)
-        }else{
+        } else {
 
             var newArray = list.filter(function (el) {
                 return el.ticketnum.includes(e) ||
-                el.asesorfinal.includes(e) ||
-                el.channeldesc.includes(e) ||
-                new Date(el.fechainicio).toLocaleString().includes(e) ||
-                new Date(el.fechafin).toLocaleString().includes(e)
+                    el.asesorfinal.includes(e) ||
+                    el.channeldesc.includes(e) ||
+                    new Date(el.fechainicio).toLocaleString().includes(e) ||
+                    new Date(el.fechafin).toLocaleString().includes(e)
             });
             setfilteredList(newArray)
         }
     }
     return (
         <div className={classes.root}>
-            {list.length>0 &&
-            <Box className={classes.containerFilterGeneral}>
-                <span></span>
-                <div className={classes.containerSearch}>
-                    <Paper component="div" className={classes.root2} elevation={0}>
-                        <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
-                            <SearchIcon />
-                        </IconButton>
-                        <InputBase
-                            className={classes.input}
-                            value={searchFilter}
-                            onChange={(e)=>filterList(e.target.value)}
-                            placeholder={t(langKeys.search)}
-                            inputProps={{ className: classes.inputPlaceholder }}
-                        />
-                    </Paper>
-                </div>
-            </Box>
+            {list.length > 0 &&
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <Paper component="div" className={classes.root2} elevation={0}>
+                            <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
+                                <SearchIcon />
+                            </IconButton>
+                            <InputBase
+                                className={classes.input}
+                                value={searchFilter}
+                                onChange={(e) => filterList(e.target.value)}
+                                placeholder={t(langKeys.search)}
+                                inputProps={{ className: classes.inputPlaceholder }}
+                            />
+                        </Paper>
+                    </div>
+                </Box>
             }
             {filteredlist.map((e, i) => {
                 if (filteredlist.length < conversations.count && i === filteredlist.length - 1) {
