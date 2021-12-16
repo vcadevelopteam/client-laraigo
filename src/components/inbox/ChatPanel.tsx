@@ -711,8 +711,8 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
 }
 
 const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
