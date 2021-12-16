@@ -364,7 +364,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
-        dispatch(getDataTicket(ticket))
+        dispatch(getDataTicket(ticket, userType === "AGENT"))
     }, [dispatch]);
 
     useEffect(() => {

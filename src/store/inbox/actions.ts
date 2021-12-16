@@ -88,9 +88,9 @@ export const getInteractions = (conversationid: number, lock: boolean, conversat
 
 export const resetGetInteractions = (): IActionCall => ({ type: actionTypes.GET_INTERACTIONS_EXTRA_RESET });
 
-export const getDataTicket = (ticket: ITicket): IActionCall => ({
+export const getDataTicket = (ticket: ITicket, lock: boolean): IActionCall => ({
     callAPI: () => CommonService.multiMain([
-        getInteractionsByConversation(ticket.conversationid, false, 0),
+        getInteractionsByConversation(ticket.conversationid, lock, 0),
         getInfoPerson(ticket.personid, ticket.conversationid),
         getConfigurationVariables(ticket.communicationchannelid),
         getBlocksUserFromChatfow(ticket.communicationchannelid),
