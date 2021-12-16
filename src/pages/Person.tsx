@@ -27,7 +27,6 @@ import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
 import TableZyx from '../components/fields/table-simple';
-import Tooltip from '@material-ui/core/Tooltip';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
 import { sendHSM } from 'store/inbox/actions';

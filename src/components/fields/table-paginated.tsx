@@ -45,6 +45,7 @@ import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 
 declare module "react-table" {
+    // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
         listSelectFilter: Dictionary;
     }
