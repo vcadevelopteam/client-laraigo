@@ -2,12 +2,12 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { FieldEditMulti, FieldSelect, Title } from 'components';
+import { FieldEditMulti, FieldSelect, SearchField, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon, SearchIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -122,9 +122,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                console.log(type)
                 const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
-                console.log(message)
                 dispatch(showSnackbar({ show: true, success: true, message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -737,8 +735,6 @@ export const Person: FC = () => {
             setPersonsSelected(p => Object.keys(selectedRows).map(x => personList.data.find(y => y.personid === parseInt(x)) || p.find(y => y.personid === parseInt(x)) || {} as IPerson))
         }
     }, [selectedRows])
-
-    console.log(domains.value?.channels)
 
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
@@ -1982,29 +1978,22 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.firstContactDate} />}
-                            subtitle={new Date(person.firstcontact).toLocaleString()}
+                            title={<Trans i18nKey={langKeys.communicationchannel} />}
+                            subtitle={`${person.communicationchannelname || ''}`}
                             m={1}
                         />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastContactDate} />}
-                            subtitle={new Date(person.lastcontact).toLocaleString()}
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastCommunicationChannel} />}
-                            subtitle={`${person.communicationchannelname || ''} - ${person.lastcommunicationchannelid || ''}`}
-                            m={1}
-                        />
-                    </Grid>
+                    </Grid>                     
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.createdBy} />}
                             subtitle={person.createby}
+                            m={1}
+                        />
+                    </Grid>       
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.creationDate} />}
+                            subtitle={new Date(person.createdate).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -2014,8 +2003,15 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.creationDate} />}
-                            subtitle={new Date(person.createdate).toLocaleString()}
+                            title={<Trans i18nKey={langKeys.firstContactDate} />}
+                            subtitle={new Date(person.firstcontact).toLocaleString()}
+                            m={1}
+                        />
+                    </Grid>                                
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.lastContactDate} />}
+                            subtitle={new Date(person.lastcontact).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -2032,7 +2028,7 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             subtitle={new Date(person.changedate).toLocaleString()}
                             m={1}
                         />
-                    </Grid>
+                    </Grid>                    
                 </Grid>
             </Grid>
         </Grid>
@@ -2047,14 +2043,51 @@ const useConversationsTabStyles = makeStyles(theme => ({
     root: {
         height: '100%',
     },
+    root2: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        height: 35,
+        border: '1px solid #EBEAED',
+        backgroundColor: '#F9F9FA',
+    },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#f9f9fa',
+        padding: `${theme.spacing(2)}px`,
+    },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
+    },
+    iconButton: {
+        padding: 4,
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    inputPlaceholder: {
+        '&::placeholder': {
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#84818A',
+        },
+    },
 }));
 
 const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
+    const { t } = useTranslation();
     const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
     const firstCall = useRef(true);
     const [page, setPage] = useState(0);
+    const [searchFilter, setsearchFilter] = useState("");
     const [list, setList] = useState<IPersonConversation[]>([]);
+    const [filteredlist, setfilteredList] = useState<IPersonConversation[]>([]);
     const conversations = useSelector(state => state.person.personTicketList);
 
     const fetchTickets = useCallback(() => {
@@ -2104,20 +2137,55 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             }));
         } else {
             setList(prevList => [...prevList, ...conversations.data]);
+            setfilteredList(prevList => [...prevList, ...conversations.data]);
         }
     }, [conversations, setList, dispatch]);
 
+    function filterList(e:any){
+        setsearchFilter(e)
+        if(e===""){
+            setfilteredList(list)
+        }else{
+
+            var newArray = list.filter(function (el) {
+                return el.ticketnum.includes(e) ||
+                el.asesorfinal.includes(e) ||
+                el.channeldesc.includes(e) ||
+                new Date(el.fechainicio).toLocaleString().includes(e) ||
+                new Date(el.fechafin).toLocaleString().includes(e)
+            });
+            setfilteredList(newArray)
+        }
+    }
     return (
         <div className={classes.root}>
-            {list.map((e, i) => {
-                if (list.length < conversations.count && i === list.length - 1) {
+            {list.length>0 &&
+            <Box className={classes.containerFilterGeneral}>
+                <span></span>
+                <div className={classes.containerSearch}>
+                    <Paper component="div" className={classes.root2} elevation={0}>
+                        <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
+                            <SearchIcon />
+                        </IconButton>
+                        <InputBase
+                            className={classes.input}
+                            value={searchFilter}
+                            onChange={(e)=>filterList(e.target.value)}
+                            placeholder={t(langKeys.search)}
+                            inputProps={{ className: classes.inputPlaceholder }}
+                        />
+                    </Paper>
+                </div>
+            </Box>
+            }
+            {filteredlist.map((e, i) => {
+                if (filteredlist.length < conversations.count && i === filteredlist.length - 1) {
                     return [
                         <ConversationItem conversation={e} key={`conversation_item_${i}`} person={person} />,
                         <div
                             style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
                             key={`conversation_item_${i}_loader`}
                         >
-                            <CircularProgress />
                         </div>
                     ];
                 }
@@ -2177,7 +2245,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-
     return (
         <div className={classes.root}>
             <DialogInteractions
@@ -2198,7 +2265,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                     <Property
                         title={<Trans i18nKey={langKeys.channel} />}
-                        subtitle={conversation.personcommunicationchannel}
+                        subtitle={conversation.channeldesc}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
