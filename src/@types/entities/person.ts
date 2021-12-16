@@ -132,6 +132,9 @@ export interface IPersonAdditionalInfo {
 }
 
 export interface IPersonConversation {
+    tme: string;
+    tmr: string;
+    tmo: string;
     asesorfinal: string;
     asesorinicial: string;
     closetype: string;

@@ -32,6 +32,7 @@ const translation: LangKeys = {
     comments: 'Comentarios',
     lastnote: 'Última nota',
 
+    tmo: "TMO",
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
     expected_revenue: 'Ingreso esperado',
