@@ -180,3 +180,15 @@ export interface ICrmGridPerson {
     activitydate: Date;
     activitydescription: string;
 }
+
+export interface ICrmLeadSel {
+    /**0 ==> all: true */
+    id: number;
+    /**customer fullname filter */
+	fullname: string;
+    /**products filter */
+	leadproduct: string;
+    /**campaign filter */
+	campaignid: number;
+	all?: boolean;
+}

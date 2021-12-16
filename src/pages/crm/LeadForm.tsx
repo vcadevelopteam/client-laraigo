@@ -175,7 +175,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [registerFormFieldOptions]);
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
+        console.log('onSubmit:', data);
         if (edit) {
             dispatch(saveLeadAction(insLead2(data, data.operation), false));
         } else {
@@ -287,7 +287,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [advisers, t, dispatch]);
 
     useEffect(() => {
-        console.log(saveLead);
         if (saveLead.loading) return;
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -416,7 +415,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [updateLeadTagProcess, match.params.id, edit, t, dispatch]);
 
     useEffect(() => {
-        console.log('leadProductsDomain:', leadProductsDomain);
         if (leadProductsDomain.loading) return;
         if (leadProductsDomain.error) {
             const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -693,9 +691,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.endDate)}
                                     className={classes.field}
-                                    type="date"
-                                    onChange={(value) => setValue('date_deadline', value)}
-                                    valueDefault={getValues('date_deadline')?.substring(0, 10)}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('date_deadline', value);
+                                    }}
+                                    valueDefault={(getValues('date_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                     error={errors?.date_deadline?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
@@ -726,7 +727,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="columnid"
                                     data={phases.data}
                                     onChange={(e) => {
-                                        console.log('FormControlLabel', Number(e.columnid));
                                         setValue('column_uuid', e.column_uuid);
                                         setValue('columnid', Number(e.columnid));
                                         setValues(prev => ({ ...prev })); // refrescar

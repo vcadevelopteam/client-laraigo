@@ -1461,7 +1461,7 @@ const translation: LangKeys = {
     summary: 'Resumen',
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
-    schedule: 'Programado',
+    schedule: 'Programar',
     markAsDone: 'Marcar como realizado',
     doneAndScheduleNext: 'Marcar como realizado y programar siguiente actividad',
     discard: 'Descartar',
