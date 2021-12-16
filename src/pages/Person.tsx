@@ -32,7 +32,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
 import { sendHSM } from 'store/inbox/actions';
-
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 interface SelectFieldProps {
@@ -312,6 +314,69 @@ const CountTicket: FC<{ label: string, count: string, color: string }> = ({ labe
 )
 
 
+export const TemplateIcons: React.FC<{
+    sendHSM: (data: any) => void;
+    sendSMS: (data: any) => void;
+    sendMAIL: (data: any) => void;
+}> = ({ sendHSM, sendSMS, sendMAIL }) => {
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = () => setAnchorEl(null);
+    const { t } = useTranslation();
+
+    return (
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(e.currentTarget);
+                }}
+            >
+                <MoreVertIcon style={{ color: '#B6B4BA' }} />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={sendHSM}>
+                    <ListItemIcon color="inherit">
+                        <HSMIcon width={22} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}
+                </MenuItem>
+                <MenuItem onClick={sendSMS}>
+                    <ListItemIcon color="inherit">
+                        <SmsIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_sms)}
+                </MenuItem>
+                <MenuItem onClick={sendMAIL}>
+                    <ListItemIcon color="inherit">
+                        <MailIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_mail)}
+                </MenuItem>
+            </Menu>
+        </div>
+    )
+}
+
+
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
@@ -339,54 +404,38 @@ export const Person: FC = () => {
         });
     }
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = () => setAnchorEl(null);
+
     const columns = [
         {
             accessor: 'leadid',
             isComponent: true,
+            minWidth: 60,
+            width: '1%',
             Cell: (props: any) => {
                 const person = props.cell.row.original as IPerson;
                 return (
-                    <>
-                        <Tooltip title={t(langKeys.send_hsm) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("HSM");
-                                }}
-                            >
-                                <HSMIcon width={24} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t(langKeys.send_mail) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("MAIL");
-                                }}
-                            >
-                                <MailIcon color="action" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t(langKeys.send_sms) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("SMS");
-                                }}
-                            >
-                                <SmsIcon color="action" />
-                            </IconButton>
-                        </Tooltip>
-                    </>
+                    <TemplateIcons
+                        sendHSM={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("HSM");
+                        }}
+                        sendSMS={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("MAIL");
+                        }}
+                        sendMAIL={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("SMS");
+                        }}
+                    />
                 )
             }
         },
@@ -753,7 +802,7 @@ export const Person: FC = () => {
                             optionValue="type"
                             optionDesc="communicationchanneldesc"
                         />
-                        <FieldMultiSelect
+                        {/* <FieldMultiSelect
                             onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
                             size="small"
                             label={t(langKeys.user)}
@@ -763,7 +812,7 @@ export const Person: FC = () => {
                             data={domains.value?.agents || []}
                             optionValue="userid"
                             optionDesc="fullname"
-                        />
+                        /> */}
                     </div>
                 </Grid>
                 <Grid item>
@@ -2173,10 +2222,10 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
 
             var newArray = list.filter(function (el) {
                 return el.ticketnum.includes(e) ||
-                el.asesorfinal.toLowerCase().includes(e.toLowerCase()) ||
-                el.channeldesc.toLowerCase().includes(e.toLowerCase()) ||
-                new Date(el.fechainicio).toLocaleString().includes(e) ||
-                new Date(el.fechafin).toLocaleString().includes(e)
+                    el.asesorfinal.toLowerCase().includes(e.toLowerCase()) ||
+                    el.channeldesc.toLowerCase().includes(e.toLowerCase()) ||
+                    new Date(el.fechainicio).toLocaleString().includes(e) ||
+                    new Date(el.fechafin).toLocaleString().includes(e)
             });
             setfilteredList(newArray)
         }
@@ -2321,7 +2370,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                     <Grid container direction="row">
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             TMO
@@ -2331,7 +2380,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             TME
@@ -2341,7 +2390,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             TMR
@@ -2351,7 +2400,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             <label className={classes.infoLabel}>
@@ -2363,11 +2412,11 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                            </Grid>                            
+                            </Grid>
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Grid container direction="column">
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             <label className={classes.infoLabel}>
@@ -2379,7 +2428,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                     </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             <label className={classes.infoLabel}>
@@ -2392,7 +2441,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            
+
                         </Grid>
 
                     </Grid>
