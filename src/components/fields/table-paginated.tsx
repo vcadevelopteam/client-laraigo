@@ -46,7 +46,6 @@ import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp,
 
 declare module "react-table" {
     interface UseTableColumnProps<D extends object> {
-        listSelectFilter: Dictionary;
     }
 }
 

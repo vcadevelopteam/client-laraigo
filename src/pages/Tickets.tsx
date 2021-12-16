@@ -472,7 +472,7 @@ const Tickets = () => {
                 type: 'date',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return row.fecha.split(" ")[0]
+                    return convertLocalDate(row.fecha).toLocaleDateString()
                 }
             },
             {

@@ -153,6 +153,7 @@ export interface IPersonConversation {
     totalpausaduration: string;
     firstreplytime: string;
     totalpauseduration: string;
+    channeldesc: string;
 }
 
 export interface IPersonLead {
