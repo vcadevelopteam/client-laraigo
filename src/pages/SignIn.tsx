@@ -250,7 +250,7 @@ const SignIn = () => {
                             <Grid item>
                                 <p>
                                     <Trans i18nKey={langKeys.newRegisterMessage} />
-                                    <a style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</a>
+                                    <span style={{ fontWeight: 'bold', color: '#6F1FA1', cursor: 'pointer' }} onClick={handleSignUp}>{t(langKeys.newRegisterMessage2)}</span>
                                 </p>
                             </Grid>
                         </Grid>
