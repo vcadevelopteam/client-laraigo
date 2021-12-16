@@ -2149,8 +2149,8 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
 
             var newArray = list.filter(function (el) {
                 return el.ticketnum.includes(e) ||
-                el.asesorfinal.includes(e) ||
-                el.channeldesc.includes(e) ||
+                el.asesorfinal.toLowerCase().includes(e.toLowerCase()) ||
+                el.channeldesc.toLowerCase().includes(e.toLowerCase()) ||
                 new Date(el.fechainicio).toLocaleString().includes(e) ||
                 new Date(el.fechafin).toLocaleString().includes(e)
             });
@@ -2227,6 +2227,9 @@ const useConversationsItemStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    containerstyle: {
+        padding: "10px 0"
+    }
 }));
 
 interface ConversationItemProps {
@@ -2290,106 +2293,84 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             </Grid>
             <Collapse in={open}>
                 <div className={classes.collapseContainer}>
-                    <Divider orientation="horizontal" />
                     <h3><Trans i18nKey={langKeys.ticketInformation} /></h3>
-                    <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstTicketassignTime} />
-                                    </label>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TMO
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tmo}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.fechainicio && new Date(conversation.fechainicio).toLocaleString()}
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TME
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tme}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TMR
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tmr}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.avgResponseTimeOfAdvisor} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tiempopromediorespuestaasesor}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            </Grid>                            
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.status} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.status}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.closetype} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.closetype}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                             </Grid>
+                            
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstReply} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.firstreplytime}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.pauseTime} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.totalpauseduration}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfAdvisor} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestaasesor}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfClient} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestapersona}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.totalTime}>
-                                        <Trans i18nKey={langKeys.totalTime} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    <label className={classes.totalTime}>{conversation.totalduration}</label>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Divider orientation="horizontal" />
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.closetype} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.closetype}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.status} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.status}
-                                </Grid>
-                            </Grid>
-                        </Grid>
+
                     </Grid>
                 </div>
             </Collapse>

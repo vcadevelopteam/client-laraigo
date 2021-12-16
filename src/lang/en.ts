@@ -1280,6 +1280,7 @@ const translation: LangKeys = {
     createdBy: 'Created by',
     creationDate: 'Creation date',
     modifiedBy: 'Modified by',
+    tmo: "TMO",
     modificationDate: 'Modification date',
     advisor: 'Advisor',
     startDate: 'Start date',

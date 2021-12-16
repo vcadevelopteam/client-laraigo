@@ -21,6 +21,7 @@ export const langKeys = {
     next: "next",
     period: "period",
     tos: "tos",
+    tmo: "tmo",
     tag: 'tag',
     
 
