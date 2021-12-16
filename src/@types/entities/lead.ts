@@ -88,6 +88,8 @@ export interface ICrmLeadActivitySave {
 	username: string | null;
 	operation: "UPDATE" | "INSERT" | "DELETE";
     feedback: string;
+    /**array json type: Descendant[] (RichText) */
+    detailjson: string;
 }
 
 export interface ICrmLeadNoteSave {
@@ -127,6 +129,8 @@ export interface IcrmLeadActivity {
 	type: string;
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
     feedback: string | null;
+    /**array json type: Descendant[] (RichText) */
+    detailjson: string;
 }
 
 export interface ICrmColumn {

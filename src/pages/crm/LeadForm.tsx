@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
+import { Descendant } from 'slate';
 
 const tagsOptions = [
     { title: "Information" },
@@ -1344,6 +1345,10 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
         margin: theme.spacing(1),
         minHeight: 58,
     },
+    richTextfield: {
+        margin: theme.spacing(1),
+        minHeight: 150,
+    },
     footer: {
         marginTop: '1em',
         display: 'flex',
@@ -1356,6 +1361,8 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
+const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }] }];
+
 export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
@@ -1365,6 +1372,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const saveActivity = useSelector(state => state.lead.saveLeadActivity);
     const advisers = useSelector(state => state.lead.advisers);
     const domains = useSelector(state => state.main.mainData);
+    const [detail, setDetail] = useState<Descendant[]>(initialValue);
 
     useEffect(() => {
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
@@ -1405,6 +1413,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
+            detailjson: JSON.stringify(initialValue),
         },
     });
 
@@ -1431,6 +1440,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [registerFormFieldOptions]);
 
     const resetValues = useCallback(() => {
+        setDetail(initialValue);
         reset({
             leadid: leadid,
             leadactivityid: 0,
@@ -1442,12 +1452,14 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: "INSERT",
             feedback: '',
+            detailjson: JSON.stringify(initialValue),
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reset]);
 
     useEffect(() => {
+        setDetail(activity?.detailjson ? JSON.parse(activity?.detailjson) : initialValue);
         reset({
             leadid: leadid,
             leadactivityid: activity?.leadactivityid || 0,
@@ -1459,6 +1471,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
+            detailjson: activity?.detailjson || JSON.stringify(initialValue),
         });
 
         registerFormFieldOptions();
@@ -1467,8 +1480,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
-            values.status = status;
-            onSubmit?.(values);
+            onSubmit?.({ ...values, status, detailjson: JSON.stringify(detail) });
             if (leadid === 0 && mustCloseOnSubmit.current) {
                 onClose();
             } else {
@@ -1476,7 +1488,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [handleSubmit, dispatch]);
+    }, [detail, handleSubmit, dispatch]);
 
     return (
         <Modal
@@ -1488,61 +1500,74 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             <Box className={modalClasses.root}>
                 <TitleDetail title={t(langKeys.scheduleActivity)} />
                 <div style={{ height: '1em' }} />
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                        <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldSelect
-                                    uset
-                                    label={t(langKeys.activityType)}
-                                    className={classes.field}
-                                    data={domains.data}
-                                    prefixTranslation="type_activitylead_"
-                                    optionDesc="domainvalue"
-                                    optionValue="domainvalue"
-                                    loading={domains.loading}
-                                    valueDefault={getValues('type')}
-                                    onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
-                                    error={errors?.type?.message}
-                                />
+                <Grid container direction="column">
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="column">
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldSelect
+                                            uset
+                                            label={t(langKeys.activityType)}
+                                            className={classes.field}
+                                            data={domains.data}
+                                            prefixTranslation="type_activitylead_"
+                                            optionDesc="domainvalue"
+                                            optionValue="domainvalue"
+                                            loading={domains.loading}
+                                            valueDefault={getValues('type')}
+                                            onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
+                                            error={errors?.type?.message}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldEdit
+                                            label={t(langKeys.summary)}
+                                            className={classes.field}
+                                            valueDefault={getValues('description')}
+                                            onChange={v => setValue('description', v)}
+                                            error={errors?.description?.message}
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldEdit
-                                    label={t(langKeys.summary)}
-                                    className={classes.field}
-                                    valueDefault={getValues('description')}
-                                    onChange={v => setValue('description', v)}
-                                    error={errors?.description?.message}
-                                />
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="column">
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldEdit
+                                            label={t(langKeys.dueDate)}
+                                            className={classes.field}
+                                            type="date"
+                                            valueDefault={getValues('duedate')?.substring(0, 10)}
+                                            onChange={(value) => setValue('duedate', value)}
+                                            error={errors?.duedate?.message}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldSelect
+                                            label={t(langKeys.assignedTo)}
+                                            className={classes.field}
+                                            data={advisers.data}
+                                            optionDesc="firstname"
+                                            optionValue="firstname"
+                                            loading={advisers.loading}
+                                            valueDefault={getValues('assignto')}
+                                            onChange={v => setValue('assignto', v?.firstname || "")}
+                                            error={errors?.assignto?.message}
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                        <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldEdit
-                                    label={t(langKeys.dueDate)}
-                                    className={classes.field}
-                                    type="date"
-                                    valueDefault={getValues('duedate')?.substring(0, 10)}
-                                    onChange={(value) => setValue('duedate', value)}
-                                    error={errors?.duedate?.message}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldSelect
-                                    label={t(langKeys.assignedTo)}
-                                    className={classes.field}
-                                    data={advisers.data}
-                                    optionDesc="firstname"
-                                    optionValue="firstname"
-                                    loading={advisers.loading}
-                                    valueDefault={getValues('assignto')}
-                                    onChange={v => setValue('assignto', v?.firstname || "")}
-                                    error={errors?.assignto?.message}
-                                />
-                            </Grid>
-                        </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <RichText
+                            value={detail}
+                            onChange={setDetail}
+                            placeholder="Escribe algo"
+                            className={classes.richTextfield}
+                            spellCheck
+                        />
                     </Grid>
                 </Grid>
                 <div className={classes.footer}>
