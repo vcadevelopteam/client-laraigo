@@ -144,7 +144,12 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
-                <span className={classes.info}>S/ {lead.expected_revenue}</span>
+                {lead.campaign && <span className={classes.info}>
+                    <Trans i18nKey={langKeys.campaign} />
+                    {': '}
+                    {lead.campaign}
+                </span>}
+                <span className={classes.info}>S/ {Number(lead.expected_revenue).toLocaleString('en-US')}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
                     {tags.map((tag: String, index: number) =>
@@ -443,7 +448,7 @@ export const DraggableLeadColumn: FC<LeadColumnProps> = ({
                         <Add style={{ height: 22, width: 22 }} />
                     </IconButton>
                 </div>
-                <span className={classes.currency}>S/ {total_revenue ? total_revenue : 0}</span>
+                <span className={classes.currency}>S/ {total_revenue?.toLocaleString('en-US') || 0}</span>
                 {children}
             </div>
         </Box>
