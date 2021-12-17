@@ -578,6 +578,7 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps }: any) => (
                         <div>
                             <Checkbox
+                                color="primary"
                                 style={{ padding: '0 24px 0 16px' }}
                                 {...getToggleAllPageRowsSelectedProps()}
                             />
@@ -586,6 +587,7 @@ const TableZyx = React.memo(({
                     Cell: ({ row }: any) => (
                         <div>
                             <Checkbox
+                                color="primary"
                                 style={{ padding: '0 24px 0 16px' }}
                                 checked={row.isSelected}
                                 onChange={(e) => row.toggleRowSelected()}
