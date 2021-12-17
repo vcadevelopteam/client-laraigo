@@ -144,6 +144,11 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
         <Box {...boxProps} style={{ position: 'relative' }} pb={1}>
             <div className={clsx(classes.root, snapshot.isDragging && classes.rootDragging)} onClick={handleClick}>
                 <span className={classes.title}>{lead.description}</span>
+                {lead.campaign && <span className={classes.info}>
+                    <Trans i18nKey={langKeys.campaign} />
+                    {': '}
+                    {lead.campaign}
+                </span>}
                 <span className={classes.info}>S/ {lead.expected_revenue}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
