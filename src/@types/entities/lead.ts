@@ -44,6 +44,12 @@ export interface ICrmLead {
     /**asesor */
     userid: string | number | null;
     phase: string | null;
+
+    /**separado por comas */
+    leadproduct: string;
+    campaignid: number;
+    /**descripción de la campaña (campaignid) */
+    campaign: string;
 }
 
 export interface ICRmSaveLead {
@@ -66,6 +72,9 @@ export interface ICRmSaveLead {
     userid: string | number | null;
     phase: string;
 	operation: string;
+    /**seperado por comas */
+    leadproduct: string;
+    campaignid: number;
 }
 
 export interface ICrmLeadActivitySave {
@@ -79,6 +88,8 @@ export interface ICrmLeadActivitySave {
 	username: string | null;
 	operation: "UPDATE" | "INSERT" | "DELETE";
     feedback: string;
+    /**array json type: Descendant[] (RichText) */
+    detailjson: string;
 }
 
 export interface ICrmLeadNoteSave {
@@ -118,6 +129,8 @@ export interface IcrmLeadActivity {
 	type: string;
 	status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO";
     feedback: string | null;
+    /**array json type: Descendant[] (RichText) */
+    detailjson: string;
 }
 
 export interface ICrmColumn {
@@ -170,4 +183,16 @@ export interface ICrmGridPerson {
     notemedia: string;
     activitydate: Date;
     activitydescription: string;
+}
+
+export interface ICrmLeadSel {
+    /**0 ==> all: true */
+    id: number;
+    /**customer fullname filter */
+	fullname: string;
+    /**products filter */
+	leadproduct: string;
+    /**campaign filter */
+	campaignid: number;
+	all?: boolean;
 }

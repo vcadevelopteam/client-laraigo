@@ -470,6 +470,10 @@ const Tickets = () => {
                 Header: t(langKeys.ticket_fecha),
                 accessor: 'fecha',
                 type: 'date',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.fecha).toLocaleDateString()
+                }
             },
             {
                 Header: t(langKeys.ticket_firstusergroup),

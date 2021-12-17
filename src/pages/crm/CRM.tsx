@@ -1,5 +1,5 @@
-import { adviserSel, convertLocalDate, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
-import React, { FC, useEffect, useState } from "react";
+import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -12,18 +12,13 @@ import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/acti
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "components";
-import ViewColumnIcon from '@material-ui/icons/ViewColumn';
-import ViewListIcon from '@material-ui/icons/ViewList';
+import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
-import { Dictionary, IFetchData } from "@types";
+import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
 import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
-import { AccessTime as AccessTimeIcon } from '@material-ui/icons';
-import NoteIcon from '@material-ui/icons/Note';
-import SmsIcon from '@material-ui/icons/Sms';
-import MailIcon from '@material-ui/icons/Mail';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
 import { HSMIcon } from "icons";
 
@@ -36,28 +31,7 @@ interface dataBackend {
   globalid: string,
   index: number,
   total_revenue?: number | null,
-  items?: leadBackend[] | null
-}
-
-interface leadBackend {
-  leadid: number,
-  description: string,
-  status: string,
-  type: string,
-  expected_revenue: string,
-  date_deadline: string,
-  tags: string,
-  personcommunicationchannel: number,
-  priority: string,
-  conversationid: number,
-  columnid: number,
-  column_uuid: string,
-  displayname: string,
-  globalid: number,
-  edit: string,
-  index: number,
-  phone: string,
-  email: string
+  items?: ICrmLead[] | null
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -84,6 +58,13 @@ const useStyles = makeStyles((theme) => ({
   filterComponent: {
       width: '220px'
   },
+  canvasFiltersHeader: {
+    margin: theme.spacing(1),
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '1em',
+    alignItems: 'center',
+  },
 }));
 
 const selectionKey = 'leadid';
@@ -92,6 +73,15 @@ interface IModalProps {
   name: string;
   open: boolean;
   payload: Dictionary | null;
+}
+
+interface IBorardFilter {
+  /**ID de la campaña */
+  campaign: number;
+  /**filtro por nombre completo */
+  customer: string;
+  /**separado por comas */
+  products: string;
 }
 
 const CRM: FC = () => {
@@ -105,13 +95,21 @@ const CRM: FC = () => {
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
   const classes = useStyles();
+  const [boardFilter, setBoardFilter] = useState<IBorardFilter>({ campaign: 0, customer: '', products: '' });
 
   useEffect(() => {
       dispatch(getMultiCollection([
           getColumnsSel(1),
-          getLeadsSel(1),
+          getLeadsSel({
+            id: 0,
+            campaignid: 0,
+            fullname: '',
+            leadproduct: '',
+          }),
           adviserSel(),
           getCommChannelLst(),
+          getCampaignLst(),
+          getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -119,16 +117,10 @@ const CRM: FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('openDialogEffect',openDialog)
-  },[openDialog])
-
-  useEffect(() => {
     if (!mainMulti.error && !mainMulti.loading) {
       if (mainMulti.data.length && mainMulti.data[0].key && mainMulti.data[0].key === "UFN_COLUMN_SEL") {
-        // const colum0 = {columnid: 0, column_uuid: '00000000-0000-0000-0000-000000000000', description: 'New', status: 'ACTIVO', type: 'type', globalid: 'globalid', index: 0, items:[] }
-        // const columns = [colum0,...(mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]]
         const columns = (mainMulti.data[0] && mainMulti.data[0].success ? mainMulti.data[0].data : []) as dataBackend[]
-        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as leadBackend[]
+        const leads = (mainMulti.data[1] && mainMulti.data[1].success ? mainMulti.data[1].data : []) as ICrmLead[]
         setDataColumn(
           columns.map((column) => {
             column.items = leads.filter( x => x.column_uuid === column.column_uuid);
@@ -137,7 +129,23 @@ const CRM: FC = () => {
         )
       }
     }
-  },[mainMulti])
+  },[mainMulti]);
+
+  const fetchBoardLeadsWithFilter = useCallback(() => {
+    dispatch(getMultiCollection([
+      getColumnsSel(1),
+      getLeadsSel({
+        id: 0,
+        campaignid: boardFilter.campaign,
+        fullname: boardFilter.customer,
+        leadproduct: boardFilter.products,
+      }),
+      adviserSel(),
+      getCommChannelLst(),
+      getCampaignLst(),
+      getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+    ]));
+  }, [boardFilter, dispatch]);
 
   const onDragEnd = (result:DropResult, columns:dataBackend[], setDataColumn:any) => {
     if (!result.destination) return;
@@ -213,7 +221,7 @@ const CRM: FC = () => {
     }
   }
 
-  const handleCloseLead = (lead:any) => {
+  const handleCloseLead = (lead: ICrmLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
@@ -233,13 +241,13 @@ const CRM: FC = () => {
     }))
   }
 
-  const handleDelete = (lead:any) => {
+  const handleDelete = (lead: ICrmLead) => {
     const callback = () => {
       const index = dataColumn.findIndex(c => c.column_uuid === lead.column_uuid)
       const column = dataColumn[index];
       const copiedItems = [...column.items!!]
-      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)//v
-      copiedItems!.splice(leadIndex, 1); //v
+      const leadIndex = copiedItems.findIndex(l => l.leadid === lead.leadid)
+      copiedItems!.splice(leadIndex, 1);
       const totalRevenue = copiedItems!.reduce((a,b) => a + parseFloat(b.expected_revenue), 0)
       const newData = Object.values({...dataColumn, [index]: {...column, total_revenue: totalRevenue, items: copiedItems}}) as dataBackend[]
       setDataColumn(newData);
@@ -253,6 +261,7 @@ const CRM: FC = () => {
     }))
   }
 
+  // No borrar
   /*const handleInsert = (title:string, columns:dataBackend[], setDataColumn:any) => {
     const newIndex = columns.length
     const uuid = uuidv4() // from common/helpers
@@ -616,7 +625,51 @@ const CRM: FC = () => {
           </div>
         </div>
         {display === 'BOARD' &&
-        <div style={{ display: "flex", /*justifyContent: "center",*/ height: "100%" }}>
+        <div style={{ display: "flex", flexDirection: 'column', height: "100%" }}>
+          <div className={classes.canvasFiltersHeader}>
+            <FieldSelect
+              variant="outlined"
+              label={t(langKeys.campaign)}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.campaign}
+              onChange={(v: ICampaignLst) => setBoardFilter(prev => ({ ...prev, campaign: v?.id || 0 }))}
+              data={mainMulti.data[4]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="description"
+              optionValue="id"
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.product, { count: 2 })}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.products}
+              onChange={(v) => setBoardFilter(prev => ({ ...prev, products: v?.map((o: IDomain) => o.domainvalue).join(',') || '' }))}
+              data={mainMulti.data[5]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="domaindesc"
+              optionValue="domainvalue"
+            />
+            <FieldEdit
+              size="small"
+              variant="outlined"
+              valueDefault={boardFilter.customer}
+              label={t(langKeys.customer)}
+              className={classes.filterComponent}
+              disabled={mainMulti.loading}
+              onChange={(v: string) => setBoardFilter(prev => ({ ...prev, customer: v }))}
+            />
+            <div style={{ flexGrow: 1 }} />
+            <Button
+                variant="contained"
+                color="primary"
+                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                style={{ backgroundColor: '#55BD84', width: 120 }}
+                onClick={fetchBoardLeadsWithFilter}
+                disabled={mainMulti.loading}
+            >
+                <Trans i18nKey={langKeys.search} />
+            </Button>
+          </div>
           <DragDropContext onDragEnd={result => onDragEnd(result, dataColumn, setDataColumn)}>
             <Droppable droppableId="all-columns" direction="horizontal" type="column" >
               {(provided) => (

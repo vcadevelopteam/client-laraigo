@@ -5,9 +5,9 @@ import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
 import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
-import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, CircularProgress, TextField, MenuItem } from '@material-ui/core';
+import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon, SearchIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -26,13 +26,13 @@ import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
 import TablePaginated from 'components/fields/table-paginated';
-import StarIcon from '@material-ui/icons/Star';
 import TableZyx from '../components/fields/table-simple';
-import Tooltip from '@material-ui/core/Tooltip';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
 import { sendHSM } from 'store/inbox/actions';
-
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Menu from '@material-ui/core/Menu';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 interface SelectFieldProps {
@@ -122,9 +122,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     useEffect(() => {
         if (waitClose) {
             if (!sendingRes.loading && !sendingRes.error) {
-                console.log(type)
                 const message = type === "HSM" ? t(langKeys.successful_send_hsm) : (type === "SMS" ? t(langKeys.successful_send_sms) : t(langKeys.successful_send_mail));
-                console.log(message)
                 dispatch(showSnackbar({ show: true, success: true, message }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -314,6 +312,69 @@ const CountTicket: FC<{ label: string, count: string, color: string }> = ({ labe
 )
 
 
+export const TemplateIcons: React.FC<{
+    sendHSM: (data: any) => void;
+    sendSMS: (data: any) => void;
+    sendMAIL: (data: any) => void;
+}> = ({ sendHSM, sendSMS, sendMAIL }) => {
+
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = () => setAnchorEl(null);
+    const { t } = useTranslation();
+
+    return (
+        <div style={{ whiteSpace: 'nowrap', display: 'flex' }}>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    setAnchorEl(e.currentTarget);
+                }}
+            >
+                <MoreVertIcon style={{ color: '#B6B4BA' }} />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                <MenuItem onClick={sendHSM}>
+                    <ListItemIcon color="inherit">
+                        <HSMIcon width={22} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}
+                </MenuItem>
+                <MenuItem onClick={sendSMS}>
+                    <ListItemIcon color="inherit">
+                        <SmsIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_sms)}
+                </MenuItem>
+                <MenuItem onClick={sendMAIL}>
+                    <ListItemIcon color="inherit">
+                        <MailIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_mail)}
+                </MenuItem>
+            </Menu>
+        </div>
+    )
+}
+
+
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
@@ -341,54 +402,38 @@ export const Person: FC = () => {
         });
     }
 
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const handleClose = () => setAnchorEl(null);
+
     const columns = [
         {
             accessor: 'leadid',
             isComponent: true,
+            minWidth: 60,
+            width: '1%',
             Cell: (props: any) => {
                 const person = props.cell.row.original as IPerson;
                 return (
-                    <>
-                        <Tooltip title={t(langKeys.send_hsm) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("HSM");
-                                }}
-                            >
-                                <HSMIcon width={24} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t(langKeys.send_mail) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("MAIL");
-                                }}
-                            >
-                                <MailIcon color="action" />
-                            </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t(langKeys.send_sms) + ""}>
-                            <IconButton
-                                size="small"
-                                onClick={(e: any) => {
-                                    e.stopPropagation();
-                                    setPersonsSelected([person]);
-                                    setOpenDialogTemplate(true);
-                                    setTypeTemplate("SMS");
-                                }}
-                            >
-                                <SmsIcon color="action" />
-                            </IconButton>
-                        </Tooltip>
-                    </>
+                    <TemplateIcons
+                        sendHSM={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("HSM");
+                        }}
+                        sendSMS={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("MAIL");
+                        }}
+                        sendMAIL={(e) => {
+                            e.stopPropagation();
+                            setPersonsSelected([person]);
+                            setOpenDialogTemplate(true);
+                            setTypeTemplate("SMS");
+                        }}
+                    />
                 )
             }
         },
@@ -738,8 +783,6 @@ export const Person: FC = () => {
         }
     }, [selectedRows])
 
-    console.log(domains.value?.channels)
-
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
             <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
@@ -757,7 +800,7 @@ export const Person: FC = () => {
                             optionValue="type"
                             optionDesc="communicationchanneldesc"
                         />
-                        <FieldMultiSelect
+                        {/* <FieldMultiSelect
                             onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
                             size="small"
                             label={t(langKeys.user)}
@@ -767,7 +810,7 @@ export const Person: FC = () => {
                             data={domains.value?.agents || []}
                             optionValue="userid"
                             optionDesc="fullname"
-                        />
+                        /> */}
                     </div>
                 </Grid>
                 <Grid item>
@@ -1885,14 +1928,38 @@ interface ChannelItemProps {
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
-
+    const nameschannel: Dictionary = {
+        "WHAT": "WHATSAPP",
+        "WHAD": "WHATSAPP",
+        "WHAP": "WHATSAPP",
+        "WHAC": "WHATSAPP",
+        "FBMS": "FACEBOOK MESSENGER",
+        "FBDM": "FACEBOOK MESSENGER",
+        "FBWA": "FACEBOOK MURO",
+        "WEBM": "WEB MESSENGER",
+        "TELE": "TELEGRAM",
+        "INST": "INSTAGRAM",
+        "INMS": "INSTAGRAM",
+        "INDM": "INSTAGRAM",
+        "ANDR": "ANDROID",
+        "APPL": "IOS",
+        "CHATZ": "WEB MESSENGER",
+        "CHAZ": "WEB MESSENGER",
+        "MAIL": "EMAIL",
+        "YOUT": "YOUTUBE",
+        "LINE": "LINE",
+        "SMS": "SMS",
+        "SMSI": "SMS",
+        "TWIT": "TWITTER",
+        "TWMS": "TWITTER",
+    }
     return (
         <div className={classes.root}>
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={channel.typedesc}
+                        subtitle={nameschannel[channel.type]}
                         m={1}
                     />
                 </Grid>
@@ -1982,22 +2049,8 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.firstContactDate} />}
-                            subtitle={new Date(person.firstcontact).toLocaleString()}
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastContactDate} />}
-                            subtitle={new Date(person.lastcontact).toLocaleString()}
-                            m={1}
-                        />
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Property
-                            title={<Trans i18nKey={langKeys.lastCommunicationChannel} />}
-                            subtitle={`${person.communicationchannelname || ''} - ${person.lastcommunicationchannelid || ''}`}
+                            title={<Trans i18nKey={langKeys.communicationchannel} />}
+                            subtitle={`${person.communicationchannelname || ''}`}
                             m={1}
                         />
                     </Grid>
@@ -2008,14 +2061,28 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                             m={1}
                         />
                     </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.creationDate} />}
+                            subtitle={new Date(person.createdate).toLocaleString()}
+                            m={1}
+                        />
+                    </Grid>
                 </Grid>
             </Grid>
             <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                 <Grid container direction="column">
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
-                            title={<Trans i18nKey={langKeys.creationDate} />}
-                            subtitle={new Date(person.createdate).toLocaleString()}
+                            title={<Trans i18nKey={langKeys.firstContactDate} />}
+                            subtitle={new Date(person.firstcontact).toLocaleString()}
+                            m={1}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Property
+                            title={<Trans i18nKey={langKeys.lastContactDate} />}
+                            subtitle={new Date(person.lastcontact).toLocaleString()}
                             m={1}
                         />
                     </Grid>
@@ -2047,14 +2114,51 @@ const useConversationsTabStyles = makeStyles(theme => ({
     root: {
         height: '100%',
     },
+    root2: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        height: 35,
+        border: '1px solid #EBEAED',
+        backgroundColor: '#F9F9FA',
+    },
+    containerFilterGeneral: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        backgroundColor: '#f9f9fa',
+        padding: `${theme.spacing(2)}px`,
+    },
+    containerSearch: {
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '50%',
+        },
+    },
+    iconButton: {
+        padding: 4,
+    },
+    input: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+    inputPlaceholder: {
+        '&::placeholder': {
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#84818A',
+        },
+    },
 }));
 
 const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
+    const { t } = useTranslation();
     const classes = useConversationsTabStyles();
     const dispatch = useDispatch();
     const firstCall = useRef(true);
     const [page, setPage] = useState(0);
+    const [searchFilter, setsearchFilter] = useState("");
     const [list, setList] = useState<IPersonConversation[]>([]);
+    const [filteredlist, setfilteredList] = useState<IPersonConversation[]>([]);
     const conversations = useSelector(state => state.person.personTicketList);
 
     const fetchTickets = useCallback(() => {
@@ -2104,20 +2208,55 @@ const ConversationsTab: FC<ConversationsTabProps> = ({ person }) => {
             }));
         } else {
             setList(prevList => [...prevList, ...conversations.data]);
+            setfilteredList(prevList => [...prevList, ...conversations.data]);
         }
     }, [conversations, setList, dispatch]);
 
+    function filterList(e: any) {
+        setsearchFilter(e)
+        if (e === "") {
+            setfilteredList(list)
+        } else {
+
+            var newArray = list.filter(function (el) {
+                return el.ticketnum.includes(e) ||
+                    el.asesorfinal.toLowerCase().includes(e.toLowerCase()) ||
+                    el.channeldesc.toLowerCase().includes(e.toLowerCase()) ||
+                    new Date(el.fechainicio).toLocaleString().includes(e) ||
+                    new Date(el.fechafin).toLocaleString().includes(e)
+            });
+            setfilteredList(newArray)
+        }
+    }
     return (
         <div className={classes.root}>
-            {list.map((e, i) => {
-                if (list.length < conversations.count && i === list.length - 1) {
+            {list.length > 0 &&
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <Paper component="div" className={classes.root2} elevation={0}>
+                            <IconButton type="button" className={classes.iconButton} aria-label="search" disabled>
+                                <SearchIcon />
+                            </IconButton>
+                            <InputBase
+                                className={classes.input}
+                                value={searchFilter}
+                                onChange={(e) => filterList(e.target.value)}
+                                placeholder={t(langKeys.search)}
+                                inputProps={{ className: classes.inputPlaceholder }}
+                            />
+                        </Paper>
+                    </div>
+                </Box>
+            }
+            {filteredlist.map((e, i) => {
+                if (filteredlist.length < conversations.count && i === filteredlist.length - 1) {
                     return [
                         <ConversationItem conversation={e} key={`conversation_item_${i}`} person={person} />,
                         <div
                             style={{ width: 'inherit', display: 'flex', justifyContent: 'center' }}
                             key={`conversation_item_${i}_loader`}
                         >
-                            <CircularProgress />
                         </div>
                     ];
                 }
@@ -2159,6 +2298,9 @@ const useConversationsItemStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    containerstyle: {
+        padding: "10px 0"
+    }
 }));
 
 interface ConversationItemProps {
@@ -2177,7 +2319,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-
     return (
         <div className={classes.root}>
             <DialogInteractions
@@ -2198,7 +2339,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                     <Property
                         title={<Trans i18nKey={langKeys.channel} />}
-                        subtitle={conversation.personcommunicationchannel}
+                        subtitle={conversation.channeldesc}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
@@ -2223,106 +2364,84 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
             </Grid>
             <Collapse in={open}>
                 <div className={classes.collapseContainer}>
-                    <Divider orientation="horizontal" />
                     <h3><Trans i18nKey={langKeys.ticketInformation} /></h3>
-                    <Grid container direction="column">
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstTicketassignTime} />
-                                    </label>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TMO
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tmo}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.fechainicio && new Date(conversation.fechainicio).toLocaleString()}
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TME
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tme}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.firstReply} />
-                                    </label>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            TMR
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tmr}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.firstreplytime}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.pauseTime} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.totalpauseduration}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfAdvisor} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestaasesor}
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.avgResponseTimeOfAdvisor} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.tiempopromediorespuestaasesor}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                             </Grid>
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.avgResponseTimeOfClient} />
-                                    </label>
+                        <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
+                            <Grid container direction="column">
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.status} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.status}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.tiempopromediorespuestapersona}
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.totalTime}>
-                                        <Trans i18nKey={langKeys.totalTime} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    <label className={classes.totalTime}>{conversation.totalduration}</label>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                        <Divider orientation="horizontal" />
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.closetype} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.closetype}
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.closetype} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.closetype}
+                                        </Grid>
+                                    </Grid>
                                 </Grid>
                             </Grid>
+
                         </Grid>
-                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                            <Grid container direction="row">
-                                <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                    <label className={classes.infoLabel}>
-                                        <Trans i18nKey={langKeys.status} />
-                                    </label>
-                                </Grid>
-                                <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
-                                    {conversation.status}
-                                </Grid>
-                            </Grid>
-                        </Grid>
+
                     </Grid>
                 </div>
             </Collapse>

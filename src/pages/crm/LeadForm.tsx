@@ -1,6 +1,6 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, makeStyles, Breadcrumbs, Grid, Button, CircularProgress, Box, TextField, Modal, IconButton, Checkbox, Tabs, Avatar, Paper, InputAdornment } from '@material-ui/core';
-import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel } from 'components';
+import { EmojiPickerZyx, FieldEdit, FieldMultiSelectFreeSolo, FieldSelect, FieldView, PhoneFieldEdit, RadioGroudFieldEdit, TitleDetail, AntTabPanel, FieldMultiSelect, RichText } from 'components';
 import { langKeys } from 'lang/keys';
 import paths from 'common/constants/paths';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,8 +10,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction } from 'store/lead/actions';
-import { ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain } from 'store/lead/actions';
+import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
 import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
+import { Descendant } from 'slate';
 
 const tagsOptions = [
     { title: "Information" },
@@ -116,7 +117,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const [openPersonModal, setOpenPersonmodal] = useState(false);
     const lead = useSelector(state => state.lead.lead);
     const advisers = useSelector(state => state.lead.advisers);
-    // const saveLead = useSelector(state => state.lead.saveLead);
     const phases = useSelector(state => state.lead.leadPhases);
     const user = useSelector(state => state.login.validateToken.user);
     const archiveLeadProcess = useSelector(state => state.lead.archiveLead);
@@ -127,6 +127,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const saveLead = useSelector(state => state.lead.saveLead);
     const leadHistory = useSelector(state => state.lead.leadHistory);
     const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
+    const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -149,6 +150,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             userid: 0,
             phase: '',
 
+            leadproduct: '',
+            campaignid: 0,
+
             activities: [] as ICrmLeadActivitySave[],
             notes: [] as ICrmLeadNoteSave[],
 
@@ -164,6 +168,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         register('personcommunicationchannel', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('userid', { validate: (value) => ((value && value > 0) ? true : t(langKeys.field_required) + "") });
         register('columnid', { validate: (value) => ((value !== null && value !== undefined && value !== '') || t(langKeys.field_required) + "") });
+        register('leadproduct', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
     }, [register, t]);
 
     React.useEffect(() => {
@@ -171,7 +176,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     }, [registerFormFieldOptions]);
 
     const onSubmit = handleSubmit((data) => {
-        console.log(data);
+        console.log('onSubmit:', data);
         if (edit) {
             dispatch(saveLeadAction(insLead2(data, data.operation), false));
         } else {
@@ -208,6 +213,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         dispatch(getAdvisers(adviserSel()));
         // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
         dispatch(getLeadPhases(getColumnsSel(0, true)));
+        dispatch(getLeadProductsDomain(getValuesFromDomain('OPORTUNIDADPRODUCTOS')));
 
         return () => {
             dispatch(resetGetLead());
@@ -220,6 +226,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetGetLeadLogNotes());
             dispatch(resetSaveLeadLogNote());
             dispatch(resetGetLeadHistory());
+            dispatch(resetGetLeadProductsDomain());
         };
     }, [edit, match.params.id, dispatch]);
 
@@ -255,6 +262,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 leadid: match.params.id,
                 phase: lead.value?.phase,
 
+                leadproduct: lead.value?.leadproduct || '',
+                campaignid: lead.value?.campaignid,
+
                 activities: [] as ICrmLeadActivitySave[],
                 notes: [] as ICrmLeadNoteSave[],
 
@@ -263,7 +273,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             registerFormFieldOptions();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [lead, edit, dispatch]);
+    }, [lead, edit, t, dispatch]);
 
     useEffect(() => {
         if (advisers.loading) return;
@@ -275,11 +285,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [advisers, dispatch]);
+    }, [advisers, t, dispatch]);
 
     useEffect(() => {
-        console.log(saveLead);
         if (saveLead.loading) return;
         if (saveLead.error) {
             const errormessage = t(saveLead.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -296,8 +304,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             history.push(paths.CRM);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [saveLead, history, dispatch]);
+    }, [saveLead, history, t, dispatch]);
 
     useEffect(() => {
         if (archiveLeadProcess.loading) return;
@@ -316,8 +323,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             history.push(paths.CRM);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [archiveLeadProcess, history, dispatch]);
+    }, [archiveLeadProcess, history, t, dispatch]);
 
     useEffect(() => {
         if (leadActivities.loading) return;
@@ -329,8 +335,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [leadActivities, dispatch]);
+    }, [leadActivities, t, dispatch]);
 
     useEffect(() => {
         if (saveActivity.loading) return;
@@ -350,8 +355,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadActivities(leadActivitySel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [saveActivity, dispatch]);
+    }, [saveActivity, match.params.id, t, dispatch]);
 
     useEffect(() => {
         if (leadNotes.loading) return;
@@ -363,8 +367,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [leadNotes, dispatch]);
+    }, [leadNotes, t, dispatch]);
 
     useEffect(() => {
         if (saveNote.loading) return;
@@ -384,8 +387,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(getLeadLogNotes(leadLogNotesSel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [saveNote, match.params.id, dispatch]);
+    }, [saveNote, match.params.id, t, dispatch]);
 
     useEffect(() => {
         if (leadHistory.loading) return;
@@ -397,8 +399,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 show: true,
             }));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [leadHistory, dispatch]);
+    }, [leadHistory, t, dispatch]);
 
     useEffect(() => {
         if (updateLeadTagProcess.loading) return;
@@ -412,8 +413,19 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         } else if (updateLeadTagProcess.success && edit === true) {
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateLeadTagProcess, match.params.id, edit, dispatch]);
+    }, [updateLeadTagProcess, match.params.id, edit, t, dispatch]);
+
+    useEffect(() => {
+        if (leadProductsDomain.loading) return;
+        if (leadProductsDomain.error) {
+            const errormessage = t(leadProductsDomain.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: errormessage,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [leadProductsDomain, match.params.id, edit, t, dispatch]);
 
     const handleCloseLead = useCallback(() => {
         if (!lead.value) return;
@@ -432,8 +444,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         };
 
         dispatch(updateLeadTags(updateLeadTagsIns(data)));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [edit, dispatch]);
+    }, [edit, match.params.id, dispatch]);
 
     const iSProcessLoading = useCallback(() => {
         return (
@@ -443,6 +454,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             saveNote.loading
         );
     }, [saveLead, archiveLeadProcess, saveActivity, saveNote]);
+
+    const onCloseSelectPersonModal = useCallback(() => {
+        setOpenPersonmodal(false);
+    }, []);
+
+    const onClickSelectPersonModal = useCallback((value: IPerson) => {
+        setValue('personcommunicationchannel', value.personcommunicationchannel)
+        setValue('email', value.email || '')
+        setValue('phone', value.phone || '')
+        setValues(prev => ({ ...prev, displayname: value.displayname }))
+    }, [setValue]);
 
     const isStatusClosed = useCallback(() => {
         return lead.value?.status === "CERRADO";
@@ -580,7 +602,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     className={classes.field}
                                     valueDefault={getValues('tags')}
                                     onChange={(value: ({title: string} | string)[], value2: {action: "create-option" | "remove-option", option: {option: string}}) => {
-                                        console.log('FieldMultiSelectFreeSolo:onChange', value, value2);
                                         const tags = value.map((o: any) => o.title || o).join();
                                         setValue('tags', tags);
 
@@ -611,6 +632,17 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         readOnly={isStatusClosed() || iSProcessLoading()}
                                     />
                                 }
+                                <FieldMultiSelect
+                                    label={t(langKeys.product, { count: 2 })}
+                                    className={classes.field}
+                                    valueDefault={getValues('leadproduct')}
+                                    onChange={(v) => setValue('leadproduct', v?.map((o: Dictionary) => o['domainvalue']).join(',') || '')}
+                                    data={leadProductsDomain.data}
+                                    loading={leadProductsDomain.loading}
+                                    optionDesc="domaindesc"
+                                    optionValue="domainvalue"
+                                    error={errors?.leadproduct?.message}
+                                />
                             </Grid>
                         </Grid>
                         <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
@@ -621,7 +653,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                         className={classes.field}
                                         value={lead.value?.displayname}
                                     />) :
-                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field} >
+                                    (<div style={{ display: 'flex', flexDirection: 'column' }} className={classes.field}>
                                         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                             <div style={{ flexGrow: 1 }}>
                                                 <FieldView
@@ -660,9 +692,12 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 <FieldEdit
                                     label={t(langKeys.endDate)}
                                     className={classes.field}
-                                    type="date"
-                                    onChange={(value) => setValue('date_deadline', value)}
-                                    valueDefault={getValues('date_deadline')?.substring(0, 10)}
+                                    type="datetime-local"
+                                    onChange={(value) => {
+                                        // datetime formaT: yyyy-MM-ddTHH:mm
+                                        setValue('date_deadline', value);
+                                    }}
+                                    valueDefault={(getValues('date_deadline') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                     error={errors?.date_deadline?.message}
                                     InputProps={{
                                         readOnly: isStatusClosed() || iSProcessLoading(),
@@ -693,7 +728,6 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     optionValue="columnid"
                                     data={phases.data}
                                     onChange={(e) => {
-                                        console.log('FormControlLabel', Number(e.columnid));
                                         setValue('column_uuid', e.column_uuid);
                                         setValue('columnid', Number(e.columnid));
                                         setValues(prev => ({ ...prev })); // refrescar
@@ -701,6 +735,11 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={<Trans i18nKey={langKeys.phase} />}
                                     error={errors?.columnid?.message}
                                     readOnly={isStatusClosed() || iSProcessLoading()}
+                                />
+                                <FieldView
+                                    label={t(langKeys.campaign)}
+                                    className={classes.field}
+                                    value={lead.value?.campaign || ''}
                                 />
                             </Grid>
                         </Grid>
@@ -787,13 +826,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                 {edit === false && (
                     <SelectPersonModal
                         open={openPersonModal}
-                        onClose={() => setOpenPersonmodal(false)}
-                        onClick={(value) => {
-                            setValue('personcommunicationchannel', value.personcommunicationchannel)
-                            setValue('email', value.email || '')
-                            setValue('phone', value.phone || '')
-                            setValues(prev => ({ ...prev, displayname: value.displayname }))
-                        }}
+                        onClose={onCloseSelectPersonModal}
+                        onClick={onClickSelectPersonModal}
                     />
                 )}
             </div>
@@ -834,7 +868,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
     const [pageSize] = useState(10);
     const personList = useSelector(state => state.person.personList);
 
-    const columns = React.useMemo(
+    const columns = useMemo(
         () => [
             {
                 accessor: 'id',
@@ -868,8 +902,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
                 accessor: 'phone' as keyof IPerson,
             },
         ],
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [t],
+        [onClick, onClose, t],
     );
 
     const fetchData = useCallback(({ pageSize, pageIndex, filters, sorts }: IFetchData) => {
@@ -902,7 +935,7 @@ const SelectPersonModal: FC<SelectPersonModalProps> = ({ open, onClose, onClick 
             settotalrow(personList.count);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [personList]);
+    }, [personList, t, dispatch]);
 
     return (
         <Modal
@@ -1312,6 +1345,10 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
         margin: theme.spacing(1),
         minHeight: 58,
     },
+    richTextfield: {
+        margin: theme.spacing(1),
+        minHeight: 150,
+    },
     footer: {
         marginTop: '1em',
         display: 'flex',
@@ -1324,6 +1361,8 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
     },
 }));
 
+const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }] }];
+
 export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
@@ -1333,6 +1372,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const saveActivity = useSelector(state => state.lead.saveLeadActivity);
     const advisers = useSelector(state => state.lead.advisers);
     const domains = useSelector(state => state.main.mainData);
+    const [detail, setDetail] = useState<Descendant[]>(initialValue);
 
     useEffect(() => {
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
@@ -1373,6 +1413,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
+            detailjson: JSON.stringify(initialValue),
         },
     });
 
@@ -1399,6 +1440,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [registerFormFieldOptions]);
 
     const resetValues = useCallback(() => {
+        setDetail(initialValue);
         reset({
             leadid: leadid,
             leadactivityid: 0,
@@ -1410,12 +1452,14 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: "INSERT",
             feedback: '',
+            detailjson: JSON.stringify(initialValue),
         });
         registerFormFieldOptions();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [reset]);
 
     useEffect(() => {
+        setDetail(activity?.detailjson ? JSON.parse(activity?.detailjson) : initialValue);
         reset({
             leadid: leadid,
             leadactivityid: activity?.leadactivityid || 0,
@@ -1427,6 +1471,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             username: null,
             operation: activity ? "UPDATE" : "INSERT",
             feedback: '',
+            detailjson: activity?.detailjson || JSON.stringify(initialValue),
         });
 
         registerFormFieldOptions();
@@ -1435,8 +1480,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
-            values.status = status;
-            onSubmit?.(values);
+            onSubmit?.({ ...values, status, detailjson: JSON.stringify(detail) });
             if (leadid === 0 && mustCloseOnSubmit.current) {
                 onClose();
             } else {
@@ -1444,7 +1488,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             }
         })();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [handleSubmit, dispatch]);
+    }, [detail, handleSubmit, dispatch]);
 
     return (
         <Modal
@@ -1456,61 +1500,74 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             <Box className={modalClasses.root}>
                 <TitleDetail title={t(langKeys.scheduleActivity)} />
                 <div style={{ height: '1em' }} />
-                <Grid container direction="row">
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                        <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldSelect
-                                    uset
-                                    label={t(langKeys.activityType)}
-                                    className={classes.field}
-                                    data={domains.data}
-                                    prefixTranslation="type_activitylead_"
-                                    optionDesc="domainvalue"
-                                    optionValue="domainvalue"
-                                    loading={domains.loading}
-                                    valueDefault={getValues('type')}
-                                    onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
-                                    error={errors?.type?.message}
-                                />
+                <Grid container direction="column">
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <Grid container direction="row">
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="column">
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldSelect
+                                            uset
+                                            label={t(langKeys.activityType)}
+                                            className={classes.field}
+                                            data={domains.data}
+                                            prefixTranslation="type_activitylead_"
+                                            optionDesc="domainvalue"
+                                            optionValue="domainvalue"
+                                            loading={domains.loading}
+                                            valueDefault={getValues('type')}
+                                            onChange={(v: IDomain) => setValue('type', v?.domainvalue || "")}
+                                            error={errors?.type?.message}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldEdit
+                                            label={t(langKeys.summary)}
+                                            className={classes.field}
+                                            valueDefault={getValues('description')}
+                                            onChange={v => setValue('description', v)}
+                                            error={errors?.description?.message}
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldEdit
-                                    label={t(langKeys.summary)}
-                                    className={classes.field}
-                                    valueDefault={getValues('description')}
-                                    onChange={v => setValue('description', v)}
-                                    error={errors?.description?.message}
-                                />
+                            <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
+                                <Grid container direction="column">
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldEdit
+                                            label={t(langKeys.dueDate)}
+                                            className={classes.field}
+                                            type="date"
+                                            valueDefault={getValues('duedate')?.substring(0, 10)}
+                                            onChange={(value) => setValue('duedate', value)}
+                                            error={errors?.duedate?.message}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                        <FieldSelect
+                                            label={t(langKeys.assignedTo)}
+                                            className={classes.field}
+                                            data={advisers.data}
+                                            optionDesc="firstname"
+                                            optionValue="firstname"
+                                            loading={advisers.loading}
+                                            valueDefault={getValues('assignto')}
+                                            onChange={v => setValue('assignto', v?.firstname || "")}
+                                            error={errors?.assignto?.message}
+                                        />
+                                    </Grid>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={6} md={6} lg={6} xl={6}>
-                        <Grid container direction="column">
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldEdit
-                                    label={t(langKeys.dueDate)}
-                                    className={classes.field}
-                                    type="date"
-                                    valueDefault={getValues('duedate')?.substring(0, 10)}
-                                    onChange={(value) => setValue('duedate', value)}
-                                    error={errors?.duedate?.message}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                <FieldSelect
-                                    label={t(langKeys.assignedTo)}
-                                    className={classes.field}
-                                    data={advisers.data}
-                                    optionDesc="firstname"
-                                    optionValue="firstname"
-                                    loading={advisers.loading}
-                                    valueDefault={getValues('assignto')}
-                                    onChange={v => setValue('assignto', v?.firstname || "")}
-                                    error={errors?.assignto?.message}
-                                />
-                            </Grid>
-                        </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <RichText
+                            value={detail}
+                            onChange={setDetail}
+                            placeholder="Escribe algo"
+                            className={classes.richTextfield}
+                            spellCheck
+                        />
                     </Grid>
                 </Grid>
                 <div className={classes.footer}>
@@ -1721,7 +1778,7 @@ const MarkDoneModal: FC<MarkDoneModalProps> = ({ open, onClose, onSubmit, onNext
             mustNext.current = false;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [markDoneProcess, dispatch]);
+    }, [markDoneProcess, t, dispatch]);
 
     return (
         <Modal

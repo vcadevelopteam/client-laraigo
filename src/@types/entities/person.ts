@@ -132,6 +132,9 @@ export interface IPersonAdditionalInfo {
 }
 
 export interface IPersonConversation {
+    tme: string;
+    tmr: string;
+    tmo: string;
     asesorfinal: string;
     asesorinicial: string;
     closetype: string;
@@ -153,6 +156,7 @@ export interface IPersonConversation {
     totalpausaduration: string;
     firstreplytime: string;
     totalpauseduration: string;
+    channeldesc: string;
 }
 
 export interface IPersonLead {

@@ -53,3 +53,13 @@ export interface ICampaign {
 
 	sourcechanged?: boolean,
 }
+
+export interface ICampaignLst {
+	description: string;
+	enddate: string;
+	id: number;
+	startdate: string;
+	status: string;
+	title: string;
+	type: string;
+}

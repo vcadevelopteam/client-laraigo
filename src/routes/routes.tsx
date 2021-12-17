@@ -49,6 +49,13 @@ export const routes: RouteConfig[] = [
         path: paths.PERSON,
         icon: (className) => <ClientIcon style={{ width: 22, height: 22 }} className={className} />,
     },
+    {
+        key: paths.CRM,
+        description: <Trans i18nKey={langKeys.lead} count={2} />,
+        tooltip: <Trans i18nKey={langKeys.lead} count={2} />,
+        path: paths.CRM,
+        icon: (className) => <CRMIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
+    },
     // {
     //     key: paths.EMAIL_INBOX,
     //     description: <Trans i18nKey={langKeys.eMailInbox} />,
@@ -146,13 +153,6 @@ export const routes: RouteConfig[] = [
         tooltip: <Trans i18nKey={langKeys.ia} />,
         path: paths.IASERVICES,
         icon: (className) => <IAServicesIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
-    },
-    {
-        key: paths.CRM,
-        description: 'CRM',
-        tooltip: 'CRM',
-        path: paths.CRM,
-        icon: (className) => <CRMIcon style={{ width: 22, height: 22, stroke: 'none' }} className={className} />,
     },
     // {
     //     key: paths.EXTRAS,

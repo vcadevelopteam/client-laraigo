@@ -32,6 +32,7 @@ const translation: LangKeys = {
     comments: 'Comentarios',
     lastnote: 'Última nota',
 
+    tmo: "TMO",
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
     expected_revenue: 'Ingreso esperado',
@@ -389,6 +390,8 @@ const translation: LangKeys = {
     yes: 'Sí',
     activate360dialog: "Activar como 360 dialog",
     activatesmooch: "Activar como smooch",
+    register360dialog: "Registrar como 360 dialog",
+    registersmooch: "Registrar como smooch",
     whatsapptitle: 'Para conectar un canal de whatsapp debes hacer clic en "Registrar cuenta de Whatsapp" y una vez que termines el registro, ingresar el número y la Clave API en este formulario',
     registerwhats: "Registrar cuenta de Whatsapp",
     whatsappinformation: "Información de Whatsapp",
@@ -784,7 +787,7 @@ const translation: LangKeys = {
     blacklist: 'Blacklist',
     executiontype: 'Tipo de ejecución',
     manual: 'Manual',
-    scheduled: 'Programado',
+    scheduled: 'Programar',
     source: 'Fuente',
     bdinternal: 'Base interna',
     bdexternal: 'Base externa',
@@ -1459,9 +1462,9 @@ const translation: LangKeys = {
     summary: 'Resumen',
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
-    schedule: 'Programado',
-    markAsDone: 'Marcar como hecho',
-    doneAndScheduleNext: 'Hecho y programar siguiente',
+    schedule: 'Programar',
+    markAsDone: 'Marcar como realizado',
+    doneAndScheduleNext: 'Marcar como realizado y programar siguiente actividad',
     discard: 'Descartar',
     date_format_error: 'Ingrese una fecha válida',
 
@@ -1505,6 +1508,9 @@ const translation: LangKeys = {
     enterTheUrl: 'Ingresa la URL',
     attached: 'Adjunto',
     loadingImage: 'Cargando imagen',
+
+    product: 'Producto',
+    product_plural: 'Productos',
 };
 
 const esResource: ResourceLanguage = {

@@ -21,6 +21,7 @@ export const langKeys = {
     next: "next",
     period: "period",
     tos: "tos",
+    tmo: "tmo",
     tag: 'tag',
     
 
@@ -121,6 +122,8 @@ export const langKeys = {
     industry_institution: "industry_institution",
     activate360dialog: "activate360dialog",
     activatesmooch: "activatesmooch",
+    register360dialog: "register360dialog",
+    registersmooch: "registersmooch",
     goback: "goback",
     personAverageReplyTimexFecha: "personAverageReplyTimexFecha",
     desiredphonenumberwhatsappbusiness: "desiredphonenumberwhatsappbusiness",
@@ -1507,6 +1510,9 @@ export const langKeys = {
     enterTheUrl: 'enterTheUrl',
     attached: 'attached',
     loadingImage: 'loadingImage',
+
+    product: 'product',
+    product_plural: 'product_plural',
 };
 
 export type LangKeys = typeof langKeys;

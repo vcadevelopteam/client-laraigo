@@ -72,7 +72,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
             setIconColor(channelSelected?.coloricon || '#7721AD');
         }
-    }, [multiData])
+    }, [multiData, communicationchannelid])
 
     return (
         <div

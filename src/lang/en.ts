@@ -869,6 +869,8 @@ const translation: LangKeys = {
     givechannelname: "Give your channel a name",
     activate360dialog: "Activate as 360 dialog",
     activatesmooch: "Activate as smooch",
+    register360dialog: "Register as 360 dialog",
+    registersmooch: "Register as smooch",
     country: "Country",
     goback: "Are you sure you want to go back? Some of the information will be lost",
     yes: 'Yes',
@@ -1278,6 +1280,7 @@ const translation: LangKeys = {
     createdBy: 'Created by',
     creationDate: 'Creation date',
     modifiedBy: 'Modified by',
+    tmo: "TMO",
     modificationDate: 'Modification date',
     advisor: 'Advisor',
     startDate: 'Start date',
@@ -1513,6 +1516,9 @@ const translation: LangKeys = {
     enterTheUrl: 'Enter the URL',
     attached: 'Attached',
     loadingImage: 'Loading image',
+
+    product: 'Product',
+    product_plural: 'Products',
 };
 
 const enResource: ResourceLanguage = {

@@ -8,18 +8,19 @@ import { Trans } from 'react-i18next';
 import { Rating, Skeleton } from '@material-ui/lab';
 import { useHistory } from 'react-router';
 import paths from 'common/constants/paths';
+import { ICrmLead } from '@types';
 
 const columnWidth = 275;
 const columnMinHeight = 500;
 const cardBorderRadius = 12;
 const inputTitleHeight = 50;
 
-interface LeadCardContentProps extends BoxProps {
-    lead: any;
+interface LeadCardContentProps extends Omit<BoxProps, 'onClick'> {
+    lead: ICrmLead;
     snapshot: DraggableStateSnapshot;
-    onDelete?: (value: string) => void;
-    onClick?: (lead: any) => void;
-    onCloseLead?: (lead: any) => void;
+    onDelete?: (value: ICrmLead) => void;
+    onClick?: (lead: ICrmLead) => void;
+    onCloseLead?: (lead: ICrmLead) => void;
 }
 
 const useLeadCardStyles = makeStyles(theme => ({
@@ -82,6 +83,11 @@ const useLeadCardStyles = makeStyles(theme => ({
         height: 8,
         borderRadius: 4,
     },
+    tagBox: {
+        width: 8,
+        height: 8,
+        borderRadius: 1,
+    },
     tagtext: {
         fontSize: 12,
         fontWeight: 400,
@@ -101,9 +107,10 @@ const useLeadCardStyles = makeStyles(theme => ({
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const tags = (lead.tags) ? lead.tags.split(',') : []
-    const urgencyLevels = [null,'LOW','MEDIUM','HIGH']
-    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet']
+    const tags = lead.tags?.split(',') || [];
+    const products = lead.leadproduct?.split(',') || [];
+    const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
+    const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
     const history = useHistory();
 
     const handleMoreVertClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -140,9 +147,19 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                 <span className={classes.info}>S/ {lead.expected_revenue}</span>
                 <span className={classes.info}>{lead.displayname}</span>
                 <div className={classes.tagsRow}>
-                    {tags.map((tag: String, index:number) =>
+                    {tags.map((tag: String, index: number) =>
                         <div className={classes.tag} key={index}>
                             <div className={classes.tagCircle} style={{ backgroundColor: colors[1] }} />
+                            <div style={{ width: 6 }} />
+                            <div className={classes.tagtext}>{tag}</div>
+                        </div>
+                    )}
+                </div>
+                {products.length !== 0 && <div style={{ height: '0.25em' }} />}
+                <div className={classes.tagsRow}>
+                    {products.map((tag: String, index: number) =>
+                        <div className={classes.tag} key={index}>
+                            <div className={classes.tagCircle} style={{ backgroundColor: colors[2] }} />
                             <div style={{ width: 6 }} />
                             <div className={classes.tagtext}>{tag}</div>
                         </div>

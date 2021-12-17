@@ -370,3 +370,33 @@ export const updateLeadTagsReset = (state: IState): IState => ({
     ...state,
     updateLeadTags: initialState.updateLeadTags,
 });
+
+export const getLeadProductsDomain = (state: IState): IState => ({
+    ...state,
+    leadProductsDomain: { ...state.leadProductsDomain, loading: true, error: false },
+});
+
+export const getLeadProductsDomainSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadProductsDomain: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadProductsDomainFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadProductsDomain: {
+        ...state.leadProductsDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadProductsDomainFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio OPORTUNIDADPRODUCTOS',
+    },
+});
+
+export const getLeadProductsDomainReset = (state: IState): IState => ({
+    ...state,
+    leadProductsDomain: initialState.leadProductsDomain,
+});

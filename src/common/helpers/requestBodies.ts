@@ -1,4 +1,4 @@
-import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
+import { DashboardTemplateSave, Dictionary, IChannel, IChatWebAdd, ICrmLead, ICrmLeadActivitySave, ICrmLeadNoteSave, ICrmLeadSel, ICrmLeadTagsSave, ILead, IPerson, IRequestBody, IRequestBodyPaginated } from '@types';
 import { uuidv4 } from '.';
 
 type ID = string | number;
@@ -1736,12 +1736,12 @@ export const getColumnsSel = (id:number, lost: boolean = false): IRequestBody =>
     }
 })
 
-export const getLeadsSel = (id:number): IRequestBody => ({
+export const getLeadsSel = (params: ICrmLeadSel): IRequestBody => ({
     method: "UFN_LEAD_SEL",
     key: "UFN_LEAD_SEL",
     parameters: {
-        id: id,
-        all: true
+        ...params,
+        all: params.id === 0,
     }
 })
 
@@ -1820,7 +1820,10 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
     key: "UFN_LEAD_SEL",
     parameters: {
         id: id,
-        all: false
+        fullname: '',
+	    leadproduct: '',
+	    campaignid: 0,
+        all: false,
     },
 });
 
