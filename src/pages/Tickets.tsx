@@ -75,7 +75,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
     const [waitClose, setWaitClose] = useState(false);
     const multiData = useSelector(state => state.main.multiData);
     const closingRes = useSelector(state => state.inbox.triggerMassiveCloseTicket);
-    
+
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm();
 
     useEffect(() => {

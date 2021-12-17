@@ -626,13 +626,11 @@ const TableZyx = React.memo(({
             prepareRow(row);
             return (
                 <TableRow
-                    component="div"
                     {...row.getRowProps({ style })}
                     hover
                 >
                     {row.cells.map((cell, i) =>
                         <TableCell
-                            component="div"
                             {...cell.getCellProps({
                                 style: {
                                     minWidth: cell.column.minWidth,
@@ -641,10 +639,12 @@ const TableZyx = React.memo(({
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
+                                    textAlign: cell.column.type === "number" ? "right" : "left",
                                 },
                             })}
                         >
-                            {headerGroups[0].headers[i].isComponent ?
+                            {cell.render('Cell')}
+                            {/* {headerGroups[0].headers[i].isComponent ?
                                 cell.render('Cell')
                                 :
                                 (cell.value?.length > 50 ?
@@ -656,7 +656,7 @@ const TableZyx = React.memo(({
                                     :
                                     cell.render('Cell')
                                 )
-                            }
+                            } */}
                         </TableCell>
                     )}
                 </TableRow>
@@ -832,14 +832,12 @@ const TableZyx = React.memo(({
                                         prepareRow(row);
                                         return (
                                             <TableRow
-                                                component="div"
                                                 {...row.getRowProps()}
                                                 hover
                                                 style={{ cursor: onClickRow ? 'pointer' : 'default' }}
                                             >
                                                 {row.cells.map((cell, i) =>
                                                     <TableCell
-                                                        component="div"
                                                         {...cell.getCellProps({
                                                             style: {
                                                                 minWidth: cell.column.minWidth,
@@ -849,6 +847,7 @@ const TableZyx = React.memo(({
                                                                 textOverflow: 'ellipsis',
                                                                 whiteSpace: 'nowrap',
                                                                 ...(toolsFooter ? {} : { padding: '0px' }),
+                                                                textAlign: cell.column.type === "number" ? "right" : "left",
                                                             },
                                                         })}
                                                         onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
