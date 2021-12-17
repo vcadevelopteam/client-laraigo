@@ -319,7 +319,10 @@ export const TemplateIcons: React.FC<{
 }> = ({ sendHSM, sendSMS, sendMAIL }) => {
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
+    const handleClose = (e: any) => {
+        e.stopPropagation();
+        setAnchorEl(null);
+    };
     const { t } = useTranslation();
 
     return (
@@ -329,6 +332,7 @@ export const TemplateIcons: React.FC<{
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
+                
                 onClick={(e) => {
                     e.stopPropagation();
                     setAnchorEl(e.currentTarget);
@@ -401,10 +405,6 @@ export const Person: FC = () => {
             state: person,
         });
     }
-
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
-
     const columns = [
         {
             accessor: 'leadid',
@@ -510,6 +510,7 @@ export const Person: FC = () => {
                         {Object.entries(phasejson).map(([key, value]) => (
                             <CountTicket
                                 label={key}
+                                key={key}
                                 count={value + ""}
                                 color="#55BD84"
                             />
