@@ -354,6 +354,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             }));
             dispatch(getLeadActivities(leadActivitySel(match.params.id)));
             dispatch(getLeadHistory(leadHistorySel(match.params.id)));
+            dispatch(resetSaveLeadActivity());
         }
     }, [saveActivity, match.params.id, t, dispatch]);
 
@@ -815,6 +816,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 setValues(prev => ({ ...prev })); // refresh
                             }
                         }}
+                        userid={getValues('userid')}
                     />
                 </AntTabPanel>
                 <AntTabPanel index={2} currentIndex={tabIndex}>
@@ -1196,6 +1198,7 @@ interface TabPanelScheduleActivityProps {
     loading?: boolean;
     activities: IcrmLeadActivity[];
     leadId: number;
+    userid: number;
     onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
 }
 
@@ -1204,7 +1207,14 @@ interface OpenModal {
     payload: IcrmLeadActivity | null;
 }
 
-export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ readOnly, activities, loading, leadId, onSubmit }) => {
+export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
+    readOnly,
+    activities,
+    loading,
+    leadId,
+    userid,
+    onSubmit,
+}) => {
     const classes = useTabPanelScheduleActivityStyles();
     const dispatch = useDispatch();
     const [openModal, setOpenModal] = useState<OpenModal>({ value: false, payload: null });
@@ -1305,6 +1315,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({ re
                 activity={openModal.payload}
                 leadid={leadId}
                 onSubmit={onSubmit}
+                userid={userid}
             />
             <MarkDoneModal
                 open={openDoneModal.value}
@@ -1336,6 +1347,7 @@ interface SaveActivityModalProps {
     open: boolean;
     activity: IcrmLeadActivity | null;
     leadid: number;
+    userid?: number;
     onClose: () => void;
     onSubmit?: (newActivity: ICrmLeadActivitySave) => void;
 }
@@ -1363,7 +1375,7 @@ const useSaveActivityModalStyles = makeStyles(theme => ({
 
 const initialValue: Descendant[] = [{ type: "paragraph", children: [{ text: "" }] }];
 
-export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, onSubmit }) => {
+export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, activity, leadid, userid, onSubmit }) => {
     const modalClasses = useSelectPersonModalStyles();
     const classes = useSaveActivityModalStyles();
     const { t } = useTranslation();
@@ -1391,7 +1403,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                 success: true,
                 show: true,
             }));
-            dispatch(getLeadActivities(leadActivitySel(leadid)))
+            dispatch(getLeadActivities(leadActivitySel(leadid)));
             if (mustCloseOnSubmit.current) {
                 onClose();
             } else {
@@ -1399,7 +1411,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [saveActivity, leadid, dispatch]);
+    }, [saveActivity, leadid, open, dispatch]);
 
     const { getValues, setValue, formState: { errors }, reset, handleSubmit, register } = useForm<ICrmLeadActivitySave>({
         defaultValues: {
@@ -1478,6 +1490,12 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activity, reset, register]);
 
+    useEffect(() => {
+        if (userid && leadid) {
+            setValue('assignto', advisers.data.find(e => e.userid === userid)?.firstname || '');
+        }
+    }, [userid, leadid, advisers, setValue]);
+
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {
             onSubmit?.({ ...values, status, detailjson: JSON.stringify(detail) });
@@ -1537,8 +1555,8 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
                                         <FieldEdit
                                             label={t(langKeys.dueDate)}
                                             className={classes.field}
-                                            type="date"
-                                            valueDefault={getValues('duedate')?.substring(0, 10)}
+                                            type="datetime-local"
+                                            valueDefault={(getValues('duedate') as string)?.replace(' ', 'T')?.substring(0, 16)}
                                             onChange={(value) => setValue('duedate', value)}
                                             error={errors?.duedate?.message}
                                         />

@@ -44,7 +44,7 @@ export interface ICampaign {
     headers?: any[],
     jsonData?: any[],
     selectedColumns?: SelectedColumns,
-	selectedRows?: any[],
+	selectedRows?: any,
 	person?: any[],
 
 	subject?: string,

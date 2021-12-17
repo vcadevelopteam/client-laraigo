@@ -61,7 +61,7 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
 		}
 	}, [resValidateToken])
-
+	
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (resValidateToken.loading && !applications) {
@@ -76,7 +76,8 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
 	} else if (!ignorePwdchangefirstloginValidation && resValidateToken.user!.pwdchangefirstlogin === true) {
 		return <Redirect to={{ pathname: paths.CHNAGE_PWD_FIRST_LOGIN }} />;
-	} else if (!applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard')) {
+	} else if (location.pathname !== "/" && !applications?.[location.pathname]?.[0] && !location.pathname.includes('channels') && !location.pathname.includes('person') && !location.pathname.includes('crm') && !location.pathname.includes('dashboard')) {
+		console.log('location.pathname', location.pathname)
 		return <Redirect to={{ pathname: "/403" }} />;
 	} else if (Component) {
 		return <Route {...rest} render={props => <Component {...props} />} />;
