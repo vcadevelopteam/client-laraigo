@@ -1541,6 +1541,12 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.supportprice),
                 accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return (basicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.starttime),

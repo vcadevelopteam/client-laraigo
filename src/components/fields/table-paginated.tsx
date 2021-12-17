@@ -47,7 +47,7 @@ import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp,
 declare module "react-table" {
     // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
-      //  listSelectFilter: Dictionary;
+      listSelectFilter: Dictionary;
     }
 }
 
@@ -659,6 +659,7 @@ const TableZyx = React.memo(({
                                                             overflow: 'hidden',
                                                             textOverflow: 'ellipsis',
                                                             whiteSpace: 'nowrap',
+                                                            textAlign: cell.column.type === "number" ? "right" : "left",
                                                         },
                                                     })}
                                                     onClick={() => cell.column.id !== "selection" ? onClickRow && onClickRow(row.original) : null}
