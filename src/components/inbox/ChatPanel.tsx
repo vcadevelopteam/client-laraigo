@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -416,7 +416,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitInsLead, setWaitInsLead] = useState(false);
-
+    const multiData = useSelector(state => state.main.multiData);
     const insLeadRes = useSelector(state => state.main.execute);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
@@ -430,6 +430,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
         firstname: string;
         email: string;
         phone: string;
+        products: string;
     }>();
 
     useEffect(() => {
@@ -459,6 +460,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 lastname: personSelected?.lastname,
                 email: personSelected?.email,
                 phone: personSelected?.phone,
+                products: '',
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
@@ -487,6 +489,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             columnid: 0,
             index: 0,
             userid: user?.userid || 0,
+            products: data.products
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
@@ -543,6 +546,16 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     valueDefault={getValues('description')}
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
+                />
+                 <FieldMultiSelect
+                    label={t(langKeys.product_plural)}
+                    className="col-12"
+                    valueDefault={getValues('products')}
+                    onChange={(value) => setValue('products', value.map((o: Dictionary) => o.domainvalue).join())}
+                    error={errors?.products?.message}
+                    data={multiData?.data[7] && multiData?.data[7].data}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <div style={{ display: 'flex', gap: 16 }}>
                     <FieldEdit

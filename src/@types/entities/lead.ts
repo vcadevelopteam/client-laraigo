@@ -11,7 +11,7 @@ export interface ILead {
     conversationid: number | null;
     columnid: number;
     index: number;
-
+    products: string;
     /**asesor */
     userid: string | number | null;
 }

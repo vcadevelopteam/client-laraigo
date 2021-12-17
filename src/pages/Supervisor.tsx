@@ -283,6 +283,7 @@ const Supervisor: FC = () => {
             getListQuickReply(),
             getMessageTemplateSel(0),
             getCommChannelLst(),
+            getValuesFromDomain("OPORTUNIDADPRODUCTOS"),
         ]))
         return () => {
             dispatch(resetAllMain());
