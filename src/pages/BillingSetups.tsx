@@ -359,7 +359,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         register('operation');
         register('allowhsm');
         register('channelotherfee');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('description');
         register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
         register('userfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
@@ -438,13 +438,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label="Plan"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
-                            error={errors?.description?.message}
-                            className="col-6"
-                        />
                         <TextField
                             id="date"
                             className="col-6"
@@ -454,10 +447,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             value={datetoshow}
                             size="small"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldSelect
-                            label={t(langKeys.supportplan)}
+                            label="Plan"
                             className="col-6"
                             valueDefault={getValues("plan")}
                             onChange={(value) => setValue('plan',value.plan)}
@@ -466,6 +457,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             optionValue="plan"
                             error={errors?.plan?.message}
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
                             onChange={(value) => setValue('basicfee', value)}
@@ -475,8 +468,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             className="col-6"
                         />
                         
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.numberofagentshired)}
                             onChange={(value) => setValue('userfreequantity', value)}
@@ -485,6 +476,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.useradditionalfee)}
                             onChange={(value) => setValue('useradditionalfee', value)}
@@ -493,8 +486,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.channelfreequantity)}
                             onChange={(value) => setValue('channelfreequantity', value)}
@@ -503,6 +494,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
@@ -511,8 +504,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.clientfreequantity)}
                             onChange={(value) => setValue('clientfreequantity', value)}
@@ -521,6 +512,8 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.clientadditionalfee)}
                             onChange={(value) => setValue('clientadditionalfee', value)}
@@ -529,14 +522,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <TemplateSwitch
                             label={t(langKeys.allowhsm)}
                             className="col-6"
                             valueDefault={getValues("allowhsm")}
                             onChange={(value) => setValue('allowhsm', value)}
                         /> 
+                    </div>
+                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.hsmfee)}
                             onChange={(value) => setValue('hsmfee', value)}
@@ -545,8 +538,6 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                    </div>
-                    <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.channelotherfee)}
                             onChange={(value) => setValue('channelotherfee', value)}
