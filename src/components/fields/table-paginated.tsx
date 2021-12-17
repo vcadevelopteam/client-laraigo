@@ -372,18 +372,18 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
-                            <div>
+                            <div style={{ textAlign: 'right'}}>
                                 <Checkbox
                                     color="primary"
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    style={{ padding: 0 }}
                                     {...getToggleAllPageRowsSelectedProps()}
                                 />
                             </div>
                             :
-                            <div>
+                            <div style={{ textAlign: 'right'}}>
                                 <Checkbox
                                     color="primary"
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    style={{ padding: 0 }}
                                     checked={filteredRows
                                         .filter((p: any) => p.original[selectionFilter?.key] === selectionFilter?.value)
                                         .every((p: any) => p.isSelected)
@@ -400,10 +400,10 @@ const TableZyx = React.memo(({
                     ),
                     Cell: ({ row }: any) => (
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
-                            ? <div>
+                            ? <div style={{ textAlign: 'right'}}>
                                 <Checkbox
                                     color="primary"
-                                    style={{ padding: '0 24px 0 16px' }}
+                                    style={{ padding: 0 }}
                                     checked={row.isSelected}
                                     onChange={(e) => row.toggleRowSelected()}
                                 />
