@@ -47,7 +47,7 @@ import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp,
 declare module "react-table" {
     // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
-      listSelectFilter: Dictionary;
+      //listSelectFilter: Dictionary;
     }
 }
 

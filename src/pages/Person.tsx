@@ -402,9 +402,6 @@ export const Person: FC = () => {
         });
     }
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
-
     const columns = [
         {
             accessor: 'leadid',
