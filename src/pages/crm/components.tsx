@@ -107,7 +107,7 @@ const useLeadCardStyles = makeStyles(theme => ({
 export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snapshot, onDelete, onClick, onCloseLead, ...boxProps }) => {
     const classes = useLeadCardStyles();
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const tags = lead.tags?.split(',') || [];
+    const tags = lead.tags?.split(',')?.filter(e => e !== '') || [];
     const products = lead.leadproduct?.split(',') || [];
     const urgencyLevels = [null,'LOW','MEDIUM','HIGH'];
     const colors = ['', 'cyan', 'red', 'violet', 'blue', 'blueviolet'];
