@@ -1,4 +1,4 @@
-const ENV = "DEVELOP";
+const ENV = "PRODUCTION";
 
 const APIS_URL = {
     DEVELOP: {
@@ -7,7 +7,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1924971937716955',
-        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
+        CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
     TESTING: {
         API: 'https://testapix.laraigo.com/api',
@@ -15,7 +15,7 @@ const APIS_URL = {
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxmetest/chatflow',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1924971937716955',
-        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
+        CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
     PRODUCTION: {
         API: 'https://apiprd.laraigo.com/api',
@@ -23,7 +23,7 @@ const APIS_URL = {
         CHATFLOW: 'https://chatflow.s3-web.us-east.cloud-object-storage.appdomain.cloud',
         FACEBOOKAPP: '1980305408682607',
         INSTAGRAMAPP: '1924971937716955',
-        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
+        CULQIKEY: 'pk_test_041501e753dcb2f9'
     },
     LOCAL: {
         API: 'http://localhost:6065/api',
@@ -32,7 +32,7 @@ const APIS_URL = {
         CHATFLOW: 'https://localhost:4200',
         FACEBOOKAPP: '1094526090706564',
         INSTAGRAMAPP: '1924971937716955',
-        CULQIKEY: 'pk_test_wXgBHymgNU4CZknl'
+        CULQIKEY: 'pk_test_041501e753dcb2f9'
     }
 }
 

@@ -4,13 +4,13 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons} from 'components';
-import { getCampaignLst, delCampaign, getValuesFromDomain, getCommChannelLst, getMessageTemplateSel, getUserGroupsSel, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
+import { getCampaignLst, delCampaign, getCampaignStatus, getCampaignStart, dateToLocalDate, todayDate, capitalize } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation, Trans } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, getMultiCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
+import { getCollection, execute, getCollectionAux, resetAllMain } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { CampaignDetail } from 'pages';
 import { Blacklist } from './Blacklist';
@@ -175,12 +175,6 @@ export const Campaign: FC = () => {
 
     useEffect(() => {
         fetchData();
-        dispatch(getMultiCollection([
-            getValuesFromDomain("ESTADOGENERICO"),
-            getCommChannelLst(),
-            getUserGroupsSel(),
-            getMessageTemplateSel(0)
-        ]));
         return () => {
             dispatch(resetAllMain());
         };
@@ -325,7 +319,6 @@ export const Campaign: FC = () => {
             <CampaignDetail
                 data={rowSelected}
                 setViewSelected={setViewSelected}
-                multiData={mainResult.multiData.data}
                 fetchData={fetchData}
             />
         )

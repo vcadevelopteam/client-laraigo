@@ -153,8 +153,6 @@ const SignIn = () => {
      }, [location]);
 
     useEffect(() => {
-        
-
         if (getAccessToken()) {
             history.push('/');
         }
