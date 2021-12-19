@@ -112,13 +112,13 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null' }], []);
+    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }], []);
     const [allParameters, setAllParameters] = useState({});
 
     if (multiData.length > 0) {
-        reportColumns.map(x => (
-            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames })
-        ));
+        reportColumns.map(x => {
+            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames, type: (x.proargtype==="bigint")?"number":"string" })
+        });
         columns.shift();
     }
 

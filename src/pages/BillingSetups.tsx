@@ -1759,30 +1759,60 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.costbasedonthecontractedplan),
                 accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return (basicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.numberofagentshired),
                 accessor: 'userfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.useradditionalfee),
                 accessor: 'useradditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { useradditionalfee } = props.cell.row.original;
+                    return (useradditionalfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelfreequantity),
                 accessor: 'channelfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.channelwhatsappfee),
                 accessor: 'channelwhatsappfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelwhatsappfee } = props.cell.row.original;
+                    return (channelwhatsappfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.clientfreequantity),
                 accessor: 'clientfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.clientadditionalfee),
                 accessor: 'clientadditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientadditionalfee } = props.cell.row.original;
+                    return (clientadditionalfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.allowhsm),
@@ -1791,6 +1821,12 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.hsmfee),
                 accessor: 'hsmfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmfee } = props.cell.row.original;
+                    return (hsmfee || 0).toFixed(2);
+                }
             },
         ],
         []
@@ -1986,42 +2022,84 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.coststartedbycompany),
                 accessor: 'companystartfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { companystartfee } = props.cell.row.original;
+                    return (companystartfee || 0).toFixed(3);
+                }
             },
             {
                 Header: t(langKeys.customerinitiatedcost),
                 accessor: 'clientstartfee',
+                Cell: (props: any) => {
+                    const { clientstartfee } = props.cell.row.original;
+                    return (clientstartfee || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.first_plural)} 250k`,
                 accessor: 'c250000',
+                Cell: (props: any) => {
+                    const { c250000 } = props.cell.row.original;
+                    return (c250000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 750k`,
                 accessor: 'c750000',
+                Cell: (props: any) => {
+                    const { c750000 } = props.cell.row.original;
+                    return (c750000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`,
                 accessor: 'c2000000',
+                Cell: (props: any) => {
+                    const { c2000000 } = props.cell.row.original;
+                    return (c2000000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`,
                 accessor: 'c3000000',
+                Cell: (props: any) => {
+                    const { c3000000 } = props.cell.row.original;
+                    return (c3000000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`,
                 accessor: 'c4000000',
+                Cell: (props: any) => {
+                    const { c4000000 } = props.cell.row.original;
+                    return (c4000000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`,
                 accessor: 'c5000000',
+                Cell: (props: any) => {
+                    const { c5000000 } = props.cell.row.original;
+                    return (c5000000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`,
                 accessor: 'c10000000',
+                Cell: (props: any) => {
+                    const { c10000000 } = props.cell.row.original;
+                    return (c10000000 || 0).toFixed(3);
+                }
             },
             {
                 Header: `${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`,
                 accessor: 'c25000000',
+                Cell: (props: any) => {
+                    const { c25000000 } = props.cell.row.original;
+                    return (c25000000 || 0).toFixed(3);
+                }
             },
         ],
         []
@@ -2231,122 +2309,250 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.costbasedonthecontractedplan),
                 accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return (basicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.numberofagentshired),
                 accessor: 'userfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.numberofactivesupervisors),
                 accessor: 'supervisorquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.numberofactiveadvisers),
                 accessor: 'asesorquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.numberofactiveagents),
                 accessor: 'userquantity',
+                type: 'number',
+                sortType: 'number',
             },            
             {
                 Header: t(langKeys.useradditionalfee),
                 accessor: 'useradditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { useradditionalfee } = props.cell.row.original;
+                    return (useradditionalfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.useradditionalcharge),
                 accessor: 'useradditionalcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { useradditionalcharge } = props.cell.row.original;
+                    return (useradditionalcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelfreequantity),
                 accessor: 'channelfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.channelwhatsappfee),
                 accessor: 'channelwhatsappfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelwhatsappfee } = props.cell.row.original;
+                    return (channelwhatsappfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelwhatsappquantity),
                 accessor: 'channelwhatsappquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.channelwhatsappcharge),
                 accessor: 'channelwhatsappcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelwhatsappcharge } = props.cell.row.original;
+                    return (channelwhatsappcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelotherfee),
                 accessor: 'channelotherfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelotherfee } = props.cell.row.original;
+                    return (channelotherfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelotherquantity),
                 accessor: 'channelotherquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.channelothercharge),
                 accessor: 'channelothercharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelothercharge } = props.cell.row.original;
+                    return (channelothercharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.channelcharge),
                 accessor: 'channelcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelcharge } = props.cell.row.original;
+                    return (channelcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.conversationquantity),
                 accessor: 'conversationquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.conversationcompanywhatquantity),
                 accessor: 'conversationcompanywhatquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.conversationcompanywhatfee),
                 accessor: 'conversationcompanywhatfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationcompanywhatfee } = props.cell.row.original;
+                    return (conversationcompanywhatfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.conversationcompanywhatcharge),
                 accessor: 'conversationcompanywhatcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationcompanywhatcharge } = props.cell.row.original;
+                    return (conversationcompanywhatcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.conversationclientwhatquantity),
                 accessor: 'conversationclientwhatquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.conversationclientwhatfee),
                 accessor: 'conversationclientwhatfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationclientwhatfee } = props.cell.row.original;
+                    return (conversationclientwhatfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.conversationclientwhatcharge),
                 accessor: 'conversationclientwhatcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationclientwhatcharge } = props.cell.row.original;
+                    return (conversationclientwhatcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.conversationwhatcharge),
                 accessor: 'conversationwhatcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { conversationwhatcharge } = props.cell.row.original;
+                    return (conversationwhatcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.interactionquantity),
                 accessor: 'interactionquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.clientfreequantity),
                 accessor: 'clientfreequantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.clientquantity),
                 accessor: 'clientquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.clientadditionalfee),
                 accessor: 'clientadditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientadditionalfee } = props.cell.row.original;
+                    return (clientadditionalfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.clientadditionalcharge),
                 accessor: 'clientadditionalcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientadditionalcharge } = props.cell.row.original;
+                    return (clientadditionalcharge || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.supportbasicfee),
                 accessor: 'supportbasicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supportbasicfee } = props.cell.row.original;
+                    return (supportbasicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.totalcharge),
                 accessor: 'totalcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totalcharge } = props.cell.row.original;
+                    return (totalcharge || 0).toFixed(2);
+                }
             },
         ],
         []
@@ -2549,22 +2755,48 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.hsmquantity),
                 accessor: 'hsmquantity',
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.wacost),
                 accessor: 'hsmcost',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supportbasicfee } = props.cell.row.original;
+                    return (supportbasicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.pucommissionVCA),
                 accessor: 'hsmutilityfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supportbasicfee } = props.cell.row.original;
+                    return (supportbasicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.vcacommissioncost),
                 accessor: 'hsmutility',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supportbasicfee } = props.cell.row.original;
+                    return (supportbasicfee || 0).toFixed(2);
+                }
             },
             {
                 Header: t(langKeys.hsmshippingcost),
                 accessor: 'hsmcharge',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { supportbasicfee } = props.cell.row.original;
+                    return (supportbasicfee || 0).toFixed(2);
+                }
             },
         ],
         []

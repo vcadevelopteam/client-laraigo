@@ -225,27 +225,45 @@ const RecordHSMRecord: FC = () => {
             {
                 Header: t(langKeys.total),
                 accessor: 'total',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.success),
                 accessor: 'success',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.failed),
                 accessor: 'failed',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
             },
             {
                 Header: `% ${t(langKeys.success)}`,
                 accessor: 'successp',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { successp } = props.cell.row.original;
+                    return (successp || 0).toFixed(2);
+                }
             },
             {
                 Header: `% ${t(langKeys.failed)}`,
                 accessor: 'failedp',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { failedp } = props.cell.row.original;
+                    return (failedp || 0).toFixed(2);
+                }
             },
             
         ],
