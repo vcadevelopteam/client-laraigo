@@ -12,6 +12,7 @@ export function useForcedDisconnection(callback?: () => void) {
     const fd = useSelector(state => state.inbox.forceddisconnect);
 
     useEffect(() => {
+        console.log('useForcedDisconnection:', fd);
         if (fd.value) {
             const key = fd.code! in langKeys ? fd.code! : langKeys.DEFAULT_FORCED_DISCONNECTION;
             dispatch(showSnackbar({

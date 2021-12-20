@@ -9,7 +9,7 @@ import {
 	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation, DashboardLayout
 } from 'pages';
 
-import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
 import paths from "common/constants/paths";
 import { makeStyles } from "@material-ui/core";
 import { useForcedDisconnection, useSelector } from 'hooks';
@@ -39,7 +39,6 @@ interface PrivateRouteProps extends Omit<RouteProps, "component"> {
 // delete: 3
 
 const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, ...rest }) => {
-	const history = useHistory();
 	const resValidateToken = useSelector(state => state.login.validateToken);
 	const ignorePwdchangefirstloginValidation = useSelector(state => state.login.ignorePwdchangefirstloginValidation);
 	const resLogin = useSelector(state => state.login.login);
@@ -62,11 +61,6 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
 		}
 	}, [resValidateToken])
-
-	useForcedDisconnection(useCallback(() => {
-		dispatch(logout());
-		history.push('/sign-in');
-	}, [history, dispatch]));
 	
 	if (!existToken) {
 		return <Redirect to={{ pathname: paths.SIGNIN }} />;
@@ -95,6 +89,11 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 
 const RouterApp: FC = () => {
 	const classes = useStyles();
+	const dispatch = useDispatch();
+
+	useForcedDisconnection(useCallback(() => {
+		dispatch(logout());
+	}, [dispatch]));
 
 	return (
 		<Router basename={process.env.PUBLIC_URL}>

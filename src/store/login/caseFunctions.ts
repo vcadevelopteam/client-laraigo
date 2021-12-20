@@ -166,7 +166,8 @@ export const logoutSuccess = (state: IState, action: IAction): IState => {
             ...state.logout,
             loading: false,
             error: false,
-        }
+        },
+        validateToken: initialState.validateToken,
     }
 };
 
