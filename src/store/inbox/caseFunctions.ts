@@ -934,3 +934,19 @@ export const wsConnect = (state: IState, action: IAction): IState => ({
     ...state,
     wsConnected: action.payload
 });
+
+export const forceddesconection = (state: IState, action: IAction): IState => ({
+    ...state,
+    forceddisconnect: {
+        error: false,
+        loading: false,
+        code: action.payload.code,
+        message: action.payload.code,
+        value: action.payload,
+    },
+});
+
+export const resetForceddesconection = (state: IState, action: IAction): IState => ({
+    ...state,
+    forceddisconnect: initialState.forceddisconnect,
+});

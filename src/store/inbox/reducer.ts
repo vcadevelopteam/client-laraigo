@@ -52,6 +52,7 @@ export interface IState {
     triggerConnectAgentGo: IBaseState;
     isFiltering: boolean;
     outboundData: IObjectState<Dictionary>;
+    forceddisconnect: IObjectState<{ userid: number, code: "SESSION_EXPIRED" | "OTHER_PC_CONNECTION" }>;
 }
 
 export const initialState: IState = {
@@ -84,7 +85,8 @@ export const initialState: IState = {
     showGoToBottom: false,
     triggerNewMessageClient: false,
     isFiltering: false,
-    outboundData: initialObjectState
+    outboundData: initialObjectState,
+    forceddisconnect: initialObjectState,
 };
 
 export default createReducer<IState>(initialState, {
@@ -200,4 +202,7 @@ export default createReducer<IState>(initialState, {
     [actionTypes.SET_IS_FILTERING]: caseFunctions.setIsFiltering,
     [actionTypes.UPDATE_PERSON]: caseFunctions.updatePerson,
     [actionTypes.CLEAN_ALERT]: caseFunctions.cleanAlerts,
+
+    [actionTypes.FORCEDDISCONECTION]: caseFunctions.forceddesconection,
+    [actionTypes.FORCEDDISCONECTION_RESET]: caseFunctions.resetForceddesconection,
 });
