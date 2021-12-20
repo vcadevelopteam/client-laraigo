@@ -126,6 +126,7 @@ const MainHeatMap: React.FC = () => {
         let year = dataMainHeatMap.startdate?.getFullYear()
         let rowmax = 0;
         let dateend = new Date(year, mes, 0).getDate()
+        let arrayvalidvalues=new Array(25).fill(0);
 
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary = {
@@ -142,11 +143,12 @@ const MainHeatMap: React.FC = () => {
         data.forEach( (row:any) => {
             
             const day = parseInt(row.fecha.split("-")[2])
-            const hour = row.hora;
+            const hour = row.hora;            
+            arrayvalidvalues[row.horanum]++
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({
                 ...x, 
                 [`day${day}`]: x[`day${day}`] + row.atencionesxfecha,
-                [`totalcol`]: x.totalcol + row.atencionesxfecha
+                [`totalcol`]: (x.totalcol + row.atencionesxfecha)/arrayvalidvalues[row.horanum]
             }) : x) 
             
             rowmax = row.atencionesxfecha>rowmax ? row.atencionesxfecha:rowmax;
@@ -217,6 +219,8 @@ const MainHeatMap: React.FC = () => {
         let dateend = new Date(year, mes, 0).getDate()
         let rowmax = 0;    
         let arrayfree:any = [];
+        let arrayvalidvalues=new Array(25).fill(0);
+        let arrayvalidvaluesmonth=new Array(32).fill(0);
         const LIMITHOUR = 24;
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
@@ -234,15 +238,14 @@ const MainHeatMap: React.FC = () => {
             const hour = row.hora;
             let timespent = row.totaldurationxfecha.split(':')
             let seconds = parseInt(timespent[0])*3600+parseInt(timespent[1])*60+parseInt(timespent[2])
-            
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.totaldurationxfecha}) : x) 
             rowmax = seconds>rowmax ? seconds:rowmax;
-            let i = 0;
+            arrayvalidvalues[row.horanum]++
+            arrayvalidvaluesmonth[day-1]++
             arrayfree.forEach((x:any) => {
-                i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvalues[row.horanum])
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -251,19 +254,25 @@ const MainHeatMap: React.FC = () => {
                     }
                 }
             )
-            let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
-            let hh= Math.floor(secondstotalnum/3600)
-            let mm= Math.floor((secondstotalnum-hh*3600)/60)
-            let ss= Math.round(secondstotalnum)-hh*3600-mm*60
-            arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
-            timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
-            hh= Math.floor(secondstotalnum/3600)
-            mm= Math.floor((secondstotalnum-hh*3600)/60)
-            ss= Math.round(secondstotalnum)-hh*3600-mm*60
-            arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            
+            if(arrayvalidvaluesmonth[day-1] === 0){
+                arrayfree[24][`day${day}`] = `00:00:00`
+            }else{
+                let timespenttotal = arrayfree[24][`day${day}`].split(':')
+                let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvaluesmonth[day-1])
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+                timespenttotal = arrayfree[24].totalcol.split(':')
+                secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvaluesmonth[day-1])
+                hh= Math.floor(secondstotalnum/3600)
+                mm= Math.floor((secondstotalnum-hh*3600)/60)
+                ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
         })
+        
         setaverageHeatMapTMOData(arrayfree)
                 
         let mid = (rowmax/2);

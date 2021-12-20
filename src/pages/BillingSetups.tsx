@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -24,11 +24,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
+import * as locale from "date-fns/locale";
 import Paper from '@material-ui/core/Paper';
 import { DownloadIcon } from 'icons';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
+import DateFnsUtils from '@date-io/date-fns';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -94,6 +97,19 @@ function formatNumberNoDecimals(num: number) {
     return "0"
 }
 
+export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    return (
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]} >
+            <KeyboardDatePicker
+                format={getLocaleDateString()}
+                value={value === '' ? null : value}
+                onChange={(e: any) => handleClickItemMenu(e)}
+                style={{ minWidth: '150px' }}
+                views={["month", "year"]}
+            />
+        </MuiPickersUtilsProvider>
+    )
+}
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -189,7 +205,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -379,7 +395,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -623,7 +639,7 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -900,7 +916,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -1334,7 +1350,7 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -1477,6 +1493,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
     const [dataMain, setdataMain] = useState({
         startdate: new Date(new Date().setDate(1)),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
@@ -1566,7 +1583,13 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1585,6 +1608,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     const handleView = (row: Dictionary) => {
+        setduplicateop(true)
         const callback = () => {
             dispatch(execute(billingSupportIns({ ...row, operation: 'DUPLICATE', id: 0 })));
             dispatch(showBackdrop(true));
@@ -1593,7 +1617,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_delete),
+            question: t(langKeys.confirmation_duplicate),
             callback
         }))
     }
@@ -1635,8 +1659,8 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 id="date"
                                 className={classes.fieldsfilter}
                                 type="month"
-                                // style={{width: 200}}
                                 variant="outlined"
+                                onInput={console.log("fml")}
                                 onChange={(e)=>handleDateChange(e.target.value)}
                                 value={dataMain.datetoshow}
                                 size="small"
@@ -1663,7 +1687,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             </Button>
                         </div>
                     )}
-                    // titlemodule={t(langKeys.organization_plural, { count: 2 })}
+                    // titlemodule={t(langKeys.billingplan, { count: 2 })}
                     data={mainResult.mainData.data}
                     filterGeneral={false}
                     download={true}
@@ -1694,7 +1718,8 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const classes = useStyles();
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [waitSave, setWaitSave] = useState(false);
+    const [waitSave, setWaitSave] = useState(false);    
+    const [duplicateop, setduplicateop] = useState(false);
     const [dataMain, setdataMain] = useState({
         startdate: new Date(new Date().setDate(1)),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
@@ -1838,12 +1863,18 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1857,6 +1888,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     const handleView = (row: Dictionary) => {
+        setduplicateop(true)
         const callback = () => {
             dispatch(execute(billingConfigurationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
             dispatch(showBackdrop(true));
@@ -1865,7 +1897,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_delete),
+            question: t(langKeys.confirmation_duplicate),
             callback
         }))
     }
@@ -1958,6 +1990,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
     const [dataMain, setdataMain] = useState({
         startdate: new Date(new Date().setDate(1)),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
@@ -2111,12 +2144,18 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -2130,6 +2169,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     }
 
     const handleView = (row: Dictionary) => {
+        setduplicateop(true)
         const callback = () => {
             dispatch(execute(billingConversationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
             dispatch(showBackdrop(true));
@@ -2138,7 +2178,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: t(langKeys.confirmation_delete),
+            question: t(langKeys.confirmation_duplicate),
             callback
         }))
     }
@@ -2569,7 +2609,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -2813,7 +2853,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
