@@ -271,3 +271,5 @@ export const cleanAlerts = (): IActionCall => ({ type: actionTypes.CLEAN_ALERT }
 export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_CONNECT, payload });
 
 export const emitEvent = (payload: any): IActionCall => ({ type: actionTypes.EMIT_EVENT, payload });
+
+export const resetForcedDisconnection = (): IActionCall => ({ type: actionTypes.FORCEDDISCONECTION_RESET });

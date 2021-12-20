@@ -1512,6 +1512,10 @@ const translation: LangKeys = {
 
     product: 'Producto',
     product_plural: 'Productos',
+
+    DEFAULT_FORCED_DISCONNECTION: 'Su sesión se ha cerrado',
+    OTHER_PC_CONNECTION: 'Su sesión ha sido usada en otra PC',
+    SESSION_EXPIRED: 'Su sesión ha expirado',
 };
 
 const esResource: ResourceLanguage = {

@@ -871,7 +871,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
         
-        data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
+        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -883,32 +883,30 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
             arrayfree[listadvisers.length][`day${day}`] += row.completadosxasesor;
             arrayfree[listadvisers.length][`totalcol`] += row.completadosxasesor;
         })
-        
         setCompletadosxAsesorData(arrayfree)
 
         let mid = rowmax/2;
         let scale = 255 / (mid);
         let m=0;
-        
         function gradient(num:number){
             m++;
             if ((listadvisers.length)*dateend<m){
-                return "00000000"
+                return "FFFFFF"
             }
             let number = "";
             if ( num <= 0 ) {
-                return "00FF0099";
+                return "00FF99";
             }
             else if ( num >= rowmax ) {
-                return "FF000099";
+                return "FF0099";
             }
             else if ( num <= mid ) {
                 number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
+                return "00".slice(number.length) + number +  "FF99" 
             }
             else {
                 number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
+                return  "FF" +"00".slice(number.length) + number +"99"  
             }
         }
         
@@ -951,8 +949,8 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         }
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
-        let listasesores = listadvisers.map((x:any) => x.userdesc);
-        data.filter((x:any) => listasesores.includes(x.asesor)).forEach((row:any) => {
+        console.log(data)
+        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
@@ -969,26 +967,25 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         let mid = rowmax/2;
         let scale = 255 / (mid);
         let m=0;
-        
         function gradient(num:number){
             m++;
             if ((listadvisers.length)*dateend<m){
-                return "00000000"
+                return "FFFFFF"
             }
             let number = "";
             if ( num <= 0 ) {
-                return "00FF0099";
+                return "00FF99";
             }
             else if ( num >= rowmax ) {
-                return "FF000099";
+                return "FF0099";
             }
             else if ( num <= mid ) {
                 number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
+                return "00".slice(number.length) + number +  "FF99" 
             }
             else {
                 number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
+                return  "FF" +"00".slice(number.length) + number +"99"  
             }
         }
         
@@ -1088,7 +1085,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
         objectlast[`totalcol`] = 0;
         arrayfree.push(objectlast)
         
-        data.filter((x:any) => listadvisers.includes(x.asesor)).forEach((row:any) => {
+        data.filter((x:any) => listadvisers.filter((e:any) => e.userid === x.userid).length>0).forEach((row:any) => {
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.userid;
             arrayfree = arrayfree.map((x:any) => x.userid === hour ? ({
