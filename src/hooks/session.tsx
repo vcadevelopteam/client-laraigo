@@ -13,8 +13,9 @@ export function useForcedDisconnection(callback?: () => void) {
 
     useEffect(() => {
         if (fd.value) {
+            const key = fd.code! in langKeys ? fd.code! : langKeys.DEFAULT_FORCED_DISCONNECTION;
             dispatch(showSnackbar({
-                message: t(fd.code || langKeys.DEFAULT_FORCED_DISCONNECTION),
+                message: t(key),
                 show: true,
                 success: false,
             }));
