@@ -834,6 +834,7 @@ const translation: LangKeys = {
     successful_edit: 'Se editó satisfactoriamente',
     successful_register: 'Se registró satisfactoriamente',
     successful_delete: 'Se eliminó satisfactoriamente',
+    successful_duplicate: 'Se duplico satisfactoriamente',
     quickreplies: 'Repuestas rapidas',
     twofactorauthentication: 'Doble factor autentificación',
     save: 'Guardar',

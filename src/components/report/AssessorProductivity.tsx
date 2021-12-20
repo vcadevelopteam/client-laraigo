@@ -86,22 +86,30 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: 'totaltickets',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_closedtickets),
                 accessor: 'closedtickets',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_asignedtickets),
                 accessor: 'asignedtickets',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_suspendedtickets),
                 accessor: 'suspendedtickets',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_avgfirstreplytime),
@@ -151,7 +159,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_userconnectedduration),
                 accessor: 'userconnectedduration',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
