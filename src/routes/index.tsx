@@ -57,8 +57,9 @@ const ProtectRoute: FC<PrivateRouteProps> = ({ children, component: Component, .
 	React.useEffect(() => {
 		if (!resValidateToken.error && !resValidateToken.loading) {
 			const automaticConnection = resLogin.user?.automaticConnection || false;
+			const fromLogin = !!resLogin.user;
 			const { userid, orgid } = resValidateToken.user!!
-			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection  }));
+			dispatch(wsConnect({ userid, orgid, usertype: 'PLATFORM', automaticConnection, fromLogin  }));
 		}
 	}, [resValidateToken])
 	

@@ -502,7 +502,7 @@ const Organizations: FC = () => {
         fetchData();
         dispatch(getCurrencyList())
         dispatch(getMultiCollection([
-            getValuesFromDomain("OPORTUNIDADPRODUCTOS"),
+            getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOORG"),
             getCorpSel(0)
         ]));

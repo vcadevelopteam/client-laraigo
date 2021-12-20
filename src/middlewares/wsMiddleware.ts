@@ -30,8 +30,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.auth = loginData;
         socket.connect();
         if (!wasconnected) {
+            
+            console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
-                console.log("load eventsListeners")
                 socket.on(event, (datatmp) => {
                     console.log("event ", event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })
