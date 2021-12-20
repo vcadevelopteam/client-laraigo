@@ -897,6 +897,7 @@ export const langKeys = {
     successful_register: 'successful_register',
     successful_sign_up: 'successful_sign_up',
     successful_delete: 'successful_delete',
+    successful_duplicate: 'successful_duplicate',
 
     quickreplies: 'quickreplies',
     quickreply: 'quickreply',
