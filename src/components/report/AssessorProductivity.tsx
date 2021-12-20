@@ -159,7 +159,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             {
                 Header: t(langKeys.report_userproductivity_userconnectedduration),
                 accessor: 'userconnectedduration',
-                NoFilter: false
+                NoFilter: false,
+                type: "number",
+                sortType: 'number',
             },
             {
                 Header: t(langKeys.report_userproductivity_userstatus),
