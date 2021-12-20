@@ -171,16 +171,18 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        setValue('startdate',startdate)
-        setValue('enddate',enddate)
-        setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-        setValue('year',year)
-        setValue('month',mes)
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            setValue('startdate',startdate)
+            setValue('enddate',enddate)
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
     }
 
     React.useEffect(() => {
@@ -358,12 +360,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-        setValue('year',year)
-        setValue('month',mes)
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
     }
 
     React.useEffect(() => {
@@ -602,12 +606,14 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-        setValue('year',year)
-        setValue('month',mes)
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
     }
 
     React.useEffect(() => {
@@ -1504,13 +1510,15 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
@@ -1660,7 +1668,6 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 className={classes.fieldsfilter}
                                 type="month"
                                 variant="outlined"
-                                onInput={console.log("fml")}
                                 onChange={(e)=>handleDateChange(e.target.value)}
                                 value={dataMain.datetoshow}
                                 size="small"
@@ -1730,13 +1737,15 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
@@ -2001,13 +2010,15 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     });
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let startdate = new Date(year, mes-1, 1)
-        let enddate = new Date(year, mes, 0)
-        let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
@@ -2288,11 +2299,13 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
@@ -2734,11 +2747,13 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
@@ -2960,11 +2975,13 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
 
     function handleDateChange(e: any){
-        let datetochange = new Date(e+"-02")
-        let mes = datetochange?.getMonth()+1
-        let year = datetochange?.getFullYear()
-        let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-        setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        }
     }
     function search(){
         dispatch(showBackdrop(true))
