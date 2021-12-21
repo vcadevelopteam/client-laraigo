@@ -205,7 +205,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
+    const user = useSelector(state => state.login.validateToken.user);
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
@@ -465,6 +465,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     className="col-6"
                                     valueDefault={getValues('autosendinvoice')}
                                     onChange={(value) => setValue('autosendinvoice', value)}
+                                    disabled={user?.roledesc !== "SUPERADMIN"}
                                 />
                             </div>
                         </>

@@ -358,6 +358,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 />
                                 <TemplateSwitch
                                     label={t(langKeys.autosendinvoice)}
+                                    disabled={user?.roledesc !== "SUPERADMIN"}
                                     className="col-6"
                                     valueDefault={getValues('autosendinvoice')}
                                     onChange={(value) => setValue('autosendinvoice', value)}
