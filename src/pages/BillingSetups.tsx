@@ -1066,20 +1066,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.numberofactivesupervisors)}
-                            value={String(getValues("supervisorquantity"))}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
                             label={t(langKeys.numberofactiveadvisers)}
                             value={String(getValues("asesorquantity"))}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.numberofactiveagents)}
-                            value={String(getValues("userquantity"))}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1093,8 +1081,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
+                            label={t(langKeys.numberofactivesupervisors)}
+                            value={String(getValues("supervisorquantity"))}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
                             label={t(langKeys.useradditionalcharge)}
                             value={getValues("useradditionalcharge").toFixed(2)}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.numberofactiveagents)}
+                            value={String(getValues("userquantity"))}
                         />
                     </div>
                 </div>}
@@ -1108,21 +1108,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             type="number"
                             className="col-6"
                         />
-                        <FieldEdit
-                            label={t(langKeys.channelwhatsappfee)}
-                            onChange={(value) => setValue('channelwhatsappfee', value)}
-                            valueDefault={getValues('channelwhatsappfee')}
-                            error={errors?.channelwhatsappfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelwhatsappquantity)}
-                            value={getValues("channelwhatsappquantity").toString()}
-                        />
                         <FieldView
                             className="col-6"
                             label={t(langKeys.channelwhatsappcharge)}
@@ -1131,6 +1116,26 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
+                            label={t(langKeys.channelwhatsappfee)}
+                            onChange={(value) => setValue('channelwhatsappfee', value)}
+                            valueDefault={getValues('channelwhatsappfee')}
+                            error={errors?.channelwhatsappfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.channelothercharge)}
+                            value={getValues("channelothercharge").toFixed(2)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.channelwhatsappquantity)}
+                            value={getValues("channelwhatsappquantity").toString()}
+                        />
+                        <FieldEdit
                             label={t(langKeys.channelotherfee)}
                             onChange={(value) => setValue('channelotherfee', value)}
                             valueDefault={getValues('channelotherfee')}
@@ -1138,17 +1143,12 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             type="number"
                             className="col-6"
                         />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelotherquantity)}
-                            value={getValues("channelotherquantity").toString()}
-                        />
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.channelothercharge)}
-                            value={getValues("channelothercharge").toFixed(2)}
+                            label={t(langKeys.channelotherquantity)}
+                            value={getValues("channelotherquantity").toString()}
                         />
                         <FieldView
                             className="col-6"
@@ -1198,8 +1198,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
+                            label={t(langKeys.conversationcompanywhatcharge)}
+                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
                             label={t(langKeys.conversationcompanywhatquantity)}
                             value={getValues("conversationcompanywhatquantity").toString()}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationclientwhatcharge)}
+                            value={getValues("conversationclientwhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1210,8 +1222,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
+                            label={t(langKeys.conversationwhatcharge)}
+                            value={getValues("conversationwhatcharge").toFixed(2)}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1222,27 +1234,15 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(2)}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
                             label={t(langKeys.interactionquantity)}
                             value={getValues("interactionquantity").toString()}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.conversationclientwhatfee)}
+                            value={getValues("conversationclientwhatfee").toFixed(2)}
                         />
                     </div>
                 </div>}
@@ -2061,6 +2061,10 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             },
             {
                 Header: t(langKeys.country),
+                accessor: 'country',
+            },
+            {
+                Header: t(langKeys.countrycode),
                 accessor: 'countrycode',
             },
             {
@@ -3236,7 +3240,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                     </StyledTableRow>
                                     <StyledTableRow>
                                         <StyledTableCell >
-                                            <div><b>{t(langKeys.contact_plural)}</b></div>
+                                            <div><b>{t(langKeys.uniquecontacts)}</b></div>
                                             <div>{t(langKeys.freecontacts)}</div>
                                             <div>{t(langKeys.total)} {t(langKeys.contact_plural)}</div>
                                             <div>{t(langKeys.additional)} {t(langKeys.contact_plural)}</div>

@@ -28,6 +28,7 @@ export const langKeys = {
     new: 'new',
     qualified: 'qualified',
     proposition: 'proposition',
+    uniquecontacts: "uniquecontacts",
     won: 'won',
     lost: 'lost',
 
@@ -93,6 +94,7 @@ export const langKeys = {
     channelotherquantity: "channelotherquantity",
     default_credentials: "default_credentials",
     country: "country",
+    countrycode: "countrycode",
     industry_beauty: "industry_beauty",
     industry_construction: "industry_construction",
     heatmap: "heatmap",
