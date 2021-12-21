@@ -3,8 +3,8 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
-import { getCorpSel, getPaymentPlanSel, getValuesFromDomain, insCorp } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TemplateSwitch, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldUploadImage } from 'components';
+import { getBusinessDocType, getCorpSel, getPaymentPlanSel, getValuesFromDomain, insCorp } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,6 +16,7 @@ import { getCollection, execute, getMultiCollection, resetAllMain } from 'store/
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
 import { CommonService } from 'network';
+import { getCountryList } from 'store/signup/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -106,10 +107,12 @@ const Corporations: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(getCountryList())
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOCORP"),
             getPaymentPlanSel(),
+            getBusinessDocType()
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -206,8 +209,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const countryList = useSelector(state => state.signup.countryList);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row ? row.corpid : 0,
             description: row ? (row.description || '') : '',
@@ -215,8 +220,18 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
             status: row?.status || 'ACTIVO',
             logo: row ? row.logo : '',
             logotype: row ? row.logotype : '',
-            paymentplanid: row?.paymentplanid||0,
-            operation: row ? "UPDATE" : "INSERT"
+            paymentplanid: row?.paymentplanid || 0,
+            billbyorg: row?.billbyorg || false,
+            doctype: row?.doctype || '',
+            docnum: row?.docnum || '',
+            bussinessname: row?.bussinessname || '',
+            fiscaladdress: row?.fiscaladdress || '',
+            sunatcountry: row?.sunatcountry || '',
+            contactemail: row?.contactemail || '',
+            contact: row?.contact || '',
+            autosendinvoice: row?.autosendinvoice || false,
+            operation: row ? "UPDATE" : "INSERT",
+            companysize: null
         }
     });
 
@@ -267,13 +282,15 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         }))
     });
 
-    const onChangeLogo = (value: any) => {
-        setValue('logo', value);
-    }
+    // const onChangeLogo = (value: any) => {
+    //     setValue('logo', value);
+    // }
 
-    const onChangeLogotype = (value: any) => {
-        setValue('logotype', value);
-    }
+    // const onChangeLogotype = (value: any) => {
+    //     setValue('logotype', value);
+    // }
+
+    console.log(getValues('billbyorg'))
 
     return (
         <div style={{ width: '100%' }}>
@@ -361,7 +378,7 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                             label={t(langKeys.billingplan)}
                             className="col-6"
                             valueDefault={getValues("paymentplanid")}
-                            onChange={(value) => setValue('paymentplanid',value?.paymentplanid||0)}
+                            onChange={(value) => setValue('paymentplanid', value?.paymentplanid || 0)}
                             data={dataPaymentPlan}
                             error={errors?.paymentplanid?.message}
                             optionDesc="plan"
@@ -369,6 +386,90 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                         />
                     </div>
                     <div className="row-zyx">
+                        <TemplateSwitch
+                            label={t(langKeys.billbyorg)}
+                            className="col-6"
+                            valueDefault={getValues('billbyorg')}
+                            onChange={(value) => {
+                                setValue('billbyorg', value);
+                                trigger('billbyorg');
+                            }}
+                        />
+                    </div>
+                    {!getValues('billbyorg') && (
+                        <>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    label={t(langKeys.docType)}
+                                    className="col-6"
+                                    valueDefault={getValues("doctype")}
+                                    onChange={(value) => setValue("doctype", value?.code || "")}
+                                    error={errors?.doctype?.message}
+                                    data={dataDocType}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.documentnumber)}
+                                    className="col-6"
+                                    valueDefault={getValues('docnum')}
+                                    onChange={(value) => setValue('docnum', value)}
+                                    error={errors?.docnum?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.bussinessname)}
+                                    className="col-6"
+                                    valueDefault={getValues('bussinessname')}
+                                    onChange={(value) => setValue('bussinessname', value)}
+                                    error={errors?.bussinessname?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.fiscaladdress)}
+                                    className="col-6"
+                                    valueDefault={getValues('fiscaladdress')}
+                                    onChange={(value) => setValue('fiscaladdress', value)}
+                                    error={errors?.fiscaladdress?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.contact)}
+                                    className="col-6"
+                                    valueDefault={getValues('contact')}
+                                    onChange={(value) => setValue('contact', value)}
+                                    error={errors?.contact?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.contactemail)}
+                                    className="col-6"
+                                    valueDefault={getValues('contactemail')}
+                                    onChange={(value) => setValue('contactemail', value)}
+                                    error={errors?.contactemail?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    label={t(langKeys.country)}
+                                    className="col-6"
+                                    valueDefault={getValues("sunatcountry")}
+                                    onChange={(value) => setValue("sunatcountry", value?.code || "")}
+                                    error={errors?.sunatcountry?.message}
+                                    data={countryList.data}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <TemplateSwitch
+                                    label={t(langKeys.autosendinvoice)}
+                                    className="col-6"
+                                    valueDefault={getValues('autosendinvoice')}
+                                    onChange={(value) => setValue('autosendinvoice', value)}
+                                />
+                            </div>
+                        </>
+                    )}
+                    {/* <div className="row-zyx">
                         {edit ?
                             <FieldUploadImage
                                 label={t(langKeys.logo)}
@@ -377,8 +478,8 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={onChangeLogo}
                             />
                             :
-                            <img src={row?.logo} alt={row?.logo}/>
-                            }
+                            <img src={row?.logo} alt={row?.logo} />
+                        }
                         {edit ?
                             <FieldUploadImage
                                 label={t(langKeys.logotype)}
@@ -387,9 +488,9 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 onChange={onChangeLogotype}
                             />
                             :
-                            <img src={row?.logotype} alt={row?.logotype}/>
-                            }
-                    </div>
+                            <img src={row?.logotype} alt={row?.logotype} />
+                        }
+                    </div> */}
                 </div>
             </form>
         </div>

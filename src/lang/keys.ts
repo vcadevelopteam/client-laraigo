@@ -23,7 +23,7 @@ export const langKeys = {
     tos: "tos",
     tmo: "tmo",
     tag: 'tag',
-    
+    billbyorg: 'billbyorg',
 
     new: 'new',
     qualified: 'qualified',
@@ -1313,6 +1313,13 @@ export const langKeys = {
     confirmation_person_unlock: 'confirmation_person_unlock',
     lock: 'lock',
     unlock: 'unlock',
+
+
+    bussinessname: 'bussinessname',
+    fiscaladdress: 'fiscaladdress',
+    sunatcountry: 'sunatcountry',
+    contactemail: 'contactemail',
+    autosendinvoice: 'autosendinvoice',
 
     agreement: 'agreement',
     agreement_plural: 'agreement_plural',

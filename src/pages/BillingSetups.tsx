@@ -3348,7 +3348,7 @@ const BillingSetup: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const countryListreq = useSelector(state => state.signup.countryList);    
+    const countryListreq = useSelector(state => state.signup.countryList);
     const multiData = useSelector(state => state.main.multiData);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:5);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
