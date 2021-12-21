@@ -132,13 +132,6 @@ const UserSettings: FC = () => {
 
     return (
         <div style={{ width: '100%' }}>
-            <CulqiModal
-                type="CHARGE"
-                title="Basic plan"
-                description=""
-                currency="USD"
-                amount={10000}
-            ></CulqiModal>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div style={{
