@@ -9,6 +9,7 @@ const eventsListeners = [
     { event: 'newMessageFromClient', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
     { event: 'newMessageFromBot', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
     { event: 'personSawChat', type: typesInbox.PERSON_SAW_CHAT, extra: {} },
+    { event: 'forceddisconnect', type: typesInbox.FORCEDDISCONECTION },
 ]
 
 let socket = io(apiUrls.WS_URL, {
@@ -29,8 +30,9 @@ const callWSMiddleware: Middleware = ({ dispatch }) => (next: Dispatch) => async
         socket.auth = loginData;
         socket.connect();
         if (!wasconnected) {
+            
+            console.log("load eventsListeners")
             eventsListeners.forEach(({ event, type, extra = {} }) => {
-                console.log("load eventsListeners")
                 socket.on(event, (datatmp) => {
                     console.log("event ", event, datatmp)
                     dispatch({ type, payload: { ...datatmp, ...extra } })

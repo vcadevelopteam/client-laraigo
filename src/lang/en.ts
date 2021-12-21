@@ -1520,6 +1520,10 @@ const translation: LangKeys = {
 
     product: 'Product',
     product_plural: 'Products',
+
+    DEFAULT_FORCED_DISCONNECTION: 'Session has been closed',
+    OTHER_PC_CONNECTION: 'Session has been logged-in on another PC',
+    SESSION_EXPIRED: 'Session has expired',
 };
 
 const enResource: ResourceLanguage = {

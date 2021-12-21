@@ -1514,6 +1514,10 @@ export const langKeys = {
 
     product: 'product',
     product_plural: 'product_plural',
+
+    DEFAULT_FORCED_DISCONNECTION: 'DEFAULT_FORCED_DISCONNECTION',
+    OTHER_PC_CONNECTION: 'OTHER_PC_CONNECTION',
+    SESSION_EXPIRED: 'SESSION_EXPIRED',
 };
 
 export type LangKeys = typeof langKeys;
