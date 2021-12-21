@@ -20,6 +20,7 @@ interface CulqiOptionsProps {
 }
 
 interface CulqiModalProps { 
+    invoiceid: number
     type?: "CHARGE" | "SUBSCRIPTION",
     title: string;
     description: string;
@@ -45,6 +46,7 @@ const publickey = apiUrls.CULQIKEY;
 */
 
 const CulqiModal: FC<CulqiModalProps> = ({
+    invoiceid,
     type = "CHARGE",
     title,
     description,
@@ -63,6 +65,7 @@ const CulqiModal: FC<CulqiModalProps> = ({
     const createCharge = (token: any) => {
         dispatch(showBackdrop(true));
         dispatch(charge({
+            invoiceid,
             settings: { title, description, currency, amount },
             token,
             metadata

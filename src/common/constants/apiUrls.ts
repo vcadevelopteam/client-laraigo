@@ -3,7 +3,7 @@ const ENV = "DEVELOP";
 const APIS_URL = {
     DEVELOP: {
         API: 'https://apix.laraigo.com/api',
-        //WS: 'http://localhost:7070',
+        // WS: 'http://localhost:7070',
         WS: 'https://socket.laraigo.com',
         CHATFLOW: 'https://zyxmelinux.zyxmeapp.com/zyxme/chatflow',
         FACEBOOKAPP: '1094526090706564',

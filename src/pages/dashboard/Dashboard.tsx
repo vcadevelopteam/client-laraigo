@@ -318,7 +318,10 @@ const DashboardCard: FC<DashboardCardProps> = ({ dashboardtemplate, disabled, on
 
     return (
         <Card style={{ position: 'relative' }}>
-            <CardActionArea onClick={onClick}>
+            <CardActionArea
+                href={paths.DASHBOARD_LAYOUT.resolve(dashboardtemplate.dashboardtemplateid)}
+                onClick={onClick}
+            >
                 <CardMedia
                     component="img"
                     height="140"

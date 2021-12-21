@@ -328,7 +328,7 @@ const TableZyx = React.memo(({
                 setFilter({ value, operator, type });
             }
             // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [value])
+        }, [value, operator])
         const handleDate = (date: Date) => {
             if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
                 setValue(date?.toISOString() || '');

@@ -34,7 +34,8 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
         className = open ? classes.drawerItemInactive : classes.drawerCloseItemInactive;
     }
 
-    const onClick = () => {
+    const onClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
         if (!config.subroute) {
             history.push(config.path!)
         } else {
@@ -53,7 +54,8 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             key={config.path}
             onClick={onClick}
             className={clsx(className)}
-
+            component="a"
+            href={config.path}
         >
             <Tooltip title={config.tooltip}>
                 <ListItemIcon>{config.icon?.(className)}</ListItemIcon>

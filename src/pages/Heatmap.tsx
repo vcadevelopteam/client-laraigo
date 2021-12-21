@@ -1430,18 +1430,18 @@ const HeatMapTicket: React.FC = () => {
         function gradient(num:number){
             let number = "";
             if ( num <= 0 ) {
-                return "00FF0099";
+                return "00FF99";
             }
             else if ( num >= rowmax ) {
-                return "FF000099";
+                return "FF0099";
             }
             else if ( num <= mid ) {
                 number=Math.imul(num, scale).toString(16)
-                return "00".slice(number.length) + number +  "FF0099" 
+                return "00".slice(number.length) + number +  "FF99" 
             }
             else {
                 number= Math.imul((255-(num-mid)),scale).toString(16)
-                return  "FF" +"00".slice(number.length) + number +"0099"  
+                return  "FF" +"00".slice(number.length) + number +"99"  
             }
         }
         
