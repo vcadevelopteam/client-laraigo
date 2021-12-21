@@ -219,7 +219,10 @@ const Dashboard: FC = () => {
                                 <DashboardCard
                                     dashboardtemplate={e}
                                     disabled={dashboardtemplateDelete.loading}
-                                    onClick={() => goToDashboardLayout(e.dashboardtemplateid)}
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        goToDashboardLayout(e.dashboardtemplateid);
+                                    }}
                                     onDelete={() => onDelete(e)}
                                 />
                             </Grid>
@@ -301,7 +304,7 @@ const Dashboard: FC = () => {
 interface DashboardCardProps {
     disabled: boolean;
     dashboardtemplate: DashboardTemplate;
-    onClick: () => void;
+    onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     onDelete: () => void;
 }
 
