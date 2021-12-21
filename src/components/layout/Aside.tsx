@@ -53,7 +53,8 @@ const LinkList: FC<{ config: RouteConfig, classes: any, open: boolean }> = ({ co
             key={config.path}
             onClick={onClick}
             className={clsx(className)}
-
+            component="a"
+            href={config.path}
         >
             <Tooltip title={config.tooltip}>
                 <ListItemIcon>{config.icon?.(className)}</ListItemIcon>
