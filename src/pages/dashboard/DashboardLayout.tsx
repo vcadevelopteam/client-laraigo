@@ -1,6 +1,6 @@
-import { FC, useEffect, useMemo, useState, useCallback } from "react";
-import { Box, Button, CircularProgress, IconButton, makeStyles, Tooltip } from "@material-ui/core";
-import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon } from "@material-ui/icons";
+import { FC, useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { Box, Button, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
 import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
@@ -10,9 +10,12 @@ import paths from "common/constants/paths";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
 import { showSnackbar } from "store/popus/actions";
-import { getDashboardTemplateIns, getDashboardTemplateSel } from "common/helpers";
+import { getDashboardTemplateIns, getDashboardTemplateSel, getReportTemplateSel } from "common/helpers";
 import RGL, { WidthProvider } from 'react-grid-layout';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as  ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps } from 'recharts';
+import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
+import { useForm } from "react-hook-form";
+import { getCollection, resetMain } from "store/main/actions";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -54,13 +57,19 @@ const DashboardLayout: FC = () => {
     const dashboardtemplate = useSelector(state => state.dashboard.dashboardtemplate);
     const dashboardSave = useSelector(state => state.dashboard.dashboardtemplateSave);
     const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);
-    const [dateRange] = useState({ startDate: "2021-11-05", endDate: "2021-11-30" });
+    const reportTemplates = useSelector(state => state.main.mainData);
+    const [dateRange, setDateRange] = useState({ startDate: "2021-11-05", endDate: "2021-11-30" });
     const [layout, setLayout] = useState<{ layout: RGL.Layout[], detail: Items }>({ layout: [], detail: {} });
+    const mustLoadagain = useRef(false);
+
+    const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit, reset } = useForm<Items>();
 
     useEffect(() => {
         dispatch(getDashboardTemplate(getDashboardTemplateSel(match.params.id)));
+        dispatch(getCollection(getReportTemplateSel()));
 
         return () => {
+            dispatch(resetMain());
             dispatch(resetGetDashboard());
             dispatch(resetGetDashboardTemplate());
             dispatch(resetSaveDashboardTemplate());
@@ -121,8 +130,15 @@ const DashboardLayout: FC = () => {
                 success: true,
                 show: true,
             }));
+            if (mustLoadagain.current) {
+                mustLoadagain.current = false;
+
+                dispatch(getDashboardTemplate(getDashboardTemplateSel(match.params.id)));
+                setDateRange(prev => ({ ...prev })); // run getDashboard effect again
+                reset();
+            }
         }
-    }, [dashboardSave, t, dispatch]);
+    }, [dashboardSave, match.params.id, reset, t, dispatch]);
 
     useEffect(() => {
         if (dashboardtemplateDelete.loading) return;
@@ -142,6 +158,22 @@ const DashboardLayout: FC = () => {
             history.push(paths.DASHBOARD);
         }
     }, [dashboardtemplateDelete, history, t, dispatch]);
+    
+    useEffect(() => {
+        if (reportTemplates.loading) return;
+        if (reportTemplates.error) {
+            const error = t(reportTemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [reportTemplates, t, dispatch]);
+
+    useEffect(() => {
+        console.log(layout);
+    }, [layout]);
 
     const onDelete = useCallback(() => {
         if (!dashboardtemplate.value) return;
@@ -157,21 +189,73 @@ const DashboardLayout: FC = () => {
     const onSave = useCallback(() => {
         if (!dashboardtemplate.value) return;
 
-        dispatch(saveDashboardTemplate(getDashboardTemplateIns({
-            ...dashboardtemplate.value!,
-            id: match.params.id,
-            operation: 'UPDATE',
-            detailjson: JSON.stringify(layout.detail),
-            layoutjson: JSON.stringify(layout.layout),
-        })));
-    }, [dashboardtemplate, layout, match.params.id, dispatch]);
+        handleSubmit(data => {
+            const detail = layout.detail;
+            for(const key in data) {
+                detail[key] = data[key];
+            }
+
+            mustLoadagain.current = Object.keys(data).length > 0;
+
+            dispatch(saveDashboardTemplate(getDashboardTemplateIns({
+                ...dashboardtemplate.value!,
+                id: match.params.id,
+                operation: 'UPDATE',
+                detailjson: JSON.stringify(detail),
+                layoutjson: JSON.stringify(layout.layout),
+            })));
+        }, e => console.log('errores', e))();
+    }, [dashboardtemplate, layout, handleSubmit, match.params.id, dispatch]);
+
+    const onDetailChange = useCallback((detail: Items, type: ChangeType, key: string) => {
+        setLayout(prev => {
+            const newLayout = type === "DELETE" ? prev.layout.filter(x => x.i !== key) : prev.layout;
+            return { layout: newLayout, detail: detail };
+        });
+    }, []);
+
+    const addItemOnClick = useCallback(() => {
+        const newKey = Date.now().toString();
+        setLayout(prev => ({
+            ...prev,
+            // detail: {
+            //     ...prev.detail,
+            //     [newKey]: {
+            //         reporttemplateid: 0,
+            //         grouping: '',
+            //         graph: '',
+            //         column: '',
+            //     },
+            // },
+            layout: [
+                ...prev.layout,
+                {
+                    i: newKey,
+                    x: (prev.layout.length * 3) % 12,
+                    y: Infinity,
+                    w: 3,
+                    h: 2,
+                    minW: 2,
+                    minH: 1,
+                    static: false,
+                },
+            ],
+        }));
+    }, []);
+
+    const deleteItemOnClick = useCallback((key: string) => {
+        setLayout(prev => {
+            // const { [key]: _, ...newDetail } = prev.detail;
+            return {
+                ...prev,
+                // detail: newDetail,
+                layout: prev.layout.filter(e => e.i !== key),
+            };
+        });
+    }, []);
 
     if (dashboardtemplate.loading || dashboard.loading) {
-        return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-                <CircularProgress />
-            </div>
-        );
+        return <CenterLoading />;
     }
 
     if (dashboardtemplate.error || dashboard.error || !dashboardtemplate.value || !dashboard.value) {
@@ -206,6 +290,14 @@ const DashboardLayout: FC = () => {
                 <Button
                     variant="contained"
                     color="primary"
+                    onClick={addItemOnClick}
+                    disabled={dashboardtemplate.loading || !dashboardtemplate.value}
+                >
+                    <Trans i18nKey={langKeys.add} />
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
                     onClick={onDelete}
                     disabled={dashboardtemplate.loading || !dashboardtemplate.value}
                 >
@@ -227,17 +319,33 @@ const DashboardLayout: FC = () => {
                 onLayoutChange={(l) => setLayout(prev => ({ ...prev, layout: l }))}
                 cols={12}
                 rowHeight={140}
+                isDraggable={!dashboardtemplate.loading && !dashboard.loading}
+                isResizable={!dashboardtemplate.loading && !dashboard.loading}
             >
                 {layout.layout.map(e => (
                     <div key={e.i}>
-                        <LayoutItem
-                            layoutKey={e.i}
-                            reportname={dashboard.value![e.i].reportname}
-                            data={dashboard.value![e.i].data}
-                            type={layout.detail[e.i]?.graph || ''}
-                            detail={layout.detail}
-                            onDetailChange={d => setLayout(prev => ({ ...prev, detail: d }))}
-                        />
+                        {e.i in layout.detail ? (
+                            <LayoutItem
+                                layoutKey={e.i}
+                                reportname={dashboard.value?.[e.i]?.reportname || '-'}
+                                data={dashboard.value?.[e.i]?.data}
+                                type={layout.detail[e.i]!.graph}
+                                detail={layout.detail}
+                                onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
+                            />
+                        ) : (
+                            <NewLayoutItem
+                                layoutKey={e.i}
+                                templates={reportTemplates.data as ReportTemplate[]}
+                                loading={reportTemplates.loading}
+                                register={register}
+                                unregister={unregister}
+                                getValues={getValues}
+                                setValue={setValue}
+                                errors={errors}
+                                onDelete={() => deleteItemOnClick(e.i)}
+                            />
+                        )}
                     </div>
                 ))}
             </ReactGridLayout>
@@ -249,16 +357,27 @@ interface ItemsData {
     [label: string]: number;
 }
 
+type ChangeType = "DELETE" | "UPDATE" | "INSERT";
+
 interface LayoutItemProps {
     reportname: string;
-    data: ItemsData;
+    data?: ItemsData;
     type: string;
     layoutKey: string;
     detail?: Items;
-    onDetailChange?: (detail: Items) => void;
+    onDetailChange?: (detail: Items, type: ChangeType) => void;
 }
 
 const useLayoutItemStyles = makeStyles(theme => ({
+    rootLoading: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        width: '100%',
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     root: {
         display: 'flex',
         flexDirection: 'column',
@@ -271,7 +390,7 @@ const useLayoutItemStyles = makeStyles(theme => ({
     header: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        gap: theme.spacing(1),
         alignItems: 'center',
         paddingBottom: '1em',
     },
@@ -289,8 +408,20 @@ const useLayoutItemStyles = makeStyles(theme => ({
 const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: key, detail, onDetailChange }) => {
     const classes = useLayoutItemStyles();
     const canChange = detail !== undefined && onDetailChange !== undefined;
-    const dataGraph = useMemo(() => Object.keys(data).map(e => ({ label: e, quantity: data[e] })), [data]);
+    const dataGraph = useMemo(() => {
+        if (!data) return [];
+        return Object.keys(data).map(e => ({ label: e, quantity: data[e] }));
+    }, [data]);
     const [graph, setGraph] = useState(type);
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     const onChange = useCallback(() => {
         if (!canChange) return;
@@ -303,8 +434,16 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
                 ...detail![key],
                 graph: newType,
             },
-        });
+        }, "UPDATE");
     }, [graph, canChange, key, detail, onDetailChange]);
+
+    const onDelete = useCallback(() => {
+        if (!canChange) return;
+
+        const { [key]: _, ...newDetail } = detail!;
+        onDetailChange!({ ...newDetail }, "DELETE");
+        handleClose();
+    }, [canChange, key, detail, onDetailChange]);
 
     const renderGraph = useCallback(() => {
         switch(graph) {
@@ -314,15 +453,47 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
         }
     }, [dataGraph, graph]);
 
+    if (!data) {
+        return (
+            <div className={classes.rootLoading}>
+                <CenterLoading />
+            </div>
+        );
+    }
+
     return (
         <div className={classes.root}>
             <div className={classes.header}>
                 <span className={classes.label}>{reportname}</span>
+                <div style={{ flexGrow: 1 }} />
                 <Tooltip title="Intercambiar">
                     <IconButton onClick={onChange} size="small">
                         <SwapHorizIcon />
                     </IconButton>
                 </Tooltip>
+                <Tooltip title="Más opciones">
+                    <IconButton
+                        id={`more-btn-${key}`}
+                        onClick={handleClick}
+                        size="small"
+                        aria-controls={`more-menu-${key}`}
+                    >
+                        <MoreVertIcon />
+                    </IconButton>
+                </Tooltip>
+                <Menu
+                    id={`more-menu-${key}`}
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                        'aria-labelledby': `more-btn-${key}`,
+                    }}
+                >
+                    <MenuItem onClick={onDelete}>
+                        <Trans i18nKey={langKeys.delete} />
+                    </MenuItem>
+                </Menu>
             </div>
             <div className={classes.reponsiveContainer}>
                 {renderGraph()}
@@ -383,6 +554,14 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, ...props }) => {
                 <Legend verticalAlign="bottom" />
             </PieChart>
         </ResponsiveContainer>
+    );
+}
+
+const CenterLoading: FC = () => {
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <CircularProgress />
+        </div>
     );
 }
 
