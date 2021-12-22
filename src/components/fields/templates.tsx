@@ -468,7 +468,7 @@ export const FieldSelect: React.FC<TemplateAutocompleteProps> = ({ error, label,
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard" }) => {
+export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, label, data, optionValue, optionDesc, valueDefault = "", onChange, disabled = false, loading, className = null, style = null, variant = "standard", uset = false, prefixTranslation = ""}) => {
 
     const [optionsSelected, setOptionsSelected] = useState<Dictionary[]>([]);
 
@@ -510,7 +510,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                     onChange && onChange(values, { action, option });
                 }}
                 size="small"
-                getOptionLabel={option => option ? option[optionDesc] : ''}
+                getOptionLabel={option => option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                 options={data}
                 renderInput={(params) => (
                     <TextField

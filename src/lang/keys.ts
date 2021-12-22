@@ -1315,6 +1315,7 @@ export const langKeys = {
     confirmation_person_unlock: 'confirmation_person_unlock',
     lock: 'lock',
     unlock: 'unlock',
+    invoice: 'invoice',
 
 
     bussinessname: 'bussinessname',

@@ -1308,6 +1308,7 @@ const translation: LangKeys = {
     confirmation_person_unlock: 'Do you want to unblock the user? The messages will be served by advisors and the bot.',
     lock: 'Lock',
     unlock: 'Unlock',
+    invoice: 'Invoice control',
 
     agreement: 'Agreement',
     agreement_plural: 'Agreements',

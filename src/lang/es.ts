@@ -1298,7 +1298,7 @@ const translation: LangKeys = {
     confirmation_person_unlock: '¿Desea desbloquear al usuario? Sus mensajes serán atendidos por asesores y el bot.',
     lock: 'Bloquear',
     unlock: 'Desbloquear',
-
+    invoice: 'Control de facturas',
     agreement: 'Acuerdo',
     agreement_plural: 'Acuerdos',
     setting: 'Coniguración',
