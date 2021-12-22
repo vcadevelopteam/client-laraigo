@@ -1321,6 +1321,7 @@ const translation: LangKeys = {
     lock: 'Lock',
     unlock: 'Unlock',
     invoice: 'Invoice control',
+    invoice_generation: 'Invoice generation',
 
     agreement: 'Agreement',
     agreement_plural: 'Agreements',

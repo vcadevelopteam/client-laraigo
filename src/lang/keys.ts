@@ -1328,6 +1328,7 @@ export const langKeys = {
     lock: 'lock',
     unlock: 'unlock',
     invoice: 'invoice',
+    invoice_generation: 'invoice_generation',
 
 
     bussinessname: 'bussinessname',

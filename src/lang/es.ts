@@ -1311,6 +1311,7 @@ const translation: LangKeys = {
     lock: 'Bloquear',
     unlock: 'Desbloquear',
     invoice: 'Control de facturas',
+    invoice_generation: 'Generación de facturas',
     agreement: 'Acuerdo',
     agreement_plural: 'Acuerdos',
     setting: 'Coniguración',

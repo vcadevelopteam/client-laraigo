@@ -2152,3 +2152,15 @@ export const getBusinessDocType = () => ({
     key: "UFN_BUSINESSDOCTYPE_SEL",
     parameters: {},
 });
+
+export const selInvoice = (year: number, month: string, invoiceid: number = 0) => ({
+    method: "UFN_INVOICE_SEL",
+    key: "UFN_INVOICE_SEL",
+    parameters: { year, month, invoiceid },
+});
+
+export const cancelInvoice = (invoiceid: number) => ({
+    method: "UFN_INVOICE_CANCELED",
+    key: "UFN_INVOICE_CANCELED",
+    parameters: { invoiceid },
+});
