@@ -494,7 +494,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                 disabled={disabled}
                 loading={loading}
                 value={optionsSelected}
-                renderOption={(item, { selected }: any) => (
+                renderOption={(option, { selected }: any) => (
                     <React.Fragment>
                         <Checkbox
                             icon={icon}
@@ -502,7 +502,7 @@ export const FieldMultiSelect: React.FC<TemplateAutocompleteProps> = ({ error, l
                             style={{ marginRight: 8 }}
                             checked={selected}
                         />
-                        {item[optionDesc]}
+                        {option ? (uset ? t(prefixTranslation + option[optionDesc]?.toLowerCase()).toUpperCase() : (option[optionDesc] || '')) : ''}
                     </React.Fragment>
                 )}
                 onChange={(_, values, action, option) => {
