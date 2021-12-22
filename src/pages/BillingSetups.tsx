@@ -1112,8 +1112,8 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.channelwhatsappcharge)}
-                            value={getValues("channelwhatsappcharge").toFixed(2)}
+                            label={t(langKeys.channelotherquantity)}
+                            value={getValues("channelotherquantity").toString()}
                         />
                     </div>
                     <div className="row-zyx">
@@ -1124,18 +1124,6 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.channelwhatsappfee?.message}
                             type="number"
                             className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelothercharge)}
-                            value={getValues("channelothercharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelwhatsappquantity)}
-                            value={getValues("channelwhatsappquantity").toString()}
                         />
                         <FieldEdit
                             label={t(langKeys.channelotherfee)}
@@ -1149,8 +1137,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.channelotherquantity)}
-                            value={getValues("channelotherquantity").toString()}
+                            label={t(langKeys.channelwhatsappquantity)}
+                            value={getValues("channelwhatsappquantity").toString()}
+                        />
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.channelothercharge)}
+                            value={getValues("channelothercharge").toFixed(2)}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldView
+                            className="col-6"
+                            label={t(langKeys.channelwhatsappcharge)}
+                            value={getValues("channelwhatsappcharge").toFixed(2)}
                         />
                         <FieldView
                             className="col-6"

@@ -94,7 +94,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                     <div className={classes.container}>
 
                         <div className={classes.containerField}>
-                            <div>Información general</div>
+                            <div>{t(langKeys.generalinformation)}</div>
                             <FieldView
                                 label={t(langKeys.corporation)}
                                 value={data?.corpdesc}
@@ -117,281 +117,281 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                             />
                         </div>
                         <div className={classes.containerField}>
-                            <div>Información de la empresa</div>
+                            <div>{t(langKeys.companyinformation)}</div>
                             <FieldView
-                                label={"issuerruc"}
+                                label={t(langKeys.issuerruc)}
                                 value={data?.issuerruc}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"issuerbusinessname"}
+                                label={t(langKeys.issuerbusinessname)}
                                 value={data?.issuerbusinessname}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"issuertradename"}
+                                label={t(langKeys.issuertradename)}
                                 value={data?.issuertradename}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"issuerfiscaladdress"}
+                                label={t(langKeys.issuerfiscaladdress)}
                                 value={data?.issuerfiscaladdress}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"issuerubigeo"}
+                                label={t(langKeys.issuerubigeo)}
                                 value={data?.issuerubigeo}
                                 className={classes.fieldView}
                             />
                         </div>
                         <div className={classes.containerField}>
-                            <div>Información de la facturación</div>
+                            <div>{t(langKeys.billinginformation)}</div>
                             <FieldView
-                                label={"emittertype"}
+                                label={t(langKeys.emittertype)}
                                 value={data?.emittertype}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"annexcode"}
+                                label={t(langKeys.annexcode)}
                                 value={data?.annexcode}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"printingformat"}
+                                label={t(langKeys.printingformat)}
                                 value={data?.printingformat}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"sendtosunat"}
+                                label={t(langKeys.sendtosunat)}
                                 value={data?.sendtosunat}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"xmlversion"}
+                                label={t(langKeys.xmlversion)}
                                 value={data?.xmlversion}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"ublversion"}
+                                label={t(langKeys.ublversion)}
                                 value={data?.ublversion}
                                 className={classes.fieldView}
                             />
                         </div>
                         <div className={classes.containerField}>
-                            <div>Información del cliente</div>
+                            <div>{t(langKeys.clientinformation)}</div>
                             <FieldView
-                                label={"receiverdoctype"}
+                                label={t(langKeys.receiverdoctype)}
                                 value={data?.receiverdoctype}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"receiverdocnum"}
+                                label={t(langKeys.receiverdocnum)}
                                 value={data?.receiverdocnum}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"receiverbusinessname"}
+                                label={t(langKeys.receiverbusinessname)}
                                 value={data?.receiverbusinessname}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"receiverfiscaladdress"}
+                                label={t(langKeys.receiverfiscaladdress)}
                                 value={data?.receiverfiscaladdress}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"receivercountry"}
+                                label={t(langKeys.receivercountry)}
                                 value={data?.receivercountry}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"receivermail"}
+                                label={t(langKeys.receivermail)}
                                 value={data?.receivermail}
                                 className={classes.fieldView}
                             />
                         </div>
                         <div className={classes.containerField}>
-                            Informacion de la factura
+                            <div>{t(langKeys.invoiceinformation)}</div>
                             <FieldView
-                                label={"serie"}
+                                label={t(langKeys.serie)}
                                 value={data?.serie}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"correlative"}
+                                label={t(langKeys.correlative)}
                                 value={data?.correlative}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"concept"}
+                                label={t(langKeys.concept)}
                                 value={data?.concept}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"invoicedate"}
+                                label={t(langKeys.invoicedate)}
                                 value={data?.invoicedate}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"expirationdate"}
+                                label={t(langKeys.expirationdate)}
                                 value={data?.expirationdate}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"subtotal"}
+                                label={t(langKeys.subtotal)}
                                 value={data?.subtotal}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"taxes"}
+                                label={t(langKeys.taxes)}
                                 value={data?.taxes}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"totalamount"}
+                                label={t(langKeys.totalamount)}
                                 value={data?.totalamount}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"currency"}
+                                label={t(langKeys.currency)}
                                 value={data?.currency}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"exchangerate"}
+                                label={t(langKeys.exchangerate)}
                                 value={data?.exchangerate}
                                 className={classes.fieldView}
                             />
                         </div>
                         <div className={classes.containerField}>
-                            <div>Informacion resp sunat</div>
+                            <div>{t(langKeys.informationrespsunat)}</div>
                             <FieldView
-                                label={"invoicestatus"}
+                                label={t(langKeys.invoicestatus)}
                                 value={data?.invoicestatus}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"errordescription"}
+                                label={t(langKeys.errordescription)}
                                 value={data?.errordescription}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"qrcode"}
+                                label={t(langKeys.qrcode)}
                                 value={data?.qrcode}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"hashcode"}
+                                label={t(langKeys.hashcode)}
                                 value={data?.hashcode}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"urlcdr"}
+                                label={t(langKeys.urlcdr)}
                                 value={data?.urlcdr}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"urlpdf"}
+                                label={t(langKeys.urlpdf)}
                                 value={data?.urlpdf}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"urlxml"}
+                                label={t(langKeys.urlxml)}
                                 value={data?.urlxml}
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div>Campos opcionales</div>
+                        <div className={classes.containerField}>                            
+                            <div>{t(langKeys.optionalfields)}</div>
 
                             <FieldView
-                                label={"filenumber"}
+                                label={t(langKeys.filenumber)}
                                 value={data?.filenumber}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"purchaseorder"}
+                                label={t(langKeys.purchaseorder)}
                                 value={data?.purchaseorder}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"executingunitcode"}
+                                label={t(langKeys.executingunitcode)}
                                 value={data?.executingunitcode}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"selectionprocessnumber"}
+                                label={t(langKeys.selectionprocessnumber)}
                                 value={data?.selectionprocessnumber}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"contractnumber"}
+                                label={t(langKeys.contractnumber)}
                                 value={data?.contractnumber}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"comments"}
+                                label={t(langKeys.comments)}
                                 value={data?.comments}
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div>Información del pago</div>
+                        <div className={classes.containerField}>                      
+                            <div>{t(langKeys.paymentinformation)}</div>
                             <FieldView
-                                label={"orderid"}
+                                label={t(langKeys.orderid)}
                                 value={data?.orderid}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"orderjson"}
+                                label={t(langKeys.orderjson)}
                                 value={data?.orderjson}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"paymentstatus"}
+                                label={t(langKeys.paymentstatus)}
                                 value={data?.paymentstatus}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"paymentdate"}
+                                label={t(langKeys.paymentdate)}
                                 value={data?.paymentdate}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"paidby"}
+                                label={t(langKeys.paidby)}
                                 value={data?.paidby}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"email"}
+                                label={t(langKeys.email)}
                                 value={data?.email}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"capture"}
+                                label={t(langKeys.capture)}
                                 value={data?.capture}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"paymentnote"}
+                                label={t(langKeys.paymentnote)}
                                 value={data?.paymentnote}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"paymentfile"}
+                                label={t(langKeys.paymentfile)}
                                 value={data?.paymentfile}
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div>Campos opcionales</div>
+                        <div className={classes.containerField}>         
+                            <div>{t(langKeys.optionalfields)}</div>
                             <FieldView
-                                label={"invoicetype"}
+                                label={t(langKeys.invoicetype)}
                                 value={data?.invoicetype}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={"sunatopecode"}
+                                label={t(langKeys.sunatopecode)}
                                 value={data?.sunatopecode}
                                 className={classes.fieldView}
                             />
@@ -493,11 +493,11 @@ const InvoiceGeneration: FC = () => {
                 accessor: 'issuerruc',
             },
             {
-                Header: "Razon social",
+                Header: t(langKeys.bussinessname),
                 accessor: 'issuerbusinessname',
             },
             {
-                Header: "Nombre comercial",
+                Header: t(langKeys.tradename),
                 accessor: 'issuertradename',
             },
             {
@@ -505,11 +505,11 @@ const InvoiceGeneration: FC = () => {
                 accessor: 'serie',
             },
             {
-                Header: "Correlativo",
+                Header: t(langKeys.correlative),
                 accessor: 'correlative',
             },
             {
-                Header: "Fecha de emisión",
+                Header: t(langKeys.dateofissue),
                 accessor: 'invoicedate',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -517,7 +517,7 @@ const InvoiceGeneration: FC = () => {
                 }
             },
             {
-                Header: "Fecha de expiración",
+                Header: t(langKeys.expirationdate),
                 accessor: 'expirationdate',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
@@ -534,11 +534,11 @@ const InvoiceGeneration: FC = () => {
                 type: 'number',
             },
             {
-                Header: "Estado factura",
+                Header:  t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
             },
             {
-                Header: "Estado pago",
+                Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
             },
         ],
