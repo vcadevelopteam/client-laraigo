@@ -16,7 +16,7 @@ import { graphTypes, groupingType } from "./constants";
 import { showSnackbar } from "store/popus/actions";
 import { resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 
-interface ReportTemplate {
+export interface ReportTemplate {
     columnjson: string; // array json
     createdate: string;
     description: string;
@@ -344,7 +344,7 @@ const useLayoutItemStyles = makeStyles(theme => ({
     },
 }));
 
-const LayoutItem: FC<LayoutItemProps> = ({
+export const LayoutItem: FC<LayoutItemProps> = ({
     layoutKey: key,
     loading = false,
     templates = [],
