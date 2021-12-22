@@ -20,7 +20,7 @@ interface CulqiOptionsProps {
 }
 
 interface CulqiModalProps { 
-    invoiceid: number
+    invoiceid?: number
     type?: "CHARGE" | "SUBSCRIPTION",
     title: string;
     description: string;
