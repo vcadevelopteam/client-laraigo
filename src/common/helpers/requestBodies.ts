@@ -2158,3 +2158,9 @@ export const selInvoice = (year: number, month: string, invoiceid: number = 0) =
     key: "UFN_INVOICE_SEL",
     parameters: { year, month, invoiceid },
 });
+
+export const cancelInvoice = (invoiceid: number) => ({
+    method: "UFN_INVOICE_CANCELED",
+    key: "UFN_INVOICE_CANCELED",
+    parameters: { invoiceid },
+});
