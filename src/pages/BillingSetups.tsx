@@ -3342,8 +3342,12 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 <TableHead>
                                 <TableRow>
                                     <StyledTableCell align="center">
-                                        <div>{datareport.userquantity}</div>
-                                        <div>{t(langKeys.uniquecontacts)}</div>
+                                        <div>{datareport.clientwhatquantity}</div>
+                                        <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.userquantity - datareport.clientwhatquantity}</div>
+                                        <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
                                         <div>{datareport.conversationquantity}</div>

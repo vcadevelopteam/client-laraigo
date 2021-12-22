@@ -32,6 +32,7 @@ export const langKeys = {
     won: 'won',
     lost: 'lost',
     tradename: "tradename",
+    others: "others",
     dateofissue: "dateofissue",
     month_01: "month_01",
     month_02: "month_02",

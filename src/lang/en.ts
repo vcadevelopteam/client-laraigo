@@ -836,6 +836,7 @@ const translation: LangKeys = {
     paymentstatus: "Payment Status",
     paymentdate: "PaymentDate",
     paidby: "PaidBy",
+    others: "Others",
     tokenid: "TokenId",
     capture: "Capture",
     tokenjson: "TokenSson",

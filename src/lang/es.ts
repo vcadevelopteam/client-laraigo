@@ -1547,6 +1547,7 @@ const translation: LangKeys = {
     errordescription: "ErrorDescripcion",
     qrcode: "cadenaCodigoQr",
     hashcode: "codigoHash",
+    others: "otros",
     urlcdr: "urlCdrSunat",
     urlpdf: "urlPdf",
     clientinformation: "Información del cliente",
