@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
-import { getCorpSel, getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
+import { getBusinessDocType, getCorpSel, getOrgSel, getValuesFromDomain, insOrg } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -18,6 +18,7 @@ import { getCurrencyList } from "store/signup/actions";
 import ClearIcon from '@material-ui/icons/Clear';
 import { IconButton, InputAdornment, Tabs } from '@material-ui/core';
 import { Visibility, VisibilityOff } from '@material-ui/icons';
+import { getCountryList } from 'store/signup/actions';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -62,18 +63,20 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
-    const { t } = useTranslation();    
-    const [pageSelected, setPageSelected] = useState(0);    
+    const { t } = useTranslation();
+    const [pageSelected, setPageSelected] = useState(0);
     const [showPassword, setShowPassword] = useState(false);
     const [showCredential, setShowCredential] = useState(row?.default_credentials || false);
 
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataCorp = multiData[2] && multiData[2].success ? multiData[2].data : [];
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const countryList = useSelector(state => state.signup.countryList);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
-            corpid: row ? row.corpid: user?.corpid,
+            corpid: row ? row.corpid : user?.corpid,
             description: row ? (row.orgdesc || '') : '',
             status: row ? row.status : 'ACTIVO',
             type: row ? row.type : '',
@@ -87,11 +90,21 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
             ssl: row?.ssl || false,
             private_mail: row?.private_mail || false,
             default_credentials: row?.default_credentials || false,
+            billbyorg: row?.billbyorg || false,
+
+            doctype: row?.doctype || '',
+            docnum: row?.docnum || '',
+            bussinessname: row?.bussinessname || '',
+            fiscaladdress: row?.fiscaladdress || '',
+            sunatcountry: row?.sunatcountry || '',
+            contactemail: row?.contactemail || '',
+            contact: row?.contact || '',
+            autosendinvoice: row?.autosendinvoice || false,
         }
     });
 
     React.useEffect(() => {
-        register('corpid', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('corpid', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -175,10 +188,10 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                     textColor="primary"
                     onChange={(_, value) => setPageSelected(value)}
                 >
-                    <AntTab label={t(langKeys.informationorganization)}/>
-                    <AntTab label={t(langKeys.emailconfiguration)}/>
+                    <AntTab label={t(langKeys.informationorganization)} />
+                    <AntTab label={t(langKeys.emailconfiguration)} />
                 </Tabs>
-                {pageSelected === 0  && <div className={classes.containerDetail}>
+                {pageSelected === 0 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
                         {edit ?
                             (
@@ -279,8 +292,82 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 className="col-6"
                             />}
                     </div>
+                    {getValues('billbyorg') && (
+                        <>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    label={t(langKeys.docType)}
+                                    className="col-6"
+                                    valueDefault={getValues("doctype")}
+                                    onChange={(value) => setValue("doctype", value?.code || "")}
+                                    error={errors?.doctype?.message}
+                                    data={dataDocType}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.documentnumber)}
+                                    className="col-6"
+                                    valueDefault={getValues('docnum')}
+                                    onChange={(value) => setValue('docnum', value)}
+                                    error={errors?.docnum?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.bussinessname)}
+                                    className="col-6"
+                                    valueDefault={getValues('bussinessname')}
+                                    onChange={(value) => setValue('bussinessname', value)}
+                                    error={errors?.bussinessname?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.fiscaladdress)}
+                                    className="col-6"
+                                    valueDefault={getValues('fiscaladdress')}
+                                    onChange={(value) => setValue('fiscaladdress', value)}
+                                    error={errors?.fiscaladdress?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldEdit
+                                    label={t(langKeys.contact)}
+                                    className="col-6"
+                                    valueDefault={getValues('contact')}
+                                    onChange={(value) => setValue('contact', value)}
+                                    error={errors?.contact?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.contactemail)}
+                                    className="col-6"
+                                    valueDefault={getValues('contactemail')}
+                                    onChange={(value) => setValue('contactemail', value)}
+                                    error={errors?.contactemail?.message}
+                                />
+                            </div>
+                            <div className="row-zyx">
+                                <FieldSelect
+                                    label={t(langKeys.country)}
+                                    className="col-6"
+                                    valueDefault={getValues("sunatcountry")}
+                                    onChange={(value) => setValue("sunatcountry", value.code)}
+                                    error={errors?.sunatcountry?.message}
+                                    data={countryList.data}
+                                    optionDesc="description"
+                                    optionValue="code"
+                                />
+                                <TemplateSwitch
+                                    label={t(langKeys.autosendinvoice)}
+                                    disabled={user?.roledesc !== "SUPERADMIN"}
+                                    className="col-6"
+                                    valueDefault={getValues('autosendinvoice')}
+                                    onChange={(value) => setValue('autosendinvoice', value)}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>}
-                {pageSelected === 1 && 
+                {pageSelected === 1 &&
                     <div className={classes.containerDetail}>
                         <div className="row-zyx">
                             {edit ?
@@ -288,11 +375,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     label={t(langKeys.private_mail)}
                                     className="col-6"
                                     valueDefault={showCredential}
-                                    onChange={(value) => {setValue('private_mail', value);setShowCredential(value)}}
+                                    onChange={(value) => { setValue('private_mail', value); setShowCredential(value) }}
                                 /> :
                                 <FieldView
                                     label={"private_mail"}
-                                    value={row ? (row.private_mail  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                    value={row ? (row.private_mail ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                     className="col-6"
                                 />
                             }
@@ -307,8 +394,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                             label={t(langKeys.email)} //transformar a multiselect
                                             className="col-6"
                                             fregister={{
-                                                ...register("email",{
-                                                    validate: (value) => (((value && value.length) && (value.includes("@") && value.includes("."))) || t(langKeys.emailverification))|| t(langKeys.field_required)
+                                                ...register("email", {
+                                                    validate: (value) => (((value && value.length) && (value.includes("@") && value.includes("."))) || t(langKeys.emailverification)) || t(langKeys.field_required)
                                                 })
                                             }}
                                             error={errors?.email?.message}
@@ -326,8 +413,8 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                             className="col-6"
                                             type="number"
                                             fregister={{
-                                                ...register("port",{
-                                                    validate: (value) => (value && value>0) || t(langKeys.validnumber) 
+                                                ...register("port", {
+                                                    validate: (value) => (value && value > 0) || t(langKeys.validnumber)
                                                 })
                                             }}
                                             error={errors?.port?.message}
@@ -343,7 +430,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <div className="row-zyx">
                                     {edit ?
                                         <FieldEdit
-                                            label={t(langKeys.password)} 
+                                            label={t(langKeys.password)}
                                             className="col-6"
                                             type={showPassword ? 'text' : 'password'}
                                             onChange={(value) => setValue('password', value)}
@@ -373,16 +460,16 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <div className="row-zyx">
                                     {edit ?
                                         <FieldEdit
-                                        label={t(langKeys.host)}
-                                        className="col-6"
-                                        fregister={{
-                                            ...register("host",{
-                                                validate: (value) => (value && value.length) || t(langKeys.field_required)
-                                            })
-                                        }}
-                                        error={errors?.host?.message}
-                                        onChange={(value:any) => setValue('host', value)}
-                                        valueDefault={getValues("host")}
+                                            label={t(langKeys.host)}
+                                            className="col-6"
+                                            fregister={{
+                                                ...register("host", {
+                                                    validate: (value) => (value && value.length) || t(langKeys.field_required)
+                                                })
+                                            }}
+                                            error={errors?.host?.message}
+                                            onChange={(value: any) => setValue('host', value)}
+                                            valueDefault={getValues("host")}
                                         />
                                         : <FieldView
                                             label={t(langKeys.host)}
@@ -399,7 +486,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         /> :
                                         <FieldView
                                             label={"SSL"}
-                                            value={row ? (row.ssl  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            value={row ? (row.ssl ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                             className="col-6"
                                         />
                                     }
@@ -412,7 +499,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                         /> :
                                         <FieldView
                                             label={t(langKeys.default_credentials)}
-                                            value={row ? (row.default_credentials  ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                            value={row ? (row.default_credentials ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
                                             className="col-6"
                                         />
                                     }
@@ -501,10 +588,12 @@ const Organizations: FC = () => {
     useEffect(() => {
         fetchData();
         dispatch(getCurrencyList())
+        dispatch(getCountryList())
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPOORG"),
-            getCorpSel(0)
+            getCorpSel(0),
+            getBusinessDocType()
         ]));
         return () => {
             dispatch(resetAllMain());
@@ -544,7 +633,7 @@ const Organizations: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insOrg({ ...row,description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
+            dispatch(execute(insOrg({ ...row, description: row.orgdesc, type: row.type, operation: 'DELETE', status: 'ELIMINADO', id: row.orgid, currency: row.currency })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }

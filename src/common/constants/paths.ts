@@ -11,6 +11,7 @@ const paths = {
     EMAIL_INBOX: '/email_inbox',
     MESSAGE_INBOX: '/message_inbox',
     SUPERVISOR: '/supervisor',
+    INVOICE: '/invoice',
     CORPORATIONS: '/corporations',
     ORGANIZATIONS: '/organizations',
     SIGNIN: "/sign-in",

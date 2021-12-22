@@ -30,6 +30,7 @@ export { default as BillingSetups } from './BillingSetups';
 export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 export { default as UserSettings } from './UserSettings';
+export { default as Invoice } from './Invoice';
 
 export * from './channels';
 export * from './signup';

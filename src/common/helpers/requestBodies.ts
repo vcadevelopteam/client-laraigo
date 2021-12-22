@@ -492,15 +492,15 @@ export const getQuickrepliesSel = (id: number): IRequestBody => ({
     }
 })
 
-export const insCorp = ({ id, description, type, status, logo, logotype, operation,paymentplanid = 0}: Dictionary): IRequestBody => ({
+export const insCorp = ({ id, description, type, status, logo, logotype, operation, paymentplanid = 0, doctype = "", docnum = "", bussinessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false, billbyorg = false }: Dictionary): IRequestBody => ({
     method: "UFN_CORP_INS",
     key: "UFN_CORP_INS",
-    parameters: { id, description, type, status, logo, logotype, operation,paymentplanid }
+    parameters: { companysize: null, id, description, type, status, logo, logotype, operation, paymentplanid, doctype, docnum, bussinessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice, billbyorg }
 });
-export const insOrg = ({ corpid ,description, status, type, id, operation,currency,email="",password="",port=0,host,ssl,default_credentials,private_mail }: Dictionary): IRequestBody => ({
+export const insOrg = ({ corpid, description, status, type, id, operation, currency, email = "", password = "", port = 0, host, ssl, default_credentials, private_mail, doctype = "", docnum = "", bussinessname = "", fiscaladdress = "", sunatcountry = "", contactemail = "", contact = "", autosendinvoice = false }: Dictionary): IRequestBody => ({
     method: "UFN_ORG_INS",
     key: "UFN_ORG_INS",
-    parameters: { corpid, id, description, status, type, operation,currency,email,password,port: parseInt(port),host,ssl,default_credentials,private_mail }
+    parameters: { corpid, id, description, status, type, operation, currency, email, password, port: parseInt(port), host, ssl, default_credentials, private_mail, country: null, timezoneoffset: null, timezone: null, doctype, docnum, bussinessname, fiscaladdress, sunatcountry, contactemail, contact, autosendinvoice }
 });
 
 export const insQuickreplies = ({ id, classificationid, description, quickreply, status, type, operation, favorite }: Dictionary): IRequestBody => ({
@@ -800,7 +800,7 @@ export const getVariableConfigurationLst = (): IRequestBody => ({
     parameters: {}
 });
 
-export const getTicketsByFilter = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string ): IRequestBody => ({
+export const getTicketsByFilter = (lastmessage: string, start_createticket: string, end_createticket: string, channels: string, conversationstatus: string, displayname: string, phone: string): IRequestBody => ({
     method: "UFN_CONVERSATION_SEL_TICKETSBYUSER_FILTER",
     parameters: {
         lastmessage,
@@ -1082,7 +1082,7 @@ export const getReferrerByPersonBody = (personId: ID) => ({
     },
 });
 
-export const insPersonUpdateLocked = ({personid, personcommunicationchannel, locked }: Dictionary) => ({
+export const insPersonUpdateLocked = ({ personid, personcommunicationchannel, locked }: Dictionary) => ({
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED",
     parameters: {
         personid,
@@ -1288,7 +1288,8 @@ export const gerencialTMOsel = ({ startdate, enddate, channel, group, company }:
 export const gerencialTMOselData = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_DATA_TMO_GENERAL_SEL",
-    parameters: { startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
+    parameters: {
+        startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
 export const gerencialTMEsel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
@@ -1510,7 +1511,7 @@ export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel
         min: "00:00:00",
         max: "00:00:00",
         target: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1527,7 +1528,7 @@ export const getdashboardoperativoTMOGENERALSeldata = ({ startdate, enddate, cha
         min: "00:00:00",
         max: "00:00:00",
         target: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1544,7 +1545,7 @@ export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel
         min: "00:00:00",
         max: "00:00:00",
         target: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1561,7 +1562,7 @@ export const getdashboardoperativoTMEGENERALSeldata = ({ startdate, enddate, cha
         min: "00:00:00",
         max: "00:00:00",
         target: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1574,7 +1575,7 @@ export const getdashboardoperativoSummarySel = ({ startdate, enddate, channel, g
         skipuptmo: 0,
         skipdowntme: 0,
         skipuptme: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1587,7 +1588,7 @@ export const getdashboardoperativoSummarySeldata = ({ startdate, enddate, channe
         skipuptmo: 0,
         skipdowntme: 0,
         skipuptme: 0,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1597,7 +1598,7 @@ export const getdashboardoperativoProdxHoraSel = ({ startdate, enddate, channel,
     parameters: {
         startdate, enddate, channel, group, company, label,
         level,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1606,7 +1607,7 @@ export const getdashboardoperativoProdxHoraDistSel = ({ startdate, enddate, chan
     key: "UFN_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1615,7 +1616,7 @@ export const getdashboardoperativoProdxHoraDistSeldata = ({ startdate, enddate, 
     key: "UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1624,7 +1625,7 @@ export const getdashboardoperativoEncuestaSel = ({ startdate, enddate, channel, 
     key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label, closedby: "",
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1633,7 +1634,7 @@ export const getdashboardoperativoEncuestaSeldata = ({ startdate, enddate, chann
     key: "UFN_DATA_DASHBOARD_OPERATIVO_ENCUESTA_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label, closedby: "",
-        offset: (new Date().getTimezoneOffset() / 60) * -1, 
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
 });
@@ -1726,7 +1727,7 @@ export const insLeadPerson = (lead: ILead, firstname: string, lastname: string, 
         personid,
     },
 });
-export const getColumnsSel = (id:number, lost: boolean = false): IRequestBody => ({
+export const getColumnsSel = (id: number, lost: boolean = false): IRequestBody => ({
     method: "UFN_COLUMN_SEL",
     key: "UFN_COLUMN_SEL",
     parameters: {
@@ -1760,13 +1761,13 @@ export const insColumns = ({ id, description, type, status, edit, index, operati
     }
 });
 
-export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid = null}: Dictionary): IRequestBody => ({
+export const updateColumnsLeads = ({ cards_startingcolumn, cards_finalcolumn, startingcolumn_uuid, finalcolumn_uuid, leadid = null }: Dictionary): IRequestBody => ({
     method: 'UFN_UPDATE_LEADS',
     key: "UFN_UPDATE_LEADS",
     parameters: {
-        cards_startingcolumn, 
-        cards_finalcolumn, 
-        startingcolumn_uuid, 
+        cards_startingcolumn,
+        cards_finalcolumn,
+        startingcolumn_uuid,
         finalcolumn_uuid,
         leadid
     }
@@ -1776,7 +1777,7 @@ export const updateColumnsOrder = ({ columns_uuid }: Dictionary): IRequestBody =
     method: 'UFN_UPDATE_COLUMNS',
     key: "UFN_UPDATE_COLUMNS",
     parameters: {
-        cards_uuid: columns_uuid, 
+        cards_uuid: columns_uuid,
     }
 });
 
@@ -1821,8 +1822,8 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
     parameters: {
         id: id,
         fullname: '',
-	    leadproduct: '',
-	    campaignid: 0,
+        leadproduct: '',
+        campaignid: 0,
         all: false,
     },
 });
@@ -1929,9 +1930,9 @@ export const heatmapresumensel = ({ communicationchannel, startdate, enddate, cl
     key: "UFN_REPORT_HEATMAP_RESUMEN_SEL",
     method: "UFN_REPORT_HEATMAP_RESUMEN_SEL",
     parameters: {
-        communicationchannel , 
-        startdate , 
-        enddate ,
+        communicationchannel,
+        startdate,
+        enddate,
         closedby,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -1940,19 +1941,19 @@ export const heatmappage1 = ({ communicationchannel, startdate, enddate, closedb
     key: "UFN_REPORT_HEATMAP_PAGE1_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE1_SEL",
     parameters: {
-        communicationchannel, 
-        startdate, 
+        communicationchannel,
+        startdate,
         enddate,
         closedby,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
-export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby,company }: Dictionary): IRequestBody => ({
+export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE3_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE3_SEL",
     parameters: {
-        communicationchannel, 
-        startdate, 
+        communicationchannel,
+        startdate,
         enddate,
         closedby,
         company,
@@ -1963,8 +1964,8 @@ export const heatmappage3 = ({ communicationchannel, startdate, enddate }: Dicti
     key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_SEL",
     parameters: {
-        communicationchannel, 
-        startdate, 
+        communicationchannel,
+        startdate,
         enddate,
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
@@ -2008,116 +2009,120 @@ export const changePasswordOnFirstLoginIns = (userid: number | string, password:
 export const getPlanSel = (): IRequestBody => ({
     method: "UFN_SUPPORTPLAN_SEL",
     key: "UFN_SUPPORTPLAN_SEL",
-    parameters: { }
+    parameters: {}
 })
 export const getPaymentPlanSel = (): IRequestBody => ({
     method: "UFN_PAYMENTPLAN_SEL",
     key: "UFN_PAYMENTPLAN_SEL",
-    parameters: { 
-        code:0,
-        all:true
+    parameters: {
+        code: 0,
+        all: true
     }
 })
 
-export const getBillingSupportSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
+export const getBillingSupportSel = ({ year, month, plan }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_SEL",
     key: "UFN_BILLINGSUPPORT_SEL",
-    parameters: { year,month,plan }
+    parameters: { year, month, plan }
 })
 
-export const billingSupportIns = ({ year,month,plan,basicfee,starttime,finishtime,status,description,id,type,operation }: Dictionary): IRequestBody => ({
+export const billingSupportIns = ({ year, month, plan, basicfee, starttime, finishtime, status, description, id, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGSUPPORT_INS",
     key: "UFN_BILLINGSUPPORT_INS",
-    parameters: { year,month,plan,basicfee,starttime,finishtime,status,type,description,operation,id }
+    parameters: { year, month, plan, basicfee, starttime, finishtime, status, type, description, operation, id }
 })
 
-export const getBillingConfigurationSel = ({ year,month,plan }: Dictionary): IRequestBody => ({
+export const getBillingConfigurationSel = ({ year, month, plan }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_SEL",
     key: "UFN_BILLINGCONFIGURATION_SEL",
-    parameters: { year,month,plan }
+    parameters: { year, month, plan }
 })
 
-export const billingConfigurationIns = ({ year,month,plan,id,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee=0,clientfreequantity,clientadditionalfee,allowhsm,hsmfee,description,status,type,operation}: Dictionary): IRequestBody => ({
+export const billingConfigurationIns = ({ year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee = 0, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONFIGURATION_INS",
     key: "UFN_BILLINGCONFIGURATION_INS",
-    parameters: { year,month,plan,id,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,allowhsm,hsmfee,description,status,type,operation }
+    parameters: { year, month, plan, id, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, allowhsm, hsmfee, description, status, type, operation }
 })
 
-export const getBillingConversationSel = ({ year,month,countrycode="" }: Dictionary): IRequestBody => ({
+export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONVERSATION_SEL",
     key: "UFN_BILLINGCONVERSATION_SEL",
-    parameters: { year,month,countrycode:countrycode?countrycode:"" }
+    parameters: { year, month, countrycode: countrycode ? countrycode : "" }
 })
 
 
-export const billingConversationIns = ({ year,month,countrycode,id,companystartfee,clientstartfee,c250000,c750000,c2000000,c3000000,c4000000,c5000000,c10000000,c25000000,description,status,type,operation }: Dictionary): IRequestBody => ({
+export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONVERSATION_INS",
     key: "UFN_BILLINGCONVERSATION_INS",
-    parameters: { year,month,countrycode,id,companystartfee,clientstartfee,c250000,c750000,c2000000,c3000000,c4000000,c5000000,c10000000,c25000000,description,status,type,operation }
+    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
 })
 
-export const getBillingPeriodSel = ({ corpid, orgid, year,month,billingplan, supportplan}: Dictionary): IRequestBody => ({
+export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, supportplan }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_SEL",
     key: "UFN_BILLINGPERIOD_SEL",
-    parameters: { corpid, orgid, year,month,billingplan, supportplan }
+    parameters: { corpid, orgid, year, month, billingplan, supportplan }
 })
-export const billingPeriodUpd = ({ corpid,orgid,year,month,billingplan,supportplan,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,supportbasicfee,additionalservicename1,additionalservicefee1,additionalservicename2,additionalservicefee2,additionalservicename3,additionalservicefee3,force}: Dictionary): IRequestBody => ({
+export const billingPeriodUpd = ({ corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_UPD",
     key: "UFN_BILLINGPERIOD_UPD",
-    parameters: { corpid,orgid,year,month,billingplan,supportplan,basicfee,userfreequantity,useradditionalfee,channelfreequantity,channelwhatsappfee,channelotherfee,clientfreequantity,clientadditionalfee,supportbasicfee,additionalservicename1,additionalservicefee1,additionalservicename2,additionalservicefee2,additionalservicename3,additionalservicefee3,force}
+    parameters: { corpid, orgid, year, month, billingplan, supportplan, basicfee, userfreequantity, useradditionalfee, channelfreequantity, channelwhatsappfee, channelotherfee, clientfreequantity, clientadditionalfee, supportbasicfee, additionalservicename1, additionalservicefee1, additionalservicename2, additionalservicefee2, additionalservicename3, additionalservicefee3, force }
 })
 
-export const getBillingPeriodHSMSel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+export const getBillingPeriodHSMSel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIODHSM_SEL",
     key: "UFN_BILLINGPERIODHSM_SEL",
-    parameters: {  corpid,orgid,year,month}
+    parameters: { corpid, orgid, year, month }
 })
-export const billingPeriodHSMUpd = ({ corpid, orgid, year, month, hsmutilityfee, force}: Dictionary): IRequestBody => ({
+export const billingPeriodHSMUpd = ({ corpid, orgid, year, month, hsmutilityfee, force }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIODHSM_UPD",
     key: "UFN_BILLINGPERIODHSM_UPD",
-    parameters: {  corpid, orgid, year, month, hsmutilityfee, force}
+    parameters: { corpid, orgid, year, month, hsmutilityfee, force }
 })
-export const getBillingPeriodSummarySel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+export const getBillingPeriodSummarySel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_SUMMARYORG",
     key: "UFN_BILLINGPERIOD_SUMMARYORG",
-    parameters: {  corpid,orgid:corpid===0?corpid:orgid,year,month,force:true}
+    parameters: { corpid, orgid: corpid === 0 ? corpid : orgid, year, month, force: true }
 })
-export const getBillingPeriodSummarySelCorp = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+export const getBillingPeriodSummarySelCorp = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGPERIOD_SUMMARYCORP",
     key: "UFN_BILLINGPERIOD_SUMMARYCORP",
-    parameters: {  corpid,orgid:corpid===0?corpid:orgid,year,month,force:true}
+    parameters: { corpid, orgid: corpid === 0 ? corpid : orgid, year, month, force: true }
 })
-export const billingpersonreportsel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+export const billingpersonreportsel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLING_REPORT_PERSON",
     key: "UFN_BILLING_REPORT_PERSON",
-    parameters: {  corpid,orgid,year,month}
+    parameters: { corpid, orgid, year, month }
 })
-export const billinguserreportsel = ({ corpid,orgid,year,month}: Dictionary): IRequestBody => ({
+export const billinguserreportsel = ({ corpid, orgid, year, month }: Dictionary): IRequestBody => ({
     method: "UFN_BILLING_REPORT_USER",
     key: "UFN_BILLING_REPORT_USER",
-    parameters: {  corpid,orgid,year,month}
+    parameters: { corpid, orgid, year, month }
 })
 export const getInputValidationSel = (id: number): IRequestBody => ({
     method: "UFN_INPUTVALIDATION_SEL",
     key: "UFN_INPUTVALIDATION_SEL",
-    parameters: {  id}
+    parameters: { id }
 })
-export const inputValidationins = ({ id, operation, description, inputvalue, type, status}: Dictionary): IRequestBody => ({
+export const inputValidationins = ({ id, operation, description, inputvalue, type, status }: Dictionary): IRequestBody => ({
     method: "UFN_INPUTVALIDATION_INS",
     key: "UFN_INPUTVALIDATION_INS",
-    parameters: {  id, operation, description, inputvalue, type, status}
+    parameters: { id, operation, description, inputvalue, type, status }
 })
-export const getRecordHSMList = ({ startdate,enddate}: Dictionary): IRequestBody => ({
+export const getRecordHSMList = ({ startdate, enddate }: Dictionary): IRequestBody => ({
     method: "UFN_HSMHISTORY_LST",
     key: "UFN_HSMHISTORY_LST",
-    parameters: { startdate,enddate,
-        offset: (new Date().getTimezoneOffset() / 60) * -1}
+    parameters: {
+        startdate, enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 })
-export const getRecordHSMReport = ({ campaignname, date}: Dictionary): IRequestBody => ({
+export const getRecordHSMReport = ({ campaignname, date }: Dictionary): IRequestBody => ({
     method: "UFN_HSMHISTORY_REPORT",
     key: "UFN_HSMHISTORY_REPORT",
-    parameters: { campaignname, date,
-        offset: (new Date().getTimezoneOffset() / 60) * -1}
+    parameters: {
+        campaignname, date,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 })
 
 export const getDashboardTemplateSel = (dashboardtemplateId: number | string = 0) => ({
@@ -2134,10 +2139,16 @@ export const getDashboardTemplateIns = (parameters: DashboardTemplateSave) => ({
     key: "UFN_DASHBOARDTEMPLATE_INS",
     parameters,
 });
-export const getBillingPeriodCalc = ({ corpid, year, month}: Dictionary) => ({
+export const getBillingPeriodCalc = ({ corpid, year, month }: Dictionary) => ({
     method: "UFN_BILLINGPERIOD_CALC",
     key: "UFN_BILLINGPERIOD_CALC",
-    parameters:{
+    parameters: {
         corpid, year, month, force: true
     },
+});
+
+export const getBusinessDocType = () => ({
+    method: "UFN_BUSINESSDOCTYPE_SEL",
+    key: "UFN_BUSINESSDOCTYPE_SEL",
+    parameters: {},
 });

@@ -1320,6 +1320,7 @@ const translation: LangKeys = {
     confirmation_person_unlock: 'Do you want to unblock the user? The messages will be served by advisors and the bot.',
     lock: 'Lock',
     unlock: 'Unlock',
+    invoice: 'Invoice control',
 
     agreement: 'Agreement',
     agreement_plural: 'Agreements',
@@ -1472,6 +1473,7 @@ const translation: LangKeys = {
     lastuser: 'Last user',
     'type_activitylead_follow-up quote': 'Follow-up quote',
     'type_activitylead_make quote': 'Make quote',
+    billbyorg: 'Bill by organization',
     type_activitylead_meeting: 'Meeting',
     type_activitylead_email: 'Email',
     type_phaselead_cualificado: 'Qualified',
@@ -1485,6 +1487,12 @@ const translation: LangKeys = {
     proposition: 'Proposition',
     won: 'Won',
     lost: 'Lost',
+
+    bussinessname: 'Bussiness name',
+    fiscaladdress: 'Fiscal address',
+    sunatcountry: 'Country',
+    contactemail: 'Contact email',
+    autosendinvoice: 'Auto send invoice',
 
     customer: 'Customer',
     logAnInternalNote: 'Log an internal note',

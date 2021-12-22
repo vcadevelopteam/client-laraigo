@@ -280,6 +280,8 @@ const useLayoutItemStyles = makeStyles(theme => ({
         fontSize: 16,
     },
     reponsiveContainer: {
+        width: '100%',
+        overflow: 'auto',
         flexGrow: 1,
     },
 }));
@@ -306,11 +308,11 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
 
     const renderGraph = useCallback(() => {
         switch(graph) {
-            case 'bar': return <LayoutBar data={dataGraph} className={classes.reponsiveContainer} />;
-            case 'pie': return <LayoutPie data={dataGraph} className={classes.reponsiveContainer} />;
+            case 'bar': return <LayoutBar data={dataGraph} />;
+            case 'pie': return <LayoutPie data={dataGraph} />;
             default: return null;
         }
-    }, [dataGraph, graph, classes]);
+    }, [dataGraph, graph]);
 
     return (
         <div className={classes.root}>
@@ -322,7 +324,9 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
                     </IconButton>
                 </Tooltip>
             </div>
-            {renderGraph()}
+            <div className={classes.reponsiveContainer}>
+                {renderGraph()}
+            </div>
         </div>
     );
 }
@@ -376,7 +380,7 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, ...props }) => {
                         />
                     ))}
                 </Pie>
-                <Legend verticalAlign="bottom" height={36}/>
+                <Legend verticalAlign="bottom" />
             </PieChart>
         </ResponsiveContainer>
     );

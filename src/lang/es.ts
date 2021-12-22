@@ -1310,7 +1310,7 @@ const translation: LangKeys = {
     confirmation_person_unlock: '¿Desea desbloquear al usuario? Sus mensajes serán atendidos por asesores y el bot.',
     lock: 'Bloquear',
     unlock: 'Desbloquear',
-
+    invoice: 'Control de facturas',
     agreement: 'Acuerdo',
     agreement_plural: 'Acuerdos',
     setting: 'Coniguración',
@@ -1498,6 +1498,13 @@ const translation: LangKeys = {
     proposition: 'Propuesto',
     won: 'Ganado',
     lost: 'Perdido',
+    billbyorg: 'Facturación por organización',
+
+    bussinessname: 'Nombre comercial',
+    fiscaladdress: 'Dirección fiscal',
+    sunatcountry: 'Pais',
+    contactemail: 'Correo del contacto',
+    autosendinvoice: 'Envío automatico de la factura',
 
     NEWNOTE: 'Nueva nota',
     NEWACTIVITY: 'Nueva actividad programada',

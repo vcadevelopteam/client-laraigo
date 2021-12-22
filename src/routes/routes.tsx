@@ -89,12 +89,13 @@ export const routes: RouteConfig[] = [
         path: paths.BILLING_SETUPS,
         icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
     },
-    // {
-    //     key: paths.BILLING_SETUPS,
-    //     description: <Trans i18nKey={langKeys.billingSetup} />,
-    //     path: paths.BILLING_SETUPS,
-    //     icon: (className) => <BillingSetupIcon style={{ width: 22, height: 22 }} className={className} />,
-    // },
+    {
+        key: paths.INVOICE,
+        description: <Trans i18nKey={langKeys.invoice} />,
+        tooltip: <Trans i18nKey={langKeys.invoice} />,
+        path: paths.INVOICE,
+        icon: (className) => <BillingSetupIcon style={{width: 22, height: 22}} className={className} />,
+    },
     {
         key: paths.CONFIGURATION,
         description: <Trans i18nKey={langKeys.configuration} />,
