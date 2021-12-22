@@ -4,7 +4,7 @@ import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIco
 import { useDispatch } from "react-redux";
 import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
-import { TemplateBreadcrumbs, TitleDetail } from "components";
+import { DateRangePicker, TemplateBreadcrumbs, TitleDetail } from "components";
 import { useHistory, useRouteMatch } from "react-router";
 import paths from "common/constants/paths";
 import { langKeys } from "lang/keys";
@@ -16,6 +16,8 @@ import { XAxis, YAxis, ResponsiveContainer, Tooltip as  ChartTooltip, BarChart, 
 import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
 import { useForm } from "react-hook-form";
 import { getCollection, resetMain } from "store/main/actions";
+import { Range } from "react-date-range";
+import { CalendarIcon } from "icons";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -47,6 +49,8 @@ const useDashboardLayoutStyles = makeStyles(theme => ({
     },
 }));
 
+const format = (date: Date) => date.toISOString().split('T')[0];
+
 const DashboardLayout: FC = () => {
     const classes = useDashboardLayoutStyles();
     const { t } = useTranslation();
@@ -58,8 +62,13 @@ const DashboardLayout: FC = () => {
     const dashboardSave = useSelector(state => state.dashboard.dashboardtemplateSave);
     const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);
     const reportTemplates = useSelector(state => state.main.mainData);
-    const [dateRange, setDateRange] = useState({ startDate: "2021-11-05", endDate: "2021-11-30" });
+    const [openDatePicker, setOpenDatePicker] = useState(false);
     const [layout, setLayout] = useState<{ layout: RGL.Layout[], detail: Items }>({ layout: [], detail: {} });
+    const [dateRange, setDateRange] = useState<Range>({
+        startDate: new Date(new Date().setDate(1)),
+        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        key: 'selection',
+    });
     const mustLoadagain = useRef(false);
 
     const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit, reset } = useForm<Items>();
@@ -80,8 +89,8 @@ const DashboardLayout: FC = () => {
     useEffect(() => {
         dispatch(getDashboard({
             dashboardtemplateid: match.params.id,
-            startdate: dateRange.startDate,
-            enddate: dateRange.endDate,
+            startdate: format(dateRange.startDate!),
+            enddate: format(dateRange.endDate!),
             offset: -5,
         }));
     }, [dateRange, match.params.id, dispatch]);
@@ -218,15 +227,6 @@ const DashboardLayout: FC = () => {
         const newKey = Date.now().toString();
         setLayout(prev => ({
             ...prev,
-            // detail: {
-            //     ...prev.detail,
-            //     [newKey]: {
-            //         reporttemplateid: 0,
-            //         grouping: '',
-            //         graph: '',
-            //         column: '',
-            //     },
-            // },
             layout: [
                 ...prev.layout,
                 {
@@ -245,10 +245,8 @@ const DashboardLayout: FC = () => {
 
     const deleteItemOnClick = useCallback((key: string) => {
         setLayout(prev => {
-            // const { [key]: _, ...newDetail } = prev.detail;
             return {
                 ...prev,
-                // detail: newDetail,
                 layout: prev.layout.filter(e => e.i !== key),
             };
         });
@@ -277,6 +275,20 @@ const DashboardLayout: FC = () => {
             <div className={classes.header}>
                 <TitleDetail title={description} />
                 <div style={{ flexGrow: 1 }} />
+                <DateRangePicker
+                    open={openDatePicker}
+                    setOpen={setOpenDatePicker}
+                    range={dateRange}
+                    onSelect={setDateRange}
+                >
+                    <Button
+                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                        startIcon={<CalendarIcon />}
+                        onClick={() => setOpenDatePicker(prev => !prev)}
+                    >
+                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                    </Button>
+                </DateRangePicker>
                 <Button
                     variant="contained"
                     type="button"
