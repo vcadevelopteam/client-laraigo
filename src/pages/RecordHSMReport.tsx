@@ -247,23 +247,23 @@ const RecordHSMRecord: FC = () => {
                 Header: `% ${t(langKeys.success)}`,
                 accessor: 'successp',
                 NoFilter: true,
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { successp } = props.cell.row.original;
-                    return (successp || 0).toFixed(2);
-                }
+                // type: 'number',
+                // sortType: 'number',
+                // Cell: (props: any) => {
+                //     const { successp } = props.cell.row.original;
+                //     return successp;
+                // }
             },
             {
                 Header: `% ${t(langKeys.failed)}`,
                 accessor: 'failedp',
                 NoFilter: true,
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { failedp } = props.cell.row.original;
-                    return (failedp || 0).toFixed(2);
-                }
+                // type: 'number',
+                // sortType: 'number',
+                // Cell: (props: any) => {
+                //     const { failedp } = props.cell.row.original;
+                //     return failedp;
+                // }
             },
             
         ],
