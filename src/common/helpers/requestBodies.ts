@@ -2153,8 +2153,8 @@ export const getBusinessDocType = () => ({
     parameters: {},
 });
 
-export const selInvoice = (year: number, month: number, invoiceid: number = 0) => ({
+export const selInvoice = (year: number, month: string, invoiceid: number = 0) => ({
     method: "UFN_INVOICE_SEL",
     key: "UFN_INVOICE_SEL",
-    parameters: { year, month: 0, invoiceid },
+    parameters: { year, month, invoiceid },
 });

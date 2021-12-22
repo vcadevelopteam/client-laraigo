@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
 import { selInvoice, getBillingConfigurationSel, getBillingPeriodCalc, billingpersonreportsel, billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -82,30 +82,173 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const BillingSetup: FC = () => {
+const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
+const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
+
+const InvoiceGeneration: FC = () => {
+    const { t } = useTranslation();
     const dispatch = useDispatch();
+    const multiData = useSelector(state => state.main.multiData);
+    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
+    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString())
+
+    useEffect(() => {
+        dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+    }, [])
+
+    useEffect(() => {
+        if (!multiData.loading && !multiData.error) {
+            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
+            if (invoiceData) {
+                setDataInvoice(invoiceData.data);
+            }
+        }
+    }, [multiData])
+
+    const columns = React.useMemo(
+        () => [
+            // {
+            //     accessor: 'billingsupportid',
+            //     isComponent: true,
+            //     minWidth: 60,
+            //     width: '1%',
+            //     Cell: (props: any) => {
+            //         const row = props.cell.row.original;
+            //         return (
+            //             <TemplateIcons
+            //                 deleteFunction={() => handleDelete(row)}
+            //                 editFunction={() => handleEdit(row)}
+            //                 viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+            //                 extraOption={t(langKeys.duplicate)}
+            //             />
+            //         )
+            //     }
+            // },
+            {
+                Header: "RUC",
+                accessor: 'issuerruc',
+            },
+            {
+                Header: "Razon social",
+                accessor: 'issuerbusinessname',
+            },
+            {
+                Header: "Nombre comercial",
+                accessor: 'issuertradename',
+            },
+            {
+                Header: "Serie",
+                accessor: 'serie',
+            },
+            {
+                Header: "Correlativo",
+                accessor: 'correlative',
+            },
+            {
+                Header: "Fecha de emisión",
+                accessor: 'invoicedate',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechafin ? new Date(row.invoicedate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: "Fecha de expiración",
+                accessor: 'expirationdate',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.fechafin ? new Date(row.invoicedate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+            },
+            {
+                Header: t(langKeys.amount),
+                accessor: 'totalamount',
+            },
+            {
+                Header: "Estado factura",
+                accessor: 'invoicestatus',
+            },
+            {
+                Header: "Estado pago",
+                accessor: 'paymentstatus',
+            },
+        ],
+        []
+    );
+
+    const search = () => {
+        dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+    }
+
+    return (
+        <div>
+            <TableZyx
+                columns={columns}
+                ButtonsElement={() => (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{ width: 150 }}
+                            valueDefault={filterYear}
+                            variant="outlined"
+                            onChange={(value) => setFilterYear(value?.desc || "")}
+                            data={YEARS}
+                            optionDesc="desc"
+                            optionValue="desc"
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.month)}
+                            style={{ width: 300 }}
+                            valueDefault={filterMonth}
+                            variant="outlined"
+                            onChange={(value) => setFilterMonth(value.map((o: Dictionary) => o.val).join())}
+                            data={MONTHS}
+                            uset={true}
+                            prefixTranslation="month_"
+                            optionDesc="val"
+                            optionValue="val"
+                        />
+                        <Button
+                            disabled={multiData.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={search}
+                        >{t(langKeys.search)}
+                        </Button>
+                    </div>
+                )}
+                // titlemodule={t(langKeys.billingplan, { count: 2 })}
+                data={dataInvoice}
+                filterGeneral={false}
+                loading={multiData.loading}
+                download={true}
+                register={false}
+            />
+
+        </div>
+    )
+}
+
+const BillingSetup: FC = () => {
+    // const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
-    const countryListreq = useSelector(state => state.signup.countryList);
-    const multiData = useSelector(state => state.main.multiData);
+
+    // const multiData = useSelector(state => state.main.multiData);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 5);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
-        // if (!multiData.loading && sentfirstinfo) {
-        //     setsentfirstinfo(false)
-        //     setdataPlan(multiData.data[0] && multiData.data[0].success ? multiData.data[0].data : [])
-        //     setdataPaymentPlan(multiData.data[3] && multiData.data[3].success ? multiData.data[3].data : [])
-        // }
-    }, [multiData])
-
-
-    useEffect(() => {
         setsentfirstinfo(true)
-        dispatch(getCountryList())
-        dispatch(getMultiCollection([
-            selInvoice(2021, 12),
-        ]));
+
+
     }, [])
     return (
         <div style={{ width: '100%' }}>
@@ -122,6 +265,7 @@ const BillingSetup: FC = () => {
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
+                    <InvoiceGeneration />
                     {/* <SupportPlan dataPlan={dataPlan} /> */}
                 </div>
             }
