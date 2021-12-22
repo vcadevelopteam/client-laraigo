@@ -1486,6 +1486,13 @@ const translation: LangKeys = {
     proposition: 'Propuesto',
     won: 'Ganado',
     lost: 'Perdido',
+    billbyorg: 'Facturación por organización',
+
+    bussinessname: 'Nombre comercial',
+    fiscaladdress: 'Dirección fiscal',
+    sunatcountry: 'Pais',
+    contactemail: 'Correo del contacto',
+    autosendinvoice: 'Envío automatico de la factura',
 
     NEWNOTE: 'Nueva nota',
     NEWACTIVITY: 'Nueva actividad programada',

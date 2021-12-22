@@ -64,7 +64,7 @@ const useDashboardAddStyles = makeStyles(theme => ({
         color: 'white',
     },
     layout: {
-        backgroundColor: 'grey',
+        backgroundColor: 'inherit',
         width: '100%',
     },
     header: {
@@ -333,13 +333,8 @@ const useLayoutItemStyles = makeStyles(theme => ({
         width: 'inherit',
         height: 'inherit',
         padding: '1em',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        justifyContent: 'center',
+        display: 'block',
         overflow: 'auto',
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
         position: 'relative',
     },
     deleteBtn: {
