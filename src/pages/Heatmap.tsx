@@ -126,7 +126,7 @@ const MainHeatMap: React.FC = () => {
         let year = dataMainHeatMap.startdate?.getFullYear()
         let rowmax = 0;
         let dateend = new Date(year, mes, 0).getDate()
-        let arrayvalidvalues=new Array(25).fill(0);
+        let arrayvalidvalues=new Array(24).fill(0);
 
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary = {
@@ -143,19 +143,23 @@ const MainHeatMap: React.FC = () => {
         data.forEach( (row:any) => {
             
             const day = parseInt(row.fecha.split("-")[2])
-            const hour = row.hora;            
+            const hour = row.hora;     
             arrayvalidvalues[row.horanum]++
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({
                 ...x, 
                 [`day${day}`]: x[`day${day}`] + row.atencionesxfecha,
-                [`totalcol`]: (x.totalcol + row.atencionesxfecha)/arrayvalidvalues[row.horanum]
+                [`totalcol`]: (x.totalcol + row.atencionesxfecha)
             }) : x) 
             
             rowmax = row.atencionesxfecha>rowmax ? row.atencionesxfecha:rowmax;
             arrayfree[24][`day${day}`] += row.atencionesxfecha;
             arrayfree[24][`totalcol`] += row.atencionesxfecha;
         });
-        
+        arrayvalidvalues.forEach((x,i)=>{
+            if(x!==0){
+                arrayfree[i].totalcol = arrayfree[i].totalcol/x 
+            }
+        })
         setheatMapConversationsData(arrayfree)
 
         let mid = rowmax/2;
@@ -200,7 +204,7 @@ const MainHeatMap: React.FC = () => {
                 else{
                     if (rowcounter < 24)
                         rowcounter++;
-                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{(props.data[rowcounter-1][key])}</div>
+                    return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{props.data[rowcounter-1][key]>0?(props.data[rowcounter-1][key].toFixed(2)):"0"}</div>
                 }
             },
         }));
@@ -259,20 +263,29 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24][`day${day}`] = `00:00:00`
             }else{
                 let timespenttotal = arrayfree[24][`day${day}`].split(':')
-                let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvaluesmonth[day-1])
+                let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
                 let hh= Math.floor(secondstotalnum/3600)
                 let mm= Math.floor((secondstotalnum-hh*3600)/60)
                 let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                 arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
                 timespenttotal = arrayfree[24].totalcol.split(':')
-                secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvaluesmonth[day-1])
+                secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
                 hh= Math.floor(secondstotalnum/3600)
                 mm= Math.floor((secondstotalnum-hh*3600)/60)
                 ss= Math.round(secondstotalnum)-hh*3600-mm*60
                 arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
-        
+        arrayvalidvaluesmonth.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
+        })
         setaverageHeatMapTMOData(arrayfree)
                 
         let mid = (rowmax/2);
