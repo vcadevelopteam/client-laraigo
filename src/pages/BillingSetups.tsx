@@ -2248,12 +2248,12 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionDesc="val"
                                 optionValue="val"
                             />
-                            <FieldSelect
+                            <FieldMultiSelect
                                 label={t(langKeys.country)}
                                 className={classes.fieldsfilter}
                                 valueDefault={dataMain.countrycode}
                                 variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value?.code||""}))}
+                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
                                 data={dataPlan}
                                 optionDesc="description"
                                 optionValue="code"
