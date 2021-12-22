@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
 import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -96,6 +96,8 @@ function formatNumberNoDecimals(num: number) {
         return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
     return "0"
 }
+const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
+const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
     return (
@@ -1493,33 +1495,22 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
 const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
+    
+    
     const mainResult = useSelector(state => state.main);
     const executeResult = useSelector(state => state.main.execute);
     const classes = useStyles();
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [disableSearch, setdisableSearch] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
     const [dataMain, setdataMain] = useState({
-        startdate: new Date(new Date().setDate(1)),
-        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         plan: "",
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes-1, 1)
-            let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
-        }
-    }
     function search(){
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingSupportSel(dataMain)))
@@ -1554,6 +1545,8 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.month),
                 accessor: 'month',
+                type: "number",
+                sortType: "number"
             },
             {
                 Header: t(langKeys.year),
@@ -1609,6 +1602,9 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             }
         }
     }, [executeResult, waitSave])
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
 
     const handleRegister = () => {
         setViewSelected("view-2");
@@ -1663,14 +1659,27 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     columns={columns}
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <TextField
-                                id="date"
-                                className={classes.fieldsfilter}
-                                type="month"
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={dataMain.datetoshow}
-                                size="small"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
                             />
                             <FieldSelect
                                 label={t(langKeys.supportplan)}
@@ -1684,7 +1693,7 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                             />
                         
                             <Button
-                                disabled={mainResult.mainData.loading}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon style={{ color: 'white' }} />}
@@ -1727,26 +1736,13 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);    
     const [duplicateop, setduplicateop] = useState(false);
+    const [disableSearch, setdisableSearch] = useState(false);
     const [dataMain, setdataMain] = useState({
-        startdate: new Date(new Date().setDate(1)),
-        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         plan: "",
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes-1, 1)
-            let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
-        }
-    }
     function search(){
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingConfigurationSel(dataMain)))
@@ -1754,6 +1750,9 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         search()
     }, [])
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
     useEffect(() => {
         if (!mainResult.mainData.loading){
             dispatch(showBackdrop(false))
@@ -1938,14 +1937,27 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     columns={columns}
                     ButtonsElement={() =>(
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <TextField
-                                id="date"
-                                className={classes.fieldsfilter}
-                                type="month"
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={dataMain.datetoshow}
-                                size="small"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
                             />
                             <FieldSelect
                                 label="Plan"
@@ -1958,7 +1970,7 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="plan"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2000,30 +2012,19 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
     const [duplicateop, setduplicateop] = useState(false);
+    const [disableSearch, setdisableSearch] = useState(false);
     const [dataMain, setdataMain] = useState({
-        startdate: new Date(new Date().setDate(1)),
-        enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         countrycode: "",
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
-
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes-1, 1)
-            let enddate = new Date(year, mes, 0)
-            let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,startdate,enddate,datetoshow,year,month:mes}))
-        }
-    }
     function search(){
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingConversationSel(dataMain)))
     }
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
     useEffect(() => {
         search()
     }, [])
@@ -2225,14 +2226,27 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <TextField
-                                id="date"
-                                className={classes.fieldsfilter}
-                                type="month"
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={dataMain.datetoshow}
-                                size="small"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
                             />
                             <FieldSelect
                                 label={t(langKeys.country)}
@@ -2245,7 +2259,7 @@ const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="code"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2287,14 +2301,14 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const [disableSearch, setdisableSearch] = useState(false);
     const [dataMain, setdataMain] = useState({
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         billingplan: "",
         supportplan: "",
         corpid: user?.corpid || 0,
         orgid: 0,
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1,
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
     });
 
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
@@ -2302,15 +2316,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
     const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
-        }
-    }
     function search(){
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingPeriodSel(dataMain)))
@@ -2617,7 +2622,10 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
 
-
+        
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
@@ -2644,19 +2652,31 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return (
             <Fragment>
                 
-
                 <TableZyx
                     columns={columns}
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <TextField
-                                id="date"
-                                className={classes.fieldsfilter}
-                                type="month"
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={dataMain.datetoshow}
-                                size="small"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
                             />
                             <FieldSelect
                                 label={t(langKeys.corporation)}
@@ -2699,7 +2719,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="description"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -2738,27 +2758,21 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const classes = useStyles();
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [disableSearch, setdisableSearch] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
     const [dataMain, setdataMain] = useState({
-        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
-        year: new Date().getFullYear(),
-        month: new Date().getMonth() + 1,
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0"),
         corpid: 0,
         orgid: 0,
     });
     const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
     const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
     const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
-            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
-        }
-    }
     function search(){
         dispatch(showBackdrop(true))
         dispatch(getCollection(getBillingPeriodHSMSel(dataMain)))
@@ -2894,14 +2908,27 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                     columns={columns}                    
                     ButtonsElement={() => (
                         <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <TextField
-                                id="date"
-                                className={classes.fieldsfilter}
-                                type="month"
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
                                 variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={dataMain.datetoshow}
-                                size="small"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
                             />
                             <FieldSelect
                                 label={t(langKeys.corporation)}
@@ -2924,7 +2951,7 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 optionValue="orgid"
                             />
                             <Button
-                                disabled={mainResult.mainData.loading}
+                                disabled={mainResult.mainData.loading || disableSearch}
                                 variant="contained"
                                 color="primary"
                                 style={{ width: 120, backgroundColor: "#55BD84" }}
@@ -3118,7 +3145,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 onClick={() => triggerExportDataPerson()}
                                 startIcon={<DownloadIcon />}
                             >
-                                {`${t(langKeys.report)} ${t(langKeys.person)}`}
+                                {`${t(langKeys.report)} ${t(langKeys.uniquecontacts)}`}
                             </Button>
                             <Button
                                 className={classes.button}
@@ -3316,7 +3343,7 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 <TableRow>
                                     <StyledTableCell align="center">
                                         <div>{datareport.userquantity}</div>
-                                        <div>{t(langKeys.contact_plural)}</div>
+                                        <div>{t(langKeys.uniquecontacts)}</div>
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
                                         <div>{datareport.conversationquantity}</div>
