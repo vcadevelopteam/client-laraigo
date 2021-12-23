@@ -80,6 +80,7 @@ const DashboardLayout: FC = () => {
 
         return () => {
             dispatch(resetMain());
+            dispatch(resetMainDynamic());
             dispatch(resetGetDashboard());
             dispatch(resetGetDashboardTemplate());
             dispatch(resetSaveDashboardTemplate());
@@ -653,12 +654,6 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, o
             },
         ],
     }), [dateRange, rawColumns]);
-
-    useEffect(() => {
-        return () => {
-            dispatch(resetMainDynamic());
-        };
-    }, [dispatch]);
 
     useEffect(() => {
         if (!open) return;
