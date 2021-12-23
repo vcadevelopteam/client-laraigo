@@ -27,7 +27,7 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import Visibility from '@material-ui/icons/Visibility';
 import MoreVert from '@material-ui/icons/MoreVert';
 import Fab from '@material-ui/core/Fab';
-import DescriptionIcon from '@material-ui/icons/Description';
+import CulqiModal from 'components/fields/CulqiModal';
 
 interface DetailProps {
     data: Dictionary | null;
@@ -83,8 +83,6 @@ const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "20
 const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
 const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
-
-
 
 const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
     const classes = useStyles();
@@ -328,7 +326,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                         </div>
                         <div className={classes.containerField}>
                             <div className={classes.titleCard}>{t(langKeys.paymentinformation)}</div>
-                            
+
                             {/* <FieldView
                                 label={t(langKeys.orderjson)}
                                 value={data?.orderjson}
@@ -689,16 +687,27 @@ const InvoiceControl: FC = () => {
                 accessor: 'paymentstatus',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
+                    console.log("invoiceid", row.invoiceid);
+                    console.log("amounttopay", row.totalamount);
+                    console.log("currency", row.currency);
                     return (
-                        <Button
-                            disabled={row.paymentstatus!=="PENDING"}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<PaymentIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={search}
-                        >{t(langKeys.paynow)}
-                        </Button>
+                        <CulqiModal
+                            type="CHARGE"
+                            invoiceid={row.invoiceid}
+                            title={t(row.docnumber)}
+                            description=""
+                            currency={row.currency}
+                            amount={row.totalamount * 100}
+                        ></CulqiModal>
+                        // <Button
+                        //     disabled={row.paymentstatus!=="PENDING"}
+                        //     variant="contained"
+                        //     color="primary"
+                        //     startIcon={<PaymentIcon style={{ color: 'white' }} />}
+                        //     style={{ width: 120, backgroundColor: "#55BD84" }}
+                        //     onClick={search}
+                        // >{t(langKeys.paynow)}
+                        // </Button>
                     )
                 }
             },
@@ -711,7 +720,7 @@ const InvoiceControl: FC = () => {
                     return (
                         <Fragment>
                             <div>
-                                <a href={urlpdf} style={{ display: "block" }}>{docnumber}</a>
+                                <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
                             </div>
                         </Fragment>
                     )
@@ -747,24 +756,24 @@ const InvoiceControl: FC = () => {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
             },
-           /* {
-                accessor: 'urlcdr',
-                NoFilter: true,
-                Cell: (props: any) => {
-                    const urlcdr = props.cell.row.original.urlcdr;
-                    const urlpdf = props.cell.row.original.urlpdf;
-                    const urlxml = props.cell.row.original.urlxml;
-                    return (
-                        <Fragment>
-                            <div>
-                                <a href={urlcdr} style={{ display: "block" }}>{`${t(langKeys.download)} CDR`}</a>
-                                <a href={urlpdf} style={{ display: "block" }}>{`${t(langKeys.download)} PDF`}</a>
-                                <a href={urlxml} style={{ display: "block" }}>{`${t(langKeys.download)} XML`}</a>
-                            </div>
-                        </Fragment>
-                    )
-                }
-            },*/
+            /* {
+                 accessor: 'urlcdr',
+                 NoFilter: true,
+                 Cell: (props: any) => {
+                     const urlcdr = props.cell.row.original.urlcdr;
+                     const urlpdf = props.cell.row.original.urlpdf;
+                     const urlxml = props.cell.row.original.urlxml;
+                     return (
+                         <Fragment>
+                             <div>
+                                 <a href={urlcdr} style={{ display: "block" }}>{`${t(langKeys.download)} CDR`}</a>
+                                 <a href={urlpdf} style={{ display: "block" }}>{`${t(langKeys.download)} PDF`}</a>
+                                 <a href={urlxml} style={{ display: "block" }}>{`${t(langKeys.download)} XML`}</a>
+                             </div>
+                         </Fragment>
+                     )
+                 }
+             },*/
         ],
         []
     );
