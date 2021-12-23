@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
-import { selInvoice, cancelInvoice, getLocaleDateString } from 'common/helpers';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -649,7 +649,7 @@ const InvoiceGeneration: FC = () => {
     }
 }
 
-const BillingSetup: FC = () => {
+const Invoice: FC = () => {
     // const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
@@ -678,4 +678,4 @@ const BillingSetup: FC = () => {
     );
 }
 
-export default BillingSetup;
+export default Invoice;
