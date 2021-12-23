@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
-import { selInvoice, cancelInvoice, getLocaleDateString } from 'common/helpers';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -301,7 +301,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>                            
+                        <div className={classes.containerField}>
                             <div>{t(langKeys.optionalfields)}</div>
 
                             <FieldView
@@ -335,7 +335,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>                      
+                        <div className={classes.containerField}>
                             <div>{t(langKeys.paymentinformation)}</div>
                             <FieldView
                                 label={t(langKeys.orderid)}
@@ -383,7 +383,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>         
+                        <div className={classes.containerField}>
                             <div>{t(langKeys.optionalfields)}</div>
                             <FieldView
                                 label={t(langKeys.invoicetype)}
@@ -405,6 +405,8 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
 
 const InvoiceGeneration: FC = () => {
     const { t } = useTranslation();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -413,9 +415,26 @@ const InvoiceGeneration: FC = () => {
     const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString())
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
 
+    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
     useEffect(() => {
-        dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+        fetchData()
     }, [])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: "Factura anulada correctamente" }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error) {
@@ -534,7 +553,7 @@ const InvoiceGeneration: FC = () => {
                 type: 'number',
             },
             {
-                Header:  t(langKeys.invoicestatus),
+                Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
             },
             {
@@ -546,7 +565,18 @@ const InvoiceGeneration: FC = () => {
     );
 
     const handleCancel = (row: Dictionary) => {
+        // cancelInvoice
+        const callback = () => {
+            dispatch(execute(cancelInvoice(row.invoiceid)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
 
+        dispatch(manageConfirmation({
+            visible: true,
+            question: "¿Está seguro de anular la factura?",
+            callback
+        }))
     }
     const handleGenerate = (row: Dictionary) => {
 
@@ -619,7 +649,7 @@ const InvoiceGeneration: FC = () => {
     }
 }
 
-const BillingSetup: FC = () => {
+const Invoice: FC = () => {
     // const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
@@ -648,4 +678,4 @@ const BillingSetup: FC = () => {
     );
 }
 
-export default BillingSetup;
+export default Invoice;
