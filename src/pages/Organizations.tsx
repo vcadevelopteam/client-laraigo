@@ -209,7 +209,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                     />
                                     :
                                     <FieldEdit
-                                        label={t(langKeys.corporation)} // "Corporation"
+                                        label={t(langKeys.corporation)}
                                         className="col-6"
                                         valueDefault={row ? (row.corpdesc || "") : user?.corpdesc}
                                         disabled={true}
