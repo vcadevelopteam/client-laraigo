@@ -288,7 +288,6 @@ const MainHeatMap: React.FC = () => {
         })
         arrayvalidvalues.forEach((x,i)=>{
             if(x!==0){
-                console.log(x)
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
                 let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
                 let hh= Math.floor(secondstotalnum/3600)
@@ -365,6 +364,9 @@ const MainHeatMap: React.FC = () => {
         let dateend = new Date(year, mes, 0).getDate()
         let rowmax = 0;    
         let arrayfree:any = [];
+        
+        let arrayvalidvalues=new Array(25).fill(0);
+        let arrayvalidvaluesmonth=new Array(32).fill(0);
         const LIMITHOUR = 24;
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
@@ -385,12 +387,12 @@ const MainHeatMap: React.FC = () => {
             
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.userfirstreplytimexfecha}) : x) 
             rowmax = seconds>rowmax ? seconds:rowmax;
-            let i = 0;
+            arrayvalidvalues[row.horanum]++
+            arrayvalidvaluesmonth[day-1]++
             arrayfree.forEach((x:any) => {
-                    i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -400,17 +402,38 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        
+        arrayvalidvaluesmonth.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
+        })
+        arrayvalidvalues.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[i][`totalcol`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
         })
         setheatMapAverageadvisorTMEData(arrayfree)
                 
@@ -481,6 +504,8 @@ const MainHeatMap: React.FC = () => {
         let rowmax = 0;    
         let arrayfree:any = [];
         const LIMITHOUR = 24;
+        let arrayvalidvalues=new Array(25).fill(0);
+        let arrayvalidvaluesmonth=new Array(32).fill(0);
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -500,12 +525,12 @@ const MainHeatMap: React.FC = () => {
             
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.useraveragereplytimexfecha}) : x) 
             rowmax = seconds>rowmax ? seconds:rowmax;
-            let i = 0;
+            arrayvalidvalues[row.horanum]++
+            arrayvalidvaluesmonth[day-1]++
             arrayfree.forEach((x:any) => {
-                    i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -515,17 +540,37 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        arrayvalidvaluesmonth.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
+        })
+        arrayvalidvalues.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[i][`totalcol`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
         })
         setuserAverageReplyTimexFechaData(arrayfree)
                 
@@ -596,6 +641,8 @@ const MainHeatMap: React.FC = () => {
         let rowmax = 0;    
         let arrayfree:any = [];
         const LIMITHOUR = 24;
+        let arrayvalidvalues=new Array(25).fill(0);
+        let arrayvalidvaluesmonth=new Array(32).fill(0);
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -615,12 +662,12 @@ const MainHeatMap: React.FC = () => {
             
             arrayfree = arrayfree.map((x:any) => x.hournum === hour ? ({...x, [`day${day}`]: row.personaveragereplytimexfecha}) : x) 
             rowmax = seconds>rowmax ? seconds:rowmax;
-            let i = 0;
+            arrayvalidvalues[row.horanum]++
+            arrayvalidvaluesmonth[day-1]++
             arrayfree.forEach((x:any) => {
-                    i++;
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/i)
+                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -630,17 +677,37 @@ const MainHeatMap: React.FC = () => {
                 }
             )
             let timespenttotal = arrayfree[24][`day${day}`].split(':')
-            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             let hh= Math.floor(secondstotalnum/3600)
             let mm= Math.floor((secondstotalnum-hh*3600)/60)
             let ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24][`day${day}`]=hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             timespenttotal = arrayfree[24].totalcol.split(':')
-            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/24)
+            secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds))
             hh= Math.floor(secondstotalnum/3600)
             mm= Math.floor((secondstotalnum-hh*3600)/60)
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+        })
+        arrayvalidvaluesmonth.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
+        })
+        arrayvalidvalues.forEach((x,i)=>{
+            if(x!==0){
+                let timetoconvert = arrayfree[i][`totalcol`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
         })
         setpersonAverageReplyTimexFechaData(arrayfree)
                 
