@@ -164,10 +164,10 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
 
     const checkValidation = () => {
         if (!frameProps.valid[0]) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.messageInbox)}));
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.required_fields_missing)}));
         }
         else if (!frameProps.valid[1]) {
-            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_null_not_allowed)}));
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.missing_people)}));
         }
         else {
             let valid = true;
@@ -467,6 +467,7 @@ export const CampaignDetail: React.FC<DetailProps> = ({ data: { row, edit }, set
                             color="primary"
                             type="button"
                             style={{ backgroundColor: "#55BD84" }}
+                            disabled={!frameProps.valid[0] || !frameProps.valid[1]}
                             onClick={() => {
                                 setFrameProps({...frameProps, executeSave: true, checkPage: true});
                             }}
