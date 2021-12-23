@@ -799,6 +799,8 @@ const translation: LangKeys = {
     field: 'Campo',
     missing_header: 'Falta cabecera',
     invalid_parameter: 'Parámetro inválido',
+    required_fields_missing: 'Faltan campos obligatorio',
+    missing_people: 'Falta registrar personas, debe registrar al menos 1',
     no_record_selected: 'Ningún registro seleccionado',
     no_records_valid: 'No hay registros válidos',
     reporttype: 'Tipo de reporte',
