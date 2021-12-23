@@ -1,10 +1,10 @@
 import { FC, useEffect, useMemo, useState, useCallback, useRef } from "react";
-import { Box, Button, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Modal, Tooltip, Typography } from "@material-ui/core";
+import { Box, Button, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Tooltip } from "@material-ui/core";
 import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
 import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
 import { useSelector } from "hooks";
-import { DateRangePicker, TemplateBreadcrumbs, TitleDetail } from "components";
+import { DateRangePicker, DialogZyx, TemplateBreadcrumbs, TitleDetail } from "components";
 import { useHistory, useRouteMatch } from "react-router";
 import paths from "common/constants/paths";
 import { langKeys } from "lang/keys";
@@ -70,6 +70,7 @@ const DashboardLayout: FC = () => {
         endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection',
     });
+    const [canLayoutChange, setCanLayoutChange] = useState(true);
     const mustLoadagain = useRef(false);
 
     const { register, unregister, formState: { errors }, getValues, setValue, handleSubmit, reset } = useForm<Items>();
@@ -80,7 +81,7 @@ const DashboardLayout: FC = () => {
 
         return () => {
             dispatch(resetMain());
-            dispatch(resetMainDynamic());
+            dispatch(resetMainDynamic()); // TableModal
             dispatch(resetGetDashboard());
             dispatch(resetGetDashboardTemplate());
             dispatch(resetSaveDashboardTemplate());
@@ -115,7 +116,6 @@ const DashboardLayout: FC = () => {
     }, [dashboardtemplate, t, dispatch]);
 
     useEffect(() => {
-        console.log(dashboard);
         if (dashboard.loading) return;
         if (dashboard.error) {
             const error = t(dashboard.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -330,8 +330,8 @@ const DashboardLayout: FC = () => {
                 onLayoutChange={(l) => setLayout(prev => ({ ...prev, layout: l }))}
                 cols={12}
                 rowHeight={140}
-                isDraggable={!dashboardtemplate.loading && !dashboard.loading}
-                isResizable={!dashboardtemplate.loading && !dashboard.loading}
+                isDraggable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
+                isResizable={canLayoutChange && !dashboardtemplate.loading && !dashboard.loading}
             >
                 {layout.layout.map(e => (
                     <div key={e.i}>
@@ -345,6 +345,7 @@ const DashboardLayout: FC = () => {
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
                                 dateRange={dateRange}
+                                onModalOpenhasChanged={v => setCanLayoutChange(!v)}
                             />
                         ) : (
                             <NewLayoutItem
@@ -381,6 +382,7 @@ interface LayoutItemProps {
     columnjson?: string;
     dateRange: Range;
     onDetailChange?: (detail: Items, type: ChangeType) => void;
+    onModalOpenhasChanged: (open: boolean) => void;
 }
 
 interface Column {
@@ -436,6 +438,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
     columnjson,
     dateRange,
     onDetailChange,
+    onModalOpenhasChanged,
 }) => {
     const classes = useLayoutItemStyles();
     const canChange = detail !== undefined && onDetailChange !== undefined;
@@ -529,6 +532,7 @@ const LayoutItem: FC<LayoutItemProps> = ({
                     <MenuItem
                         onClick={() => {
                             setOpenTableModal(true);
+                            onModalOpenhasChanged(true);
                             handleClose();
                         }}
                     >
@@ -545,7 +549,10 @@ const LayoutItem: FC<LayoutItemProps> = ({
             <TableModal
                 title={reportname}
                 open={openTableModal}
-                onClose={() => setOpenTableModal(false)}
+                onClose={() => {
+                    setOpenTableModal(false);
+                    onModalOpenhasChanged(false);
+                }}
                 rawColumns={rawColumns}
                 dateRange={dateRange}
             />
@@ -608,24 +615,6 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, ...props }) => {
     );
 }
 
-const useTableModalStyles = makeStyles(theme => ({
-    root: {
-        position: 'absolute' as 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        maxWidth: "80%",
-        maxHeight: "80%",
-        width: '80%',
-        backgroundColor: 'white',
-        padding: "16px",
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '1em',
-    },
-}));
-
 interface TableModalProps {
     title: string;
     open: boolean;
@@ -635,7 +624,6 @@ interface TableModalProps {
 }
 
 const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, onClose }) => {
-    const classes = useTableModalStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const mainDynamic = useSelector(state => state.main.mainDynamic);
@@ -674,32 +662,21 @@ const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, o
     }, [mainDynamic, open, t, dispatch]);
 
     return (
-        <Modal
+        <DialogZyx
             open={open}
-            onClose={onClose}
-            aria-labelledby="table-modal-title"
+            title={title}
+            buttonText2={t(langKeys.cancel)}
+            handleClickButton2={onClose}
+            maxWidth="md"
         >
-            <Box className={classes.root}>
-                <Typography id="table-modal-title" variant="h6" component="h2">
-                    {title}
-                </Typography>
-                <TableZyx
-                    columns={columns}
-                    filterGeneral={false}
-                    data={mainDynamic.data}
-                    download={false}
-                    loading={mainDynamic.loading}
-                />
-                <Button
-                    variant="contained"
-                    color="primary"
-                    disabled={mainDynamic.loading}
-                    onClick={onClose}
-                >
-                    <Trans i18nKey={langKeys.close} />
-                </Button>
-            </Box>
-        </Modal>
+            <TableZyx
+                columns={columns}
+                filterGeneral={false}
+                data={mainDynamic.data}
+                download={false}
+                loading={mainDynamic.loading}
+            />
+        </DialogZyx>
     );
 }
 
