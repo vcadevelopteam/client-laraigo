@@ -1617,6 +1617,8 @@ const translation: LangKeys = {
     DEFAULT_FORCED_DISCONNECTION: 'Session has been closed',
     OTHER_PC_CONNECTION: 'Session has been logged-in on another PC',
     SESSION_EXPIRED: 'Session has expired',
+
+    seeMore: 'See more',
 };
 
 const enResource: ResourceLanguage = {

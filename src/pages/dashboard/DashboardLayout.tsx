@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo, useState, useCallback, useRef } from "react";
-import { Box, Button, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Tooltip } from "@material-ui/core";
+import { Box, Button, CircularProgress, IconButton, makeStyles, Menu, MenuItem, Modal, Tooltip, Typography } from "@material-ui/core";
 import { Clear as ClearIcon, SwapHoriz as SwapHorizIcon, MoreVert as MoreVertIcon } from "@material-ui/icons";
 import { useDispatch } from "react-redux";
 import { deleteDashboardTemplate, getDashboard, getDashboardTemplate, resetDeleteDashboardTemplate, resetGetDashboard, resetGetDashboardTemplate, resetSaveDashboardTemplate, saveDashboardTemplate } from "store/dashboard/actions";
@@ -15,9 +15,10 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import { XAxis, YAxis, ResponsiveContainer, Tooltip as  ChartTooltip, BarChart, Legend, Bar, PieChart, Pie, Cell, ResponsiveContainerProps } from 'recharts';
 import { LayoutItem as NewLayoutItem, ReportTemplate } from './DashboardAdd';
 import { useForm } from "react-hook-form";
-import { getCollection, resetMain } from "store/main/actions";
+import { getCollection, getCollectionDynamic, resetMain, resetMainDynamic } from "store/main/actions";
 import { Range } from "react-date-range";
 import { CalendarIcon } from "icons";
+import TableZyx from "components/fields/table-simple";
 
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -113,6 +114,7 @@ const DashboardLayout: FC = () => {
     }, [dashboardtemplate, t, dispatch]);
 
     useEffect(() => {
+        console.log(dashboard);
         if (dashboard.loading) return;
         if (dashboard.error) {
             const error = t(dashboard.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -179,10 +181,6 @@ const DashboardLayout: FC = () => {
             }));
         }
     }, [reportTemplates, t, dispatch]);
-
-    useEffect(() => {
-        console.log(layout);
-    }, [layout]);
 
     const onDelete = useCallback(() => {
         if (!dashboardtemplate.value) return;
@@ -341,9 +339,11 @@ const DashboardLayout: FC = () => {
                                 layoutKey={e.i}
                                 reportname={dashboard.value?.[e.i]?.reportname || '-'}
                                 data={dashboard.value?.[e.i]?.data}
+                                columnjson={dashboard.value?.[e.i]?.columnjson}
                                 type={layout.detail[e.i]!.graph}
                                 detail={layout.detail}
                                 onDetailChange={(d, t) => onDetailChange(d, t, e.i)}
+                                dateRange={dateRange}
                             />
                         ) : (
                             <NewLayoutItem
@@ -377,7 +377,16 @@ interface LayoutItemProps {
     type: string;
     layoutKey: string;
     detail?: Items;
+    columnjson?: string;
+    dateRange: Range;
     onDetailChange?: (detail: Items, type: ChangeType) => void;
+}
+
+interface Column {
+    key: string;
+    value: string;
+    filter: string;
+    hasFilter: boolean;
 }
 
 const useLayoutItemStyles = makeStyles(theme => ({
@@ -417,7 +426,16 @@ const useLayoutItemStyles = makeStyles(theme => ({
     },
 }));
 
-const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: key, detail, onDetailChange }) => {
+const LayoutItem: FC<LayoutItemProps> = ({
+    reportname,
+    data,
+    type,
+    layoutKey: key,
+    detail,
+    columnjson,
+    dateRange,
+    onDetailChange,
+}) => {
     const classes = useLayoutItemStyles();
     const canChange = detail !== undefined && onDetailChange !== undefined;
     const dataGraph = useMemo(() => {
@@ -425,6 +443,11 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
         return Object.keys(data).map(e => ({ label: e, quantity: data[e] }));
     }, [data]);
     const [graph, setGraph] = useState(type);
+    const [openTableModal, setOpenTableModal] = useState(false);
+    const rawColumns = useMemo<Column[]>(() => {
+        if (!columnjson) return [];
+        return JSON.parse(columnjson);
+    }, [columnjson]);
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -502,6 +525,14 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
                         'aria-labelledby': `more-btn-${key}`,
                     }}
                 >
+                    <MenuItem
+                        onClick={() => {
+                            setOpenTableModal(true);
+                            handleClose();
+                        }}
+                    >
+                        <Trans i18nKey={langKeys.seeMore} />
+                    </MenuItem>
                     <MenuItem onClick={onDelete}>
                         <Trans i18nKey={langKeys.delete} />
                     </MenuItem>
@@ -510,6 +541,13 @@ const LayoutItem: FC<LayoutItemProps> = ({ reportname, data, type, layoutKey: ke
             <div className={classes.reponsiveContainer}>
                 {renderGraph()}
             </div>
+            <TableModal
+                title={reportname}
+                open={openTableModal}
+                onClose={() => setOpenTableModal(false)}
+                rawColumns={rawColumns}
+                dateRange={dateRange}
+            />
         </div>
     );
 }
@@ -566,6 +604,107 @@ const LayoutPie: FC<LayoutPieProps> = ({ data, ...props }) => {
                 <Legend verticalAlign="bottom" />
             </PieChart>
         </ResponsiveContainer>
+    );
+}
+
+const useTableModalStyles = makeStyles(theme => ({
+    root: {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: "80%",
+        maxHeight: "80%",
+        width: '80%',
+        backgroundColor: 'white',
+        padding: "16px",
+        overflowY: 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '1em',
+    },
+}));
+
+interface TableModalProps {
+    title: string;
+    open: boolean;
+    rawColumns: Column[];
+    dateRange: Range;
+    onClose: () => void;
+}
+
+const TableModal: FC<TableModalProps> = ({ title, open, rawColumns, dateRange, onClose }) => {
+    const classes = useTableModalStyles();
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const mainDynamic = useSelector(state => state.main.mainDynamic);
+    const columns = useMemo(() => rawColumns.map(x => ({ Header: x.value, accessor: x.key })), [rawColumns]);
+
+    const getBody = useCallback(() => ({
+        columns: rawColumns,
+        parameters: {
+            offset: (new Date().getTimezoneOffset() / 60) * -1,
+        },
+        filters: [
+            {
+                column: "startdate",
+                start: format(dateRange.startDate!),
+                end: format(dateRange.endDate!)
+            },
+        ],
+    }), [dateRange, rawColumns]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(resetMainDynamic());
+        };
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (!open) return;
+
+        dispatch(getCollectionDynamic(getBody()));
+    }, [open, getBody, dispatch]);
+
+    useEffect(() => {
+        if (!open || mainDynamic.loading) return;
+        if (mainDynamic.error) {
+            const error = t(mainDynamic.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
+            dispatch(showSnackbar({
+                message: error,
+                success: false,
+                show: true,
+            }));
+        }
+    }, [mainDynamic, open, t, dispatch]);
+
+    return (
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="table-modal-title"
+        >
+            <Box className={classes.root}>
+                <Typography id="table-modal-title" variant="h6" component="h2">
+                    {title}
+                </Typography>
+                <TableZyx
+                    columns={columns}
+                    filterGeneral={false}
+                    data={mainDynamic.data}
+                    download={false}
+                    loading={mainDynamic.loading}
+                />
+                <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={mainDynamic.loading}
+                    onClick={onClose}
+                >
+                    <Trans i18nKey={langKeys.close} />
+                </Button>
+            </Box>
+        </Modal>
     );
 }
 

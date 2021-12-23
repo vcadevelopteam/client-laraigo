@@ -9,6 +9,17 @@ interface IDashboardData {
             [label: string]: number;
         };
         reportname: string;
+        /**
+         * Array Json
+         * 
+         * type {
+         *  key: string;
+         *  value: string;
+         *  filter: string;
+         *  hasFilter: boolean;
+         * }
+         */
+        columnjson: string;
     }
 }
 

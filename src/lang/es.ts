@@ -1608,6 +1608,8 @@ const translation: LangKeys = {
     DEFAULT_FORCED_DISCONNECTION: 'Su sesión se ha cerrado',
     OTHER_PC_CONNECTION: 'Su sesión ha sido usada en otra PC',
     SESSION_EXPIRED: 'Su sesión ha expirado',
+
+    seeMore: 'Ver más',
 };
 
 const esResource: ResourceLanguage = {
