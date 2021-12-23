@@ -684,13 +684,20 @@ const InvoiceControl: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'paymentstatus',
+                NoFilter: true,
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     console.log("invoiceid", row.invoiceid);
                     console.log("amounttopay", row.totalamount);
                     console.log("currency", row.currency);
+                    if (row.paymentstatus !=="PENDING")
+                        return null;
                     return (
+
                         <CulqiModal
                             type="CHARGE"
                             invoiceid={row.invoiceid}
@@ -699,15 +706,6 @@ const InvoiceControl: FC = () => {
                             currency={row.currency}
                             amount={row.totalamount * 100}
                         ></CulqiModal>
-                        // <Button
-                        //     disabled={row.paymentstatus!=="PENDING"}
-                        //     variant="contained"
-                        //     color="primary"
-                        //     startIcon={<PaymentIcon style={{ color: 'white' }} />}
-                        //     style={{ width: 120, backgroundColor: "#55BD84" }}
-                        //     onClick={search}
-                        // >{t(langKeys.paynow)}
-                        // </Button>
                     )
                 }
             },
@@ -755,6 +753,10 @@ const InvoiceControl: FC = () => {
             {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
+            },
+            {
+                Header: t(langKeys.paymentstatus),
+                accessor: 'paymentstatus',
             },
             /* {
                  accessor: 'urlcdr',
