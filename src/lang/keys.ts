@@ -948,6 +948,8 @@ export const langKeys = {
     field: 'field',
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
+    required_fields_missing: 'required_fields_missing',
+    missing_people: 'missing_people',
     no_record_selected: 'no_record_selected',
     no_records_valid: 'no_records_valid',
     reporttype: 'reporttype',

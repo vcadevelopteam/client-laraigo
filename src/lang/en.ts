@@ -702,6 +702,8 @@ const translation: LangKeys = {
     field: 'Field',
     missing_header: 'Missing header',
     invalid_parameter: 'Invalid parameter',
+    required_fields_missing: 'Required fields are missing',
+    missing_people: 'Missing people, need to register at least 1',
     no_record_selected: 'No record selected',
     no_records_valid: 'No valid records',
     reporttype: 'Report type',
