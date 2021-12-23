@@ -705,6 +705,17 @@ const InvoiceControl: FC = () => {
             {
                 Header: t(langKeys.documentnumber),
                 accessor: 'docnumber',
+                Cell: (props: any) => {
+                    const urlpdf = props.cell.row.original.urlpdf;
+                    const docnumber = props.cell.row.original.docnumber;
+                    return (
+                        <Fragment>
+                            <div>
+                                <a href={urlpdf} style={{ display: "block" }}>{docnumber}</a>
+                            </div>
+                        </Fragment>
+                    )
+                }
             },
             {
                 Header: t(langKeys.concept),
@@ -736,7 +747,7 @@ const InvoiceControl: FC = () => {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
             },
-            {
+           /* {
                 accessor: 'urlcdr',
                 NoFilter: true,
                 Cell: (props: any) => {
@@ -753,7 +764,7 @@ const InvoiceControl: FC = () => {
                         </Fragment>
                     )
                 }
-            },
+            },*/
         ],
         []
     );
