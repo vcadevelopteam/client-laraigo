@@ -32,6 +32,7 @@ export const langKeys = {
     won: 'won',
     lost: 'lost',
     tradename: "tradename",
+    amounttopay: "amounttopay",
     others: "others",
     dateofissue: "dateofissue",
     month_01: "month_01",
@@ -947,6 +948,8 @@ export const langKeys = {
     field: 'field',
     missing_header: 'missing_header',
     invalid_parameter: 'invalid_parameter',
+    required_fields_missing: 'required_fields_missing',
+    missing_people: 'missing_people',
     no_record_selected: 'no_record_selected',
     no_records_valid: 'no_records_valid',
     reporttype: 'reporttype',
@@ -1611,6 +1614,8 @@ export const langKeys = {
     DEFAULT_FORCED_DISCONNECTION: 'DEFAULT_FORCED_DISCONNECTION',
     OTHER_PC_CONNECTION: 'OTHER_PC_CONNECTION',
     SESSION_EXPIRED: 'SESSION_EXPIRED',
+
+    seeMore: 'seeMore',
 };
 
 export type LangKeys = typeof langKeys;

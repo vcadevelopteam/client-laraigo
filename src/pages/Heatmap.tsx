@@ -249,7 +249,7 @@ const MainHeatMap: React.FC = () => {
             arrayfree.forEach((x:any) => {
                     if (x.hournum === hour){
                         let timespenttotal = x["totalcol"].split(':')
-                        let secondstotalnum = (((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)/arrayvalidvalues[row.horanum])
+                        let secondstotalnum = ((timespenttotal[0])*3600+(timespenttotal[1])*60+parseInt(timespenttotal[2])+seconds)
                         let hh= Math.floor(secondstotalnum/3600)
                         let mm= Math.floor((secondstotalnum-hh*3600)/60)
                         let ss= Math.round(secondstotalnum)-hh*3600-mm*60
@@ -284,6 +284,17 @@ const MainHeatMap: React.FC = () => {
                 let mm= Math.floor((secondstotalnum-hh*3600)/60)
                 let ss= Math.round(secondstotalnum)-hh*3600-mm*60
                 arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
+            }
+        })
+        arrayvalidvalues.forEach((x,i)=>{
+            if(x!==0){
+                console.log(x)
+                let timetoconvert = arrayfree[i][`totalcol`].split(':')
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))
+                let hh= Math.floor(secondstotalnum/3600)
+                let mm= Math.floor((secondstotalnum-hh*3600)/60)
+                let ss= Math.round(secondstotalnum)-hh*3600-mm*60
+                arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
         setaverageHeatMapTMOData(arrayfree)

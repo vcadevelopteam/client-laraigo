@@ -1475,15 +1475,16 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
                         />
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.vcacommissioncost)}
-                            value={getValues("hsmutility").toFixed(2)}
+                            label={t(langKeys.hsmshippingcost)}
+                            value={getValues("hsmcharge").toFixed(2)}
                         />
+                        
                     </div>
                     <div className="row-zyx">
                         <FieldView
                             className="col-6"
-                            label={t(langKeys.hsmshippingcost)}
-                            value={getValues("hsmcharge").toFixed(2)}
+                            label={t(langKeys.vcacommissioncost)}
+                            value={getValues("hsmutility").toFixed(2)}
                         />
                     </div>
                 </div>
@@ -2837,8 +2838,8 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 type: 'number',
                 sortType: 'number',
                 Cell: (props: any) => {
-                    const { supportbasicfee } = props.cell.row.original;
-                    return (supportbasicfee || 0).toFixed(2);
+                    const { hsmcost } = props.cell.row.original;
+                    return (hsmcost || 0).toFixed(2);
                 }
             },
             {
@@ -2847,8 +2848,8 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 type: 'number',
                 sortType: 'number',
                 Cell: (props: any) => {
-                    const { supportbasicfee } = props.cell.row.original;
-                    return (supportbasicfee || 0).toFixed(2);
+                    const { hsmutilityfee } = props.cell.row.original;
+                    return (hsmutilityfee || 0).toFixed(2);
                 }
             },
             {
@@ -2857,8 +2858,8 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 type: 'number',
                 sortType: 'number',
                 Cell: (props: any) => {
-                    const { supportbasicfee } = props.cell.row.original;
-                    return (supportbasicfee || 0).toFixed(2);
+                    const { hsmutility } = props.cell.row.original;
+                    return (hsmutility || 0).toFixed(2);
                 }
             },
             {
@@ -2867,8 +2868,8 @@ const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 type: 'number',
                 sortType: 'number',
                 Cell: (props: any) => {
-                    const { supportbasicfee } = props.cell.row.original;
-                    return (supportbasicfee || 0).toFixed(2);
+                    const { hsmcharge } = props.cell.row.original;
+                    return (hsmcharge || 0).toFixed(2);
                 }
             },
         ],
@@ -3342,11 +3343,11 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                                 <TableHead>
                                 <TableRow>
                                     <StyledTableCell align="center">
-                                        <div>{datareport.clientwhatquantity}</div>
+                                        <div>{datareport.channelwhatsappquantity}</div>
                                         <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
-                                        <div>{datareport.userquantity - datareport.clientwhatquantity}</div>
+                                        <div>{datareport.userquantity - datareport.channelwhatsappquantity}</div>
                                         <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
                                     </StyledTableCell>
                                     <StyledTableCell align="center">
