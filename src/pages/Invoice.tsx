@@ -21,6 +21,7 @@ import Menu from '@material-ui/core/Menu';
 import {
     Search as SearchIcon,
 } from '@material-ui/icons';
+import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Visibility from '@material-ui/icons/Visibility';
@@ -685,62 +686,19 @@ const InvoiceControl: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
+                accessor: 'paymentstatus',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-                    const handleClose = () => setAnchorEl(null);
                     return (
-                        <>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleView(row)}
-                            >
-                                <Visibility style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={(e) => setAnchorEl(e.currentTarget)}
-                            >
-                                <MoreVert style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                getContentAnchorEl={null}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleGenerate(row)
-                                }}>Generar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleSend(row)
-                                }}>Envíar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleCancel(row)
-                                }}>Anular factura</MenuItem>
-                            </Menu>
-                        </>
+                        <Button
+                            disabled={row.paymentstatus!=="PENDING"}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<PaymentIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={search}
+                        >{t(langKeys.paynow)}
+                        </Button>
                     )
                 }
             },

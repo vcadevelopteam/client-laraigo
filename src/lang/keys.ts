@@ -29,6 +29,7 @@ export const langKeys = {
 
     new: 'new',
     qualified: 'qualified',
+    paynow: "paynow",
     proposition: 'proposition',
     uniquecontacts: "uniquecontacts",
     won: 'won',

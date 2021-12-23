@@ -827,6 +827,7 @@ const translation: LangKeys = {
     qrcode: "Qr Code",
     hashcode: "Hash code",
     urlcdr: "Download CDR",
+    paynow: "Pay now",
     urlpdf: "Download PDF",
     urlxml: "Download XML",
     filenumber: "File number",

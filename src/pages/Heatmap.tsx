@@ -290,7 +290,7 @@ const MainHeatMap: React.FC = () => {
             if(x!==0){
                 console.log(x)
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
-                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))
+                let secondstotalnum = (((timetoconvert[0])*3600+(timetoconvert[1])*60+parseInt(timetoconvert[2])))/x
                 let hh= Math.floor(secondstotalnum/3600)
                 let mm= Math.floor((secondstotalnum-hh*3600)/60)
                 let ss= Math.round(secondstotalnum)-hh*3600-mm*60

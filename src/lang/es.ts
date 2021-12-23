@@ -1558,6 +1558,7 @@ const translation: LangKeys = {
     invoiceinformation: "Información de la factura",
     informationrespsunat: "Información resp sunat",
     optionalfields: "Campos opcionales",
+    paynow: "Pagar ahora",
     paymentinformation: "Información del pago",
     urlxml: "Descargar XML",
     filenumber: "Número de expediente",
