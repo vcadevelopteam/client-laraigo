@@ -25,6 +25,7 @@ import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import Visibility from '@material-ui/icons/Visibility';
 import MoreVert from '@material-ui/icons/MoreVert';
+import Fab from '@material-ui/core/Fab';
 import DescriptionIcon from '@material-ui/icons/Description';
 
 interface DetailProps {
@@ -57,6 +58,7 @@ const useStyles = makeStyles((theme) => ({
         gap: 16
     },
     containerField: {
+        borderRadius: theme.spacing(2),
         flex: '0 0 300px',
         display: 'flex',
         flexDirection: 'column',
@@ -64,6 +66,10 @@ const useStyles = makeStyles((theme) => ({
         gap: 16,
         border: '1px solid #e1e1e1',
         padding: theme.spacing(2),
+    },
+    titleCard: {
+        fontSize: 16,
+        fontWeight: 'bold',
     }
 }));
 
@@ -75,12 +81,59 @@ const invocesBread = [
 const YEARS = [{ desc: "2010" }, { desc: "2011" }, { desc: "2012" }, { desc: "2013" }, { desc: "2014" }, { desc: "2015" }, { desc: "2016" }, { desc: "2017" }, { desc: "2018" }, { desc: "2020" }, { desc: "2021" }, { desc: "2022" }, { desc: "2023" }, { desc: "2024" }, { desc: "2025" }]
 const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
 
-// (DRAFT, INVOICED, ERROR, CANCELED)
+const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
+
 
 
 const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            filenumber: data?.filenumber || '',
+            purchaseorder: data?.purchaseorder || '',
+            executingunitcode: data?.executingunitcode || '',
+            selectionprocessnumber: data?.selectionprocessnumber || '',
+            contractnumber: data?.contractnumber || '',
+            comments: data?.comments || '',
+        }
+    });
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+
+    const onSubmit = handleSubmit((row) => {
+        const callback = () => {
+            dispatch(execute(insInvoice({ ...data!!, ...row })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
     return (
         <div style={{ width: '100%' }}>
             <div>
@@ -95,137 +148,43 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                     <div className={classes.container}>
 
                         <div className={classes.containerField}>
-                            <div>{t(langKeys.generalinformation)}</div>
+                            <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
                             <FieldView
-                                label={t(langKeys.corporation)}
-                                value={data?.corpdesc}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.year)}
-                                value={data?.year}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.month)}
-                                value={data?.month}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.description)}
-                                value={data?.description}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.companyinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.issuerruc)}
-                                value={data?.issuerruc}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.issuerbusinessname)}
-                                value={data?.issuerbusinessname}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.issuertradename)}
-                                value={data?.issuertradename}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.issuerfiscaladdress)}
-                                value={data?.issuerfiscaladdress}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.issuerubigeo)}
-                                value={data?.issuerubigeo}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.billinginformation)}</div>
-                            <FieldView
-                                label={t(langKeys.emittertype)}
-                                value={data?.emittertype}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.annexcode)}
-                                value={data?.annexcode}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.printingformat)}
-                                value={data?.printingformat}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.sendtosunat)}
-                                value={data?.sendtosunat}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.xmlversion)}
-                                value={data?.xmlversion}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.ublversion)}
-                                value={data?.ublversion}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.clientinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.receiverdoctype)}
+                                label={t(langKeys.docType)}
                                 value={data?.receiverdoctype}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.receiverdocnum)}
+                                label={t(langKeys.documentnumber)}
                                 value={data?.receiverdocnum}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.receiverbusinessname)}
+                                label={t(langKeys.bussinessname)}
                                 value={data?.receiverbusinessname}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.receiverfiscaladdress)}
+                                label={t(langKeys.address)}
                                 value={data?.receiverfiscaladdress}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.receivercountry)}
+                                label={t(langKeys.country)}
                                 value={data?.receivercountry}
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.receivermail)}
+                                label={t(langKeys.email)}
                                 value={data?.receivermail}
                                 className={classes.fieldView}
                             />
                         </div>
                         <div className={classes.containerField}>
-                            <div>{t(langKeys.invoiceinformation)}</div>
+                            <div className={classes.titleCard}>{t(langKeys.invoiceinformation)}</div>
                             <FieldView
-                                label={t(langKeys.serie)}
-                                value={data?.serie}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.correlative)}
-                                value={data?.correlative}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.concept)}
-                                value={data?.concept}
+                                label={t(langKeys.documentnumber)}
+                                value={data?.serie + " - " + (data?.correlative || "")}
                                 className={classes.fieldView}
                             />
                             <FieldView
@@ -234,18 +193,8 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                             <FieldView
-                                label={t(langKeys.expirationdate)}
+                                label={t(langKeys.dueDate)}
                                 value={data?.expirationdate}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.subtotal)}
-                                value={data?.subtotal}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.taxes)}
-                                value={data?.taxes}
                                 className={classes.fieldView}
                             />
                             <FieldView
@@ -253,40 +202,22 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 value={data?.totalamount}
                                 className={classes.fieldView}
                             />
+
                             <FieldView
                                 label={t(langKeys.currency)}
                                 value={data?.currency}
                                 className={classes.fieldView}
                             />
-                            <FieldView
-                                label={t(langKeys.exchangerate)}
-                                value={data?.exchangerate}
-                                className={classes.fieldView}
-                            />
-                        </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.informationrespsunat)}</div>
-                            <FieldView
-                                label={t(langKeys.invoicestatus)}
-                                value={data?.invoicestatus}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.errordescription)}
-                                value={data?.errordescription}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.qrcode)}
-                                value={data?.qrcode}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.hashcode)}
-                                value={data?.hashcode}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
+                            <div>
+                                <a href={data?.urlpdf} target="_blank" rel="noreferrer">{t(langKeys.urlpdf)}</a>
+                            </div>
+                            <div>
+                                <a href={data?.urlcdr} target="_blank" rel="noreferrer">{t(langKeys.urlcdr)}</a>
+                            </div>
+                            <div>
+                                <a href={data?.urlxml} target="_blank" rel="noreferrer">{t(langKeys.urlxml)}</a>
+                            </div>
+                            {/* <FieldView
                                 label={t(langKeys.urlcdr)}
                                 value={data?.urlcdr}
                                 className={classes.fieldView}
@@ -300,54 +231,108 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 label={t(langKeys.urlxml)}
                                 value={data?.urlxml}
                                 className={classes.fieldView}
-                            />
+                            /> */}
                         </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.optionalfields)}</div>
+                        <div className={classes.containerField} style={{ position: 'relative' }}>
+                            <div className={classes.titleCard}>{t(langKeys.additional_information)}</div>
+                            {statusToEdit.includes(data?.invoicestatus) ? (
+                                <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                                    <Fab
+                                        onClick={onSubmit}
+                                        type="submit"
+                                        size="small"
+                                        style={{ position: 'absolute', top: 8, right: 8, zIndex: 99999, backgroundColor: '#fff' }}
+                                    >
+                                        <SaveIcon color="primary" />
+                                    </Fab>
+                                    <FieldEdit
+                                        label={t(langKeys.filenumber)}
+                                        className="col-6"
+                                        type="number"
+                                        valueDefault={getValues('filenumber')}
+                                        onChange={(value) => setValue('filenumber', parseInt(value || "0"))}
+                                        error={errors?.filenumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.purchaseorder)}
+                                        className="col-6"
+                                        valueDefault={getValues('purchaseorder')}
+                                        onChange={(value) => setValue('purchaseorder', value)}
+                                        error={errors?.purchaseorder?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.executingunitcode)}
+                                        className="col-6"
+                                        valueDefault={getValues('executingunitcode')}
+                                        onChange={(value) => setValue('executingunitcode', value)}
+                                        error={errors?.executingunitcode?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.selectionprocessnumber)}
+                                        className="col-6"
+                                        valueDefault={getValues('selectionprocessnumber')}
+                                        onChange={(value) => setValue('selectionprocessnumber', value)}
+                                        error={errors?.selectionprocessnumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.contractnumber)}
+                                        className="col-6"
+                                        valueDefault={getValues('contractnumber')}
+                                        onChange={(value) => setValue('contractnumber', value)}
+                                        error={errors?.contractnumber?.message}
+                                    />
+                                    <FieldEdit
+                                        label={t(langKeys.comments)}
+                                        className="col-6"
+                                        valueDefault={getValues('comments')}
+                                        onChange={(value) => setValue('comments', value)}
+                                        error={errors?.comments?.message}
+                                    />
+                                </form>
+                            ) : (
+                                <>
 
-                            <FieldView
-                                label={t(langKeys.filenumber)}
-                                value={data?.filenumber}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.purchaseorder)}
-                                value={data?.purchaseorder}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.executingunitcode)}
-                                value={data?.executingunitcode}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.selectionprocessnumber)}
-                                value={data?.selectionprocessnumber}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.contractnumber)}
-                                value={data?.contractnumber}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
-                                label={t(langKeys.comments)}
-                                value={data?.comments}
-                                className={classes.fieldView}
-                            />
+                                    <FieldView
+                                        label={t(langKeys.filenumber)}
+                                        value={data?.filenumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.purchaseorder)}
+                                        value={data?.purchaseorder}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.executingunitcode)}
+                                        value={data?.executingunitcode}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.selectionprocessnumber)}
+                                        value={data?.selectionprocessnumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.contractnumber)}
+                                        value={data?.contractnumber}
+                                        className={classes.fieldView}
+                                    />
+                                    <FieldView
+                                        label={t(langKeys.comments)}
+                                        value={data?.comments}
+                                        className={classes.fieldView}
+                                    />
+                                </>
+                            )}
                         </div>
                         <div className={classes.containerField}>
-                            <div>{t(langKeys.paymentinformation)}</div>
-                            <FieldView
-                                label={t(langKeys.orderid)}
-                                value={data?.orderid}
-                                className={classes.fieldView}
-                            />
-                            <FieldView
+                            <div className={classes.titleCard}>{t(langKeys.paymentinformation)}</div>
+                            
+                            {/* <FieldView
                                 label={t(langKeys.orderjson)}
                                 value={data?.orderjson}
                                 className={classes.fieldView}
-                            />
+                            /> */}
                             <FieldView
                                 label={t(langKeys.paymentstatus)}
                                 value={data?.paymentstatus}
@@ -369,10 +354,15 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                             <FieldView
+                                label={t(langKeys.id_payment)}
+                                value={data?.orderid}
+                                className={classes.fieldView}
+                            />
+                            {/* <FieldView
                                 label={t(langKeys.capture)}
                                 value={data?.capture}
                                 className={classes.fieldView}
-                            />
+                            /> */}
                             <FieldView
                                 label={t(langKeys.paymentnote)}
                                 value={data?.paymentnote}
@@ -384,8 +374,8 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 className={classes.fieldView}
                             />
                         </div>
-                        <div className={classes.containerField}>
-                            <div>{t(langKeys.optionalfields)}</div>
+                        {/* <div className={classes.containerField}>
+                            <div className={classes.titleCard}>{t(langKeys.optionalfields)}</div>
                             <FieldView
                                 label={t(langKeys.invoicetype)}
                                 value={data?.invoicetype}
@@ -396,11 +386,11 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                                 value={data?.sunatopecode}
                                 className={classes.fieldView}
                             />
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
 
@@ -420,6 +410,7 @@ const InvoiceGeneration: FC = () => {
     useEffect(() => {
         fetchData()
     }, [])
+
 
     useEffect(() => {
         if (waitSave) {
@@ -797,9 +788,9 @@ const InvoiceControl: FC = () => {
                     return (
                         <Fragment>
                             <div>
-                                <a href={urlcdr} style={{ display: "block"}}>{`${t(langKeys.download)} CDR`}</a>
-                                <a href={urlpdf} style={{ display: "block"}}>{`${t(langKeys.download)} PDF`}</a>
-                                <a href={urlxml} style={{ display: "block"}}>{`${t(langKeys.download)} XML`}</a>
+                                <a href={urlcdr} style={{ display: "block" }}>{`${t(langKeys.download)} CDR`}</a>
+                                <a href={urlpdf} style={{ display: "block" }}>{`${t(langKeys.download)} PDF`}</a>
+                                <a href={urlxml} style={{ display: "block" }}>{`${t(langKeys.download)} XML`}</a>
                             </div>
                         </Fragment>
                     )
