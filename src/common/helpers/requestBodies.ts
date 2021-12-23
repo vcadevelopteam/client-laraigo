@@ -2158,7 +2158,11 @@ export const selInvoice = (year: number, month: string, invoiceid: number = 0) =
     key: "UFN_INVOICE_SEL",
     parameters: { year, month, invoiceid },
 });
-
+export const insInvoice = (parameters: Dictionary) => ({
+    method: "UFN_INVOICE_INS",
+    key: "UFN_INVOICE_INS",
+    parameters
+});
 export const cancelInvoice = (invoiceid: number) => ({
     method: "UFN_INVOICE_CANCELED",
     key: "UFN_INVOICE_CANCELED",
