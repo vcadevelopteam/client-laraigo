@@ -1565,6 +1565,7 @@ const translation: LangKeys = {
     purchaseorder: "Órden de compra",
     executingunitcode: "Código de unidad ejecutora",
     selectionprocessnumber: "Número de proceso de selección",
+    evidenceofpayment: "Evidencia del pago",
     contractnumber: "Número de contrato",
     orderid: "Solicitar ID",
     orderjson: "Order json",

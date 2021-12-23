@@ -24,6 +24,7 @@ export const langKeys = {
     tmo: "tmo",
     tag: 'tag',
     billbyorg: 'billbyorg',
+    evidenceofpayment: "evidenceofpayment",
     additional_information: 'additional_information',
     id_payment: 'id_payment',
 

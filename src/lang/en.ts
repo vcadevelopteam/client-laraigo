@@ -1291,6 +1291,7 @@ const translation: LangKeys = {
     chatBorder: 'Chat border',
     clientMessage: 'Client message',
     clientMessage_plural: 'Client messages',
+    evidenceofpayment: "Evidence of payment",
     botMessage: 'Bot message',
     botMessage_plural: 'Bot messages',
     required: 'Required',

@@ -3,8 +3,8 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect, DialogZyx } from 'components';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -15,10 +15,12 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, exportData } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { IconButton, MenuItem, Tabs, TextField, Tooltip } from '@material-ui/core';
+import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs, TextField, Tooltip } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import Menu from '@material-ui/core/Menu';
 import {
+    Close,
+    CloudUpload,
     Search as SearchIcon,
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
@@ -33,6 +35,21 @@ interface DetailProps {
     data: Dictionary | null;
     setViewSelected: (view: string) => void;
     fetchData?: () => void,
+}
+const getImgUrl = (file: File | string | null): string | null => {
+    if (!file) return null;
+
+    try {
+        if (typeof file === "string") {
+            return file;
+        } else if (typeof file === "object") {
+            return URL.createObjectURL(file);
+        }
+        return null;
+    } catch (ex) {
+        console.error(ex);
+        return null;
+    }
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
@@ -71,8 +88,41 @@ const useStyles = makeStyles((theme) => ({
     titleCard: {
         fontSize: 16,
         fontWeight: 'bold',
-    }
+    },
+    button: {
+        padding: 12,
+        fontWeight: 500,
+        fontSize: '14px',
+        textTransform: 'initial'
+    },
+    text: {
+        fontWeight: 500,
+        fontSize: 15,
+    },
+    imgContainer: {
+        borderRadius: 20,
+        backgroundColor: 'white',
+        width: 300,
+        height: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    img: {
+        paddingTop: 10,
+        height: '100%',
+        width: 'auto',
+    },
+    icon: {
+        '&:hover': {
+            cursor: 'pointer',
+            color: theme.palette.primary.main,
+        }
+    },
 }));
+const isEmpty = (str?: string) => {
+    return !str || str.length === 0;
+}
 
 const invocesBread = [
     { id: "view-1", name: "Invoices" },
@@ -84,23 +134,159 @@ const MONTHS = [{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { va
 
 const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
 
+
+
+const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void}> = ({ data,openModal,setOpenModal }) =>{
+    const classes = useStyles();
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const [waitSave, setWaitSave] = useState(false);
+    const [chatBtn, setChatBtn] = useState<File | string | null>(null);
+    const executeRes = useSelector(state => state.main.execute);
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            invoiceid: data?.invoiceid || 0,
+            paymentnote: data?.paymentnote || "",
+            paymentfile: ""
+        }
+    });
+    const mandatoryFileField = (value: string | File | null) => {
+        return !value ? t(langKeys.field_required) : undefined;
+    }
+    
+    React.useEffect(() => {
+        register('invoiceid');
+        register('paymentnote', { validate: mandatoryFileField });
+        register('paymentfile', { validate: mandatoryFileField });
+
+    }, [register]);
+    
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
+                dispatch(showBackdrop(false));
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((dataf) => {
+        const callback = () => {
+            dispatch(showBackdrop(true));
+            dispatch(execute(selInvoiceChangePaymentStatus(dataf)));
+
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+    const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+        if (!e.target.files) return;
+        setChatBtn(e.target.files[0]);
+        setValue("paymentfile", String(getImgUrl(e.target.files[0])))
+    }
+    const handleChatBtnClick = () => {
+        const input = document.getElementById('chatBtnInput');
+        input!.click();
+    }
+    const handleCleanChatInput = () => {
+        if (!chatBtn) return;
+        const input = document.getElementById('chatBtnInput') as HTMLInputElement;
+        input.value = "";
+        setChatBtn(null);
+        setValue('paymentfile', "");
+    }
+
+    const chatImgUrl = getImgUrl(chatBtn);
+    return (
+        <DialogZyx
+            open={openModal}
+            title={t(langKeys.pay)}
+            buttonText1={t(langKeys.cancel)}
+            buttonText2={t(langKeys.save)}
+            handleClickButton1={() => setOpenModal(false)}
+            handleClickButton2={onSubmit}
+            button2Type="submit"
+        >
+            <FieldEdit
+                label={t(langKeys.paymentnote)}
+                valueDefault={data?.paymentnote || ""}
+                error={errors?.paymentnote?.message}
+                onChange={(value) => setValue('paymentnote', value)}
+                className="col-12"
+            />
+            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <Box m={1}>
+                    <Grid container direction="row">
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <label className={classes.text}>
+                                {t(langKeys.evidenceofpayment)}
+                            </label>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                            <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                <div className={classes.imgContainer}>
+                                    {chatImgUrl && <img src={chatImgUrl} alt="icon button" className={classes.img} />}
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', marginLeft: 12 }}>
+                                    <input
+                                        accept="image/*"
+                                        style={{ display: 'none' }}
+                                        id="chatBtnInput"
+                                        type="file"
+                                        onChange={onChangeChatInput}
+                                    />
+                                    <IconButton onClick={handleChatBtnClick}>
+                                        <CloudUpload className={classes.icon} />
+                                    </IconButton>
+                                    <IconButton onClick={handleCleanChatInput}>
+                                        <Close className={classes.icon} />
+                                    </IconButton>
+                                </div>
+                            </div>
+                            <FormHelperText error={!isEmpty(errors?.paymentfile?.message)} style={{ marginLeft: 14 }}>
+                                {errors?.paymentfile?.message}
+                            </FormHelperText>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Grid>
+        </DialogZyx>
+    )
+}
+
 const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
+            invoiceid: data?.invoiceid || 0,
             filenumber: data?.filenumber || '',
             purchaseorder: data?.purchaseorder || '',
             executingunitcode: data?.executingunitcode || '',
             selectionprocessnumber: data?.selectionprocessnumber || '',
             contractnumber: data?.contractnumber || '',
             comments: data?.comments || '',
+            paymentnote: data?.paymentnote || "",
+            paymentfile: ""
         }
     });
+
+
 
     useEffect(() => {
         if (waitSave) {
@@ -136,13 +322,35 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
     return (
         <div style={{ width: '100%' }}>
             <div>
-                <TemplateBreadcrumbs
-                    breadcrumbs={invocesBread}
-                    handleClick={setViewSelected}
+                <PaymentComp
+                    data={data}
+                    openModal={openModal}
+                    setOpenModal={setOpenModal} 
                 />
-                <TitleDetail
-                    title={data?.description}
-                />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={invocesBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={data?.description}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {data?.paymentstatus==="PENDING" &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<PaymentIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                                onClick={() => setOpenModal(true)}
+                            >{t(langKeys.pay)}
+                            </Button>
+                        }
+                    </div>
+                </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
                     <div className={classes.container}>
 

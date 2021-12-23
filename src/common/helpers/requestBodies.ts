@@ -2163,6 +2163,11 @@ export const selInvoiceClient = (year: number, month: string, invoiceid: number 
     key: "UFN_INVOICE_SELCLIENT",
     parameters: { year, month, invoiceid },
 });
+export const selInvoiceChangePaymentStatus = ({invoiceid, paymentnote, paymentfile }: Dictionary) => ({
+    method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
+    key: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
+    parameters: { invoiceid, status: "PAID", paymentnote, paymentfile },
+});
 export const insInvoice = (parameters: Dictionary) => ({
     method: "UFN_INVOICE_INS",
     key: "UFN_INVOICE_INS",
