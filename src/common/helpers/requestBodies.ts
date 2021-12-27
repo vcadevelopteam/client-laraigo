@@ -1842,6 +1842,7 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         fullname: '',
         leadproduct: '',
         campaignid: 0,
+        tags: '',
         all: false,
     },
 });
@@ -2195,4 +2196,10 @@ export const cancelInvoice = (invoiceid: number) => ({
     method: "UFN_INVOICE_ANNULLED",
     key: "UFN_INVOICE_ANNULLED",
     parameters: { invoiceid },
+});
+
+export const getLeadTasgsSel = () => ({
+    method: "UFN_LEAD_TAGSDISTINCT_SEL",
+    key: "UFN_LEAD_TAGSDISTINCT_SEL",
+    parameters: {},
 });

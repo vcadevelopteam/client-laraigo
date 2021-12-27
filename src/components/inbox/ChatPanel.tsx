@@ -137,6 +137,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             platformtype: ticketSelected?.communicationchannelsite!!,
             communicationchanneltype: ticketSelected?.communicationchanneltype!!,
             listmembers: [{
+                personid: person.data?.personid || 0,
                 phone: person.data?.phone!! + "",
                 firstname: person.data?.firstname + "",
                 lastname: person.data?.lastname + "",

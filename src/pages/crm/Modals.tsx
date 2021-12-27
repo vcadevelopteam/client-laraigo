@@ -274,6 +274,7 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
             platformtype: data.communicationchanneltype,
             type: messagetype,
             listmembers: personsWithData.map((person: Dictionary) => ({
+                personid: person.personid,
                 phone: person.phone || "",
                 firstname: person.contact_name || "",
                 email: person.email || "",

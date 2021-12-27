@@ -1,4 +1,4 @@
-import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
+import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
@@ -75,13 +75,15 @@ interface IModalProps {
   payload: Dictionary | null;
 }
 
-interface IBorardFilter {
+interface IBoardFilter {
   /**ID de la campaña */
   campaign: number;
   /**filtro por nombre completo */
   customer: string;
   /**separado por comas */
   products: string;
+  /**separados por coma */
+  tags: string;
 }
 
 const CRM: FC = () => {
@@ -95,7 +97,7 @@ const CRM: FC = () => {
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
   const classes = useStyles();
-  const [boardFilter, setBoardFilter] = useState<IBorardFilter>({ campaign: 0, customer: '', products: '' });
+  const [boardFilter, setBoardFilter] = useState<IBoardFilter>({ campaign: 0, customer: '', products: '', tags: '' });
 
   useEffect(() => {
       dispatch(getMultiCollection([
@@ -105,11 +107,13 @@ const CRM: FC = () => {
             campaignid: 0,
             fullname: '',
             leadproduct: '',
+            tags: '',
           }),
           adviserSel(),
           getCommChannelLst(),
           getCampaignLst(),
           getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+          getLeadTasgsSel(),
       ]));
       return () => {
           dispatch(resetAllMain());
@@ -139,11 +143,13 @@ const CRM: FC = () => {
         campaignid: boardFilter.campaign,
         fullname: boardFilter.customer,
         leadproduct: boardFilter.products,
+        tags: boardFilter.tags,
       }),
       adviserSel(),
       getCommChannelLst(),
       getCampaignLst(),
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+      getLeadTasgsSel(),
     ]));
   }, [boardFilter, dispatch]);
 
@@ -648,6 +654,17 @@ const CRM: FC = () => {
               loading={mainMulti.loading}
               optionDesc="domaindesc"
               optionValue="domainvalue"
+            />
+            <FieldMultiSelect
+              variant="outlined"
+              label={t(langKeys.tag, { count: 2 })}
+              className={classes.filterComponent}
+              valueDefault={boardFilter.tags}
+              onChange={(v) => setBoardFilter(prev => ({ ...prev, tags: v?.map((o: any) => o.tags).join(',') || '' }))}
+              data={mainMulti.data[6]?.data || []}
+              loading={mainMulti.loading}
+              optionDesc="tags"
+              optionValue="tags"
             />
             <FieldEdit
               size="small"
