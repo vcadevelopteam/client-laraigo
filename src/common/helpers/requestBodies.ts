@@ -1825,6 +1825,7 @@ export const getOneLeadSel = (id: string | number): IRequestBody => ({
         fullname: '',
         leadproduct: '',
         campaignid: 0,
+        tags: '',
         all: false,
     },
 });
