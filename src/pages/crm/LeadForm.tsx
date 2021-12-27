@@ -1246,7 +1246,7 @@ export const TabPanelScheduleActivity: FC<TabPanelScheduleActivityProps> = ({
                                     <div className={classes.column}>
                                         <div className={clsx(classes.row, classes.centerRow)}>
                                             <span className={classes.activityDate}>
-                                                {`Due in ${formatDate(activity.duedate, { withTime: false })}`}
+                                                {`Due in ${formatDate(activity.duedate, { withTime: true })}`}
                                             </span>
                                             <div style={{ width: '1em' }} />
                                             <span className={classes.activityName}>
@@ -1385,6 +1385,7 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     const advisers = useSelector(state => state.lead.advisers);
     const domains = useSelector(state => state.main.mainData);
     const [detail, setDetail] = useState<Descendant[]>(initialValue);
+    const [, refresh] = useState(false);
 
     useEffect(() => {
         dispatch(getCollection(getValuesFromDomain("TIPOACTIVIDADLEAD")));
@@ -1491,10 +1492,11 @@ export const SaveActivityModal: FC<SaveActivityModalProps> = ({ open, onClose, a
     }, [activity, reset, register]);
 
     useEffect(() => {
-        if (userid && leadid) {
+        if (open === true && userid !== undefined && leadid !== 0) {
             setValue('assignto', advisers.data.find(e => e.userid === userid)?.firstname || '');
+            refresh(prev => !prev);
         }
-    }, [userid, leadid, advisers, setValue]);
+    }, [open, userid, leadid, advisers, setValue]);
 
     const handleSave = useCallback((status: "PROGRAMADO" | "REALIZADO" | "ELIMINADO") => {
         handleSubmit((values) => {

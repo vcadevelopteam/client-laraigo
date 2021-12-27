@@ -2178,3 +2178,9 @@ export const cancelInvoice = (invoiceid: number) => ({
     key: "UFN_INVOICE_ANNULLED",
     parameters: { invoiceid },
 });
+
+export const getLeadTasgsSel = () => ({
+    method: "UFN_LEAD_TAGSDISTINCT_SEL",
+    key: "UFN_LEAD_TAGSDISTINCT_SEL",
+    parameters: {},
+});

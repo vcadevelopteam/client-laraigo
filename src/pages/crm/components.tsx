@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { Avatar, Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
+import { Box, BoxProps, Button, IconButton, makeStyles, Popover, TextField } from '@material-ui/core';
 import { Add, MoreVert as MoreVertIcon } from '@material-ui/icons';
 import { DraggableProvided, DraggableStateSnapshot, DroppableStateSnapshot } from 'react-beautiful-dnd';
 import { langKeys } from 'lang/keys';
@@ -26,7 +26,6 @@ interface LeadCardContentProps extends Omit<BoxProps, 'onClick'> {
 const useLeadCardStyles = makeStyles(theme => ({
     root: {
         padding: 16,
-        // margin: '0 0 8px 0',
         minHeight: '50px',
         backgroundColor: 'white',
         color: theme.palette.text.primary,
@@ -178,7 +177,6 @@ export const DraggableLeadCardContent: FC<LeadCardContentProps> = ({ lead, snaps
                         readOnly
                     />
                     <div style={{ flexGrow: 1 }} />
-                    <Avatar style={{ height: 22, width: 22 }} src="" />
                 </div>
             </div>
             <div className={classes.floatingMenuIcon}>
