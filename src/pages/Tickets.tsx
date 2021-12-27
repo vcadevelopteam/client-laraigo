@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, execute } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -750,6 +750,7 @@ const Tickets = () => {
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
             getListUsers(),
+            getUserSel(0),
         ]));
 
         return () => {
@@ -844,6 +845,19 @@ const Tickets = () => {
                                 data={mainResult?.multiData?.data[1]?.data}
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
+                                disabled={mainPaginated.loading}
+                            />
+                        }
+                        {mainResult?.multiData?.data[6]?.data &&
+                            <FieldMultiSelect
+                                label={t(langKeys.user_plural)}
+                                className={classes.filterComponent}
+                                key="fieldMultiSelect_user"
+                                onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                                variant="outlined"
+                                data={mainResult?.multiData?.data[6]?.data}
+                                optionDesc="usr"
+                                optionValue="userid"
                                 disabled={mainPaginated.loading}
                             />
                         }

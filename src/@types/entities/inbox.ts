@@ -20,6 +20,7 @@ export interface IMassiveCloseTicketsParams {
 }
 
 interface IMember {
+    personid: number;
     phone: string;
     email?: string;
     firstname?: string | undefined;

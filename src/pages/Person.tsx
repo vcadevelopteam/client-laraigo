@@ -181,7 +181,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             setValue('hsmtemplateid', 0);
         }
     }
-
+    console.log(personWithData)
     const onSubmit = handleSubmit((data) => {
         const messagedata = {
             hsmtemplateid: data.hsmtemplateid,
@@ -190,6 +190,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
             platformtype: data.communicationchanneltype,
             type,
             listmembers: personWithData.map(person => ({
+                personid: person.personid,
                 phone: person.phone || "",
                 firstname: person.firstname || "",
                 email: person.email || "",
@@ -357,19 +358,19 @@ export const TemplateIcons: React.FC<{
             >
                 <MenuItem onClick={sendHSM}>
                     <ListItemIcon color="inherit">
-                        <HSMIcon width={22} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                        <HSMIcon width={22} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     {t(langKeys.send_hsm)}
                 </MenuItem>
                 <MenuItem onClick={sendSMS}>
                     <ListItemIcon color="inherit">
-                        <SmsIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                        <SmsIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     {t(langKeys.send_sms)}
                 </MenuItem>
                 <MenuItem onClick={sendMAIL}>
                     <ListItemIcon color="inherit">
-                        <MailIcon width={18} style={{ fill: 'rgba(0, 0, 0, 0.54)' }} />
+                        <MailIcon width={18} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     {t(langKeys.send_mail)}
                 </MenuItem>
@@ -581,8 +582,6 @@ export const Person: FC = () => {
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
-        fetchData(fetchDataAux);
-
         return () => {
             dispatch(resetGetPersonListPaginated());
             dispatch(resetAllMain());
@@ -2076,14 +2075,14 @@ const AuditTab: FC<AuditTabProps> = ({ person }) => {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.firstContactDate} />}
-                            subtitle={new Date(person.firstcontact).toLocaleString()}
+                            subtitle={person.firstcontact ? new Date(person.firstcontact).toLocaleString() : ''}
                             m={1}
                         />
                     </Grid>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Property
                             title={<Trans i18nKey={langKeys.lastContactDate} />}
-                            subtitle={new Date(person.lastcontact).toLocaleString()}
+                            subtitle={person.lastcontact ? new Date(person.lastcontact).toLocaleString() : ''}
                             m={1}
                         />
                     </Grid>
