@@ -920,11 +920,24 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            <div className={classes.containerFields}>
+                                <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                    {dataTMOgraph.map((entry: any, index: number) => {
+                                        let totalsum = dataTMOgraph[0].quantity + dataTMOgraph[1].quantity
+                                        let perc = (dataTMOgraph[index].quantity*100)/totalsum
+                                        return <li style={{display: "inline-block", marginRight: 10}}>
+                                            <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                            <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                            <span style={{color: COLORS[index % COLORS.length]}}>{dataTMOgraph[index].label} {perc.toFixed(2)}%</span>
+                                        </li>
+                                        }
+                                    )}
+                                </ul>
+                            </div>
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.sla)}</div>
                                 <div className={classes.datafield}>{data.sla}</div>
