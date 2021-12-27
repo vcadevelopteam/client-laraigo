@@ -3,7 +3,7 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
 import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -15,7 +15,7 @@ import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute,exportData } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Tabs, TextField } from '@material-ui/core';
+import { Box, FormControlLabel, Tabs, TextField } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -331,6 +331,7 @@ const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit
 const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [checkedaux, setCheckedaux] = useState(row?.allowhsm||false);
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -544,12 +545,14 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             type="number"
                             className="col-6"
                         />
-                        <TemplateSwitch
-                            label={t(langKeys.allowhsm)}
-                            className="col-6"
-                            valueDefault={getValues("allowhsm")}
-                            onChange={(value) => setValue('allowhsm', value)}
-                        /> 
+                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
+                            <FormControlLabel
+                                style={{paddingLeft:10}}
+                                control={<IOSSwitch checked={checkedaux}  onChange={(e) => {setCheckedaux(e.target.checked) ;setValue('allowhsm', e.target.checked)}} />}
+                                label={checkedaux? t(langKeys.yes):"No"}
+                            />                        
+                        </div>
                     </div>
                     <div className="row-zyx">
                         <FieldEdit
