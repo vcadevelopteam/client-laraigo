@@ -1,10 +1,10 @@
-import { Box, Button, createStyles, makeStyles, Theme } from "@material-ui/core";
-import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect } from "components";
+import { Box, Button, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
+import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, TemplateSwitch } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -15,11 +15,12 @@ import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { exportExcel } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
 
@@ -355,6 +356,8 @@ const DashboardManagerial: FC = () => {
         avgasesoresconectados: "0",
     });
     const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogPerRequest, setOpenDialogPerRequest] = useState(false);
+    const [fieldToFilter, setFieldToFilter] = useState("");
     const [resTMO, setResTMO] = useState<any>([]);
     const [resTME, setResTME] = useState<any>([]);
     const [titlefile, settitlefile] = useState('');
@@ -374,6 +377,17 @@ const DashboardManagerial: FC = () => {
         queue: "",
         provider: "",
         channels: ""
+    });
+    const [searchfieldsOnlyOne, setsearchfieldsOnlyOne] = useState({
+        closedbyasesor: true,  
+        closedbybot:  true,
+        closedby: "ASESOR,BOT",
+        min: "", 
+        max: "", 
+        target:0, 
+        skipdown:0, 
+        skipup:0,
+        limit: 5
     });
     useEffect(() => {
         if (mainResult.multiData.data.length !== 0) {
@@ -445,6 +459,25 @@ const DashboardManagerial: FC = () => {
                     { label: t(langKeys.quantitymeets), quantity: tickets_comply },
                     { label: t(langKeys.quantitymeetsnot), quantity: tickets_analyzed - tickets_comply }
                 ]);
+            }else{
+                setData({
+                    dataTMO: "0s",
+                    obj_max: "< 0m",
+                    variaciontxt: "0s",
+                    variacioncolor: true,
+                    timeMax: "0s",
+                    timeMin: "0s",
+                    sla: "0%",
+                    variacionperccolor: true,
+                    variacionperc: 0,
+                    tickets_comply: 0,
+                    tickets_analyzed: 0,
+                    tickets_total: 0,
+                })
+                setDataTMOgraph([
+                    { label: t(langKeys.quantitymeets), quantity: 0 },
+                    { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+                ]);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -506,6 +539,25 @@ const DashboardManagerial: FC = () => {
                 ]);
 
 
+            }else{
+                setDataTME({
+                    dataTME: "0s",
+                    obj_max: "< 0m",
+                    variaciontxt: "0s",
+                    variacioncolor: true,
+                    timeMax: "0s",
+                    timeMin: "0s",
+                    sla: "0%",
+                    variacionperccolor: true,
+                    variacionperc: 0,
+                    tickets_comply: 0,
+                    tickets_analyzed: 0,
+                    tickets_total: 0,
+                })
+                setDataTMEgraph([
+                    { label: t(langKeys.quantitymeets), quantity: 0 },
+                    { label: t(langKeys.quantitymeetsnot), quantity: 0 }
+                ]);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -565,6 +617,166 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resSummary])
+    function setDataEncuestanps(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataNPS: "0%",
+            nps_green: "0%",
+            npsvariacioncolor: true,
+            npsvariation: "0%",
+            npspollssent: "0",
+            npspollsanswered: "0",
+            npstotalpromoters: 0,
+            npstotaldetractors: 0,
+            npstotalneutral: 0,
+            npstotalconversations: 0,
+        }))
+        setDataNPSgraph([
+            { label: t(langKeys.totalpromoters), quantity: 0 },
+            { label: t(langKeys.totaldetractors), quantity: 0 },
+            { label: t(langKeys.totalneutral), quantity: 0 }
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, medium, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataNPS: `${((toshow) * 100).toFixed(2)}%`,
+                npsvariacioncolor: variacioncolor,
+                nps_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                npsvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                npspollssent: `${formatNumber(tickets)}`,
+                npspollsanswered: `${formatNumber(total)}`,
+                npstotalpromoters: high,
+                npstotaldetractors: low,
+                npstotalneutral: medium,
+                npstotalconversations: tickets,
+            }))
+            setDataNPSgraph([
+                { label: t(langKeys.totalpromoters), quantity: high },
+                { label: t(langKeys.totaldetractors), quantity: low },
+                { label: t(langKeys.totalneutral), quantity: medium }
+            ]);
+        }
+    }
+    function setDataEncuestacsat(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataCSAT: "0%",
+            csat_green: "0%",
+            csatvariacioncolor: true,
+            csatvariation: "0%",
+            csatpollssent: "0",
+            csatpollsanswered: "0",
+            csattotalpromoters: 0,
+            csattotaldetractors: 0,
+            csattotalneutral: 0,
+            csattotalconversations: 0,
+        }))
+        setDataCSATgraph([
+            { label: t(langKeys.totalpromoters), quantity: 0 },
+            { label: t(langKeys.totaldetractors), quantity: 0 },
+            { label: t(langKeys.totalneutral), quantity: 0 }
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, medium, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataCSAT: `${((toshow) * 100).toFixed(2)}%`,
+                csatvariacioncolor: variacioncolor,
+                csat_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                csatvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                csatpollssent: `${formatNumber(tickets)}`,
+                csatpollsanswered: `${formatNumber(total)}`,
+                csattotalpromoters: high,
+                csattotaldetractors: low,
+                csattotalneutral: medium,
+                csattotalconversations: tickets,
+            }))
+            setDataCSATgraph([
+                { label: t(langKeys.totalpromoters), quantity: high },
+                { label: t(langKeys.totaldetractors), quantity: low },
+                { label: t(langKeys.totalneutral), quantity: medium }
+            ]);
+        }
+    }
+    function setDataEncuestafcr(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataFCR: "0%",
+            fcr_green: "0%",
+            fcrvariacioncolor: true,
+            fcrvariation: "0%",
+            fcrpollssent: "0",
+            fcrpollsanswered: "0",
+            fcrtotalpromoters: 0,
+            fcrtotaldetractors: 0,
+            fcrtotalconversations: 0,
+        }))
+        setDataFCRgraph([
+            { label: t(langKeys.totalresolved), quantity: 0 },
+            { label: t(langKeys.totalnotresolved), quantity: 0 },
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, red, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataFCR: `${((toshow) * 100).toFixed(2)}%`,
+                fcrvariacioncolor: variacioncolor,
+                fcr_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                fcrvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                fcrpollssent: `${formatNumber(tickets)}`,
+                fcrpollsanswered: `${formatNumber(total)}`,
+                fcrtotalpromoters: high,
+                fcrtotaldetractors: low,
+                fcrtotalconversations: tickets,
+            }))
+            setDataFCRgraph([
+                { label: t(langKeys.totalresolved), quantity: high },
+                { label: t(langKeys.totalnotresolved), quantity: low },
+            ]);
+        }
+    }
+    function setDataEncuestafix(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataFIX: "0%",
+            fix_green: "0%",
+            fixvariacioncolor: true,
+            fixvariation: "0%",
+            fixpollssent: "0",
+            fixpollsanswered: "0",
+            fixtotalpromoters: 0,
+            fixtotaldetractors: 0,
+            fixtotalconversations: 0,
+        }))
+        setDataFIXgraph([
+            { label: t(langKeys.totalresolved), quantity: 0 },
+            { label: t(langKeys.totalnotresolved), quantity: 0 },
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, red, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataFIX: `${((toshow) * 100).toFixed(2)}%`,
+                fixvariacioncolor: variacioncolor,
+                fix_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                fixvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                fixpollssent: `${formatNumber(tickets)}`,
+                fixpollsanswered: `${formatNumber(total)}`,
+                fixtotalpromoters: high,
+                fixtotaldetractors: low,
+                fixtotalconversations: tickets,
+            }))
+            setDataFIXgraph([
+                { label: t(langKeys.totalresolved), quantity: high },
+                { label: t(langKeys.totalnotresolved), quantity: low },
+            ]);
+        }
+    }
     useEffect(() => {
         setDataEncuesta({
             dataNPS: "0%",
@@ -774,6 +986,43 @@ const DashboardManagerial: FC = () => {
         ]))
         setWaitSave(true)
     }
+    async function funcsearchoneonly() {
+        dispatch(showBackdrop(true));
+        setOpenDialogPerRequest(false)
+        
+        if(fieldToFilter==="TMO"){
+            setResTMO([])
+            dispatch(getCollectionAux(gerencialTMOsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })));
+        }
+        if(fieldToFilter==="TME"){
+            setResTME([])
+            dispatch(getCollectionAux(gerencialTMEsel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }
+        if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
+            dispatch(getCollectionAux(gerencialEncuestassel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }
+        setWaitSave(true)
+    }
+    useEffect(() => {
+        
+        if (waitSave && !mainResult.mainAux.loading) {
+            
+            if(fieldToFilter==="TMO")
+                setResTMO(mainResult.mainAux.data)
+            if(fieldToFilter==="TME")
+                setResTME(mainResult.mainAux.data)
+            if(fieldToFilter==="NPS")
+                setDataEncuestanps(mainResult.mainAux.data)
+            if(fieldToFilter==="CSAT")
+                setDataEncuestacsat(mainResult.mainAux.data)
+            if(fieldToFilter==="FIX")
+                setDataEncuestafix(mainResult.mainAux.data)
+            if(fieldToFilter==="FCR")
+                setDataEncuestafcr(mainResult.mainAux.data)
+            dispatch(showBackdrop(false));
+            setWaitSave(false);
+        }
+    },[mainResult.mainAux])
 
 
     useEffect(() => {
@@ -869,6 +1118,116 @@ const DashboardManagerial: FC = () => {
                 </div>
 
             </DialogZyx>
+            <DialogZyx
+                open={openDialogPerRequest}
+                title={`${t(langKeys.configuration)} ${fieldToFilter === "averageconversationsattendedbytheadvisorbyhour"? t(langKeys.averageconversationsattendedbytheadvisorbyhour): fieldToFilter === "averageconversationsattendedbyhour"? t(langKeys.averageconversationsattendedbyhour): fieldToFilter}`}
+                buttonText1={t(langKeys.close)}
+                buttonText2={t(langKeys.search)}
+                handleClickButton1={() => setOpenDialogPerRequest(false)}
+                handleClickButton2={() => funcsearchoneonly()}
+            >
+                <div>
+                    {(fieldToFilter!=="FCR" && fieldToFilter!=="etiqueta" && fieldToFilter!=="averageconversationsattendedbytheadvisorbyhour" && fieldToFilter!=="averageconversationsattendedbyhour" ) &&
+                        <div className="row-zyx">
+                            <TemplateSwitch
+                                label={t(langKeys.advisor)}
+                                valueDefault={searchfieldsOnlyOne.closedbyasesor}
+                                onChange={(value) => {
+                                    let closedby = ""
+                                    if(value && searchfieldsOnlyOne.closedbybot) {closedby="ASESOR,BOT"} else
+                                    if (value) {closedby="ASESOR"} else
+                                    if (searchfieldsOnlyOne.closedbybot) {closedby="BOT"}
+                                    
+                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbyasesor: value, closedby: closedby}))}}
+                                className="col-6"
+                            />
+                            <TemplateSwitch
+                                label="Bot"
+                                className="col-6"
+                                valueDefault={searchfieldsOnlyOne.closedbybot}
+                                onChange={(value) =>{ 
+                                    let closedby = ""
+                                    if(value && searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR,BOT"} else
+                                    if (value) {closedby="BOT"} else
+                                    if (searchfieldsOnlyOne.closedbyasesor) {closedby="ASESOR"}
+                                    setsearchfieldsOnlyOne((prevState) =>({...prevState, closedbybot: value, closedby: closedby}))}}
+                            />
+                        </div>
+                    }
+                    {(fieldToFilter==="TMO" || fieldToFilter==="TME" || fieldToFilter==="averageconversationsattendedbytheadvisorbyhour" || fieldToFilter==="averageconversationsattendedbyhour" ) &&
+                        <div className="row-zyx">
+                            <TextField 
+                                label={`${t(langKeys.lowesttime)} (%)`} 
+                                variant="outlined" 
+                                value={searchfieldsOnlyOne.skipdown}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipdown: (Number(e.target.value))}))}
+                                type="number"
+                                className="col-6"
+                            />
+                            <TextField 
+                                label={`${t(langKeys.higuesttime)} (%)`} 
+                                variant="outlined" 
+                                value={searchfieldsOnlyOne.skipup}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, skipup: (Number(e.target.value))}))}
+                                className="col-6"
+                                type="number"
+                            />
+                        </div>
+                    }
+                    
+                    {fieldToFilter==="TMO" &&
+                        <div className="row-zyx">
+                                <TextField 
+                                    label={t(langKeys.timemin)} 
+                                    variant="outlined" 
+                                    type="time"
+                                    className="col-12"
+                                    value={searchfieldsOnlyOne.min}
+                                    onChange={(e) => setsearchfieldsOnlyOne((prevState) =>({...prevState, min: e.target.value}))}
+                                />
+                        </div>
+                    }
+                    {(fieldToFilter==="TMO" || fieldToFilter==="TME") &&
+                        <div className="row-zyx">
+                            <TextField 
+                                label={t(langKeys.timemax)}
+                                variant="outlined" 
+                                type="time"
+                                className="col-12"
+                                value={searchfieldsOnlyOne.max}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, max: e.target.value}))}
+                            />
+                        </div>
+                    }
+                    { (fieldToFilter!=="etiqueta" && fieldToFilter!=="averageconversationsattendedbytheadvisorbyhour" && fieldToFilter!=="averageconversationsattendedbyhour") &&
+
+                        <div className="row-zyx">
+                            <TextField 
+                                label={t(langKeys.targetvalue)}
+                                variant="outlined" 
+                                type="number"
+                                className="col-12"
+                                value={searchfieldsOnlyOne.target}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, target: (Number(e.target.value))}))}
+                            />
+                        </div>
+                    }
+                    { (fieldToFilter==="etiqueta") &&
+
+                        <div className="row-zyx">
+                            <TextField 
+                                label={t(langKeys.numberoflabels)}
+                                variant="outlined" 
+                                type="number"
+                                className="col-12"
+                                value={searchfieldsOnlyOne.limit}
+                                onChange={(e) => setsearchfieldsOnlyOne(prevState =>({...prevState, limit: (Number(e.target.value))}))}
+                            />
+                        </div>
+                    }
+                </div>
+
+            </DialogZyx>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                 <div className={classes.maintitle}> {t(langKeys.managerial)}</div>
@@ -885,7 +1244,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>                            
+                            <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TMO</div>
@@ -924,20 +1286,22 @@ const DashboardManagerial: FC = () => {
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
-                            <div className={classes.containerFields}>
-                                <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
-                                    {dataTMOgraph.map((entry: any, index: number) => {
-                                        let totalsum = dataTMOgraph[0].quantity + dataTMOgraph[1].quantity
-                                        let perc = (dataTMOgraph[index].quantity*100)/totalsum
-                                        return <li style={{display: "inline-block", marginRight: 10}}>
-                                            <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
-                                            <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
-                                            <span style={{color: COLORS[index % COLORS.length]}}>{dataTMOgraph[index].label} {perc.toFixed(2)}%</span>
-                                        </li>
-                                        }
-                                    )}
-                                </ul>
-                            </div>
+                            {(dataTMOgraph[0].quantity + dataTMOgraph[1].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataTMOgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataTMOgraph[0].quantity + dataTMOgraph[1].quantity
+                                            let perc = (dataTMOgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMOgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataTMOgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.sla)}</div>
                                 <div className={classes.datafield}>{data.sla}</div>
@@ -965,7 +1329,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>TME</div>
@@ -1000,11 +1367,26 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            {(dataTMEgraph[0].quantity + dataTMEgraph[1].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataTMEgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataTMEgraph[0].quantity + dataTMEgraph[1].quantity
+                                            let perc = (dataTMEgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMEgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataTMEgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.sla)}</div>
                                 <div className={classes.datafield}>{dataTME.sla}</div>
@@ -1075,7 +1457,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("NPS")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("NPS")} className={classes.styleicon}/>                            
+                            <SettingsIcon onClick={()=>{setFieldToFilter("NPS"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>NPS</div>
@@ -1110,11 +1495,26 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            {(dataNPSgraph[0].quantity + dataNPSgraph[1].quantity + dataNPSgraph[2].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataNPSgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataNPSgraph[0].quantity + dataNPSgraph[1].quantity + dataNPSgraph[2].quantity
+                                            let perc = (dataNPSgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataNPSgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataNPSgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.npstotalpromoters}</div>
@@ -1136,7 +1536,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("CSAT")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("CSAT")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("CSAT"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>CSAT</div>
@@ -1171,11 +1574,26 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            {(dataCSATgraph[0].quantity + dataCSATgraph[1].quantity + dataCSATgraph[2].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataCSATgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataCSATgraph[0].quantity + dataCSATgraph[1].quantity + dataCSATgraph[2].quantity
+                                            let perc = (dataCSATgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataCSATgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataCSATgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalpromoters)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.csattotalpromoters}</div>
@@ -1199,7 +1617,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FCR")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("FCR")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("FCR"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FCR</div>
@@ -1234,11 +1655,26 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            {(dataFCRgraph[0].quantity + dataFCRgraph[1].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataFCRgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataFCRgraph[0].quantity + dataFCRgraph[1].quantity
+                                            let perc = (dataFCRgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataFCRgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataFCRgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalresolved)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotalpromoters}</div>
@@ -1256,7 +1692,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         className={classes.itemCard}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("FIX")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("FIX")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("FIX"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.columnCard}>
                             <div className={classes.containerFieldsTitle}>
                                 <div className={classes.boxtitle}>FIX</div>
@@ -1291,11 +1730,26 @@ const DashboardManagerial: FC = () => {
                                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Legend verticalAlign="bottom" height={36}/>
                                 </PieChart>
                             </ResponsiveContainer>
                         </div>
                         <div className={classes.columnCard}>
+                            {(dataFIXgraph[0].quantity + dataFIXgraph[1].quantity) > 0 &&
+                                <div className={classes.containerFields}>
+                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                        {dataFIXgraph.map((entry: any, index: number) => {
+                                            let totalsum = dataFIXgraph[0].quantity + dataFIXgraph[1].quantity
+                                            let perc = (dataFIXgraph[index].quantity*100)/totalsum
+                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataFIXgraphlegend-${index}`}>
+                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataFIXgraph[index].label} {perc.toFixed(2)}%</span>
+                                            </li>
+                                            }
+                                        )}
+                                    </ul>
+                                </div>
+                            }
                             <div className={classes.containerFields}>
                                 <div className={classes.label}>{t(langKeys.totalresolved)}</div>
                                 <div className={classes.datafield}>{dataEncuesta.fixtotalpromoters}</div>
@@ -1315,7 +1769,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbyhour")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbyhour")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("averageconversationsattendedbyhour"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgtickethour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
@@ -1348,7 +1805,10 @@ const DashboardManagerial: FC = () => {
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
-                        <div className={classes.downloadiconcontainer}><CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbytheadvisorbyhour")} className={classes.styleicon}/></div>
+                        <div className={classes.downloadiconcontainer}>
+                            <CloudDownloadIcon onClick={()=>downloaddata("averageconversationsattendedbytheadvisorbyhour")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("averageconversationsattendedbytheadvisorbyhour"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
+                        </div>
                         <div className={classes.boxtitlequarter}>{dataSummary.avgticketasesorhour}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageconversationsattendedbytheadvisorbyhour)}</div>
                         <div style={{display: "flex",  width: "100%"}}>
@@ -1449,6 +1909,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.containertitleboxes}>
                             <div style={{ fontWeight: "bold", fontSize: "1.6em"}}>{t(langKeys.top5labels)}</div>
                             <CloudDownloadIcon onClick={()=>downloaddata("etiqueta")} className={classes.styleicon}/>
+                            <SettingsIcon onClick={()=>{setFieldToFilter("etiqueta"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>                            
                         </div>
                         <div style={{ paddingTop: "20px" }}>
                             <ResponsiveContainer width="100%" aspect={4.0 / 1.0}>

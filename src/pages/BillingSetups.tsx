@@ -550,7 +550,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
                             <FormControlLabel
                                 style={{paddingLeft:10}}
                                 control={<IOSSwitch checked={checkedaux}  onChange={(e) => {setCheckedaux(e.target.checked) ;setValue('allowhsm', e.target.checked)}} />}
-                                label={checkedaux? t(langKeys.yes):"No"}
+                                label={""}
                             />                        
                         </div>
                     </div>
@@ -1854,6 +1854,11 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
             {
                 Header: t(langKeys.allowhsm),
                 accessor: 'allowhsm',
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const { allowhsm } = props.cell.row.original;
+                    return allowhsm?t(langKeys.yes):"No"
+                }
             },
             {
                 Header: t(langKeys.hsmfee),

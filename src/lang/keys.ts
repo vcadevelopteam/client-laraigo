@@ -27,7 +27,12 @@ export const langKeys = {
     evidenceofpayment: "evidenceofpayment",
     additional_information: 'additional_information',
     id_payment: 'id_payment',
-
+    lowesttime: "lowesttime",
+    higuesttime: "higuesttime",
+    timemin: "timemin",
+    timemax: "timemax",
+    targetvalue: "targetvalue",
+    numberoflabels: "numberoflabels",
     new: 'new',
     qualified: 'qualified',
     paynow: "paynow",
