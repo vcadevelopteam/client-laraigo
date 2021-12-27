@@ -418,6 +418,7 @@ export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, endd
         origin: "ticket",
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        lastuserid: allParameters['lastuserid'] ? allParameters['lastuserid'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 })
