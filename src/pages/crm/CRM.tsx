@@ -149,6 +149,7 @@ const CRM: FC = () => {
       getCommChannelLst(),
       getCampaignLst(),
       getValuesFromDomain('OPORTUNIDADPRODUCTOS'),
+      getLeadTasgsSel(),
     ]));
   }, [boardFilter, dispatch]);
 
@@ -654,7 +655,7 @@ const CRM: FC = () => {
               optionDesc="domaindesc"
               optionValue="domainvalue"
             />
-            {/* <FieldMultiSelect
+            <FieldMultiSelect
               variant="outlined"
               label={t(langKeys.tag, { count: 2 })}
               className={classes.filterComponent}
@@ -664,7 +665,7 @@ const CRM: FC = () => {
               loading={mainMulti.loading}
               optionDesc="tags"
               optionValue="tags"
-            /> */}
+            />
             <FieldEdit
               size="small"
               variant="outlined"
