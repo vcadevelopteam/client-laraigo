@@ -581,8 +581,6 @@ export const Person: FC = () => {
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
-        fetchData(fetchDataAux);
-
         return () => {
             dispatch(resetGetPersonListPaginated());
             dispatch(resetAllMain());
