@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection, getCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import clsx from 'clsx';
 import PersonIcon from '@material-ui/icons/Person';
@@ -206,8 +206,8 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardProductivity: FC = () => {
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
-    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
+    const resaux = useSelector(state => state.main.mainAux);
     const [downloaddatafile,setdownloaddatafile]=useState(false)
     const [titlefile, settitlefile] = useState('');
     const [openDialogPerRequest, setOpenDialogPerRequest] = useState(false);
@@ -793,7 +793,7 @@ const DashboardProductivity: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -831,7 +831,7 @@ const DashboardProductivity: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -938,6 +938,7 @@ const DashboardProductivity: FC = () => {
             dispatch(showBackdrop(false));
             setWaitSaveAux(false);
         }
+        // eslint-disable-next-line
     },[mainResult.mainAux,waitSaveAux])
 
 
@@ -956,11 +957,14 @@ const DashboardProductivity: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if(downloaddatafile && !mainResultData.loading){
-            exportExcel(titlefile,mainResultData.data)
+        if(downloaddatafile) {
+            if(!resaux.loading){
+                exportExcel(titlefile,resaux.data)
+                setdownloaddatafile(false)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResultData])
+    }, [resaux,downloaddatafile])
     async function downloaddata(tipeoffilter:string){
         let tosend = { 
             startdate: dateRangeCreateDate.startDate, 
@@ -974,15 +978,15 @@ const DashboardProductivity: FC = () => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO"){
-            dispatch(getCollection(getdashboardoperativoTMOGENERALSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSeldata(tosend)))
         }else if(tipeoffilter==="TME"){
-            dispatch(getCollection(getdashboardoperativoTMEGENERALSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSeldata(tosend)))
         }else if(tipeoffilter==="TMODistribution"||tipeoffilter==="TMEDistribution"){
-            dispatch(getCollection(getdashboardoperativoSummarySeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoSummarySeldata(tosend)))
         }else if(tipeoffilter==="prodxHoraDist"){
-            dispatch(getCollection(getdashboardoperativoProdxHoraDistSel(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoProdxHoraDistSel(tosend)))
         }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
-            dispatch(getCollection(getdashboardoperativoEncuestaSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoEncuestaSeldata(tosend)))
         }
     }
     async function funcsearchoneonly() {
@@ -991,14 +995,14 @@ const DashboardProductivity: FC = () => {
         
         if(fieldToFilter==="TMO"){
             setResTMO([])
-            dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })));
+            dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSel({ ...searchfieldsOnlyOne,supervisor: searchfields.supervisor, label:searchfields.label,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })));
         }
         if(fieldToFilter==="TME"){
             setResTME([])
-            dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSel({ ...searchfieldsOnlyOne,supervisor: searchfields.supervisor, label:searchfields.label,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
         if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
-            dispatch(getCollectionAux(getdashboardoperativoEncuesta3Sel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(getdashboardoperativoEncuesta3Sel({ ...searchfieldsOnlyOne,supervisor: searchfields.supervisor, label:searchfields.label,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
         setWaitSaveAux(true)
     }

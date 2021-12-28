@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection, getCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -19,7 +19,7 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -221,7 +221,6 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
     const mainResultMulti = useSelector(state => state.main.multiData);
-    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
@@ -407,13 +406,14 @@ const DashboardManagerial: FC = () => {
     }, [mainResultMulti,bringdataFilters])
 
     useEffect(() => {
-        if(downloaddatafile && !mainResultData.loading){
-            // exportExcel(titlefile,mainResultData.data)
-            // setdownloaddatafile(false)
+        if(downloaddatafile) {
+            if(!resaux.loading){
+                exportExcel(titlefile,resaux.data)
+                setdownloaddatafile(false)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResultData,downloaddatafile])
-    
+    }, [resaux,downloaddatafile])
     useEffect(() => {
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
@@ -729,7 +729,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -819,7 +819,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -1097,6 +1097,7 @@ const DashboardManagerial: FC = () => {
                 setWaitSaveaux(false);
             }
         }
+        // eslint-disable-next-line
     },[resaux,waitSaveaux])
 
 
@@ -1119,19 +1120,19 @@ const DashboardManagerial: FC = () => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
-            dispatch(getCollection(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialTMOselData({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
-            dispatch(getCollection(gerencialencuestaseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialencuestaseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="etiqueta"){
-            dispatch(getCollection(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialetiquetasseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="averageconversations"){
-            dispatch(getCollection(gerencialconversationseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialconversationseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="interaction"){
-            dispatch(getCollection(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialinteractionseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else if(tipeoffilter==="asesoresconectados"){
-            dispatch(getCollection(gerencialasesoresconectadosbarseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialasesoresconectadosbarseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }else{
-            dispatch(getCollection(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
     
