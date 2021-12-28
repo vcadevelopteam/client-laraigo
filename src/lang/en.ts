@@ -1145,11 +1145,14 @@ const translation: LangKeys = {
     ticket_tdatime: 'TDA',
 
     report_loginhistory: 'User login',
+    report_loginhistory_datehour: 'Date-Hour',
+    report_loginhistory_user: 'User',
+    report_loginhistory_username: 'Username',
     report_loginhistory_createdate: 'Date',
     report_loginhistory_createhour: 'Hour',
     report_loginhistory_nombre_usuario: 'Username',
     report_loginhistory_usuario: 'User',
-    report_loginhistory_status: 'Status ',
+    report_loginhistory_status: 'Status',
     report_loginhistory_type: 'Type',
 
     report_inputretry: 'Retries',

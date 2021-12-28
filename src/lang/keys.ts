@@ -1165,6 +1165,9 @@ export const langKeys = {
 
     report_loginhistory: 'report_loginhistory',
     report_loginhistory_createdate: 'report_loginhistory_createdate',
+    report_loginhistory_datehour: 'report_loginhistory_datehour',
+    report_loginhistory_user: 'report_loginhistory_user',
+    report_loginhistory_username: 'report_loginhistory_username',
     report_loginhistory_createhour: 'report_loginhistory_createhour',
     report_loginhistory_nombre_usuario: 'report_loginhistory_nombre_usuario',
     report_loginhistory_usuario: 'report_loginhistory_usuario',
