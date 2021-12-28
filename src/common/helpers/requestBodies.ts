@@ -1430,14 +1430,14 @@ export const gerencialinteractionseldata = ({ startdate, enddate, channel, group
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
-export const gerencialetiquetassel = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
+export const gerencialetiquetassel = ({ startdate, enddate, channel, group, company,limit=5 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ETIQUETAS_SEL",
     parameters: {
         startdate,
         enddate,
         channel,
-        limit: 5,
+        limit,
         group,
         company,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
@@ -1584,6 +1584,16 @@ export const getdashboardoperativoTMEGENERALSeldata = ({ startdate, enddate, cha
         supervisorid: supervisor
     }
 });
+export const getdashboardgerencialconverstionxhoursel = ({ startdate, enddate, channel, group, company, skipdown,skipup }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_GERENCIAL_CONVERSATIONXHOUR_SEL',
+    key: "UFN_DASHBOARD_GERENCIAL_CONVERSATIONXHOUR_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company,
+        skipdown: skipdown/100,
+        skipup: skipup/100,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+    }
+});
 export const getdashboardoperativoSummarySel = ({ startdate, enddate, channel, group, company, label, supervisor }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL',
     key: "UFN_DASHBOARD_OPERATIVO_SUMMARY_SEL",
@@ -1634,6 +1644,15 @@ export const getdashboardoperativoProdxHoraDistSeldata = ({ startdate, enddate, 
     key: "UFN_DATA_DASHBOARD_OPERATIVO_PRODXHORADIST_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        supervisorid: supervisor
+    }
+});
+export const getdashboardoperativoEncuesta3Sel = ({ startdate, enddate, channel, group, company, label,question,closedby,target, supervisor }: Dictionary): IRequestBody => ({
+    method: 'UFN_DASHBOARD_OPERATIVO_ENCUESTA3_SEL',
+    key: "UFN_DASHBOARD_OPERATIVO_ENCUESTA3_SEL",
+    parameters: {
+        startdate, enddate, channel, group, company, label, question,closedby,target,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }

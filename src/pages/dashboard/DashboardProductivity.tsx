@@ -11,7 +11,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { useTranslation } from "react-i18next";
-import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuestaSeldata, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel,getdashboardoperativoSummarySeldata, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
+import { exportExcel, getCommChannelLst, getdashboardoperativoEncuestaSel,getdashboardoperativoEncuestaSeldata,getdashboardoperativoEncuesta3Sel, getdashboardoperativoProdxHoraDistSel, getdashboardoperativoProdxHoraSel,getdashboardoperativoSummarySeldata, getdashboardoperativoSummarySel,getdashboardoperativoTMEGENERALSeldata, getdashboardoperativoTMEGENERALSel, getdashboardoperativoTMOGENERALSel, getdashboardoperativoTMOGENERALSeldata, getLabelsSel, getSupervisorsSel, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import { Dictionary } from "@types";
@@ -355,6 +355,7 @@ const DashboardProductivity: FC = () => {
     const [dataprovider, setdataprovider] = useState<any>([]);
     const [datachannels, setdatachannels] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
+    const [waitSaveAux, setWaitSaveAux] = useState(false);
     const [searchfields, setsearchfields] = useState({
         queue: "",
         provider: "",
@@ -689,7 +690,166 @@ const DashboardProductivity: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [resEncuesta]);
+    function setDataEncuestanps(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataNPS: "0%",
+            nps_green: "0%",
+            npsvariacioncolor: true,
+            npsvariation: "0%",
+            npspollssent: "0",
+            npspollsanswered: "0",
+            npstotalpromoters: 0,
+            npstotaldetractors: 0,
+            npstotalneutral: 0,
+            npstotalconversations: 0,
+        }))
+        setDataNPSgraph([
+            { label: t(langKeys.totalpromoters), quantity: 0 },
+            { label: t(langKeys.totaldetractors), quantity: 0 },
+            { label: t(langKeys.totalneutral), quantity: 0 }
+        ]);
+        if(data.length){
 
+            const { high, tickets, low, green, medium, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataNPS: `${((toshow) * 100).toFixed(2)}%`,
+                npsvariacioncolor: variacioncolor,
+                nps_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                npsvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                npspollssent: `${formatNumber(tickets)}`,
+                npspollsanswered: `${formatNumber(total)}`,
+                npstotalpromoters: high,
+                npstotaldetractors: low,
+                npstotalneutral: medium,
+                npstotalconversations: tickets,
+            }))
+            setDataNPSgraph([
+                { label: t(langKeys.totalpromoters), quantity: high },
+                { label: t(langKeys.totaldetractors), quantity: low },
+                { label: t(langKeys.totalneutral), quantity: medium }
+            ]);
+        }
+    }
+    function setDataEncuestacsat(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataCSAT: "0%",
+            csat_green: "0%",
+            csatvariacioncolor: true,
+            csatvariation: "0%",
+            csatpollssent: "0",
+            csatpollsanswered: "0",
+            csattotalpromoters: 0,
+            csattotaldetractors: 0,
+            csattotalneutral: 0,
+            csattotalconversations: 0,
+        }))
+        setDataCSATgraph([
+            { label: t(langKeys.totalpromoters), quantity: 0 },
+            { label: t(langKeys.totaldetractors), quantity: 0 },
+            { label: t(langKeys.totalneutral), quantity: 0 }
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, medium, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataCSAT: `${((toshow) * 100).toFixed(2)}%`,
+                csatvariacioncolor: variacioncolor,
+                csat_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                csatvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                csatpollssent: `${formatNumber(tickets)}`,
+                csatpollsanswered: `${formatNumber(total)}`,
+                csattotalpromoters: high,
+                csattotaldetractors: low,
+                csattotalneutral: medium,
+                csattotalconversations: tickets,
+            }))
+            setDataCSATgraph([
+                { label: t(langKeys.totalpromoters), quantity: high },
+                { label: t(langKeys.totaldetractors), quantity: low },
+                { label: t(langKeys.totalneutral), quantity: medium }
+            ]);
+        }
+    }
+    function setDataEncuestafcr(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataFCR: "0%",
+            fcr_green: "0%",
+            fcrvariacioncolor: true,
+            fcrvariation: "0%",
+            fcrpollssent: "0",
+            fcrpollsanswered: "0",
+            fcrtotalpromoters: 0,
+            fcrtotaldetractors: 0,
+            fcrtotalconversations: 0,
+        }))
+        setDataFCRgraph([
+            { label: t(langKeys.totalresolved), quantity: 0 },
+            { label: t(langKeys.totalnotresolved), quantity: 0 },
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, red, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataFCR: `${((toshow) * 100).toFixed(2)}%`,
+                fcrvariacioncolor: variacioncolor,
+                fcr_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                fcrvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                fcrpollssent: `${formatNumber(tickets)}`,
+                fcrpollsanswered: `${formatNumber(total)}`,
+                fcrtotalpromoters: high,
+                fcrtotaldetractors: low,
+                fcrtotalconversations: tickets,
+            }))
+            setDataFCRgraph([
+                { label: t(langKeys.totalresolved), quantity: high },
+                { label: t(langKeys.totalnotresolved), quantity: low },
+            ]);
+        }
+    }    
+    function setDataEncuestafix(data:any){
+        setDataEncuesta(prev =>({...prev,
+            dataFIX: "0%",
+            fix_green: "0%",
+            fixvariacioncolor: true,
+            fixvariation: "0%",
+            fixpollssent: "0",
+            fixpollsanswered: "0",
+            fixtotalpromoters: 0,
+            fixtotaldetractors: 0,
+            fixtotalconversations: 0,
+        }))
+        setDataFIXgraph([
+            { label: t(langKeys.totalresolved), quantity: 0 },
+            { label: t(langKeys.totalnotresolved), quantity: 0 },
+        ]);
+        if(data.length){
+
+            const { high, tickets, low, green, red, total } = data[0]
+            const toshow = total ? ((high - low) / total) : 0;
+            let variacioncolor = (toshow - green) * 100 >= 0
+            setDataEncuesta(prev =>({...prev,
+                dataFIX: `${((toshow) * 100).toFixed(2)}%`,
+                fixvariacioncolor: variacioncolor,
+                fix_green: `${(parseFloat(green) * 100).toFixed(2)}%`,
+                fixvariation: `${((toshow - green) * 100).toFixed(2)}%`,
+                fixpollssent: `${formatNumber(tickets)}`,
+                fixpollsanswered: `${formatNumber(total)}`,
+                fixtotalpromoters: high,
+                fixtotaldetractors: low,
+                fixtotalconversations: tickets,
+            }))
+            setDataFIXgraph([
+                { label: t(langKeys.totalresolved), quantity: high },
+                { label: t(langKeys.totalnotresolved), quantity: low },
+            ]);
+        }
+    }
     useEffect(() => {
         if (waitSave) {
             if (!remultiaux.loading && !remultiaux.error) {
@@ -760,24 +920,24 @@ const DashboardProductivity: FC = () => {
     }
     useEffect(() => {
         
-        if (waitSave && !mainResult.mainAux.loading) {
+        if (waitSaveAux && !mainResult.mainAux.loading) {
             
             if(fieldToFilter==="TMO")
                 setResTMO(mainResult.mainAux.data)
             if(fieldToFilter==="TME")
                 setResTME(mainResult.mainAux.data)
-          /*  if(fieldToFilter==="NPS")
+            if(fieldToFilter==="NPS")
                 setDataEncuestanps(mainResult.mainAux.data)
             if(fieldToFilter==="CSAT")
                 setDataEncuestacsat(mainResult.mainAux.data)
             if(fieldToFilter==="FIX")
                 setDataEncuestafix(mainResult.mainAux.data)
             if(fieldToFilter==="FCR")
-                setDataEncuestafcr(mainResult.mainAux.data)*/
+                setDataEncuestafcr(mainResult.mainAux.data)
             dispatch(showBackdrop(false));
-            setWaitSave(false);
+            setWaitSaveAux(false);
         }
-    },[mainResult.mainAux])
+    },[mainResult.mainAux,waitSaveAux])
 
 
     useEffect(() => {
@@ -837,9 +997,9 @@ const DashboardProductivity: FC = () => {
             dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
         if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
-            //dispatch(getCollectionAux(gerencialEncuestassel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+            dispatch(getCollectionAux(getdashboardoperativoEncuesta3Sel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
-        setWaitSave(true)
+        setWaitSaveAux(true)
     }
     return (
         <Fragment>
