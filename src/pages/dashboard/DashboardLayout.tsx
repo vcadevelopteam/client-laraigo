@@ -279,6 +279,7 @@ const DashboardLayout: FC = () => {
                     setOpen={setOpenDatePicker}
                     range={dateRange}
                     onSelect={setDateRange}
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Button
                         style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
@@ -302,7 +303,7 @@ const DashboardLayout: FC = () => {
                     variant="contained"
                     color="primary"
                     onClick={addItemOnClick}
-                    disabled={dashboardtemplate.loading || !dashboardtemplate.value}
+                    disabled={dashboardSave.loading || dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Trans i18nKey={langKeys.add} />
                 </Button>
@@ -310,7 +311,7 @@ const DashboardLayout: FC = () => {
                     variant="contained"
                     color="primary"
                     onClick={onDelete}
-                    disabled={dashboardtemplate.loading || !dashboardtemplate.value}
+                    disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Trans i18nKey={langKeys.delete} />
                 </Button>
@@ -318,7 +319,7 @@ const DashboardLayout: FC = () => {
                     variant="contained"
                     color="primary"
                     onClick={onSave}
-                    disabled={dashboardtemplate.loading || !dashboardtemplate.value}
+                    disabled={dashboardSave.loading ||dashboardtemplate.loading || !dashboardtemplate.value}
                 >
                     <Trans i18nKey={langKeys.save} />
                 </Button>

@@ -194,5 +194,7 @@ export interface ICrmLeadSel {
 	leadproduct: string;
     /**campaign filter */
 	campaignid: number;
+    /**tags filter */
+    tags: string; 
 	all?: boolean;
 }
