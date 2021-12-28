@@ -886,6 +886,20 @@ export const Person: FC = () => {
                     pathname: paths.PERSON_DETAIL.resolve(0),
                     state: {},
                 })}
+                onFilterChange={f => {
+                    console.log('onFilterChange', f);
+                    const params = new URLSearchParams();
+                    for (const key in f) {
+                        if (f[key] === undefined || f[key] === null) continue;
+                        if (typeof f[key] === 'object' && 'value' in f[key] && 'operator' in f[key]) {
+                            params.append(key, String(f[key].value));
+                            params.append(`${key}-operator`, String(f[key].operator));
+                        } else {
+                            params.append(key, String(f[key]));
+                        }
+                    }
+                    history.push({ search: params.toString() });
+                }}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}

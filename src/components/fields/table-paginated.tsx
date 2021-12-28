@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
 import { makeStyles } from '@material-ui/core/styles';
-import { TableConfig, Pagination, Dictionary } from '@types'
+import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
@@ -324,11 +324,13 @@ const TableZyx = React.memo(({
     initialSelectedRows,
     setSelectedRows,
     onClickRow,
+    onFilterChange,
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
+    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({ startDate: null, endDate: null, page: 0 });
     const {
         getTableProps,
         getTableBodyProps,
@@ -454,12 +456,19 @@ const TableZyx = React.memo(({
     });
 
     const triggertmp = () => {
-        fetchData && fetchData({
+        if (!fetchData) return;
+
+        fetchData({
             ...pagination, pageSize, daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
             }
         });
+        setTFilters(prev => ({
+            ...prev,
+            startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
+            endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
+        }));
     }
 
     useEffect(() => {
@@ -483,6 +492,10 @@ const TableZyx = React.memo(({
         setSelectedRows && setSelectedRows(selectedRowIds)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
+
+    useEffect(() => {
+        onFilterChange?.(tFilters);
+    }, [tFilters]);
 
     const exportData = () => {
         exportPersonalized && exportPersonalized({
@@ -629,7 +642,15 @@ const TableZyx = React.memo(({
                                                                 type={column.type}
                                                                 firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
-                                                                setFilters={setFilters}
+                                                                setFilters={(filters: any, page: number) => {
+                                                                    setFilters(filters, page);
+                                                                    setTFilters(prev => ({
+                                                                        ...prev,
+                                                                        ...filters,
+                                                                        page,
+                                                                    }));
+                                                                }}
+                                                                // setFilters={setFilters}
                                                             />
                                                         }
                                                     </>)
