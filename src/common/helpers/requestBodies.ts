@@ -1283,7 +1283,7 @@ export const gerencialTMOsel = ({ startdate, enddate, channel, group, company, c
     method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL",
     parameters: {
-        startdate, enddate, channel, group, company, level: 0, closedby, min, max, target: target / 100, skipdown: skipdown / 100, skipup: skipup / 100, bd, offset: (new Date().getTimezoneOffset() / 60) * -1,
+        startdate, enddate, channel, group, company, level: 0, closedby, min: min==""?"00:00:00":min, max: max==""?"99:00:00":max, target: target / 100, skipdown: skipdown / 100, skipup: skipup / 100, bd, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
 export const gerencialTMOselData = ({ startdate, enddate, channel, group, company,bd=true }: Dictionary): IRequestBody => ({
@@ -1304,8 +1304,8 @@ export const gerencialTMEsel = ({ startdate, enddate, channel, group, company, c
         company,
         level: 0,
         closedby,
-        min,
-        max,
+        min: min==""?"00:00:00":min,
+        max: max==""?"99:00:00":max,
         target: target / 100,
         skipdown: skipdown / 100,
         skipup: skipup / 100,
@@ -1526,8 +1526,8 @@ export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel
         skipdown: skipdown / 100,
         skipup: skipup / 100,
         bd,
-        min,
-        max,
+        min: min==""?"00:00:00":min,
+        max: max==""?"99:00:00":max,
         target: target / 100,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
@@ -1560,8 +1560,8 @@ export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel
         skipdown: skipdown / 100,
         skipup: skipup / 100,
         bd,
-        min,
-        max,
+        min: min==""?"00:00:00":min,
+        max: max==""?"99:00:00":max,
         target: target / 100,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor

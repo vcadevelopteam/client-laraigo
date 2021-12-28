@@ -208,6 +208,7 @@ const DashboardProductivity: FC = () => {
     const mainResult = useSelector(state => state.main);
     const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
+    const resaux = useSelector(state => state.main.mainAux);
     const [downloaddatafile,setdownloaddatafile]=useState(false)
     const [titlefile, settitlefile] = useState('');
     const [openDialogPerRequest, setOpenDialogPerRequest] = useState(false);
@@ -956,11 +957,14 @@ const DashboardProductivity: FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
     useEffect(() => {
-        if(downloaddatafile && !mainResultData.loading){
-            exportExcel(titlefile,mainResultData.data)
+        if(downloaddatafile) {
+            if(!resaux.loading){
+                exportExcel(titlefile,resaux.data)
+                setdownloaddatafile(false)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResultData])
+    }, [resaux,downloaddatafile])
     async function downloaddata(tipeoffilter:string){
         let tosend = { 
             startdate: dateRangeCreateDate.startDate, 
@@ -974,15 +978,15 @@ const DashboardProductivity: FC = () => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO"){
-            dispatch(getCollection(getdashboardoperativoTMOGENERALSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoTMOGENERALSeldata(tosend)))
         }else if(tipeoffilter==="TME"){
-            dispatch(getCollection(getdashboardoperativoTMEGENERALSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoTMEGENERALSeldata(tosend)))
         }else if(tipeoffilter==="TMODistribution"||tipeoffilter==="TMEDistribution"){
-            dispatch(getCollection(getdashboardoperativoSummarySeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoSummarySeldata(tosend)))
         }else if(tipeoffilter==="prodxHoraDist"){
-            dispatch(getCollection(getdashboardoperativoProdxHoraDistSel(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoProdxHoraDistSel(tosend)))
         }else if(tipeoffilter==="NPS"||tipeoffilter==="CSAT"||tipeoffilter==="FIX"||tipeoffilter==="FCR"){
-            dispatch(getCollection(getdashboardoperativoEncuestaSeldata(tosend)))
+            dispatch(getCollectionAux(getdashboardoperativoEncuestaSeldata(tosend)))
         }
     }
     async function funcsearchoneonly() {
