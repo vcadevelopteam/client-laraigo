@@ -15,6 +15,7 @@ export { default as DateRangePicker } from './fields/DateRangePicker';
 export { default as ColorInput } from './fields/ColorInput';
 
 export { default as SkeletonInteraction } from './skeletons/SkeletonInteraction';
+export { default as SkeletonReportCard } from './skeletons/SkeletonReportCard';
 export { default as SkeletonReport } from './skeletons/SkeletonReport';
 export { default as BadgeGo } from './fields/BadgeGo';
 

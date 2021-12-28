@@ -11,7 +11,7 @@ import TablePaginated from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect } from 'components';
+import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
 import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate } from 'common/helpers';
@@ -116,8 +116,8 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [allParameters, setAllParameters] = useState({});
 
     if (multiData.length > 0) {
-        reportColumns.map(x => {
-            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames, type: (x.proargtype==="bigint")?"number":"string" })
+        reportColumns.forEach(x => {
+            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames, type: (x.proargtype === "bigint") ? "number" : "string" })
         });
         columns.shift();
     }
@@ -276,6 +276,7 @@ const Reports: FC = () => {
     const executeRes = useSelector(state => state.main.execute);
     const [allReports, setAllReports] = useState<Dictionary[]>([]);
     const [allReportsToShow, setallReportsToShow] = useState<Dictionary[]>([]);
+
     const fetchData = () => {
         dispatch(getCollection(getReportSel('')))
         dispatch(getCollectionAux(getReportTemplateSel()))
@@ -284,7 +285,7 @@ const Reports: FC = () => {
     useEffect(() => {
         if (!reportsResult.mainData.loading && !reportsResult.mainData.error && !reportsResult.mainAux.loading && !reportsResult.mainAux.error) {
             if (searchValue === null || searchValue.trim().length === 0) {
-                if (allReports.length === 0) {
+                if (allReports.length === 0 || !waitSave) {
                     const rr = [...reportsResult.mainData.data, ...reportsResult.mainAux.data.map(x => ({
                         ...x,
                         columns: x.columnjson ? JSON.parse(x.columnjson) : [],
@@ -304,16 +305,13 @@ const Reports: FC = () => {
                 ])
             }
         }
-    }, [searchValue, reportsResult.mainAux, reportsResult.mainData])
+    }, [searchValue, reportsResult.mainAux, reportsResult.mainData, waitSave])
 
     useEffect(() => {
         setallReportsToShow(allReports);
     }, [viewSelected])
 
     useEffect(() => {
-        dispatch(resetMainAux());
-        dispatch(resetCollectionPaginated());
-        dispatch(resetMultiMain());
         fetchData();
 
         dispatch(getMultiCollectionAux([
@@ -397,6 +395,7 @@ const Reports: FC = () => {
     const handleSelectedString = (key: string) => {
         setViewSelected(key);
     }
+
     if (viewSelected === "view-1") {
         return (
             <div className={classes.container}>
@@ -405,155 +404,161 @@ const Reports: FC = () => {
                         {t(langKeys.report_plural)}
                     </span>
                 </Box>
-                <Box className={classes.containerFilterGeneral}>
-                    <span></span>
-                    <div className={classes.containerSearch}>
-                        <SearchField
-                            colorPlaceHolder='#FFF'
-                            handleChangeOther={handleFiend}
-                            lazy
-                        />
-                    </div>
-                </Box>
-                <div className={classes.containerDetails}>
-                    <Grid container spacing={3} >
-                        {allReportsToShow.filter(x => !!x.image).map((report, index) => (
-                            <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                <Card >
-                                    <CardActionArea onClick={() => handleSelected(report, report.filters)}>
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            className={classes.media}
-                                            image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
-                                            title={t('report_' + report?.origin)}
-                                        />
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h6" component="div">
-                                                {t('report_' + report?.origin)}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                </Card>
-                            </Grid>
-                        ))}
-                        <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                            <Card >
-                                <CardActionArea onClick={() => handleSelectedString("heatmap")}>
-                                    <CardMedia
-                                        component="img"
-                                        height="140"
-                                        className={classes.media}
-                                        image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4SgTYos-jCFQS1NPSy5_gbSbSwOd-bMAv2w&usqp=CAU'}
-                                        title={t(langKeys.heatmap)}
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h6" component="div">
-                                            {t(langKeys.heatmap)}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                        <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                            <Card >
-                                <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
-                                    <CardMedia
-                                        component="img"
-                                        height="140"
-                                        className={classes.media}
-                                        image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/enviocomunicaciones.png"
-                                        title={t(langKeys.recordhsmreport)}
-                                    />
-                                    <CardContent>
-                                        <Typography gutterBottom variant="h6" component="div">
-                                            {t(langKeys.recordhsmreport)}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                        {allReportsToShow.filter(x => !x.image).map((report, index) => (
-                            <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                <Card style={{ position: 'relative' }}>
-                                    <CardActionArea
-                                        onClick={() => {
-                                            console.log(report)
-                                            setViewSelected("view-4");
-                                            setRowReportSelected({ row: report, edit: true });
-                                        }}
-                                    >
-                                        <CardMedia
-                                            component="img"
-                                            height="140"
-                                            className={classes.media}
-                                            image='https://www.datacrm.com/upload/article/b201902121011569.jpg'
-                                            title={report.description}
-                                        />
+                {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (
+                    <SkeletonReportCard />
+                ) : (
+                    <>
+                        <Box className={classes.containerFilterGeneral}>
+                            <span></span>
+                            <div className={classes.containerSearch}>
+                                <SearchField
+                                    colorPlaceHolder='#FFF'
+                                    handleChangeOther={handleFiend}
+                                    lazy
+                                />
+                            </div>
+                        </Box>
+                        <div className={classes.containerDetails}>
+                            <Grid container spacing={3} >
+                                {allReportsToShow.filter(x => !!x.image).map((report, index) => (
+                                    <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                        <Card >
+                                            <CardActionArea onClick={() => handleSelected(report, report.filters)}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="140"
+                                                    className={classes.media}
+                                                    image={reportsImage.find(x => x.name === report.image)?.image || 'no_data.png'}
+                                                    title={t('report_' + report?.origin)}
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">
+                                                        {t('report_' + report?.origin)}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                                <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card >
+                                        <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                className={classes.media}
+                                                image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4SgTYos-jCFQS1NPSy5_gbSbSwOd-bMAv2w&usqp=CAU'}
+                                                title={t(langKeys.heatmap)}
+                                            />
+                                            <CardContent>
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    {t(langKeys.heatmap)}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                                <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card >
+                                        <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                                            <CardMedia
+                                                component="img"
+                                                height="140"
+                                                className={classes.media}
+                                                image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/enviocomunicaciones.png"
+                                                title={t(langKeys.recordhsmreport)}
+                                            />
+                                            <CardContent>
+                                                <Typography gutterBottom variant="h6" component="div">
+                                                    {t(langKeys.recordhsmreport)}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                                {allReportsToShow.filter(x => !x.image).map((report, index) => (
+                                    <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                        <Card style={{ position: 'relative' }}>
+                                            <CardActionArea
+                                                onClick={() => {
+                                                    console.log(report)
+                                                    setViewSelected("view-4");
+                                                    setRowReportSelected({ row: report, edit: true });
+                                                }}
+                                            >
+                                                <CardMedia
+                                                    component="img"
+                                                    height="140"
+                                                    className={classes.media}
+                                                    image='https://www.datacrm.com/upload/article/b201902121011569.jpg'
+                                                    title={report.description}
+                                                />
 
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h6" component="div">
-                                                {report.description}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                    <IconButton
-                                        aria-label="settings"
-                                        aria-describedby={`${report?.reporttemplateid}reporttemplate`}
-                                        aria-haspopup="true"
-                                        style={{ position: 'absolute', right: 0, top: 0 }}
-                                        onClick={(e) => {
-                                            setRowReportSelected({ row: report, edit: true });
-                                            setAnchorEl(e.currentTarget)
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">
+                                                        {report.description}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                            <IconButton
+                                                aria-label="settings"
+                                                aria-describedby={`${report?.reporttemplateid}reporttemplate`}
+                                                aria-haspopup="true"
+                                                style={{ position: 'absolute', right: 0, top: 0 }}
+                                                onClick={(e) => {
+                                                    setRowReportSelected({ row: report, edit: true });
+                                                    setAnchorEl(e.currentTarget)
+                                                }}
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </Card>
+                                    </Grid>
+                                ))}
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    getContentAnchorEl={null}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={Boolean(anchorEl)}
+                                    onClose={() => setAnchorEl(null)}
+                                >
+                                    <MenuItem
+                                        onClick={() => {
+                                            setAnchorEl(null)
+                                            setViewSelected("view-3");
                                         }}
                                     >
-                                        <MoreVertIcon />
-                                    </IconButton>
-                                </Card>
+                                        {t(langKeys.edit)}
+                                    </MenuItem>
+                                    <MenuItem onClick={(e) => handleDelete(rowReportSelected?.row)}>{t(langKeys.delete)}</MenuItem>
+                                </Menu>
+                                <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                    <Card style={{ height: '100%', minHeight: 211 }}>
+                                        <CardActionArea
+                                            onClick={() => {
+                                                setViewSelected("view-3");
+                                                setRowReportSelected({ row: null, edit: true });
+                                            }}
+                                            style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
+                                        >
+                                            <AddIcon
+                                                color="action"
+                                                style={{ width: 60, height: 60 }}
+                                            />
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
                             </Grid>
-                        ))}
-                        <Menu
-                            anchorEl={anchorEl}
-                            getContentAnchorEl={null}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={() => setAnchorEl(null)}
-                        >
-                            <MenuItem
-                                onClick={() => {
-                                    setAnchorEl(null)
-                                    setViewSelected("view-3");
-                                }}
-                            >
-                                {t(langKeys.edit)}
-                            </MenuItem>
-                            <MenuItem onClick={(e) => handleDelete(rowReportSelected?.row)}>{t(langKeys.delete)}</MenuItem>
-                        </Menu>
-                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                            <Card style={{ height: '100%', minHeight: 211 }}>
-                                <CardActionArea
-                                    onClick={() => {
-                                        setViewSelected("view-3");
-                                        setRowReportSelected({ row: null, edit: true });
-                                    }}
-                                    style={{ marginLeft: 'auto', marginRight: 'auto', width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}
-                                >
-                                    <AddIcon
-                                        color="action"
-                                        style={{ width: 60, height: 60 }}
-                                    />
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    </Grid>
-                </div>
+                        </div>
+                    </>
+                )}
             </div>
         );
     } else if (viewSelected === "view-3") {
@@ -588,8 +593,7 @@ const Reports: FC = () => {
         )
     } else if (viewSelected === "recordhsmreport") {
         return (
-
-            <Fragment>
+            <>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
                         breadcrumbs={getArrayBread("recordhsmreport")}
@@ -597,10 +601,9 @@ const Reports: FC = () => {
                     />
                     <RecordHSMRecord />
                 </div>
-            </Fragment>
+            </>
         )
     }
-
     else {
         return (
             <ReportItem
