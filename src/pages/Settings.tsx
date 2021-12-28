@@ -197,7 +197,7 @@ const PropertiesTileBody: FC = () => {
                                 <>
                                     <Trans i18nKey={langKeys.sessionExpirationTIme} />
                                     {' ('}
-                                    <Trans i18nKey={langKeys.advisor} />
+                                    <Trans i18nKey={langKeys.agent} />
                                     {')'}
                                 </>
                             )}

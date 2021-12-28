@@ -404,6 +404,7 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResultMulti,bringdataFilters])
+
     useEffect(() => {
         if(downloaddatafile) {
             if(!resaux.loading){
@@ -1106,12 +1107,14 @@ const DashboardManagerial: FC = () => {
             getCommChannelLst()
         ]));
         funcsearch()
-        return () => {
-            dispatch(resetMain());
-        };
+
+        // return () => {
+        //     dispatch(resetMain());
+        // };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    async function downloaddata(tipeoffilter:string){
+
+    const downloaddata= (tipeoffilter:string) => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
@@ -1130,6 +1133,7 @@ const DashboardManagerial: FC = () => {
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
+    
     return (
         <Fragment>
             <DialogZyx
@@ -1204,7 +1208,7 @@ const DashboardManagerial: FC = () => {
                     {(fieldToFilter!=="FCR" && fieldToFilter!=="etiqueta" && fieldToFilter!=="averageconversationsattendedbytheadvisorbyhour" && fieldToFilter!=="averageconversationsattendedbyhour" ) &&
                         <div className="row-zyx">
                             <TemplateSwitch
-                                label={t(langKeys.advisor)}
+                                label={t(langKeys.agent)}
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
@@ -1508,7 +1512,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1985,7 +1989,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.advisor)}</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.agent)}</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>

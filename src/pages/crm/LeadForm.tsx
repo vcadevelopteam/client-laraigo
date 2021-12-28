@@ -621,7 +621,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                 />
                                 {(!!getValues('userid') || !edit) &&
                                     <FieldSelect
-                                        label={t(langKeys.advisor)}
+                                        label={t(langKeys.agent)}
                                         className={classes.field}
                                         valueDefault={getValues('userid')}
                                         loading={advisers.loading}

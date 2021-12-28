@@ -1103,7 +1103,7 @@ const DashboardProductivity: FC = () => {
                     {(fieldToFilter!=="FCR" ) &&
                         <div className="row-zyx">
                             <TemplateSwitch
-                                label={t(langKeys.advisor)}
+                                label={t(langKeys.agent)}
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
@@ -1389,7 +1389,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
