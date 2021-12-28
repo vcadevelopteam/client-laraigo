@@ -37,4 +37,9 @@ export default createReducer<IState>(initialState, {
     [actionTypes.UNSUBSCRIBE_FAILURE]: caseFUnctions.unsubscribeFailure,
     [actionTypes.UNSUBSCRIBE_SUCCESS]: caseFUnctions.unsubscribeSuccess,
     [actionTypes.UNSUBSCRIBE_RESET]: caseFUnctions.unsubscribeReset,
+
+    [actionTypes.SEND_INVOICE]: caseFUnctions.sendInvoice,
+    [actionTypes.SEND_INVOICE_FAILURE]: caseFUnctions.sendInvoiceFailure,
+    [actionTypes.SEND_INVOICE_SUCCESS]: caseFUnctions.sendInvoiceSuccess,
+    [actionTypes.SEND_INVOICE_RESET]: caseFUnctions.sendInvoiceReset,
 });
