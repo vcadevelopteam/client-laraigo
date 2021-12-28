@@ -1017,6 +1017,7 @@ const translation: LangKeys = {
     error_function_not_exists: '42883: There was an error, contact the administrator ',
     error_parameter_is_missing: "5004: There was an error, contact the administrator",
     error_request_services: '50007: There was an error, contact the administrator',
+    error_request_bridge: '50008: There was an error, contact the administrator',
     dateRangeFilterTitle: 'Filter by date range',
     tipify_ticket: 'Tipify ticket',
     send_hsm: 'Send HSM',

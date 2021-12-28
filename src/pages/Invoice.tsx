@@ -3,19 +3,19 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, TemplateSwitch, FieldMultiSelect, DialogZyx } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus } from 'common/helpers';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import { getCollection, getMultiCollection, execute, exportData } from 'store/main/actions';
+import { sendInvoice } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import ClearIcon from '@material-ui/icons/Clear';
-import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs, TextField, Tooltip } from '@material-ui/core';
+import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import Menu from '@material-ui/core/Menu';
 import {
@@ -34,7 +34,7 @@ import CulqiModal from 'components/fields/CulqiModal';
 interface DetailProps {
     data: Dictionary | null;
     setViewSelected: (view: string) => void;
-    fetchData?: () => void,
+    fetchData: () => void,
 }
 const getImgUrl = (file: File | string | null): string | null => {
     if (!file) return null;
@@ -136,36 +136,38 @@ const statusToEdit = ["DRAFT", "INVOICED", "ERROR", "CANCELED"];
 
 
 
-const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void}> = ({ data,openModal,setOpenModal }) =>{
+const PaymentComp: FC<{ data: any, openModal: boolean, setOpenModal: (param: any) => void, onTrigger: () => void }> = ({ data, openModal, setOpenModal, onTrigger }) => {
     const classes = useStyles();
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitSave, setWaitSave] = useState(false);
     const [chatBtn, setChatBtn] = useState<File | string | null>(null);
     const executeRes = useSelector(state => state.main.execute);
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             invoiceid: data?.invoiceid || 0,
-            paymentnote: data?.paymentnote || "",
+            paymentnote: '',
             paymentfile: ""
         }
     });
+
     const mandatoryFileField = (value: string | File | null) => {
         return !value ? t(langKeys.field_required) : undefined;
     }
-    
+
     React.useEffect(() => {
         register('invoiceid');
         register('paymentnote', { validate: mandatoryFileField });
         register('paymentfile', { validate: mandatoryFileField });
-
     }, [register]);
-    
+
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_register) }))
                 dispatch(showBackdrop(false));
+                onTrigger()
             } else if (executeRes.error) {
                 const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
@@ -179,7 +181,6 @@ const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void
         const callback = () => {
             dispatch(showBackdrop(true));
             dispatch(execute(selInvoiceChangePaymentStatus(dataf)));
-
             setWaitSave(true);
         }
 
@@ -189,6 +190,7 @@ const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void
             callback
         }))
     });
+
     const onChangeChatInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         if (!e.target.files) return;
         setChatBtn(e.target.files[0]);
@@ -207,6 +209,7 @@ const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void
     }
 
     const chatImgUrl = getImgUrl(chatBtn);
+
     return (
         <DialogZyx
             open={openModal}
@@ -219,7 +222,7 @@ const PaymentComp: FC<{data:any,openModal:boolean,setOpenModal:(param:any)=>void
         >
             <FieldEdit
                 label={t(langKeys.paymentnote)}
-                valueDefault={data?.paymentnote || ""}
+                valueDefault={getValues('paymentnote')}
                 error={errors?.paymentnote?.message}
                 onChange={(value) => setValue('paymentnote', value)}
                 className="col-12"
@@ -272,7 +275,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
     const [openModal, setOpenModal] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
 
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+    const { handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             invoiceid: data?.invoiceid || 0,
             filenumber: data?.filenumber || '',
@@ -285,8 +288,6 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
             paymentfile: ""
         }
     });
-
-
 
     useEffect(() => {
         if (waitSave) {
@@ -319,13 +320,20 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
         }))
     });
 
+    const onPaid = () => {
+        fetchData();
+        setOpenModal(false);
+        setViewSelected("view-1");
+    }
+
     return (
         <div style={{ width: '100%' }}>
             <div>
                 <PaymentComp
                     data={data}
                     openModal={openModal}
-                    setOpenModal={setOpenModal} 
+                    setOpenModal={setOpenModal}
+                    onTrigger={onPaid}
                 />
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -338,7 +346,7 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        {data?.paymentstatus==="PENDING" &&
+                        {data?.paymentstatus === "PENDING" &&
                             <Button
                                 className={classes.button}
                                 variant="contained"
@@ -353,7 +361,6 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
                 </div>
                 <div style={{ backgroundColor: 'white', padding: 16 }}>
                     <div className={classes.container}>
-
                         <div className={classes.containerField}>
                             <div className={classes.titleCard}>{t(langKeys.clientinformation)}</div>
                             <FieldView
@@ -605,6 +612,7 @@ const InvoiceGeneration: FC = () => {
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
     const executeRes = useSelector(state => state.main.execute);
+    const resInvoice = useSelector(state => state.culqi.request);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
     const [viewSelected, setViewSelected] = useState("view-1");
@@ -612,17 +620,19 @@ const InvoiceGeneration: FC = () => {
     const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
     const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString())
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [waitSend, setWaitSend] = useState(false);
+    const [functiontrigger, setfunctiontrigger] = useState('');
 
     const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
     useEffect(() => {
         fetchData()
     }, [])
 
-
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: "Factura anulada correctamente" }))
+                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
+                dispatch(showSnackbar({ show: true, success: true, message }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -634,6 +644,21 @@ const InvoiceGeneration: FC = () => {
             }
         }
     }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (waitSend) {
+            if (!resInvoice.loading && !resInvoice.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+            } else if (resInvoice.error) {
+                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSend(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [resInvoice, waitSend])
 
     useEffect(() => {
         if (!multiData.loading && !multiData.error) {
@@ -764,7 +789,7 @@ const InvoiceGeneration: FC = () => {
     );
 
     const handleCancel = (row: Dictionary) => {
-        // cancelInvoice
+        setfunctiontrigger("cancel")
         const callback = () => {
             dispatch(execute(cancelInvoice(row.invoiceid)));
             dispatch(showBackdrop(true));
@@ -778,10 +803,31 @@ const InvoiceGeneration: FC = () => {
         }))
     }
     const handleGenerate = (row: Dictionary) => {
+        setfunctiontrigger("generate")
+        const callback = () => {
+            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
 
+        dispatch(manageConfirmation({
+            visible: true,
+            question: "¿Está seguro de regenerar la factura?",
+            callback
+        }))
     }
     const handleSend = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(sendInvoice(row.invoiceid));
+            dispatch(showBackdrop(true));
+            setWaitSend(true)
+        }
 
+        dispatch(manageConfirmation({
+            visible: true,
+            question: "¿Está seguro de envíar la factura?",
+            callback
+        }))
     }
 
     const handleView = (row: Dictionary) => {
@@ -830,7 +876,6 @@ const InvoiceGeneration: FC = () => {
                         </Button>
                     </div>
                 )}
-                // titlemodule={t(langKeys.billingplan, { count: 2 })}
                 data={dataInvoice}
                 filterGeneral={false}
                 loading={multiData.loading}
@@ -841,6 +886,7 @@ const InvoiceGeneration: FC = () => {
     } else {
         return (
             <InvoiceDetail
+                fetchData={fetchData}
                 data={rowSelected}
                 setViewSelected={setViewSelected}
             />
@@ -899,10 +945,7 @@ const InvoiceControl: FC = () => {
                 accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    console.log("invoiceid", row.invoiceid);
-                    console.log("amounttopay", row.totalamount);
-                    console.log("currency", row.currency);
-                    if (row.paymentstatus !=="PENDING")
+                    if (row.paymentstatus !== "PENDING")
                         return null;
                     return (
 
@@ -965,54 +1008,10 @@ const InvoiceControl: FC = () => {
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
-            },
-            /* {
-                 accessor: 'urlcdr',
-                 NoFilter: true,
-                 Cell: (props: any) => {
-                     const urlcdr = props.cell.row.original.urlcdr;
-                     const urlpdf = props.cell.row.original.urlpdf;
-                     const urlxml = props.cell.row.original.urlxml;
-                     return (
-                         <Fragment>
-                             <div>
-                                 <a href={urlcdr} style={{ display: "block" }}>{`${t(langKeys.download)} CDR`}</a>
-                                 <a href={urlpdf} style={{ display: "block" }}>{`${t(langKeys.download)} PDF`}</a>
-                                 <a href={urlxml} style={{ display: "block" }}>{`${t(langKeys.download)} XML`}</a>
-                             </div>
-                         </Fragment>
-                     )
-                 }
-             },*/
+            }
         ],
         []
     );
-
-    const handleCancel = (row: Dictionary) => {
-        // cancelInvoice
-        const callback = () => {
-            dispatch(execute(cancelInvoice(row.invoiceid)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: "¿Está seguro de anular la factura?",
-            callback
-        }))
-    }
-    const handleGenerate = (row: Dictionary) => {
-
-    }
-    const handleSend = (row: Dictionary) => {
-
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
-    }
 
     const search = () => dispatch(getMultiCollection([
         selInvoice(parseInt(filterYear), filterMonth),
@@ -1069,6 +1068,7 @@ const InvoiceControl: FC = () => {
     } else {
         return (
             <InvoiceDetail
+                fetchData={fetchData}
                 data={rowSelected}
                 setViewSelected={setViewSelected}
             />

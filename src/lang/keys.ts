@@ -1035,6 +1035,7 @@ export const langKeys = {
     info: 'info',
     validnumber: "validnumber",
     error_request_services: 'error_request_services',
+    error_request_bridge: 'error_request_bridge',
     error_already_exists_record: 'error_already_exists_record',
     error_cos_unexpected: 'cos_unexpected',
     error_zero_records: 'error_zero_records',

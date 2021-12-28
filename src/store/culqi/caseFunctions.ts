@@ -111,3 +111,41 @@ export const unsubscribeReset = (state: IState): IState => ({
     ...state,
     request: initialState.request
 })
+
+
+export const sendInvoice = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: true,
+        error: false
+    }
+})
+
+export const sendInvoiceFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message
+    }
+})
+
+export const sendInvoiceSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    request: {
+        ...state.request,
+        loading: false,
+        error: false,
+        data: action.payload.data,
+        code: action.payload.code,
+        message: action.payload.message
+    }
+})
+
+export const sendInvoiceReset = (state: IState): IState => ({
+    ...state,
+    request: initialState.request
+})
