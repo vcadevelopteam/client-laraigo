@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection, getCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -19,7 +19,7 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -221,7 +221,6 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
     const mainResultMulti = useSelector(state => state.main.multiData);
-    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
@@ -729,7 +728,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -819,7 +818,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -1097,6 +1096,7 @@ const DashboardManagerial: FC = () => {
                 setWaitSaveaux(false);
             }
         }
+        // eslint-disable-next-line
     },[resaux,waitSaveaux])
 
 
