@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontSize: '22px',
         fontWeight: 'bold',
-        marginBottom: theme.spacing(1),
         color: theme.palette.text.primary,
     },
 
@@ -45,8 +44,7 @@ const useStyles = makeStyles((theme) => ({
         flexWrap: 'wrap'
     },
     filterComponent: {
-        width: '300px',
-        backgroundColor: '#FFF'
+        width: '250px'
     },
     button: {
         padding: 12,
@@ -419,7 +417,7 @@ const Tickets = () => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleClose = () => setAnchorEl(null);
 
-    const [allParameters, setAllParameters] = useState({});
+    const [allParameters, setAllParameters] = useState<Dictionary>({});
     //const format = (date: Date) => date.toISOString().split('T')[0];
 
     const [filterStatus, setFilterStatus] = useState('')
@@ -467,23 +465,6 @@ const Tickets = () => {
                 }
             },
             {
-                Header: t(langKeys.ticket_fecha),
-                accessor: 'fecha',
-                type: 'date',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return convertLocalDate(row.fecha).toLocaleDateString()
-                }
-            },
-            {
-                Header: t(langKeys.ticket_firstusergroup),
-                accessor: 'firstusergroup'
-            },
-            {
-                Header: t(langKeys.ticket_ticketgroup),
-                accessor: 'ticketgroup'
-            },
-            {
                 Header: t(langKeys.ticket_communicationchanneldescription),
                 accessor: 'communicationchanneldescription'
             },
@@ -492,8 +473,8 @@ const Tickets = () => {
                 accessor: 'name'
             },
             {
-                Header: t(langKeys.ticket_canalpersonareferencia),
-                accessor: 'canalpersonareferencia'
+                Header: t(langKeys.ticket_phone),
+                accessor: 'phone'
             },
             {
                 Header: t(langKeys.ticket_fechainicio),
@@ -515,6 +496,34 @@ const Tickets = () => {
                     return row.fechafin ? convertLocalDate(row.fechafin).toLocaleString() : ''
                 }
             },
+            {
+                Header: t(langKeys.status),
+                accessor: 'estadoconversacion'
+            },
+            // {
+            //     Header: t(langKeys.ticket_fecha),
+            //     accessor: 'fecha',
+            //     type: 'date',
+            //     Cell: (props: any) => {
+            //         const row = props.cell.row.original;
+            //         return convertLocalDate(row.fecha).toLocaleDateString()
+            //     }
+            // },
+            {
+                Header: t(langKeys.ticket_firstusergroup),
+                accessor: 'firstusergroup'
+            },
+            {
+                Header: t(langKeys.ticket_ticketgroup),
+                accessor: 'ticketgroup'
+            },
+           
+            
+            {
+                Header: t(langKeys.ticket_canalpersonareferencia),
+                accessor: 'canalpersonareferencia'
+            },
+           
             {
                 Header: t(langKeys.ticket_fechaprimeraconversacion),
                 accessor: 'fechaprimeraconversacion',
@@ -615,10 +624,6 @@ const Tickets = () => {
                 type: 'time'
             },
             {
-                Header: t(langKeys.ticket_estadoconversacion),
-                accessor: 'estadoconversacion'
-            },
-            {
                 Header: t(langKeys.ticket_tipocierre),
                 accessor: 'tipocierre'
             },
@@ -634,18 +639,15 @@ const Tickets = () => {
                 Header: t(langKeys.ticket_contact),
                 accessor: 'contact'
             },
-            {
-                Header: t(langKeys.ticket_lastname),
-                accessor: 'lastname'
-            },
-            {
-                Header: t(langKeys.ticket_email),
-                accessor: 'email'
-            },
-            {
-                Header: t(langKeys.ticket_phone),
-                accessor: 'phone'
-            },
+            // {
+            //     Header: t(langKeys.ticket_lastname),
+            //     accessor: 'lastname'
+            // },
+            // {
+            //     Header: t(langKeys.ticket_email),
+            //     accessor: 'email'
+            // },
+            
             {
                 Header: t(langKeys.ticket_balancetimes),
                 accessor: 'balancetimes',
@@ -788,7 +790,7 @@ const Tickets = () => {
                     <div className={classes.title}>
                         {t(langKeys.ticket_plural)}
                     </div>
-                    <div style={{ display: 'flex', gap: 32 }}>
+                    {/* <div style={{ display: 'flex', gap: 32 }}>
                         <div
                             className={clsx(classes.filterStatus, {
                                 [classes.filterStatusActive]: filterStatus === '',
@@ -817,50 +819,31 @@ const Tickets = () => {
                             onClick={() => setFilterStatus('PENDIENTE')}
                         >{t(langKeys.pending)}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {mainResult?.multiData?.data[0]?.data &&
-                            <FieldMultiSelect
-                                label={t(langKeys.channel_plural)}
-                                className={classes.filterComponent}
-                                key="fieldMultiSelect_channel"
-                                onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
-                                variant="outlined"
-                                data={mainResult?.multiData?.data[0]?.data}
-                                optionDesc="communicationchanneldesc"
-                                optionValue="communicationchannelid"
-                                disabled={mainPaginated.loading}
-                            />
-                        }
 
-                        {mainResult?.multiData?.data[1]?.data &&
-                            <FieldMultiSelect
-                                label={t(langKeys.group_plural)}
-                                className={classes.filterComponent}
-                                key="fieldMultiSelect_group"
-                                onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
-                                variant="outlined"
-                                data={mainResult?.multiData?.data[1]?.data}
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                                disabled={mainPaginated.loading}
-                            />
-                        }
-                        {mainResult?.multiData?.data[6]?.data &&
-                            <FieldMultiSelect
-                                label={t(langKeys.user_plural)}
-                                className={classes.filterComponent}
-                                key="fieldMultiSelect_user"
-                                onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
-                                variant="outlined"
-                                data={mainResult?.multiData?.data[6]?.data}
-                                optionDesc="usr"
-                                optionValue="userid"
-                                disabled={mainPaginated.loading}
-                            />
-                        }
+                    </div>
+                </div>
+            </Box>
+            <TablePaginated
+                columns={columns}
+                data={mainPaginated.data}
+                totalrow={totalrow}
+                loading={mainPaginated.loading}
+                pageCount={pageCount}
+                filterrange={true}
+                download={true}
+                fetchData={fetchData}
+                exportPersonalized={triggerExportData}
+                useSelection={true}
+                selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
+                selectionKey={selectionKey}
+                setSelectedRows={setSelectedRows}
+                filterRangeDate="today"
+                ButtonsElement={() => (
+                    <>
                         <IconButton
                             aria-label="more"
                             aria-controls="long-menu"
@@ -903,25 +886,49 @@ const Tickets = () => {
                             }}>{t(langKeys.tipify_ticket)}
                             </MenuItem>
                         </Menu>
-                    </div>
-                </div>
-            </Box>
-            <TablePaginated
-                columns={columns}
-                data={mainPaginated.data}
-                totalrow={totalrow}
-                loading={mainPaginated.loading}
-                pageCount={pageCount}
-                filterrange={true}
-                download={true}
-                fetchData={fetchData}
-                exportPersonalized={triggerExportData}
-                useSelection={true}
-                selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
-                selectionKey={selectionKey}
-                setSelectedRows={setSelectedRows}
+                    </>
+                )}
+                FiltersElement={React.useMemo(() => (
+                    <>
+                        <FieldMultiSelect
+                            label={t(langKeys.channel)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_channel"
+                            valueDefault={allParameters["channel"] || ""}
+                            onChange={(value) => setValue("channel", value ? value.map((o: Dictionary) => o.communicationchannelid).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[0]?.data || []}
+                            optionDesc="communicationchanneldesc"
+                            optionValue="communicationchannelid"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.group)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_group"
+                            valueDefault={allParameters["usergroup"] || ""}
+                            onChange={(value) => setValue("usergroup", value ? value.map((o: Dictionary) => o.domainvalue).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[1]?.data || []}
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.agent)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_user"
+                            valueDefault={allParameters["lastuserid"] || ""}
+                            onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[6]?.data || []}
+                            optionDesc="usr"
+                            optionValue="userid"
+                            disabled={mainPaginated.loading}
+                        />
+                    </>
+                ), [allParameters, mainResult.multiData, mainPaginated])}
             />
-
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}

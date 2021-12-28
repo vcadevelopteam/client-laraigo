@@ -311,6 +311,12 @@ export const templateMaker = (data: any[], header: string[]) => {
     return temp;
 }
 
+export const getDateToday = () => new Date(new Date().setHours(10));
+
+export const getFirstDayMonth = () => new Date(new Date(new Date().setHours(10)).setDate(1));
+
+export const getLastDayMonth = () => new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
 export const getLocaleDateString = () => {
     const formats: any = {
       "af-ZA": "yyyy/MM/dd",

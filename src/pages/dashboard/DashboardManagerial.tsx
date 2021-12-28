@@ -4,7 +4,7 @@ import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
 import { langKeys } from "lang/keys";
 import { FC, Fragment, useEffect, useState } from "react";
-import { resetMain, getMultiCollection, getMultiCollectionAux, getCollection, getCollectionAux } from 'store/main/actions';
+import { resetMain, getMultiCollection, getMultiCollectionAux, getCollectionAux } from 'store/main/actions';
 import { Range } from 'react-date-range';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
@@ -19,7 +19,7 @@ import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEn
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Legend } from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 const COLORS = ['#22b66e', '#b41a1a', '#ffcd56'];
@@ -221,7 +221,6 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
     const mainResultMulti = useSelector(state => state.main.multiData);
-    const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
@@ -405,6 +404,7 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResultMulti,bringdataFilters])
+
     useEffect(() => {
         if(downloaddatafile) {
             if(!resaux.loading){
@@ -729,7 +729,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -819,7 +819,7 @@ const DashboardManagerial: FC = () => {
         ]);
         if(data.length){
 
-            const { high, tickets, low, green, red, total } = data[0]
+            const { high, tickets, low, green, total } = data[0]
             const toshow = total ? ((high - low) / total) : 0;
             let variacioncolor = (toshow - green) * 100 >= 0
             setDataEncuesta(prev =>({...prev,
@@ -1097,6 +1097,7 @@ const DashboardManagerial: FC = () => {
                 setWaitSaveaux(false);
             }
         }
+        // eslint-disable-next-line
     },[resaux,waitSaveaux])
 
 
@@ -1108,12 +1109,14 @@ const DashboardManagerial: FC = () => {
             getCommChannelLst()
         ]));
         funcsearch()
-        return () => {
-            dispatch(resetMain());
-        };
+
+        // return () => {
+        //     dispatch(resetMain());
+        // };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    async function downloaddata(tipeoffilter:string){
+
+    const downloaddata= (tipeoffilter:string) => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
@@ -1132,6 +1135,7 @@ const DashboardManagerial: FC = () => {
             dispatch(getCollectionAux(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
+    
     return (
         <Fragment>
             <DialogZyx
@@ -1206,7 +1210,7 @@ const DashboardManagerial: FC = () => {
                     {(fieldToFilter!=="FCR" && fieldToFilter!=="etiqueta" && fieldToFilter!=="averageconversationsattendedbytheadvisorbyhour" && fieldToFilter!=="averageconversationsattendedbyhour" ) &&
                         <div className="row-zyx">
                             <TemplateSwitch
-                                label={t(langKeys.advisor)}
+                                label={t(langKeys.agent)}
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
@@ -1504,7 +1508,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1975,7 +1979,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.advisor)}</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.agent)}</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>

@@ -43,6 +43,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+import { getDateToday, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
 
 declare module "react-table" {
     // eslint-disable-next-line
@@ -112,7 +113,7 @@ const useStyles = makeStyles((theme) => ({
     containerHeader: {
         display: 'block',
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -324,6 +325,8 @@ const TableZyx = React.memo(({
     initialSelectedRows,
     setSelectedRows,
     onClickRow,
+    FiltersElement,
+    filterRangeDate = "month"
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -372,7 +375,7 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
-                            <div style={{ textAlign: 'right'}}>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -380,7 +383,7 @@ const TableZyx = React.memo(({
                                 />
                             </div>
                             :
-                            <div style={{ textAlign: 'right'}}>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -400,7 +403,7 @@ const TableZyx = React.memo(({
                     ),
                     Cell: ({ row }: any) => (
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
-                            ? <div style={{ textAlign: 'right'}}>
+                            ? <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -448,8 +451,8 @@ const TableZyx = React.memo(({
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(1)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
+        endDate: filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
         key: 'selection'
     });
 
@@ -515,21 +518,22 @@ const TableZyx = React.memo(({
                                 >
                                     {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
                                 </Button>
-                                <Button
-                                    disabled={loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                                    onClick={() => {
-                                        if (triggerSearch)
-                                            triggertmp()
-                                        setTriggerSearch(true)
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.search} />
-                                </Button>
                             </DateRangePicker>
+                            {FiltersElement && FiltersElement}
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: '#55BD84', width: 120 }}
+                                onClick={() => {
+                                    if (triggerSearch)
+                                        triggertmp()
+                                    setTriggerSearch(true)
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.search} />
+                            </Button>
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>

@@ -59,15 +59,15 @@ const MainHeatMap: React.FC = () => {
     const [heatMapConversationsData, setheatMapConversationsData] = useState<any>([]);
     const [averageHeatMapTMOTitle, setaverageHeatMapTMOTitle] = useState<any>([]);
     const [averageHeatMapTMOData, setaverageHeatMapTMOData] = useState<any>([]);
-    const [heatMapAverageadvisorTMETitle, setheatMapAverageadvisorTMETitle] = useState<any>([]);
-    const [heatMapAverageadvisorTMEData, setheatMapAverageadvisorTMEData] = useState<any>([]);
+    const [heatmapaverageagentTMETitle, setheatmapaverageagentTMETitle] = useState<any>([]);
+    const [heatmapaverageagentTMEData, setheatmapaverageagentTMEData] = useState<any>([]);
     const [userAverageReplyTimexFechaTitle, setuserAverageReplyTimexFechaTitle] = useState<any>([]);
     const [userAverageReplyTimexFechaData, setuserAverageReplyTimexFechaData] = useState<any>([]);
     const [personAverageReplyTimexFechaTitle, setpersonAverageReplyTimexFechaTitle] = useState<any>([]);
     const [personAverageReplyTimexFechaData, setpersonAverageReplyTimexFechaData] = useState<any>([]);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
-    const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
+    const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
@@ -111,7 +111,7 @@ const MainHeatMap: React.FC = () => {
         
         setheatMapConversationsData([])
         setaverageHeatMapTMOData([])
-        setheatMapAverageadvisorTMEData([])
+        setheatmapaverageagentTMEData([])
         setuserAverageReplyTimexFechaData([])
         setpersonAverageReplyTimexFechaData([])
         setrealizedsearch(true)
@@ -435,7 +435,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
-        setheatMapAverageadvisorTMEData(arrayfree)
+        setheatmapaverageagentTMEData(arrayfree)
                 
         let mid = (rowmax/2);
         let scale = 255 / (mid);
@@ -488,7 +488,7 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
-        setheatMapAverageadvisorTMETitle([
+        setheatmapaverageagentTMETitle([
             {
                 Header: `Hora`,
                 accessor: "hournum",
@@ -787,7 +787,7 @@ const MainHeatMap: React.FC = () => {
                 </div>
                 <div style={{flex:1}}>
                     <FieldMultiSelect
-                        label={t(langKeys.advisor)}
+                        label={t(langKeys.agent)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => { setdataMainHeatMap(p => ({ ...p, closedby: value.map((o: Dictionary) => o.domainvalue).join() })) }}
@@ -836,12 +836,12 @@ const MainHeatMap: React.FC = () => {
                 </div>:""
             }
             {
-                heatMapAverageadvisorTMEData.length?
+                heatmapaverageagentTMEData.length?
                 <div style={{padding:10}}>
                     <TableZyx
-                        columns={heatMapAverageadvisorTMETitle}
-                        titlemodule={t(langKeys.heatmapaverageadvisorTME)}
-                        data={heatMapAverageadvisorTMEData}
+                        columns={heatmapaverageagentTMETitle}
+                        titlemodule={t(langKeys.heatmapaverageagentTME)}
+                        data={heatmapaverageagentTMEData}
                         download={true}
                         pageSizeDefault={50}
                         filterGeneral={false}
@@ -895,7 +895,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     const [ventasxAsesorData, setventasxAsesorData] = useState<any>([]);
     const [ventasxAsesorTitle, setventasxAsesorTitle] = useState<any>([]);
     const [completadosxAsesorTitle, setCompletadosxAsesorTitle] = useState<any>([]);
-    const dataAdvisor = [{domaindesc: t(langKeys.advisor), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
+    const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const dispatch = useDispatch();
     //const mainData = useSelector(state => state.main.mainData);
     const multiData = useSelector(state => state.main.multiData);
@@ -1337,7 +1337,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                 </div>
                 <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
-                        label={t(langKeys.advisor)}
+                        label={t(langKeys.agent)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => { setdataMainHeatMap(p => ({ ...p, closedby: value.map((o: Dictionary) => o.domainvalue).join() })) }}
