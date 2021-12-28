@@ -1320,7 +1320,7 @@ const DashboardManagerial: FC = () => {
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
                     { (resaux.loading && fieldToFilter==="TMO")?
-                        (<Box  className={classes.itemCard}>
+                        (<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}>
                             <CircularProgress/>
                         </Box>):
                         (<Box
@@ -1408,7 +1408,7 @@ const DashboardManagerial: FC = () => {
                         </Box>)
                     }
 
-                    { (resaux.loading && fieldToFilter==="TME")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="TME")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                         (<Box
                             className={classes.itemCard}
                         >
@@ -1538,7 +1538,7 @@ const DashboardManagerial: FC = () => {
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
-                    { (resaux.loading && fieldToFilter==="NPS")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="NPS")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         className={classes.itemCard}
                     >
@@ -1618,7 +1618,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                         </div>
                     </Box>)}
-                    { (resaux.loading && fieldToFilter==="CSAT")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="CSAT")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         className={classes.itemCard}
                     >
@@ -1700,7 +1700,7 @@ const DashboardManagerial: FC = () => {
                     </Box>)}
                 </div>
                 <div className={classes.replacerowzyx} >
-                    { (resaux.loading && fieldToFilter==="FCR")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="FCR")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         className={classes.itemCard}
                     >
@@ -1776,7 +1776,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                         </div>
                     </Box>)}
-                    { (resaux.loading && fieldToFilter==="FIX")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="FIX")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         className={classes.itemCard}
                     >
@@ -1854,7 +1854,7 @@ const DashboardManagerial: FC = () => {
                     </Box>)}
                 </div>
                 <div className={classes.replacerowzyx}>
-                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbyhour")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbyhour")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
@@ -1891,7 +1891,7 @@ const DashboardManagerial: FC = () => {
                             <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
                         </div>
                     </Box>)}
-                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
@@ -1993,7 +1993,7 @@ const DashboardManagerial: FC = () => {
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>
-                    { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
                     (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
