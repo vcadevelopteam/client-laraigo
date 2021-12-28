@@ -1106,7 +1106,7 @@ const translation: LangKeys = {
     ticket_firstusergroup: 'First user group',
     ticket_ticketgroup: 'Ticket group',
     ticket_communicationchanneldescription: 'Channel',
-    ticket_name: 'Client',
+    ticket_name: 'Person',
     ticket_canalpersonareferencia: 'ID User channel',
     ticket_fechainicio: 'Start Date',
     ticket_fechafin: 'Close Date',

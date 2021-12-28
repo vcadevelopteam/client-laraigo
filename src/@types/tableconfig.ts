@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export interface Dictionary {
     [key: string]: any
 }
@@ -23,8 +25,9 @@ export interface TableConfig {
     download?: boolean;
     register?: boolean;
     handleRegister?(param: any): void;
-    HeadComponent?: () => JSX.Element |null;
-    ButtonsElement?: () => JSX.Element |null;
+    HeadComponent?: () => JSX.Element | null;
+    ButtonsElement?: () => JSX.Element | null;
+    FiltersElement?: ReactElement;
     pageSizeDefault?: number;
     filterGeneral?: boolean;
     hoverShadow?: boolean;
@@ -34,14 +37,14 @@ export interface TableConfig {
     skipAutoReset?: boolean;
     useSelection?: boolean;
     selectionKey?: string;
-    selectionFilter?: {key: string, value: string};
+    selectionFilter?: { key: string, value: string };
     initialSelectedRows?: any;
     setSelectedRows?: (param?: any) => void;
     allRowsSelected?: boolean;
     setAllRowsSelected?: (value: boolean) => void;
     autotrigger?: boolean;
     toolsFooter?: boolean;
-    autoRefresh?: {value: boolean, callback: (value: boolean) => void};
+    autoRefresh?: { value: boolean, callback: (value: boolean) => void };
     onClickRow?: (param?: any) => void
 }
 

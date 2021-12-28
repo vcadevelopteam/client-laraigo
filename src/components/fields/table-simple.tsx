@@ -24,7 +24,6 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
 import Tooltip from '@material-ui/core/Tooltip';
-import Zoom from '@material-ui/core/Zoom';
 import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
@@ -88,7 +87,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         justifyContent: 'space-between',
         backgroundColor: '#FFF',
-        padding: `${theme.spacing(2)}px`,
+        padding: `${theme.spacing(1)}px`,
     },
     containerfloat: {
         borderBottom: 'none',
@@ -631,7 +630,7 @@ const TableZyx = React.memo(({
                     {...row.getRowProps({ style })}
                     hover
                 >
-                    {row.cells.map((cell, i) =>
+                    {row.cells.map((cell, _) =>
                         <TableCell
                             {...cell.getCellProps({
                                 style: {
@@ -646,19 +645,6 @@ const TableZyx = React.memo(({
                             })}
                         >
                             {cell.render('Cell')}
-                            {/* {headerGroups[0].headers[i].isComponent ?
-                                cell.render('Cell')
-                                :
-                                (cell.value?.length > 50 ?
-                                    <Tooltip TransitionComponent={Zoom} title={cell.value}>
-                                        <div style={{ width: 'inherit', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            {cell.render('Cell')}
-                                        </div>
-                                    </Tooltip>
-                                    :
-                                    cell.render('Cell')
-                                )
-                            } */}
                         </TableCell>
                     )}
                 </TableRow>

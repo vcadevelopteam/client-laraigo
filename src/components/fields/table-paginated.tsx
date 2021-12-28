@@ -112,7 +112,7 @@ const useStyles = makeStyles((theme) => ({
     containerHeader: {
         display: 'block',
         backgroundColor: '#FFF',
-        padding: theme.spacing(2),
+        padding: theme.spacing(1),
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
@@ -324,6 +324,7 @@ const TableZyx = React.memo(({
     initialSelectedRows,
     setSelectedRows,
     onClickRow,
+    FiltersElement
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -372,7 +373,7 @@ const TableZyx = React.memo(({
                     Header: ({ getToggleAllPageRowsSelectedProps, filteredRows }: any) => (
                         !selectionFilter
                             ?
-                            <div style={{ textAlign: 'right'}}>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -380,7 +381,7 @@ const TableZyx = React.memo(({
                                 />
                             </div>
                             :
-                            <div style={{ textAlign: 'right'}}>
+                            <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -400,7 +401,7 @@ const TableZyx = React.memo(({
                     ),
                     Cell: ({ row }: any) => (
                         !selectionFilter || row.original[selectionFilter?.key] === selectionFilter?.value
-                            ? <div style={{ textAlign: 'right'}}>
+                            ? <div style={{ textAlign: 'right' }}>
                                 <Checkbox
                                     color="primary"
                                     style={{ padding: 0 }}
@@ -515,21 +516,22 @@ const TableZyx = React.memo(({
                                 >
                                     {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
                                 </Button>
-                                <Button
-                                    disabled={loading}
-                                    variant="contained"
-                                    color="primary"
-                                    startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                    style={{ backgroundColor: '#55BD84', width: 120 }}
-                                    onClick={() => {
-                                        if (triggerSearch)
-                                            triggertmp()
-                                        setTriggerSearch(true)
-                                    }}
-                                >
-                                    <Trans i18nKey={langKeys.search} />
-                                </Button>
                             </DateRangePicker>
+                            {FiltersElement && FiltersElement}
+                            <Button
+                                disabled={loading}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ backgroundColor: '#55BD84', width: 120 }}
+                                onClick={() => {
+                                    if (triggerSearch)
+                                        triggertmp()
+                                    setTriggerSearch(true)
+                                }}
+                            >
+                                <Trans i18nKey={langKeys.search} />
+                            </Button>
                         </div>
                     )}
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
