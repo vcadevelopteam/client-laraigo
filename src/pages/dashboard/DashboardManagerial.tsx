@@ -15,7 +15,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import AdbIcon from '@material-ui/icons/Adb';
 import { exportExcel } from 'common/helpers';
 import { useTranslation } from 'react-i18next';
-import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
+import { gerencialasesoresconectadosbarsel, gerencialconversationsel,gerencialEncuestassel,getdashboardgerencialconverstionxhoursel,gerencialasesoresconectadosbarseldata,gerencialencuestaseldata,gerencialinteractionseldata, gerencialconversationseldata,gerencialencuestasel,gerencialetiquetasseldata, gerencialetiquetassel, gerencialinteractionsel,gerencialsummaryseldata, gerencialsummarysel, gerencialTMEsel, gerencialTMOsel,gerencialTMOselData, getCommChannelLst, getValuesFromDomain } from "common/helpers";
 import { useDispatch } from "react-redux";
 import { Dictionary } from "@types";
 import { showBackdrop, showSnackbar } from "store/popus/actions";
@@ -220,9 +220,10 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
-    const mainResult = useSelector(state => state.main);
+    const mainResultMulti = useSelector(state => state.main.multiData);
     const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
+    const resaux = useSelector(state => state.main.mainAux);
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [downloaddatafile,setdownloaddatafile]=useState(false)
@@ -373,6 +374,8 @@ const DashboardManagerial: FC = () => {
     const [dataprovider, setdataprovider] = useState<any>([]);
     const [datachannels, setdatachannels] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
+    const [bringdataFilters, setbringdataFilters] = useState(false);
+    const [waitSaveaux, setWaitSaveaux] = useState(false);
     const [searchfields, setsearchfields] = useState({
         queue: "",
         provider: "",
@@ -387,23 +390,29 @@ const DashboardManagerial: FC = () => {
         target:0, 
         skipdown:0, 
         skipup:0,
-        limit: 5
+        limit: 5,
+        bd: false
     });
     useEffect(() => {
-        if (mainResult.multiData.data.length !== 0) {
-            let multiData = mainResult.multiData.data;
-            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
-            setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
-            setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
+        if(bringdataFilters){
+            if (mainResultMulti.data.length !== 0) {
+                let multiData = mainResultMulti.data;
+                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+                setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
+                setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
+                setbringdataFilters(false)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResult.multiData])
+    }, [mainResultMulti,bringdataFilters])
     useEffect(() => {
+        debugger
         if(downloaddatafile && !mainResultData.loading){
             exportExcel(titlefile,mainResultData.data)
+            setdownloaddatafile(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResultData])
+    }, [mainResultData,downloaddatafile])
     useEffect(() => {
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
@@ -739,6 +748,58 @@ const DashboardManagerial: FC = () => {
             ]);
         }
     }
+    function setDataaverageconversationsattendedbyhour(data:any){
+        setDataSummary((prev)=>({...prev,
+            avgtickethour: "0",
+            maxavgtickethour: "0",
+            maxavgtickethourdescdate: "",
+            maxavgtickethourdeschour: "",
+            minvgtickethour: "0",
+            minavgtickethourdescdate: "",
+            minavgtickethourdeschour: "",
+        }))
+        if(data.length){
+            let txtmaxavgticketusername = formatname(data[0].maxavgticketusername)
+            let txtminavgticketusername = formatname(data[0].minavgticketusername)
+            const mm = data[0].maxavgtickethourdesc ? data[0].maxavgtickethourdesc.split(" ") : null;
+            const mm1 = data[0].minavgtickethourdesc ? data[0].minavgtickethourdesc.split(" ") : null;
+            setDataSummary((prev)=>({...prev,
+                avgtickethour: data[0].avgtickethour,
+                maxavgtickethour: `${data[0].maxavgtickethour}(${txtmaxavgticketusername})`,
+                maxavgtickethourdescdate: mm ? mm[0] + " " + arraymonth[parseInt(mm[1]) - 1] : "",
+                maxavgtickethourdeschour: mm ? mm[2] + " " + mm[3].toLowerCase() : "",
+                minvgtickethour: `${data[0].minavgtickethour} (${txtminavgticketusername})`,
+                minavgtickethourdescdate: mm1 ? mm1[0] + " " + arraymonth[parseInt(mm1[1]) - 1] : "",
+                minavgtickethourdeschour: mm1 ? mm1[2] + " " + mm1[3].toLowerCase() : "",
+            }))
+        }
+    }
+    function setDataaverageconversationsattendedbytheadvisorbyhour(data:any){
+        setDataSummary((prev)=>({...prev,
+            avgticketasesorhour: "0",
+            maxavgticketasesorhour: "0",
+            maxavgticketasesorhourdescdate: "",
+            maxavgticketasesorhourdeschour: "",
+            minvgtickethour: "0",
+            minavgticketasesorhourdescdate: "",
+            minavgticketasesorhourdeschour: "",
+        }))
+        if(data.length){
+            let txtminavgticketusername = formatname(resSummary[0].minavgticketusername)
+            let txtmaxavgticketasesorusername = formatname(resSummary[0].maxavgticketasesorusername)
+            const mm2 = resSummary[0].maxavgticketasesorhourdesc ? resSummary[0].maxavgticketasesorhourdesc.split(" ") : null;
+            const mm3 = resSummary[0].minavgticketasesorhourdesc ? resSummary[0].minavgticketasesorhourdesc.split(" ") : null;
+            setDataSummary((prev)=>({...prev,
+                avgticketasesorhour: resSummary[0].avgticketasesorhour,
+                maxavgticketasesorhour: `${resSummary[0].maxavgticketasesorhour} (${txtmaxavgticketasesorusername})`,
+                maxavgticketasesorhourdescdate: mm2 ? mm2[0] + " " + arraymonth[parseInt(mm2[1]) - 1] : "",
+                maxavgticketasesorhourdeschour: mm2 ? mm2[2] + " " + mm2[3].toLowerCase() : "",
+                minvgtickethour: `${resSummary[0].minavgtickethour} (${txtminavgticketusername})`,
+                minavgticketasesorhourdescdate: mm3 ? mm3[0] + " " + arraymonth[parseInt(mm3[1]) - 1] : "",
+                minavgticketasesorhourdeschour: mm3 ? mm3[2] + " " + mm3[3].toLowerCase() : "",
+            }))
+        }
+    }
     function setDataEncuestafix(data:any){
         setDataEncuesta(prev =>({...prev,
             dataFIX: "0%",
@@ -1001,31 +1062,45 @@ const DashboardManagerial: FC = () => {
         if(fieldToFilter==="NPS"||fieldToFilter==="CSAT" || fieldToFilter==="FCR" || fieldToFilter==="FIX"){
             dispatch(getCollectionAux(gerencialEncuestassel({ ...searchfieldsOnlyOne,question: fieldToFilter,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
-        setWaitSave(true)
+        if(fieldToFilter==="averageconversationsattendedbyhour" || fieldToFilter==="averageconversationsattendedbytheadvisorbyhour"){
+            dispatch(getCollectionAux(getdashboardgerencialconverstionxhoursel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }
+        if(fieldToFilter==="etiqueta"){
+            setResLabels([])
+            dispatch(getCollectionAux(gerencialetiquetassel({ ...searchfieldsOnlyOne,startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
+        }
+        setWaitSaveaux(true)
     }
     useEffect(() => {
-        
-        if (waitSave && !mainResult.mainAux.loading) {
-            
-            if(fieldToFilter==="TMO")
-                setResTMO(mainResult.mainAux.data)
-            if(fieldToFilter==="TME")
-                setResTME(mainResult.mainAux.data)
-            if(fieldToFilter==="NPS")
-                setDataEncuestanps(mainResult.mainAux.data)
-            if(fieldToFilter==="CSAT")
-                setDataEncuestacsat(mainResult.mainAux.data)
-            if(fieldToFilter==="FIX")
-                setDataEncuestafix(mainResult.mainAux.data)
-            if(fieldToFilter==="FCR")
-                setDataEncuestafcr(mainResult.mainAux.data)
-            dispatch(showBackdrop(false));
-            setWaitSave(false);
+        if (waitSaveaux) {
+            if(!resaux.loading){
+                if(fieldToFilter==="TMO")
+                    setResTMO(resaux.data)
+                if(fieldToFilter==="TME")
+                    setResTME(resaux.data)
+                if(fieldToFilter==="NPS")
+                    setDataEncuestanps(resaux.data)
+                if(fieldToFilter==="CSAT")
+                    setDataEncuestacsat(resaux.data)
+                if(fieldToFilter==="FIX")
+                    setDataEncuestafix(resaux.data)
+                if(fieldToFilter==="FCR")
+                    setDataEncuestafcr(resaux.data)
+                if(fieldToFilter==="averageconversationsattendedbyhour")
+                    setDataaverageconversationsattendedbyhour(resaux.data)
+                if(fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")
+                    setDataaverageconversationsattendedbytheadvisorbyhour(resaux.data)
+                if(fieldToFilter==="etiqueta")
+                    setResLabels(resaux.data)
+                dispatch(showBackdrop(false));
+                setWaitSaveaux(false);
+            }
         }
-    },[mainResult.mainAux])
+    },[resaux,waitSaveaux])
 
 
     useEffect(() => {
+        setbringdataFilters(true)
         dispatch(getMultiCollection([
             getValuesFromDomain("GRUPOS"),
             getValuesFromDomain("EMPRESA"),
@@ -1428,7 +1503,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Asesor</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1448,7 +1523,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Client</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
                     </Box>
@@ -1899,7 +1974,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>Asesor</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.advisor)}</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>

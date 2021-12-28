@@ -224,7 +224,7 @@ const translation: LangKeys = {
     averagenumberofadvisersconnectedbyhour: "Promedio de asesores conectados por hora",
     conversationsattended: "Conversaciones atendidas",
     averageinteractionbyconversation: "Promedio de interacciones x conversación",
-    top5labels: "Top 5 de etiquetas",
+    top5labels: "Ranking top 5 de etiquetas",
     food: "Comida",
     distributionbycategoryHSM: "Distribución por Categoría HSM",
     animals: "Animales",
