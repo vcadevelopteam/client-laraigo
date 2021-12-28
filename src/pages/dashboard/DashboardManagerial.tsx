@@ -405,14 +405,15 @@ const DashboardManagerial: FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResultMulti,bringdataFilters])
+
     useEffect(() => {
-        debugger
         if(downloaddatafile && !mainResultData.loading){
-            exportExcel(titlefile,mainResultData.data)
-            setdownloaddatafile(false)
+            // exportExcel(titlefile,mainResultData.data)
+            // setdownloaddatafile(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mainResultData,downloaddatafile])
+    
     useEffect(() => {
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
@@ -1107,12 +1108,14 @@ const DashboardManagerial: FC = () => {
             getCommChannelLst()
         ]));
         funcsearch()
-        return () => {
-            dispatch(resetMain());
-        };
+
+        // return () => {
+        //     dispatch(resetMain());
+        // };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    async function downloaddata(tipeoffilter:string){
+
+    const downloaddata= (tipeoffilter:string) => {
         setdownloaddatafile(true)
         settitlefile(`DashboardManagerial-${tipeoffilter}`)
         if(tipeoffilter==="TMO" || tipeoffilter==="TME"){
@@ -1131,6 +1134,7 @@ const DashboardManagerial: FC = () => {
             dispatch(getCollection(gerencialsummaryseldata({ startdate: dateRangeCreateDate.startDate, enddate: dateRangeCreateDate.endDate, channel: searchfields.channels, group: searchfields.queue, company: searchfields.provider })))
         }
     }
+    
     return (
         <Fragment>
             <DialogZyx

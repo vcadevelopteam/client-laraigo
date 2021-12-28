@@ -841,6 +841,7 @@ const Tickets = () => {
                 selectionFilter={{ key: 'estadoconversacion', value: 'ASIGNADO' }}
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
+                filterRangeDate="today"
                 ButtonsElement={() => (
                     <>
                         <IconButton
@@ -890,7 +891,7 @@ const Tickets = () => {
                 FiltersElement={React.useMemo(() => (
                     <>
                         <FieldMultiSelect
-                            label={t(langKeys.channel_plural)}
+                            label={t(langKeys.channel)}
                             className={classes.filterComponent}
                             key="fieldMultiSelect_channel"
                             valueDefault={allParameters["channel"] || ""}
@@ -902,7 +903,7 @@ const Tickets = () => {
                             disabled={mainPaginated.loading}
                         />
                         <FieldMultiSelect
-                            label={t(langKeys.group_plural)}
+                            label={t(langKeys.group)}
                             className={classes.filterComponent}
                             key="fieldMultiSelect_group"
                             valueDefault={allParameters["usergroup"] || ""}
@@ -914,7 +915,7 @@ const Tickets = () => {
                             disabled={mainPaginated.loading}
                         />
                         <FieldMultiSelect
-                            label={t(langKeys.user_plural)}
+                            label={t(langKeys.agent)}
                             className={classes.filterComponent}
                             key="fieldMultiSelect_user"
                             valueDefault={allParameters["lastuserid"] || ""}

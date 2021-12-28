@@ -43,6 +43,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+import { getDateToday, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
 
 declare module "react-table" {
     // eslint-disable-next-line
@@ -324,7 +325,8 @@ const TableZyx = React.memo(({
     initialSelectedRows,
     setSelectedRows,
     onClickRow,
-    FiltersElement
+    FiltersElement,
+    filterRangeDate = "month"
 }: TableConfig) => {
     const classes = useStyles();
     const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
@@ -449,8 +451,8 @@ const TableZyx = React.memo(({
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(1)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
+        endDate: filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
         key: 'selection'
     });
 

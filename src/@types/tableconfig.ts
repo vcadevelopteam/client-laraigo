@@ -14,6 +14,7 @@ export interface TableConfig {
     columns: any;
     data: Dictionary[];
     filterrange?: boolean;
+    filterRangeDate?: string;
     totalrow?: number;
     fetchData?(param?: any | undefined): void;
     pageCount?: number;
