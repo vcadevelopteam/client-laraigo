@@ -1,4 +1,4 @@
-import { Box, Button, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
+import { Box, Button, CircularProgress, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, TemplateSwitch } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -1048,7 +1048,6 @@ const DashboardManagerial: FC = () => {
         setWaitSave(true)
     }
     async function funcsearchoneonly() {
-        dispatch(showBackdrop(true));
         setOpenDialogPerRequest(false)
         
         if(fieldToFilter==="TMO"){
@@ -1092,7 +1091,6 @@ const DashboardManagerial: FC = () => {
                     setDataaverageconversationsattendedbytheadvisorbyhour(resaux.data)
                 if(fieldToFilter==="etiqueta")
                     setResLabels(resaux.data)
-                dispatch(showBackdrop(false));
                 setWaitSaveaux(false);
             }
         }
@@ -1317,174 +1315,180 @@ const DashboardManagerial: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
-                    <Box
-                        className={classes.itemCard}
-                    >
-                        <div className={classes.downloadiconcontainer}>                            
-                            <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
-                        </div>
-                        <div className={classes.columnCard}>
-                            <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>TMO</div>
-                                <div className={classes.boxtitledata}>{data.dataTMO}</div>
+                    { (resaux.loading && fieldToFilter==="TMO")?
+                        (<Box  className={classes.itemCard}>
+                            <CircularProgress/>
+                        </Box>):
+                        (<Box
+                            className={classes.itemCard}
+                        >
+                            <div className={classes.downloadiconcontainer}>                            
+                                <CloudDownloadIcon onClick={()=>downloaddata("TMO")} className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TMO"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                             </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.objective)}</div>
-                                <div className={classes.datafield}>{data.obj_max}</div>
-                            </div>
-                            <div className={clsx(classes.containerFields, data.variacioncolor ? classes.colorgreen : classes.colorred)}>
-                                <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{data.variaciontxt}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.highestTMO)}</div>
-                                <div className={classes.datafield}>{data.timeMax}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.lowestTMO)}</div>
-                                <div className={classes.datafield}>{data.timeMin}</div>
-                            </div>
-                        </div>
-                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
-                                [classes.dontshow]: !data.tickets_total,
-
-                            })}>
-                            <ResponsiveContainer className={classes.itemGraphic}>
-                                <PieChart>
-                                    <Tooltip />
-                                    <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
-                                        {dataTMOgraph.map((entry: any, index: number) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className={classes.columnCard}>
-                            {(dataTMOgraph[0].quantity + dataTMOgraph[1].quantity) > 0 &&
-                                <div className={classes.containerFields}>
-                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
-                                        {dataTMOgraph.map((entry: any, index: number) => {
-                                            let totalsum = dataTMOgraph[0].quantity + dataTMOgraph[1].quantity
-                                            let perc = (dataTMOgraph[index].quantity*100)/totalsum
-                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMOgraphlegend-${index}`}>
-                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
-                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
-                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataTMOgraph[index].label} {perc.toFixed(2)}%</span>
-                                            </li>
-                                            }
-                                        )}
-                                    </ul>
+                            <div className={classes.columnCard}>
+                                <div className={classes.containerFieldsTitle}>
+                                    <div className={classes.boxtitle}>TMO</div>
+                                    <div className={classes.boxtitledata}>{data.dataTMO}</div>
                                 </div>
-                            }
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.sla)}</div>
-                                <div className={classes.datafield}>{data.sla}</div>
-                            </div>
-                            <div className={clsx(classes.containerFields, data.variacionperccolor ? classes.colorgreen : classes.colorred)}>
-                                <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{data.variacionperc.toFixed(2)}%</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
-                                <div className={classes.datafield}>{data.tickets_comply}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
-                                <div className={classes.datafield}>{data.tickets_analyzed - data.tickets_comply}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
-                                <div className={classes.datafield}>{data.tickets_total}</div>
-                            </div>
-                        </div>
-                    </Box>
-
-
-                    <Box
-                        className={classes.itemCard}
-                    >
-                        <div className={classes.downloadiconcontainer}>
-                            <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
-                            <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
-                        </div>
-                        <div className={classes.columnCard}>
-                            <div className={classes.containerFieldsTitle}>
-                                <div className={classes.boxtitle}>TME</div>
-                                <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.objective)}</div>
-                                <div className={classes.datafield}>{dataTME.obj_max}</div>
-                            </div>
-                            <div className={clsx(classes.containerFields, dataTME.variacioncolor ? classes.colorgreen : classes.colorred)}>
-                                <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{dataTME.variaciontxt}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.highestTME)}</div>
-                                <div className={classes.datafield}>{dataTME.timeMax}</div>
-                            </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.lowestTME)}</div>
-                                <div className={classes.datafield}>{dataTME.timeMin}</div>
-                            </div>
-                        </div>
-                        <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
-                                [classes.dontshow]: !dataTME.tickets_total,
-
-                            })}>
-                            <ResponsiveContainer className={classes.itemGraphic}>
-                                <PieChart>
-                                    <Tooltip />
-                                    <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
-                                        {dataTMEgraph.map((entry: any, index: number) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className={classes.columnCard}>
-                            {(dataTMEgraph[0].quantity + dataTMEgraph[1].quantity) > 0 &&
                                 <div className={classes.containerFields}>
-                                    <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
-                                        {dataTMEgraph.map((entry: any, index: number) => {
-                                            let totalsum = dataTMEgraph[0].quantity + dataTMEgraph[1].quantity
-                                            let perc = (dataTMEgraph[index].quantity*100)/totalsum
-                                            return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMEgraphlegend-${index}`}>
-                                                <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
-                                                <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
-                                                <span style={{color: COLORS[index % COLORS.length]}}>{dataTMEgraph[index].label} {perc.toFixed(2)}%</span>
-                                            </li>
-                                            }
-                                        )}
-                                    </ul>
+                                    <div className={classes.label}>{t(langKeys.objective)}</div>
+                                    <div className={classes.datafield}>{data.obj_max}</div>
                                 </div>
-                            }
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.sla)}</div>
-                                <div className={classes.datafield}>{dataTME.sla}</div>
+                                <div className={clsx(classes.containerFields, data.variacioncolor ? classes.colorgreen : classes.colorred)}>
+                                    <div className={classes.label}>{t(langKeys.variation)}</div>
+                                    <div className={classes.datafield}>{data.variaciontxt}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.highestTMO)}</div>
+                                    <div className={classes.datafield}>{data.timeMax}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.lowestTMO)}</div>
+                                    <div className={classes.datafield}>{data.timeMin}</div>
+                                </div>
                             </div>
-                            <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
-                                <div className={classes.label}>{t(langKeys.variation)}</div>
-                                <div className={classes.datafield}>{dataTME.variacionperc.toFixed(2)}%</div>
+                            <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                    [classes.dontshow]: !data.tickets_total,
+
+                                })}>
+                                <ResponsiveContainer className={classes.itemGraphic}>
+                                    <PieChart>
+                                        <Tooltip />
+                                        <Pie data={dataTMOgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
+                                            {dataTMOgraph.map((entry: any, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
-                                <div className={classes.datafield}>{dataTME.tickets_comply}</div>
+                            <div className={classes.columnCard}>
+                                {(dataTMOgraph[0].quantity + dataTMOgraph[1].quantity) > 0 &&
+                                    <div className={classes.containerFields}>
+                                        <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                            {dataTMOgraph.map((entry: any, index: number) => {
+                                                let totalsum = dataTMOgraph[0].quantity + dataTMOgraph[1].quantity
+                                                let perc = (dataTMOgraph[index].quantity*100)/totalsum
+                                                return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMOgraphlegend-${index}`}>
+                                                    <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                    <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                    <span style={{color: COLORS[index % COLORS.length]}}>{dataTMOgraph[index].label} {perc.toFixed(2)}%</span>
+                                                </li>
+                                                }
+                                            )}
+                                        </ul>
+                                    </div>
+                                }
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.sla)}</div>
+                                    <div className={classes.datafield}>{data.sla}</div>
+                                </div>
+                                <div className={clsx(classes.containerFields, data.variacionperccolor ? classes.colorgreen : classes.colorred)}>
+                                    <div className={classes.label}>{t(langKeys.variation)}</div>
+                                    <div className={classes.datafield}>{data.variacionperc.toFixed(2)}%</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                    <div className={classes.datafield}>{data.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                    <div className={classes.datafield}>{data.tickets_analyzed - data.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                    <div className={classes.datafield}>{data.tickets_total}</div>
+                                </div>
                             </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
-                                <div className={classes.datafield}>{dataTME.tickets_analyzed - dataTME.tickets_comply}</div>
+                        </Box>)
+                    }
+
+                    { (resaux.loading && fieldToFilter==="TME")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                        (<Box
+                            className={classes.itemCard}
+                        >
+                            <div className={classes.downloadiconcontainer}>
+                                <CloudDownloadIcon onClick={()=>downloaddata("TME")}  className={classes.styleicon}/>
+                                <SettingsIcon onClick={()=>{setFieldToFilter("TME"); setOpenDialogPerRequest(true)}} className={classes.styleicon}/>
                             </div>
-                            <div className={classes.containerFields}>
-                                <div className={classes.label}>{t(langKeys.totalconversation)}</div>
-                                <div className={classes.datafield}>{dataTME.tickets_total}</div>
+                            <div className={classes.columnCard}>
+                                <div className={classes.containerFieldsTitle}>
+                                    <div className={classes.boxtitle}>TME</div>
+                                    <div className={classes.boxtitledata}>{dataTME.dataTME}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.objective)}</div>
+                                    <div className={classes.datafield}>{dataTME.obj_max}</div>
+                                </div>
+                                <div className={clsx(classes.containerFields, dataTME.variacioncolor ? classes.colorgreen : classes.colorred)}>
+                                    <div className={classes.label}>{t(langKeys.variation)}</div>
+                                    <div className={classes.datafield}>{dataTME.variaciontxt}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.highestTME)}</div>
+                                    <div className={classes.datafield}>{dataTME.timeMax}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.lowestTME)}</div>
+                                    <div className={classes.datafield}>{dataTME.timeMin}</div>
+                                </div>
                             </div>
-                        </div>
-                    </Box>
+                            <div style={{ flex: '0 0 200px', height: 200 }} className={clsx({
+                                    [classes.dontshow]: !dataTME.tickets_total,
+
+                                })}>
+                                <ResponsiveContainer className={classes.itemGraphic}>
+                                    <PieChart>
+                                        <Tooltip />
+                                        <Pie data={dataTMEgraph} dataKey="quantity" nameKey="label" cx="50%" cy="50%" innerRadius={40} fill="#8884d8">
+                                            {dataTMEgraph.map((entry: any, index: number) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                            <div className={classes.columnCard}>
+                                {(dataTMEgraph[0].quantity + dataTMEgraph[1].quantity) > 0 &&
+                                    <div className={classes.containerFields}>
+                                        <ul style={{padding: 0, margin: 0, textAlign: "center"}}>
+                                            {dataTMEgraph.map((entry: any, index: number) => {
+                                                let totalsum = dataTMEgraph[0].quantity + dataTMEgraph[1].quantity
+                                                let perc = (dataTMEgraph[index].quantity*100)/totalsum
+                                                return <li style={{display: "inline-block", marginRight: 10}} key={`dataTMEgraphlegend-${index}`}>
+                                                    <svg width="14" height="14" viewBox="0 0 32 32" version="1.1" style={{display: "inline-block", verticalAlign: "middle", marginRight: 4}}>
+                                                    <path stroke="none" fill={COLORS[index % COLORS.length]} d="M0,4h32v24h-32z"></path></svg>
+                                                    <span style={{color: COLORS[index % COLORS.length]}}>{dataTMEgraph[index].label} {perc.toFixed(2)}%</span>
+                                                </li>
+                                                }
+                                            )}
+                                        </ul>
+                                    </div>
+                                }
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.sla)}</div>
+                                    <div className={classes.datafield}>{dataTME.sla}</div>
+                                </div>
+                                <div className={clsx(classes.containerFields, dataTME.variacionperccolor ? classes.colorgreen : classes.colorred)}>
+                                    <div className={classes.label}>{t(langKeys.variation)}</div>
+                                    <div className={classes.datafield}>{dataTME.variacionperc.toFixed(2)}%</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.quantitymeets)}</div>
+                                    <div className={classes.datafield}>{dataTME.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.quantitymeetsnot)}</div>
+                                    <div className={classes.datafield}>{dataTME.tickets_analyzed - dataTME.tickets_comply}</div>
+                                </div>
+                                <div className={classes.containerFields}>
+                                    <div className={classes.label}>{t(langKeys.totalconversation)}</div>
+                                    <div className={classes.datafield}>{dataTME.tickets_total}</div>
+                                </div>
+                            </div>
+                        </Box>)
+                    }
 
                 </div>
                 <div className={classes.replacerowzyx}>
@@ -1530,7 +1534,8 @@ const DashboardManagerial: FC = () => {
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
-                    <Box
+                    { (resaux.loading && fieldToFilter==="NPS")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1608,8 +1613,9 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.npstotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
-                    <Box
+                    </Box>)}
+                    { (resaux.loading && fieldToFilter==="CSAT")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1687,10 +1693,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.csattotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
                 </div>
                 <div className={classes.replacerowzyx} >
-                    <Box
+                    { (resaux.loading && fieldToFilter==="FCR")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1764,8 +1771,9 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
-                    <Box
+                    </Box>)}
+                    { (resaux.loading && fieldToFilter==="FIX")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1839,10 +1847,11 @@ const DashboardManagerial: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fixtotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
                 </div>
                 <div className={classes.replacerowzyx}>
-                    <Box
+                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbyhour")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1877,8 +1886,9 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
                         </div>
-                    </Box>
-                    <Box
+                    </Box>)}
+                    { (resaux.loading && fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 1.91 }}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1913,7 +1923,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
                         </div>
-                    </Box>
+                    </Box>)}
                     <Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
@@ -1979,7 +1989,8 @@ const DashboardManagerial: FC = () => {
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>
-                    <Box
+                    { (resaux.loading && fieldToFilter==="etiqueta")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         style={{ backgroundColor: "white", padding: "10px", flex: 4 }}
                     >
                         <div className={classes.containertitleboxes}>
@@ -1998,7 +2009,7 @@ const DashboardManagerial: FC = () => {
                             </ResponsiveContainer>
 
                         </div>
-                    </Box>
+                    </Box>)}
                 </div>
             </div>
         </Fragment>

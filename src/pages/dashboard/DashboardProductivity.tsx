@@ -1,4 +1,4 @@
-import { Box, Button, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
+import { Box, Button, CircularProgress, createStyles, makeStyles, TextField, Theme } from "@material-ui/core";
 import { DateRangePicker, DialogZyx, FieldMultiSelect, FieldSelect, TemplateSwitch } from "components";
 import { useSelector } from "hooks";
 import { CalendarIcon } from "icons";
@@ -935,7 +935,6 @@ const DashboardProductivity: FC = () => {
                 setDataEncuestafix(mainResult.mainAux.data)
             if(fieldToFilter==="FCR")
                 setDataEncuestafcr(mainResult.mainAux.data)
-            dispatch(showBackdrop(false));
             setWaitSaveAux(false);
         }
         // eslint-disable-next-line
@@ -990,7 +989,6 @@ const DashboardProductivity: FC = () => {
         }
     }
     async function funcsearchoneonly() {
-        dispatch(showBackdrop(true));
         setOpenDialogPerRequest(false)
         
         if(fieldToFilter==="TMO"){
@@ -1203,7 +1201,8 @@ const DashboardProductivity: FC = () => {
             </div>
             <div style={{ display: 'flex', gap: 16, flexDirection: 'column' }}>
                 <div className={classes.replacerowzyx}>
-                    <Box
+                    { (resaux.loading && fieldToFilter==="TMO")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>                            
@@ -1285,10 +1284,10 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{data.tickets_total}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
 
-
-                    <Box
+                    { (resaux.loading && fieldToFilter==="TME")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1370,7 +1369,7 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{dataTME.tickets_total}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
 
                 </div>
                 <div className={classes.replacerowzyx}>
@@ -1504,7 +1503,8 @@ const DashboardProductivity: FC = () => {
                     </Box>
                 </div>
                 <div className={classes.replacerowzyx}>
-                    <Box
+                    { (resaux.loading && fieldToFilter==="NPS")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1582,8 +1582,9 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.npstotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
-                    <Box
+                    </Box>)}
+                    { (resaux.loading && fieldToFilter==="CSAT")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1661,10 +1662,11 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.csattotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
                 </div>
                 <div className={classes.replacerowzyx} >
-                    <Box
+                    { (resaux.loading && fieldToFilter==="FCR")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1738,8 +1740,9 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fcrtotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
-                    <Box
+                    </Box>)}
+                    { (resaux.loading && fieldToFilter==="FIX")?(<Box  className={classes.itemCard}><CircularProgress/> </Box>):
+                    (<Box
                         className={classes.itemCard}
                     >
                         <div className={classes.downloadiconcontainer}>
@@ -1813,7 +1816,7 @@ const DashboardProductivity: FC = () => {
                                 <div className={classes.datafield}>{dataEncuesta.fixtotalconversations}</div>
                             </div>
                         </div>
-                    </Box>
+                    </Box>)}
                 </div>
             </div>
         </Fragment>
