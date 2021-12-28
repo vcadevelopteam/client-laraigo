@@ -460,7 +460,7 @@ const TableZyx = React.memo(({
 
     const [dateRange, setdateRange] = useState<Range>({
         startDate: new Date(initialStartDate || new Date().setDate(1)),
-        endDate: new Date(initialEndDate || new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        endDate: new Date(initialEndDate || (new Date().getFullYear(), new Date().getMonth() + 1, 0)),
         key: 'selection'
     });
 
@@ -515,7 +515,7 @@ const TableZyx = React.memo(({
             }
         })
     }
-
+console.log('DateRange:', dateRange, initialEndDate);
     return (
         <Box width={1}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}

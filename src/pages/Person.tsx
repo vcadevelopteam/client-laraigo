@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
@@ -383,6 +383,7 @@ export const TemplateIcons: React.FC<{
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
+    const location = useLocation();
     const dispatch = useDispatch();
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const personList = useSelector(state => state.person.personList);
@@ -399,6 +400,8 @@ export const Person: FC = () => {
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState('');
+
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
 
     const goToPersonDetail = (person: IPerson) => {
         history.push({
@@ -900,6 +903,10 @@ export const Person: FC = () => {
                     }
                     history.push({ search: params.toString() });
                 }}
+                initialEndDate={Number(query.get('endDate'))}
+                initialStartDate={Number(query.get('startDate'))}
+                // initialFilters={}
+                initialPageIndex={Number(query.get('page'))}
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
