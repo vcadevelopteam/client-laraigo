@@ -2332,7 +2332,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
                     <Property
-                        title={<Trans i18nKey={langKeys.advisor} />}
+                        title={<Trans i18nKey={langKeys.agent} />}
                         subtitle={conversation.asesorfinal}
                     />
                 </Grid>

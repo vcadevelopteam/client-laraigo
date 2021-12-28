@@ -1209,7 +1209,7 @@ const DashboardManagerial: FC = () => {
                     {(fieldToFilter!=="FCR" && fieldToFilter!=="etiqueta" && fieldToFilter!=="averageconversationsattendedbytheadvisorbyhour" && fieldToFilter!=="averageconversationsattendedbyhour" ) &&
                         <div className="row-zyx">
                             <TemplateSwitch
-                                label={t(langKeys.advisor)}
+                                label={t(langKeys.agent)}
                                 valueDefault={searchfieldsOnlyOne.closedbyasesor}
                                 onChange={(value) => {
                                     let closedby = ""
@@ -1507,7 +1507,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.agent)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1978,7 +1978,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.advisor)}</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.agent)}</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>
