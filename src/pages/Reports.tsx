@@ -294,18 +294,13 @@ const Reports: FC = () => {
                     setAllReports(rr);
                     setallReportsToShow(rr);
                 }
-            } else {
-                setallReportsToShow([
-                    ...allReports.filter(report => !!report.image && t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())),
-                    ...allReports.filter(r => !r.image && r.description.toLowerCase().includes(searchValue.toLowerCase())).map(x => ({
-                        ...x,
-                        columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
-                    }))
-                ])
             }
         }
-    }, [searchValue, reportsResult.mainAux, reportsResult.mainData, waitSave])
+    }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
+    useEffect(() => {
+        let temparray = allReports.filter((el:any)=> String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
+        setallReportsToShow(temparray)
+    }, [searchValue]);
 
     useEffect(() => {
         setallReportsToShow(allReports);
@@ -440,7 +435,7 @@ const Reports: FC = () => {
                                         </Card>
                                     </Grid>
                                 ))}
-                                <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                {t(langKeys.heatmap).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                     <Card >
                                         <CardActionArea onClick={() => handleSelectedString("heatmap")}>
                                             <CardMedia
@@ -457,8 +452,8 @@ const Reports: FC = () => {
                                             </CardContent>
                                         </CardActionArea>
                                     </Card>
-                                </Grid>
-                                <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                </Grid>}
+                                {t(langKeys.recordhsmreport).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                     <Card >
                                         <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
                                             <CardMedia
@@ -475,7 +470,7 @@ const Reports: FC = () => {
                                             </CardContent>
                                         </CardActionArea>
                                     </Card>
-                                </Grid>
+                                </Grid>}
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>

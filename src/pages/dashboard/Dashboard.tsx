@@ -9,12 +9,12 @@ import { useDispatch } from 'react-redux';
 import { default as DashboardManagerial } from './DashboardManagerial';
 import { default as DashboardProductivity } from './DashboardProductivity';
 import { default as DashboardOperationalPush } from './DashboardOperationalPush';
-import { TemplateBreadcrumbs } from 'components';
+import { SearchField, TemplateBreadcrumbs } from 'components';
 import paths from 'common/constants/paths';
 import { useHistory } from 'react-router';
 import { useSelector } from 'hooks';
 import { showSnackbar } from 'store/popus/actions';
-import { DashboardTemplate, IListStatePaginated } from '@types';
+import { DashboardTemplate, Dictionary, IListStatePaginated } from '@types';
 import { deleteDashboardTemplate, resetDeleteDashboardTemplate } from 'store/dashboard/actions';
 
 
@@ -79,8 +79,12 @@ const Dashboard: FC = () => {
     const history = useHistory();
     const [viewSelected, setViewSelected] = useState("view-1");
     const dashboardtemplates = useSelector(state => state.main.mainData) as IListStatePaginated<DashboardTemplate>;
-    const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);
+    const dashboardtemplateDelete = useSelector(state => state.dashboard.dashboardtemplateDelete);    
+    const [searchValue, setSearchValue] = useState('');
+    const [allDashboards, setAllDashboards] = useState<any>([]);
+    const [allDashboardsToShow, setallDashboardsToShow] = useState<any>([]);
 
+    
     useEffect(() => {
         dispatch(getCollection(getDashboardTemplateSel()));
 
@@ -95,6 +99,10 @@ const Dashboard: FC = () => {
     }, [dispatch]);
 
     useEffect(() => {
+        let temparray = allDashboards.filter((el:any)=> String(el.description).toLowerCase().includes(searchValue.toLowerCase()))
+        setallDashboardsToShow(temparray)
+    }, [searchValue]);
+    useEffect(() => {
         if (dashboardtemplates.loading) return;
         if (dashboardtemplates.error) {
             const error = t(dashboardtemplates.code || "error_unexpected_error", { module: t(langKeys.user).toLocaleLowerCase() });
@@ -103,6 +111,10 @@ const Dashboard: FC = () => {
                 success: false,
                 show: true,
             }));
+        }else{
+            
+            setAllDashboards(dashboardtemplates.data)
+            setallDashboardsToShow(dashboardtemplates.data)
         }
     }, [dashboardtemplates, t, dispatch]);
 
@@ -149,6 +161,9 @@ const Dashboard: FC = () => {
             </div>
         );
     }
+    const handleFiend = (valor: string) => {
+        setSearchValue(valor);
+    }
 
     if (viewSelected === "view-1") {
         return (
@@ -158,9 +173,19 @@ const Dashboard: FC = () => {
                         {t(langKeys.dashboard_plural)}
                     </span>
                 </Box>
+                <Box className={classes.containerFilterGeneral}>
+                    <span></span>
+                    <div className={classes.containerSearch}>
+                        <SearchField
+                            colorPlaceHolder='#FFF'
+                            handleChangeOther={handleFiend}
+                            lazy
+                        />
+                    </div>
+                </Box>
                 <div className={classes.containerDetails}>
                     <Grid container spacing={3}>
-                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        { t(langKeys.managerial).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card>
                                 <CardActionArea onClick={() => handleSelected("dashboardgerencial")}>
                                     <CardMedia
@@ -177,8 +202,8 @@ const Dashboard: FC = () => {
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                        </Grid>
-                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        </Grid>}
+                        {t(langKeys.productivity).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card>
                                 <CardActionArea onClick={() => handleSelected("dashboardproductivity")}>
                                     <CardMedia
@@ -195,8 +220,8 @@ const Dashboard: FC = () => {
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                        </Grid>
-                        <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                        </Grid>}
+                        {t(langKeys.operationalpush).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                             <Card>
                                 <CardActionArea onClick={() => handleSelected("dashboardoperationalpush")}>
                                     <CardMedia
@@ -213,8 +238,8 @@ const Dashboard: FC = () => {
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                        </Grid>
-                        {dashboardtemplates.data.map((e, i) => (
+                        </Grid>}
+                        {allDashboardsToShow.map((e:any, i:number) => (
                             <Grid item xs={12} md={4} lg={3} style={{ minWidth: 360 }} key={i}>
                                 <DashboardCard
                                     dashboardtemplate={e}
