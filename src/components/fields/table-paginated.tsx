@@ -325,12 +325,20 @@ const TableZyx = React.memo(({
     setSelectedRows,
     onClickRow,
     onFilterChange,
+    initialEndDate = null,
+    initialStartDate = null,
+    initialFilters = {},
+    initialPageIndex = 0,
 }: TableConfig) => {
     const classes = useStyles();
-    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
-    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({ startDate: null, endDate: null, page: 0 });
+    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
+        startDate: initialStartDate,
+        endDate: initialEndDate,
+        page: initialPageIndex,
+    });
     const {
         getTableProps,
         getTableBodyProps,
@@ -347,7 +355,7 @@ const TableZyx = React.memo(({
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
+            initialState: { pageIndex: initialPageIndex, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
@@ -428,6 +436,7 @@ const TableZyx = React.memo(({
     };
     const setPageIndex = (page: number) => {
         setPagination(prev => ({ ...prev, pageIndex: page, trigger: true }));
+        setTFilters(prev => ({ ...prev, page }));
     }
     const handleClickSort = (column: string) => {
         const newsorts: any = {
@@ -450,8 +459,8 @@ const TableZyx = React.memo(({
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: new Date(new Date().setDate(1)),
-        endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+        startDate: new Date(initialStartDate || new Date().setDate(1)),
+        endDate: new Date(initialEndDate || new Date().getFullYear(), new Date().getMonth() + 1, 0),
         key: 'selection'
     });
 

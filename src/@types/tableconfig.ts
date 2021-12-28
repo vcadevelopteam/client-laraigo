@@ -45,6 +45,11 @@ export interface TableConfig {
     onClickRow?: (param?: any) => void;
     /**cualquier filtro */
     onFilterChange?: (filter: ITablePaginatedFilter) => void;
+
+    initialPageIndex?: number;
+    initialStartDate?: number | null;
+    initialEndDate?: number | null;
+    initialFilters?: Dictionary;
 }
 
 export interface Pagination {
