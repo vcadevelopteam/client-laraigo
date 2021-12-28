@@ -1279,11 +1279,11 @@ export const insInteligentModelConfiguration = ({ channels, id, operation, descr
         parameters: services
     }
 });
-export const gerencialTMOsel = ({ startdate, enddate, channel, group, company,closedby = "ASESOR,BOT",  min= "", max="", target=0, skipdown=0, skipup=0}: Dictionary): IRequestBody => ({
+export const gerencialTMOsel = ({ startdate, enddate, channel, group, company, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TMO_GENERAL_SEL",
     parameters: {
-        startdate, enddate, channel, group, company, level: 0, closedby, min, max, target: target/100, skipdown: skipdown/100, skipup: skipup/100, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
+        startdate, enddate, channel, group, company, level: 0, closedby, min, max, target: target / 100, skipdown: skipdown / 100, skipup: skipup / 100, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
 export const gerencialTMOselData = ({ startdate, enddate, channel, group, company }: Dictionary): IRequestBody => ({
@@ -1293,7 +1293,7 @@ export const gerencialTMOselData = ({ startdate, enddate, channel, group, compan
         startdate, enddate, channel, group, company, level: 0, closedby: "ASESOR,BOT", min: 0, max: 0, target: 0, skipdown: 0, skipup: 0, bd: true, offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
-export const gerencialTMEsel = ({ startdate, enddate, channel, group, company,closedby = "ASESOR,BOT",  min= "", max="", target=0, skipdown=0, skipup=0 }: Dictionary): IRequestBody => ({
+export const gerencialTMEsel = ({ startdate, enddate, channel, group, company, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_TME_GENERAL_SEL",
     parameters: {
@@ -1306,14 +1306,14 @@ export const gerencialTMEsel = ({ startdate, enddate, channel, group, company,cl
         closedby,
         min,
         max,
-        target: target/100, 
-        skipdown: skipdown/100, 
-        skipup: skipup/100,
+        target: target / 100,
+        skipdown: skipdown / 100,
+        skipup: skipup / 100,
         bd: true,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
 });
-export const gerencialEncuestassel = ({ startdate, enddate, channel, group, company,question,  closedby= "ASESOR,BOT", target=0 }: Dictionary): IRequestBody => ({
+export const gerencialEncuestassel = ({ startdate, enddate, channel, group, company, question, closedby = "ASESOR,BOT", target = 0 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_GERENCIAL_ENCUESTA3_SEL',
     key: "UFN_DASHBOARD_GERENCIAL_ENCUESTA3_SEL",
     parameters: {
@@ -1325,7 +1325,7 @@ export const gerencialEncuestassel = ({ startdate, enddate, channel, group, comp
         level: 0,
         closedby,
         question,
-        target: target/100, 
+        target: target / 100,
         bd: true,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
     }
@@ -1516,19 +1516,19 @@ export const getdashboardPushMENSAJEXDIASel = ({ startdate, enddate, channel, gr
     key: "UFN_DASHBOARD_PUSH_MENSAJEXDIA_SEL",
     parameters: { startdate, enddate, channel, group, company, label, category, offset: (new Date().getTimezoneOffset() / 60) * -1, userid: supervisor }
 });
-export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor,closedby = "ASESOR,BOT",  min= "", max="", target=0, skipdown=0, skipup=0 }: Dictionary): IRequestBody => ({
+export const getdashboardoperativoTMOGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL',
     key: "UFN_DASHBOARD_OPERATIVO_TMO_GENERAL_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         level: 0,
         closedby,
-        skipdown: skipdown/100,
-        skipup: skipup/100,
+        skipdown: skipdown / 100,
+        skipup: skipup / 100,
         bd: true,
         min,
         max,
-        target: target/100,
+        target: target / 100,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
@@ -1550,19 +1550,19 @@ export const getdashboardoperativoTMOGENERALSeldata = ({ startdate, enddate, cha
         supervisorid: supervisor
     }
 });
-export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor,closedby = "ASESOR,BOT",  min= "", max="", target=0, skipdown=0, skipup=0  }: Dictionary): IRequestBody => ({
+export const getdashboardoperativoTMEGENERALSel = ({ startdate, enddate, channel, group, company, label, supervisor, closedby = "ASESOR,BOT", min = "", max = "", target = 0, skipdown = 0, skipup = 0 }: Dictionary): IRequestBody => ({
     method: 'UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL',
     key: "UFN_DASHBOARD_OPERATIVO_TME_GENERAL_SEL",
     parameters: {
         startdate, enddate, channel, group, company, label,
         level: 0,
         closedby,
-        skipdown: skipdown/100,
-        skipup: skipup/100,
+        skipdown: skipdown / 100,
+        skipup: skipup / 100,
         bd: true,
         min,
         max,
-        target: target/100,
+        target: target / 100,
         offset: (new Date().getTimezoneOffset() / 60) * -1,
         supervisorid: supervisor
     }
@@ -2182,10 +2182,15 @@ export const selInvoiceClient = (year: number, month: string, invoiceid: number 
     key: "UFN_INVOICE_SELCLIENT",
     parameters: { year, month, invoiceid },
 });
-export const selInvoiceChangePaymentStatus = ({invoiceid, paymentnote, paymentfile }: Dictionary) => ({
+export const selInvoiceChangePaymentStatus = ({ invoiceid, paymentnote, paymentfile }: Dictionary) => ({
     method: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
     key: "UFN_INVOICE_CHANGEPAYMENTSTATUS",
     parameters: { invoiceid, status: "PAID", paymentnote, paymentfile },
+});
+export const regenerateInvoice = ({ invoiceid }: Dictionary) => ({
+    method: "UFN_INVOICE_REGENERATE",
+    key: "UFN_INVOICE_REGENERATE",
+    parameters: { invoiceid },
 });
 export const insInvoice = (parameters: Dictionary) => ({
     method: "UFN_INVOICE_INS",
