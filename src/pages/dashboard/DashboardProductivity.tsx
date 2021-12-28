@@ -223,7 +223,8 @@ const DashboardProductivity: FC = () => {
         target:0, 
         skipdown:0, 
         skipup:0,
-        limit: 5
+        limit: 5,
+        bd: false
     });
     const [data, setData] = useState({
         dataTMO: "0s",
@@ -1385,7 +1386,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Asesor</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1405,7 +1406,7 @@ const DashboardProductivity: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Client</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
                     </Box>

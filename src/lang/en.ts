@@ -532,7 +532,7 @@ const translation: LangKeys = {
     conversationsattended: "Conversations attended",
     socialmediachannel2: "You can select more than one channel at the same time if you consider it necessary at the time of self-registration or manage additional channels after the first registration.",
     averageinteractionbyconversation: "Average interaction by conversation",
-    top5labels: "Top 5 labels",
+    top5labels: "Ranking top 5 labels",
     distributionbycategoryHSM: "Distribution by category HSM",
     favorites: "Favorites",
     messagesbyday: "Messages by day",

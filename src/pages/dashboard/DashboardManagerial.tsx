@@ -220,7 +220,7 @@ const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DashboardManagerial: FC = () => {
     const classes = useStyles();
-    const mainResult = useSelector(state => state.main);
+    const mainResultMulti = useSelector(state => state.main.multiData);
     const mainResultData = useSelector(state => state.main.mainData);
     const remultiaux = useSelector(state => state.main.multiDataAux);
     const resaux = useSelector(state => state.main.mainAux);
@@ -374,6 +374,7 @@ const DashboardManagerial: FC = () => {
     const [dataprovider, setdataprovider] = useState<any>([]);
     const [datachannels, setdatachannels] = useState<any>([]);
     const [waitSave, setWaitSave] = useState(false);
+    const [bringdataFilters, setbringdataFilters] = useState(false);
     const [waitSaveaux, setWaitSaveaux] = useState(false);
     const [searchfields, setsearchfields] = useState({
         queue: "",
@@ -389,23 +390,29 @@ const DashboardManagerial: FC = () => {
         target:0, 
         skipdown:0, 
         skipup:0,
-        limit: 5
+        limit: 5,
+        bd: false
     });
     useEffect(() => {
-        if (mainResult.multiData.data.length !== 0) {
-            let multiData = mainResult.multiData.data;
-            setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
-            setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
-            setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
+        if(bringdataFilters){
+            if (mainResultMulti.data.length !== 0) {
+                let multiData = mainResultMulti.data;
+                setdataqueue(multiData[0] && multiData[0].success ? multiData[0].data : []);
+                setdataprovider(multiData[1] && multiData[1].success ? multiData[1].data : []);
+                setdatachannels(multiData[2] && multiData[2].success ? multiData[2].data : []);
+                setbringdataFilters(false)
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResult.multiData])
+    }, [mainResultMulti,bringdataFilters])
     useEffect(() => {
+        debugger
         if(downloaddatafile && !mainResultData.loading){
             exportExcel(titlefile,mainResultData.data)
+            setdownloaddatafile(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mainResultData])
+    }, [mainResultData,downloaddatafile])
     useEffect(() => {
         if (resTMO.length) {
             const { time_avg, tickets_comply, tickets_total, target_max, target_min, time_max, time_min, tickets_analyzed, target_percmax} = resTMO[0];
@@ -1093,6 +1100,7 @@ const DashboardManagerial: FC = () => {
 
 
     useEffect(() => {
+        setbringdataFilters(true)
         dispatch(getMultiCollection([
             getValuesFromDomain("GRUPOS"),
             getValuesFromDomain("EMPRESA"),
@@ -1495,7 +1503,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Asesor</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.advisor)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRAsesor}</div>
                         </div>
                     </Box>
@@ -1515,7 +1523,7 @@ const DashboardManagerial: FC = () => {
                     >
                         <div className={classes.containerFieldsQuarter}>
                             <PersonIcon style={{color:"white",margin: "3px 5px"}}/>
-                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR Client</div>
+                            <div className={classes.boxtitle} style={{ padding: 0 }}>TMR {t(langKeys.client)}</div>
                             <div className={classes.boxtitledata} style={{ padding: 0 }}>{dataSummary.dataTMRCliente}</div>
                         </div>
                     </Box>
@@ -1966,7 +1974,7 @@ const DashboardManagerial: FC = () => {
                         <div className={classes.boxtitlequarter}>{dataInteraction.avginteractionsxconversations}</div>
                         <div className={classes.boxtitlequarter}>{t(langKeys.averageinteractionbyconversation)}</div>
                         <div className="row-zyx" style={{ paddingTop: "10px", margin: 0 }}>{dataInteraction.maxavginteractionsxconversations} </div>
-                        <div className="row-zyx" style={{ paddingTop: "0" }}>Asesor</div>
+                        <div className="row-zyx" style={{ paddingTop: "0" }}>{t(langKeys.advisor)}</div>
                         <div className="row-zyx" style={{ paddingTop: "30px", margin: 0 }}>{dataInteraction.minvginteractionsxconversations} </div>
                         <div className="row-zyx" style={{ paddingTop: "0" }}>Bot</div>
                     </Box>
