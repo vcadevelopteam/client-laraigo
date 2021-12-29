@@ -1251,7 +1251,9 @@ const translation: LangKeys = {
     report_userproductivityhours_filter_adviser: 'Agent',
     report_userproductivityhours_filter_channels: 'Channels',
     report_userproductivityhours_filter_hours: 'Hour',
-
+    tmeexpected: "TME expected",
+    tmoexpected: "TMO expected",
+    tmoadviserexpected: "TMO adviser expected",
     report_userproductivity: 'Agent productivity',
     report_userproductivity_totalclosedtickets: 'Closed ticket number',
     report_userproductivity_holdingtickets: 'Holding ticket number',
