@@ -240,8 +240,8 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
     useEffect(() => {
         if (Object.keys(filters).length === 0) setValue('');
         else if (header in filters) {
-            setValue(filters[header].value);
-            setoperator(filters[header].operator);
+            setValue(filters?.[header]?.value || '');
+            if (filters?.[header]) setoperator(filters[header].operator);
         }
     }, [filters]);
 
