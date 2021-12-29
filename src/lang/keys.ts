@@ -607,6 +607,8 @@ export const langKeys = {
     status_pendiente: 'status_pendiente',
     status_pending: 'status_pending',
     status_cerrado: 'status_cerrado',
+    status_conectado: 'status_conectado',
+    status_desconectado: 'status_desconectado',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',
@@ -1093,6 +1095,9 @@ export const langKeys = {
     istrue: 'istrue',
     isfalse: 'isfalse',
 
+    true: 'true',
+    false: 'false',
+
     error_login_user_incorrect: "error_login_user_incorrect",
     error_login_user_pending: "error_login_user_pending",
     error_login_locked_by_attempts_failed_password: "error_login_locked_by_attempts_failed_password",
@@ -1275,6 +1280,7 @@ export const langKeys = {
     report_userproductivity_usersconnected: 'report_userproductivity_usersconnected',
 
     report_userproductivity_userid: 'report_userproductivity_userid',
+    report_userproductivity_user: 'report_userproductivity_user',
     report_userproductivity_fullname: 'report_userproductivity_fullname',
     report_userproductivity_hourfirstlogin: 'report_userproductivity_hourfirstlogin',
     report_userproductivity_totaltickets: 'report_userproductivity_totaltickets',
@@ -1302,6 +1308,21 @@ export const langKeys = {
     report_userproductivity_cardmaxmax: 'report_userproductivity_cardmaxmax',
     report_userproductivity_cardavgmin: 'report_userproductivity_cardavgmin',
     report_userproductivity_cardminmin: 'report_userproductivity_cardminmin',
+
+    report_userproductivity_cardavgmax_tme: 'report_userproductivity_cardavgmax_tme',
+    report_userproductivity_cardmaxmax_tme: 'report_userproductivity_cardmaxmax_tme',
+    report_userproductivity_cardavgmin_tme: 'report_userproductivity_cardavgmin_tme',
+    report_userproductivity_cardminmin_tme: 'report_userproductivity_cardminmin_tme',
+
+    report_userproductivity_cardavgmax_tmo: 'report_userproductivity_cardavgmax_tmo',
+    report_userproductivity_cardmaxmax_tmo: 'report_userproductivity_cardmaxmax_tmo',
+    report_userproductivity_cardavgmin_tmo: 'report_userproductivity_cardavgmin_tmo',
+    report_userproductivity_cardminmin_tmo: 'report_userproductivity_cardminmin_tmo',
+
+    report_userproductivity_cardavgmax_tmoagent: 'report_userproductivity_cardavgmax_tmoagent',
+    report_userproductivity_cardmaxmax_tmoagent: 'report_userproductivity_cardmaxmax_tmoagent',
+    report_userproductivity_cardavgmin_tmoagent: 'report_userproductivity_cardavgmin_tmoagent',
+    report_userproductivity_cardminmin_tmoagent: 'report_userproductivity_cardminmin_tmoagent',
 
     report_userproductivity_filter_channels: 'report_userproductivity_filter_channels',
     report_userproductivity_filter_group: 'report_userproductivity_filter_group',

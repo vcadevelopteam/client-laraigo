@@ -78,8 +78,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const columns = React.useMemo(
         () => [
             {
-                Header: t(langKeys.report_userproductivity_userid),
-                accessor: 'userid',
+                Header: t(langKeys.report_userproductivity_user),
+                accessor: 'usr',
                 NoFilter: false,
             },
             {
@@ -279,15 +279,6 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                             >{t(langKeys.search)}
                             </Button>
                         </div>
-                        <Button
-                            className={classes.button}
-                            variant="contained"
-                            color="primary"
-                            disabled={detailCustomReport.loading}
-                            onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
-                            startIcon={<DownloadIcon />}
-                        >{t(langKeys.download)}
-                        </Button>
                     </Box>
                 </Box>
             </div>
@@ -298,8 +289,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme>= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme< detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -310,35 +301,35 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtme>= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax)}
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tme)}
                                     value={detailCustomReport.data[0]?.cardavgmaxtme}
                                     value2={detailCustomReport.data[0]?.cardavgmaxtmeuser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax)}
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtme}
                                     value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin)}
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tme)}
                                     value={detailCustomReport.data[0]?.cardavgmintme}
                                     value2={detailCustomReport.data[0]?.cardavgmintmeuser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin)}
+                                    title={t(langKeys.report_userproductivity_cardminmin_tme)}
                                     value={detailCustomReport.data[0]?.cardminmintme}
                                     value2={detailCustomReport.data[0]?.cardminmintmeuser}
                                 />
@@ -351,8 +342,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo>= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo< detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -363,35 +354,35 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmo>= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax)}
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardavgmaxtmo}
                                     value2={detailCustomReport.data[0]?.cardavgmaxtmouser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax)}
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtmo}
                                     value2={detailCustomReport.data[0]?.cardmaxmaxtmouser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin)}
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardavgmintmo}
                                     value2={detailCustomReport.data[0]?.cardavgmintmouser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin)}
+                                    title={t(langKeys.report_userproductivity_cardminmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardminmintmo}
                                     value2={detailCustomReport.data[0]?.cardminmintmouser}
                                 />
@@ -404,8 +395,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                         <Grid container spacing={1} style={{ paddingTop: 12 }}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmoasesor>= detailCustomReport.data[0]?.tmoasesoresperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmoasesor< detailCustomReport.data[0]?.tmoasesoresperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmoasesor < detailCustomReport.data[0]?.tmoasesoresperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmoasesor > detailCustomReport.data[0]?.tmoasesoresperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -416,35 +407,35 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmoadviserexpected)} ${detailCustomReport.data[0]?.tmoasesoresperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmoasesor>= detailCustomReport.data[0]?.tmoasesoresperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtmoasesor <= detailCustomReport.data[0]?.tmoasesoresperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax)}
+                                    title={t(langKeys.report_userproductivity_cardavgmax_tmoagent)}
                                     value={detailCustomReport.data[0]?.cardavgmaxtmoasesor}
                                     value2={detailCustomReport.data[0]?.cardavgmaxtmoasesoruser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax)}
+                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmoagent)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtmoasesor}
                                     value2={detailCustomReport.data[0]?.cardmaxmaxtmoasesoruser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin)}
+                                    title={t(langKeys.report_userproductivity_cardavgmin_tmoagent)}
                                     value={detailCustomReport.data[0]?.cardavgmintmoasesor}
                                     value2={detailCustomReport.data[0]?.cardavgmintmoasesoruser}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
                                 <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin)}
+                                    title={t(langKeys.report_userproductivity_cardminmin_tmoagent)}
                                     value={detailCustomReport.data[0]?.cardminmintmoasesor}
                                     value2={detailCustomReport.data[0]?.cardminmintmoasesoruser}
                                 />
@@ -475,11 +466,23 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 </Grid>
                 <Grid item xs={12} md={4} lg={3}>
                     <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_usersconnected)}
+                        title={`${t(langKeys.report_userproductivity_usersconnected)} ${new Date().toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}`}
                         value={detailCustomReport.data[0]?.usersconnected}
                     />
                 </Grid>
             </Grid>
+
+            <Box width={1} style={{display: "flex", justifyContent: "flex-end"}}>
+                <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    disabled={detailCustomReport.loading}
+                    onClick={() => exportExcel("report" + (new Date().toISOString()), detailCustomReport.data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                    startIcon={<DownloadIcon />}
+                >{t(langKeys.download)}
+                </Button>
+            </Box>
 
             <TableZyx
                 columns={columns}
