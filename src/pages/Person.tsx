@@ -415,6 +415,7 @@ export const Person: FC = () => {
     }, [query]);
 
     const goToPersonDetail = (person: IPerson) => {
+        console.log('AA:', location.pathname, location.search);
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
@@ -1247,7 +1248,8 @@ export const PersonDetail: FC = () => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        history.push(paths.PERSON);
+                        // history.push(paths.PERSON);
+                        history.goBack();
                     }}
                 >
                     <Trans i18nKey={langKeys.person} count={2} />
@@ -1285,7 +1287,8 @@ export const PersonDetail: FC = () => {
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            history.push(paths.PERSON);
+                            // history.push(paths.PERSON);
+                            history.goBack();
                         }}
                     >
                         {t(langKeys.back)}
