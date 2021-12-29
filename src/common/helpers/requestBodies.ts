@@ -2228,3 +2228,13 @@ export const getLeadTasgsSel = () => ({
     key: "UFN_LEAD_TAGSDISTINCT_SEL",
     parameters: {},
 });
+
+export const getHistoryStatusConversation = (personid: number, conversationid: number, communicationchannelid: number) => ({
+    method: "UFN_CONVERSATIONSTATUS_SEL",
+    key: "UFN_CONVERSATIONSTATUS_SEL",
+    parameters: {
+        personid,
+        conversationid,
+        communicationchannelid
+    },
+});

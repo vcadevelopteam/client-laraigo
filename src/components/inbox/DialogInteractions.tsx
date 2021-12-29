@@ -9,6 +9,12 @@ import { Dictionary } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ItemGroupInteraction from './Interaction';
+// import html2pdf from 'html2pdf.js'
+import Button from '@material-ui/core/Button';
+import { Trans } from 'react-i18next';
+import { DownloadIcon } from 'icons';
+
+const html2pdf = require('html2pdf.js');
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -113,7 +119,8 @@ const useStyles = makeStyles((theme) => ({
         position: 'relative',
         maxWidth: 480,
         backgroundColor: '#FFF',
-        boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
+        border: '1px solid #EBEAED',
+        // boxShadow: '0 1px 2px 0 rgb(16 35 47 / 15%)'
     },
     interactionTextAgent: {
         borderBottomLeftRadius: 12,
@@ -157,7 +164,7 @@ const useStyles = makeStyles((theme) => ({
         flex: '1',
         flexDirection: 'column',
         display: 'flex',
-        
+
     },
     collapseInfo: {
         position: 'absolute',
@@ -220,7 +227,7 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     interactionFromPost: {
-        display: 'flex', 
+        display: 'flex',
         gap: 8
     },
     buttonIcon: {
@@ -276,16 +283,15 @@ const useStyles = makeStyles((theme) => ({
         boxShadow: '0px 3px 6px rgb(0 0 0 / 10%)',
         backgroundColor: '#FFF',
         width: 250,
-        // padding: theme.spacing(1)
     },
     headerQuickReply: {
-        fontSize: 13, 
+        fontSize: 13,
         fontWeight: 500,
         padding: theme.spacing(1.5),
         borderBottom: '1px solid #EBEAED'
     },
     itemQuickReply: {
-        fontSize: 13, 
+        fontSize: 13,
         paddingTop: theme.spacing(.7),
         paddingBottom: theme.spacing(.7),
         paddingLeft: theme.spacing(1.5),
@@ -297,17 +303,47 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-
 const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const interactionExtraList = useSelector(state => state.inbox.interactionExtraList);
+    const el = React.useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
         if (ticket)
             dispatch(getInteractions(ticket?.conversationid, false, 0));
     }, [ticket])
+
+    const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
+
+        const downloadPdfDocument = () => {
+            if (el.current) {
+                const gg = document.createElement('div');
+                gg.innerHTML = el.current.innerHTML;
+                gg.style.margin = '16px'
+                var opt = {
+                    html2canvas: {
+                        dpi: 300,
+                        useCORS: true,
+                    }
+                };
+                html2pdf()
+                    .from(gg).set(opt)
+                    .save(downloadFileName);
+            }
+        }
+        return (
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={downloadPdfDocument}
+                startIcon={<DownloadIcon />}
+                style={{ position: 'absolute', right: 16, top: 16 }}
+            ><Trans i18nKey={langKeys.download} />
+            </Button>
+        )
+    }
 
     return (
         <DialogZyx
@@ -316,8 +352,12 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
             buttonText1={t(langKeys.cancel)}
             handleClickButton1={() => setOpenModal(false)}
         >
+            <GenericPdfDownloader
+                // rootElementId={el?.current!!}
+                downloadFileName={`ticket-` + ticket?.ticketnum}
+            />
             {interactionExtraList.loading ? <SkeletonInteraction /> :
-                <div className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
+                <div ref={el} className="scroll-style-go" style={{ display: 'flex', flexDirection: 'column', gap: 8, height: '60vh' }}>
                     {interactionExtraList.data.map((groupInteraction) => (
                         <ItemGroupInteraction
                             imageClient={ticket?.imageurldef}

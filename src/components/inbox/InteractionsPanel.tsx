@@ -20,7 +20,7 @@ const InteractionPanel: React.FC<{ classes: any }> = React.memo(({ classes }) =>
     const scrollToBottom = () => {
         if (!loadingInteractions && (isOnBottom || isOnBottom === null)) {
             if (el?.current) {
-                el.current.scrollIntoView()
+                el.current.scrollIntoView();
             }
         }
     };

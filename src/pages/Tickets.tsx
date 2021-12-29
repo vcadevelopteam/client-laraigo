@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetCollectionPaginated, execute } from 'store/main/actions';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel,getHistoryStatusConversation } from 'common/helpers';
+import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
@@ -13,6 +13,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
 import clsx from 'clsx';
+import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';
 import IconButton from '@material-ui/core/IconButton';
@@ -248,7 +249,6 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
             return;
         }
-
         const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
 
         dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation, data.newUserGroup)));
@@ -495,11 +495,75 @@ const IconOptions: React.FC<{
                         {t(langKeys.close_ticket)}
                     </MenuItem>
                 }
+                {onHandlerShowHistory &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerShowHistory();
+                    }}>
+                        {t(langKeys.status_history)}
+                    </MenuItem>
+                }
             </Menu>
         </>
     )
 }
 
+const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: boolean, setOpenModal: (param: any) => void }> = ({ ticket, openModal, setOpenModal }) => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    const resultHistory = useSelector(state => state.main.mainAux);
+
+    useEffect(() => {
+        if (ticket) {
+            dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+        }
+    }, [ticket])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                Header: t(langKeys.status),
+                accessor: 'status',
+            },
+            {
+                Header: t(langKeys.creationDate),
+                accessor: 'createdate',
+                type: 'date',
+                sortType: 'datetime',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return convertLocalDate(row.createdate).toLocaleString()
+                }
+            },
+            {
+                Header: t(langKeys.agent),
+                accessor: 'createby',
+            },
+        ],
+        []
+    );
+
+    return (
+        <DialogZyx
+            open={openModal}
+            maxWidth="md"
+            title={`${t(langKeys.status_history)} ticket ${ticket?.numeroticket}`}
+            buttonText1={t(langKeys.cancel)}
+            handleClickButton1={() => setOpenModal(false)}
+        >
+            <TableZyx
+                columns={columns}
+                // titlemodule={t(langKeys.hi, { count: 2 })}
+                data={resultHistory.data}
+                filterGeneral={false}
+                download={false}
+                loading={resultHistory.loading}
+                register={false}
+            />
+        </DialogZyx>
+    )
+}
 
 const Tickets = () => {
     const { t } = useTranslation();
@@ -508,12 +572,10 @@ const Tickets = () => {
     const dispatch = useDispatch();
 
     const [allParameters, setAllParameters] = useState<Dictionary>({});
-    //const format = (date: Date) => date.toISOString().split('T')[0];
-
-
     const [openDialogTipify, setOpenDialogTipify] = useState(false);
     const [openDialogClose, setOpenDialogClose] = useState(false);
     const [openDialogReassign, setOpenDialogReassign] = useState(false);
+    const [openDialogShowHistory, setOpenDialogShowHistory] = useState(false);
 
     const [rowWithDataSelected, setRowWithDataSelected] = useState<Dictionary[]>([]);
     const [selectedRows, setSelectedRows] = useState<any>({});
@@ -545,21 +607,24 @@ const Tickets = () => {
                 width: '1%',
                 Cell: (props: any) => {
                     const ticket = props.cell.row.original;
-                    if (ticket.estadoconversacion === "CERRADO")
-                        return null;
+                    
                     return (
                         <IconOptions
-                            onHandlerReassign={() => {
+                            onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
                                 setRowWithDataSelected([ticket]);
                                 setOpenDialogReassign(true);
                             }}
-                            onHandlerClassify={() => {
+                            onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
                                 setRowWithDataSelected([ticket]);
                                 setOpenDialogClose(true);
                             }}
-                            onHandlerClose={() => {
+                            onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
                                 setRowWithDataSelected([ticket]);
                                 setOpenDialogClose(true);
+                            }}
+                            onHandlerShowHistory={() => {
+                                setOpenDialogShowHistory(true);
+                                setRowSelected(ticket);
                             }}
                         />
                     )
@@ -787,12 +852,6 @@ const Tickets = () => {
         fetchData(fetchDataAux);
     };
 
-    // useEffect(() => {
-    //     if (fetchDataAux.pageSize) {
-    //         fetchData(fetchDataAux);
-    //     }
-    // }, [])
-
     useEffect(() => {
         dispatch(getMultiCollection([
             getCommChannelLst(),
@@ -806,8 +865,7 @@ const Tickets = () => {
         ]));
 
         return () => {
-            dispatch(resetCollectionPaginated());
-            dispatch(resetMultiMain());
+            dispatch(resetAllMain());
         };
     }, []);
 
@@ -913,6 +971,11 @@ const Tickets = () => {
             <DialogInteractions
                 openModal={openModal}
                 setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
+            <DialogHistoryStatus
+                openModal={openDialogShowHistory}
+                setOpenModal={setOpenDialogShowHistory}
                 ticket={rowSelected}
             />
             <DialogTipifications

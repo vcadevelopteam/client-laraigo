@@ -265,7 +265,9 @@ const ItemInteraction: React.FC<{ classes: any, interaction: IInteraction, userT
             <div title={convertLocalDate(createdate).toLocaleString()} className={classes.interactionImage}>
                 <img
                     className={classes.imageCard}
-                    src={interactiontext} alt=""
+                    src={interactiontext}
+                    alt=""
+                    crossOrigin={interactiontext.includes('cloud-object-storage') ? 'anonymous' : undefined}
                     onClick={() => {
                         dispatch(manageLightBox({ visible: true, images: listImage!!, index: indexImage!! }))
                     }}
