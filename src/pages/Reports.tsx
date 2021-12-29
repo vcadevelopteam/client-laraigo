@@ -14,7 +14,7 @@ import { langKeys } from 'lang/keys';
 import { TemplateBreadcrumbs, SearchField, FieldSelect, FieldMultiSelect, SkeletonReportCard } from 'components';
 import { useSelector } from 'hooks';
 import { Dictionary, IFetchData, MultiData, IRequestBody } from "@types";
-import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate } from 'common/helpers';
+import { getReportSel, getReportTemplateSel, getValuesFromDomain, getTagsChatflow, getCommChannelLst, getReportColumnSel, getReportFilterSel, getPaginatedForReports, getReportExport, insertReportTemplate, convertLocalDate } from 'common/helpers';
 import { getCollection, getCollectionAux, execute, resetMain, getCollectionPaginated, resetCollectionPaginated, exportData, getMultiCollection, resetMultiMain, resetMainAux, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import { useDispatch } from 'react-redux';
@@ -112,12 +112,49 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     const [waitSave, setWaitSave] = useState(false);
     const [totalrow, settotalrow] = useState(0);
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 0, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
-    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }], []);
+    const columns = React.useMemo(() => [{ Header: 'null', accessor: 'null', type: 'null' }] as any, []);
     const [allParameters, setAllParameters] = useState({});
 
     if (multiData.length > 0) {
         reportColumns.forEach(x => {
-            columns.push({ Header: t('report_' + row?.origin + '_' + x.proargnames || ''), accessor: x.proargnames, type: (x.proargtype === "bigint") ? "number" : "string" })
+            switch (x.proargtype) {
+                case "bigint":
+                    columns.push({
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "number"
+                    });
+                    break;
+                case "timestamp without time zone":
+                    columns.push({
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "date",
+                        Cell: (props: any) => {
+                            const column = props.cell.column;
+                            const row = props.cell.row.original;
+                            return (<div>
+                                {convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                                    year: "numeric",
+                                    month: "2-digit",
+                                    day: "2-digit",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    second: "numeric",
+                                    hour12: false
+                                })}
+                            </div>)
+                        }
+                    });
+                    break;
+                default:
+                    columns.push({
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "string"
+                    });
+                    break;
+            }
         });
         columns.shift();
     }
@@ -294,18 +331,13 @@ const Reports: FC = () => {
                     setAllReports(rr);
                     setallReportsToShow(rr);
                 }
-            } else {
-                setallReportsToShow([
-                    ...allReports.filter(report => !!report.image && t('report_' + report?.origin).toLowerCase().includes(searchValue.toLowerCase())),
-                    ...allReports.filter(r => !r.image && r.description.toLowerCase().includes(searchValue.toLowerCase())).map(x => ({
-                        ...x,
-                        columns: x.columnjson ? JSON.parse(x.columnjson) : [],
-                        ...(x.filterjson ? JSON.parse(x.filterjson) : {})
-                    }))
-                ])
             }
         }
-    }, [searchValue, reportsResult.mainAux, reportsResult.mainData, waitSave])
+    }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
+    useEffect(() => {
+        let temparray = allReports.filter((el:any)=> String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
+        setallReportsToShow(temparray)
+    }, [searchValue]);
 
     useEffect(() => {
         setallReportsToShow(allReports);
@@ -440,7 +472,7 @@ const Reports: FC = () => {
                                         </Card>
                                     </Grid>
                                 ))}
-                                <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                {t(langKeys.heatmap).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                     <Card >
                                         <CardActionArea onClick={() => handleSelectedString("heatmap")}>
                                             <CardMedia
@@ -457,8 +489,8 @@ const Reports: FC = () => {
                                             </CardContent>
                                         </CardActionArea>
                                     </Card>
-                                </Grid>
-                                <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                </Grid>}
+                                {t(langKeys.recordhsmreport).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                     <Card >
                                         <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
                                             <CardMedia
@@ -475,7 +507,7 @@ const Reports: FC = () => {
                                             </CardContent>
                                         </CardActionArea>
                                     </Card>
-                                </Grid>
+                                </Grid>}
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>
