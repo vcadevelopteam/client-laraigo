@@ -3,17 +3,19 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch } from 'components';
-import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText } from 'common/helpers';
+import { DialogZyx, TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, FieldMultiSelect, TemplateSwitch, IOSSwitch, TemplateSwitchYesNo } from 'components';
+import { getOrgUserSel, getUserSel, getValuesFromDomain, getOrgsByCorp, getRolesByOrg, getSupervisors, getChannelsByOrg, getApplicationsByRole, insUser, insOrgUser, randomText, templateMaker, exportExcel, uploadExcel, array_trimmer } from 'common/helpers';
+import { getDomainsByTypename, resetGetDomainsByTypename } from 'store/person/actions';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
 import Avatar from '@material-ui/core/Avatar';
 import { uploadFile } from 'store/main/actions';
+import ListAltIcon from '@material-ui/icons/ListAlt';
 import {
     getCollection, resetAllMain, getMultiCollection,
     execute, getCollectionAux, resetMainAux, getMultiCollectionAux
@@ -28,7 +30,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Typography from '@material-ui/core/Typography';
-import { Divider, Grid, ListItem, Box, IconButton } from '@material-ui/core';
+import { Divider, Grid, ListItem, Box, IconButton, FormControlLabel } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import InputAdornment from '@material-ui/core/InputAdornment';
@@ -320,19 +322,11 @@ const DetailOrgUser: React.FC<ModalProps> = ({ index, data: { row, edit }, multi
                             }
                         </div>
                         <div className="col-6">
-                            {edit ?
-                                <TemplateSwitch
-                                    label={t(langKeys.default_organization)}
-                                    className={classes.mb2}
-                                    valueDefault={row ? row.bydefault : true}
-                                    onChange={(value) => setValue('bydefault', value)}
-                                /> :
-                                <FieldView
-                                    label={t(langKeys.default_organization)}
-                                    value={row ? (row.bydefault ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                    className={classes.mb2}
-                                />
-                            }
+                            <TemplateSwitchYesNo
+                                label={t(langKeys.default_organization)}
+                                className={classes.mb2}
+                                valueDefault={row ? row.bydefault : true}
+                                onChange={(value) => setValue('bydefault', value)}/>
                             {edit ?
                                 <FieldSelect
                                     label={t(langKeys.supervisor)}
@@ -1011,6 +1005,7 @@ const Users: FC = () => {
     const mainMultiResult = useSelector(state => state.main.multiData);
     const executeResult = useSelector(state => state.main.execute);
     const [dataUsers, setdataUsers] = useState<Dictionary[]>([]);
+    const domains = useSelector(state => state.person.editableDomains);
 
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
@@ -1028,7 +1023,6 @@ const Users: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
                         />
@@ -1079,6 +1073,41 @@ const Users: FC = () => {
         ],
         []
     );
+    const handleTemplate = () => {
+        const data = [
+            {},
+            {},
+            {},
+            domains.value?.company?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            domains.value?.docTypes.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`type_documenttype_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            domains.value?.billinggroups?.reduce((a, d) => ({ ...a, [d.domainvalue]: d.domaindesc }), {}),
+            {},
+            domains.value?.genericstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
+            domains.value?.userstatus?.reduce((a, d) => ({ ...a, [d.domainvalue]: t(`status_${d.domainvalue?.toLowerCase()}`) }), {}),
+            {},
+            {},
+            {true:'true',false:'false'},
+            domains.value?.roles?.reduce((a, d) => ({ ...a, [d.roleid]: d.roldesc }), {})
+        ];
+        const header = [
+            'firstname',
+            'lastname',
+            'email',
+            'company',
+            'doctype',
+            'docnum',
+            'billinggroup',
+            'registercode',
+            'twofactorauthentication',
+            'status',
+            'image',
+            'password',
+            'pwdchangefirstlogin',
+            'role',
+        ];
+        exportExcel(`${t(langKeys.template)} ${t(langKeys.user)}`, templateMaker(data, header));
+    }
 
     const fetchData = () => dispatch(getCollection(getUserSel(0)));
 
@@ -1088,6 +1117,7 @@ const Users: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(getDomainsByTypename());
         dispatch(getMultiCollection([
             getValuesFromDomain("ESTADOGENERICO"),
             getValuesFromDomain("TIPODOCUMENTO"),
@@ -1126,9 +1156,61 @@ const Users: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: false });
+    const handleUpload = async (files: any) => {
+        const file = files?.item(0);
+        if (file) {
+            let excel: any = await uploadExcel(file, undefined);
+            let data = array_trimmer(excel);
+            data = data.filter((f: any) =>
+                (f.company === undefined || Object.keys(domains.value?.company?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.company)) &&
+                (f.doctype === undefined || Object.keys(domains.value?.docTypes?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.doctype)) &&
+                (f.billinggroup === undefined || Object.keys(domains.value?.billinggroups?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.billinggroup)) &&
+                (f.twofactorauthentication === undefined || Object.keys(domains.value?.genericstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.twofactorauthentication)) &&
+                (f.status === undefined || Object.keys(domains.value?.userstatus?.reduce((a: any, d) => ({ ...a, [d.domainvalue]: d.domainvalue }), {})).includes('' + f.status)) &&
+                (f.pwdchangefirstlogin === undefined || [true,false].includes(f.pwdchangefirstlogin)) 
+            );
+            if (data.length > 0) {
+                dispatch(showBackdrop(true));
+                let table: Dictionary = data.reduce((a: any, d) => ({
+                    ...a,
+                    [`${d.email}_${d.docnum}`]: {
+                        id: 0,
+                        usr: d.email,
+                        doctype: d.doctype,
+                        docnum: d.docnum,
+                        password: d.password,
+                        firstname: d.firstname,
+                        lastname: d.lastname,
+                        email: d.email,
+                        pwdchangefirstlogin: d.pwdchangefirstlogin,
+                        type: "NINGUNO",
+                        status: d.status,
+                        operation: "INSERT",
+                        company: d.company,
+                        twofactorauthentication: d.twofactorauthentication,
+                        registercode: d.registercode,
+                        billinggroupid: d.billinggroup,
+                        image: d?.image || "",
+                        detail:{
+
+                        }
+                    }
+                }), {});
+                console.log(table)
+                /*Object.values(table).forEach((p) => {
+                    dispatch(execute({
+                        header: insUser({ ...p }),
+                        detail: [
+                            ...p.pcc.map((x: IPersonCommunicationChannel) => insPersonCommunicationChannel({ ...x })),
+                        ]
+                    }, true));
+                });
+                setWaitImport(true)*/
+            }
+            else {
+                dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.no_records_valid) }));
+            }
+        }
     }
 
     const handleEdit = (row: Dictionary) => {
@@ -1166,6 +1248,19 @@ const Users: FC = () => {
                 register={true}
                 hoverShadow={true}
                 handleRegister={handleRegister}
+                importCSV={handleUpload}
+                ButtonsElement={() => (
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainResult.loading}
+                        startIcon={<ListAltIcon color="secondary" />}
+                        onClick={handleTemplate}
+                        style={{ backgroundColor: "#55BD84" }}
+                    >
+                        <Trans i18nKey={langKeys.template} />
+                    </Button>
+                )}
             />
         )
     }

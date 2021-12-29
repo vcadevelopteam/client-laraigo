@@ -220,6 +220,10 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     }, [resExportData, waitSave]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.map((x: Dictionary) => ({
+            key: x.accessor,
+            alias: x.Header
+        }));
         dispatch(exportData(getReportExport(
             row?.methodexport || '',
             row?.origin || '',
@@ -229,7 +233,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 ...allParameters
-            })));
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     };
