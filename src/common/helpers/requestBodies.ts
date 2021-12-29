@@ -1245,12 +1245,13 @@ export const getBlocksUserFromChatfow = (communicationchannelid: number): IReque
     parameters: { communicationchannelid },
 });
 
-export const reassignMassiveTicket = (conversationid: string, newuserid: number, comment: string): IRequestBody => ({
+export const reassignMassiveTicket = (conversationid: string, newuserid: number, comment: string, newusergroup: string): IRequestBody => ({
     method: "UFN_CONVERSATION_REASSIGNTICKET_MASSIVE",
     parameters: {
         conversationid,
-        newuserid,
-        comment
+        newuserid: newusergroup !== "" && newuserid === 0 ? 3 : newuserid,
+        comment,
+        newusergroup
     },
 });
 

@@ -475,6 +475,7 @@ export const langKeys = {
     signoff: 'signoff',
 
     changePassword: 'changePassword',
+    status_history: 'status_history',
 
     user: 'user',
     user_plural: 'user_plural',

@@ -128,7 +128,7 @@ const DialogCloseticket: React.FC<{ fetchData: () => void, setOpenModal: (param:
             open={openModal}
             title={t(langKeys.close_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -163,15 +163,18 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+    const user = useSelector(state => state.login.validateToken.user);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         newUserId: number;
         observation: string;
+        newUserGroup: string;
     }>();
 
     useEffect(() => {
         if (waitReassign) {
             if (!reassigningRes.loading && !reassigningRes.error) {
+                const touserid = getValues('newUserGroup') !== "" && getValues('newUserId') === 0 ? 3 : getValues('newUserId');
                 dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_reasign_ticket) }))
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
@@ -206,9 +209,13 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     event: 'reassignTicket',
                     data: {
                         ...ticket,
-                        newuserid: getValues('newUserId'),
+                        wasanswered: true,
+                        newuserid: touserid,
+                        newUserGroup: getValues('newUserGroup'),
+                        lastmessage: `${user?.firstname} ${user?.lastname} reasignó este ticket ${touserid === 3 ? 'HOLDING(' + getValues('newUserGroup') + ")" : ''}`
                     }
                 })))
+                fetchData();
             } else if (reassigningRes.error) {
                 dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.error_unexpected_error) }))
                 dispatch(showBackdrop(false));
@@ -226,17 +233,25 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
         if (openModal) {
             reset({
                 newUserId: 0,
-                observation: ''
+                observation: '',
+                newUserGroup: '',
             })
-            register('newUserId', { validate: (value) => ((value && value > 0) || (t(langKeys.field_required) + "")) });
+            register('newUserId');
             register('observation');
+            register('newUserGroup');
+
         }
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
+        if (data.newUserId === 0 && !data.newUserGroup) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.least_user_or_group) }))
+            return;
+        }
+
         const listConversation = rowWithDataSelected.map(x => x.conversationid).join();
 
-        dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation)));
+        dispatch(execute(reassignMassiveTicket(listConversation, data.newUserId, data.observation, data.newUserGroup)));
         dispatch(showBackdrop(true));
         setWaitReassign(true);
 
@@ -247,7 +262,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             open={openModal}
             title={t(langKeys.reassign_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -262,6 +277,16 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     data={agentsConnected}
                     optionDesc="displayname"
                     optionValue="userid"
+                />
+                <FieldSelect
+                    label={t(langKeys.group_plural)}
+                    className="col-12"
+                    valueDefault={getValues('newUserGroup')}
+                    onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
+                    error={errors?.newUserGroup?.message}
+                    data={multiData?.data[7]?.data || []}
+                    optionDesc="domaindesc"
+                    optionValue="domainvalue"
                 />
                 <FieldEditMulti
                     label={t(langKeys.observation)}
@@ -366,7 +391,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
             open={openModal}
             title={t(langKeys.tipify_ticket) + "s"}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -408,19 +433,83 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
         </DialogZyx>)
 }
 
+const IconOptions: React.FC<{
+    onHandlerReassign?: (e?: any) => void;
+    onHandlerClassify?: (e?: any) => void;
+    onHandlerClose?: (e?: any) => void;
+    onHandlerShowHistory?: (e?: any) => void;
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory }) => {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const { t } = useTranslation();
+
+    const handleClose = () => setAnchorEl(null);
+    return (
+        <>
+            <IconButton
+                aria-label="more"
+                aria-controls="long-menu"
+                aria-haspopup="true"
+                size="small"
+                // disabled={rowWithDataSelected.length === 0}
+                color="primary"
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+            >
+                <MoreVertIcon />
+            </IconButton>
+            <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+            >
+                {onHandlerReassign &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerReassign();
+                    }}>
+                        {t(langKeys.reassign_ticket)}
+                    </MenuItem>
+                }
+                {onHandlerClassify &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerClassify();
+                    }}>
+                        {t(langKeys.tipify_ticket)}
+                    </MenuItem>
+                }
+                {onHandlerClose &&
+                    <MenuItem onClick={() => {
+                        setAnchorEl(null);
+                        onHandlerClose();
+                    }}>
+                        {t(langKeys.close_ticket)}
+                    </MenuItem>
+                }
+            </Menu>
+        </>
+    )
+}
+
+
 const Tickets = () => {
     const { t } = useTranslation();
     const classes = useStyles();
     const mainResult = useSelector(state => state.main);
     const dispatch = useDispatch();
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleClose = () => setAnchorEl(null);
-
     const [allParameters, setAllParameters] = useState<Dictionary>({});
     //const format = (date: Date) => date.toISOString().split('T')[0];
 
-    const [filterStatus, setFilterStatus] = useState('')
 
     const [openDialogTipify, setOpenDialogTipify] = useState(false);
     const [openDialogClose, setOpenDialogClose] = useState(false);
@@ -449,6 +538,33 @@ const Tickets = () => {
 
     const columns = React.useMemo(
         () => [
+            {
+                accessor: 'leadid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const ticket = props.cell.row.original;
+                    if (ticket.estadoconversacion === "CERRADO")
+                        return null;
+                    return (
+                        <IconOptions
+                            onHandlerReassign={() => {
+                                setRowWithDataSelected([ticket]);
+                                setOpenDialogReassign(true);
+                            }}
+                            onHandlerClassify={() => {
+                                setRowWithDataSelected([ticket]);
+                                setOpenDialogClose(true);
+                            }}
+                            onHandlerClose={() => {
+                                setRowWithDataSelected([ticket]);
+                                setOpenDialogClose(true);
+                            }}
+                        />
+                    )
+                }
+            },
             {
                 Header: t(langKeys.ticket_numeroticket),
                 accessor: 'numeroticket',
@@ -500,38 +616,33 @@ const Tickets = () => {
                 Header: t(langKeys.status),
                 accessor: 'estadoconversacion'
             },
-            // {
-            //     Header: t(langKeys.ticket_fecha),
-            //     accessor: 'fecha',
-            //     type: 'date',
-            //     Cell: (props: any) => {
-            //         const row = props.cell.row.original;
-            //         return convertLocalDate(row.fecha).toLocaleDateString()
-            //     }
-            // },
             {
-                Header: t(langKeys.ticket_firstusergroup),
-                accessor: 'firstusergroup'
+                Header: t(langKeys.ticket_tipocierre),
+                accessor: 'tipocierre'
             },
             {
-                Header: t(langKeys.ticket_ticketgroup),
-                accessor: 'ticketgroup'
+                Header: t(langKeys.ticket_duraciontotal),
+                accessor: 'duraciontotal',
+                type: 'time'
             },
-           
-            
             {
-                Header: t(langKeys.ticket_canalpersonareferencia),
-                accessor: 'canalpersonareferencia'
+                Header: t(langKeys.ticket_duracionreal),
+                accessor: 'duracionreal',
+                type: 'time'
             },
-           
             {
-                Header: t(langKeys.ticket_fechaprimeraconversacion),
-                accessor: 'fechaprimeraconversacion',
+                Header: t(langKeys.ticket_duracionpausa),
+                accessor: 'duracionpausa',
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_fechahandoff),
+                accessor: 'fechahandoff',
                 type: 'date',
                 sortType: 'datetime',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return row.fechaprimeraconversacion ? convertLocalDate(row.fechaprimeraconversacion).toLocaleString() : ''
+                    return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
                 }
             },
             {
@@ -542,16 +653,6 @@ const Tickets = () => {
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
                     return row.fechaultimaconversacion ? convertLocalDate(row.fechaultimaconversacion).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.ticket_fechahandoff),
-                accessor: 'fechahandoff',
-                type: 'date',
-                sortType: 'datetime',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.fechahandoff ? convertLocalDate(row.fechahandoff).toLocaleString() : ''
                 }
             },
             {
@@ -571,12 +672,9 @@ const Tickets = () => {
                 accessor: 'empresa'
             },
             {
-                Header: t(langKeys.ticket_attentiongroup),
-                accessor: 'attentiongroup'
-            },
-            {
-                Header: t(langKeys.ticket_classification),
-                accessor: 'classification'
+                Header: t(langKeys.ticket_tmoasesor),
+                accessor: 'tmoasesor',
+                type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuesta),
@@ -589,33 +687,13 @@ const Tickets = () => {
                 type: 'time'
             },
             {
-                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
-                accessor: 'tiempopromediorespuestaasesor',
-                type: 'time'
-            },
-            {
                 Header: t(langKeys.ticket_tiempopromediorespuestapersona),
                 accessor: 'tiempopromediorespuestapersona',
                 type: 'time'
             },
             {
-                Header: t(langKeys.ticket_duraciontotal),
-                accessor: 'duraciontotal',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_duracionreal),
-                accessor: 'duracionreal',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_duracionpausa),
-                accessor: 'duracionpausa',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tmoasesor),
-                accessor: 'tmoasesor',
+                Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                accessor: 'tiempopromediorespuestaasesor',
                 type: 'time'
             },
             {
@@ -624,44 +702,36 @@ const Tickets = () => {
                 type: 'time'
             },
             {
-                Header: t(langKeys.ticket_tipocierre),
-                accessor: 'tipocierre'
+                Header: t(langKeys.ticket_tdatime),
+                accessor: 'tdatime',
+                type: 'time'
             },
             {
-                Header: t(langKeys.ticket_tipification),
-                accessor: 'tipification'
+                Header: t(langKeys.ticket_classification),
+                accessor: 'classification'
+            },
+
+            {
+                Header: t(langKeys.ticket_documenttype),
+                accessor: 'documenttype'
             },
             {
-                Header: t(langKeys.ticket_firstname),
-                accessor: 'firstname'
+                Header: t(langKeys.ticket_email),
+                accessor: 'email'
             },
             {
-                Header: t(langKeys.ticket_contact),
-                accessor: 'contact'
+                Header: t(langKeys.ticket_firstusergroup),
+                accessor: 'firstusergroup'
             },
-            // {
-            //     Header: t(langKeys.ticket_lastname),
-            //     accessor: 'lastname'
-            // },
-            // {
-            //     Header: t(langKeys.ticket_email),
-            //     accessor: 'email'
-            // },
-            
+            {
+                Header: t(langKeys.ticket_ticketgroup),
+                accessor: 'ticketgroup'
+            },
             {
                 Header: t(langKeys.ticket_balancetimes),
                 accessor: 'balancetimes',
                 type: 'number',
                 sortType: 'number',
-            },
-            {
-                Header: t(langKeys.ticket_documenttype),
-                accessor: 'documenttype'
-            }
-            ,
-            {
-                Header: t(langKeys.ticket_dni),
-                accessor: 'dni'
             },
             {
                 Header: t(langKeys.ticket_abandoned),
@@ -672,18 +742,9 @@ const Tickets = () => {
                 }
             },
             {
-                Header: t(langKeys.ticket_enquiries),
-                accessor: 'enquiries'
-            },
-            {
                 Header: t(langKeys.ticket_labels),
                 accessor: 'labels'
             },
-            {
-                Header: t(langKeys.ticket_tdatime),
-                accessor: 'tdatime',
-                type: 'time'
-            }
         ],
         []
     );
@@ -697,12 +758,6 @@ const Tickets = () => {
         dispatch(exportData(getTicketExport({
             filters: {
                 ...filters,
-                ...(filterStatus ? {
-                    estadoconversacion: {
-                        value: filterStatus,
-                        operator: "equals"
-                    }
-                } : {})
             },
             sorts,
             startdate: daterange.startDate!,
@@ -723,12 +778,6 @@ const Tickets = () => {
             sorts: sorts,
             filters: {
                 ...filters,
-                ...(filterStatus ? {
-                    estadoconversacion: {
-                        value: filterStatus,
-                        operator: "equals"
-                    }
-                } : {})
             },
             ...allParameters
         })))
@@ -738,11 +787,11 @@ const Tickets = () => {
         fetchData(fetchDataAux);
     };
 
-    useEffect(() => {
-        if (fetchDataAux.pageSize) {
-            fetchData(fetchDataAux);
-        }
-    }, [filterStatus])
+    // useEffect(() => {
+    //     if (fetchDataAux.pageSize) {
+    //         fetchData(fetchDataAux);
+    //     }
+    // }, [])
 
     useEffect(() => {
         dispatch(getMultiCollection([
@@ -753,6 +802,7 @@ const Tickets = () => {
             getClassificationLevel1("TIPIFICACION"),
             getListUsers(),
             getUserSel(0),
+            getValuesFromDomain("GRUPOS"),
         ]));
 
         return () => {
@@ -790,36 +840,6 @@ const Tickets = () => {
                     <div className={classes.title}>
                         {t(langKeys.ticket_plural)}
                     </div>
-                    {/* <div style={{ display: 'flex', gap: 32 }}>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === '',
-                            })}
-                            onClick={() => setFilterStatus('')}
-                        >{t(langKeys.all)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'ASIGNADO',
-                            })}
-                            onClick={() => setFilterStatus('ASIGNADO')}
-                        >{t(langKeys.assigned)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'CERRADO',
-                            })}
-                            onClick={() => setFilterStatus('CERRADO')}
-                        >{t(langKeys.closed)}
-                        </div>
-                        <div
-                            className={clsx(classes.filterStatus, {
-                                [classes.filterStatusActive]: filterStatus === 'PENDIENTE',
-                            })}
-                            onClick={() => setFilterStatus('PENDIENTE')}
-                        >{t(langKeys.pending)}
-                        </div>
-                    </div> */}
                 </div>
                 <div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -843,50 +863,11 @@ const Tickets = () => {
                 setSelectedRows={setSelectedRows}
                 filterRangeDate="today"
                 ButtonsElement={() => (
-                    <>
-                        <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            size="small"
-                            disabled={rowWithDataSelected.length === 0}
-                            color="primary"
-                            onClick={(e) => setAnchorEl(e.currentTarget)}
-                        >
-                            <MoreVertIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorEl}
-                            getContentAnchorEl={null}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={Boolean(anchorEl)}
-                            onClose={handleClose}
-                        >
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogReassign(true)
-                            }}>{t(langKeys.reassign_ticket)}
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogClose(true)
-                            }}>{t(langKeys.close_ticket)}
-                            </MenuItem>
-                            <MenuItem onClick={(e) => {
-                                setAnchorEl(null)
-                                setOpenDialogTipify(true)
-                            }}>{t(langKeys.tipify_ticket)}
-                            </MenuItem>
-                        </Menu>
-                    </>
+                    <IconOptions
+                        onHandlerReassign={() => setOpenDialogReassign(true)}
+                        onHandlerClassify={() => setOpenDialogClose(true)}
+                        onHandlerClose={() => setOpenDialogTipify(true)}
+                    />
                 )}
                 FiltersElement={React.useMemo(() => (
                     <>
