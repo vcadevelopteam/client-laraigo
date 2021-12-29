@@ -20,4 +20,9 @@ export interface IPersonDomains {
     agents?: Dictionary[];
     templates?: Dictionary[];
     channels?: Dictionary[];
+    company?: Dictionary[];
+    billinggroups?: Dictionary[];
+    genericstatus?: Dictionary[];
+    userstatus?: Dictionary[];
+    roles?: Dictionary[];
 }
