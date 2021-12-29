@@ -402,6 +402,17 @@ export const Person: FC = () => {
     const [typeTemplate, setTypeTemplate] = useState('');
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const filters = useMemo(() => {
+        const map: { [key: string]: { value: string, operator: string } } = {};
+        query.forEach((value, key) => {
+            if (key === "endDate" || key === "startDate" || key === "page" || key.includes('-operator')) {
+                return;
+            }
+
+            map[key] = { value, operator: query.get(`${key}-operator`)! };
+        });
+        return map;
+    }, [query]);
 
     const goToPersonDetail = (person: IPerson) => {
         history.push({
@@ -905,8 +916,9 @@ export const Person: FC = () => {
                 }}
                 initialEndDate={Number(query.get('endDate'))}
                 initialStartDate={Number(query.get('startDate'))}
-                // initialFilters={}
+                initialFilters={filters}
                 initialPageIndex={Number(query.get('page'))}
+                autotrigger
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}

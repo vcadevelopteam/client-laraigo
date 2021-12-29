@@ -239,6 +239,10 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
 
     useEffect(() => {
         if (Object.keys(filters).length === 0) setValue('');
+        else if (header in filters) {
+            setValue(filters[header].value);
+            setoperator(filters[header].operator);
+        }
     }, [filters]);
 
     return (
@@ -338,6 +342,7 @@ const TableZyx = React.memo(({
         startDate: initialStartDate,
         endDate: initialEndDate,
         page: initialPageIndex,
+        ...initialFilters,
     });
     const {
         getTableProps,
@@ -515,7 +520,7 @@ const TableZyx = React.memo(({
             }
         })
     }
-console.log('DateRange:', dateRange, initialEndDate);
+
     return (
         <Box width={1}>
             {titlemodule && <div className={classes.title}>{titlemodule}</div>}
