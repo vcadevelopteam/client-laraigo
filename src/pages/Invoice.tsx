@@ -798,7 +798,7 @@ const InvoiceGeneration: FC = () => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: "¿Está seguro de anular la factura?",
+            question: t(langKeys.cancelinvoice),
             callback
         }))
     }
@@ -812,7 +812,7 @@ const InvoiceGeneration: FC = () => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: "¿Está seguro de regenerar la factura?",
+            question: t(langKeys.regenerateinvoice),
             callback
         }))
     }
@@ -825,7 +825,7 @@ const InvoiceGeneration: FC = () => {
 
         dispatch(manageConfirmation({
             visible: true,
-            question: "¿Está seguro de envíar la factura?",
+            question: t(langKeys.sendinvoice),
             callback
         }))
     }
@@ -913,7 +913,7 @@ const InvoiceControl: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: "Factura anulada correctamente" }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.invoicesuccessfullyvoided) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
