@@ -1,4 +1,4 @@
-import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic } from "@types";
+import { IActionCall, IRequestBodyPaginated, IRequestBody, ITransaction, IRequestBodyDynamic, Dictionary } from "@types";
 import { CommonService } from "network";
 import actionTypes from "./actionTypes";
 
@@ -81,14 +81,15 @@ export const uploadFile = (data: FormData): IActionCall => ({
 export const resetUploadFile = (): IActionCall => ({ type: actionTypes.UPLOAD_FILE_RESET });
 
 
-export const exportData = (requestBody: IRequestBody, reportName: string = "", formatToExport: "excel" | "csv" = "excel", isNotPaginated: boolean = false): IActionCall => ({
+export const exportData = (requestBody: IRequestBody, reportName: string = "", formatToExport: "excel" | "csv" = "excel", isNotPaginated: boolean = false, headerClient: Dictionary[] | null = null): IActionCall => ({
     callAPI: () => CommonService.exportData({
         ...requestBody,
         parameters: {
             ...requestBody.parameters,
             formatToExport,
             isNotPaginated,
-            reportName
+            reportName,
+            headerClient
         }
     }),
     types: {

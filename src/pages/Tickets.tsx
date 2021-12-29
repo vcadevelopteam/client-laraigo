@@ -820,6 +820,10 @@ const Tickets = () => {
     }, [mainResult]);
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header
+        }))
         dispatch(exportData(getTicketExport({
             filters: {
                 ...filters,
@@ -828,7 +832,7 @@ const Tickets = () => {
             startdate: daterange.startDate!,
             enddate: daterange.endDate!,
             ...allParameters
-        })));
+        }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitSave(true);
     };
