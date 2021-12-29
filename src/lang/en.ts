@@ -312,6 +312,8 @@ const translation: LangKeys = {
     status_pendiente: 'pending',
     status_pending: 'pending',
     status_cerrado: 'closed',
+    status_conectado: 'connected',
+    status_desconectado: 'disconnected',
 
     type_corp_ninguno: 'none',
     type_corp_natural: 'Natural person',
@@ -1069,6 +1071,9 @@ const translation: LangKeys = {
     all: 'All',
     istrue: 'Is true',
     isfalse: 'Is false',
+
+    true: 'True',
+    false: 'False',
 
     error_login_user_incorrect: "Incorrect user or password",
     error_login_user_pending: "User pending confirmation",

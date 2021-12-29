@@ -479,6 +479,8 @@ const translation: LangKeys = {
     status_pendiente: 'pendiente',
     status_pending: 'pendiente',
     status_cerrado: 'cerrado',
+    status_conectado: 'conectado',
+    status_desconectado: 'desconectado',
 
     type_corp_ninguno: 'Ninguno',
     type_corp_natural: 'Persona natural',
@@ -1007,6 +1009,9 @@ const translation: LangKeys = {
     istrue: 'Es verdadero',
     isfalse: 'Es falso',
 
+    true: 'Verdadero',
+    false: 'Falso',
+
     error_login_user_incorrect: "Usuario o contraseña incorrecta",
     error_login_user_pending: "Usuario pendiente de confirmación",
     error_login_locked_by_attempts_failed_password: "Tu usuario fue bloqueado por exceder los intentos permitidos al loguearse",
@@ -1152,7 +1157,7 @@ const translation: LangKeys = {
     report_productivity_tmoasesor: 'TMO Asesor',
     report_productivity_holdingwaitingtime: 'Tiempo espera holding',
 
-    report_tipification: 'Tipificaciones',
+    report_tipification: 'Clasificaciones',
     report_tipification_ticket: 'Ticket',
     report_tipification_datehour: 'Fecha ticket - Hora ticket',
     report_tipification_person: 'Persona',

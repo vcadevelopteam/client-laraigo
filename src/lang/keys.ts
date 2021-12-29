@@ -606,6 +606,8 @@ export const langKeys = {
     status_pendiente: 'status_pendiente',
     status_pending: 'status_pending',
     status_cerrado: 'status_cerrado',
+    status_conectado: 'status_conectado',
+    status_desconectado: 'status_desconectado',
 
     type_corp_ninguno: 'type_corp_ninguno',
     type_corp_natural: 'type_corp_natural',
@@ -1091,6 +1093,9 @@ export const langKeys = {
     all: 'all',
     istrue: 'istrue',
     isfalse: 'isfalse',
+
+    true: 'true',
+    false: 'false',
 
     error_login_user_incorrect: "error_login_user_incorrect",
     error_login_user_pending: "error_login_user_pending",

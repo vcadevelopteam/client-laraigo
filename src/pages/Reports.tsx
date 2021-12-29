@@ -125,6 +125,18 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         type: "number"
                     });
                     break;
+                case "boolean":
+                    columns.push({
+                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                        accessor: x.proargnames,
+                        type: "boolean",
+                        Cell: (props: any) => {
+                            const column = props.cell.column;
+                            const row = props.cell.row.original;
+                            return (t(`${row[column.id]}`.toLowerCase()) || "").toUpperCase()
+                        }
+                    });
+                    break;
                 case "timestamp without time zone":
                     columns.push({
                         Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
@@ -148,11 +160,37 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                     });
                     break;
                 default:
-                    columns.push({
-                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
-                        accessor: x.proargnames,
-                        type: "string"
-                    });
+                    switch (row?.origin) {
+                        case "loginhistory":
+                            switch (x.proargnames) {
+                                case "status":
+                                    columns.push({
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        type: "string",
+                                        Cell: (props: any) => {
+                                            const { status } = props.cell.row.original;
+                                            return (t(`status_${status}`.toLowerCase()) || "").toUpperCase()
+                                        }
+                                    });
+                                    break;
+                                default:
+                                    columns.push({
+                                        Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                        accessor: x.proargnames,
+                                        type: "string"
+                                    });
+                                    break;
+                            }
+                            break;
+                        default:
+                            columns.push({
+                                Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                                accessor: x.proargnames,
+                                type: "string"
+                            });
+                            break;
+                    }
                     break;
             }
         });
