@@ -72,6 +72,7 @@ export const langKeys = {
     tmeexpected: "tmeexpected",
     tmoexpected: "tmoexpected",
     tmoadviserexpected: "tmoadviserexpected",
+    dropusers: "dropusers",
     cancelinvoice: "cancelinvoice",
     regenerateinvoice: "regenerateinvoice",
     sendinvoice: "sendinvoice",

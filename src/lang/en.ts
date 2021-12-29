@@ -1253,7 +1253,7 @@ const translation: LangKeys = {
     report_userproductivity_holdingtickets: 'Holding ticket number',
     report_userproductivity_asesortickets: 'Agent ticket number',
     report_userproductivity_usersconnected: 'Connected agents',
-
+    dropusers: "Drop users",
     report_userproductivity_userid: 'Id',
     report_userproductivity_fullname: 'Name of agent',
     report_userproductivity_hourfirstlogin: 'First login',

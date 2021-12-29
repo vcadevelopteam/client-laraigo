@@ -692,6 +692,7 @@ const translation: LangKeys = {
     duplicate: 'Duplicar',
     label: "Etiqueta",
     newuser: "Nuevo usuario",
+    dropusers: "Baja de usuarios",
     newdomain: "Nuevo dominio",
     newgroupconfig: "Nuevo grupo configuración",
     newinnapropiateword: "Nueva palabra inapropiada",
