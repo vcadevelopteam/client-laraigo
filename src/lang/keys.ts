@@ -820,6 +820,7 @@ export const langKeys = {
     advance_search: 'advance_search',
     search_inbox: 'search_inbox',
     deletedata: 'deletedata',
+    refresh: 'refresh',
 
     newmessagetemplate: 'newmessagetemplate',
     messagetemplate: 'messagetemplate',
@@ -1065,6 +1066,7 @@ export const langKeys = {
 
     today: 'today',
     yes: 'yes',
+    no: 'no',
     yesterday: 'yesterday',
     thisWeek: 'thisWeek',
     lastWeek: 'lastWeek',

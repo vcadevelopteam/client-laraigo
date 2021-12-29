@@ -241,13 +241,17 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )
                     )
                 }
-                <div style={{ display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-                    <FormControlLabel
-                        control={<Switch checked={state.checkedA}
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                    {t(langKeys.report_userproductivity_filter_includebot)}
+                    <div style={{ display: 'flex', alignItems: 'center' }}> 
+                        {t(langKeys.no)}
+                        <Switch
+                            checked={state.checkedA}
                             onChange={handleChange}
-                            name="checkedA" />}
-                        label={t(langKeys.report_userproductivity_filter_includebot)}
-                    />
+                            name="checkedA"
+                        />
+                        {t(langKeys.yes)}
+                    </div>
                 </div>
                 <Box width={1}>
                     <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
@@ -271,12 +275,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 disabled={detailCustomReport.loading}
                                 variant="contained"
                                 color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
                                 style={{ backgroundColor: '#55BD84', width: 120 }}
                                 onClick={() => {
                                     fetchData()
                                 }}
-                            >{t(langKeys.search)}
+                            >{t(langKeys.refresh)}
                             </Button>
                         </div>
                     </Box>
