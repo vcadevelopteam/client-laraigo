@@ -368,6 +368,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     }, [dispatch]);
 
     useEffect(() => {
+        console.log(agentSelected)
         dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
         return () => {
             dispatch(resetGetTickets())

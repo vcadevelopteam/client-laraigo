@@ -865,7 +865,7 @@ const Tickets = () => {
             getValuesFromDomain("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
-            getListUsers(),
+            getUserSel(0),
             getValuesFromDomain("GRUPOS"),
         ]));
 
@@ -966,7 +966,7 @@ const Tickets = () => {
                             onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
                             variant="outlined"
                             data={mainResult?.multiData?.data[5]?.data || []}
-                            optionDesc="displayname"
+                            optionDesc="usr"
                             optionValue="userid"
                             disabled={mainPaginated.loading}
                         />

@@ -374,6 +374,14 @@ export const setIsFiltering = (state: IState, action: IAction): IState => {
     };
 }
 
+export const resetInboxSupervisor = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        agentSelected: null
+    };
+}
+
+
 export const newMessageFromClient = (state: IState, action: IAction): IState => {
     const data: INewMessageParams = action.payload;
     let newticketList = [...state.ticketList.data];

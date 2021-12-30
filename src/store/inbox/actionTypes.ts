@@ -111,6 +111,7 @@ const actionType = {
     WS_CONNECT: 'WS_CONNECT',
     WS_CONNECTED: 'WS_CONNECTED',
     EMIT_EVENT: 'EMIT_EVENT',
+    RESET_INBOX_SUPERVISOR: 'RESET_INBOX_SUPERVISOR',
 };
 
 export default actionType;
