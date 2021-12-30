@@ -14,7 +14,7 @@ import Button from '@material-ui/core/Button';
 import { Trans } from 'react-i18next';
 import { DownloadIcon } from 'icons';
 
-const html2pdf = require('html2pdf.js');
+// const html2pdf = require('html2pdf.js');
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -318,20 +318,20 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
 
         const downloadPdfDocument = () => {
-            if (el.current) {
-                const gg = document.createElement('div');
-                gg.innerHTML = el.current.innerHTML;
-                gg.style.margin = '16px'
-                var opt = {
-                    html2canvas: {
-                        dpi: 300,
-                        useCORS: true,
-                    }
-                };
-                html2pdf()
-                    .from(gg).set(opt)
-                    .save(downloadFileName);
-            }
+            // if (el.current) {
+            //     const gg = document.createElement('div');
+            //     gg.innerHTML = el.current.innerHTML;
+            //     gg.style.margin = '16px'
+            //     var opt = {
+            //         html2canvas: {
+            //             dpi: 300,
+            //             useCORS: true,
+            //         }
+            //     };
+            //     html2pdf()
+            //         .from(gg).set(opt)
+            //         .save(downloadFileName);
+            // }
         }
         return (
             <Button
