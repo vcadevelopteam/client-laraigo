@@ -150,6 +150,16 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
     }
 });
 
+export const getValuesFromDomainCorp = (domainname: string, keytmp?: any, corpid?: number | null, orgid?: number | null): IRequestBody => ({
+    method: "UFN_DOMAIN_LST_VALORES",
+    key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
+    parameters: {
+        domainname,
+        corpid: corpid || undefined,
+        orgid: orgid || undefined
+    }
+});
+
 export const getListUsers = (): IRequestBody => ({
     method: "UFN_CONVERSATION_LST_USRDELEGATE2",
     key: "UFN_CONVERSATION_LST_USRDELEGATE2",
@@ -2226,4 +2236,16 @@ export const getLeadTasgsSel = () => ({
     method: "UFN_LEAD_TAGSDISTINCT_SEL",
     key: "UFN_LEAD_TAGSDISTINCT_SEL",
     parameters: {},
+});
+
+export const getAppsettingInvoiceSel = () => ({
+    method: "UFN_APPSETTING_INVOICE_SEL",
+    key: "UFN_APPSETTING_INVOICE_SEL",
+    parameters: {},
+});
+
+export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }: Dictionary): IRequestBody => ({
+    method: "UFN_APPSETTING_INVOICE_UPDATE",
+    key: "UFN_APPSETTING_INVOICE_UPDATE",
+    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }
 });

@@ -3,19 +3,19 @@ import React, { FC, Fragment, useEffect, useState } from 'react'; // we need thi
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString } from 'common/helpers';
-import { Dictionary } from "@types";
+import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
+import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomain, getValuesFromDomainCorp } from 'common/helpers';
+import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import { useForm } from 'react-hook-form';
-import { getCollection, getMultiCollection, execute,exportData } from 'store/main/actions';
+import { getCollection, getMultiCollection, execute,exportData, getMultiCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
 import ClearIcon from '@material-ui/icons/Clear';
-import { Box, FormControlLabel, Tabs, TextField } from '@material-ui/core';
+import { Box, FormControlLabel, Tabs, TextField, IconButton, Input, InputAdornment, InputLabel } from '@material-ui/core';
 import { getCountryList } from 'store/signup/actions';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -32,6 +32,7 @@ import {
 } from '@material-ui/icons';
 import DateFnsUtils from '@date-io/date-fns';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import Typography from '@material-ui/core/Typography';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -3388,13 +3389,661 @@ const PeriodReport: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     
 }
 
+const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+    const multiResult = useSelector(state => state.main.multiDataAux);
+    
+    const [domainCurrency, setDomainCurrency] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [domainDocument, setDomainDocument] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [domainInvoiceProvider, setDomainInvoiceProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [domainPaymentProvider, setDomainPaymentProvider] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [domainPrinting, setDomainPrinting] = useState<{ loading: boolean; data: Dictionary[] }>({ loading: false, data: [] });
+    const [edit, setEdit] = useState(true);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const fetchData = () => dispatch(getCollection(getAppsettingInvoiceSel()));
+
+    const [fields, setFields] = useState({
+        "method": "UFN_APPSETTING_INVOICE_UPDATE",
+        "parameters": {
+            "ruc": "",
+            "businessname": "",
+            "tradename": "",
+            "fiscaladdress": "",
+            "ubigeo": "",
+            "country": "",
+            "emittertype": "",
+            "currency": "",
+            "invoiceserie": "",
+            "invoicecorrelative": 0,
+            "annexcode": "",
+            "igv": 0.00,
+            "printingformat": "",
+            "xmlversion": "",
+            "ublversion": "",
+            "returnpdf": false,
+            "returnxmlsunat": false,
+            "returnxml": false,
+            "invoiceprovider": "",
+            "sunaturl": "",
+            "token": "",
+            "sunatusername": "",
+            "paymentprovider": "",
+            "publickey": "",
+            "privatekey": ""
+        }
+    })
+
+    useEffect(() => {
+        fetchData();
+
+        setDomainCurrency({ loading: true, data: [] });
+        setDomainDocument({ loading: true, data: [] });
+        setDomainInvoiceProvider({ loading: true, data: [] });
+        setDomainPaymentProvider({ loading: true, data: [] });
+        setDomainPrinting({ loading: true, data: [] });
+
+        dispatch(getMultiCollectionAux([
+            getValuesFromDomainCorp('BILLINGCURRENCY', '_CURRENCY', 1, 0),
+            getValuesFromDomainCorp('BILLINGDOCUMENTTYPE', '_DOCUMENT', 1, 0),
+            getValuesFromDomainCorp('BILLINGINVOICEPROVIDER', '_INVOICEPROVIDER', 1, 0),
+            getValuesFromDomainCorp('BILLINGPAYMENTPROVIDER', '_PAYMENTPROVIDER', 1, 0),
+            getValuesFromDomainCorp('BILLINGPRINTING', '_PRINTING', 1, 0),
+        ]));
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false));
+            if (mainResult.mainData.data) {
+                if (mainResult.mainData.data[0]) {
+                    setFields({
+                        "method": "UFN_APPSETTING_INVOICE_UPDATE",
+                        "parameters": {
+                            "ruc": mainResult.mainData.data[0].ruc,
+                            "businessname": mainResult.mainData.data[0].businessname,
+                            "tradename": mainResult.mainData.data[0].tradename,
+                            "fiscaladdress": mainResult.mainData.data[0].fiscaladdress,
+                            "ubigeo": mainResult.mainData.data[0].ubigeo,
+                            "country": mainResult.mainData.data[0].country,
+                            "emittertype": mainResult.mainData.data[0].emittertype,
+                            "currency": mainResult.mainData.data[0].currency,
+                            "invoiceserie": mainResult.mainData.data[0].invoiceserie,
+                            "invoicecorrelative": mainResult.mainData.data[0].invoicecorrelative,
+                            "annexcode": mainResult.mainData.data[0].annexcode,
+                            "igv": mainResult.mainData.data[0].igv,
+                            "printingformat": mainResult.mainData.data[0].printingformat,
+                            "xmlversion": mainResult.mainData.data[0].xmlversion,
+                            "ublversion": mainResult.mainData.data[0].ublversion,
+                            "returnpdf": mainResult.mainData.data[0].returnpdf,
+                            "returnxmlsunat": mainResult.mainData.data[0].returnxmlsunat,
+                            "returnxml": mainResult.mainData.data[0].returnxml,
+                            "invoiceprovider": mainResult.mainData.data[0].invoiceprovider,
+                            "sunaturl": mainResult.mainData.data[0].sunaturl,
+                            "token": mainResult.mainData.data[0].token,
+                            "sunatusername": mainResult.mainData.data[0].sunatusername,
+                            "paymentprovider": mainResult.mainData.data[0].paymentprovider,
+                            "publickey": mainResult.mainData.data[0].publickey,
+                            "privatekey": mainResult.mainData.data[0].privatekey
+                        }
+                    });
+                }
+            }
+        }
+    }, [mainResult])
+
+    useEffect(() => {
+        const indexDomainCurrency = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_CURRENCY'));
+
+        if (indexDomainCurrency > -1) {
+            setDomainCurrency({ loading: false, data: multiResult.data[indexDomainCurrency] && multiResult.data[indexDomainCurrency].success ? multiResult.data[indexDomainCurrency].data : [] });
+        }
+
+        const indexDomainDocument = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_DOCUMENT'));
+
+        if (indexDomainDocument > -1) {
+            setDomainDocument({ loading: false, data: multiResult.data[indexDomainDocument] && multiResult.data[indexDomainDocument].success ? multiResult.data[indexDomainDocument].data : [] });
+        }
+
+        const indexDomainInvoiceProvider = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_INVOICEPROVIDER'));
+
+        if (indexDomainInvoiceProvider > -1) {
+            setDomainInvoiceProvider({ loading: false, data: multiResult.data[indexDomainInvoiceProvider] && multiResult.data[indexDomainInvoiceProvider].success ? multiResult.data[indexDomainInvoiceProvider].data : [] });
+        }
+
+        const indexDomainPaymentProvider = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_PAYMENTPROVIDER'));
+
+        if (indexDomainPaymentProvider > -1) {
+            setDomainPaymentProvider({ loading: false, data: multiResult.data[indexDomainPaymentProvider] && multiResult.data[indexDomainPaymentProvider].success ? multiResult.data[indexDomainPaymentProvider].data : [] });
+        }
+
+        const indexDomainPrinting = multiResult.data.findIndex((x: MultiData) => x.key === ('UFN_DOMAIN_LST_VALORES_PRINTING'));
+
+        if (indexDomainPrinting > -1) {
+            setDomainPrinting({ loading: false, data: multiResult.data[indexDomainPrinting] && multiResult.data[indexDomainPrinting].success ? multiResult.data[indexDomainPrinting].data : [] });
+        }
+    }, [multiResult]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_edit) }))
+                fetchData();
+                dispatch(showBackdrop(false));
+            }
+            else if (executeResult.error) {
+                dispatch(showSnackbar({ show: true, success: false, message: t(executeResult.code || "error_unexpected_db_error") }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const { handleSubmit, formState: { errors } } = useForm({
+        defaultValues: fields.parameters
+    });
+
+    const onSubmit = handleSubmit(() => {
+        const callback = () => {
+            dispatch(execute(updateAppsettingInvoice(fields.parameters)));
+            setWaitSave(true);
+        }
+        if (
+            fields.parameters.ruc === '' ||
+            fields.parameters.businessname === '' ||
+            fields.parameters.tradename === '' ||
+            fields.parameters.fiscaladdress === '' ||
+            fields.parameters.ubigeo === '' ||
+            fields.parameters.country === '' ||
+            fields.parameters.emittertype === '' ||
+            fields.parameters.currency === '' ||
+            fields.parameters.invoiceserie === '' ||
+            fields.parameters.invoicecorrelative === 0 ||
+            fields.parameters.annexcode === '' ||
+            fields.parameters.igv === 0 ||
+            fields.parameters.printingformat === '' ||
+            fields.parameters.xmlversion === '' ||
+            fields.parameters.ublversion === '' ||
+            fields.parameters.invoiceprovider === '' ||
+            fields.parameters.sunaturl === '' ||
+            fields.parameters.token === '' ||
+            fields.parameters.sunatusername === '' ||
+            fields.parameters.paymentprovider === '' ||
+            fields.parameters.publickey === '' ||
+            fields.parameters.privatekey === ''
+            ) {
+            dispatch(showSnackbar({ show: true, success: false, message: t(langKeys.required_fields_missing) }));
+        }
+        else {
+            dispatch(manageConfirmation({
+                visible: true,
+                question: t(langKeys.confirmation_save),
+                callback
+            }))
+        }
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        {edit ?
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button> :
+                            null
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupgeneralinformation)}</Typography>
+
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingruc)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.ruc || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, ruc: value}})}
+                                error={errors?.ruc?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingruc)}
+                                value={fields ? (fields.parameters.ruc || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingcompanyname)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.businessname || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, businessname: value}})}
+                                error={errors?.businessname?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingcompanyname)}
+                                value={fields ? (fields.parameters.businessname || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingcommercialname)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.tradename || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, tradename: value}})}
+                                error={errors?.tradename?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingcommercialname)}
+                                value={fields ? (fields.parameters.tradename || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingfiscaladdress)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.fiscaladdress || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, fiscaladdress: value}})}
+                                error={errors?.fiscaladdress?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingfiscaladdress)}
+                                value={fields ? (fields.parameters.fiscaladdress || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingubigeocode)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.ubigeo || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, ubigeo: value}})}
+                                error={errors?.ubigeo?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingubigeocode)}
+                                value={fields ? (fields.parameters.ubigeo || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldSelect
+                                label={t(langKeys.billingcountry)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.country || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, country: value.code}})}
+                                error={errors?.country?.message}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="code"
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingcountry)}
+                                value={fields ? (fields.parameters.country || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupbillinginformation)}</Typography>
+
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldSelect
+                                label={t(langKeys.billingemittertype)}
+                                loading={domainDocument.loading}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.emittertype || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, emittertype: value.domainvalue}})}
+                                error={errors?.emittertype?.message}
+                                data={domainDocument.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                uset={true}
+                                prefixTranslation='billingfield_'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingemittertype)}
+                                value={fields ? (fields.parameters.emittertype || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldSelect
+                                label={t(langKeys.billingcurrency)}
+                                loading={domainCurrency.loading}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.currency || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, currency: value.domainvalue}})}
+                                error={errors?.currency?.message}
+                                data={domainCurrency.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                uset={true}
+                                prefixTranslation='billingfield_'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingcurrency)}
+                                value={fields ? (fields.parameters.currency || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingserial)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.invoiceserie || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, invoiceserie: value}})}
+                                error={errors?.invoiceserie?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingserial)}
+                                value={fields ? (fields.parameters.invoiceserie || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingcorrelative)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.invoicecorrelative || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, invoicecorrelative: value}})}
+                                error={errors?.invoicecorrelative?.message}
+                                type='number'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingcorrelative)}
+                                value={fields ? (fields.parameters.invoicecorrelative.toString() || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingannexcode)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.annexcode || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, annexcode: value}})}
+                                error={errors?.annexcode?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingannexcode)}
+                                value={fields ? (fields.parameters.annexcode || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingtax)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.igv || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, igv: value}})}
+                                error={errors?.igv?.message}
+                                type='number'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingtax)}
+                                value={fields ? (fields.parameters.igv.toString() || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldSelect
+                                label={t(langKeys.billingprintingformat)}
+                                loading={domainPrinting.loading}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.printingformat || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, printingformat: value.domainvalue}})}
+                                error={errors?.printingformat?.message}
+                                data={domainPrinting.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                uset={true}
+                                prefixTranslation='billingfield_'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingprintingformat)}
+                                value={fields ? (fields.parameters.printingformat || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingxmlversion)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.xmlversion || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, xmlversion: value}})}
+                                error={errors?.xmlversion?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingxmlversion)}
+                                value={fields ? (fields.parameters.xmlversion || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingublversion)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.ublversion || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, ublversion: value}})}
+                                error={errors?.ublversion?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingublversion)}
+                                value={fields ? (fields.parameters.ublversion || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <TemplateSwitch
+                                label={t(langKeys.billingreturnpdf)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.returnpdf || false) : false}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, returnpdf: value}})}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingreturnpdf)}
+                                value={fields ? (fields.parameters.returnpdf ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <TemplateSwitch
+                                label={t(langKeys.billingreturncsv)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.returnxmlsunat || false) : false}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, returnxmlsunat: value}})}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingreturncsv)}
+                                value={fields ? (fields.parameters.returnxmlsunat ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <TemplateSwitch
+                                label={t(langKeys.billingreturnxml)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.returnxml || false) : false}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, returnxml: value}})}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingreturnxml)}
+                                value={fields ? (fields.parameters.returnxml ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetupsunatinformation)}</Typography>
+
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldSelect
+                                label={t(langKeys.billinginvoiceprovider)}
+                                loading={domainInvoiceProvider.loading}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.invoiceprovider || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, invoiceprovider: value.domainvalue}})}
+                                error={errors?.invoiceprovider?.message}
+                                data={domainInvoiceProvider.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                uset={true}
+                                prefixTranslation='billingfield_'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billinginvoiceprovider)}
+                                value={fields ? (fields.parameters.invoiceprovider || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingapiendpoint)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.sunaturl || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, sunaturl: value}})}
+                                error={errors?.sunaturl?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingapiendpoint)}
+                                value={fields ? (fields.parameters.sunaturl || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingtoken)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.token || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, token: value}})}
+                                error={errors?.token?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingtoken)}
+                                value={fields ? (fields.parameters.token || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingusername)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.sunatusername || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, sunatusername: value}})}
+                                error={errors?.sunatusername?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingusername)}
+                                value={fields ? (fields.parameters.sunatusername || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <Typography style={{ fontSize: 20, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.billingsetuppaymentinformation)}</Typography>
+
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldSelect
+                            label={t(langKeys.billingpaymentprovider)}
+                                loading={domainPaymentProvider.loading}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.paymentprovider || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, paymentprovider: value.domainvalue}})}
+                                error={errors?.paymentprovider?.message}
+                                data={domainPaymentProvider.data}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                                uset={true}
+                                prefixTranslation='billingfield_'
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingpaymentprovider)}
+                                value={fields ? (fields.parameters.paymentprovider || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingpublickey)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.publickey || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, publickey: value}})}
+                                error={errors?.publickey?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingpublickey)}
+                                value={fields ? (fields.parameters.publickey || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                    <div className="row-zyx">
+                        { edit ?
+                            <FieldEdit
+                                label={t(langKeys.billingprivatekey)}
+                                className="col-6"
+                                valueDefault={fields ? (fields.parameters.privatekey || '') : ''}
+                                onChange={(value) => setFields({...fields, parameters: {...fields.parameters, privatekey: value}})}
+                                error={errors?.privatekey?.message}
+                            /> :
+                            <FieldView
+                                label={t(langKeys.billingprivatekey)}
+                                value={fields ? (fields.parameters.privatekey || '') : ''}
+                                className="col-6"
+                            />
+                        }
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
 const BillingSetup: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const user = useSelector(state => state.login.validateToken.user);
     const countryListreq = useSelector(state => state.signup.countryList);
     const multiData = useSelector(state => state.main.multiData);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:5);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:6);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
     const [dataPlan, setdataPlan] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
@@ -3432,6 +4081,9 @@ const BillingSetup: FC = () => {
                 onChange={(_, value) => setPageSelected(value)}
             >
                 {user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
+                }
+                {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.supportplan)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
@@ -3450,37 +4102,41 @@ const BillingSetup: FC = () => {
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan}/>
+                    <GeneralConfiguration dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
+                    <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList}/>
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
                 </div>
             }
             {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <CostPerPeriod dataPlan={multiData}/>
+                    <ConversationCost dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
-                    <CostPerHSMPeriod dataPlan={multiData}/>
+                    <CostPerPeriod dataPlan={multiData}/>
                 </div>
             }
             {pageSelected === 5 &&
+                <div style={{ marginTop: 16 }}>
+                    <CostPerHSMPeriod dataPlan={multiData}/>
+                </div>
+            }
+            {pageSelected === 6 &&
                 <div style={{ marginTop: 16 }}>
                     <PeriodReport dataPlan={multiData}/>
                 </div>
             }
         </div>
     );
-
 }
 
 export default BillingSetup;
