@@ -169,7 +169,8 @@ const DateRangePicker: FC<DateRangePickerProps> = (props) => {
                             color={theme.palette.primary.main}
                             locale={dateRangeResourceLanguage()}
                             staticRanges={staticRanges}
-                            inputRanges={inputRanges}
+                            
+                            // inputRanges={inputRanges}
                             rangeColors={[theme.palette.primary.main, theme.palette.primary.dark]}
                             {...res}
                         />

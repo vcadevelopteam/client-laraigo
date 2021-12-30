@@ -282,3 +282,6 @@ code {
     padding-left: 4px;
     padding-right: 4px;
 }
+.rdrInputRange {
+    display: none!important
+}

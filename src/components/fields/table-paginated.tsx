@@ -456,9 +456,13 @@ const TableZyx = React.memo(({
         key: 'selection'
     });
 
-    const triggertmp = () => {
+    const triggertmp = (fromButton: boolean = false) => {
+        console.log("fromButton", fromButton)
         fetchData && fetchData({
-            ...pagination, pageSize, daterange: {
+            ...pagination,
+            pageSize,
+            pageIndex: fromButton ? 0 : pagination.pageIndex,
+            daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
                 endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
             }
@@ -468,11 +472,15 @@ const TableZyx = React.memo(({
     useEffect(() => {
         if (pagination?.trigger) {
             triggertmp()
-        } else {
-            triggerSearch && triggertmp();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageSize, pagination, dateRange, triggerSearch])
+
+    useEffect(() => {
+        if (triggerSearch) {
+            triggerSearch && triggertmp(true);
+        }
+    }, [triggerSearch])
 
     useEffect(() => {
         if (autoRefresh?.value) {
@@ -528,7 +536,7 @@ const TableZyx = React.memo(({
                                 style={{ backgroundColor: '#55BD84', width: 120 }}
                                 onClick={() => {
                                     if (triggerSearch)
-                                        triggertmp()
+                                        triggertmp(true)
                                     setTriggerSearch(true)
                                 }}
                             >
