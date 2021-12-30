@@ -284,7 +284,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[7]?.data || []}
+                    data={multiData?.data[6]?.data || []}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -866,7 +866,6 @@ const Tickets = () => {
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
             getListUsers(),
-            getUserSel(0),
             getValuesFromDomain("GRUPOS"),
         ]));
 
@@ -966,8 +965,8 @@ const Tickets = () => {
                             valueDefault={allParameters["lastuserid"] || ""}
                             onChange={(value) => setValue("lastuserid", value ? value.map((o: Dictionary) => o.userid).join() : '')}
                             variant="outlined"
-                            data={mainResult?.multiData?.data[6]?.data || []}
-                            optionDesc="usr"
+                            data={mainResult?.multiData?.data[5]?.data || []}
+                            optionDesc="displayname"
                             optionValue="userid"
                             disabled={mainPaginated.loading}
                         />

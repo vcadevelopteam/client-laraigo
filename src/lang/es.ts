@@ -688,6 +688,8 @@ const translation: LangKeys = {
     deleteRecord: 'Eliminar registro',
     deletedata: 'Eliminar data',
     changeDate: 'Fecha de cambio',
+    corporationdetail: "Detalle corporación",
+    organizationdetail: "Detalle organización",
     select: "Seleccionar",
     edit: 'Editar',
     delete: 'Eliminar',

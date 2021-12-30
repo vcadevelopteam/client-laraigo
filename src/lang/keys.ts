@@ -417,6 +417,8 @@ export const langKeys = {
     newquickreply: "newquickreply",
     newsla: "newsla",
     newcorporation: "newcorporation",
+    corporationdetail: "corporationdetail",
+    organizationdetail: "organizationdetail",
     neworganization: "neworganization",
     newiaservice: "newiaservice",
     newwhitelist: "newwhitelist",

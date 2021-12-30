@@ -1265,6 +1265,8 @@ const translation: LangKeys = {
     report_userproductivity_user: 'User',
     report_userproductivity_fullname: 'Name of agent',
     report_userproductivity_hourfirstlogin: 'First login',
+    corporationdetail: "Corporation detail",
+    organizationdetail: "Organization detail",
     report_userproductivity_totaltickets: 'Ticket quantity',
     report_userproductivity_closedtickets: 'Closed',
     report_userproductivity_asignedtickets: 'Assigned',

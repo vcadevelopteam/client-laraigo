@@ -26,10 +26,6 @@ interface MultiData {
     data: Dictionary[];
     success: boolean;
 }
-const arrayBread = [
-    { id: "view-1", name: "Corporation" },
-    { id: "view-2", name: "Corporation detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -76,7 +72,7 @@ const Corporations: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.corporation),
                 accessor: 'description',
                 NoFilter: true
             },
@@ -88,6 +84,11 @@ const Corporations: FC = () => {
                     const { type } = props.cell.row.original;
                     return (t(`type_corp_${type}`.toLowerCase()) || "").toUpperCase()
                 }
+            },
+            {
+                Header: t(langKeys.billingplan),
+                accessor: 'paymentplandesc',
+                NoFilter: true
             },
             {
                 Header: t(langKeys.status),
@@ -202,6 +203,10 @@ interface DetailCorporationProps {
 const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
+    const [doctype, setdoctype] = useState("");
+    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
+    const doctypeListPE = dataDocType.filter(x=>(x.code==='1'||x.code==='4'||x.code==='6'))
+    const doctypeListOther = dataDocType.filter(x=>(x.code==='0'))
     const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -209,7 +214,6 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     const dataStatus = multiData[0] && multiData[0].success ? multiData[0].data : [];
     const dataType = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataPaymentPlan = multiData[2] && multiData[2].success ? multiData[2].data : [];
-    const dataDocType = multiData[3] && multiData[3].success ? multiData[3].data : [];
     const countryList = useSelector(state => state.signup.countryList);
 
     const { register, handleSubmit, setValue, trigger, getValues, formState: { errors } } = useForm({
@@ -236,12 +240,10 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
     });
 
     React.useEffect(() => {
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('type', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('paymentplanid');
-    }, [edit, register]);
+    }, [doctype]);
 
+    useEffect(() => {
+    }, [executeRes, waitSave])
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
@@ -282,13 +284,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
         }))
     });
 
-    // const onChangeLogo = (value: any) => {
-    //     setValue('logo', value);
-    // }
-
-    // const onChangeLogotype = (value: any) => {
-    //     setValue('logotype', value);
-    // }
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.corporation) },
+        { id: "view-2", name: t(langKeys.corporationdetail) }
+    ];
 
     console.log(getValues('billbyorg'))
 
@@ -402,10 +402,11 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                 <FieldSelect
                                     label={t(langKeys.docType)}
                                     className="col-6"
-                                    valueDefault={getValues("doctype")}
-                                    onChange={(value) => setValue("doctype", value?.code || "")}
+                                    valueDefault={doctype}
+                                    onChange={(value) => {setValue("doctype", value?.code || ""); setdoctype( value?.code || "")}}
                                     error={errors?.doctype?.message}
-                                    data={dataDocType}
+                                    disabled={doctype === "0"}
+                                    data={doctype === "0"? doctypeListOther : doctypeListPE}
                                     optionDesc="description"
                                     optionValue="code"
                                 />
@@ -454,7 +455,9 @@ const DetailCorporation: React.FC<DetailCorporationProps> = ({ data: { row, edit
                                     label={t(langKeys.country)}
                                     className="col-6"
                                     valueDefault={getValues("sunatcountry")}
-                                    onChange={(value) => setValue("sunatcountry", value?.code || "")}
+                                    onChange={(value) => {setValue("sunatcountry", value?.code || "");
+                                        setdoctype(value?.code!=="PE"?"0":"")
+                                    }}
                                     error={errors?.sunatcountry?.message}
                                     data={countryList.data}
                                     optionDesc="description"
