@@ -616,7 +616,7 @@ const Tickets = () => {
                             }}
                             onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
                                 setRowWithDataSelected([ticket]);
-                                setOpenDialogClose(true);
+                                setOpenDialogTipify(true);
                             }}
                             onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
                                 setRowWithDataSelected([ticket]);
@@ -773,7 +773,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_classification),
-                accessor: 'classification'
+                accessor: 'tipification'
             },
 
             {
@@ -928,8 +928,8 @@ const Tickets = () => {
                 ButtonsElement={() => (
                     <IconOptions
                         onHandlerReassign={() => setOpenDialogReassign(true)}
-                        onHandlerClassify={() => setOpenDialogClose(true)}
-                        onHandlerClose={() => setOpenDialogTipify(true)}
+                        onHandlerClassify={() => setOpenDialogTipify(true)}
+                        onHandlerClose={() => setOpenDialogClose(true)}
                     />
                 )}
                 FiltersElement={React.useMemo(() => (

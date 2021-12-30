@@ -60,4 +60,4 @@ export const initialListState: IListState<any> = {
     message: undefined,
 };
 
-export const initialDisplayState: string = 'BOARD';
+export const initialDisplayState: 'BOARD' | 'GRID' = 'BOARD';
