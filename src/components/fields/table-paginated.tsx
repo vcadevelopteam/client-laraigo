@@ -11,7 +11,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
 import Input from '@material-ui/core/Input';
 import { makeStyles } from '@material-ui/core/styles';
-import { TableConfig, Pagination, Dictionary } from '@types'
+import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
@@ -44,6 +44,7 @@ import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
+import { useLocation } from 'react-router-dom';
 
 declare module "react-table" {
     // eslint-disable-next-line
@@ -240,6 +241,10 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
 
     useEffect(() => {
         if (Object.keys(filters).length === 0) setValue('');
+        else if (header in filters) {
+            setValue(filters?.[header]?.value || '');
+            if (filters?.[header]) setoperator(filters[header].operator);
+        }
     }, [filters]);
 
     return (
@@ -326,12 +331,23 @@ const TableZyx = React.memo(({
     setSelectedRows,
     onClickRow,
     FiltersElement,
-    filterRangeDate = "month"
+    filterRangeDate = "month",
+    onFilterChange,
+    initialEndDate = null,
+    initialStartDate = null,
+    initialFilters = {},
+    initialPageIndex = 0,
 }: TableConfig) => {
     const classes = useStyles();
-    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: {}, pageIndex: 0 });
+    const [pagination, setPagination] = useState<Pagination>({ sorts: {}, filters: initialFilters, pageIndex: initialPageIndex });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [triggerSearch, setTriggerSearch] = useState(autotrigger);
+    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
+        startDate: initialStartDate,
+        endDate: initialEndDate,
+        page: initialPageIndex,
+        ...initialFilters,
+    });
     const {
         getTableProps,
         getTableBodyProps,
@@ -348,7 +364,7 @@ const TableZyx = React.memo(({
         {
             columns,
             data,
-            initialState: { pageIndex: 0, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
+            initialState: { pageIndex: initialPageIndex, pageSize: 20, selectedRowIds: initialSelectedRows || {} },
             manualPagination: true, // Tell the usePagination
             pageCount: controlledPageCount,
             useControlledState: (state: any) => {
@@ -429,6 +445,7 @@ const TableZyx = React.memo(({
     };
     const setPageIndex = (page: number) => {
         setPagination(prev => ({ ...prev, pageIndex: page, trigger: true }));
+        setTFilters(prev => ({ ...prev, page }));
     }
     const handleClickSort = (column: string) => {
         const newsorts: any = {
@@ -464,9 +481,14 @@ const TableZyx = React.memo(({
             pageIndex: fromButton ? 0 : pagination.pageIndex,
             daterange: {
                 startDate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
-                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+                endDate: dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null,
             }
         });
+        setTFilters(prev => ({
+            ...prev,
+            startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
+            endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
+        }));
     }
 
     useEffect(() => {
@@ -494,6 +516,10 @@ const TableZyx = React.memo(({
         setSelectedRows && setSelectedRows(selectedRowIds)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRowIds]);
+
+    useEffect(() => {
+        onFilterChange?.(tFilters);
+    }, [tFilters]);
 
     const exportData = () => {
         exportPersonalized && exportPersonalized({
@@ -641,7 +667,15 @@ const TableZyx = React.memo(({
                                                                 type={column.type}
                                                                 firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
-                                                                setFilters={setFilters}
+                                                                setFilters={(filters: any, page: number) => {
+                                                                    setFilters(filters, page);
+                                                                    setTFilters(prev => ({
+                                                                        ...prev,
+                                                                        ...filters,
+                                                                        page,
+                                                                    }));
+                                                                }}
+                                                                // setFilters={setFilters}
                                                             />
                                                         }
                                                     </>)
@@ -760,3 +794,63 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
         </>
     );
 };
+
+interface IQueryMap {
+    [key: string]: {
+        value: string;
+        operator: string;
+    }
+}
+
+interface IFilters {
+    startDate: number;
+    endDate: number;
+    page: number;
+    filters: IQueryMap;
+}
+
+interface IOptions {
+    ignore: string[];
+}
+
+export function useQueryParams(query: URLSearchParams, options: IOptions = { ignore: [] }) {
+    return useMemo(() => {
+        const map: IFilters = {
+            endDate: Number(query.get('endDate')),
+            startDate: Number(query.get('startDate')),
+            page: Number(query.get('page')),
+            filters: {},
+        };
+        const { ignore } = options;
+
+        query.forEach((value, key) => {
+            if (key === "endDate" ||
+                key === "startDate" ||
+                key === "page" ||
+                key.includes('-operator') ||
+                ignore.includes(key)) {
+                return;
+            }
+
+            map.filters[key] = { value, operator: query.get(`${key}-operator`)! };
+        });
+
+        return map;
+    }, [query]);
+}
+
+export function buildQueryFilters(filters: IQueryMap) {
+    const params = new URLSearchParams();
+    
+    for (const key in filters) {
+        if (filters[key] === undefined || filters[key] === null) continue;
+        if (typeof filters[key] === 'object' && 'value' in filters[key] && 'operator' in filters[key]) {
+            params.append(key, String(filters[key].value));
+            params.append(`${key}-operator`, String(filters[key].operator));
+        } else {
+            params.append(key, String(filters[key]));
+        }
+    }
+
+    return params;
+}

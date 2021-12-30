@@ -1,5 +1,5 @@
 import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -7,7 +7,7 @@ import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList 
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "compone
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
-import TablePaginated from 'components/fields/table-paginated';
+import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
@@ -89,6 +89,7 @@ interface IBoardFilter {
 const CRM: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
@@ -98,6 +99,9 @@ const CRM: FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const [boardFilter, setBoardFilter] = useState<IBoardFilter>({ campaign: 0, customer: '', products: '', tags: '' });
+
+  const query = useMemo(() => new URLSearchParams(location.search), [location]);
+  const params = useQueryParams(query);
 
   useEffect(() => {
       dispatch(getMultiCollection([
@@ -870,6 +874,15 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
+              onFilterChange={f => {
+                console.log('Leads::onFilterChange', f);
+                const params = buildQueryFilters(f);
+                history.push({ search: params.toString() });
+              }}
+              initialEndDate={params.endDate}
+              initialStartDate={params.startDate}
+              initialFilters={params.filters}
+              initialPageIndex={params.page}
             />
           {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}

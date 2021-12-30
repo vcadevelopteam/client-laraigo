@@ -46,7 +46,16 @@ export interface TableConfig {
     autotrigger?: boolean;
     toolsFooter?: boolean;
     autoRefresh?: { value: boolean, callback: (value: boolean) => void };
-    onClickRow?: (param?: any) => void
+    // onClickRow?: (param?: any) => void
+    // autoRefresh?: {value: boolean, callback: (value: boolean) => void};
+    onClickRow?: (param?: any) => void;
+    /**cualquier filtro */
+    onFilterChange?: (filter: ITablePaginatedFilter) => void;
+
+    initialPageIndex?: number;
+    initialStartDate?: number | null;
+    initialEndDate?: number | null;
+    initialFilters?: Dictionary;
 }
 
 export interface Pagination {
@@ -62,4 +71,13 @@ export interface IFetchData {
     pageIndex: number;
     pageSize: number;
     daterange: any;
+}
+
+export interface ITablePaginatedFilter {
+    /**timestamp */
+    startDate: number | null;
+    /**timestamp */
+    endDate: number | null;
+    page: number;
+    [column: string]: any;
 }
