@@ -25,7 +25,7 @@ import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react
 import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
-import TablePaginated from 'components/fields/table-paginated';
+import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import TableZyx from '../components/fields/table-simple';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
@@ -402,17 +402,7 @@ export const Person: FC = () => {
     const [typeTemplate, setTypeTemplate] = useState('');
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
-    const filters = useMemo(() => {
-        const map: { [key: string]: { value: string, operator: string } } = {};
-        query.forEach((value, key) => {
-            if (key === "endDate" || key === "startDate" || key === "page" || key.includes('-operator')) {
-                return;
-            }
-
-            map[key] = { value, operator: query.get(`${key}-operator`)! };
-        });
-        return map;
-    }, [query]);
+    const params = useQueryParams(query);
 
     const goToPersonDetail = (person: IPerson) => {
         console.log('AA:', location.pathname, location.search);
@@ -902,23 +892,14 @@ export const Person: FC = () => {
                     state: {},
                 })}
                 onFilterChange={f => {
-                    console.log('onFilterChange', f);
-                    const params = new URLSearchParams();
-                    for (const key in f) {
-                        if (f[key] === undefined || f[key] === null) continue;
-                        if (typeof f[key] === 'object' && 'value' in f[key] && 'operator' in f[key]) {
-                            params.append(key, String(f[key].value));
-                            params.append(`${key}-operator`, String(f[key].operator));
-                        } else {
-                            params.append(key, String(f[key]));
-                        }
-                    }
+                    console.log('Persons::onFilterChange', f);
+                    const params = buildQueryFilters(f);
                     history.push({ search: params.toString() });
                 }}
-                initialEndDate={Number(query.get('endDate'))}
-                initialStartDate={Number(query.get('startDate'))}
-                initialFilters={filters}
-                initialPageIndex={Number(query.get('page'))}
+                initialEndDate={params.endDate}
+                initialStartDate={params.startDate}
+                initialFilters={params.filters}
+                initialPageIndex={params.page}
                 autotrigger
             />
             <DialogSendTemplate

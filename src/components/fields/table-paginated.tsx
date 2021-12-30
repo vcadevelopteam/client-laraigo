@@ -43,6 +43,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
+import { useLocation } from 'react-router-dom';
 
 declare module "react-table" {
     // eslint-disable-next-line
@@ -783,3 +784,63 @@ const LoadingSkeleton: React.FC<{ columns: number }> = ({ columns }) => {
         </>
     );
 };
+
+interface IQueryMap {
+    [key: string]: {
+        value: string;
+        operator: string;
+    }
+}
+
+interface IFilters {
+    startDate: number;
+    endDate: number;
+    page: number;
+    filters: IQueryMap;
+}
+
+interface IOptions {
+    ignore: string[];
+}
+
+export function useQueryParams(query: URLSearchParams, options: IOptions = { ignore: [] }) {
+    return useMemo(() => {
+        const map: IFilters = {
+            endDate: Number(query.get('endDate')),
+            startDate: Number(query.get('startDate')),
+            page: Number(query.get('page')),
+            filters: {},
+        };
+        const { ignore } = options;
+
+        query.forEach((value, key) => {
+            if (key === "endDate" ||
+                key === "startDate" ||
+                key === "page" ||
+                key.includes('-operator') ||
+                ignore.includes(key)) {
+                return;
+            }
+
+            map.filters[key] = { value, operator: query.get(`${key}-operator`)! };
+        });
+
+        return map;
+    }, [query]);
+}
+
+export function buildQueryFilters(filters: IQueryMap) {
+    const params = new URLSearchParams();
+    
+    for (const key in filters) {
+        if (filters[key] === undefined || filters[key] === null) continue;
+        if (typeof filters[key] === 'object' && 'value' in filters[key] && 'operator' in filters[key]) {
+            params.append(key, String(filters[key].value));
+            params.append(`${key}-operator`, String(filters[key].operator));
+        } else {
+            params.append(key, String(filters[key]));
+        }
+    }
+
+    return params;
+}
