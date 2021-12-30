@@ -311,7 +311,7 @@ const DetailDomains: React.FC<DetailProps> = ({ data: { row, domainname, edit },
     });
 
     return (
-        <div>
+        <div style={{width: "100%"}}>
             <form onSubmit={onSubmit}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
@@ -473,6 +473,9 @@ const Domains: FC = () => {
     const [viewSelected, setViewSelected] = useState("view-1");
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, domainname: "", edit: false });
     const [waitSave, setWaitSave] = useState(false);
+    const user = useSelector(state => state.login.validateToken.user);
+    const superadmin = user?.roledesc === "SUPERADMIN"
+    console.log(superadmin)
 
     const columns = React.useMemo(
         () => [
@@ -604,7 +607,7 @@ const Domains: FC = () => {
                 data={mainResult.mainData.data}
                 download={true}
                 loading={mainResult.mainData.loading}
-                register={true}
+                register={superadmin}
                 handleRegister={handleRegister}
             />
         )

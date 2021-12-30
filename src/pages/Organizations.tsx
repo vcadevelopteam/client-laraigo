@@ -35,10 +35,6 @@ interface DetailOrganizationProps {
     fetchData: () => void,
     dataCurrency: Dictionary[];
 }
-const arrayBread = [
-    { id: "view-1", name: "Organizations" },
-    { id: "view-2", name: "Organization detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -145,6 +141,11 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
         }))
     });
 
+        
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.organization)},
+        { id: "view-2", name: t(langKeys.organizationdetail) }
+    ];
     return (
         <div style={{ width: '100%' }}>
             <form onSubmit={onSubmit}>
@@ -545,7 +546,7 @@ const Organizations: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.description),
+                Header: t(langKeys.organization),
                 accessor: 'orgdesc',
                 NoFilter: true
             },
