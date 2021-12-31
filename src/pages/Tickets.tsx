@@ -161,11 +161,14 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
 
-    const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
+    // const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
+    const userList = useSelector(state => state.main.mainAux);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
     const [groupsList, setGroupsList] = useState<Dictionary[]>([]);
     const user = useSelector(state => state.login.validateToken.user);
+
+
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         newUserId: number;
@@ -227,11 +230,6 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     }, [reassigningRes, waitReassign])
 
     useEffect(() => {
-        if (multiData && multiData?.data[3])
-            setAgentsConnected(multiData?.data[3].data)
-    }, [multiData])
-
-    useEffect(() => {
         if (openModal) {
             console.log(rowWithDataSelected)
             reset({
@@ -250,6 +248,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             } else {
                 setGroupsList(groupsList);
             }
+            dispatch(getCollectionAux(getListUsers()));
         }
     }, [openModal])
 
@@ -283,7 +282,8 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     valueDefault={"" + getValues('newUserId')}
                     onChange={(value) => setValue('newUserId', value ? value.userid : 0)}
                     error={errors?.newUserId?.message}
-                    data={agentsConnected}
+                    data={userList.data.filter(x => x.status === 'ACTIVO')}
+                    loading={userList.loading}
                     optionDesc="displayname"
                     optionValue="userid"
                 />
