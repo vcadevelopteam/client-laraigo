@@ -265,8 +265,7 @@ export const resetConnectAgentAPI = (): IActionCall => ({ type: actionTypes.CONN
 
 export const cleanAlerts = (): IActionCall => ({ type: actionTypes.CLEAN_ALERT });
 
-
-
+export const cleanInboxSupervisor = (): IActionCall => ({ type: actionTypes.RESET_INBOX_SUPERVISOR });
 
 export const wsConnect = (payload: any): IActionCall => ({ type: actionTypes.WS_CONNECT, payload });
 

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
@@ -25,7 +25,7 @@ import { useForm, UseFormGetValues, UseFormSetValue, useFieldArray } from 'react
 import { execute, resetAllMain, exportData } from 'store/main/actions';
 import { DialogInteractions, FieldMultiSelect, FieldEditArray, DialogZyx } from 'components';
 import Rating from '@material-ui/lab/Rating';
-import TablePaginated from 'components/fields/table-paginated';
+import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import TableZyx from '../components/fields/table-simple';
 import MailIcon from '@material-ui/icons/Mail';
 import SmsIcon from '@material-ui/icons/Sms';
@@ -383,6 +383,7 @@ export const TemplateIcons: React.FC<{
 export const Person: FC = () => {
     const history = useHistory();
     const { t } = useTranslation();
+    const location = useLocation();
     const dispatch = useDispatch();
     const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
     const personList = useSelector(state => state.person.personList);
@@ -400,7 +401,11 @@ export const Person: FC = () => {
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState('');
 
+    const query = useMemo(() => new URLSearchParams(location.search), [location]);
+    const params = useQueryParams(query);
+
     const goToPersonDetail = (person: IPerson) => {
+        console.log('AA:', location.pathname, location.search);
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
@@ -886,6 +891,16 @@ export const Person: FC = () => {
                     pathname: paths.PERSON_DETAIL.resolve(0),
                     state: {},
                 })}
+                onFilterChange={f => {
+                    console.log('Persons::onFilterChange', f);
+                    const params = buildQueryFilters(f);
+                    history.push({ search: params.toString() });
+                }}
+                initialEndDate={params.endDate}
+                initialStartDate={params.startDate}
+                initialFilters={params.filters}
+                initialPageIndex={params.page}
+                autotrigger
             />
             <DialogSendTemplate
                 openModal={openDialogTemplate}
@@ -1214,7 +1229,8 @@ export const PersonDetail: FC = () => {
                     href="/"
                     onClick={(e) => {
                         e.preventDefault();
-                        history.push(paths.PERSON);
+                        // history.push(paths.PERSON);
+                        history.goBack();
                     }}
                 >
                     <Trans i18nKey={langKeys.person} count={2} />
@@ -1252,7 +1268,8 @@ export const PersonDetail: FC = () => {
                         style={{ backgroundColor: "#FB5F5F" }}
                         onClick={(e) => {
                             e.preventDefault();
-                            history.push(paths.PERSON);
+                            // history.push(paths.PERSON);
+                            history.goBack();
                         }}
                     >
                         {t(langKeys.back)}

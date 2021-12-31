@@ -1,5 +1,5 @@
 import { adviserSel, convertLocalDate, getCampaignLst, getColumnsSel, getCommChannelLst, getLeadExport, getLeadsSel, getLeadTasgsSel, getPaginatedLead, getValuesFromDomain, insColumns, insLead, updateColumnsLeads, updateColumnsOrder } from "common/helpers";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -7,7 +7,7 @@ import { DraggableLeadCardContent, DraggableLeadColumn, DroppableLeadColumnList 
 import { getMultiCollection, resetAllMain, execute, getCollectionPaginated, exportData } from "store/main/actions";
 import NaturalDragAnimation from "./prueba";
 import paths from "common/constants/paths";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 import { manageConfirmation, showBackdrop, showSnackbar } from "store/popus/actions";
 import { langKeys } from "lang/keys";
 import { Trans, useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ import { DialogZyx3Opt, FieldEdit, FieldMultiSelect, FieldSelect } from "compone
 import { Search as SearchIcon, ViewColumn as ViewColumnIcon, ViewList as ViewListIcon, AccessTime as AccessTimeIcon, Note as NoteIcon, Sms as SmsIcon, Mail as MailIcon } from '@material-ui/icons';
 import { Button, IconButton } from "@material-ui/core";
 import { Dictionary, ICampaignLst, ICrmLead, IDomain, IFetchData } from "@types";
-import TablePaginated from 'components/fields/table-paginated';
+import TablePaginated, { buildQueryFilters, useQueryParams } from 'components/fields/table-paginated';
 import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
@@ -89,15 +89,25 @@ interface IBoardFilter {
 const CRM: FC = () => {
   const user = useSelector(state => state.login.validateToken.user);
   const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [dataColumn, setDataColumn] = useState<dataBackend[]>([])
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteColumn, setDeleteColumn] = useState('')
-  const display = useSelector(state => state.lead.display);
+  // const display = useSelector(state => state.lead.display);
   const mainMulti = useSelector(state => state.main.multiData);
   const { t } = useTranslation();
   const classes = useStyles();
   const [boardFilter, setBoardFilter] = useState<IBoardFilter>({ campaign: 0, customer: '', products: '', tags: '' });
+
+  const query = useMemo(() => new URLSearchParams(location.search), [location]);
+  const params = useQueryParams(query, { ignore: ['asesorid', 'channels', 'contact', 'display'] });
+  const otherParams = useMemo(() => ({
+    asesorid: Number(query.get('asesorid')),
+    channels: query.get('channels') || '',
+    contact: query.get('contact') || '',
+  }), [query]);
+  const [display, setDisplay] = useState(query.get('display') || 'BOARD');
 
   useEffect(() => {
       dispatch(getMultiCollection([
@@ -336,8 +346,10 @@ const CRM: FC = () => {
   const [fetchDataAux, setfetchDataAux] = useState<IFetchData>({ pageSize: 20, pageIndex: 0, filters: {}, sorts: {}, daterange: null })
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [waitExport, setWaitExport] = useState(false);
-  const [allParameters, setAllParameters] = useState<any>({
-    asesorid: mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? user?.userid : 0,
+  const [allParameters, setAllParameters] = useState<{ contact: string, channel: string, asesorid: number }>({
+    asesorid: otherParams.asesorid || mainMulti.data[2]?.data?.map(d => d.userid).includes(user?.userid) ? (user?.userid || 0) : 0,
+    channel: otherParams.channels,
+    contact: otherParams.contact,
   });
   const [selectedRows, setSelectedRows] = useState<Dictionary>({});
   const [personsSelected, setPersonsSelected] = useState<Dictionary[]>([]);
@@ -608,6 +620,12 @@ const CRM: FC = () => {
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [selectedRows])
 
+  useEffect(() => {
+    const p = new URLSearchParams(location.search);
+    p.set('display', display);
+    history.push({ search: p.toString() });
+  }, [display, history]);
+
   return (
       <div style={{ width: '100%', display: 'flex', flexDirection: 'column'}}>
         <div style={{ marginBottom: '34px' }}>
@@ -615,7 +633,10 @@ const CRM: FC = () => {
             <IconButton
               color="default"
               disabled={display === 'BOARD'}
-              onClick={() => dispatch(setDisplay('BOARD'))}
+              onClick={() => {
+                // dispatch(setDisplay('BOARD'));
+                setDisplay('BOARD');
+              }}
               style={{ padding: '5px' }}
             >
               <ViewColumnIcon />
@@ -623,7 +644,10 @@ const CRM: FC = () => {
             <IconButton
               color="default"
               disabled={display === 'GRID'}
-              onClick={() => dispatch(setDisplay('GRID'))}
+              onClick={() => {
+                // dispatch(setDisplay('GRID'));
+                setDisplay('GRID');
+              }}
               style={{ padding: '5px' }}
             >
               <ViewListIcon />
@@ -800,6 +824,7 @@ const CRM: FC = () => {
                   variant="outlined"
                   label={t(langKeys.user)}
                   className={classes.filterComponent}
+                  valueDefault={allParameters.asesorid}
                   onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
                   data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
                   optionDesc={'fullname'}
@@ -809,6 +834,7 @@ const CRM: FC = () => {
                   variant="outlined"
                   label={t(langKeys.channel)}
                   className={classes.filterComponent}
+                  valueDefault={allParameters.channel}
                   onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
                   data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
                   optionDesc={'communicationchanneldesc'}
@@ -819,6 +845,7 @@ const CRM: FC = () => {
                   variant="outlined"
                   label={t(langKeys.customer)}
                   className={classes.filterComponent}
+                  valueDefault={allParameters.contact}
                   onChange={(value) => setAllParameters({...allParameters, contact: value})}
               />
             </div>
@@ -870,6 +897,19 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
+              onFilterChange={f => {
+                console.log('Leads::onFilterChange', f);
+                const params = buildQueryFilters(f);
+                if (allParameters.asesorid) params.set('asesorid', String(allParameters.asesorid));
+                if (allParameters.channel) params.set('channels', String(allParameters.channel));
+                if (allParameters.contact) params.set('contact', String(allParameters.contact));
+                params.set('display', display);
+                history.push({ search: params.toString() });
+              }}
+              initialEndDate={params.endDate}
+              initialStartDate={params.startDate}
+              initialFilters={params.filters}
+              initialPageIndex={params.page}
             />
           {gridModal.name === 'ACTIVITY' && <NewActivityModal
             gridModalProps={gridModal}

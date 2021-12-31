@@ -476,6 +476,8 @@ export const langKeys = {
 
     groupconfig: 'groupconfig',
     inappropriatewords: 'inappropriatewords',
+    person_who_modified: 'person_who_modified',
+    ticket_tiempoprimerarespuesta: 'ticket_tiempoprimerarespuesta',
 
     online: 'online',
     offline: 'offline',
