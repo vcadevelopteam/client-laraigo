@@ -629,11 +629,11 @@ const KPIManager: FC = () => {
 
     useEffect(() => {
         fetchData();
+        dispatch(getMultiCollection([
+            getValuesFromDomain("ESTADOGENERICO"),
+        ]));
         return () => {
             dispatch(resetAllMain());
-            dispatch(getMultiCollection([
-                getValuesFromDomain("ESTADOGENERICO"),
-            ]));
         };
     }, []);
 
