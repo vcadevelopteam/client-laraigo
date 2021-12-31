@@ -868,9 +868,9 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
     }, [query]);
 }
 
-export function buildQueryFilters(filters: IQueryMap) {
-    const params = new URLSearchParams();
-
+export function buildQueryFilters(filters: IQueryMap, init?: string | string[][] | Record<string, string>) {
+    const params = new URLSearchParams(init);
+    
     for (const key in filters) {
         if (filters[key] === undefined || filters[key] === null) continue;
         if (typeof filters[key] === 'object' && 'value' in filters[key] && 'operator' in filters[key]) {

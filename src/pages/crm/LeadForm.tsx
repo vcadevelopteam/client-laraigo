@@ -489,7 +489,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             onClick={(e) => {
                                 e.preventDefault();
                                 if (iSProcessLoading()) return;
-                                history.push(paths.CRM);
+                                history.goBack();
                             }}
                         >
                             CRM
@@ -529,7 +529,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                             color="primary"
                             startIcon={<ClearIcon color="secondary" />}
                             style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => history.push(paths.CRM)}
+                            onClick={() => history.goBack()}
                             disabled={iSProcessLoading()}
                         >
                             <Trans i18nKey={langKeys.back} />
