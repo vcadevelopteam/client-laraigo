@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomain, getValuesFromDomainCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomain, getValuesFromDomainCorp } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -578,262 +578,7 @@ const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: 
         </div>
     );
 }
-const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
-    )
-    
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            id: row? row.billingconversationid : 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            countrycode: row?.countrycode || 'PE',
-            companystartfee: row?.companystartfee || 0.0,
-            description: row?.description || "",
-            clientstartfee: row?.clientstartfee || 0.0,
-            c250000: row?.c250000 || 0.0,
-            c750000: row?.c750000 || 0.0,
-            c2000000: row?.c2000000 || 0.0,
-            c3000000: row?.c3000000 || 0.0,
-            c4000000: row?.c4000000 || 0.0,
-            c5000000: row?.c5000000 || 0.0,
-            c10000000: row?.c10000000 || 0.0,
-            c25000000: row?.c25000000 || 0.0,
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            operation: row? "UPDATE" : "INSERT",
-        }
-    });
 
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
-        }
-    }
-
-    React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('companystartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientstartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c250000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c750000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c2000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c3000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c4000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c5000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c10000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('c25000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingConversationIns(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadConversationCost}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newconversationplan)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)}
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={getValues('description')}
-                            error={errors?.description?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                            <TextField
-                                id="date"
-                                className="col-6"
-                                type="month"
-                                variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={datetoshow}
-                                size="small"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.country)}
-                                className="col-6"
-                                valueDefault={getValues("countrycode")}
-                                variant="outlined"
-                                onChange={(value) => setValue("countrycode",value.code)}
-                                error={errors?.countrycode?.message}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="code"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.coststartedbycompany)}
-                                onChange={(value) => setValue('companystartfee', value)}
-                                valueDefault={getValues('companystartfee')}
-                                error={errors?.companystartfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={t(langKeys.customerinitiatedcost)}
-                                onChange={(value) => setValue('clientstartfee', value)}
-                                valueDefault={getValues('clientstartfee')}
-                                error={errors?.clientstartfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.first_plural)} 250k`}
-                                onChange={(value) => setValue('c250000', value)}
-                                valueDefault={getValues('c250000')}
-                                error={errors?.c250000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 750k`}
-                                onChange={(value) => setValue('c750000', value)}
-                                valueDefault={getValues('c750000')}
-                                error={errors?.c750000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c2000000', value)}
-                                valueDefault={getValues('c2000000')}
-                                error={errors?.c2000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c3000000', value)}
-                                valueDefault={getValues('c3000000')}
-                                error={errors?.c3000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c4000000', value)}
-                                valueDefault={getValues('c4000000')}
-                                error={errors?.c4000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c5000000', value)}
-                                valueDefault={getValues('c5000000')}
-                                error={errors?.c5000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={`${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c10000000', value)}
-                                valueDefault={getValues('c10000000')}
-                                error={errors?.c10000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                            <FieldEdit
-                                label={`${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`}
-                                onChange={(value) => setValue('c25000000', value)}
-                                valueDefault={getValues('c25000000')}
-                                error={errors?.c25000000?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
 const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -1497,810 +1242,6 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
-const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    
-    
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [waitSave, setWaitSave] = useState(false);
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [duplicateop, setduplicateop] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        plan: "",
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
-    });
-
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingSupportSel(dataMain)))
-    }
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-                type: "number",
-                sortType: "number"
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.supportplan),
-                accessor: 'plan',
-            },
-            {
-                Header: t(langKeys.supportprice),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.starttime),
-                accessor: 'starttime',
-            },
-            {
-                Header: t(langKeys.finishtime),
-                accessor: 'finishtime',
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingSupportSel(dataMain)));
-
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
-
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                }
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingSupportIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(billingSupportIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingsupportid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-                {/* <div>
-                    <div style={{width:"100%", display: "flex", padding: 10}}>
-                        
-                    </div>
-                </div> */}
-
-                <TableZyx
-                    columns={columns}
-                    ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.supportplan)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.plan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="description"
-                            />
-                        
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    // titlemodule={t(langKeys.billingplan, { count: 2 })}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    handleRegister={handleRegister}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailSupportPlan
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlan}
-            />
-        )
-    } else
-        return null;
-}
-const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [waitSave, setWaitSave] = useState(false);    
-    const [duplicateop, setduplicateop] = useState(false);
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        plan: "",
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
-    });
-
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingConfigurationSel(dataMain)))
-    }
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingconfigurationid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: "Plan",
-                accessor: 'plan',
-            },
-            {
-                Header: t(langKeys.costbasedonthecontractedplan),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.numberofagentshired),
-                accessor: 'userfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.useradditionalfee),
-                accessor: 'useradditionalfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { useradditionalfee } = props.cell.row.original;
-                    return (useradditionalfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelfreequantity),
-                accessor: 'channelfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.channelwhatsappfee),
-                accessor: 'channelwhatsappfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelwhatsappfee } = props.cell.row.original;
-                    return (channelwhatsappfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.clientfreequantity),
-                accessor: 'clientfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.clientadditionalfee),
-                accessor: 'clientadditionalfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { clientadditionalfee } = props.cell.row.original;
-                    return (clientadditionalfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.allowhsm),
-                accessor: 'allowhsm',
-                NoFilter: false,
-                Cell: (props: any) => {
-                    const { allowhsm } = props.cell.row.original;
-                    return allowhsm?t(langKeys.yes):"No"
-                }
-            },
-            {
-                Header: t(langKeys.hsmfee),
-                accessor: 'hsmfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { hsmfee } = props.cell.row.original;
-                    return (hsmfee || 0).toFixed(2);
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingConfigurationSel(dataMain)));
-
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
-
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                }
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconfigurationid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}
-                    ButtonsElement={() =>(
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldSelect
-                                label="Plan"
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.plan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.plan||""}))}
-                                data={dataPlan}
-                                optionDesc="plan"
-                                optionValue="plan"
-                            />
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    handleRegister={handleRegister}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailContractedPlanByPeriod
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlan}
-            />
-        )
-    } else
-        return null;
-}
-const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [waitSave, setWaitSave] = useState(false);
-    const [duplicateop, setduplicateop] = useState(false);
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        countrycode: "",
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
-    });
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingConversationSel(dataMain)))
-    }
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingconversationid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            deleteFunction={() => handleDelete(row)}
-                            editFunction={() => handleEdit(row)}
-                            viewFunction={() => handleView(row)} //esta es la funcion de duplicar
-                            extraOption={t(langKeys.duplicate)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.country),
-                accessor: 'country',
-            },
-            {
-                Header: t(langKeys.countrycode),
-                accessor: 'countrycode',
-            },
-            {
-                Header: t(langKeys.coststartedbycompany),
-                accessor: 'companystartfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { companystartfee } = props.cell.row.original;
-                    return (companystartfee || 0).toFixed(3);
-                }
-            },
-            {
-                Header: t(langKeys.customerinitiatedcost),
-                accessor: 'clientstartfee',
-                Cell: (props: any) => {
-                    const { clientstartfee } = props.cell.row.original;
-                    return (clientstartfee || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.first_plural)} 250k`,
-                accessor: 'c250000',
-                Cell: (props: any) => {
-                    const { c250000 } = props.cell.row.original;
-                    return (c250000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 750k`,
-                accessor: 'c750000',
-                Cell: (props: any) => {
-                    const { c750000 } = props.cell.row.original;
-                    return (c750000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`,
-                accessor: 'c2000000',
-                Cell: (props: any) => {
-                    const { c2000000 } = props.cell.row.original;
-                    return (c2000000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`,
-                accessor: 'c3000000',
-                Cell: (props: any) => {
-                    const { c3000000 } = props.cell.row.original;
-                    return (c3000000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`,
-                accessor: 'c4000000',
-                Cell: (props: any) => {
-                    const { c4000000 } = props.cell.row.original;
-                    return (c4000000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`,
-                accessor: 'c5000000',
-                Cell: (props: any) => {
-                    const { c5000000 } = props.cell.row.original;
-                    return (c5000000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`,
-                accessor: 'c10000000',
-                Cell: (props: any) => {
-                    const { c10000000 } = props.cell.row.original;
-                    return (c10000000 || 0).toFixed(3);
-                }
-            },
-            {
-                Header: `${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`,
-                accessor: 'c25000000',
-                Cell: (props: any) => {
-                    const { c25000000 } = props.cell.row.original;
-                    return (c25000000 || 0).toFixed(3);
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingConversationSel(dataMain)));
-
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                if(duplicateop){
-                    setduplicateop(false)
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
-                }else{
-
-                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                }
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleRegister = () => {
-        setViewSelected("view-2");
-        setRowSelected({ row: null, edit: true });
-    }
-
-    const handleView = (row: Dictionary) => {
-        setduplicateop(true)
-        const callback = () => {
-            dispatch(execute(billingConversationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_duplicate),
-            callback
-        }))
-    }
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    const handleDelete = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(execute(billingConversationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconversationid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true);
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_delete),
-            callback
-        }))
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-                <TableZyx
-                    columns={columns}                    
-                    ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.country)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.countrycode}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="code"
-                            />
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={true}
-                    handleRegister={handleRegister}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailConversationCost
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlan}
-            />
-        )
-    } else
-        return null;
-}
 const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const dispatch = useDispatch();
@@ -4037,6 +2978,1490 @@ const GeneralConfiguration: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     );
 }
 
+const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+
+    const [dataMain, setdataMain] = useState({
+        plan: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingConfigurationSel(dataMain)))
+    }
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingconfigurationid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: "Plan",
+                accessor: 'plan',
+            },
+            {
+                Header: t(langKeys.costbasedonthecontractedplan),
+                accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return (basicfee || 0).toFixed(2);
+                }
+            },
+            {
+                Header: t(langKeys.numberofagentshired),
+                accessor: 'userfreequantity',
+                type: 'number',
+                sortType: 'number',
+            },
+            {
+                Header: t(langKeys.useradditionalfee),
+                accessor: 'useradditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { useradditionalfee } = props.cell.row.original;
+                    return (useradditionalfee || 0).toFixed(2);
+                }
+            },
+            {
+                Header: t(langKeys.channelfreequantity),
+                accessor: 'channelfreequantity',
+                type: 'number',
+                sortType: 'number',
+            },
+            {
+                Header: t(langKeys.channelwhatsappfee),
+                accessor: 'channelwhatsappfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { channelwhatsappfee } = props.cell.row.original;
+                    return (channelwhatsappfee || 0).toFixed(2);
+                }
+            },
+            {
+                Header: t(langKeys.clientfreequantity),
+                accessor: 'clientfreequantity',
+                type: 'number',
+                sortType: 'number',
+            },
+            {
+                Header: t(langKeys.clientadditionalfee),
+                accessor: 'clientadditionalfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { clientadditionalfee } = props.cell.row.original;
+                    return (clientadditionalfee || 0).toFixed(2);
+                }
+            },
+            {
+                Header: t(langKeys.allowhsm),
+                accessor: 'allowhsm',
+                NoFilter: false,
+                Cell: (props: any) => {
+                    const { allowhsm } = props.cell.row.original;
+                    return allowhsm?t(langKeys.yes):"No"
+                }
+            },
+            {
+                Header: t(langKeys.hsmfee),
+                accessor: 'hsmfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { hsmfee } = props.cell.row.original;
+                    return (hsmfee || 0).toFixed(2);
+                }
+            },
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingConfigurationSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingConfigurationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconfigurationid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() =>(
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label="Plan"
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.plan||""}))}
+                                data={dataPlan}
+                                optionDesc="plan"
+                                optionValue="plan"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailContractedPlanByPeriod
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlan}
+            />
+        )
+    } else
+        return null;
+}
+
+const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+
+    const [dataMain, setdataMain] = useState({
+        countrycode: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingConversationSel(dataMain)))
+    }
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingconversationid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.country),
+                accessor: 'country',
+            },
+            {
+                Header: t(langKeys.countrycode),
+                accessor: 'countrycode',
+            },
+            {
+                Header: t(langKeys.billingvcacomission),
+                accessor: 'vcacomission',
+                Cell: (props: any) => {
+                    const { vcacomission } = props.cell.row.original;
+                    return (vcacomission || 0).toFixed(3);
+                }
+            },
+            {
+                Header: t(langKeys.coststartedbycompany),
+                accessor: 'companystartfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { companystartfee } = props.cell.row.original;
+                    return (companystartfee || 0).toFixed(3);
+                }
+            },
+            {
+                Header: t(langKeys.customerinitiatedcost),
+                accessor: 'clientstartfee',
+                Cell: (props: any) => {
+                    const { clientstartfee } = props.cell.row.original;
+                    return (clientstartfee || 0).toFixed(3);
+                }
+            }
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingConversationSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingConversationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingConversationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingconversationid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                <TableZyx
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.country)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.countrycode}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="code"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailConversationCost
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlan}
+            />
+        )
+    } else
+        return null;
+}
+
+const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
+    const [waitSave, setWaitSave] = useState(false);
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row? row.billingconversationid : 0,
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            countrycode: row?.countrycode || 'PE',
+            companystartfee: row?.companystartfee || 0.0,
+            clientstartfee: row?.clientstartfee || 0.0,
+            vcacomission: row?.vcacomission || 0.0,
+            description: row?.description || "",
+            status: row? row.status : 'ACTIVO',
+            type: row? row.type : '',
+            operation: row? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('type');
+        register('status');
+        register('year');
+        register('month');
+        register('operation');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('companystartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('clientstartfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingConversationIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBreadConversationCost}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row? `${row.description}` : t(langKeys.newconversationplan)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues('description')}
+                            error={errors?.description?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                            <TextField
+                                id="date"
+                                className="col-6"
+                                type="month"
+                                variant="outlined"
+                                onChange={(e)=>handleDateChange(e.target.value)}
+                                value={datetoshow}
+                                size="small"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.country)}
+                                className="col-6"
+                                valueDefault={getValues("countrycode")}
+                                variant="outlined"
+                                onChange={(value) => setValue("countrycode",value.code)}
+                                error={errors?.countrycode?.message}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="code"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.billingvcacomission)}
+                                onChange={(value) => setValue('vcacomission', value)}
+                                valueDefault={getValues('vcacomission')}
+                                error={errors?.vcacomission?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={t(langKeys.coststartedbycompany)}
+                                onChange={(value) => setValue('companystartfee', value)}
+                                valueDefault={getValues('companystartfee')}
+                                error={errors?.companystartfee?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.customerinitiatedcost)}
+                                onChange={(value) => setValue('clientstartfee', value)}
+                                valueDefault={getValues('clientstartfee')}
+                                error={errors?.clientstartfee?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+
+    const [dataMain, setdataMain] = useState({
+        countrycode: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingNotificationSel(dataMain)))
+    }
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingnotificationid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.country),
+                accessor: 'country',
+            },
+            {
+                Header: t(langKeys.countrycode),
+                accessor: 'countrycode',
+            },
+            {
+                Header: t(langKeys.billingvcacomission),
+                accessor: 'vcacomission',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { vcacomission } = props.cell.row.original;
+                    return (vcacomission || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.first_plural)} 250k`,
+                accessor: 'c250000',
+                Cell: (props: any) => {
+                    const { c250000 } = props.cell.row.original;
+                    return (c250000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 750k`,
+                accessor: 'c750000',
+                Cell: (props: any) => {
+                    const { c750000 } = props.cell.row.original;
+                    return (c750000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`,
+                accessor: 'c2000000',
+                Cell: (props: any) => {
+                    const { c2000000 } = props.cell.row.original;
+                    return (c2000000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`,
+                accessor: 'c3000000',
+                Cell: (props: any) => {
+                    const { c3000000 } = props.cell.row.original;
+                    return (c3000000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`,
+                accessor: 'c4000000',
+                Cell: (props: any) => {
+                    const { c4000000 } = props.cell.row.original;
+                    return (c4000000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`,
+                accessor: 'c5000000',
+                Cell: (props: any) => {
+                    const { c5000000 } = props.cell.row.original;
+                    return (c5000000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`,
+                accessor: 'c10000000',
+                Cell: (props: any) => {
+                    const { c10000000 } = props.cell.row.original;
+                    return (c10000000 || 0).toFixed(3);
+                }
+            },
+            {
+                Header: `${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`,
+                accessor: 'c25000000',
+                Cell: (props: any) => {
+                    const { c25000000 } = props.cell.row.original;
+                    return (c25000000 || 0).toFixed(3);
+                }
+            },
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingNotificationSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingNotificationIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingNotificationIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingnotificationid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                <TableZyx
+                    columns={columns}                    
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.country)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.countrycode}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,countrycode:value.map((o: Dictionary) => o.code).join()}))}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="code"
+                            />
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailNotificationCost
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlan}
+            />
+        )
+    } else
+        return null;
+}
+
+const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+    const classes = useStyles();
+    const [waitSave, setWaitSave] = useState(false);
+    const executeRes = useSelector(state => state.main.execute);
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
+    
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row? row.billingnotificationid : 0,
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            countrycode: row?.countrycode || 'PE',
+            vcacomission: row?.vcacomission || 0.0,
+            c250000: row?.c250000 || 0.0,
+            c750000: row?.c750000 || 0.0,
+            c2000000: row?.c2000000 || 0.0,
+            c3000000: row?.c3000000 || 0.0,
+            c4000000: row?.c4000000 || 0.0,
+            c5000000: row?.c5000000 || 0.0,
+            c10000000: row?.c10000000 || 0.0,
+            c25000000: row?.c25000000 || 0.0,
+            description: row?.description || "",
+            status: row? row.status : 'ACTIVO',
+            type: row? row.type : '',
+            operation: row? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('type');
+        register('status');
+        register('year');
+        register('month');
+        register('operation');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('countrycode', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('vcacomission', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c250000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c750000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c2000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c3000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c4000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c5000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c10000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('c25000000', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingNotificationIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBreadConversationCost}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row? `${row.description}` : t(langKeys.newnotificationcost)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.description)}
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={getValues('description')}
+                            error={errors?.description?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                            <TextField
+                                id="date"
+                                className="col-6"
+                                type="month"
+                                variant="outlined"
+                                onChange={(e)=>handleDateChange(e.target.value)}
+                                value={datetoshow}
+                                size="small"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.country)}
+                                className="col-6"
+                                valueDefault={getValues("countrycode")}
+                                variant="outlined"
+                                onChange={(value) => setValue("countrycode",value.code)}
+                                error={errors?.countrycode?.message}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="code"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.billingvcacomission)}
+                                onChange={(value) => setValue('vcacomission', value)}
+                                valueDefault={getValues('vcacomission')}
+                                error={errors?.vcacomission?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={`${t(langKeys.first_plural)} 250k`}
+                                onChange={(value) => setValue('c250000', value)}
+                                valueDefault={getValues('c250000')}
+                                error={errors?.c250000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 750k`}
+                                onChange={(value) => setValue('c750000', value)}
+                                valueDefault={getValues('c750000')}
+                                error={errors?.c750000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 2 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c2000000', value)}
+                                valueDefault={getValues('c2000000')}
+                                error={errors?.c2000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 3 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c3000000', value)}
+                                valueDefault={getValues('c3000000')}
+                                error={errors?.c3000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 4 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c4000000', value)}
+                                valueDefault={getValues('c4000000')}
+                                error={errors?.c4000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 5 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c5000000', value)}
+                                valueDefault={getValues('c5000000')}
+                                error={errors?.c5000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                            <FieldEdit
+                                label={`${t(langKeys.next_plural)} 10 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c10000000', value)}
+                                valueDefault={getValues('c10000000')}
+                                error={errors?.c10000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={`${t(langKeys.greaterthan)} 25 ${t(langKeys.millions)}`}
+                                onChange={(value) => setValue('c25000000', value)}
+                                valueDefault={getValues('c25000000')}
+                                error={errors?.c25000000?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeResult = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+
+    const [dataMain, setdataMain] = useState({
+        plan: "",
+        year: String(new Date().getFullYear()),
+        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
+    });
+    const [disableSearch, setdisableSearch] = useState(false);
+    const [duplicateop, setduplicateop] = useState(false);
+    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+
+    function search(){
+        dispatch(showBackdrop(true))
+        dispatch(getCollection(getBillingSupportSel(dataMain)))
+    }
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingsupportid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return (
+                        <TemplateIcons
+                            deleteFunction={() => handleDelete(row)}
+                            editFunction={() => handleEdit(row)}
+                            //viewFunction={() => handleView(row)} //esta es la funcion de duplicar
+                            //extraOption={t(langKeys.duplicate)}
+                        />
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+                type: "number",
+                sortType: "number"
+            },
+            {
+                Header: t(langKeys.supportplan),
+                accessor: 'plan',
+            },
+            {
+                Header: t(langKeys.supportprice),
+                accessor: 'basicfee',
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { basicfee } = props.cell.row.original;
+                    return (basicfee || 0).toFixed(2);
+                }
+            },
+            {
+                Header: t(langKeys.starttime),
+                accessor: 'starttime',
+            },
+            {
+                Header: t(langKeys.finishtime),
+                accessor: 'finishtime',
+            },
+        ],
+        []
+    );
+
+    const fetchData = () => dispatch(getCollection(getBillingSupportSel(dataMain)));
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeResult.loading && !executeResult.error) {
+                if(duplicateop){
+                    setduplicateop(false)
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_duplicate) }))
+                }else{
+
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
+                fetchData();
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            } else if (executeResult.error) {
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.supportplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitSave(false);
+            }
+        }
+    }, [executeResult, waitSave])
+
+    useEffect(() => {
+        setdisableSearch(dataMain.year === "" ) 
+    }, [dataMain])
+
+    const handleRegister = () => {
+        setViewSelected("view-2");
+        setRowSelected({ row: null, edit: true });
+    }
+
+    const handleView = (row: Dictionary) => {
+        setduplicateop(true)
+        const callback = () => {
+            dispatch(execute(billingSupportIns({ ...row, operation: 'DUPLICATE', id: 0 })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_duplicate),
+            callback
+        }))
+    }
+
+    const handleEdit = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected({ row, edit: true });
+    }
+
+    const handleDelete = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(execute(billingSupportIns({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.billingsupportid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true);
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_delete),
+            callback
+        }))
+    }
+
+    if (viewSelected === "view-1") {
+        return (
+            <Fragment>
+                {/* <div>
+                    <div style={{width:"100%", display: "flex", padding: 10}}>
+                        
+                    </div>
+                </div> */}
+
+                <TableZyx
+                    columns={columns}
+                    ButtonsElement={() => (
+                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                            <FieldSelect
+                                label={t(langKeys.year)}
+                                style={{width: 150}}
+                                valueDefault={dataMain.year}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
+                                data={years}
+                                optionDesc="desc"
+                                optionValue="desc"
+                            />
+                            <FieldMultiSelect
+                                label={t(langKeys.month)}
+                                style={{width: 300}}
+                                valueDefault={dataMain.month}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
+                                data={months}
+                                uset={true}
+                                prefixTranslation="month_"
+                                optionDesc="val"
+                                optionValue="val"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.supportplan)}
+                                className={classes.fieldsfilter}
+                                valueDefault={dataMain.plan}
+                                variant="outlined"
+                                onChange={(value) => setdataMain(prev=>({...prev,plan:value?.description||""}))}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="description"
+                            />
+                        
+                            <Button
+                                disabled={mainResult.mainData.loading || disableSearch}
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon style={{ color: 'white' }} />}
+                                style={{ width: 120, backgroundColor: "#55BD84" }}
+                                onClick={() => search()}
+                            >{t(langKeys.search)}
+                            </Button>
+                        </div>
+                    )}
+                    // titlemodule={t(langKeys.billingplan, { count: 2 })}
+                    data={mainResult.mainData.data}
+                    filterGeneral={false}
+                    download={true}
+                    loading={mainResult.mainData.loading}
+                    register={true}
+                    handleRegister={handleRegister}
+                />
+            </Fragment>
+        )
+    }
+    else if (viewSelected === "view-2") {
+        return (
+            <DetailSupportPlan
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+                fetchData={fetchData}
+                dataPlan = {dataPlan}
+            />
+        )
+    } else
+        return null;
+}
+
 const BillingSetup: FC = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -4084,21 +4509,26 @@ const BillingSetup: FC = () => {
                     <AntTab label={t(langKeys.billingsetupgeneralconfiguration)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.supportplan)} />
-                }
-                {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.contractedplanbyperiod)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.conversationcost)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.costperperiod)} />
+                    <AntTab label={t(langKeys.notificationcost)} />
                 }
                 {user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.costperHSMperiod)} />
+                    <AntTab label={t(langKeys.supportplan)} />
                 }
-                <AntTab label={t(langKeys.periodreport)} />
+                {/*user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.costperperiod)} />
+                */}
+                {/*user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.costperHSMperiod)} />
+                */}
+                {/*user?.roledesc === "SUPERADMIN" && 
+                    <AntTab label={t(langKeys.periodreport)} />
+                */}
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -4107,34 +4537,39 @@ const BillingSetup: FC = () => {
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <SupportPlan dataPlan={dataPlan}/>
+                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
                 </div>
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <ContractedPlanByPeriod dataPlan={dataPaymentPlan}/>
+                    <ConversationCost dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <ConversationCost dataPlan={countryList}/>
+                    <NotificationCost dataPlan={countryList}/>
                 </div>
             }
             {pageSelected === 4 &&
                 <div style={{ marginTop: 16 }}>
-                    <CostPerPeriod dataPlan={multiData}/>
+                    <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
-            {pageSelected === 5 &&
+            {/*pageSelected === 5 &&
+                <div style={{ marginTop: 16 }}>
+                    <CostPerPeriod dataPlan={multiData}/>
+                </div>
+            */}
+            {/*pageSelected === 6 &&
                 <div style={{ marginTop: 16 }}>
                     <CostPerHSMPeriod dataPlan={multiData}/>
                 </div>
-            }
-            {pageSelected === 6 &&
+            */}
+            {/*pageSelected === 7 &&
                 <div style={{ marginTop: 16 }}>
                     <PeriodReport dataPlan={multiData}/>
                 </div>
-            }
+            */}
         </div>
     );
 }

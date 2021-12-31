@@ -1672,6 +1672,9 @@ export const langKeys = {
     billingfield_billinga4: 'billingfield_billinga4',
     billingfield_billingmatricial: 'billingfield_billingmatricial',
     billingfield_billingtermico: 'billingfield_billingtermico',
+    billingvcacomission: "billingvcacomission",
+    notificationcost: "notificationcost",
+    newnotificationcost: "newnotificationcost",
 };
 
 export type LangKeys = typeof langKeys;
