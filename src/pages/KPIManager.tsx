@@ -19,6 +19,7 @@ import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { CalendarIcon, SearchIcon } from 'icons';
+import GaugeChart from 'react-gauge-chart'
 
 interface RowSelected {
     row: Dictionary | null,
@@ -435,6 +436,7 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                         <TableCell><Trans i18nKey={langKeys.last_reading} /></TableCell>
                                         <TableCell><Trans i18nKey={langKeys.target} /></TableCell>
                                         <TableCell><Trans i18nKey={langKeys.variance} /></TableCell>
+                                        <TableCell></TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -444,6 +446,13 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                         <TableCell>{detaildata?.previousvalue}</TableCell>
                                         <TableCell>{row?.target}</TableCell>
                                         <TableCell>{detaildata?.currentvalue - row?.target}</TableCell>
+                                        <TableCell>
+                                            <GaugeChart
+                                                style={{width: '150px'}}
+                                                id="gauge-chart"
+                                                nrOfLevels={20}
+                                                percent={detaildata?.currentvalue/row?.target} 
+                                            /></TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
