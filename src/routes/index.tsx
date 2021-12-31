@@ -6,7 +6,7 @@ import {
 	Users, SignIn, SignUp, Properties, Quickreplies, Groupconfig, Whitelist, InappropriateWords, IntelligentModels, SLA, Domains, Person, NotFound, Forbidden, InternalServererror, Supervisor,
 	Organizations, MessageTemplates, Tipifications, Channels, ChannelAdd, IntegrationManager, ChannelAddChatWeb, ChannelAddFacebook, ChannelAddMessenger, ChannelAddInstagram, ChannelAddWhatsapp, ChannelAddTelegram,
 	Reports, Tickets, MessageInbox, BotDesigner, VariableConfiguration, ChannelAddTwitter, ChannelAddTwitterDM, Campaign, Emojis, PersonDetail, Iaservices,UserSettings,
-	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation, DashboardLayout, Invoice
+	Corporations, Settings, Dashboard, ChannelEdit, ChannelAddIos, ChannelAddAndroid, ChannelAddInstagramDM , Privacy, CRM, ActivateUser, LeadForm, ChangePwdFirstLogin, BillingSetups, DashboardAdd,InputValidation, DashboardLayout, Invoice, KPIManager
 } from 'pages';
 
 import { BrowserRouter as Router, Switch, Route, RouteProps, useLocation } from 'react-router-dom';
@@ -321,6 +321,9 @@ const RouterApp: FC = () => {
 				</ProtectRoute>
 				<ProtectRoute exact path={paths.CRM_EDIT_LEAD.path}>
 					<Layout mainClasses={classes.main}><LeadForm edit /></Layout>
+				</ProtectRoute>
+				<ProtectRoute exact path={paths.KPIMANAGER}>
+					<Layout mainClasses={classes.main}><KPIManager /></Layout>
 				</ProtectRoute>
 				<Route exact path={paths.CHNAGE_PWD_FIRST_LOGIN}>
 					<ChangePwdFirstLogin />

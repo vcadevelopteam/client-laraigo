@@ -595,6 +595,21 @@ export const langKeys = {
     hsm_template: 'hsm_template',
     hsm_template_plural: 'hsm_template_plural',
 
+    kpimanager: 'kpimanager',
+    kpimanager_detail: 'kpimanager_detail',
+    kpimanager_plural: 'kpimanager_plural',
+    newkpi: 'newkpi',
+    kpiname: 'kpiname',
+    target: 'target',
+    caution_at: 'caution_at',
+    alert_at: 'alert_at',
+    graphic_detail: 'graphic_detail',
+    current: 'current',
+    current_value: 'current_value',
+    last_reading: 'last_reading',
+    variance: 'variance',
+    last_update: 'last_update',
+
     no_reply_use_hsm: 'no_reply_use_hsm',
 
     active: 'active',

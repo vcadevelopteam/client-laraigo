@@ -31,6 +31,7 @@ export { default as Organizations } from './Organizations';
 export { default as Tickets } from './Tickets';
 export { default as UserSettings } from './UserSettings';
 export { default as Invoice } from './Invoice';
+export { default as KPIManager } from './KPIManager';
 
 export * from './channels';
 export * from './signup';

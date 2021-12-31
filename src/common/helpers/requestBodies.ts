@@ -2238,3 +2238,44 @@ export const getHistoryStatusConversation = (personid: number, conversationid: n
         communicationchannelid
     },
 });
+
+export const selKPIManager = (kpiid: number = 0) => ({
+    method: "UFN_KPI_SEL",
+    key: "UFN_KPI_SEL",
+    parameters: {
+        kpiid
+    },
+});
+
+export const insKPIManager = ({id = 0, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_KPI_INS",
+    key: "UFN_KPI_INS",
+    parameters: {id, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, operation}
+});
+
+export const duplicateKPIManager = (kpiid: number = 0): IRequestBody => ({
+    method: "UFN_KPI_DUPLICATE",
+    key: "UFN_KPI_DUPLICATE",
+    parameters: {
+        kpiid
+    }
+});
+
+export const selKPIManagerHistory = ({ kpiid, startdate, enddate }: Dictionary) => ({
+    method: "UFN_KPIHISTORY_SEL",
+    key: "UFN_KPIHISTORY_SEL",
+    parameters: {
+        kpiid,
+        startdate,
+        enddate,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    },
+});
+
+export const calcKPIManager = (kpiid: number = 0): IRequestBody => ({
+    method: "UFN_KPI_CALC",
+    key: "UFN_KPI_CALC",
+    parameters: {
+        kpiid
+    }
+});
