@@ -174,7 +174,6 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
     const handleClickItemMenu = (op: any) => {
         setAnchorEl(null);
         setoperator(op)
-        console.log(op)
         if (type === 'boolean') {
             setValue(op);
             setFilters({
@@ -193,6 +192,37 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
                     operator: "equals"
                 },
             }, 0)
+        } else if (type === "text" || !type) {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            } else if (value) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            }
+        } else if (type === "number") {
+            if (value) {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
+                        operator: op
+                    },
+                }, 0)
+            }
         }
     };
     const handleClickMenu = (event: any) => {
@@ -268,7 +298,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
                         {!['date', 'time'].includes(type) &&
                             <Input
                                 style={{ fontSize: '15px', minWidth: '100px' }}
-                                type={type ? type : (typeof firstvalue === "number" ? "number" : "text")}
+                                type={type === "number" ? "number" : "text"}
                                 fullWidth
                                 value={value}
                                 onKeyDown={keyPress}
@@ -474,7 +504,6 @@ const TableZyx = React.memo(({
     });
 
     const triggertmp = (fromButton: boolean = false) => {
-        console.log("fromButton", fromButton)
         fetchData && fetchData({
             ...pagination,
             pageSize,
@@ -675,7 +704,7 @@ const TableZyx = React.memo(({
                                                                         page,
                                                                     }));
                                                                 }}
-                                                                // setFilters={setFilters}
+                                                            // setFilters={setFilters}
                                                             />
                                                         }
                                                     </>)
@@ -841,7 +870,7 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
 
 export function buildQueryFilters(filters: IQueryMap) {
     const params = new URLSearchParams();
-    
+
     for (const key in filters) {
         if (filters[key] === undefined || filters[key] === null) continue;
         if (typeof filters[key] === 'object' && 'value' in filters[key] && 'operator' in filters[key]) {

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel,getHistoryStatusConversation } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -164,6 +164,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
+    const [groupsList, setGroupsList] = useState<Dictionary[]>([]);
     const user = useSelector(state => state.login.validateToken.user);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
@@ -232,6 +233,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
 
     useEffect(() => {
         if (openModal) {
+            console.log(rowWithDataSelected)
             reset({
                 newUserId: 0,
                 observation: '',
@@ -241,6 +243,13 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             register('observation');
             register('newUserGroup');
 
+            const groupsList = multiData?.data[6]?.data || [];
+            if (rowWithDataSelected.length === 1) {
+                const { ticketgroup } = rowWithDataSelected[0];
+                setGroupsList(ticketgroup ? groupsList.filter(group => group.domainvalue === ticketgroup) : groupsList);
+            } else {
+                setGroupsList(groupsList);
+            }
         }
     }, [openModal])
 
@@ -284,7 +293,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[6]?.data || []}
+                    data={groupsList}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -527,7 +536,7 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
                 accessor: 'status',
             },
             {
-                Header: t(langKeys.creationDate),
+                Header: t(langKeys.changeDate),
                 accessor: 'createdate',
                 type: 'date',
                 sortType: 'datetime',
@@ -537,7 +546,7 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
                 }
             },
             {
-                Header: t(langKeys.agent),
+                Header: t(langKeys.person_who_modified),
                 accessor: 'createby',
             },
         ],
@@ -607,7 +616,7 @@ const Tickets = () => {
                 width: '1%',
                 Cell: (props: any) => {
                     const ticket = props.cell.row.original;
-                    
+
                     return (
                         <IconOptions
                             onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
@@ -747,18 +756,18 @@ const Tickets = () => {
                 type: 'time',
             },
             {
-                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
-                accessor: 'tiempoprimerarespuestaasesor',
-                type: 'time'
-            },
-            {
-                Header: t(langKeys.ticket_tiempopromediorespuestapersona),
-                accessor: 'tiempopromediorespuestapersona',
-                type: 'time'
-            },
-            {
                 Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
                 accessor: 'tiempopromediorespuestaasesor',
+                type: 'time',
+            },
+            {
+                Header: t(langKeys.ticket_tiempoprimerarespuesta),
+                accessor: 'tiempoprimerarespuesta',
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                accessor: 'tiempoprimerarespuestaasesor',
                 type: 'time'
             },
             {
@@ -779,6 +788,10 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_documenttype),
                 accessor: 'documenttype'
+            },
+            {
+                Header: t(langKeys.documentnumber),
+                accessor: 'dni'
             },
             {
                 Header: t(langKeys.ticket_email),

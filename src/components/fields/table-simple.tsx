@@ -227,6 +227,8 @@ export const TimeOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
                 ampm={false}
                 views={['hours', 'minutes', 'seconds']}
                 format="HH:mm:ss"
+                error={false}
+                helperText={''}
                 value={value === '' ? null : value}
                 onChange={(e: any) => handleClickItemMenu(e)}
                 style={{ minWidth: '150px' }}
