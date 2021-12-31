@@ -20,6 +20,7 @@ export const langKeys = {
     report_plural: 'report_plural',
     next: "next",
     period: "period",
+    interval: 'interval',
     tos: "tos",
     tmo: "tmo",
     tag: 'tag',
@@ -1094,6 +1095,8 @@ export const langKeys = {
     lastMonth: 'lastMonth',
     daysUpToToday: 'daysUpToToday',
     daysStartingToday: 'daysStartingToday',
+    minute: 'minute',
+    day: 'day',
 
     equals: 'equals',
     notequals: 'notequals',

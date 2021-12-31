@@ -2247,10 +2247,13 @@ export const selKPIManager = (kpiid: number = 0) => ({
     },
 });
 
-export const insKPIManager = ({id = 0, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, operation }: Dictionary): IRequestBody => ({
+export const insKPIManager = ({id = 0, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, taskperiod, taskinterval, taskstartdate, operation }: Dictionary): IRequestBody => ({
     method: "UFN_KPI_INS",
     key: "UFN_KPI_INS",
-    parameters: {id, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, operation}
+    parameters: {
+        id, kpiname, description, status, type, sqlselect, sqlwhere, target, cautionat, alertat, taskperiod, taskinterval, taskstartdate, operation,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
 });
 
 export const duplicateKPIManager = (kpiid: number = 0): IRequestBody => ({
@@ -2276,6 +2279,7 @@ export const calcKPIManager = (kpiid: number = 0): IRequestBody => ({
     method: "UFN_KPI_CALC",
     key: "UFN_KPI_CALC",
     parameters: {
-        kpiid
+        kpiid,
+        task: false
     }
 });

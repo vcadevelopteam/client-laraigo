@@ -120,6 +120,8 @@ const translation: LangKeys = {
     default_credentials: "Default credentials",
     private_mail: "Use private mail",
     ticketinformation: 'Ticket',
+    minute: 'Minute',
+    day: 'Day',
     month: "Month",
     supportprice: "Support cost",
     businesshours: "Business hours",
@@ -130,6 +132,7 @@ const translation: LangKeys = {
     AIservices: 'AI Services',
     systemvariables: 'System',
     period: "Period",
+    interval: 'Intervalo',
     odoovariables: 'Odoo',
 
     supportplan:"Support plan",

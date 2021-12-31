@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldEditMulti } from 'components';
-import { calcKPIManager, convertLocalDate, duplicateKPIManager, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
+import { calcKPIManager, convertLocalDate, dateToLocalDate, dictToArrayKV, duplicateKPIManager, getDateToday, getFirstDayMonth, getLastDayMonth, getValuesFromDomain, insKPIManager, selKPIManager, selKPIManagerHistory } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
@@ -53,6 +53,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const dataPeriod: Dictionary = {
+    MINUTE: 'minute',
+    HOUR: 'hour',
+    DAY: 'day',
+    MONTH: 'month'
+};
+
 const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }, setViewSelected, multiData, fetchData }) => {
     const user = useSelector(state => state.login.validateToken.user);
     const classes = useStyles();
@@ -77,6 +84,10 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
             target: row?.target || 0,
             cautionat: row?.cautionat || 0,
             alertat: row?.alertat || 0,
+
+            taskperiod: row?.taskperiod || 'DAY',
+            taskinterval: row?.taskinterval || 1,
+            taskstartdate: row ? new Date(new Date(row?.taskstartdate).getTime() - new Date().getTimezoneOffset() * 60000).toISOString() : new Date().toISOString(),
 
             previousvalue: row?.previousvalue,
             currentvalue: row?.currentvalue,
@@ -103,6 +114,9 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         register('status', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('sqlselect', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('sqlwhere', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('taskperiod', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('taskinterval', { validate: (value) => (value && value > 0) || t(langKeys.field_required) });
+        register('taskstartdate', { validate: (value: any) => (value && value.length) || t(langKeys.field_required) });
     }, [edit, register]);
 
     useEffect(() => {
@@ -412,21 +426,75 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                             />
                         }
                     </div>
-                    <Box style={{display: 'flex', justifyContent: 'space-between'}}>
-                        <Typography variant="h6" component="h6">
-                            {t(langKeys.graphic_detail)}
-                        </Typography>
-                        <Button
-                            style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
-                            onClick={() => calcKPI()}
-                        >
-                            {t(langKeys.refresh)}
-                        </Button>
-                    </Box>
-                    <Box>
-                        {t(langKeys.last_update)}: {convertLocalDate(detaildata?.updatedate).toLocaleString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}
-                    </Box>
                     <div className="row-zyx">
+                        {edit ?
+                            <FieldSelect
+                                uset={true}
+                                label={t(langKeys.period)}
+                                className="col-4"
+                                valueDefault={getValues('taskperiod')}
+                                onChange={(data) => setValue('taskperiod', data?.key || '')}
+                                error={errors?.taskperiod?.message}
+                                data={dictToArrayKV(dataPeriod)}
+                                optionDesc="value"
+                                optionValue="key"
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.period)}
+                                value={t(dataPeriod[row?.period]) || ""}
+                                className="col-12"
+                            />
+                        }
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.interval)}
+                                className="col-4"
+                                type="number"
+                                valueDefault={getValues('taskinterval')}
+                                onChange={(value) => setValue('taskinterval', value)}
+                                error={errors?.taskinterval?.message}
+                                inputProps={{ min: 0, step: 1 }}
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.interval)}
+                                value={row ? (row.taskinterval || 1) : 1}
+                                className="col-4"
+                            />
+                        }
+                        {edit ?
+                            <FieldEdit
+                                label={t(langKeys.startdate)}
+                                className="col-4"
+                                type="datetime-local"
+                                valueDefault={(getValues('taskstartdate') as string)?.replace(' ', 'T')?.substring(0, 16)}
+                                onChange={(value) => setValue('taskstartdate', value)}
+                                error={errors?.taskstartdate?.message}
+                            />
+                            :
+                            <FieldView
+                                label={t(langKeys.startdate)}
+                                value={row ? (row.taskstartdate || "") : ""}
+                                className="col-4"
+                            />
+                        }
+                    </div>
+                    {row && <div className="row-zyx">
+                        <Box style={{display: 'flex', justifyContent: 'space-between'}}>
+                            <Typography variant="h6" component="h6">
+                                {t(langKeys.graphic_detail)}
+                            </Typography>
+                            <Button
+                                style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)' }}
+                                onClick={() => calcKPI()}
+                            >
+                                {t(langKeys.refresh)}
+                            </Button>
+                        </Box>
+                        <Box>
+                            {t(langKeys.last_update)}: {convertLocalDate(detaildata?.updatedate).toLocaleString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}
+                        </Box>
                         <TableContainer>
                             <Table aria-label="simple table">
                                 <TableHead>
@@ -451,13 +519,14 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                                 style={{width: '150px'}}
                                                 id="gauge-chart"
                                                 nrOfLevels={20}
-                                                percent={detaildata?.currentvalue/row?.target} 
+                                                percent={!!row?.target ? detaildata?.currentvalue/row?.target : 0} 
                                             /></TableCell>
                                     </TableRow>
                                 </TableBody>
                             </Table>
                         </TableContainer>
                     </div>
+                    }
                 </div>
                 }
                 {pageSelected === 1 &&
@@ -609,7 +678,8 @@ const KPIManager: FC = () => {
                     const column = props.cell.column;
                     const row = props.cell.row.original;
                     return (
-                        row[column.id] && convertLocalDate(row[column.id]).toLocaleString(undefined, {
+                        row[column.id]
+                        ? convertLocalDate(row[column.id]).toLocaleString(undefined, {
                             year: "numeric",
                             month: "2-digit",
                             day: "2-digit",
@@ -617,6 +687,7 @@ const KPIManager: FC = () => {
                             minute: "numeric",
                             second: "numeric"
                         })
+                        : ''
                     )
                 }
             },
@@ -679,7 +750,7 @@ const KPIManager: FC = () => {
 
     const handleDelete = (row: Dictionary) => {
         const callback = () => {
-            dispatch(execute(insKPIManager({ ...row, operation: 'DELETE', status: 'ELIMINADO' })));
+            dispatch(execute(insKPIManager({ ...row, operation: 'DELETE', status: 'ELIMINADO', id: row.id })));
             dispatch(showBackdrop(true));
             setWaitSave(true);
         }
@@ -718,7 +789,7 @@ const KPIManager: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.kpimanager_plural, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={mainResult.mainData.data || []}
                 download={true}
                 loading={mainResult.mainData.loading}
                 register={true}
