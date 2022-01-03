@@ -55,7 +55,9 @@ export interface TableConfig {
     initialPageIndex?: number;
     initialStartDate?: number | null;
     initialEndDate?: number | null;
-    initialFilters?: Dictionary;
+    initialFilters?: {
+        [key: string]: IFilters;
+    };
 }
 
 export interface Pagination {
@@ -73,11 +75,15 @@ export interface IFetchData {
     daterange: any;
 }
 
+interface IFilters { value: any, operator: string, type?: string | null; }
+
 export interface ITablePaginatedFilter {
     /**timestamp */
     startDate: number | null;
     /**timestamp */
     endDate: number | null;
     page: number;
-    [column: string]: any;
+    filters: {
+        [key: string]: IFilters;
+    };
 }

@@ -7,7 +7,7 @@ import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPers
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
-import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, HSMIcon, SearchIcon } from 'icons';
+import { BuildingIcon, DocNumberIcon, DocTypeIcon, EMailInboxIcon, GenderIcon, TelephoneIcon, WhatsappIcon, SearchIcon, FacebookMessengerIcon, FacebookWallIcon, WebMessengerIcon, TelegramIcon, InstagramIcon, AndroidIcon, AppleIcon, EmailIcon, YoutubeIcon, LineIcon, TwitterIcon } from 'icons';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Trans, useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -358,7 +358,7 @@ export const TemplateIcons: React.FC<{
             >
                 <MenuItem onClick={sendHSM}>
                     <ListItemIcon color="inherit">
-                        <HSMIcon width={22} style={{ fill: '#7721AD' }} />
+                        <WhatsappIcon width={22} style={{ fill: '#7721AD' }} />
                     </ListItemIcon>
                     {t(langKeys.send_hsm)}
                 </MenuItem>
@@ -405,7 +405,6 @@ export const Person: FC = () => {
     const params = useQueryParams(query);
 
     const goToPersonDetail = (person: IPerson) => {
-        console.log('AA:', location.pathname, location.search);
         history.push({
             pathname: paths.PERSON_DETAIL.resolve(person.personid),
             state: person,
@@ -824,7 +823,7 @@ export const Person: FC = () => {
                             variant="contained"
                             color="primary"
                             disabled={personList.loading || Object.keys(selectedRows).length === 0}
-                            startIcon={<HSMIcon width={24} style={{ fill: '#FFF' }} />}
+                            startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
                             onClick={() => {
                                 setOpenDialogTemplate(true);
                                 setTypeTemplate("HSM");
@@ -952,6 +951,10 @@ const usePropertyStyles = makeStyles(theme => ({
         fontSize: 15,
         margin: 0,
         width: '100%',
+
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     leadingContainer: {
         height: 24,
@@ -1696,13 +1699,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.persontype}
+                                        valueDefault={person.type}
                                         onChange={(value) => {
-                                            setValue('persontype', value?.domainvalue);
+                                            setValue('type', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personGenTypes || []}
-                                        prefixTranslation="type_persontype_"
+                                        data={domains.value?.personTypes || []}
+                                        prefixTranslation="type_personlevel_"
                                         optionValue="domainvalue"
                                         optionDesc="domaindesc"
                                     />
@@ -1716,13 +1719,13 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
-                                        valueDefault={person.type}
+                                        valueDefault={person.persontype}
                                         onChange={(value) => {
-                                            setValue('type', value?.domainvalue);
+                                            setValue('persontype', value?.domainvalue);
                                         }}
                                         loading={domains.loading}
-                                        data={domains.value?.personTypes || []}
-                                        prefixTranslation="type_personlevel_"
+                                        data={domains.value?.personGenTypes || []}
+                                        prefixTranslation="type_persontype_"
                                         optionValue="domainvalue"
                                         optionDesc="domainvalue"
                                     />
@@ -1906,9 +1909,9 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                     </Grid>
                 </Grid>
             </Grid>
-            <div style={{ height: 12 }} />
+            {/* <div style={{ height: 12 }} />
             <label>{t(langKeys.referredBy)}</label>
-            {referrerList.data.map((e, i) => <ReferrerItem referrer={e} key={`referrer_item_${i}`} />)}
+            {referrerList.data.map((e, i) => <ReferrerItem referrer={e} key={`referrer_item_${i}`} />)} */}
         </div>
     );
 }
@@ -1937,6 +1940,12 @@ const useChannelItemStyles = makeStyles(theme => ({
         fontWeight: 400,
         margin: '6px 0',
     },
+    subtitle: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '0.5em',
+        alignItems: 'center',
+    },
 }));
 
 interface ChannelItemProps {
@@ -1945,38 +1954,50 @@ interface ChannelItemProps {
 
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
-    const nameschannel: Dictionary = {
-        "WHAT": "WHATSAPP",
-        "WHAD": "WHATSAPP",
-        "WHAP": "WHATSAPP",
-        "WHAC": "WHATSAPP",
-        "FBMS": "FACEBOOK MESSENGER",
-        "FBDM": "FACEBOOK MESSENGER",
-        "FBWA": "FACEBOOK MURO",
-        "WEBM": "WEB MESSENGER",
-        "TELE": "TELEGRAM",
-        "INST": "INSTAGRAM",
-        "INMS": "INSTAGRAM",
-        "INDM": "INSTAGRAM",
-        "ANDR": "ANDROID",
-        "APPL": "IOS",
-        "CHATZ": "WEB MESSENGER",
-        "CHAZ": "WEB MESSENGER",
-        "MAIL": "EMAIL",
-        "YOUT": "YOUTUBE",
-        "LINE": "LINE",
-        "SMS": "SMS",
-        "SMSI": "SMS",
-        "TWIT": "TWITTER",
-        "TWMS": "TWITTER",
+    const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
+        "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+        "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+        "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+        "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+        "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+        "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+        "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
+        "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+        "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
+        "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+        "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+        "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+        "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
+        "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
+        "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+        "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+        "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
+        "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
+        "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
+        "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
+        "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+        "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+        "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
     }
+    const personIdentifier = useMemo(() => {
+        if (!channel) return '';
+
+        const index = channel.personcommunicationchannel.lastIndexOf('_');
+        return channel.personcommunicationchannel.substring(0, index);
+    }, [channel]);
+
     return (
         <div className={classes.root}>
             <Grid container direction="row">
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.communicationchannel} />}
-                        subtitle={nameschannel[channel.type]}
+                        subtitle={(
+                            <div className={classes.subtitle}>
+                                <span>{nameschannel[channel.type].label}</span>
+                                {nameschannel[channel.type].icon}
+                            </div>
+                        )}
                         m={1}
                     />
                 </Grid>
@@ -1990,7 +2011,7 @@ const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
                 <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                     <Property
                         title={<Trans i18nKey={langKeys.personIdentifier} />}
-                        subtitle={channel.personcommunicationchannel}
+                        subtitle={personIdentifier}
                         m={1}
                     />
                 </Grid>
@@ -2398,7 +2419,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            TME
+                                            <Trans i18nKey={langKeys.tmeAgent} />
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
                                             {conversation.tme}
@@ -2408,7 +2429,7 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
-                                            TMR
+                                            <Trans i18nKey={langKeys.tmrAgent} />
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
                                             {conversation.tmr}
@@ -2452,6 +2473,30 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
                                             {conversation.closetype}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.initialAgent} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.asesorinicial}
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} className={classes.containerstyle}>
+                                    <Grid container direction="row">
+                                        <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+                                            <label className={classes.infoLabel}>
+                                                <Trans i18nKey={langKeys.finalAgent} />
+                                            </label>
+                                        </Grid>
+                                        <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
+                                            {conversation.asesorfinal}
                                         </Grid>
                                     </Grid>
                                 </Grid>
@@ -2577,7 +2622,7 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
             data={leads.data}
             download={false}
             loading={leads.loading}
-            onClickRow={goToLead}
+            // onClickRow={goToLead}
             register={false}
         />
     );

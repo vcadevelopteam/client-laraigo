@@ -568,6 +568,9 @@ const translation: LangKeys = {
     type_personlevel_medium: 'Cliente Estándar',
     type_personlevel_vip: 'Cliente Vip',
 
+    'type_personlevel_cliente medio': 'Cliente Estándar',
+    'type_personlevel_cliente vip': 'Cliente Vip',
+
     type_ocupation_1: "ABOGADO",
     type_ocupation_2: "ACTOR, ACTRIZ, ARTISTA, DIRECTOR DE ESPECTÁCULOS",
     type_ocupation_3: "ACTUARIO",
@@ -1722,6 +1725,11 @@ const translation: LangKeys = {
     billingvcacomission: "Comisión VCA",
     notificationcost: "Costo Basado en Notificación",
     newnotificationcost: "Nuevo costo basado en notificación",
+
+    tmeAgent: 'TME Asesor',
+    tmrAgent: 'TMR Asesor',
+    initialAgent: 'Asesor inicial',
+    finalAgent: 'Asesor final',
 };
 
 const esResource: ResourceLanguage = {

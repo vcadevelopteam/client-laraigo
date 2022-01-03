@@ -28,7 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
-import { TableConfig } from '@types'
+import { ITablePaginatedFilter, TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -291,18 +291,36 @@ const TableZyx = React.memo(({
     allRowsSelected,
     setAllRowsSelected,
     onClickRow,
-    toolsFooter = true
+    toolsFooter = true,
+    onFilterChange,
+    initialPageIndex = 0,
+    initialFilters = {},
 }: TableConfig) => {
     const classes = useStyles();
+    const [tFilters, setTFilters] = useState<ITablePaginatedFilter>({
+        startDate: null,
+        endDate: null,
+        page: initialPageIndex,
+        filters: initialFilters,
+    });
+
+    useEffect(() => {
+        onFilterChange?.(tFilters);
+    }, [tFilters]);
 
     const DefaultColumnFilter = ({
-        column: { setFilter, listSelectFilter = [], type = "string" },
+        column: { id: header, setFilter: $setFilter, listSelectFilter = [], type = "string" },
     }: any) => {
 
         const [value, setValue] = useState('');
         const [anchorEl, setAnchorEl] = useState(null);
         const open = Boolean(anchorEl);
         const [operator, setoperator] = useState("contains");
+
+        const setFilter = (filter: any) => {
+            $setFilter(filter);
+            setTFilters(prev => ({ ...prev, filters: { ...prev.filters, [header]: filter } }));
+        }
 
         const handleCloseMenu = () => {
             setAnchorEl(null);
@@ -560,7 +578,7 @@ const TableZyx = React.memo(({
     } = useTable({
         columns,
         data,
-        initialState: { pageIndex: 0, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
+        initialState: { pageIndex: initialPageIndex, pageSize: pageSizeDefault, selectedRowIds: initialSelectedRows || {} },
         defaultColumn,
         getRowId: (row, relativeIndex: any, parent: any) => selectionKey
             ? (parent ? [row[selectionKey], parent].join('.') : row[selectionKey])
@@ -856,25 +874,37 @@ const TableZyx = React.memo(({
                     <Box className={classes.footerTable}>
                         <Box>
                             <IconButton
-                                onClick={() => gotoPage(0)}
+                                onClick={() => {
+                                    gotoPage(0);
+                                    setTFilters(prev => ({ ...prev, page: 0 }));
+                                }}
                                 disabled={!canPreviousPage || loading}
                             >
                                 <FirstPage />
                             </IconButton>
                             <IconButton
-                                onClick={() => previousPage()}
+                                onClick={() => {
+                                    previousPage();
+                                    setTFilters(prev => ({ ...prev, page: pageIndex - 1 }));
+                                }}
                                 disabled={!canPreviousPage || loading}
                             >
                                 <NavigateBefore />
                             </IconButton>
                             <IconButton
-                                onClick={() => nextPage()}
+                                onClick={() => {
+                                    nextPage();
+                                    setTFilters(prev => ({ ...prev, page: pageIndex + 1 }));
+                                }}
                                 disabled={!canNextPage || loading}
                             >
                                 <NavigateNext />
                             </IconButton>
                             <IconButton
-                                onClick={() => gotoPage(pageCount - 1)}
+                                onClick={() => {
+                                    gotoPage(pageCount - 1);
+                                    setTFilters(prev => ({ ...prev, page: pageCount - 1 }));
+                                }}
                                 disabled={!canNextPage || loading}
                             >
                                 <LastPage />

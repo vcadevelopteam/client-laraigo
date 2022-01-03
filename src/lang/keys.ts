@@ -711,6 +711,9 @@ export const langKeys = {
     type_personlevel_medium: 'type_personlevel_medium',
     type_personlevel_vip: 'type_personlevel_vip',
 
+    'type_personlevel_cliente medio': 'type_personlevel_cliente medio',
+    'type_personlevel_cliente vip': 'type_personlevel_cliente vip',
+
     type_ocupation_1: "1",
     type_ocupation_2: "2",
     type_ocupation_3: "3",
@@ -1723,6 +1726,11 @@ export const langKeys = {
     billingvcacomission: "billingvcacomission",
     notificationcost: "notificationcost",
     newnotificationcost: "newnotificationcost",
+
+    tmeAgent: 'tmeAgent',
+    tmrAgent: 'tmrAgent',
+    initialAgent: 'initialAgent',
+    finalAgent: 'finalAgent',
 };
 
 export type LangKeys = typeof langKeys;
