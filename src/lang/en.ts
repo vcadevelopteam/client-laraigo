@@ -677,6 +677,8 @@ const translation: LangKeys = {
     informationFCR: "Information FCR",
     beautify: 'Beautify',
     invalidjson: 'Invalid json',
+    invalid_date_format: 'Invalid date format',
+    invalid_time_format: 'Invalid time format',
     test: 'Test',
     result: 'Result',
     closing_reason: 'Closing Reason',
