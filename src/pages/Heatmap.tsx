@@ -787,7 +787,7 @@ const MainHeatMap: React.FC = () => {
                 </div>
                 <div style={{flex:1}}>
                     <FieldMultiSelect
-                        label={t(langKeys.agent)}
+                        label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => { setdataMainHeatMap(p => ({ ...p, closedby: value.map((o: Dictionary) => o.domainvalue).join() })) }}
@@ -1337,7 +1337,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
                 </div>
                 <div style={{flex:1,paddingRight: 10}}>
                     <FieldMultiSelect
-                        label={t(langKeys.agent)}
+                        label={t(langKeys.advisor)}
                         className={classes.fieldsfilter}
                         variant="outlined"
                         onChange={(value) => { setdataMainHeatMap(p => ({ ...p, closedby: value.map((o: Dictionary) => o.domainvalue).join() })) }}

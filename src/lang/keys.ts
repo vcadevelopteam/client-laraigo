@@ -1437,6 +1437,7 @@ export const langKeys = {
     modifiedBy: 'modifiedBy',
     modificationDate: 'modificationDate',
     agent: 'agent',
+    advisor: 'advisor',
     startDate: 'startDate',
     endDate: 'endDate',
     ticketInformation: 'ticketInformation',
