@@ -10,7 +10,7 @@ import TableZyx from '../components/fields/table-simple';
 import { makeStyles } from '@material-ui/core/styles';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
-import { getCollection, getCollectionAux, resetAllMain } from 'store/main/actions';
+import { getMultiCollection, getMultiCollectionAux } from 'store/main/actions';
 import { showBackdrop } from 'store/popus/actions';
 import { CalendarIcon } from 'icons';
 import { Range } from 'react-date-range';
@@ -60,20 +60,22 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
     const classes = useStyles();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
+    const multiDataAux = useSelector(state => state.main.multiDataAux);
 
     function search(){
         dispatch(showBackdrop(true))
-        dispatch(getCollectionAux(getRecordHSMReport({
-            campaignname: row?.campaignname||"",
-            date: row?.date||""
-        })))
+        dispatch(getMultiCollectionAux([
+            getRecordHSMReport({
+                campaignname: row?.campaignname||"",
+                date: row?.date||""
+            })
+        ]))
     }
     useEffect(() => {
-        if (!mainResult.mainAux.loading){
+        if (!multiDataAux.loading){
             dispatch(showBackdrop(false))
         }
-    }, [mainResult])
+    }, [multiDataAux])
 
     useEffect(() => {
         search()
@@ -173,9 +175,9 @@ const DetailRecordHSMRecord: React.FC<DetailRecordHSMRecordProps> = ({ data: { r
                         >{t(langKeys.back)}</Button>
                     )}
                     columns={columns}
-                    data={mainResult.mainAux.data}
+                    data={multiDataAux.data[0]?.data||[]}
                     download={true}
-                    loading={mainResult.mainAux.loading}
+                    loading={multiDataAux.loading}
                     register={false}
                     filterGeneral={false}
                 // fetchData={fetchData}
@@ -189,7 +191,7 @@ const RecordHSMRecord: FC = () => {
     // const history = useHistory();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
+    const multiData = useSelector(state => state.main.multiData);
     
     const classes = useStyles()
     const [openDateRangeCreateDateModal, setOpenDateRangeCreateDateModal] = useState(false);
@@ -230,7 +232,7 @@ const RecordHSMRecord: FC = () => {
                 sortType: 'number',
             },
             {
-                Header: t(langKeys.success),
+                Header: t(langKeys.satisfactory),
                 accessor: 'success',
                 NoFilter: true,
                 type: 'number',
@@ -244,7 +246,7 @@ const RecordHSMRecord: FC = () => {
                 sortType: 'number',
             },
             {
-                Header: `% ${t(langKeys.success)}`,
+                Header: `% ${t(langKeys.satisfactory)}`,
                 accessor: 'successp',
                 NoFilter: true,
                 // type: 'number',
@@ -273,24 +275,23 @@ const RecordHSMRecord: FC = () => {
     
     function search(){
         dispatch(showBackdrop(true))
-        dispatch(getCollection(getRecordHSMList(
-            {
-                startdate: dateRangeCreateDate.startDate,
-                enddate: dateRangeCreateDate.endDate
-            }
-        )))
+        dispatch(getMultiCollection([
+            getRecordHSMList(
+                {
+                    startdate: dateRangeCreateDate.startDate,
+                    enddate: dateRangeCreateDate.endDate
+                }
+            )
+        ]))
     }
     useEffect(() => {
         search()
-        return () => {
-            dispatch(resetAllMain());
-        };
     }, [])
     useEffect(() => {
-        if (!mainResult.mainData.loading){
+        if (!multiData.loading){
             dispatch(showBackdrop(false))
         }
-    }, [mainResult])
+    }, [multiData])
 
     const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -303,7 +304,7 @@ const RecordHSMRecord: FC = () => {
             <TableZyx
                 columns={columns}
                 titlemodule={t(langKeys.recordhsmreport, { count: 2 })}
-                data={mainResult.mainData.data}
+                data={multiData.data[0]?.data||[]}
                 ButtonsElement={() => (
                     <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
                         <DateRangePicker
@@ -321,7 +322,7 @@ const RecordHSMRecord: FC = () => {
                             </Button>
                         </DateRangePicker>
                         <Button
-                            disabled={mainResult.mainData.loading}
+                            disabled={multiData.loading}
                             variant="contained"
                             color="primary"
                             startIcon={<SearchIcon style={{ color: 'white' }} />}
@@ -333,7 +334,7 @@ const RecordHSMRecord: FC = () => {
                 )}
                 download={true}
                 filterGeneral={false}
-                loading={mainResult.mainData.loading}
+                loading={multiData.loading}
                 register={false}
             // fetchData={fetchData}
             />
