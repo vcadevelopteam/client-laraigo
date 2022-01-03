@@ -160,15 +160,11 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitReassign, setWaitReassign] = useState(false);
-
-    // const [agentsConnected, setAgentsConnected] = useState<Dictionary[]>([]);
     const multiData = useSelector(state => state.main.multiData);
     const userList = useSelector(state => state.main.mainAux);
     const reassigningRes = useSelector(state => state.inbox.triggerReassignTicket);
     const [groupsList, setGroupsList] = useState<Dictionary[]>([]);
     const user = useSelector(state => state.login.validateToken.user);
-
-
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         newUserId: number;
@@ -244,7 +240,7 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
             const groupsList = multiData?.data[6]?.data || [];
             if (rowWithDataSelected.length === 1) {
                 const { ticketgroup } = rowWithDataSelected[0];
-                setGroupsList(ticketgroup ? groupsList.filter(group => group.domainvalue === ticketgroup) : groupsList);
+                setGroupsList(ticketgroup ? groupsList.filter(group => group.domainvalue !== ticketgroup) : groupsList);
             } else {
                 setGroupsList(groupsList);
             }
@@ -352,7 +348,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
             register('path1');
             register('classificationid1', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
             register('path2');
-            register('classificationid2', { validate: (value) => ((value && value > 0) || t(langKeys.field_required)) });
+            register('classificationid2');
             register('path3');
             register('classificationid3');
 
@@ -391,7 +387,7 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
 
     const onSubmit = handleSubmit((data) => {
         dispatch(showBackdrop(true));
-        dispatch(execute(insConversationClassificationMassive(rowWithDataSelected.map(x => x.conversationid).join(), data.classificationid3 || data.classificationid2)))
+        dispatch(execute(insConversationClassificationMassive(rowWithDataSelected.map(x => x.conversationid).join(), data.classificationid3 || data.classificationid2 || data.classificationid1)))
         setWaitTipify(true)
     });
 

@@ -5,6 +5,7 @@ interface Dictionary {
 export interface IPerson {
     corpid: number;
     corpdesc: string;
+    observation?: string;
     orgid: number;
     orgdesc: string;
     personid: number;

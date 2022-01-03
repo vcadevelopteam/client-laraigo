@@ -92,7 +92,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                     <GetIcon channelType={communicationchanneltype} color={iconColor} />
-                    <div className={classes.name}>{displayname}</div>
+                    <div className={classes.name}>{displayname || "-"}</div>
                 </div>
                 <div style={{ color: '#465a6ed9', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: 230 }}>
                     {lastmessage}

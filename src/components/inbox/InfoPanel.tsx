@@ -7,7 +7,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
 import { EMailInboxIcon, PhoneIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
-import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab } from 'components'
+import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { convertLocalDate, getValuesFromDomain, insPersonBody } from 'common/helpers';
@@ -154,6 +154,7 @@ const InfoTab: React.FC = () => {
         register('firstname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('lastname');
         register('email');
+        register('observation');
         register('phone');
         register('documenttype');
         register('documentnumber');
@@ -317,6 +318,12 @@ const InfoTab: React.FC = () => {
                             prefixTranslation="type_educationlevel_"
                             error={errors?.educationlevel?.message}
                         />
+                        <FieldEditMulti
+                            label={t(langKeys.observation)}
+                            onChange={(value) => setValue('observation', value)}
+                            valueDefault={getValues('observation')}
+                            error={errors?.observation?.message}
+                        />
                     </div>
                     <Fab
                         onClick={() => setView('view')}
@@ -447,6 +454,12 @@ const InfoTab: React.FC = () => {
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.totalconversations)}</div>
                         <div>{person?.totaltickets}</div>
+                    </div>
+                </div>}
+                {person?.observation && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.observation)}</div>
+                        <div>{person?.observation}</div>
                     </div>
                 </div>}
             </div>

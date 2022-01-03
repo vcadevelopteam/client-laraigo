@@ -501,7 +501,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                                 width={width}
                                                 height={height}
                                                 itemCount={ticketFilteredList.data.length}
-                                                itemSize={76.6}
+                                                itemSize={82.59}
                                             >
                                                 {RenderRowFilterd}
                                             </FixedSizeList>
@@ -518,7 +518,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                                         width={width}
                                         height={height}
                                         itemCount={ticketsToShow.length}
-                                        itemSize={76.6}
+                                        itemSize={82.59}
                                     >
                                         {RenderRow}
                                     </FixedSizeList>

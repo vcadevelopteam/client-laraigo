@@ -201,7 +201,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 setFilters({
                     ...filters,
                     [header]: {
-                        value: value,
+                        value: op,
                         operator: op
                     },
                 }, 0)
@@ -224,12 +224,25 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     },
                 }, 0)
             }
+        } else {
+            if (op === 'isempty' ||
+                op === 'isnotempty' ||
+                op === 'isnull' ||
+                op === 'isnotnull') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: op,
+                        operator: op
+                    },
+                }, 0)
+            }
         }
     };
     const handleClickMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleDate = React.useCallback((date: Date) => {
+    const handleDate = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
             if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
@@ -248,7 +261,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                 }, 0)
             }
         }
-    }, [filters, operator])
+    }
 
     const handleTime = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
@@ -874,7 +887,7 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
 
 export function buildQueryFilters(filters: IQueryMap, init?: string | string[][] | Record<string, string>) {
     const params = new URLSearchParams(init);
-    
+
     for (const key in filters) {
         if (filters[key] === undefined || filters[key] === null) continue;
         if (typeof filters[key] === 'object' && 'value' in filters[key] && 'operator' in filters[key]) {

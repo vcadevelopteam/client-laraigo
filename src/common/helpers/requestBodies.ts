@@ -1733,6 +1733,7 @@ export const insPersonBody = (person: Dictionary): IRequestBody => ({
         ...person,
         corpid: null,
         orgid: null,
+        observation: person.observation || '',
     },
 });
 
@@ -1751,6 +1752,7 @@ export const editPersonBody = (person: IPerson): IRequestBody => ({
         ...person,
         id: person.personid,
         operation: person.personid ? 'UPDATE' : 'INSERT',
+        observation: person.observation || '',
     },
 });
 
