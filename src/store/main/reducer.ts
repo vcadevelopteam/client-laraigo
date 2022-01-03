@@ -18,6 +18,7 @@ export interface IState {
     mainDynamic: IListStatePaginated<Dictionary>;
     multiData: IListStatePaginated<MultiData>;
     multiDataAux: IListStatePaginated<itemMulti>;
+    multiDataAux2: IListStatePaginated<itemMulti>;
     execute: IListStatePaginated<Dictionary> & { success: boolean | undefined | null };
     mainAux: IListStatePaginated<Dictionary>;
     mainAux2: IListStatePaginated<Dictionary>;
@@ -32,6 +33,7 @@ export const initialState: IState = {
     mainDynamic: initialListPaginatedState,
     multiData: initialListPaginatedState,
     multiDataAux: initialListPaginatedState,
+    multiDataAux2: initialListPaginatedState,
     execute: { success: undefined, ...initialListPaginatedState },
     mainAux: initialListPaginatedState,
     mainAux2: initialListPaginatedState,
@@ -62,10 +64,20 @@ export default createReducer<IState>(initialState, {
     [actionTypes.AUX_MAIN_FAILURE]: caseFunctions.mainAuxFailure,
     [actionTypes.AUX_MAIN_RESET]: caseFunctions.mainAuxReset,
 
+    [actionTypes.AUX2_MAIN]: caseFunctions.mainAux2,
+    [actionTypes.AUX2_MAIN_SUCCESS]: caseFunctions.mainAux2Success,
+    [actionTypes.AUX2_MAIN_FAILURE]: caseFunctions.mainAux2Failure,
+    [actionTypes.AUX2_MAIN_RESET]: caseFunctions.mainAux2Reset,
+
     [actionTypes.AUX_MULTI_MAIN]: caseFunctions.auxMultiMain,
     [actionTypes.AUX_MULTI_MAIN_SUCCESS]: caseFunctions.auxMultiMainSuccess,
     [actionTypes.AUX_MULTI_MAIN_FAILURE]: caseFunctions.auxMultiMainFailure,
     [actionTypes.AUX_MULTI_MAIN_RESET]: caseFunctions.auxMultiMainReset,
+
+    [actionTypes.AUX2_MULTI_MAIN]: caseFunctions.aux2MultiMain,
+    [actionTypes.AUX2_MULTI_MAIN_SUCCESS]: caseFunctions.aux2MultiMainSuccess,
+    [actionTypes.AUX2_MULTI_MAIN_FAILURE]: caseFunctions.aux2MultiMainFailure,
+    [actionTypes.AUX2_MULTI_MAIN_RESET]: caseFunctions.aux2MultiMainReset,
 
     [actionTypes.PAGINATED_MAIN]: caseFunctions.mainPaginated,
     [actionTypes.PAGINATED_MAIN_SUCCESS]: caseFunctions.mainPaginatedSuccess,

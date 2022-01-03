@@ -257,7 +257,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     };
 
     const handleSelected = () => {
-        dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setSearchValue('');
@@ -409,7 +408,6 @@ const Reports: FC = () => {
     }
 
     const handleSelected = (row: Dictionary, allFilters: Dictionary[]) => {
-        dispatch(resetMainAux());
         dispatch(resetCollectionPaginated());
         dispatch(resetMultiMain());
         setRowSelected(row);
@@ -658,7 +656,7 @@ const Reports: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread("Heatmap")}
+                        breadcrumbs={getArrayBread(t('report_heatmap'))}
                         handleClick={handleSelectedString}
                     />
                     <Heatmap />
@@ -670,7 +668,7 @@ const Reports: FC = () => {
             <>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread("recordhsmreport")}
+                        breadcrumbs={getArrayBread(t('report_recordhsmreport'))}
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />
