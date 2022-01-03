@@ -218,6 +218,39 @@ export const mainAuxReset = (state: IState): IState => ({
     mainAux: initialState.mainAux,
 });
 
+export const mainAux2 = (state: IState): IState => ({
+    ...state,
+    mainAux2: { ...state.mainAux2, loading: true, error: false }
+});
+
+export const mainAux2Success = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        mainAux2: {
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const mainAux2Failure = (state: IState, action: IAction): IState => ({
+    ...state,
+    mainAux2: {
+        ...state.mainAux2,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const mainAux2Reset = (state: IState): IState => ({
+    ...state,
+    mainAux2: initialState.mainAux2,
+});
+
 
 export const multiMain = (state: IState): IState => ({
     ...state,
@@ -286,6 +319,39 @@ export const auxMultiMainFailure = (state: IState, action: IAction): IState => (
 export const auxMultiMainReset = (state: IState): IState => ({
     ...state,
     multiDataAux: initialState.multiDataAux,
+});
+
+export const aux2MultiMain = (state: IState): IState => ({
+    ...state,
+    multiDataAux2: { ...state.multiDataAux2, loading: true, error: false }
+});
+
+export const aux2MultiMainSuccess = (state: IState, action: IAction): IState => {
+    return {
+        ...state,
+        multiDataAux2: {
+            data: action.payload.data || [],
+            count: 0,
+            loading: false,
+            error: false
+        }
+    }
+};
+
+export const aux2MultiMainFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    multiDataAux2: {
+        ...state.multiDataAux2,
+        loading: false,
+        error: true,
+        code: action.payload.code ? "error_" + action.payload.code.toString().toLowerCase() : 'error_unexpected_error',
+        message: action.payload.message || 'error_unexpected_error',
+    }
+});
+
+export const aux2MultiMainReset = (state: IState): IState => ({
+    ...state,
+    multiDataAux2: initialState.multiDataAux2,
 });
 
 

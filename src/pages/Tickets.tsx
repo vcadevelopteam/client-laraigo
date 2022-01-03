@@ -851,8 +851,6 @@ const Tickets = () => {
     };
 
     const fetchData = ({ pageSize, pageIndex, filters, sorts, daterange }: IFetchData) => {
-
-        console.log(pageIndex)
         setfetchDataAux({ pageSize, pageIndex, filters, sorts, daterange })
         dispatch(getCollectionPaginated(getPaginatedTicket({
             startdate: daterange.startDate!,
