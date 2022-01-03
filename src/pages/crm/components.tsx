@@ -276,7 +276,7 @@ const InputTitle : FC<InputTitleProps> = ({ defaultValue, edit: enableEdit, onCh
             <div className={classes.root}>
                 <h2
                     className={classes.title}
-                    onClick={() => setEdit(true)}
+                    // onClick={() => setEdit(true)}
                 >
                     {value}
                 </h2>

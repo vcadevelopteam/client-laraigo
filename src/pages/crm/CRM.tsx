@@ -20,7 +20,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { setDisplay } from "store/lead/actions";
 import { Rating } from '@material-ui/lab';
 import { DialogSendTemplate, NewActivityModal, NewNoteModal } from "./Modals";
-import { HSMIcon } from "icons";
+import { WhatsappIcon } from "icons";
 
 interface dataBackend {
   columnid: number,
@@ -498,7 +498,7 @@ const CRM: FC = () => {
                     size="small"
                     onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
                   >
-                    <HSMIcon
+                    <WhatsappIcon
                       width={24}
                       style={{ fill: 'rgba(0, 0, 0, 0.54)' }}
                     />
@@ -854,7 +854,7 @@ const CRM: FC = () => {
                   variant="contained"
                   color="primary"
                   disabled={mainPaginated.loading || Object.keys(selectedRows).length === 0}
-                  startIcon={<HSMIcon width={24} style={{ fill: '#FFF' }} />}
+                  startIcon={<WhatsappIcon width={24} style={{ fill: '#FFF' }} />}
                   onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: personsSelected, messagetype: 'HSM' }}) }
               >
                   <Trans i18nKey={langKeys.send_hsm} />

@@ -24,7 +24,7 @@ import { AccessTime as AccessTimeIcon, Archive as ArchiveIcon, Flag as FlagIcon,
 import { useForm } from 'react-hook-form';
 import { getCollection, resetMain } from 'store/main/actions';
 import { AntTab } from 'components';
-import { EmailIcon, HSMIcon, SmsIcon } from 'icons';
+import { EmailIcon, WhatsappIcon, SmsIcon } from 'icons';
 import { Descendant } from 'slate';
 
 const tagsOptions = [
@@ -1700,7 +1700,7 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
     const getFileName = useCallback(() => {
         if (isUrl()) {
             const m = (src as string).match(/.*\/(.+?)\./);
-            return m && m.length > 1 ? m[1] : "";
+            return m && m.length > 1 ? m[1].substring(13) : "";
         };
         return (src as File).name;
     }, [isUrl, src]);
@@ -1914,7 +1914,7 @@ const TabPanelLeadHistory: FC<TabPanelLeadHistoryProps> = ({ history, loading })
             case "NEWNOTE": return <NoteIcon width={24} style={{ fill: 'white' }} />;
             case "NEWACTIVITY": return <HistoryIcon width={24} style={{ fill: 'white' }} />;
             case "CHANGESTATUS": return <LowPriorityIcon width={24} style={{ fill: 'white' }} />;
-            case "SENDHSM": return <HSMIcon width={24} style={{ fill: 'white' }} />;
+            case "SENDHSM": return <WhatsappIcon width={24} style={{ fill: 'white' }} />;
             case "SENDMAIL": return <EmailIcon width={24} style={{ fill: 'white' }} />;
             case "SENDSMS": return <SmsIcon width={24} style={{ fill: 'white' }} />;
             case "NEWTAG": return <LocalOfferIcon width={24} style={{ fill: 'white' }} />;
