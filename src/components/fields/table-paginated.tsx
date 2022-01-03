@@ -504,6 +504,8 @@ const TableZyx = React.memo(({
     });
 
     const triggertmp = (fromButton: boolean = false) => {
+        if (fromButton)
+            setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
         fetchData && fetchData({
             ...pagination,
             pageSize,
