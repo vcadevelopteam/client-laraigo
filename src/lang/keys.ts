@@ -901,6 +901,8 @@ export const langKeys = {
     order: 'order',
     beautify: 'beautify',
     invalidjson: 'invalidjson',
+    invalid_date_format: 'invalid_date_format',
+    invalid_time_format: 'invalid_time_format',
     test: 'test',
     result: 'result',
     closing_reason: 'closing_reason',

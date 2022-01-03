@@ -208,10 +208,12 @@ export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickIte
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    const { t } = useTranslation();
     const [value2, setvalue2] = useState('')
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
             <KeyboardDatePicker
+                invalidDateMessage={t(langKeys.invalid_date_format)}
                 format={getLocaleDateString()}
                 value={value2 === '' ? null : value2}
                 onChange={(e: any) => {
@@ -916,7 +918,7 @@ const TableZyx = React.memo(({
                             <Box component="span" fontSize={14}>
                                 <Trans
                                     i18nKey={langKeys.tablePageOf}
-                                    values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
+                                    values={{ currentPage: (pageOptions.length === 0 ? 0 : pageIndex + 1), totalPages: pageOptions.length }}
                                     components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
                                 />
                             </Box>
