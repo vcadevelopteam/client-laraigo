@@ -150,6 +150,16 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
     }
 });
 
+export const getValuesFromDomainCorp = (domainname: string, keytmp?: any, corpid?: number | null, orgid?: number | null): IRequestBody => ({
+    method: "UFN_DOMAIN_LST_VALORES",
+    key: "UFN_DOMAIN_LST_VALORES" + (keytmp || ""),
+    parameters: {
+        domainname,
+        corpid: corpid || undefined,
+        orgid: orgid || undefined
+    }
+});
+
 export const getListUsers = (): IRequestBody => ({
     method: "UFN_CONVERSATION_LST_USRDELEGATE2",
     key: "UFN_CONVERSATION_LST_USRDELEGATE2",
@@ -2090,10 +2100,10 @@ export const getBillingConversationSel = ({ year, month, countrycode = "" }: Dic
 })
 
 
-export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }: Dictionary): IRequestBody => ({
+export const billingConversationIns = ({ year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, description, status, type, operation }: Dictionary): IRequestBody => ({
     method: "UFN_BILLINGCONVERSATION_INS",
     key: "UFN_BILLINGCONVERSATION_INS",
-    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
+    parameters: { year, month, countrycode, id, companystartfee, clientstartfee, vcacomission, description, status, type, operation }
 })
 
 export const getBillingPeriodSel = ({ corpid, orgid, year, month, billingplan, supportplan }: Dictionary): IRequestBody => ({
@@ -2283,3 +2293,27 @@ export const calcKPIManager = (kpiid: number = 0): IRequestBody => ({
         task: false
     }
 });
+export const getAppsettingInvoiceSel = () => ({
+    method: "UFN_APPSETTING_INVOICE_SEL",
+    key: "UFN_APPSETTING_INVOICE_SEL",
+    parameters: {},
+});
+
+export const updateAppsettingInvoice = ({ ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }: Dictionary): IRequestBody => ({
+    method: "UFN_APPSETTING_INVOICE_UPDATE",
+    key: "UFN_APPSETTING_INVOICE_UPDATE",
+    parameters: { ruc, businessname, tradename, fiscaladdress, ubigeo, country, emittertype, currency, invoiceserie, invoicecorrelative, annexcode, igv, printingformat, xmlversion, ublversion, returnpdf, returnxmlsunat, returnxml, invoiceprovider, sunaturl, token, sunatusername, paymentprovider, publickey, privatekey }
+});
+
+export const getBillingNotificationSel = ({ year, month, countrycode = "" }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGNOTIFICATION_SEL",
+    key: "UFN_BILLINGNOTIFICATION_SEL",
+    parameters: { year, month, countrycode: countrycode ? countrycode : "" }
+})
+
+
+export const billingNotificationIns = ({ year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }: Dictionary): IRequestBody => ({
+    method: "UFN_BILLINGNOTIFICATION_INS",
+    key: "UFN_BILLINGNOTIFICATION_INS",
+    parameters: { year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
+})
