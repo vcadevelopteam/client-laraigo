@@ -318,13 +318,11 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
 
         const downloadPdfDocument = () => {
             if (el.current) {
-                const input = el.current;
-
-                // var clone = el.current.cloneNode(true);
                 const gg = document.createElement('div');
                 gg.style.display = 'flex';
                 gg.style.flexDirection = 'column';
-                gg.style.gap = '8px'
+                gg.style.gap = '8px';
+                gg.id = "newexportcontainer"
                 document.body.appendChild(gg);
 
                 gg.innerHTML = el.current.innerHTML;
@@ -334,7 +332,6 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                 if (pdf) {
                     DomToImage.toPng(gg)
                         .then(imgData => {
-                            console.log(imgData)
                             var imgWidth = 210;
                             var pageHeight = 295;
                             var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
@@ -352,6 +349,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                                 heightLeft -= pageHeight;
                             }
                             doc.save('file.pdf');
+                            document.getElementById('newexportcontainer')?.remove();
                         });
                 }
             }
