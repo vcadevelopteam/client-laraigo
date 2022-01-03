@@ -737,7 +737,7 @@ const TableZyx = React.memo(({
                             variant="contained"
                             color="primary"
                             disabled={loading}
-                            onClick={() => exportExcel(String(titlemodule) + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
+                            onClick={() => exportExcel(String(titlemodule || '') + "Report", data, columns.filter((x: any) => (!x.isComponent && !x.activeOnHover)))}
                             startIcon={<DownloadIcon />}
                         ><Trans i18nKey={langKeys.download} />
                         </Button>

@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, createStyles, makeStyles, Tabs, TextField, Theme } from '@material-ui/core';
-import { AntTab } from 'components';
+import { AntTab, DialogZyx } from 'components';
 import { langKeys } from 'lang/keys';
 import React, { FC, Fragment, useEffect, useState } from 'react';
 import { FieldMultiSelect } from "components";
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showBackdrop } from 'store/popus/actions';
-import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage2, heatmappage3 } from 'common/helpers/requestBodies';
-import {  getMultiCollection, getMultiCollectionAux} from 'store/main/actions';
+import { getasesoresbyorgid, getValuesFromDomain, heatmappage1, heatmappage1detail, heatmappage2, heatmappage3, heatmappage3detail } from 'common/helpers/requestBodies';
+import { getMultiCollection, getMultiCollectionAux, getMultiCollectionAux2 } from 'store/main/actions';
 import { useSelector } from 'hooks';
 import { Dictionary } from '@types';
 import TableZyx from 'components/fields/table-simple';
@@ -50,8 +50,43 @@ function capitalize(word:string){
 
 }
 
+interface ModalProps {
+    openModal: boolean;
+    setOpenModal: (value: boolean) => any;
+    title: string;
+    row: Dictionary | null;
+    columns: Dictionary[];
+    data: Dictionary[];
+}
+
+const ModalHeatMap: React.FC<ModalProps> = ({ openModal, setOpenModal, title = '', row = null, columns = [], data = [] }) => {
+    const { t } = useTranslation();
+
+    const handleCancelModal = () => {
+        setOpenModal(false);
+    }
+
+    return (
+        <DialogZyx
+            open={openModal}
+            title={title}
+            maxWidth="lg"
+            button1Type="button"
+            buttonText1={t(langKeys.close)}
+            handleClickButton1={handleCancelModal}
+        >
+            <TableZyx
+                columns={columns}
+                data={data}
+                download={true}
+                pageSizeDefault={20}
+                filterGeneral={false}
+            />
+        </DialogZyx>
+    )
+}
+
 const MainHeatMap: React.FC = () => {
-    
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);  
@@ -67,6 +102,7 @@ const MainHeatMap: React.FC = () => {
     const [personAverageReplyTimexFechaData, setpersonAverageReplyTimexFechaData] = useState<any>([]);
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const dataAdvisor = [{domaindesc: t(langKeys.agent), domainvalue: "ASESOR"},{domaindesc: "Bot", domainvalue: "BOT"}]
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
@@ -75,6 +111,82 @@ const MainHeatMap: React.FC = () => {
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
     });
+
+    const [waitDetail, setWaitDetail] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalRow, setModalRow] = useState<Dictionary | null>(null);
+    const [modalColumns, setModalColumns] = useState<any>([]);
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary) => {
+        if ((typeof(row[column.id]) === 'number' && row[column.id] > 0)
+        || (typeof(row[column.id]) === 'string' && row[column.id] !== '00:00:00')) {
+            setModalRow(row);
+            const day = column.id.replace('day','');
+            const hour = row.hour - 1;
+            const hournum = row.hournum.replace('a','-');
+            switch (grid) {
+                case '1.1':
+                    setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                        { Header: t(langKeys.tmo), accessor: 'totalduration' },
+                    ])
+                    break;
+                case '1.2':
+                    setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.tmo), accessor: 'totalduration' },
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                    ])
+                    break;
+                case '1.3':
+                    setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.tme), accessor: 'userfirstreplytime' },
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                    ])
+                    break;
+                case '1.4':
+                    setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.tme), accessor: 'useraveragereplytime' },
+                        { Header: t(langKeys.agent), accessor: 'asesor' },
+                    ])
+                    break;
+                case '1.5':
+                    setModalTitle(`Tickets ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.ticket), accessor: 'ticketnum' },
+                        { Header: t(langKeys.tme), accessor: 'personaveragereplytime' },
+                    ])
+                    break;
+                default:
+                    break;
+            }
+            dispatch(getMultiCollectionAux2([heatmappage1detail({
+                ...dataMainHeatMap,
+                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
+                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                horanum: ['TOTAL','PRM'].includes(row.hournum) ? '' : hour
+            })]));
+            dispatch(showBackdrop(true));
+            setWaitDetail(true);
+        }
+    }
+
+    useEffect(() => {
+        if(waitDetail) {
+            if (!multiDataAux2.loading){
+                dispatch(showBackdrop(false));
+                setWaitDetail(false);
+                setOpenModal(true);
+            }
+        }
+    }, [multiDataAux2])
     
     function handleDateChange(e: any){
         let datetochange = new Date(e+"-02")
@@ -85,6 +197,7 @@ const MainHeatMap: React.FC = () => {
         let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
         setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
     }
+
     useEffect(() => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
@@ -104,11 +217,12 @@ const MainHeatMap: React.FC = () => {
             }
         }
     }, [multiData,realizedsearch])
+
     useEffect(() => {
         search()
     }, [])
+
     function search(){
-        
         setheatMapConversationsData([])
         setaverageHeatMapTMOData([])
         setheatmapaverageagentTMEData([])
@@ -120,6 +234,7 @@ const MainHeatMap: React.FC = () => {
             heatmappage1(dataMainHeatMap)
         ]));
     }
+
     function initAtencionesxFechaAsesorGrid(data:any){
         let arrayfree: any = [];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
@@ -192,16 +307,23 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!=="totalcol"){
-                    let color="white"
-                    if(props.data[rowcounter]){
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                if (key !== "totalcol") {
+                    let color = "white"
+                    if (props.data[rowcounter]) {
                         color = gradient(parseInt(props.data[rowcounter][key]),rowcounter)
                     }
-                    
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.data[rowcounter][key])}</div>
-                    
+                    return (
+                        <div
+                            style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                            onClick={() => fetchDetail('1.1', column, row)}
+                        >
+                            {(props.data[rowcounter][key])}
+                        </div>
+                    )
                 }
-                else{
+                else {
                     if (rowcounter < 24)
                         rowcounter++;
                     return <div style={{textAlign: "center", fontWeight: "bold",background: "white"}}>{props.data[rowcounter-1][key]>0?(props.data[rowcounter-1][key].toFixed(2)):"0"}</div>
@@ -217,6 +339,7 @@ const MainHeatMap: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     function averageHeatMapTMO(data:any) {
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -226,6 +349,7 @@ const MainHeatMap: React.FC = () => {
         let arrayvalidvalues=new Array(25).fill(0);
         let arrayvalidvaluesmonth=new Array(32).fill(0);
         const LIMITHOUR = 24;
+
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -237,6 +361,7 @@ const MainHeatMap: React.FC = () => {
             objectfree[`totalcol`] = "00:00:00";
             arrayfree.push(objectfree);
         }
+
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
@@ -276,6 +401,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         arrayvalidvaluesmonth.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
@@ -286,6 +412,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         arrayvalidvalues.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
@@ -331,16 +458,24 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!=="totalcol"){
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                if (key !== "totalcol") {
                     let color=gradient(props.cell.row.original[key],key)
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
-                    
+                    return (
+                        <div
+                            style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                            onClick={() => fetchDetail('1.2', column, row)}
+                        >
+                            {`${hh}${mm}${ss}s`}
+                        </div>
+                    )
                 }
-                else{
+                else {
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -358,6 +493,7 @@ const MainHeatMap: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     function initUserFirstReplyTimexFechaGrid(data:any) {
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -368,6 +504,7 @@ const MainHeatMap: React.FC = () => {
         let arrayvalidvalues=new Array(25).fill(0);
         let arrayvalidvaluesmonth=new Array(32).fill(0);
         const LIMITHOUR = 24;
+
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -379,6 +516,7 @@ const MainHeatMap: React.FC = () => {
             objectfree[`totalcol`] = "00:00:00";
             arrayfree.push(objectfree);
         }
+
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
@@ -425,6 +563,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         arrayvalidvalues.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
@@ -435,6 +574,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         setheatmapaverageagentTMEData(arrayfree)
                 
         let mid = (rowmax/2);
@@ -470,16 +610,24 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!=="totalcol"){
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                if (key!=="totalcol") {
                     let color=gradient(props.cell.row.original[key],key)
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
-                    
+                    return (
+                        <div
+                            style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                            onClick={() => fetchDetail('1.3', column, row)}
+                        >
+                            {`${hh}${mm}${ss}s`}
+                        </div>
+                    )
                 }
-                else{
+                else {
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -488,6 +636,7 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
+
         setheatmapaverageagentTMETitle([
             {
                 Header: `Hora`,
@@ -497,6 +646,7 @@ const MainHeatMap: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     function initUserAverageReplyTimexFechaGrid(data:any) {
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -506,6 +656,7 @@ const MainHeatMap: React.FC = () => {
         const LIMITHOUR = 24;
         let arrayvalidvalues=new Array(25).fill(0);
         let arrayvalidvaluesmonth=new Array(32).fill(0);
+
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -517,6 +668,7 @@ const MainHeatMap: React.FC = () => {
             objectfree[`totalcol`] = "00:00:00";
             arrayfree.push(objectfree);
         }
+
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
@@ -552,6 +704,7 @@ const MainHeatMap: React.FC = () => {
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
+
         arrayvalidvaluesmonth.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
@@ -562,6 +715,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         arrayvalidvalues.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
@@ -572,6 +726,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         setuserAverageReplyTimexFechaData(arrayfree)
                 
         let mid = (rowmax/2);
@@ -607,16 +762,24 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!=="totalcol"){
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                if (key !== "totalcol") {
                     let color=gradient(props.cell.row.original[key],key)
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
-                    
+                    return (
+                        <div
+                            style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                            onClick={() => fetchDetail('1.4', column, row)}
+                        >
+                            {`${hh}${mm}${ss}s`}
+                        </div>
+                    )
                 }
-                else{
+                else {
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -625,6 +788,7 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
+
         setuserAverageReplyTimexFechaTitle([
             {
                 Header: `Hora`,
@@ -634,6 +798,7 @@ const MainHeatMap: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     function initPersonAverageReplyTimexFechaGrid(data:any) {
         let mes = dataMainHeatMap.startdate?.getMonth()+1
         let year = dataMainHeatMap.startdate?.getFullYear()
@@ -643,6 +808,7 @@ const MainHeatMap: React.FC = () => {
         const LIMITHOUR = 24;
         let arrayvalidvalues=new Array(25).fill(0);
         let arrayvalidvaluesmonth=new Array(32).fill(0);
+
         for(let i = 1; i <= LIMITHOUR+1; i++) {
             const objectfree: Dictionary  = {
                 hour: i,
@@ -654,6 +820,7 @@ const MainHeatMap: React.FC = () => {
             objectfree[`totalcol`] = "00:00:00";
             arrayfree.push(objectfree);
         }
+
         data.forEach((row:any)=>{
             const day = parseInt(row.fecha.split("-")[2])
             const hour = row.hora;
@@ -689,6 +856,7 @@ const MainHeatMap: React.FC = () => {
             ss= Math.round(secondstotalnum)-hh*3600-mm*60
             arrayfree[24].totalcol = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
         })
+
         arrayvalidvaluesmonth.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[24][`day${i+1}`].split(':')
@@ -699,6 +867,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[24][`day${i+1}`] = hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         arrayvalidvalues.forEach((x,i)=>{
             if(x!==0){
                 let timetoconvert = arrayfree[i][`totalcol`].split(':')
@@ -709,6 +878,7 @@ const MainHeatMap: React.FC = () => {
                 arrayfree[i][`totalcol`]= hh.toString().padStart(2,"0") + ":" + mm.toString().padStart(2,"0") +":" + ss.toString().padStart(2,"0")
             }
         })
+
         setpersonAverageReplyTimexFechaData(arrayfree)
                 
         let mid = (rowmax/2);
@@ -744,16 +914,24 @@ const MainHeatMap: React.FC = () => {
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                if(key!=="totalcol"){
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                if (key !=="totalcol") {
                     let color=gradient(props.cell.row.original[key],key)
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
                     let ss = timespenttotal[2]
-                    return <div style={{background: `#${color}`, textAlign: "center", color:"black"}}>{`${hh}${mm}${ss}s`}</div>                    
-                    
+                    return (
+                        <div
+                            style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                            onClick={() => fetchDetail('1.5', column, row)}
+                        >
+                            {`${hh}${mm}${ss}s`}
+                        </div>
+                    )
                 }
-                else{
+                else {
                     let timespenttotal = props.cell.row.original[key].split(':')
                     let hh = timespenttotal[0] === "00" ? "" : (timespenttotal[0] + "h ")
                     let mm = timespenttotal[1] === "00" ? "" : (timespenttotal[1] + "m ")
@@ -762,6 +940,7 @@ const MainHeatMap: React.FC = () => {
                 }
             },
         }));
+
         setpersonAverageReplyTimexFechaTitle([
             {
                 Header: `Hora`,
@@ -771,6 +950,7 @@ const MainHeatMap: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
@@ -877,11 +1057,19 @@ const MainHeatMap: React.FC = () => {
                     />
                 </div>:""
             }
+            <ModalHeatMap
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                title={modalTitle}
+                row={modalRow}
+                columns={modalColumns}
+                data={multiDataAux2.data[0]?.data||[]}
+            />
         </div>
     )
 }
+
 const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({companydomain,listadvisers}) => {
-    
     const { t } = useTranslation();
     const classes = useStyles();
     const [realizedsearch, setrealizedsearch] = useState(false);
@@ -1443,11 +1631,11 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     )
 }
 const HeatMapTicket: React.FC = () => {
-    
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
     const multiData = useSelector(state => state.main.multiData);
+    const multiDataAux2 = useSelector(state => state.main.multiDataAux2);
     const [realizedsearch, setrealizedsearch] = useState(false);  
     const [asesoresConectadosData, setasesoresConectadosData] = useState<any>([]);  
     const [asesoresConectadosTitle, setasesoresConectadosTitle] = useState<any>([]);  
@@ -1457,9 +1645,53 @@ const HeatMapTicket: React.FC = () => {
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
     });
+
+    const [waitDetail, setWaitDetail] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalRow, setModalRow] = useState<Dictionary | null>(null);
+    const [modalColumns, setModalColumns] = useState<any>([]);
+    const fetchDetail = (grid: string, column: Dictionary, row: Dictionary) => {
+        if (typeof(row[column.id]) === 'number' && row[column.id] > 0) {
+            setModalRow(row);
+            const day = column.id.replace('day','');
+            const hour = row.hour - 1;
+            const hournum = row.hournum.replace('a','-');
+            switch (grid) {
+                case '3.1':
+                    setModalTitle(`${t(langKeys.agent_plural)} ${t(langKeys.day)} ${day} ${hournum}`)
+                    setModalColumns([
+                        { Header: t(langKeys.agent), accessor: 'asesor' }
+                    ])
+                    break;
+                default:
+                    break;
+            }
+            dispatch(getMultiCollectionAux2([heatmappage3detail({
+                ...dataMainHeatMap,
+                startdate: new Date(dataMainHeatMap.startdate.setDate(day)),
+                enddate: new Date(dataMainHeatMap.enddate.setDate(day)),
+                horanum: row.hournum === 'TOTAL' ? '' : hour
+            })]));
+            dispatch(showBackdrop(true));
+            setWaitDetail(true);
+        }
+    }
+
+    useEffect(() => {
+        if(waitDetail) {
+            if (!multiDataAux2.loading){
+                dispatch(showBackdrop(false));
+                setWaitDetail(false);
+                setOpenModal(true);
+            }
+        }
+    }, [multiDataAux2])
+
     useEffect(() => {
         search()
     }, [])
+
     useEffect(() => {
         if(!multiData.loading && realizedsearch){
             setrealizedsearch(false)
@@ -1471,8 +1703,8 @@ const HeatMapTicket: React.FC = () => {
             }
         }
     }, [multiData,realizedsearch])
+
     function search(){
-        
         setasesoresConectadosData([])
         setrealizedsearch(true)
         dispatch(showBackdrop(true))
@@ -1480,6 +1712,7 @@ const HeatMapTicket: React.FC = () => {
             heatmappage3(dataMainHeatMap)
         ]));
     }
+
     function handleDateChange(e: any){
         let datetochange = new Date(e+"-02")
         let mes = datetochange?.getMonth()+1
@@ -1489,6 +1722,7 @@ const HeatMapTicket: React.FC = () => {
         let datetoshow = `${startdate.getFullYear()}-${String(startdate.getMonth()+1).padStart(2, '0')}`
         setdataMainHeatMap(prev=>({...prev,startdate,enddate,datetoshow}))
     }
+
     function initAsesoresConectadosGrid(data:any){
         let arrayfree: any = [];
         let mes = dataMainHeatMap.startdate?.getMonth()+1
@@ -1536,16 +1770,27 @@ const HeatMapTicket: React.FC = () => {
             }
         }
         
-        setasesoresConectadosData(arrayfree)
+        setasesoresConectadosData(arrayfree);
+
         const arraytemplate = Object.entries(arrayfree[0]).filter(([key]) => !/hour|horanum/gi.test(key)).map(([key, value]) => ({
             Header: `${key.split('day')[1]}/${mes}`,
             accessor: key,
             NoFilter: true,
             Cell: (props: any) => {
-                let color=gradient(props.cell.row.original[key])
-                return <div style={{background: `#${color}`, textAlign: "center", color:"black"}} >{(props.cell.row.original[key])}</div>
+                const column = props.cell.column;
+                const row = props.cell.row.original;
+                let color = gradient(props.cell.row.original[key]);
+                return (
+                    <div
+                        style={{background: `#${color}`, textAlign: "center", color:"black"}}
+                        onClick={() => fetchDetail('3.1', column, row)}
+                    >
+                        {(props.cell.row.original[key])}
+                    </div>
+                )
             },
         }));
+
         setasesoresConectadosTitle([
             {
                 Header: `Hora`,
@@ -1555,6 +1800,7 @@ const HeatMapTicket: React.FC = () => {
             ...arraytemplate
         ])
     }
+
     return (
         <div>
             <div style={{width:"100%", display: "flex", paddingTop: 10}}>
@@ -1592,6 +1838,14 @@ const HeatMapTicket: React.FC = () => {
                     />
                 </div>:""
             }
+            <ModalHeatMap
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                title={modalTitle}
+                row={modalRow}
+                columns={modalColumns}
+                data={multiDataAux2.data[0]?.data||[]}
+            />
         </div>
     )
 }
