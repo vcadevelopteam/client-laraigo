@@ -208,12 +208,16 @@ export const SelectFilterTmp: React.FC<{ value: any; data: any[]; handleClickIte
 }
 
 export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: any) => void) => {
+    const [value2, setvalue2] = useState('')
     return (
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
             <KeyboardDatePicker
                 format={getLocaleDateString()}
-                value={value === '' ? null : value}
-                onChange={(e: any) => handleClickItemMenu(e)}
+                value={value2 === '' ? null : value2}
+                onChange={(e: any) => {
+                    handleClickItemMenu(e);
+                    setvalue2(e)
+                }}
                 style={{ minWidth: '150px' }}
             />
         </MuiPickersUtilsProvider>
