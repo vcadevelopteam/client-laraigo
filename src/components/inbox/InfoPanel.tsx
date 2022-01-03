@@ -116,9 +116,7 @@ const InfoClient: React.FC = () => {
                     <Avatar alt="" style={{ width: 120, height: 120 }} src={person?.imageurldef} />
                     <div style={{ flex: 1, textAlign: 'center' }}>
                         <div style={{ fontSize: 18, fontWeight: 500 }}>{person?.firstname} {person?.lastname}</div>
-                        <div className={classes.label}>{`ID# ${person?.personid}`}</div>
                     </div>
-                    {/* <div className={classes.btn}>{t(langKeys.active)}</div> */}
                 </div>
                 <div className={classes.containerName}>
                     <EMailInboxIcon className={classes.propIcon} />
@@ -347,18 +345,6 @@ const InfoTab: React.FC = () => {
                         <div>{person?.lastname}</div>
                     </div>
                 </div>}
-                {person?.documenttype && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.documenttype)}</div>
-                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
-                    </div>
-                </div>}
-                {person?.documentnumber && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.documentnumber)}</div>
-                        <div>{person?.documentnumber}</div>
-                    </div>
-                </div>}
                 {person?.email && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.email)}</div>
@@ -371,6 +357,31 @@ const InfoTab: React.FC = () => {
                         <div>{person?.phone}</div>
                     </div>
                 </div>}
+                {person?.firstcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
+                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
+                {person?.lastcontact && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
+                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
+                    </div>
+                </div>}
+                {person?.documenttype && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documenttype)}</div>
+                        <div>{person?.documenttype && t("type_documenttype_" + person?.documenttype.toLocaleLowerCase())}</div>
+                    </div>
+                </div>}
+                {person?.documentnumber && <div className={classes.containerName}>
+                    <div style={{ flex: 1 }}>
+                        <div className={classes.label}>{t(langKeys.documentnumber)}</div>
+                        <div>{person?.documentnumber}</div>
+                    </div>
+                </div>}
+               
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
@@ -425,18 +436,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-                {person?.firstcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.firstContactDate)}</div>
-                        <div>{new Date(person?.firstcontact).toLocaleString()}</div>
-                    </div>
-                </div>}
-                {person?.lastcontact && <div className={classes.containerName}>
-                    <div style={{ flex: 1 }}>
-                        <div className={classes.label}>{t(langKeys.lastContactDate)}</div>
-                        <div>{new Date(person?.lastcontact).toLocaleString()}</div>
-                    </div>
-                </div>}
+               
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
@@ -469,9 +469,11 @@ const Variables: React.FC = () => {
     return (
         <div className={`scroll-style-go ${classes.containerInfoClient}`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
 
-            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ description, fontbold, fontcolor, variable }, index) => {
+            {variablecontext && !(variablecontext instanceof Array) && configurationVariables.map(({ fontbold, fontcolor, variable }, index) => {
                 const variabletmp = variablecontext[variable];
-                console.log(variablecontext)
+                if (!variabletmp?.Value) {
+                    return null;
+                }
                 return (
                     <div key={index} className={classes.containerName}>
                         <div style={{ fontWeight: fontbold ? 'bold' : 'normal' }}>

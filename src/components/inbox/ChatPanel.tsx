@@ -787,7 +787,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.typify)}
                     </MenuItem>
                 }
-                {ticketSelected?.communicationchanneltype.includes('WHA') &&
+                {ticketSelected?.communicationchanneltype?.includes('WHA') &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
                         setOpenModalHSM(true)
@@ -853,7 +853,7 @@ const HeadChat: React.FC<{ classes: any }> = ({ classes }) => {
                             {ticketSelected!!.displayname}
                         </div>
                         <div style={{ fontSize: 14, fontWeight: 400 }}>
-                            Ticket #{ticketSelected!!.ticketnum}
+                            Ticket {ticketSelected!!.ticketnum}
                         </div>
                     </div>
                 </div>

@@ -18,6 +18,7 @@ import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import { Skeleton } from '@material-ui/lab';
+
 import {
     FirstPage,
     LastPage,
@@ -123,7 +124,7 @@ const useStyles = makeStyles((theme) => ({
 
 const format = (date: Date) => date.toISOString().split('T')[0];
 
-const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, listSelectFilter }: any) => {
+const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -145,10 +146,10 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
     }, [type])
 
     useEffect(() => {
-        if (!type && typeof firstvalue === "number")
+        if (type === "number")
             setoperator("equals");
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [firstvalue])
+    }, [type])
 
     const keyPress = (e: any) => {
         if (e.keyCode === 13) {
@@ -228,7 +229,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
     const handleClickMenu = (event: any) => {
         setAnchorEl(event.currentTarget);
     };
-    const handleDate = (date: Date) => {
+    const handleDate = React.useCallback((date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
             if (!!date || ['isnull', 'isnotnull'].includes(operator)) {
@@ -247,7 +248,8 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
                 }, 0)
             }
         }
-    }
+    }, [filters, operator])
+
     const handleTime = (date: Date) => {
         if (date === null || (date instanceof Date && !isNaN(date.valueOf()))) {
             setValue(date?.toISOString() || '');
@@ -289,7 +291,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
                     <SelectFilterTmp
                         value={value}
                         handleClickItemMenu={handleClickItemMenu}
-                        data={listSelectFilter}
+                        data={listSelectFilter || []}
                     /> :
 
                     <React.Fragment>
@@ -329,7 +331,7 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, firstvalue, li
                                 },
                             }}
                         >
-                            {OptionsMenuComponent(type ? type : typeof firstvalue, operator, handleClickItemMenu)}
+                            {OptionsMenuComponent(type || 'string', operator, handleClickItemMenu)}
                         </Menu>
                     </React.Fragment>)}
         </div>
@@ -504,6 +506,8 @@ const TableZyx = React.memo(({
     });
 
     const triggertmp = (fromButton: boolean = false) => {
+        if (fromButton)
+            setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
         fetchData && fetchData({
             ...pagination,
             pageSize,
@@ -694,7 +698,7 @@ const TableZyx = React.memo(({
                                                                 header={column.id}
                                                                 listSelectFilter={column.listSelectFilter || []}
                                                                 type={column.type}
-                                                                firstvalue={data && data.length > 0 ? data[0][column.id] : null}
+                                                                // firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
                                                                 setFilters={(filters: any, page: number) => {
                                                                     setFilters(filters, page);

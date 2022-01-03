@@ -1997,6 +1997,18 @@ export const heatmappage1 = ({ communicationchannel, startdate, enddate, closedb
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const heatmappage1detail = ({ communicationchannel, startdate, enddate, closedby, horanum }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_DATE_DETAIL_SEL",
+    method: "UFN_REPORT_HEATMAP_DATE_DETAIL_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        closedby,
+        horanum,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
 export const heatmappage2 = ({ communicationchannel, startdate, enddate, closedby, company }: Dictionary): IRequestBody => ({
     key: "UFN_REPORT_HEATMAP_PAGE3_SEL",
     method: "UFN_REPORT_HEATMAP_PAGE3_SEL",
@@ -2019,6 +2031,18 @@ export const heatmappage3 = ({ communicationchannel, startdate, enddate }: Dicti
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
+export const heatmappage3detail = ({ communicationchannel, startdate, enddate, horanum }: Dictionary): IRequestBody => ({
+    key: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_DETAIL_SEL",
+    method: "UFN_REPORT_HEATMAP_ASESORESCONECTADOS_DETAIL_SEL",
+    parameters: {
+        communicationchannel,
+        startdate,
+        enddate,
+        horanum,
+        offset: (new Date().getTimezoneOffset() / 60) * -1
+    }
+});
+
 export const leadHistorySel = (leadid: string | number): IRequestBody => ({
     key: "UFN_LEADACTIVITYHISTORY_SEL",
     method: "UFN_LEADACTIVITYHISTORY_SEL",

@@ -9,12 +9,11 @@ import { Dictionary } from '@types';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
 import ItemGroupInteraction from './Interaction';
-// import html2pdf from 'html2pdf.js'
 import Button from '@material-ui/core/Button';
 import { Trans } from 'react-i18next';
 import { DownloadIcon } from 'icons';
-
-// const html2pdf = require('html2pdf.js');
+import DomToImage from 'dom-to-image';
+import jsPDF from 'jspdf';
 
 const useStyles = makeStyles((theme) => ({
     containerPanel: {
@@ -318,20 +317,42 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const GenericPdfDownloader: React.FC<{ downloadFileName: string }> = ({ downloadFileName }) => {
 
         const downloadPdfDocument = () => {
-            // if (el.current) {
-            //     const gg = document.createElement('div');
-            //     gg.innerHTML = el.current.innerHTML;
-            //     gg.style.margin = '16px'
-            //     var opt = {
-            //         html2canvas: {
-            //             dpi: 300,
-            //             useCORS: true,
-            //         }
-            //     };
-            //     html2pdf()
-            //         .from(gg).set(opt)
-            //         .save(downloadFileName);
-            // }
+            if (el.current) {
+                const gg = document.createElement('div');
+                gg.style.display = 'flex';
+                gg.style.flexDirection = 'column';
+                gg.style.gap = '8px';
+                gg.id = "newexportcontainer"
+                document.body.appendChild(gg);
+
+                gg.innerHTML = el.current.innerHTML;
+                document.body.appendChild(gg);
+                const pdf = new jsPDF('p', 'mm');
+
+                if (pdf) {
+                    DomToImage.toPng(gg)
+                        .then(imgData => {
+                            var imgWidth = 210;
+                            var pageHeight = 295;
+                            var imgHeight = gg.scrollHeight * imgWidth / gg.offsetWidth;
+                            var heightLeft = imgHeight;
+                            var doc = new jsPDF('p', 'mm');
+                            var position = 10; // give some top padding to first page
+
+                            doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+
+                            while (heightLeft >= 0) {
+                                position += heightLeft - imgHeight; // top padding for other pages
+                                doc.addPage();
+                                doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                                heightLeft -= pageHeight;
+                            }
+                            doc.save('file.pdf');
+                            document.getElementById('newexportcontainer')?.remove();
+                        });
+                }
+            }
         }
         return (
             <Button
