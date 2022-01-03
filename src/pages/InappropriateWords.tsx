@@ -3,7 +3,7 @@ import React, { FC, useEffect, useState } from 'react'; // we need this to make 
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
-import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect } from 'components';
+import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldEdit, FieldSelect } from 'components';
 import { dictToArrayKV, exportExcel, getInappropriateWordsSel, getValuesFromDomain, insarrayInappropriateWords, insInappropriateWords, templateMaker, uploadExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
@@ -156,56 +156,37 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                uset={true}    
-                                label={t(langKeys.classification)}
-                                className="col-12"
-                                valueDefault={row ? (row.classification || "") : ""}
-                                onChange={(value) => setValue('classification', (value?.domainvalue||""))}
-                                error={errors?.classification?.message}
-                                data={dictToArrayKV(dataClassification)}
-                                optionDesc="value"
-                                optionValue="key"
-                            />
-                            : <FieldView
-                                label={t(langKeys.classification)}
-                                value={row?.classification || ""}
-                                className="col-12"
-                            />}
+                        <FieldSelect
+                            uset={true}    
+                            label={t(langKeys.classification)}
+                            className="col-12"
+                            valueDefault={row?.classification || ""}
+                            onChange={(value) => setValue('classification', (value?.value||""))}
+                            error={errors?.classification?.message}
+                            data={dictToArrayKV(dataClassification)}
+                            optionDesc="value"
+                            optionValue="key"
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.description)} 
-                                className="col-12"
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={row ? (row.description || "") : ""}
-                                error={errors?.description?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.description)} 
+                            className="col-12"
+                            onChange={(value) => setValue('description', value)}
+                            valueDefault={row ? (row.description || "") : ""}
+                            error={errors?.description?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.defaultanswer)} 
-                                className="col-12"
-                                onChange={(value) => setValue('defaultanswer', value)}
-                                valueDefault={row ? (row.defaultanswer || "") : ""}
-                                error={errors?.defaultanswer?.message}
-                            />
-                            : <FieldView
-                                label={t(langKeys.defaultanswer)}
-                                value={row ? (row.defaultanswer || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.defaultanswer)} 
+                            className="col-12"
+                            onChange={(value) => setValue('defaultanswer', value)}
+                            valueDefault={row ? (row.defaultanswer || "") : ""}
+                            error={errors?.defaultanswer?.message}
+                        />
                     </div>
                     <div className="row-zyx">
-                        {edit ?
                         <FieldSelect
                             label={t(langKeys.status)}
                             className="col-12"
@@ -218,11 +199,6 @@ const DetailInappropriateWords: React.FC<DetailInappropriateWordsProps> = ({ dat
                             optionDesc="domaindesc"
                             optionValue="domainvalue"
                         />
-                        : <FieldView
-                            label={t(langKeys.status)}
-                            value={row ? (row.status || "") : ""}
-                            className="col-12"
-                        />}
                     </div>
                 </div>
             </form>
