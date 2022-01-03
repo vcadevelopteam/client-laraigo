@@ -348,7 +348,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
                                 doc.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
                                 heightLeft -= pageHeight;
                             }
-                            doc.save('file.pdf');
+                            doc.save(`ticket${ticket?.ticketnum}.pdf`);
                             document.getElementById('newexportcontainer')?.remove();
                         });
                 }

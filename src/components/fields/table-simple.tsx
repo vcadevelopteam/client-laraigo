@@ -918,7 +918,7 @@ const TableZyx = React.memo(({
                             <Box component="span" fontSize={14}>
                                 <Trans
                                     i18nKey={langKeys.tablePageOf}
-                                    values={{ currentPage: pageIndex + 1, totalPages: pageOptions.length }}
+                                    values={{ currentPage: (pageOptions.length === 0 ? 0 : pageIndex + 1), totalPages: pageOptions.length }}
                                     components={[<Box fontWeight="700" component="span"></Box>, <Box fontWeight="700" component="span"></Box>]}
                                 />
                             </Box>

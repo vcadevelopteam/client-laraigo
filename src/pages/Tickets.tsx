@@ -439,11 +439,12 @@ const DialogTipifications: React.FC<{ fetchData: () => void, setOpenModal: (para
 }
 
 const IconOptions: React.FC<{
+    disabled?: boolean,
     onHandlerReassign?: (e?: any) => void;
     onHandlerClassify?: (e?: any) => void;
     onHandlerClose?: (e?: any) => void;
     onHandlerShowHistory?: (e?: any) => void;
-}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory }) => {
+}> = ({ onHandlerReassign, onHandlerClassify, onHandlerClose, onHandlerShowHistory, disabled }) => {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const { t } = useTranslation();
 
@@ -455,7 +456,7 @@ const IconOptions: React.FC<{
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                // disabled={rowWithDataSelected.length === 0}
+                disabled={disabled}
                 color="primary"
                 onClick={(e) => setAnchorEl(e.currentTarget)}
             >
@@ -616,15 +617,15 @@ const Tickets = () => {
                     return (
                         <IconOptions
                             onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowWithDataSelected([ticket]);
+                                setRowSelected(ticket);
                                 setOpenDialogReassign(true);
                             }}
                             onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowWithDataSelected([ticket]);
+                                setRowSelected(ticket);
                                 setOpenDialogTipify(true);
                             }}
                             onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowWithDataSelected([ticket]);
+                                setRowSelected(ticket);
                                 setOpenDialogClose(true);
                             }}
                             onHandlerShowHistory={() => {
@@ -906,15 +907,8 @@ const Tickets = () => {
     return (
         <div className={classes.container}>
             <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" style={{ gap: 8 }}>
-                <div>
-                    <div className={classes.title}>
-                        {t(langKeys.ticket_plural)}
-                    </div>
-                </div>
-                <div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-
-                    </div>
+                <div className={classes.title}>
+                    {t(langKeys.ticket_plural)}
                 </div>
             </Box>
             <TablePaginated
@@ -937,6 +931,7 @@ const Tickets = () => {
                         onHandlerReassign={() => setOpenDialogReassign(true)}
                         onHandlerClassify={() => setOpenDialogTipify(true)}
                         onHandlerClose={() => setOpenDialogClose(true)}
+                        disabled={rowWithDataSelected.length === 0}
                     />
                 )}
                 FiltersElement={React.useMemo(() => (
@@ -992,19 +987,19 @@ const Tickets = () => {
             />
             <DialogTipifications
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={[rowSelected || {}]}
                 openModal={openDialogTipify}
                 setOpenModal={setOpenDialogTipify}
             />
             <DialogCloseticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={[rowSelected || {}]}
                 openModal={openDialogClose}
                 setOpenModal={setOpenDialogClose}
             />
             <DialogReassignticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={rowWithDataSelected}
+                rowWithDataSelected={[rowSelected || {}]}
                 openModal={openDialogReassign}
                 setOpenModal={setOpenDialogReassign}
             />
