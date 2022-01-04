@@ -213,7 +213,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={(locale as any)[navigator.language.split('-')[0]]}>
             <KeyboardDatePicker
                 format={getLocaleDateString()}
-                value={value2 === '' ? null : value2}
+                value={value2 === '' ? undefined : value2}
                 onChange={(e: any) => {
                     handleClickItemMenu(e);
                     setvalue2(e)
