@@ -122,7 +122,6 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const format = (date: Date) => date.toISOString().split('T')[0];
 
 const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilter }: any) => {
     const [value, setValue] = useState('');
@@ -233,6 +232,14 @@ const DefaultColumnFilter = ({ header, type, setFilters, filters, listSelectFilt
                     ...filters,
                     [header]: {
                         value: op,
+                        operator: op
+                    },
+                }, 0)
+            } else if (value !== '') {
+                setFilters({
+                    ...filters,
+                    [header]: {
+                        value: value,
                         operator: op
                     },
                 }, 0)
@@ -485,7 +492,7 @@ const TableZyx = React.memo(({
     const setFilters = (filters: any, page: number) => {
         setPagination(prev => {
             const pageIndex = !page ? prev.pageIndex : page;
-            return { ...prev, filters, pageIndex: pageIndex, trigger: true }
+            return { ...prev, filters, pageIndex: 0, trigger: true }
         });
     };
     const setPageIndex = (page: number) => {
@@ -546,7 +553,7 @@ const TableZyx = React.memo(({
             triggertmp()
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageSize, pagination, dateRange, triggerSearch])
+    }, [pageSize, pagination, triggerSearch])
 
     useEffect(() => {
         if (triggerSearch) {
