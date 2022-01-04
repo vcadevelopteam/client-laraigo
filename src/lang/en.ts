@@ -636,6 +636,12 @@ const translation: LangKeys = {
     totalnotresolved: "Total Not resolved in 1st contact",
     totaldetractors: "Total Detractors",
     totalneutral: "Total Neutral",
+    
+    ticket_number: "Ticket",
+    total_duration: "Total duration",
+    waiting_person_time: "Person waiting time",
+    time_to_automatic_closing: "Time remaining for automatic closing",
+
     totalconversations: "Total Conversations",
     bearer: 'Bearer',
     token: 'Token',

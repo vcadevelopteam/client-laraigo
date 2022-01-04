@@ -111,19 +111,19 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
                         label={ticketnum}
-                        tooltip={t(langKeys.ticket)}
+                        tooltip={t(langKeys.ticket_number)}
                         color={status === 'ASIGNADO' ? "#55BD84" : (status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
                         isTimer={true}
-                        tooltip={t(langKeys.ticket)}
+                        tooltip={t(langKeys.total_duration)}
                         dateGo={firstconversationdate || new Date().toISOString()}
                         color="#465a6ed9"
                     />
                     {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
-                            tooltip={t(langKeys.ticket)}
+                            tooltip={t(langKeys.waiting_person_time)}
                             dateGo={personlastreplydate || new Date().toISOString()}
                             color="#FB5F5F"
                         />
