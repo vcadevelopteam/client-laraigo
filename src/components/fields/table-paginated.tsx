@@ -44,7 +44,7 @@ import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
-import { getDateToday, getFirstDayMonth, getLastDayMonth } from 'common/helpers';
+import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
 import { useLocation } from 'react-router-dom';
 
 declare module "react-table" {
@@ -600,7 +600,7 @@ const TableZyx = React.memo(({
                                     startIcon={<CalendarIcon />}
                                     onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
                                 >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    {getDateCleaned(dateRange.startDate!) + " - " + getDateCleaned(dateRange.endDate!)}
                                 </Button>
                             </DateRangePicker>
                             {FiltersElement && FiltersElement}
