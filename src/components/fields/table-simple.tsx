@@ -215,7 +215,7 @@ export const DateOptionsMenuComponent = (value: any, handleClickItemMenu: (key: 
             <KeyboardDatePicker
                 invalidDateMessage={t(langKeys.invalid_date_format)}
                 format={getLocaleDateString()}
-                value={value2 === '' ? undefined : value2}
+                value={value2 === '' ? null : value2}
                 onChange={(e: any) => {
                     handleClickItemMenu(e);
                     setvalue2(e)
