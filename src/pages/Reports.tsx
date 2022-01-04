@@ -284,38 +284,6 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         />
                         :
                         <>
-                            {allFilters &&
-                                <div className={classes.containerFilter} >
-                                    {
-                                        allFilters.map(filtro => (
-                                            (filtro.values[0].multiselect ?
-                                                <FieldMultiSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
-                                                    variant="outlined"
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
-                                                :
-                                                <FieldSelect
-                                                    label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
-                                                    className={classes.filterComponent}
-                                                    key={filtro.values[0].filter}
-                                                    variant="outlined"
-                                                    onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
-                                                    data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
-                                                    optionDesc={filtro.values[0].optionDesc}
-                                                    optionValue={filtro.values[0].optionValue}
-                                                />
-                                            )
-                                        )
-                                        )
-                                    }
-                                </div>
-                            }
                             <div className={classes.container}>
                                 <TablePaginated
                                     columns={columns}
@@ -324,6 +292,35 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     loading={mainPaginated.loading}
                                     pageCount={pageCount}
                                     filterrange={true}
+                                    FiltersElement={(
+                                        <>
+                                            {allFilters.map(filtro => (
+                                                (filtro.values[0].multiselect ?
+                                                    <FieldMultiSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value.map((o: Dictionary) => o[filtro.values[0].optionValue]).join() : '')}
+                                                        variant="outlined"
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                    :
+                                                    <FieldSelect
+                                                        label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
+                                                        className={classes.filterComponent}
+                                                        key={filtro.values[0].filter}
+                                                        variant="outlined"
+                                                        onChange={(value) => setValue(filtro.values[0].parameterName, value ? value[filtro.values[0].optionValue] : '')}
+                                                        data={multiData[multiData.findIndex(x => x.key === filtro.values[0].filter)].data}
+                                                        optionDesc={filtro.values[0].optionDesc}
+                                                        optionValue={filtro.values[0].optionValue}
+                                                    />
+                                                )
+                                            ))}
+                                        </>
+                                    )}
                                     download={true}
                                     fetchData={fetchData}
                                     exportPersonalized={triggerExportData}
@@ -376,7 +373,7 @@ const Reports: FC = () => {
         }
     }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
     useEffect(() => {
-        let temparray = allReports.filter((el:any)=> String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
+        let temparray = allReports.filter((el: any) => String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
         setallReportsToShow(temparray)
     }, [searchValue]);
 
