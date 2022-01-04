@@ -496,7 +496,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'HSM' }})
+                    }}
                   >
                     <WhatsappIcon
                       width={24}
@@ -508,7 +511,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'MAIL' }}) 
+                    }}
                   >
                     <MailIcon color="action" />
                   </IconButton>
@@ -517,7 +523,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'MESSAGE', open: true, payload: { persons: [row], messagetype: 'SMS' }}) 
+                    }}
                   >
                     <SmsIcon color="action" />
                   </IconButton>
@@ -528,7 +537,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'ACTIVITY', open: true, payload: {leadid: row['leadid']}}) 
+                    }}
                   >
                     <AccessTimeIcon
                       titleAccess={t(langKeys.activities)}
@@ -540,7 +552,10 @@ const CRM: FC = () => {
                     aria-controls="long-menu"
                     aria-haspopup="true"
                     size="small"
-                    onClick={() => setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setGridModal({name: 'NOTE', open: true, payload: {leadid: row['leadid']}}) 
+                    }}
                   >
                     <NoteIcon
                       titleAccess={t(langKeys.logNote)}

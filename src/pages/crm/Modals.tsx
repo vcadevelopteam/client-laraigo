@@ -183,6 +183,8 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     const [personsWithData, setPersonsWithData] = useState<ICrmGridPerson[]>([])
     const messagetype: string = gridModalProps.payload?.messagetype || "";
     const outboundData = useSelector(state => state.inbox.outboundData);
+    const [variablesTemp, setVariablesTemp] = useState([]);
+    const [waitSend, setWaitSend] = useState(false);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -202,6 +204,31 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
     useEffect(() => {
         dispatch(getDataForOutbound());
     }, [])
+
+    useEffect(() => {
+        if (waitSend) {
+            if (!sendingRes.loading && !sendingRes.error) {
+                dispatch(execute({
+                    header: null,
+                    detail: [
+                        ...personsWithData.map((x: Dictionary) => leadHistoryIns({
+                            leadid: x.leadid,
+                            description: variablesTemp.reduce((a: string, v: any, i: number) => (
+                                a.replace(`{{${v.name}}}`, v.variable !== 'custom' ? x[v.variable] : v.text)
+                            ), bodyMessage),
+                            type: `SEND${messagetype.toUpperCase()}`,
+                            operation: 'INSERT'
+                        }))
+                    ]
+                }, true));
+                setWaitSend(false);
+                setWaitClose(true);
+            } else if (sendingRes.error) {
+                setWaitSend(false);
+                setWaitClose(true);
+            }
+        }
+    }, [sendingRes, waitSend])
 
     useEffect(() => {
         if (waitClose) {
@@ -285,22 +312,10 @@ export const DialogSendTemplate: React.FC<IFCModalProps> = ({ gridModalProps, se
                 }))
             }))
         }
+        setVariablesTemp(data.variables);
         dispatch(sendHSM(messagedata));
-        dispatch(execute({
-            header: null,
-            detail: [
-                ...personsWithData.map((x: Dictionary) => leadHistoryIns({
-                    leadid: x.leadid,
-                    description: data.variables.reduce((a: string, v: any, i: number) => (
-                        a.replace(`{{${v.name}}}`, v.variable !== 'custom' ? x[v.variable] : v.text)
-                    ), bodyMessage),
-                    type: `SEND${messagetype.toUpperCase()}`,
-                    operation: 'INSERT'
-                }))
-            ]
-        }, true));
         dispatch(showBackdrop(true));
-        setWaitClose(true)
+        setWaitSend(true)
     });
 
     return (
