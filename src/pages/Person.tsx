@@ -468,7 +468,7 @@ export const Person: FC = () => {
         },
         {
             Header: t(langKeys.lastuser),
-            accesor: 'lastuser',
+            accessor: 'lastuser',
         },
         {
             Header: t(langKeys.lead),
