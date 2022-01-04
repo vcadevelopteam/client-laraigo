@@ -19,9 +19,15 @@ import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
 import { getMultiCollectionAux, resetMultiMainAux, execute } from 'store/main/actions';
 import Fab from '@material-ui/core/Fab';
+import { CircularProgress } from '@material-ui/core';
+import AttachFileIcon from '@material-ui/icons/AttachFile';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import clsx from 'clsx';
+
 const useStyles = makeStyles((theme) => ({
     containerInfo: {
         flex: '0 0 300px',
+        width: 300,
         display: 'flex',
         flexDirection: 'column',
 
@@ -58,7 +64,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(1),
         display: 'flex',
         flexDirection: 'column',
-        gap: theme.spacing(1),
+        gap: theme.spacing(.5),
         overflowY: 'auto',
         cursor: 'pointer',
         flex: 1,
@@ -94,6 +100,12 @@ const useStyles = makeStyles((theme) => ({
     propIcon: {
         stroke: '#8F92A1'
     },
+    orderReverse: {
+        flexDirection: 'column-reverse'
+    },
+    orderDefault: {
+        flexDirection: 'column'
+    }
 }));
 
 const InfoClient: React.FC = () => {
@@ -388,7 +400,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.documentnumber}</div>
                     </div>
                 </div>}
-               
+
                 {person?.alternativephone && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.alternativePhone)}</div>
@@ -443,7 +455,7 @@ const InfoTab: React.FC = () => {
                         <div>{person?.educationlevel && t("type_educationlevel_" + person?.educationlevel.toLocaleLowerCase())}</div>
                     </div>
                 </div>}
-               
+
                 {person?.lastcommunicationchannel && <div className={classes.containerName}>
                     <div style={{ flex: 1 }}>
                         <div className={classes.label}>{t(langKeys.lastCommunicationChannel)}</div>
@@ -500,7 +512,7 @@ const Variables: React.FC = () => {
     )
 }
 
-const PreviewTickets = () => {
+const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     const dispatch = useDispatch();
     const classes = useStyles();
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
@@ -518,33 +530,52 @@ const PreviewTickets = () => {
         setRowSelected(row)
     };
 
+    if (previewTicketList.loading) {
+        return (
+            <div style={{ flex: 1, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CircularProgress />
+            </div>
+        )
+    }
+
+    if (previewTicketList.data.length === 0) {
+        return (
+            <div style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_result)}
+            </div>
+        )
+    }
+
     return (
-        <div style={{ flex: 1 }} className="scroll-style-go">
-            {previewTicketList.loading ? "Espere" :
-                previewTicketList.data?.map((ticket, index) => (
+        <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex' }} className={clsx("scroll-style-go", {
+                [classes.orderDefault]: order === -1,
+                [classes.orderReverse]: order === 1,
+            })}>
+                {previewTicketList.data?.map((ticket, index) => (
                     <div key={index} className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
-                            <div>#{ticket.ticketnum}</div>
+                            <div>{ticket.ticketnum}</div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.created_on)}</div>
+                                <div className={classes.label}>{t(langKeys.creationDate)}</div>
                                 <div>{convertLocalDate(ticket.firstconversationdate).toLocaleString()}</div>
                             </div>
                             <div style={{ flex: 1 }}>
-                                <div className={classes.label}>{t(langKeys.closed_on)}</div>
+                                <div className={classes.label}>{t(langKeys.close_date)}</div>
                                 <div>{convertLocalDate(ticket.finishdate).toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
-                ))
-            }
-            <DialogInteractions
-                openModal={openModal}
-                setOpenModal={setOpenModal}
-                ticket={rowSelected}
-            />
+                ))}
+                <DialogInteractions
+                    openModal={openModal}
+                    setOpenModal={setOpenModal}
+                    ticket={rowSelected}
+                />
+            </div>
         </div>
     )
 }
@@ -552,6 +583,8 @@ const PreviewTickets = () => {
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
+    const [order, setOrder] = useState(-1)
+    const { t } = useTranslation();
 
     return (
         <div className={classes.containerInfo}>
@@ -559,18 +592,20 @@ const InfoPanel: React.FC = () => {
             <Tabs
                 value={pageSelected}
                 indicatorColor="primary"
-                variant="fullWidth"
+                variant="scrollable"
+                scrollButtons="auto"
                 style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
                 textColor="primary"
                 onChange={(_, value) => setPageSelected(value)}
             >
-                <AntTab label="Info" />
+                <AntTab label={t(langKeys.information)} />
                 <AntTab label="Variables" />
-                <AntTab label="Tickets" />
+                <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
+                <AntTab icon={<AttachFileIcon />} />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
             {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets />}
+            {pageSelected === 2 && <PreviewTickets order={order} />}
         </div>
     );
 }

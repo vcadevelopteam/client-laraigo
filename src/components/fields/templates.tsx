@@ -770,6 +770,13 @@ export const AntTab = withStyles((theme) => ({
             color: theme.palette.primary.main,
         },
     },
+    labelIcon: {
+        minHeight: 40,
+    },
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'row-reverse',
+    },
     selected: {},
 }))((props: TabProps) => <Tab disableRipple {...props} />);
 

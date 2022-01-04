@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(3)
     },
     media: {
-        objectFit: "none"
+        objectFit: "contain"
     },
     containerSearch: {
         width: '100%',
@@ -519,7 +519,7 @@ const Reports: FC = () => {
                                                 component="img"
                                                 height="140"
                                                 className={classes.media}
-                                                image={'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4SgTYos-jCFQS1NPSy5_gbSbSwOd-bMAv2w&usqp=CAU'}
+                                                image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
                                                 title={t(langKeys.heatmap)}
                                             />
                                             <CardContent>
@@ -537,7 +537,7 @@ const Reports: FC = () => {
                                                 component="img"
                                                 height="140"
                                                 className={classes.media}
-                                                image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/enviocomunicaciones.png"
+                                                image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
                                                 title={t(langKeys.recordhsmreport)}
                                             />
                                             <CardContent>
@@ -562,7 +562,7 @@ const Reports: FC = () => {
                                                     component="img"
                                                     height="140"
                                                     className={classes.media}
-                                                    image='https://www.datacrm.com/upload/article/b201902121011569.jpg'
+                                                    image='https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/03reportepersonalizado.png'
                                                     title={report.description}
                                                 />
 

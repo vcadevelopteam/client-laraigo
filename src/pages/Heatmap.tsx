@@ -107,7 +107,7 @@ const MainHeatMap: React.FC = () => {
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
     });
@@ -1090,7 +1090,7 @@ const HeatMapAsesor: React.FC<{companydomain: any, listadvisers: any}> = ({compa
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
         closedby: "ASESOR",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
         company: ""
@@ -1641,7 +1641,7 @@ const HeatMapTicket: React.FC = () => {
     const [asesoresConectadosTitle, setasesoresConectadosTitle] = useState<any>([]);  
     const [dataMainHeatMap, setdataMainHeatMap] = useState({
         communicationchannel: "",
-        startdate: new Date(new Date().setDate(1)),
+        startdate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
         enddate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
         datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
     });

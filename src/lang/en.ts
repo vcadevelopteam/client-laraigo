@@ -1152,7 +1152,15 @@ const translation: LangKeys = {
     ticket_fechaultimaconversacion: 'Last conversation',
     ticket_fechahandoff: 'Derivation date',
     ticket_asesorinicial: 'First agent',
+    
+    close_date: "Close date",
+    filter_by_user: "Filter by agent name",
+    filter_by_group: "Filter by agent group",
+
+    conversation_status: "Conversation status",
+
     ticket_asesorfinal: 'Last agent',
+    information: "Information",
     ticket_supervisor: 'Supervisor',
     ticket_empresa: 'Company',
     ticket_attentiongroup: 'Users group',

@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
         marginTop: theme.spacing(3)
     },
     media: {
-        objectFit: "none"
+        objectFit: "cover"
     },
     containerSearch: {
         width: '100%',
@@ -192,7 +192,7 @@ const Dashboard: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/1gerencial.png'}
                                         title={t(langKeys.managerial)}
                                     />
                                     <CardContent>
@@ -210,7 +210,7 @@ const Dashboard: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/2productividad.png'}
                                         title={t(langKeys.productivity)}
                                     />
                                     <CardContent>
@@ -228,7 +228,7 @@ const Dashboard: FC = () => {
                                         component="img"
                                         height="140"
                                         className={classes.media}
-                                        image={'https://www.datacrm.com/upload/article/b201902121011569.jpg'}
+                                        image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/3operativoPush.png'}
                                         title={t(langKeys.operationalpush)}
                                     />
                                     <CardContent>

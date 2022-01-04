@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Box from '@material-ui/core/Box/Box';
 import { DialogZyx, FieldMultiSelect, FieldSelect, FieldEditMulti } from 'components';
-import clsx from 'clsx';
 import TableZyx from 'components/fields/table-simple';
 import { DialogInteractions } from 'components';
 import { useForm } from 'react-hook-form';

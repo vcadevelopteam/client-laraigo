@@ -6,7 +6,10 @@ import { ITicket } from "@types";
 import { GetIcon } from 'components'
 import clsx from 'clsx';
 import Badge from '@material-ui/core/Badge';
+import Tooltip from '@material-ui/core/Tooltip';
 import { convertLocalDate, secondsToTime, getSecondsUntelNow } from 'common/helpers';
+import { langKeys } from 'lang/keys';
+import { useTranslation } from 'react-i18next';
 
 const useStyles = makeStyles((theme) => ({
     label: {
@@ -27,14 +30,19 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; dateGo?: string }> = ({ label, color, dateGo, isTimer }) => {
+const LabelGo: React.FC<{
+    label?: string,
+    color: string,
+    isTimer?: boolean;
+    dateGo?: string;
+    tooltip?: string;
+}> = ({ label, color, dateGo, isTimer, tooltip }) => {
     const classes = useStyles({ color });
     const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? getSecondsUntelNow(convertLocalDate(dateGo, true)) : -1);
 
     React.useEffect(() => {
         isMounted.current = true;
-
         let timer = !label ? setTimeout(() => {
             if (isMounted.current)
                 settime(getSecondsUntelNow(convertLocalDate(dateGo, true)))
@@ -48,10 +56,12 @@ const LabelGo: React.FC<{ label?: string, color: string, isTimer?: boolean; date
     }, [time]);
 
     return (
-        <div style={{ position: 'relative' }}>
-            <div className={classes.label}>{isTimer ? secondsToTime(time || 0) : label}</div>
-            <div className={classes.backgroundLabel}></div>
-        </div>
+        <Tooltip title={tooltip || ''} arrow placement="top">
+            <div style={{ position: 'relative' }}>
+                <div className={classes.label}>{isTimer ? secondsToTime(time || 0) : label}</div>
+                <div className={classes.backgroundLabel}></div>
+            </div>
+        </Tooltip>
     )
 }
 
@@ -66,9 +76,10 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const multiData = useSelector(state => state.main.multiData);
     const [iconColor, setIconColor] = useState('#7721AD');
-    
+    const { t } = useTranslation();
+
     React.useEffect(() => {
-        if (!multiData.error && !multiData.loading &&  multiData?.data[6] && multiData.data[6].success) {
+        if (!multiData.error && !multiData.loading && multiData?.data[6] && multiData.data[6].success) {
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
             setIconColor(channelSelected?.coloricon || '#7721AD');
         }
@@ -100,16 +111,19 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                     <LabelGo
                         label={ticketnum}
+                        tooltip={t(langKeys.ticket)}
                         color={status === 'ASIGNADO' ? "#55BD84" : (status === "PAUSADO" ? "#ffbf00" : "#FB5F5F")}
                     />
                     <LabelGo
                         isTimer={true}
+                        tooltip={t(langKeys.ticket)}
                         dateGo={firstconversationdate || new Date().toISOString()}
                         color="#465a6ed9"
                     />
                     {(countnewmessages || 0) > 0 &&
                         <LabelGo
                             isTimer={true}
+                            tooltip={t(langKeys.ticket)}
                             dateGo={personlastreplydate || new Date().toISOString()}
                             color="#FB5F5F"
                         />

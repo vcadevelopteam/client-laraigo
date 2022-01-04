@@ -133,7 +133,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                             optionValue="communicationchannelid"
                         />
                         <div>
-                            <div style={{ fontWeight: 500 }}>{t(langKeys.conversation) + " " + t(langKeys.status)}</div>
+                            <div style={{ fontWeight: 500 }}>{t(langKeys.conversation_status)}</div>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                 <FormControlLabel
                                     control={(
