@@ -502,6 +502,11 @@ export const langKeys = {
     servicedata: "servicedata",
     assesor_plural: "assesor_plural",
     interaction_plural: "interaction_plural",
+    information: "information",
+    close_date: "close_date",
+    filter_by_user: "filter_by_user",
+    filter_by_group: "filter_by_group",
+    conversation_status: "conversation_status",
 
     organization_permissions: 'organization_permissions',
     generate_password: 'generate_password',

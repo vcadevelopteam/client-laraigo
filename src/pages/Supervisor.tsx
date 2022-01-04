@@ -8,7 +8,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Tabs from '@material-ui/core/Tabs';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import { GetIcon } from 'components'
 import { getAgents, selectAgent, emitEvent, cleanAlerts, cleanInboxSupervisor } from 'store/inbox/actions';
@@ -21,25 +20,29 @@ import { AntTab, BadgeGo, ListItemSkeleton } from 'components';
 import { SearchIcon } from 'icons';
 import { IAgent } from "@types";
 import clsx from 'clsx';
+import IconButton from '@material-ui/core/IconButton';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-const filterAboutStatusName = (data: IAgent[], page: number, searchName: string): IAgent[] => {
-    if (page === 0 && searchName === "") {
+const filterAboutStatusName = (data: IAgent[], page: number, textToSearch: string, filterBy: string): IAgent[] => {
+    if (page === 0 && textToSearch === "") {
         return data;
     }
-    if (page === 0 && searchName !== "") {
-        return data.filter(item => item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 0 && textToSearch !== "") {
+        return data.filter(item => (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
-    if (page === 1 && searchName === "") {
+    if (page === 1 && textToSearch === "") {
         return data.filter(item => item.status === "ACTIVO");
     }
-    if (page === 1 && searchName !== "") {
-        return data.filter(item => item.status === "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 1 && textToSearch !== "") {
+        return data.filter(item => item.status === "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
-    if (page === 2 && searchName === "") {
+    if (page === 2 && textToSearch === "") {
         return data.filter(item => item.status !== "ACTIVO");
     }
-    if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status !== "ACTIVO" && item.name.toLowerCase().includes(searchName.toLowerCase()));
+    if (page === 2 && textToSearch !== "") {
+        return data.filter(item => item.status !== "ACTIVO" && (filterBy === "user" ? item.name : (item.groups || "")).toLowerCase().includes(textToSearch.toLowerCase()));
     }
     return data;
 }
@@ -179,29 +182,82 @@ const ItemAgent: FC<{ agent: IAgent, useridSelected?: number }> = ({ agent, agen
     )
 }
 
-const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, search: string) => void }> = ({ classes, onSearch }) => {
+const HeaderAgentPanel: FC<{
+    classes: any,
+    onSearch: (pageSelected: number, search: string, filterBy: string) => void
+}> = ({ classes, onSearch }) => {
+
     const [pageSelected, setPageSelected] = useState(0);
     const [showSearch, setShowSearch] = useState(false);
     const [search, setSearch] = useState("");
     const { t } = useTranslation();
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [filterBy, setFilterBy] = useState('user')
 
     const onChangeSearchAgent = (e: any) => setSearch(e.target.value);
 
+    const handleClose = () => setAnchorEl(null);
+
     useEffect(() => {
-        onSearch(pageSelected, search);
-    }, [pageSelected, search])
+        onSearch(pageSelected, search, filterBy);
+    }, [pageSelected, search, filterBy])
 
     return (
         <>
-            <div style={{ paddingRight: '16px', paddingLeft: '16px' }}>
+            <div style={{ paddingRight: 8, paddingLeft: 16 }}>
                 {!showSearch ?
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div className={classes.title}>
                             Supervisor
                         </div>
-                        <IconButton onClick={() => setShowSearch(true)} edge="end">
-                            <SearchIcon />
-                        </IconButton>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <IconButton size='small' onClick={() => setShowSearch(true)} edge="end">
+                                <SearchIcon />
+                            </IconButton>
+                            <IconButton
+                                size='small'
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={anchorEl}
+                                getContentAnchorEl={null}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem
+                                    selected={filterBy === 'user'}
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setFilterBy('user');
+                                    }}
+                                >
+                                    {t(langKeys.filter_by_user)}
+                                </MenuItem>
+                                <MenuItem
+                                    selected={filterBy === 'group'}
+                                    onClick={() => {
+                                        setAnchorEl(null);
+                                        setFilterBy('group');
+                                    }}
+                                >
+                                    {t(langKeys.filter_by_group)}
+                                </MenuItem>
+                            </Menu>
+                        </div>
                     </div> :
                     <TextField
                         color="primary"
@@ -213,7 +269,7 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
-                                    <IconButton edge="end">
+                                    <IconButton size="small" edge="end">
                                         <SearchIcon />
                                     </IconButton>
                                 </InputAdornment>)
@@ -240,8 +296,8 @@ const HeaderAgentPanel: FC<{ classes: any, onSearch: (pageSelected: number, sear
 const AgentPanel: FC<{ classes: any }> = ({ classes }) => {
     const agentList = useSelector(state => state.inbox.agentList);
 
-    const onSearch = (pageSelected: number, search: string) => {
-        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search));
+    const onSearch = (pageSelected: number, search: string, filterBy: string) => {
+        setAgentsToShow(filterAboutStatusName(dataAgents, pageSelected, search, filterBy));
     }
 
     const [agentsToShow, setAgentsToShow] = useState<IAgent[]>([]);
