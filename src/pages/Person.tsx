@@ -512,9 +512,13 @@ export const Person: FC = () => {
                     return null;
                 return (
                     <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
-                        {Object.entries(phasejson).map(([key, value]) => (
+                        {Object.entries(phasejson).sort(([aKey], [bKey]) => {
+                            const aIndex = Number(aKey.split(',')[0]);
+                            const bIndex = Number(bKey.split(',')[0]); 
+                            return aIndex - bIndex;
+                        }).map(([key, value]) => (
                             <CountTicket
-                                label={key}
+                                label={key.split(',')[1]}
                                 key={key}
                                 count={value + ""}
                                 color="#55BD84"
@@ -765,6 +769,24 @@ export const Person: FC = () => {
         }
     }
 
+    // const handleLock = () => {
+    //     if (person) {
+    //         const callback = () => {
+    //             setValue('locked', !getValues('locked'));
+    //             trigger('locked');
+    //             dispatch(execute(insPersonUpdateLocked({ ...person, locked: !person.locked })));
+    //             dispatch(showBackdrop(true));
+    //             setWaitLock(true);
+    //         }
+
+    //         dispatch(manageConfirmation({
+    //             visible: true,
+    //             question: getValues('locked') ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
+    //             callback
+    //         }))
+    //     }
+    // }
+
     useEffect(() => {
         if (waitImport) {
             if (!executeResult.loading && !executeResult.error) {
@@ -951,10 +973,6 @@ const usePropertyStyles = makeStyles(theme => ({
         fontSize: 15,
         margin: 0,
         width: '100%',
-
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
     },
     leadingContainer: {
         height: 24,
@@ -1952,33 +1970,34 @@ interface ChannelItemProps {
     channel: IPersonChannel;
 }
 
+const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
+    "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
+    "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
+    "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
+    "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
+    "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
+    "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
+    "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
+    "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
+    "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
+    "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
+    "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
+    "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+    "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
+};
+
 const ChannelItem: FC<ChannelItemProps> = ({ channel }) => {
     const classes = useChannelItemStyles();
-    const nameschannel: { [x: string]: { label: string, icon: React.ReactNode } } = {
-        "WHAT": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAD": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAP": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "WHAC": { label: "WHATSAPP", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "FBMS": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "FBDM": { label: "FACEBOOK MESSENGER", icon: <FacebookMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "FBWA": { label: "FACEBOOK MURO", icon: <FacebookWallIcon width={18} style={{ fill: 'black' }} /> },
-        "WEBM": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "TELE": { label: "TELEGRAM", icon: <TelegramIcon width={18} style={{ fill: 'black' }} /> },
-        "INST": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "INMS": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "INDM": { label: "INSTAGRAM", icon: <InstagramIcon width={18} style={{ fill: 'black' }} /> },
-        "ANDR": { label: "ANDROID", icon: <AndroidIcon width={18} style={{ fill: 'black' }} /> },
-        "APPL": { label: "IOS", icon: <AppleIcon width={18} style={{ fill: 'black' }} /> },
-        "CHATZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "CHAZ": { label: "WEB MESSENGER", icon: <WebMessengerIcon width={18} style={{ fill: 'black' }} /> },
-        "MAIL": { label: "EMAIL", icon: <EmailIcon width={18} style={{ fill: 'black' }} /> },
-        "YOUT": { label: "YOUTUBE", icon: <YoutubeIcon width={18} style={{ fill: 'black' }} /> },
-        "LINE": { label: "LINE", icon: <LineIcon width={18} style={{ fill: 'black' }} /> },
-        "SMS": { label: "SMS", icon: <SmsIcon width={18} style={{ fill: 'black' }} /> },
-        "SMSI": { label: "SMS", icon: <WhatsappIcon width={18} style={{ fill: 'black' }} /> },
-        "TWIT": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
-        "TWMS": { label: "TWITTER", icon: <TwitterIcon width={18} style={{ fill: 'black' }} /> },
-    }
     const personIdentifier = useMemo(() => {
         if (!channel) return '';
 
@@ -2357,6 +2376,8 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
+console.log(conversation);
+
     return (
         <div className={classes.root}>
             <DialogInteractions
@@ -2377,7 +2398,12 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
                 <Grid item xs={12} sm={12} md={3} lg={3} xl={3}>
                     <Property
                         title={<Trans i18nKey={langKeys.channel} />}
-                        subtitle={conversation.channeldesc}
+                        subtitle={(
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '0.5em' }}>
+                                <span>{conversation.channeldesc}</span>
+                                {nameschannel[conversation.channeltype].icon}
+                            </div>
+                        )}
                     />
                 </Grid>
                 <Grid item xs={12} sm={12} md={2} lg={2} xl={2}>
