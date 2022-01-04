@@ -519,6 +519,8 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     const previewTicketList = useSelector(state => state.inbox.previewTicketList);
     const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [openModal, setOpenModal] = useState(false);
+    const el = React.useRef<null | HTMLDivElement>(null);
+    const el1 = React.useRef<null | HTMLDivElement>(null);
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -529,6 +531,15 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
         setOpenModal(true);
         setRowSelected(row)
     };
+
+    useEffect(() => {
+        // setTimeout(() => {
+            if (order === 1)
+                el1.current?.scrollIntoView();
+            else 
+                el?.current?.scrollIntoView();
+        // }, 1000);
+    }, [order])
 
     if (previewTicketList.loading) {
         return (
@@ -547,12 +558,13 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     }
 
     return (
-        <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex' }} className={clsx("scroll-style-go", {
-                [classes.orderDefault]: order === -1,
-                [classes.orderReverse]: order === 1,
-            })}>
-                {previewTicketList.data?.map((ticket, index) => (
+        <div style={{ display: 'flex', flex: 1 }} className={clsx("scroll-style-go", {
+            [classes.orderDefault]: order === -1,
+            [classes.orderReverse]: order === 1,
+        })}>
+            <div ref={el}></div>
+            {previewTicketList.data?.map((ticket, index) => (
+                <div>
                     <div key={index} className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
@@ -569,13 +581,14 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
                             </div>
                         </div>
                     </div>
-                ))}
-                <DialogInteractions
-                    openModal={openModal}
-                    setOpenModal={setOpenModal}
-                    ticket={rowSelected}
-                />
-            </div>
+                </div>
+            ))}
+            <div ref={el1}></div>
+            <DialogInteractions
+                openModal={openModal}
+                setOpenModal={setOpenModal}
+                ticket={rowSelected}
+            />
         </div>
     )
 }
@@ -599,13 +612,13 @@ const InfoPanel: React.FC = () => {
                 onChange={(_, value) => setPageSelected(value)}
             >
                 <AntTab label={t(langKeys.information)} />
-                <AntTab label="Variables" />
                 <AntTab label="Tickets" icon={<ImportExportIcon onClick={() => setOrder(order * -1)} />} />
                 <AntTab icon={<AttachFileIcon />} />
+                <AntTab label="Variables" />
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
-            {pageSelected === 1 && <Variables />}
-            {pageSelected === 2 && <PreviewTickets order={order} />}
+            {pageSelected === 1 && <PreviewTickets order={order} />}
+            {pageSelected === 3 && <Variables />}
         </div>
     );
 }

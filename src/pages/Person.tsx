@@ -432,13 +432,13 @@ export const Person: FC = () => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("MAIL");
+                            setTypeTemplate("SMS");
                         }}
                         sendMAIL={(e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("SMS");
+                            setTypeTemplate("MAIL");
                         }}
                     />
                 )

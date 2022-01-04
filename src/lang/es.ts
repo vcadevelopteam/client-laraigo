@@ -1567,7 +1567,10 @@ const translation: LangKeys = {
     NEWLEAD: 'Nueva oportunidad',
     
     lastuser: 'Último asesor',
-    
+    ticket_number: "Número de ticket",
+    total_duration: "Duración total",
+    waiting_person_time: "Tiempo de espera de la persona",
+    time_to_automatic_closing: "Tiempo restante para cierre automático",
     new: 'Nuevo',
     qualified: 'Calificado',
     proposition: 'Propuesto',

@@ -27,18 +27,18 @@ interface DateRangePickerProps extends Omit<PDateRangePickerProps, 'ranges'> {
 }
 
 const defineds = {
-    startOfWeek: startOfWeek(new Date()),
-    endOfWeek: endOfWeek(new Date()),
-    startOfLastWeek: startOfWeek(addDays(new Date(), -7)),
-    endOfLastWeek: endOfWeek(addDays(new Date(), -7)),
-    startOfToday: startOfDay(new Date()),
-    endOfToday: endOfDay(new Date()),
-    startOfYesterday: startOfDay(addDays(new Date(), -1)),
-    endOfYesterday: endOfDay(addDays(new Date(), -1)),
-    startOfMonth: startOfMonth(new Date()),
-    endOfMonth: endOfMonth(new Date()),
-    startOfLastMonth: startOfMonth(addMonths(new Date(), -1)),
-    endOfLastMonth: endOfMonth(addMonths(new Date(), -1)),
+  startOfWeek: startOfWeek(new Date()),
+  endOfWeek: endOfWeek(new Date()),
+  startOfLastWeek: startOfWeek(addDays(new Date(), -7)),
+  endOfLastWeek: endOfWeek(addDays(new Date(), -7)),
+  startOfToday: startOfDay(new Date()),
+  endOfToday: endOfDay(new Date()),
+  startOfYesterday: startOfDay(addDays(new Date(), -1)),
+  endOfYesterday: endOfDay(addDays(new Date(), -1)),
+  startOfMonth: startOfMonth(new Date()),
+  endOfMonth: endOfMonth(new Date()),
+  startOfLastMonth: startOfMonth(addMonths(new Date(), -1)),
+  endOfLastMonth: endOfMonth(addMonths(new Date(), -1)),
 };
 
 const todayRange: Range = { startDate: defineds.startOfToday, endDate: defineds.endOfToday };

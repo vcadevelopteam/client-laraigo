@@ -1,3 +1,5 @@
+import { Dictionary } from "@types";
+
 export interface IApplication {
     delete: boolean;
     insert: boolean;
@@ -21,6 +23,8 @@ interface Organization {
 interface Properties {
     alertTicketNew: boolean | undefined;
     alertMessageIn: boolean | undefined;
+    auto_close: Dictionary;
+    auto_close_holding: Dictionary;
 }
 
 export interface IUser {
