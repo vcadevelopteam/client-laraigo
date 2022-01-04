@@ -442,6 +442,7 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
         startdate,
         enddate,
         sorts,
+        lastuserid: allParameters['lastuserid'] ? allParameters['lastuserid'] : "",
         channel: allParameters['channel'] ? allParameters['channel'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1

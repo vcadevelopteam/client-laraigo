@@ -510,6 +510,11 @@ export const langKeys = {
     filter_by_user: "filter_by_user",
     filter_by_group: "filter_by_group",
     conversation_status: "conversation_status",
+    
+    ticket_number: "ticket_number",
+    total_duration: "total_duration",
+    waiting_person_time: "waiting_person_time",
+    time_to_automatic_closing: "time_to_automatic_closing",
 
     organization_permissions: 'organization_permissions',
     generate_password: 'generate_password',
