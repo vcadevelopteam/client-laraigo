@@ -27,10 +27,12 @@ const translation: LangKeys = {
 
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
-
+    resume: "Resume",
+    quickresponse: "Quick response",
     advance_search: 'Advance search',
     search_inbox: 'Search inbox',
     search_result: 'Search result',
+    emoticons: "Emoticons",
     industry_foodsanddrinks: "Food and Drinks",
     industry_audiovisual: "Audiovisuales",
     industry_beauty: "Beauty and Relaxation",
