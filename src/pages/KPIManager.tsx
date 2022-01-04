@@ -388,6 +388,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('target')}
                                 onChange={(value) => setValue('target', value)}
                                 error={errors?.target?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -403,6 +405,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('cautionat')}
                                 onChange={(value) => setValue('cautionat', value)}
                                 error={errors?.cautionat?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -418,6 +422,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                 valueDefault={getValues('alertat')}
                                 onChange={(value) => setValue('alertat', value)}
                                 error={errors?.alertat?.message}
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
                             />
                             :
                             <FieldView
@@ -520,6 +526,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                                 style={{width: '150px'}}
                                                 id="gauge-chart"
                                                 nrOfLevels={20}
+                                                textColor="#000000"
+                                                animate={false}
                                                 percent={!!row?.target ? detaildata?.currentvalue/row?.target : 0} 
                                             /></TableCell>
                                     </TableRow>
