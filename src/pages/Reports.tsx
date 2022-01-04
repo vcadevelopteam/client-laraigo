@@ -294,7 +294,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                                     filterrange={true}
                                     FiltersElement={(
                                         <>
-                                            {allFilters.map(filtro => (
+                                            {!allFilters ? null : allFilters.map(filtro => (
                                                 (filtro.values[0].multiselect ?
                                                     <FieldMultiSelect
                                                         label={t('report_' + row?.origin + '_filter_' + filtro.values[0].label || '')}
