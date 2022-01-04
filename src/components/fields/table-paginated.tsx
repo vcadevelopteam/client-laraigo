@@ -493,20 +493,24 @@ const TableZyx = React.memo(({
         setTFilters(prev => ({ ...prev, page }));
     }
     const handleClickSort = (column: string) => {
-        const newsorts: any = {
-            ...pagination.sorts
+        let newsorts: any = {};
+        if (Object.keys(pagination.sorts).includes(column)) {
+            newsorts = {
+                ...pagination.sorts
+            }
         }
-
-        let currentsort = "";
 
         if (newsorts[column] === "desc") {
             delete newsorts[column]
-        } else {
-            if (newsorts[column] === "asc")
-                currentsort = "desc";
-            else
-                currentsort = "asc";
-            newsorts[column] = currentsort
+        }
+        else
+        {
+            if (newsorts[column] === "asc") {
+                newsorts[column] = "desc";
+            }
+            else {
+                newsorts[column] = "asc";
+            }
         }
 
         setPagination(prev => ({ ...prev, sorts: newsorts, trigger: true }))
