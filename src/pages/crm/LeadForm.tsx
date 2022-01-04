@@ -183,9 +183,14 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(saveLeadWithFiles(async (uploader) => {
                 const notes = (data.notes || []) as ICrmLeadNoteSave[];
                 for (let i = 0; i < notes.length; i++) {
-                    if (notes[i].media && typeof notes[i].media === "object") {
-                        const url = await uploader(notes[i].media as File);
-                        notes[i].media = url;
+                    // subir los archivos de la nota que se va a agregar
+                    if (notes[i].media && Array.isArray(notes[i].media)) {
+                        const urls: String[] = [];
+                        for (const fileToUpload of notes[i].media as File[]) {
+                            const url = await uploader(fileToUpload);
+                            urls.push(url);
+                        }
+                        notes[i].media = urls.join(',');
                     }
                 }
 
@@ -1016,7 +1021,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const [noteDescription, setNoteDescription] = useState("");
-    const [media, setMedia] = useState<File | null>(null);
+    const [media, setMedia] = useState<File[] | null>(null);
 
     const handleSubmit = useCallback(() => {
         const newNote: ICrmLeadNoteSave = {
@@ -1036,13 +1041,20 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
     }, [noteDescription, media, dispatch]);
 
     const handleInputMedia = useCallback(() => {
-        const input = document.getElementById('noteMediaInput');
+        const input = document.getElementById('noteMediaInput') as HTMLInputElement;
+        input.value = "";
         input!.click();
     }, []);
 
     const onChangeMediaInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        setMedia(e.target.files[0]);
+
+        const newFiles: File[] = [];
+        for (let i = 0; i < e.target.files.length; i++) {
+            newFiles.push(e.target.files[i]);
+        }
+
+        setMedia(prev => [...(prev || []), ...newFiles]);
     }, []);
 
     const handleCleanMediaInput = () => {
@@ -1051,6 +1063,10 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
         input.value = "";
         setMedia(null);
     }
+
+    const deleteMediaFile = useCallback((fileToRemove: File) => {
+        setMedia(prev => prev?.filter(x => x !== fileToRemove) || null);
+    }, []);
 
     return (
         <div className={clsx(classes.root, classes.column)}>
@@ -1069,7 +1085,8 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                 disabled={loading}
                             />
                             <div style={{ height: 4 }} />
-                            {media && <FilePreview src={media} onClose={handleCleanMediaInput} />}
+                            {/* {media && <FilePreview src={media} onClose={handleCleanMediaInput} />} */}
+                            {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}
                             {media && <div style={{ height: 4 }} />}
                             <input
                                 accept="file/*"
@@ -1077,6 +1094,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                 id="noteMediaInput"
                                 type="file"
                                 onChange={onChangeMediaInput}
+                                multiple
                             />
                             <div className={classes.row}>
                                 <EmojiPickerZyx
@@ -1089,7 +1107,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                     )}
                                 />
                                 <div style={{ width: '0.5em' }} />
-                                <IconButton onClick={handleInputMedia} color="primary" disabled={media !== null || loading}>
+                                <IconButton onClick={handleInputMedia} color="primary" disabled={/*media !== null || */loading}>
                                     <AttachFile />
                                 </IconButton>
                             </div>
@@ -1128,7 +1146,8 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                         <div style={{ height: 4 }} />
                                         <span>{note.description}</span>
                                         {note.media && <div style={{ height: 4 }} />}
-                                        {note.media && <FilePreview src={note.media} />}
+                                        {/* {note.media && <FilePreview src={note.media} />} */}
+                                        {note.media && <FileCollectionPreview files={note.media} />}
                                     </div>
                                 </div>
                             </div>
@@ -1739,6 +1758,40 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             </div>
         </Paper>
     );
+}
+
+interface FileCollectionPreviewProps {
+    files: File[] | string;
+    onCloseFile?: (file: File) => void;
+}
+
+const FileCollectionPreview: FC<FileCollectionPreviewProps> = ({ files, onCloseFile }) => {
+    const buildFileChildren = useCallback((files: File[]) => {
+        const children: React.ReactElement[] = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            children.push(<FilePreview src={file} onClose={() => onCloseFile?.(file)} />);
+        }
+
+        return children;
+    }, []);
+
+    const buildStringChildren = useCallback((files: string) => {
+        return files.split(',').map(file => {
+            return <FilePreview src={file} />;
+        });
+    }, []);
+
+    const children = useMemo(() => {
+        return typeof files === "string" ? buildStringChildren(files) : buildFileChildren(files);
+    }, [files]);
+    
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '1em' }}>
+            {children}
+        </div>
+    )
 }
 
 interface MarkDoneModalProps {

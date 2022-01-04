@@ -98,7 +98,8 @@ export interface ICrmLeadNoteSave {
 	description: string;
 	type: string;
 	status: string;
-    media: string | File | null;
+    /** splited by ,  */
+    media: string | File[] | null;
 	username: string | null | undefined;
 	operation: "UPDATE" | "INSERT" | "DELETE";
 
