@@ -491,6 +491,8 @@ export const langKeys = {
     changePassword: 'changePassword',
     status_history: 'status_history',
     ready_to_close: 'ready_to_close',
+    suspend_ticket: 'suspend_ticket',
+    activate_ticket: 'activate_ticket',
 
     user: 'user',
     user_plural: 'user_plural',
@@ -936,6 +938,8 @@ export const langKeys = {
     observation: 'observation',
     tipify_ticket: 'tipify_ticket',
     successful_close_ticket: 'successful_close_ticket',
+    successful_suspend_ticket: 'successful_suspend_ticket',
+    successful_reactivate_ticket: 'successful_reactivate_ticket',
     successful_send_hsm: 'successful_send_hsm',
     successful_send_sms: 'successful_send_sms',
     successful_send_mail: 'successful_send_mail',

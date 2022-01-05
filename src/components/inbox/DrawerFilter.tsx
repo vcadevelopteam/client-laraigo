@@ -27,7 +27,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
     const [filterCheckBox, setFilterCheckBox] = useState({
         ASIGNADO: false,
         CERRADO: false,
-        PAUSADO: false
+        SUSPENDIDO: false
     })
 
     const [filters, setFilters] = useState({
@@ -49,7 +49,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
         const conversationstatus = [
             ...(filterCheckBox.ASIGNADO ? ["ASIGNADO"] : []),
             ...(filterCheckBox.CERRADO ? ["CERRADO"] : []),
-            ...(filterCheckBox.PAUSADO ? ["PAUSADO"] : []),
+            ...(filterCheckBox.SUSPENDIDO ? ["SUSPENDIDO"] : []),
         ].join(',');
 
         setFilters({
@@ -99,7 +99,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
         setFilterCheckBox({
             ASIGNADO: false,
             CERRADO: false,
-            PAUSADO: false
+            SUSPENDIDO: false
         })
         setFilters({
             channels: '',
@@ -158,9 +158,9 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
-                                            checked={filterCheckBox.PAUSADO}
+                                            checked={filterCheckBox.SUSPENDIDO}
                                             color="primary"
-                                            onChange={(e) => setFilterCheckBox({ ...filterCheckBox, PAUSADO: e.target.checked })}
+                                            onChange={(e) => setFilterCheckBox({ ...filterCheckBox, SUSPENDIDO: e.target.checked })}
                                             name="checkedC" />
                                     )}
                                     label={t(langKeys.paused)}

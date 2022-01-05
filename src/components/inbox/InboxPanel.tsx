@@ -340,10 +340,10 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
         return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     if (page === 2 && searchName === "") {
-        return data.filter(item => item.status === "PAUSADO");
+        return data.filter(item => item.status === "SUSPENDIDO");
     }
     if (page === 2 && searchName !== "") {
-        return data.filter(item => item.status === "PAUSADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
+        return data.filter(item => item.status === "SUSPENDIDO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     return data;
 }
@@ -361,6 +361,11 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     const ticketFilteredList = useSelector(state => state.inbox.ticketFilteredList);
     const agentSelected = useSelector(state => state.inbox.agentSelected);
     const isFiltering = useSelector(state => state.inbox.isFiltering);
+    const [counterTickets, setCounterTickets] = useState({
+        assigned: -0,
+        paused: -0,
+        all: -1
+    })
 
     const setTicketSelected = React.useCallback((ticket: ITicket) => {
         dispatch(selectTicket(ticket))
@@ -368,6 +373,12 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     }, [dispatch]);
 
     useEffect(() => {
+        setPageSelected(0)
+        setCounterTickets({
+            assigned: -0,
+            paused: -0,
+            all: -0,
+        })
         dispatch(getTickets(userType === "SUPERVISOR" ? agentSelected!.userid : null))
         return () => {
             dispatch(resetGetTickets())
@@ -376,8 +387,12 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
 
     useEffect(() => {
         if (!ticketList.loading && !ticketList.error) {
-            setDataTickets(ticketList.data as ITicket[])
-            setTicketsToShow((ticketList.data as ITicket[]).filter(item => item.status === "ASIGNADO"));
+            setDataTickets(ticketList.data as ITicket[]);
+            setCounterTickets({
+                assigned: ticketList.data.filter(item => item.status === "ASIGNADO").length,
+                paused: ticketList.data.filter(item => item.status === "SUSPENDIDO").length,
+                all: ticketList.data.length
+            })
         }
     }, [ticketList])
 
@@ -388,7 +403,7 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
     useEffect(() => {
         setTicketsToShow(filterAboutStatusName(dataTickets, pageSelected, search));
         return () => setTicketsToShow(dataTickets)
-    }, [pageSelected, search])
+    }, [pageSelected, search, dataTickets])
 
     const RenderRow = React.useCallback(
         ({ index, style }) => {
@@ -422,14 +437,15 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                         <Tabs
                             value={pageSelected}
                             indicatorColor="primary"
-                            variant="fullWidth"
+                            // variant="scrollable"
+                            scrollButtons="auto"
                             textColor="primary"
                             style={{ flex: 1 }}
                             onChange={(_, value) => setPageSelected(value)}
                         >
-                            <AntTab label={t(langKeys.assigned)} />
-                            <AntTab label={t(langKeys.all)} />
-                            <AntTab label={t(langKeys.paused)} />
+                            <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
+                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
+                            <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>

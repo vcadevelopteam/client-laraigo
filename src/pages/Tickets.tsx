@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
 import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
-import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux } from 'store/main/actions';
+import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
 import { useDispatch } from 'react-redux';
@@ -244,6 +244,8 @@ const DialogReassignticket: React.FC<{ fetchData: () => void, setOpenModal: (par
                 setGroupsList(groupsList);
             }
             dispatch(getCollectionAux(getListUsers()));
+        } else {
+            dispatch(resetMainAux());
         }
     }, [openModal])
 
@@ -520,10 +522,12 @@ const DialogHistoryStatus: React.FC<{ ticket: Dictionary | null, openModal: bool
     const resultHistory = useSelector(state => state.main.mainAux);
 
     useEffect(() => {
-        if (ticket) {
-            dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+        if (openModal) {
+            if (ticket) {
+                dispatch(getCollectionAux(getHistoryStatusConversation(ticket.personid, ticket.conversationid, ticket.communicationchannelid)))
+            }
         }
-    }, [ticket])
+    }, [ticket, openModal])
 
     const columns = React.useMemo(
         () => [

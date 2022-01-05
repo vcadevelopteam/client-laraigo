@@ -60,6 +60,7 @@ const MessageInbox: React.FC = () => {
             getMessageTemplateLst(),
             getCommChannelLst(),
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
+            getValuesFromDomainLight("MOTIVOSUSPENSION"),
         ]))
         setinitial(false)
         return () => {

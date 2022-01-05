@@ -290,6 +290,20 @@ export const modifyTicket = (state: IState, action: IAction): IState => ({
     ticketList: { ...state.ticketList, data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? action.payload : x) },
 })
 
+export const changeStatusTicket = (state: IState, action: IAction): IState => ({
+    ...state,
+    ticketSelected: {
+        ...state.ticketSelected!!,
+        status: action.payload.status
+    },
+    ticketList: { 
+        ...state.ticketList,
+        data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
+            ...x,
+            status: action.payload.status
+        } : x) },
+})
+
 
 export const getTickets = (state: IState): IState => ({
     ...state,
