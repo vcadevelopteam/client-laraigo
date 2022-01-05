@@ -600,7 +600,7 @@ export const getValuesForTree = (type="QUICKREPLY"): IRequestBody => ({
 export const getParentSel = (): IRequestBody => ({
     method: "UFN_CLASSIFICATION_LST_PARENT",
     parameters: {
-        classificationid: 0
+        classificationid: 0,
     }
 });
 
