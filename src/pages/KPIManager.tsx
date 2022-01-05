@@ -528,7 +528,8 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                                 nrOfLevels={20}
                                                 textColor="#000000"
                                                 animate={false}
-                                                percent={!!row?.target ? detaildata?.currentvalue/row?.target : 0} 
+                                                percent={!!row?.target ? (detaildata?.currentvalue/row?.target > 1 ? 1 : detaildata?.currentvalue/row?.target) : 0}
+                                                formatTextValue={() => !!row?.target ? `${detaildata?.currentvalue/row?.target*100}%` : '0%'} 
                                             /></TableCell>
                                     </TableRow>
                                 </TableBody>
