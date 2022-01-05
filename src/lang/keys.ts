@@ -1532,6 +1532,8 @@ export const langKeys = {
     manageAgreement_plural: 'manageAgreement_plural',
     activeOrganization: 'activeOrganization',
     activeOrganization_plural: 'activeOrganization_plural',
+    activeProperty: 'activeProperty',
+    activeProperty_plural: 'activeProperty_plural',
     activeUser: 'activeUser',
     activeUser_plural: 'activeUser_plural',
     activeChannel: 'activeChannel',

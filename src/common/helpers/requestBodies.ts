@@ -580,11 +580,11 @@ export const getCommChannelLst = (): IRequestBody => ({
     }
 });
 
-export const getValuesForTree = (): IRequestBody => ({
+export const getValuesForTree = (type="QUICKREPLY"): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     parameters: {
-        type: 'QUICKREPLY'
+        type
     }
 });
 

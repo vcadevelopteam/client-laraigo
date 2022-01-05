@@ -1524,6 +1524,8 @@ const translation: LangKeys = {
     manageAgreement_plural: 'Manage agreements',
     activeOrganization: 'Active organization',
     activeOrganization_plural: 'Active organizations',
+    activeProperty: 'Active property',
+    activeProperty_plural: 'Active properties',
     activeUser: 'Active user',
     activeUser_plural: 'Active users',
     activeChannel: 'Active channel',
