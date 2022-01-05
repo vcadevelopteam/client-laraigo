@@ -563,7 +563,7 @@ export const getPaginatedPerson = ({ skip, take, filters, sorts, startdate, endd
     }
 })
 //tabla paginada
-export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictionary): IRequestBody => ({
+export const getPersonExport = ({ filters, sorts, startdate, enddate, userids, personcommunicationchannels }: Dictionary): IRequestBody => ({
     method: "UFN_PERSON_EXPORT",
     key: "UFN_PERSON_EXPORT",
     parameters: {
@@ -572,7 +572,9 @@ export const getPersonExport = ({ filters, sorts, startdate, enddate }: Dictiona
         startdate,
         enddate,
         sorts,
-        offset: (new Date().getTimezoneOffset() / 60) * -1
+        offset: (new Date().getTimezoneOffset() / 60) * -1,
+        userids,
+        personcommunicationchannels, // channel types
     }
 });
 
@@ -2359,6 +2361,12 @@ export const billingNotificationIns = ({ year, month, countrycode, id, vcacomiss
     parameters: { year, month, countrycode, id, vcacomission, c250000, c750000, c2000000, c3000000, c4000000, c5000000, c10000000, c25000000, description, status, type, operation }
 })
 
+/**bloquear o desbloquear personas de forma masiva */
+export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid: number, personcommunicationchannel: string, locked: boolean}[]) => ({
+    method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
+    key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
+    parameters: { table: JSON.stringify(table) },
+});
 export const getBillingPeriodCalcRefreshAll = () => ({
     method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
     key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",

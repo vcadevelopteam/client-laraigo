@@ -600,6 +600,14 @@ const CRM: FC = () => {
   }, [mainPaginated]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+    const columnsExport = [
+      ...columns.filter(x => !x.isComponent && x.accessor != 'comments').map(x => ({
+        key: x.accessor,
+        alias: x.Header,
+      })),
+      { key: 'notedescription', alias: t(langKeys.notedescription) }, // parte de la columna comments
+      { key: 'activitydescription', alias: t(langKeys.activitydescription) }, // parte de la columna comments
+    ];
     dispatch(exportData(getLeadExport(
       {
         startdate: daterange.startDate!,
@@ -607,7 +615,7 @@ const CRM: FC = () => {
         sorts: sorts,
         filters: filters,
         ...allParameters
-    })));  
+      }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };
