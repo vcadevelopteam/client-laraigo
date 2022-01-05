@@ -600,6 +600,10 @@ const CRM: FC = () => {
   }, [mainPaginated]);
 
   const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+    const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+      key: x.accessor,
+      alias: x.Header,
+    }));
     dispatch(exportData(getLeadExport(
       {
         startdate: daterange.startDate!,
@@ -607,7 +611,7 @@ const CRM: FC = () => {
         sorts: sorts,
         filters: filters,
         ...allParameters
-    })));  
+      }), "", "excel", false, columnsExport));
     dispatch(showBackdrop(true));
     setWaitExport(true);
   };

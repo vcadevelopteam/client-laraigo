@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel, personcommunicationchannelUpdateLockedArrayIns } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
@@ -396,7 +396,6 @@ export const Person: FC = () => {
     const [waitExport, setWaitExport] = useState(false);
     const [waitImport, setWaitImport] = useState(false);
     const [filterAgents, setFilterAgents] = useState('');
-    const [filterChannelsType, setFilterChannelType] = useState('')
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
@@ -404,7 +403,9 @@ export const Person: FC = () => {
     const phases = useSelector(state => state.lead.leadPhases);
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
-    const params = useQueryParams(query);
+    const params = useQueryParams(query, { ignore: ['channelTypes'] });
+
+    const [filterChannelsType, setFilterChannelType] = useState(query.get('channelTypes') || '');
 
     const goToPersonDetail = (person: IPerson) => {
         history.push({
@@ -468,7 +469,7 @@ export const Person: FC = () => {
         },
         {
             Header: t(langKeys.lastuser),
-            accesor: 'lastuser',
+            accessor: 'lastuser',
         },
         {
             Header: t(langKeys.lead),
@@ -558,13 +559,19 @@ export const Person: FC = () => {
     }
 
     const triggerExportData = ({ filters, sorts, daterange }: IFetchData) => {
+        const columnsExport = columns.filter(x => !x.isComponent).map(x => ({
+            key: x.accessor,
+            alias: x.Header,
+        }));
         dispatch(exportData(getPersonExport(
             {
                 startdate: daterange.startDate!,
                 enddate: daterange.endDate!,
                 sorts,
-                filters: filters
-            })));
+                filters: filters,
+                userids: '',
+                personcommunicationchannels: filterChannelsType,
+            }), "", "excel", false, columnsExport));
         dispatch(showBackdrop(true));
         setWaitExport(true);
     };
@@ -708,23 +715,24 @@ export const Person: FC = () => {
         }
     }
 
-    // const handleLock = () => {
-    //     if (person) {
-    //         const callback = () => {
-    //             setValue('locked', !getValues('locked'));
-    //             trigger('locked');
-    //             dispatch(execute(insPersonUpdateLocked({ ...person, locked: !person.locked })));
-    //             dispatch(showBackdrop(true));
-    //             setWaitLock(true);
-    //         }
+    const handleLock = (type: "LOCK" | "UNLOCK") => {
+        const callback = () => {
+            const data = personsSelected.map(p => ({
+                personid: p.personid,
+                personcommunicationchannel: p.personcommunicationchannel,
+                locked: type === "LOCK",
+            }));
+            dispatch(execute(personcommunicationchannelUpdateLockedArrayIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitImport(true);
+        }
 
-    //         dispatch(manageConfirmation({
-    //             visible: true,
-    //             question: getValues('locked') ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
-    //             callback
-    //         }))
-    //     }
-    // }
+        dispatch(manageConfirmation({
+            visible: true,
+            question: type === "UNLOCK" ? t(langKeys.confirmation_person_unlock) : t(langKeys.confirmation_person_lock),
+            callback
+        }));
+    }
 
     useEffect(() => {
         if (waitImport) {
@@ -764,6 +772,7 @@ export const Person: FC = () => {
                             data={domains.value?.channels || []}
                             optionValue="type"
                             optionDesc="communicationchanneldesc"
+                            valueDefault={filterChannelsType}
                         />
                     </div>
                 </Grid>
@@ -775,7 +784,7 @@ export const Person: FC = () => {
                             color="primary"
                             disabled={personList.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LockIcon color="secondary" />}
-                            // onClick={handleLock}
+                            onClick={() => handleLock("LOCK")}
                         >
                             <Trans i18nKey={langKeys.lock} />
                         </Button>
@@ -785,7 +794,7 @@ export const Person: FC = () => {
                             color="primary"
                             disabled={personList.loading || Object.keys(selectedRows).length === 0}
                             startIcon={<LockOpenIcon color="secondary" />}
-                            // onClick={handleLock}
+                            onClick={() => handleLock("UNLOCK")}
                         >
                             <Trans i18nKey={langKeys.unlock} />
                         </Button>
@@ -863,6 +872,7 @@ export const Person: FC = () => {
                 onFilterChange={f => {
                     console.log('Persons::onFilterChange', f);
                     const params = buildQueryFilters(f);
+                    if (filterChannelsType !== '') params.append('channelTypes', filterChannelsType);
                     history.push({ search: params.toString() });
                 }}
                 initialEndDate={params.endDate}
