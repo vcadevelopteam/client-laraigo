@@ -1760,6 +1760,9 @@ export const langKeys = {
     supportplandetail: "supportplandetail",
     costcommentary: "costcommentary",
     confirmation_calculate: 'confirmation_calculate',
+
+    notedescription: 'notedescription',
+    activitydescription: 'activitydescription',
 };
 
 export type LangKeys = typeof langKeys;
