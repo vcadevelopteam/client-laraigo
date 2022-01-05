@@ -310,7 +310,7 @@ const DialogInteractions: React.FC<{ ticket: Dictionary | null, openModal: boole
     const el = React.useRef<null | HTMLDivElement>(null);
 
     useEffect(() => {
-        if (ticket)
+        if (ticket && openModal)
             dispatch(getInteractions(ticket?.conversationid, false, 0));
     }, [ticket])
 
