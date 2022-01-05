@@ -1232,7 +1232,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll()));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(3.968)));
             dispatch(showBackdrop(true));
             setWaitSave(true)
         }

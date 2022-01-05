@@ -1740,7 +1740,7 @@ const translation: LangKeys = {
     notificationcostdetail: "Detalle de Costo Basado en Notificación",
     supportplandetail: "Detalle de Plan de Soporte",
     costcommentary: "Lista de precios vigente a partir de febrero del 2021",
-    confirmation_calculate: '¿Estas seguro que quieres recalcular la data para el mes actual?',
+    confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
 };
 
 const esResource: ResourceLanguage = {
