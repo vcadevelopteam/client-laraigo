@@ -1168,6 +1168,8 @@ export const langKeys = {
     emoji_name: 'emoji_name',
     emoji_category_name: 'emoji_category_name',
     emoji_favorites: 'emoji_favorites',
+    emoji_removefavorites: 'emoji_removefavorites',
+    emoji_removerestricted: 'emoji_removerestricted',
     emoji_restricted: 'emoji_restricted',
     emoji_message_favorites: 'emoji_message_favorites',
     emoji_message_restricted: 'emoji_message_restricted',

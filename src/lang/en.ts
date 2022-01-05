@@ -1134,8 +1134,10 @@ const translation: LangKeys = {
 
     emoji_name: 'Name',
     emoji_category_name: 'Category',
-    emoji_favorites: 'Favorites',
-    emoji_restricted: 'Restricted',
+    emoji_favorites: 'Add Favorite',
+    emoji_removefavorites: 'Remove Favorite',
+    emoji_restricted: 'Add Restricted',
+    emoji_removerestricted: 'Remove Restricted',
     emoji_message_favorites: 'You want to send the emoji as a favorite to all organizations and channels',
     emoji_message_restricted: 'You want to restrict the emoji to all organizations and channels',
 

@@ -1068,8 +1068,10 @@ const translation: LangKeys = {
 
     emoji_name: 'Nombre',
     emoji_category_name: 'Categoría',
-    emoji_favorites: 'Favoritos',
-    emoji_restricted: 'Restringidos',
+    emoji_favorites: 'Añadir Favorito',
+    emoji_removefavorites: 'Remover Favorito',
+    emoji_restricted: 'Añadir Restringido',
+    emoji_removerestricted: 'Remover Restringido',
     emoji_message_favorites: 'Usted desea enviar el emoji como favorito a todas las organizaciones y canales',
     emoji_message_restricted: 'Usted desea restringir el emoji a todas las organizaciones y canales',
 
