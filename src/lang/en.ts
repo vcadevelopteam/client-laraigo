@@ -714,6 +714,8 @@ const translation: LangKeys = {
     variableconfiguration_plural: 'Variable Configuration',
     flow: 'Flow',
     color: 'Color',
+    suspend_ticket: 'Suspend ticket',
+    activate_ticket: 'Activate ticket',
     bold: 'Bold',
     tos: "By signing up you accept our terms of use and ",
     signupstep1title2: 'Complete Personal and Business Information',
@@ -1067,6 +1069,8 @@ const translation: LangKeys = {
     send_mail: 'Send Mail',
     send_sms: 'Send SMS',
     successful_close_ticket: 'Ticket closed successfully',
+    successful_suspend_ticket: 'Ticket suspended successfully',
+    successful_reactivate_ticket: 'Ticket reactivated successfully',
     
     successful_send_hsm: 'HSM sent successfully',
     successful_send_sms: 'SMS sent successfully',
@@ -1768,6 +1772,9 @@ const translation: LangKeys = {
     supportplandetail: "Support Plan detail",
     costcommentary: "Price list valid as of February 2021",
     confirmation_calculate: 'Are you sure you want to calculate the data for the current month?',
+
+    notedescription: 'Note description',
+    activitydescription: 'Activity description',
 };
 
 const enResource: ResourceLanguage = {

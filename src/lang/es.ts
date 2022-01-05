@@ -876,6 +876,10 @@ const translation: LangKeys = {
     pay: 'Pagar',
 
     successful_close_ticket: 'El ticket fue cerrado satisfactoriamente',
+    
+    successful_suspend_ticket: 'El ticket fue suspendido satisfactoriamente',
+    successful_reactivate_ticket: 'El ticket fue reactivado satisfactoriamente',
+
     successful_tipify_ticket: 'El ticket se clasificó satisfactoriamente',
     successful_reasign_ticket: 'El ticket se reasignó satisfactoriamente',
     confirmation_reasign_with_reply: 'Si confirma enviar el mensaje el ticket se asignará a su bandeja.',
@@ -1558,6 +1562,10 @@ const translation: LangKeys = {
     dueDate: 'Fecha de vencimiento',
     assignedTo: 'Asignado a',
     schedule: 'Programar',
+
+    suspend_ticket: 'Suspender ticket',
+    activate_ticket: 'Activar ticket',
+
     markAsDone: 'Marcar como realizado',
     doneAndScheduleNext: 'Marcar como realizado y programar siguiente actividad',
     discard: 'Descartar',
@@ -1756,6 +1764,9 @@ const translation: LangKeys = {
     supportplandetail: "Detalle de Plan de Soporte",
     costcommentary: "Lista de precios vigente a partir de febrero del 2021",
     confirmation_calculate: '¿Estas seguro que quieres recalcular la data para el mes actual?',
+
+    notedescription: 'Descripción de la nota',
+    activitydescription: 'Descripción de la actividad',
 };
 
 const esResource: ResourceLanguage = {

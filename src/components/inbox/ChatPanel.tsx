@@ -9,9 +9,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
-import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson } from 'store/inbox/actions';
+import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipificationLevel3, getTipificationLevel3, showInfoPanel, closeTicket, reassignTicket, emitEvent, sendHSM, updatePerson, changeStatusTicket } from 'store/inbox/actions';
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
-import { insertClassificationConversation, insLeadPerson } from 'common/helpers';
+import { changeStatus, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
 import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect } from 'components'
 import { langKeys } from 'lang/keys';
@@ -156,7 +156,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             open={openModal}
             title={t(langKeys.send_hsm)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -196,10 +196,17 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
         </DialogZyx>)
 }
 
-const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean }> = ({ setOpenModal, openModal }) => {
+const DialogCloseticket: React.FC<{
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    status?: string;
+}> = ({ setOpenModal, openModal, status = "CERRADO" }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
+    const [waitOther, setWaitOther] = useState(false);
+    const changeStatusRes = useSelector(state => state.main.execute);
+
     const multiData = useSelector(state => state.main.multiData);
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const userType = useSelector(state => state.inbox.userType);
@@ -234,6 +241,25 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
     }, [closingRes, waitClose])
 
     useEffect(() => {
+        if (waitOther) {
+            if (!changeStatusRes.loading && !changeStatusRes.error) {
+                
+                dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
+                dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
+                
+                setOpenModal(false);
+                dispatch(showBackdrop(false));
+                setWaitOther(false);
+            } else if (changeStatusRes.error) {
+                const message = t(changeStatusRes.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitOther(false);
+            }
+        }
+    }, [changeStatusRes, waitOther])
+
+    useEffect(() => {
         if (openModal) {
             reset({
                 motive: '',
@@ -245,40 +271,51 @@ const DialogCloseticket: React.FC<{ setOpenModal: (param: any) => void, openModa
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-        const dd: ICloseTicketsParams = {
-            conversationid: ticketSelected?.conversationid!!,
-            motive: data.motive,
-            observation: data.observation,
-            ticketnum: ticketSelected?.ticketnum!!,
-            personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
-            communicationchannelsite: ticketSelected?.communicationchannelsite!!,
-            communicationchanneltype: ticketSelected?.communicationchanneltype!!,
-            status: 'CERRADO',
-            isAnswered: false,
+        if (status === "CERRADO") {
+            const dd: ICloseTicketsParams = {
+                conversationid: ticketSelected?.conversationid!!,
+                motive: data.motive,
+                observation: data.observation,
+                ticketnum: ticketSelected?.ticketnum!!,
+                personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
+                communicationchannelsite: ticketSelected?.communicationchannelsite!!,
+                communicationchanneltype: ticketSelected?.communicationchanneltype!!,
+                status: 'CERRADO',
+                isAnswered: false,
+            }
+            dispatch(showBackdrop(true));
+            dispatch(closeTicket(dd));
+            setWaitClose(true)
+        } else {
+            dispatch(showBackdrop(true));
+            dispatch(execute(changeStatus({
+                conversationid: ticketSelected?.conversationid!!,
+                status,
+                obs: data.observation,
+                motive: data.motive
+            })))
+            setWaitOther(true)
         }
-        dispatch(showBackdrop(true));
-        dispatch(closeTicket(dd));
-        setWaitClose(true)
     });
 
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.close_ticket)}
+            title={status === "CERRADO" ? t(langKeys.close_ticket) : (status === 'ASIGNADO' ? t(langKeys.activate_ticket) : t(langKeys.suspend_ticket))}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
         >
             <div className="row-zyx">
                 <FieldSelect
-                    label={t(langKeys.closing_reason)}
+                    label={t(langKeys.ticket_reason)}
                     className="col-12"
                     valueDefault={getValues('motive')}
                     onChange={(value) => setValue('motive', value ? value.domainvalue : '')}
                     error={errors?.motive?.message}
-                    data={multiData?.data[0] && multiData?.data[0].data}
+                    data={(status === "CERRADO" ? multiData?.data?.[0]?.data || [] : multiData?.data?.[8]?.data || [])}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -378,7 +415,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
             open={openModal}
             title={t(langKeys.reassign_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -400,7 +437,7 @@ const DialogReassignticket: React.FC<{ setOpenModal: (param: any) => void, openM
                     valueDefault={getValues('newUserGroup')}
                     onChange={(value) => setValue('newUserGroup', value ? value.domainvalue : '')}
                     error={errors?.newUserGroup?.message}
-                    data={multiData?.data[3] && multiData?.data[3].data}
+                    data={multiData?.data?.[3] && multiData?.data[3].data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -506,7 +543,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             open={openModal}
             title={t(langKeys.newlead)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -556,7 +593,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     valueDefault={getValues('products')}
                     onChange={(value) => setValue('products', value.map((o: Dictionary) => o.domainvalue).join())}
                     error={errors?.products?.message}
-                    data={multiData?.data[7] && multiData?.data[7].data}
+                    data={multiData?.data[7] && multiData?.data[7]?.data}
                     optionDesc="domaindesc"
                     optionValue="domainvalue"
                 />
@@ -734,30 +771,35 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     const [openModalCloseticket, setOpenModalCloseticket] = useState(false);
     const [openModalReassignticket, setOpenModalReassignticket] = useState(false);
     const [openModalTipification, setOpenModalTipification] = useState(false);
+    const [typeStatus, setTypeStatus] = useState('');
     const [openModalLead, setOpenModalLead] = useState(false);
     const [openModalHSM, setOpenModalHSM] = useState(false);
-    const closeTicket = () => setOpenModalCloseticket(true);
+
+    const closeTicket = (newstatus: string) => {
+        setOpenModalCloseticket(true);
+        setTypeStatus(newstatus);
+    };
 
     return (
         <>
             <div className={classes.containerButtonsChat}>
-                {/* {ticketSelected?.status === 'SUSPENDIDO' &&
-                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                        <IconButton onClick={closeTicket}>
+                {ticketSelected?.status === 'SUSPENDIDO' &&
+                    <Tooltip title={t(langKeys.activate_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => closeTicket("ASIGNADO")}>
                             <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
                 }
                 {ticketSelected?.status === 'ASIGNADO' &&
-                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                        <IconButton onClick={closeTicket}>
+                    <Tooltip title={t(langKeys.suspend_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={() => closeTicket("SUSPENDIDO")}>
                             <PauseIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
-                } */}
+                }
                 {ticketSelected?.status !== 'CERRADO' &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
-                        <IconButton onClick={closeTicket}>
+                        <IconButton onClick={() => closeTicket("CERRADO")}>
                             <CloseTicketIcon width={24} height={24} fill="#8F92A1" />
                         </IconButton>
                     </Tooltip>
@@ -838,6 +880,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
             <DialogCloseticket
                 openModal={openModalCloseticket}
                 setOpenModal={setOpenModalCloseticket}
+                status={typeStatus}
             />
             <DialogReassignticket
                 openModal={openModalReassignticket}

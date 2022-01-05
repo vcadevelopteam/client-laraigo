@@ -206,4 +206,5 @@ export default createReducer<IState>(initialState, {
     [actionTypes.FORCEDDISCONECTION]: caseFunctions.forceddesconection,
     [actionTypes.FORCEDDISCONECTION_RESET]: caseFunctions.resetForceddesconection,
     [actionTypes.RESET_INBOX_SUPERVISOR]: caseFunctions.resetInboxSupervisor,
+    [actionTypes.CHANGE_STATUS_TICKET]: caseFunctions.changeStatusTicket,
 });
