@@ -198,12 +198,6 @@ export const subroutes: RouteConfig[] = [
         path: paths.QUICKREPLIES,
     },
     {
-        key: paths.WHITELIST,
-        description: <Trans i18nKey={langKeys.whitelist} />,
-        tooltip: "",
-        path: paths.WHITELIST,
-    },
-    {
         key: paths.INPUTVALIDATION,
         description: <Trans i18nKey={langKeys.inputvalidation} />,
         tooltip: "",
