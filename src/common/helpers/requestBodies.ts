@@ -149,6 +149,15 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         orgid: orgid || undefined
     }
 });
+// solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
+export const getValuesFromDomainLight = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
+    method: "UFN_DOMAIN_LST_VALUES_ONLY_DATA",
+    key: "UFN_DOMAIN_LST_VALUES_ONLY_DATA" + (keytmp || ""),
+    parameters: {
+        domainname,
+        orgid: orgid || undefined
+    }
+});
 
 export const getValuesFromDomainCorp = (domainname: string, keytmp?: any, corpid?: number | null, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
@@ -582,11 +591,11 @@ export const getCommChannelLst = (): IRequestBody => ({
     }
 });
 
-export const getValuesForTree = (): IRequestBody => ({
+export const getValuesForTree = (type="QUICKREPLY"): IRequestBody => ({
     method: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     key: "UFN_CLASSIFICATION_QUICKREPLYTREE_SEL",
     parameters: {
-        type: 'QUICKREPLY'
+        type
     }
 });
 
@@ -603,6 +612,11 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
         id: id,
         all: id === 0,
     }
+});
+
+export const getMessageTemplateLst = (): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_LST",
+    parameters: {}
 });
 
 export const insMessageTemplate = (
@@ -2352,4 +2366,9 @@ export const personcommunicationchannelUpdateLockedArrayIns = (table: {personid:
     method: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     key: "UFN_PERSONCOMMUNICATIONCHANNEL_UPDATE_LOCKED_ARRAY",
     parameters: { table: JSON.stringify(table) },
+});
+export const getBillingPeriodCalcRefreshAll = () => ({
+    method: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    key: "UFN_BILLINGPERIOD_CALC_REFRESHALL",
+    parameters: {},
 });

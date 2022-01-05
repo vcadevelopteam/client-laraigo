@@ -556,7 +556,7 @@ const Tipifications: FC = () => {
             getValuesFromDomain("ESTADOGENERICO"),
             getParentSel(),
             getValuesFromDomain("TIPOCANAL"),
-            getValuesForTree()
+            getValuesForTree("TIPIFICACION")
         ]));
         return () => {
             dispatch(resetAllMain());

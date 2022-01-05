@@ -28,7 +28,10 @@ export const langKeys = {
     evidenceofpayment: "evidenceofpayment",
     additional_information: 'additional_information',
     id_payment: 'id_payment',
+    resume: "resume",
+    quickresponse: "quickresponse",
     lowesttime: "lowesttime",
+    emoticons: "emoticons",
     higuesttime: "higuesttime",
     timemin: "timemin",
     timemax: "timemax",
@@ -490,6 +493,7 @@ export const langKeys = {
 
     changePassword: 'changePassword',
     status_history: 'status_history',
+    ready_to_close: 'ready_to_close',
 
     user: 'user',
     user_plural: 'user_plural',
@@ -1165,6 +1169,8 @@ export const langKeys = {
     emoji_name: 'emoji_name',
     emoji_category_name: 'emoji_category_name',
     emoji_favorites: 'emoji_favorites',
+    emoji_removefavorites: 'emoji_removefavorites',
+    emoji_removerestricted: 'emoji_removerestricted',
     emoji_restricted: 'emoji_restricted',
     emoji_message_favorites: 'emoji_message_favorites',
     emoji_message_restricted: 'emoji_message_restricted',
@@ -1527,6 +1533,8 @@ export const langKeys = {
     manageAgreement_plural: 'manageAgreement_plural',
     activeOrganization: 'activeOrganization',
     activeOrganization_plural: 'activeOrganization_plural',
+    activeProperty: 'activeProperty',
+    activeProperty_plural: 'activeProperty_plural',
     activeUser: 'activeUser',
     activeUser_plural: 'activeUser_plural',
     activeChannel: 'activeChannel',
@@ -1743,6 +1751,15 @@ export const langKeys = {
     tmrAgent: 'tmrAgent',
     initialAgent: 'initialAgent',
     finalAgent: 'finalAgent',
+
+    costperperioddetail: "costperperioddetail",
+    costbasedonthesupportplan: "costbasedonthesupportplan",
+    contractedplandetail: "contractedplandetail",
+    conversationcostdetail: "conversationcostdetail",
+    notificationcostdetail: "notificationcostdetail",
+    supportplandetail: "supportplandetail",
+    costcommentary: "costcommentary",
+    confirmation_calculate: 'confirmation_calculate',
 };
 
 export type LangKeys = typeof langKeys;

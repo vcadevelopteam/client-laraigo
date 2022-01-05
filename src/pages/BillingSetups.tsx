@@ -4,7 +4,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateSwitch, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, IOSSwitch } from 'components';
-import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns,billingPeriodUpd, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomain, getValuesFromDomainCorp } from 'common/helpers';
+import { billingSupportIns, getBillingConfigurationSel,getBillingPeriodCalc,billingpersonreportsel,billinguserreportsel, getBillingSupportSel, getPlanSel, getPaymentPlanSel, billingConfigurationIns, getBillingConversationSel, billingConversationIns, getBillingNotificationSel, billingNotificationIns, getBillingPeriodSel, getOrgSelList, getCorpSel, getBillingPeriodHSMSel, billingPeriodHSMUpd, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, getLocaleDateString, getAppsettingInvoiceSel, updateAppsettingInvoice, getValuesFromDomain, getValuesFromDomainCorp } from 'common/helpers';
 import { Dictionary, MultiData } from "@types";
 import TableZyx from '../components/fields/table-simple';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
@@ -53,22 +53,6 @@ interface DetailSupportPlanProps2 {
 
 const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
 
-const arrayBread = [
-    { id: "view-1", name: "Support Plan" },
-    { id: "view-2", name: "Support Plan detail" }
-];
-const arrayBreadContractedPlan = [
-    { id: "view-1", name: "Contracted Plan" },
-    { id: "view-2", name: "Contracted Plan detail" }
-];
-const arrayBreadConversationCost = [
-    { id: "view-1", name: "Conversation Cost" },
-    { id: "view-2", name: "Conversation Cost detail" }
-];
-const arrayBreadCostPerPeriod = [
-    { id: "view-1", name: "Cost Per Period" },
-    { id: "view-2", name: "Cost Per Period detail" }
-];
 const arrayBreadCostPerHSMPeriod = [
     { id: "view-1", name: "Cost Per HSM Period" },
     { id: "view-2", name: "Cost Per HSM Period detail" }
@@ -141,929 +125,13 @@ const useStyles = makeStyles((theme) => ({
         width: 220,
     },
     transparent: {
-        color:"transparent"
+        color:"transparent",
+    },
+    commentary: {
+        fontStyle:"italic"
     }
 }));
 
-const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
-    )
-    
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            id: row? row.billingsupportid : 0,
-            startdate: row?.startdate || new Date(new Date().setDate(1)),
-            enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            plan: row?.plan||"",
-            basicfee: row?.basicfee||0,
-            starttime: row?.starttime || new Date().getTime(),
-            finishtime: row?.finishtime || new Date().getTime(),
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            description: row? row.description : '',
-            operation: row? "UPDATE" : "INSERT",
-        }
-    });
-
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            let startdate = new Date(year, mes-1, 1)
-            let enddate = new Date(year, mes, 0)
-            setValue('startdate',startdate)
-            setValue('enddate',enddate)
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
-        }
-    }
-
-    React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
-        register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingSupportIns(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBread}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newsupportplan)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                label={t(langKeys.description)}
-                                onChange={(value) => setValue('description', value)}
-                                valueDefault={getValues('description')}
-                                error={errors?.description?.message}
-                                className="col-6"
-                            />
-                            <TextField
-                                id="date"
-                                className="col-6"
-                                type="month"
-                                variant="outlined"
-                                onChange={(e)=>handleDateChange(e.target.value)}
-                                value={datetoshow}
-                                size="small"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldSelect
-                                label="Plan"
-                                className="col-6"
-                                valueDefault={getValues("plan")}
-                                onChange={(value) => setValue('plan',value.description)}
-                                data={dataPlan}
-                                optionDesc="description"
-                                optionValue="description"
-                                error={errors?.plan?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.supportprice)}
-                                onChange={(value) => setValue('basicfee', value)}
-                                valueDefault={getValues('basicfee')}
-                                error={errors?.basicfee?.message}
-                                type="number"
-                                className="col-6"
-                            />
-                    </div>
-                    <div className="row-zyx">
-                            <FieldEdit
-                                type="time"
-                                label={t(langKeys.starttime)}
-                                error={errors?.starttime?.message}
-                                className="col-6"
-                                onChange={(value) => setValue('starttime', value)}
-                                valueDefault={getValues("starttime")}
-                            />
-                            <FieldEdit
-                                type="time"
-                                label={t(langKeys.finishtime)}
-                                error={errors?.finishtime?.message}
-                                className="col-6"
-                                onChange={(value) => setValue('finishtime', value)}
-                                valueDefault={getValues("finishtime")}
-                            />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
-const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const [checkedaux, setCheckedaux] = useState(row?.allowhsm||false);
-    const executeRes = useSelector(state => state.main.execute);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const [datetoshow, setdatetoshow] = useState(
-        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
-    )
-    
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {
-            id: row?.billingconfigurationid || 0,
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            plan: row?.plan||"",
-            basicfee: row?.basicfee||0,
-            userfreequantity: row?.userfreequantity||0,
-            channelfreequantity: row?.channelfreequantity||0,
-            clientfreequantity: row?.clientfreequantity||0,
-            useradditionalfee: row?.useradditionalfee||0,
-            channelwhatsappfee: row?.channelwhatsappfee||0,
-            clientadditionalfee: row?.clientadditionalfee||0,
-            channelotherfee: row?.channelotherfee||0,
-            hsmfee: row?.hsmfee||0,
-            allowhsm: row?.allowhsm||false,
-            status: row? row.status : 'ACTIVO',
-            type: row? row.type : '',
-            description: row? row.description : '',
-            operation: row? "UPDATE" : "INSERT",
-        }
-    });
-
-    function handleDateChange(e: any){
-        if(e!==""){
-            let datetochange = new Date(e+"-02")
-            let mes = datetochange?.getMonth()+1
-            let year = datetochange?.getFullYear()
-            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
-            setValue('year',year)
-            setValue('month',mes)
-        }
-    }
-
-    React.useEffect(() => {
-        register('id');
-        register('type');
-        register('status');
-        register('year');
-        register('month');
-        register('operation');
-        register('allowhsm');
-        register('channelotherfee');
-        register('description');
-        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('userfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('channelfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('useradditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('channelwhatsappfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('clientadditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-        register('hsmfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingConfigurationIns(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadContractedPlan}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row? `${row.description}` : t(langKeys.newcontractedplanbyperiod)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <TextField
-                            id="date"
-                            className="col-6"
-                            type="month"
-                            variant="outlined"
-                            onChange={(e)=>handleDateChange(e.target.value)}
-                            value={datetoshow}
-                            size="small"
-                        />
-                        <FieldSelect
-                            label="Plan"
-                            className="col-6"
-                            valueDefault={getValues("plan")}
-                            onChange={(value) => setValue('plan',value.plan)}
-                            data={dataPlan}
-                            optionDesc="plan"
-                            optionValue="plan"
-                            error={errors?.plan?.message}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.costbasedonthecontractedplan)}
-                            onChange={(value) => setValue('basicfee', value)}
-                            valueDefault={getValues('basicfee')}
-                            error={errors?.basicfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        
-                        <FieldEdit
-                            label={t(langKeys.numberofagentshired)}
-                            onChange={(value) => setValue('userfreequantity', value)}
-                            valueDefault={getValues('userfreequantity')}
-                            error={errors?.userfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.useradditionalfee)}
-                            onChange={(value) => setValue('useradditionalfee', value)}
-                            valueDefault={getValues('useradditionalfee')}
-                            error={errors?.useradditionalfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.channelfreequantity)}
-                            onChange={(value) => setValue('channelfreequantity', value)}
-                            valueDefault={getValues('channelfreequantity')}
-                            error={errors?.channelfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.channelwhatsappfee)}
-                            onChange={(value) => setValue('channelwhatsappfee', value)}
-                            valueDefault={getValues('channelwhatsappfee')}
-                            error={errors?.channelwhatsappfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.clientfreequantity)}
-                            onChange={(value) => setValue('clientfreequantity', value)}
-                            valueDefault={getValues('clientfreequantity')}
-                            error={errors?.clientfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.clientadditionalfee)}
-                            onChange={(value) => setValue('clientadditionalfee', value)}
-                            valueDefault={getValues('clientadditionalfee')}
-                            error={errors?.clientadditionalfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
-                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
-                            <FormControlLabel
-                                style={{paddingLeft:10}}
-                                control={<IOSSwitch checked={checkedaux}  onChange={(e) => {setCheckedaux(e.target.checked) ;setValue('allowhsm', e.target.checked)}} />}
-                                label={""}
-                            />                        
-                        </div>
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.hsmfee)}
-                            onChange={(value) => setValue('hsmfee', value)}
-                            valueDefault={getValues('hsmfee')}
-                            error={errors?.hsmfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.channelotherfee)}
-                            onChange={(value) => setValue('channelotherfee', value)}
-                            valueDefault={getValues('channelotherfee')}
-                            error={errors?.channelotherfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                </div>
-            </form>
-        </div>
-    );
-}
-
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const [pageSelected, setPageSelected] = useState(0);
-    
-    
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
-
-    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
-        defaultValues: {            
-            corpid: row?.corpid||0,
-            orgid: row?.orgid||0,
-            corpdesc: row?.corpdesc||"",
-            orgdesc: row?.orgdesc||"",
-            year: row?.year ||new Date().getFullYear(),
-            month: row?.month ||new Date().getMonth() + 1,
-            billingplan: row?.billingplan || "",
-            supportplan: row?.supportplan || "",
-            basicfee: row?.basicfee||0,
-            userfreequantity: row?.userfreequantity||0,
-            useradditionalfee : row?.useradditionalfee ||0,
-            supervisorquantity: row?.supervisorquantity||0,
-            asesorquantity: row?.asesorquantity||0,
-            userquantity: row?.userquantity||0,
-            useradditionalcharge: row?.useradditionalcharge||0,
-            channelfreequantity: row?.channelfreequantity||0,
-            channelwhatsappfee: row?.channelwhatsappfee||0,
-            channelwhatsappquantity: row?.channelwhatsappquantity||0,
-            channelwhatsappcharge: row?.channelwhatsappcharge||0,
-            channelotherfee: row?.channelotherfee||0,
-            channelotherquantity: row?.channelotherquantity||0,
-            channelothercharge: row?.channelothercharge||0,
-            channelcharge: row?.channelcharge||0,
-            clientfreequantity: row?.clientfreequantity||0,
-            clientquantity: row?.clientquantity||0,
-            clientadditionalfee: row?.clientadditionalfee||0,
-            clientadditionalcharge: row?.clientadditionalcharge||0,
-            conversationquantity: row?.conversationquantity||0,
-            conversationcompanywhatquantity: row?.conversationcompanywhatquantity||0,
-            conversationcompanywhatfee: row?.conversationcompanywhatfee||0,
-            conversationcompanywhatcharge: row?.conversationcompanywhatcharge||0,
-            conversationclientwhatquantity: row?.conversationclientwhatquantity||0,
-            conversationclientwhatfee: row?.conversationclientwhatfee||0,
-            conversationclientwhatcharge: row?.conversationclientwhatcharge||0,
-            conversationwhatcharge: row?.conversationwhatcharge||0,
-            interactionquantity: row?.interactionquantity||0,
-            supportbasicfee: row?.supportbasicfee||0,
-            additionalservicename1: row?.additionalservicename1||"",
-            additionalservicefee1: row?.additionalservicefee1||0,
-            additionalservicename2: row?.additionalservicename2||"",
-            additionalservicefee2: row?.additionalservicefee2||0,
-            additionalservicename3: row?.additionalservicename3||"",
-            additionalservicefee3: row?.additionalservicefee3||0,
-            force: row?.force||true
-            
-        }
-    });
-    React.useEffect(() => {
-        register('corpid');
-        register('orgid');
-        register('year');
-        register('month');
-        register('billingplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('supportplan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
-        register('basicfee');
-        register('userfreequantity');
-        register('useradditionalfee');
-        register('channelfreequantity');
-        register('channelwhatsappfee');
-        register('channelotherfee');
-        register('clientfreequantity');
-        register('clientadditionalfee');
-        register('supportbasicfee');
-        register('additionalservicename1');
-        register('additionalservicefee1');
-        register('additionalservicename2');
-        register('additionalservicefee2');
-        register('additionalservicename3');
-        register('additionalservicefee3');
-        register('force');
-    }, [edit, register]);
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    const onSubmit = handleSubmit((data) => {
-        const callback = () => {
-            dispatch(execute(billingPeriodUpd(data)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.confirmation_save),
-            callback
-        }))
-    });
-
-    return (
-        <div style={{ width: '100%' }}>
-            <form onSubmit={onSubmit}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <div>
-                        <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadCostPerPeriod}
-                            handleClick={setViewSelected}
-                        />
-                        <TitleDetail
-                            title={row? `${row.corpdesc} - ${row.orgdesc}` : t(langKeys.neworganization)}
-                        />
-                    </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        <Button
-                            variant="contained"
-                            type="button"
-                            color="primary"
-                            startIcon={<ClearIcon color="secondary" />}
-                            style={{ backgroundColor: "#FB5F5F" }}
-                            onClick={() => setViewSelected("view-1")}
-                        >{t(langKeys.back)}</Button>
-                        {edit &&
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                type="submit"
-                                startIcon={<SaveIcon color="secondary" />}
-                                style={{ backgroundColor: "#55BD84" }}
-                            >{t(langKeys.save)}
-                            </Button>
-                        }
-                    </div>
-                </div>
-                <Tabs
-                    value={pageSelected}
-                    indicatorColor="primary"
-                    variant="fullWidth"
-                    style={{ borderBottom: '1px solid #EBEAED', backgroundColor: '#FFF', marginTop: 8 }}
-                    textColor="primary"
-                    onChange={(_, value) => setPageSelected(value)}
-                >
-                    <AntTab label={t(langKeys.generalinformation)}/>
-                    <AntTab label={t(langKeys.agent_plural)}/>
-                    <AntTab label={t(langKeys.channel_plural)}/>
-                    <AntTab label={t(langKeys.contact_plural)}/>
-                    <AntTab label={t(langKeys.conversation)}/>
-                    <AntTab label="Extras"/>
-                </Tabs>
-                {pageSelected === 0  && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.corporation)}
-                            value={getValues("corpdesc")}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.organization)}
-                            value={getValues("orgdesc")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.year)}
-                            value={getValues("year")}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.month)}
-                            value={getValues("month")}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldSelect
-                            label={t(langKeys.billingplan)}
-                            className="col-6"
-                            valueDefault={getValues("billingplan")}
-                            variant="outlined"
-                            onChange={(value) => setValue('billingplan',value.plan)}
-                            data={dataPaymentPlanList}
-                            error={errors?.billingplan?.message}
-                            optionDesc="plan"
-                            optionValue="plan"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.supportplan)}
-                            className="col-6"
-                            valueDefault={getValues("supportplan")}
-                            variant="outlined"
-                            onChange={(value) => setValue('supportplan',value.description)}
-                            data={dataPlanList}
-                            error={errors?.supportplan?.message}
-                            optionDesc="description"
-                            optionValue="description"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.costbasedonthecontractedplan)}
-                            onChange={(value) => setValue('basicfee', value)}
-                            valueDefault={getValues('basicfee')}
-                            error={errors?.basicfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                </div>}
-                {pageSelected === 1 && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.numberofagentshired)}
-                            onChange={(value) => setValue('userfreequantity', value)}
-                            valueDefault={getValues('userfreequantity')}
-                            error={errors?.userfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.numberofactiveadvisers)}
-                            value={String(getValues("asesorquantity"))}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.useradditionalfee)}
-                            onChange={(value) => setValue('useradditionalfee', value)}
-                            valueDefault={getValues('useradditionalfee')}
-                            error={errors?.useradditionalfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.numberofactivesupervisors)}
-                            value={String(getValues("supervisorquantity"))}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.useradditionalcharge)}
-                            value={getValues("useradditionalcharge").toFixed(2)}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.numberofactiveagents)}
-                            value={String(getValues("userquantity"))}
-                        />
-                    </div>
-                </div>}
-                {pageSelected === 2  && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.channelfreequantity)}
-                            onChange={(value) => setValue('channelfreequantity', value)}
-                            valueDefault={getValues('channelfreequantity')}
-                            error={errors?.channelfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelotherquantity)}
-                            value={getValues("channelotherquantity").toString()}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.channelwhatsappfee)}
-                            onChange={(value) => setValue('channelwhatsappfee', value)}
-                            valueDefault={getValues('channelwhatsappfee')}
-                            error={errors?.channelwhatsappfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={t(langKeys.channelotherfee)}
-                            onChange={(value) => setValue('channelotherfee', value)}
-                            valueDefault={getValues('channelotherfee')}
-                            error={errors?.channelotherfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelwhatsappquantity)}
-                            value={getValues("channelwhatsappquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelothercharge)}
-                            value={getValues("channelothercharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelwhatsappcharge)}
-                            value={getValues("channelwhatsappcharge").toFixed(2)}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.channelcharge)}
-                            value={getValues("channelcharge").toFixed(2)}
-                        />
-                    </div>
-                </div>}
-                {pageSelected === 3  && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.clientfreequantity)}
-                            onChange={(value) => setValue('clientfreequantity', value)}
-                            valueDefault={getValues('clientfreequantity')}
-                            error={errors?.clientfreequantity?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.clientquantity)}
-                            value={getValues("clientquantity").toString()}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.clientadditionalfee)}
-                            onChange={(value) => setValue('clientadditionalfee', value)}
-                            valueDefault={getValues('clientadditionalfee')}
-                            error={errors?.clientadditionalfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.clientadditionalcharge)}
-                            value={getValues("clientadditionalcharge").toFixed(2)}
-                        />
-                    </div>
-                </div>}
-                {pageSelected === 4  && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationquantity)}
-                            value={getValues("conversationquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatcharge)}
-                            value={getValues("conversationcompanywhatcharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatquantity)}
-                            value={getValues("conversationcompanywhatquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationclientwhatcharge)}
-                            value={getValues("conversationclientwhatcharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationcompanywhatfee)}
-                            value={getValues("conversationcompanywhatfee").toFixed(2)}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationwhatcharge)}
-                            value={getValues("conversationwhatcharge").toFixed(2)}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationclientwhatquantity)}
-                            value={getValues("conversationclientwhatquantity").toString()}
-                        />
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.interactionquantity)}
-                            value={getValues("interactionquantity").toString()}
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldView
-                            className="col-6"
-                            label={t(langKeys.conversationclientwhatfee)}
-                            value={getValues("conversationclientwhatfee").toFixed(2)}
-                        />
-                    </div>
-                </div>}
-                {pageSelected === 5  && <div className={classes.containerDetail}>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.supportbasicfee)}
-                            onChange={(value) => setValue('supportbasicfee', value)}
-                            valueDefault={getValues('supportbasicfee')}
-                            error={errors?.supportbasicfee?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicename)} 1`}
-                            onChange={(value) => setValue('additionalservicename1', value)}
-                            valueDefault={getValues('additionalservicename1')}
-                            error={errors?.additionalservicename1?.message}
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicefee)} 1`}
-                            onChange={(value) => setValue('additionalservicefee1', value)}
-                            valueDefault={getValues('additionalservicefee1')}
-                            error={errors?.additionalservicefee1?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicename)} 2`}
-                            onChange={(value) => setValue('additionalservicename2', value)}
-                            valueDefault={getValues('additionalservicename2')}
-                            error={errors?.additionalservicename2?.message}
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicefee)} 2`}
-                            onChange={(value) => setValue('additionalservicefee2', value)}
-                            valueDefault={getValues('additionalservicefee2')}
-                            error={errors?.additionalservicefee2?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                    <div className="row-zyx">
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicename)} 3`}
-                            onChange={(value) => setValue('additionalservicename3', value)}
-                            valueDefault={getValues('additionalservicename3')}
-                            error={errors?.additionalservicename3?.message}
-                            className="col-6"
-                        />
-                        <FieldEdit
-                            label={`${t(langKeys.additionalservicefee)} 3`}
-                            onChange={(value) => setValue('additionalservicefee3', value)}
-                            valueDefault={getValues('additionalservicefee3')}
-                            error={errors?.additionalservicefee3?.message}
-                            type="number"
-                            className="col-6"
-                        />
-                    </div>
-                </div>}
-            </form>
-        </div>
-    );
-}
 const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
     const classes = useStyles();
     const [waitSave, setWaitSave] = useState(false);
@@ -1242,465 +310,6 @@ const DetailCostPerHSMPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row,
     );
 }
 
-const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
-    const user = useSelector(state => state.login.validateToken.user);
-    const dispatch = useDispatch();
-    const { t } = useTranslation();
-    const mainResult = useSelector(state => state.main);
-    const executeResult = useSelector(state => state.main.execute);
-    const classes = useStyles();
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
-    const [waitSave, setWaitSave] = useState(false);
-    const [disableSearch, setdisableSearch] = useState(false);
-    const [dataMain, setdataMain] = useState({
-        billingplan: "",
-        supportplan: "",
-        corpid: user?.corpid || 0,
-        orgid: 0,
-        year: String(new Date().getFullYear()),
-        month: (new Date().getMonth() + 1).toString().padStart(2, "0")
-    });
-
-    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : []
-    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : []
-    const dataPlanList = dataPlan.data[0] && dataPlan.data[0].success? dataPlan.data[0].data : []
-    const dataPaymentPlanList = dataPlan.data[3] && dataPlan.data[3].success? dataPlan.data[3].data : []
-
-    function search(){
-        dispatch(showBackdrop(true))
-        dispatch(getCollection(getBillingPeriodSel(dataMain)))
-    }
-    useEffect(() => {
-        search()
-    }, [])
-    useEffect(() => {
-        if (!mainResult.mainData.loading){
-            dispatch(showBackdrop(false))
-        }
-    }, [mainResult])
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return (
-                        <TemplateIcons
-                            editFunction={() => handleEdit(row)}
-                        />
-                    )
-                }
-            },
-            {
-                Header: t(langKeys.corporation),
-                accessor: 'corpdesc',
-            },
-            {
-                Header: t(langKeys.organization),
-                accessor: 'orgdesc',
-            },
-            {
-                Header: t(langKeys.year),
-                accessor: 'year',
-            },
-            {
-                Header: t(langKeys.month),
-                accessor: 'month',
-            },
-            {
-                Header: t(langKeys.contractedplan),
-                accessor: 'billingplan',
-            },
-            {
-                Header: t(langKeys.supportplan),
-                accessor: 'supportplan',
-            },
-            {
-                Header: t(langKeys.costbasedonthecontractedplan),
-                accessor: 'basicfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { basicfee } = props.cell.row.original;
-                    return (basicfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.numberofagentshired),
-                accessor: 'userfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.numberofactivesupervisors),
-                accessor: 'supervisorquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.numberofactiveadvisers),
-                accessor: 'asesorquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.numberofactiveagents),
-                accessor: 'userquantity',
-                type: 'number',
-                sortType: 'number',
-            },            
-            {
-                Header: t(langKeys.useradditionalfee),
-                accessor: 'useradditionalfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { useradditionalfee } = props.cell.row.original;
-                    return (useradditionalfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.useradditionalcharge),
-                accessor: 'useradditionalcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { useradditionalcharge } = props.cell.row.original;
-                    return (useradditionalcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelfreequantity),
-                accessor: 'channelfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.channelwhatsappfee),
-                accessor: 'channelwhatsappfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelwhatsappfee } = props.cell.row.original;
-                    return (channelwhatsappfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelwhatsappquantity),
-                accessor: 'channelwhatsappquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.channelwhatsappcharge),
-                accessor: 'channelwhatsappcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelwhatsappcharge } = props.cell.row.original;
-                    return (channelwhatsappcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelotherfee),
-                accessor: 'channelotherfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelotherfee } = props.cell.row.original;
-                    return (channelotherfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelotherquantity),
-                accessor: 'channelotherquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.channelothercharge),
-                accessor: 'channelothercharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelothercharge } = props.cell.row.original;
-                    return (channelothercharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.channelcharge),
-                accessor: 'channelcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { channelcharge } = props.cell.row.original;
-                    return (channelcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.conversationquantity),
-                accessor: 'conversationquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.conversationcompanywhatquantity),
-                accessor: 'conversationcompanywhatquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.conversationcompanywhatfee),
-                accessor: 'conversationcompanywhatfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { conversationcompanywhatfee } = props.cell.row.original;
-                    return (conversationcompanywhatfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.conversationcompanywhatcharge),
-                accessor: 'conversationcompanywhatcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { conversationcompanywhatcharge } = props.cell.row.original;
-                    return (conversationcompanywhatcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.conversationclientwhatquantity),
-                accessor: 'conversationclientwhatquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.conversationclientwhatfee),
-                accessor: 'conversationclientwhatfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { conversationclientwhatfee } = props.cell.row.original;
-                    return (conversationclientwhatfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.conversationclientwhatcharge),
-                accessor: 'conversationclientwhatcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { conversationclientwhatcharge } = props.cell.row.original;
-                    return (conversationclientwhatcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.conversationwhatcharge),
-                accessor: 'conversationwhatcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { conversationwhatcharge } = props.cell.row.original;
-                    return (conversationwhatcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.interactionquantity),
-                accessor: 'interactionquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.clientfreequantity),
-                accessor: 'clientfreequantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.clientquantity),
-                accessor: 'clientquantity',
-                type: 'number',
-                sortType: 'number',
-            },
-            {
-                Header: t(langKeys.clientadditionalfee),
-                accessor: 'clientadditionalfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { clientadditionalfee } = props.cell.row.original;
-                    return (clientadditionalfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.clientadditionalcharge),
-                accessor: 'clientadditionalcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { clientadditionalcharge } = props.cell.row.original;
-                    return (clientadditionalcharge || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.supportbasicfee),
-                accessor: 'supportbasicfee',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { supportbasicfee } = props.cell.row.original;
-                    return (supportbasicfee || 0).toFixed(2);
-                }
-            },
-            {
-                Header: t(langKeys.totalcharge),
-                accessor: 'totalcharge',
-                type: 'number',
-                sortType: 'number',
-                Cell: (props: any) => {
-                    const { totalcharge } = props.cell.row.original;
-                    return (totalcharge || 0).toFixed(2);
-                }
-            },
-        ],
-        []
-    );
-
-    const fetchData = () => dispatch(getCollection(getBillingPeriodSel(dataMain)));
-
-        
-    useEffect(() => {
-        setdisableSearch(dataMain.year === "" ) 
-    }, [dataMain])
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
-                fetchData();
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                dispatch(showBackdrop(false));
-                setWaitSave(false);
-            }
-        }
-    }, [executeResult, waitSave])
-
-    const handleEdit = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected({ row, edit: true });
-    }
-
-    if (viewSelected === "view-1") {
-
-        return (
-            <Fragment>
-                
-                <TableZyx
-                    columns={columns}
-                    ButtonsElement={() => (
-                        <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
-                            <FieldSelect
-                                label={t(langKeys.year)}
-                                style={{width: 150}}
-                                valueDefault={dataMain.year}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,year:value?.desc||""}))}
-                                data={years}
-                                optionDesc="desc"
-                                optionValue="desc"
-                            />
-                            <FieldMultiSelect
-                                label={t(langKeys.month)}
-                                style={{width: 300}}
-                                valueDefault={dataMain.month}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,month:value.map((o: Dictionary) => o.val).join()}))}
-                                data={months}
-                                uset={true}
-                                prefixTranslation="month_"
-                                optionDesc="val"
-                                optionValue="val"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.corporation)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.corpid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
-                                data={dataCorpList}
-                                optionDesc="description"
-                                optionValue="corpid"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.organization)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.orgid}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
-                                data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
-                                optionDesc="orgdesc"
-                                optionValue="orgid"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.billingplan)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.billingplan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,billingplan:value?value.plan:""}))}
-                                data={dataPaymentPlanList}
-                                optionDesc="plan"
-                                optionValue="plan"
-                            />
-                            <FieldSelect
-                                label={t(langKeys.supportplan)}
-                                className={classes.fieldsfilter}
-                                valueDefault={dataMain.supportplan}
-                                variant="outlined"
-                                onChange={(value) => setdataMain(prev=>({...prev,supportplan:value?value.description:""}))}
-                                data={dataPlanList}
-                                optionDesc="description"
-                                optionValue="description"
-                            />
-                            <Button
-                                disabled={mainResult.mainData.loading || disableSearch}
-                                variant="contained"
-                                color="primary"
-                                style={{ width: 120, backgroundColor: "#55BD84" }}
-                                startIcon={<SearchIcon style={{ color: 'white' }} />}
-                                onClick={() => search()}
-                            >{t(langKeys.search)}
-                            </Button>
-                        </div>
-                    )}
-                    data={mainResult.mainData.data}
-                    filterGeneral={false}
-                    download={true}
-                    loading={mainResult.mainData.loading}
-                    register={false}
-                />
-            </Fragment>
-        )
-    }
-    else if (viewSelected === "view-2") {
-        return (
-            <DetailCostPerPeriod
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-                fetchData={fetchData}
-                dataPlan = {dataPlan}
-            />
-        )
-    } else
-        return null;
-}
 const CostPerHSMPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -3265,6 +1874,264 @@ const ContractedPlanByPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return null;
 }
 
+const DetailContractedPlanByPeriod: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
+    const [checkedaux, setCheckedaux] = useState(row?.allowhsm||false);
+    const [waitSave, setWaitSave] = useState(false);
+
+    const arrayBreadContractedPlan = [
+        { id: "view-1", name: t(langKeys.contractedplan) },
+        { id: "view-2", name: t(langKeys.contractedplandetail) }
+    ];
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row?.billingconfigurationid || 0,
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            plan: row?.plan||"",
+            basicfee: row?.basicfee||0,
+            userfreequantity: row?.userfreequantity||0,
+            channelfreequantity: row?.channelfreequantity||0,
+            clientfreequantity: row?.clientfreequantity||0,
+            useradditionalfee: row?.useradditionalfee||0,
+            channelwhatsappfee: row?.channelwhatsappfee||0,
+            clientadditionalfee: row?.clientadditionalfee||0,
+            channelotherfee: row?.channelotherfee||0,
+            hsmfee: row?.hsmfee||0,
+            allowhsm: row?.allowhsm||false,
+            status: row? row.status : 'ACTIVO',
+            type: row? row.type : '',
+            description: row? row.description : '',
+            operation: row? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('type');
+        register('status');
+        register('year');
+        register('month');
+        register('operation');
+        register('allowhsm');
+        register('channelotherfee');
+        register('description');
+        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('userfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('channelfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('clientfreequantity', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('useradditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('channelwhatsappfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('clientadditionalfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+        register('hsmfee', { validate: (value) => (value && value>0) || t(langKeys.field_required) });
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingConfigurationIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBreadContractedPlan}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row? `${row.description}` : t(langKeys.newcontractedplanbyperiod)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <TextField
+                            id="date"
+                            className="col-6"
+                            type="month"
+                            variant="outlined"
+                            onChange={(e)=>handleDateChange(e.target.value)}
+                            value={datetoshow}
+                            size="small"
+                        />
+                        <FieldSelect
+                            label="Plan"
+                            className="col-6"
+                            valueDefault={getValues("plan")}
+                            onChange={(value) => setValue('plan',value.plan)}
+                            data={dataPlan}
+                            optionDesc="plan"
+                            optionValue="plan"
+                            error={errors?.plan?.message}
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.costbasedonthecontractedplan)}
+                            onChange={(value) => setValue('basicfee', value)}
+                            valueDefault={getValues('basicfee')}
+                            error={errors?.basicfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        
+                        <FieldEdit
+                            label={t(langKeys.numberofagentshired)}
+                            onChange={(value) => setValue('userfreequantity', value)}
+                            valueDefault={getValues('userfreequantity')}
+                            error={errors?.userfreequantity?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.useradditionalfee)}
+                            onChange={(value) => setValue('useradditionalfee', value)}
+                            valueDefault={getValues('useradditionalfee')}
+                            error={errors?.useradditionalfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.channelfreequantity)}
+                            onChange={(value) => setValue('channelfreequantity', value)}
+                            valueDefault={getValues('channelfreequantity')}
+                            error={errors?.channelfreequantity?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.channelwhatsappfee)}
+                            onChange={(value) => setValue('channelwhatsappfee', value)}
+                            valueDefault={getValues('channelwhatsappfee')}
+                            error={errors?.channelwhatsappfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.clientfreequantity)}
+                            onChange={(value) => setValue('clientfreequantity', value)}
+                            valueDefault={getValues('clientfreequantity')}
+                            error={errors?.clientfreequantity?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.clientadditionalfee)}
+                            onChange={(value) => setValue('clientadditionalfee', value)}
+                            valueDefault={getValues('clientadditionalfee')}
+                            error={errors?.clientadditionalfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <div className={"col-6"} style={{ paddingBottom: '3px' }}>
+                            <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.allowhsm)}</Box>
+                            <FormControlLabel
+                                style={{paddingLeft:10}}
+                                control={<IOSSwitch checked={checkedaux}  onChange={(e) => {setCheckedaux(e.target.checked) ;setValue('allowhsm', e.target.checked)}} />}
+                                label={""}
+                            />                        
+                        </div>
+                    </div>
+                    <div className="row-zyx">
+                        <FieldEdit
+                            label={t(langKeys.hsmfee)}
+                            onChange={(value) => setValue('hsmfee', value)}
+                            valueDefault={getValues('hsmfee')}
+                            error={errors?.hsmfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                        <FieldEdit
+                            label={t(langKeys.channelotherfee)}
+                            onChange={(value) => setValue('channelotherfee', value)}
+                            valueDefault={getValues('channelotherfee')}
+                            error={errors?.channelotherfee?.message}
+                            type="number"
+                            className="col-6"
+                        />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
 const ConversationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const dispatch = useDispatch();
 
@@ -3518,6 +2385,11 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
     )
     const [waitSave, setWaitSave] = useState(false);
 
+    const arrayBreadConversationCost = [
+        { id: "view-1", name: t(langKeys.conversationcost) },
+        { id: "view-2", name: t(langKeys.conversationcostdetail) }
+    ];
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row? row.billingconversationid : 0,
@@ -3625,6 +2497,13 @@ const DetailConversationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <FieldView
+                            label=''
+                            value={t(langKeys.costcommentary)}
+                            className={classes.commentary}
+                        />
+                    </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.description)}
@@ -3978,15 +2857,23 @@ const NotificationCost: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 }
 
 const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
-    const classes = useStyles();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
     const dispatch = useDispatch();
+
     const { t } = useTranslation();
+
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
     const [datetoshow, setdatetoshow] = useState(
         row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
     )
-    
+    const [waitSave, setWaitSave] = useState(false);
+
+    const arrayBreadNotificationCost = [
+        { id: "view-1", name: t(langKeys.notificationcost) },
+        { id: "view-2", name: t(langKeys.notificationcostdetail) }
+    ];
+
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             id: row? row.billingnotificationid : 0,
@@ -4076,7 +2963,7 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <div>
                         <TemplateBreadcrumbs
-                            breadcrumbs={arrayBreadConversationCost}
+                            breadcrumbs={arrayBreadNotificationCost}
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
@@ -4106,6 +2993,13 @@ const DetailNotificationCost: React.FC<DetailSupportPlanProps> = ({ data: { row,
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                        <FieldView
+                            label=''
+                            value={t(langKeys.costcommentary)}
+                            className={classes.commentary}
+                        />
+                    </div>
                     <div className="row-zyx">
                         <FieldEdit
                             label={t(langKeys.description)}
@@ -4462,17 +3356,214 @@ const SupportPlan: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return null;
 }
 
+const DetailSupportPlan: React.FC<DetailSupportPlanProps> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+    
+    const classes = useStyles();
+    const executeRes = useSelector(state => state.main.execute);
+
+    const [datetoshow, setdatetoshow] = useState(
+        row? `${row.year}-${String(row.month).padStart(2, '0')}` : `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`
+    )
+    const [waitSave, setWaitSave] = useState(false);
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.supportplan) },
+        { id: "view-2", name: t(langKeys.supportplandetail) }
+    ];
+
+    const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
+        defaultValues: {
+            id: row? row.billingsupportid : 0,
+            startdate: row?.startdate || new Date(new Date().setDate(1)),
+            enddate: row?.enddate || new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0),
+            year: row?.year ||new Date().getFullYear(),
+            month: row?.month ||new Date().getMonth() + 1,
+            plan: row?.plan||"",
+            basicfee: row?.basicfee||0,
+            starttime: row?.starttime || new Date().getTime(),
+            finishtime: row?.finishtime || new Date().getTime(),
+            status: row? row.status : 'ACTIVO',
+            type: row? row.type : '',
+            description: row? row.description : '',
+            operation: row? "UPDATE" : "INSERT",
+        }
+    });
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let startdate = new Date(year, mes-1, 1)
+            let enddate = new Date(year, mes, 0)
+            setValue('startdate',startdate)
+            setValue('enddate',enddate)
+            setdatetoshow(`${year}-${String(mes).padStart(2, '0')}`)
+            setValue('year',year)
+            setValue('month',mes)
+        }
+    }
+
+    React.useEffect(() => {
+        register('id');
+        register('type');
+        register('status');
+        register('year');
+        register('month');
+        register('operation');
+        register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('plan', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('basicfee', { validate: (value) => (value && value>=0) || t(langKeys.field_required) });
+        register('starttime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+        register('finishtime', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
+    }, [edit, register]);
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(row? langKeys.successful_edit : langKeys.successful_register) }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    const onSubmit = handleSubmit((data) => {
+        const callback = () => {
+            dispatch(execute(billingSupportIns(data)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_save),
+            callback
+        }))
+    });
+
+    return (
+        <div style={{ width: '100%' }}>
+            <form onSubmit={onSubmit}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <div>
+                        <TemplateBreadcrumbs
+                            breadcrumbs={arrayBread}
+                            handleClick={setViewSelected}
+                        />
+                        <TitleDetail
+                            title={row? `${row.description}` : t(langKeys.newsupportplan)}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            startIcon={<ClearIcon color="secondary" />}
+                            style={{ backgroundColor: "#FB5F5F" }}
+                            onClick={() => setViewSelected("view-1")}
+                        >{t(langKeys.back)}</Button>
+                        {edit &&
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                type="submit"
+                                startIcon={<SaveIcon color="secondary" />}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{t(langKeys.save)}
+                            </Button>
+                        }
+                    </div>
+                </div>
+                <div className={classes.containerDetail}>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                label={t(langKeys.description)}
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={getValues('description')}
+                                error={errors?.description?.message}
+                                className="col-6"
+                            />
+                            <TextField
+                                id="date"
+                                className="col-6"
+                                type="month"
+                                variant="outlined"
+                                onChange={(e)=>handleDateChange(e.target.value)}
+                                value={datetoshow}
+                                size="small"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldSelect
+                                label="Plan"
+                                className="col-6"
+                                valueDefault={getValues("plan")}
+                                onChange={(value) => setValue('plan',value.description)}
+                                data={dataPlan}
+                                optionDesc="description"
+                                optionValue="description"
+                                error={errors?.plan?.message}
+                            />
+                            <FieldEdit
+                                label={t(langKeys.supportprice)}
+                                onChange={(value) => setValue('basicfee', value)}
+                                valueDefault={getValues('basicfee')}
+                                error={errors?.basicfee?.message}
+                                type="number"
+                                className="col-6"
+                            />
+                    </div>
+                    <div className="row-zyx">
+                            <FieldEdit
+                                type="time"
+                                label={t(langKeys.starttime)}
+                                error={errors?.starttime?.message}
+                                className="col-6"
+                                onChange={(value) => setValue('starttime', value)}
+                                valueDefault={getValues("starttime")}
+                            />
+                            <FieldEdit
+                                type="time"
+                                label={t(langKeys.finishtime)}
+                                error={errors?.finishtime?.message}
+                                className="col-6"
+                                onChange={(value) => setValue('finishtime', value)}
+                                valueDefault={getValues("finishtime")}
+                            />
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
 const BillingSetup: FC = () => {
     const dispatch = useDispatch();
+
     const { t } = useTranslation();
-    const user = useSelector(state => state.login.validateToken.user);
+
     const countryListreq = useSelector(state => state.signup.countryList);
     const multiData = useSelector(state => state.main.multiData);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const [countryList, setcountryList] = useState<any>([]);
+    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
+    const [dataPlan, setdataPlan] = useState<any>([]);
     const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN"?0:6);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
-    const [dataPlan, setdataPlan] = useState<any>([]);
-    const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
-    const [countryList, setcountryList] = useState<any>([]);
+
     useEffect(() => {
         if(!multiData.loading && sentfirstinfo){
             setsentfirstinfo(false)
@@ -4480,11 +3571,13 @@ const BillingSetup: FC = () => {
             setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : [])
         }
     }, [multiData])
+
     useEffect(() => {
         if(!countryListreq.loading && countryListreq.data.length){
             setcountryList(countryListreq.data)
         }
     }, [countryListreq])
+
     useEffect(()=>{
         setsentfirstinfo(true)
         dispatch(getCountryList())
@@ -4495,6 +3588,7 @@ const BillingSetup: FC = () => {
             getPaymentPlanSel(),
         ]));
     },[])
+
     return (
         <div style={{ width: '100%' }}>
             <Tabs
@@ -4520,9 +3614,6 @@ const BillingSetup: FC = () => {
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.supportplan)} />
                 }
-                {/*user?.roledesc === "SUPERADMIN" && 
-                    <AntTab label={t(langKeys.costperperiod)} />
-                */}
                 {/*user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.costperHSMperiod)} />
                 */}
@@ -4555,11 +3646,6 @@ const BillingSetup: FC = () => {
                     <SupportPlan dataPlan={dataPlan}/>
                 </div>
             }
-            {/*pageSelected === 5 &&
-                <div style={{ marginTop: 16 }}>
-                    <CostPerPeriod dataPlan={multiData}/>
-                </div>
-            */}
             {/*pageSelected === 6 &&
                 <div style={{ marginTop: 16 }}>
                     <CostPerHSMPeriod dataPlan={multiData}/>

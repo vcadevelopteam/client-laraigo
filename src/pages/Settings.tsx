@@ -564,7 +564,7 @@ const Settings: FC = () => {
             </Grid>
             <ItemTile
                 title={<Trans i18nKey={langKeys.property} count={2} />}
-                subtitle={<PropertiesTileBody />}
+                subtitle={<SubtitleText value={value?.num_property} i18nKey={langKeys.activeProperty} />}
                 icon={<ConfigPropertiesIcon fill="inherit" stroke="inherit" />}
                 helpText={
                     <HelpText

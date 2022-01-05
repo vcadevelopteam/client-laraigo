@@ -128,7 +128,7 @@ const DrawerFilter: React.FC<{ classes: any, drawerOpen: boolean, setDrawerOpen:
                             className={classes.itemFilter}
                             valueDefault={filters.channels}
                             onChange={(value) => setFilters(p => ({ ...p, channels: value.map((o: any) => o.communicationchannelid).join() }))}
-                            data={multiData?.data[6]?.data}
+                            data={multiData?.data[6]?.data || []}
                             optionDesc="communicationchanneldesc"
                             optionValue="communicationchannelid"
                         />
