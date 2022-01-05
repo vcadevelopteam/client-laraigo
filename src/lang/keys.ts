@@ -1733,6 +1733,15 @@ export const langKeys = {
     tmrAgent: 'tmrAgent',
     initialAgent: 'initialAgent',
     finalAgent: 'finalAgent',
+
+    costperperioddetail: "costperperioddetail",
+    costbasedonthesupportplan: "costbasedonthesupportplan",
+    contractedplandetail: "contractedplandetail",
+    conversationcostdetail: "conversationcostdetail",
+    notificationcostdetail: "notificationcostdetail",
+    supportplandetail: "supportplandetail",
+    costcommentary: "costcommentary",
+    confirmation_calculate: 'confirmation_calculate',
 };
 
 export type LangKeys = typeof langKeys;

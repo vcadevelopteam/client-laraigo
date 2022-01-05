@@ -283,6 +283,8 @@ const TableZyx = React.memo(({
     download = true,
     register,
     handleRegister,
+    calculate = false,
+    handleCalculate,
     HeadComponent,
     ButtonsElement,
     pageSizeDefault = 20,
@@ -749,6 +751,18 @@ const TableZyx = React.memo(({
                             onClick={handleRegister}
                             style={{ backgroundColor: "#55BD84" }}
                         ><Trans i18nKey={langKeys.register} />
+                        </Button>
+                    )}
+                    {calculate && (
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="primary"
+                            disabled={loading}
+                            startIcon={<RefreshIcon color="secondary" />}
+                            onClick={handleCalculate}
+                            style={{ backgroundColor: "#55BD84" }}
+                        ><Trans i18nKey={langKeys.calculate} />
                         </Button>
                     )}
                     {download && (
