@@ -24,6 +24,8 @@ import Rating from '@material-ui/lab/Rating';
 import { Box } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import StarIcon from '@material-ui/icons/Star';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -739,6 +741,20 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                {/* {ticketSelected?.status === 'SUSPENDIDO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={closeTicket}>
+                            <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
+                {ticketSelected?.status === 'ASIGNADO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={closeTicket}>
+                            <PauseIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                } */}
                 {ticketSelected?.status !== 'CERRADO' &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={closeTicket}>

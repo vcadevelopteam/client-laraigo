@@ -588,6 +588,7 @@ const Tickets = () => {
     const [openModal, setOpenModal] = useState(false);
     const mainPaginated = useSelector(state => state.main.mainPaginated);
     const resExportData = useSelector(state => state.main.exportData);
+    const [rowToSend, setRowToSend] = useState<Dictionary[]>([]);
     const [waitSave, setWaitSave] = useState(false);
     const [pageCount, setPageCount] = useState(0);
     const [totalrow, settotalrow] = useState(0);
@@ -616,20 +617,21 @@ const Tickets = () => {
                     return (
                         <IconOptions
                             onHandlerReassign={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogReassign(true);
                             }}
                             onHandlerClassify={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogTipify(true);
                             }}
                             onHandlerClose={ticket.estadoconversacion === "CERRADO" ? undefined : () => {
-                                setRowSelected(ticket);
+                                setRowToSend([ticket]);
                                 setOpenDialogClose(true);
                             }}
                             onHandlerShowHistory={() => {
                                 setOpenDialogShowHistory(true);
                                 setRowSelected(ticket);
+                                setRowToSend([ticket]);
                             }}
                         />
                     )
@@ -927,9 +929,18 @@ const Tickets = () => {
                 filterRangeDate="today"
                 ButtonsElement={() => (
                     <IconOptions
-                        onHandlerReassign={() => setOpenDialogReassign(true)}
-                        onHandlerClassify={() => setOpenDialogTipify(true)}
-                        onHandlerClose={() => setOpenDialogClose(true)}
+                        onHandlerReassign={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogReassign(true);
+                        }}
+                        onHandlerClassify={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogTipify(true);
+                        }}
+                        onHandlerClose={() => {
+                            setRowToSend(rowWithDataSelected);
+                            setOpenDialogClose(true);
+                        }}
                         disabled={rowWithDataSelected.length === 0}
                     />
                 )}
@@ -986,19 +997,19 @@ const Tickets = () => {
             />
             <DialogTipifications
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogTipify}
                 setOpenModal={setOpenDialogTipify}
             />
             <DialogCloseticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogClose}
                 setOpenModal={setOpenDialogClose}
             />
             <DialogReassignticket
                 fetchData={fetchDataAux2}
-                rowWithDataSelected={[rowSelected || {}]}
+                rowWithDataSelected={rowToSend}
                 openModal={openDialogReassign}
                 setOpenModal={setOpenDialogReassign}
             />
