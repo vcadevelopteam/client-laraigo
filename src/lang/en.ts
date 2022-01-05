@@ -27,10 +27,12 @@ const translation: LangKeys = {
 
     analysis_type: 'Analysis Type',
     analysis_type_plural: 'Analysis Types',
-
+    resume: "Resume",
+    quickresponse: "Quick response",
     advance_search: 'Advance search',
     search_inbox: 'Search inbox',
     search_result: 'Search result',
+    emoticons: "Emoticons",
     industry_foodsanddrinks: "Food and Drinks",
     industry_audiovisual: "Audiovisuales",
     industry_beauty: "Beauty and Relaxation",
@@ -1137,8 +1139,10 @@ const translation: LangKeys = {
 
     emoji_name: 'Name',
     emoji_category_name: 'Category',
-    emoji_favorites: 'Favorites',
-    emoji_restricted: 'Restricted',
+    emoji_favorites: 'Add Favorite',
+    emoji_removefavorites: 'Remove Favorite',
+    emoji_restricted: 'Add Restricted',
+    emoji_removerestricted: 'Remove Restricted',
     emoji_message_favorites: 'You want to send the emoji as a favorite to all organizations and channels',
     emoji_message_restricted: 'You want to restrict the emoji to all organizations and channels',
 
@@ -1525,6 +1529,8 @@ const translation: LangKeys = {
     manageAgreement_plural: 'Manage agreements',
     activeOrganization: 'Active organization',
     activeOrganization_plural: 'Active organizations',
+    activeProperty: 'Active property',
+    activeProperty_plural: 'Active properties',
     activeUser: 'Active user',
     activeUser_plural: 'Active users',
     activeChannel: 'Active channel',
@@ -1766,6 +1772,9 @@ const translation: LangKeys = {
     supportplandetail: "Support Plan detail",
     costcommentary: "Price list valid as of February 2021",
     confirmation_calculate: 'Are you sure you want to calculate the data for the current month?',
+
+    notedescription: 'Note description',
+    activitydescription: 'Activity description',
 };
 
 const enResource: ResourceLanguage = {

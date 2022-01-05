@@ -28,7 +28,10 @@ export const langKeys = {
     evidenceofpayment: "evidenceofpayment",
     additional_information: 'additional_information',
     id_payment: 'id_payment',
+    resume: "resume",
+    quickresponse: "quickresponse",
     lowesttime: "lowesttime",
+    emoticons: "emoticons",
     higuesttime: "higuesttime",
     timemin: "timemin",
     timemax: "timemax",
@@ -1170,6 +1173,8 @@ export const langKeys = {
     emoji_name: 'emoji_name',
     emoji_category_name: 'emoji_category_name',
     emoji_favorites: 'emoji_favorites',
+    emoji_removefavorites: 'emoji_removefavorites',
+    emoji_removerestricted: 'emoji_removerestricted',
     emoji_restricted: 'emoji_restricted',
     emoji_message_favorites: 'emoji_message_favorites',
     emoji_message_restricted: 'emoji_message_restricted',
@@ -1532,6 +1537,8 @@ export const langKeys = {
     manageAgreement_plural: 'manageAgreement_plural',
     activeOrganization: 'activeOrganization',
     activeOrganization_plural: 'activeOrganization_plural',
+    activeProperty: 'activeProperty',
+    activeProperty_plural: 'activeProperty_plural',
     activeUser: 'activeUser',
     activeUser_plural: 'activeUser_plural',
     activeChannel: 'activeChannel',
@@ -1757,6 +1764,9 @@ export const langKeys = {
     supportplandetail: "supportplandetail",
     costcommentary: "costcommentary",
     confirmation_calculate: 'confirmation_calculate',
+
+    notedescription: 'notedescription',
+    activitydescription: 'activitydescription',
 };
 
 export type LangKeys = typeof langKeys;

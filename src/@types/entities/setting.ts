@@ -13,4 +13,5 @@ export interface ISetting {
     num_integrations: number | null;
     num_whitelist: number | null;
     num_inputvalidation: number | null;
+    num_property: number | null;
 }

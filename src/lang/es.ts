@@ -26,12 +26,14 @@ const translation: LangKeys = {
     lead: 'Oportunidad',
     lead_plural: 'Oportunidades',
     model: 'Modelo',
+    quickresponse: "Respuesta rápida",
     model_plural: 'Modelos',
     newlead: 'Nueva oportunidad',
     successful_sign_up: 'Se registró correctamente, revise su bandeja de correo para proceder con la activación su cuenta.',
     comments: 'Comentarios',
     lastnote: 'Última nota',
-
+    resume: "Resumen",
+    emoticons: "Emoticones",
     tmo: "TMO",
     analysis_type: 'Tipos de Analisis',
     analysis_type_plural: 'Tipos de Analisiss',
@@ -1070,8 +1072,10 @@ const translation: LangKeys = {
 
     emoji_name: 'Nombre',
     emoji_category_name: 'Categoría',
-    emoji_favorites: 'Favoritos',
-    emoji_restricted: 'Restringidos',
+    emoji_favorites: 'Añadir Favorito',
+    emoji_removefavorites: 'Remover Favorito',
+    emoji_restricted: 'Añadir Restringido',
+    emoji_removerestricted: 'Remover Restringido',
     emoji_message_favorites: 'Usted desea enviar el emoji como favorito a todas las organizaciones y canales',
     emoji_message_restricted: 'Usted desea restringir el emoji a todas las organizaciones y canales',
 
@@ -1431,6 +1435,8 @@ const translation: LangKeys = {
     manageAgreement_plural: 'Gestionar acuerdos',
     activeOrganization: 'Organización activa',
     activeOrganization_plural: 'Organizaciones activas',
+    activeProperty: 'Propiedad activa',
+    activeProperty_plural: 'Propiedades activas',
     activeUser: 'Usuario activo',
     activeUser_plural: 'Usuarios activos',
     activeChannel: 'Canal activo',
@@ -1758,6 +1764,9 @@ const translation: LangKeys = {
     supportplandetail: "Detalle de Plan de Soporte",
     costcommentary: "Lista de precios vigente a partir de febrero del 2021",
     confirmation_calculate: '¿Estas seguro que quieres recalcular la data para el mes actual?',
+
+    notedescription: 'Descripción de la nota',
+    activitydescription: 'Descripción de la actividad',
 };
 
 const esResource: ResourceLanguage = {

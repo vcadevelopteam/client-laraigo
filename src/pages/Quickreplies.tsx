@@ -360,76 +360,51 @@ const DetailQuickreply: React.FC<DetailQuickreplyProps> = ({ data: { row, edit }
                     <Typography style={{ fontSize: 22, paddingBottom: "10px" }} color="textPrimary">{t(langKeys.quickreply)}</Typography>
 
                     <div className="row-zyx">
-                        {edit ?
-                            <TemplateSwitch
-                                label={t(langKeys.favorite)}
-                                className="col-12"
-                                valueDefault={row?.favorite || false}
-                                onChange={(value) => setValue('favorite', value)}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.favorite)}
-                                value={row ? (row.value ? t(langKeys.affirmative) : t(langKeys.negative)) : t(langKeys.negative)}
-                                className="col-6"
-                            />
-                        }
+                        <TemplateSwitch
+                            label={t(langKeys.favorite)}
+                            className="col-12"
+                            valueDefault={row?.favorite || false}
+                            onChange={(value) => setValue('favorite', value)}
+                        /> 
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldEdit
-                                label={t(langKeys.summarize)}
-                                className="col-12"
-                                valueDefault={row?.description || ""}
-                                onChange={(value) => setValue('description', value)}
-                                error={errors?.description?.message}
-                            /> :
-                            <FieldView
-                                label={t(langKeys.summarize)}
-                                value={row?.description || ""}
-                                className="col-6"
-                            />}
+                        <FieldEdit
+                            label={t(langKeys.summarize)}
+                            className="col-12"
+                            valueDefault={row?.description || ""}
+                            onChange={(value) => setValue('description', value)}
+                            error={errors?.description?.message}
+                        /> 
                     </div>
                     <div className="row-zyx" style={{ position: 'relative' }}>
-                        {edit ?
-                            <>
-                                <FieldEditMulti
-                                    label={t(langKeys.detail)}
-                                    className="col-12"
-                                    valueDefault={quickreply}
-                                    onChange={(value) => setQuickreply(value)}
-                                    error={errors?.quickreply?.message}
-                                    maxLength={1024}
-                                />
-                                <EmojiPickerZyx
-                                    style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
-                                    onSelect={e => setQuickreply(quickreply + e.native)} />
-
-                            </>
-                            : <FieldView
+                        <>
+                            <FieldEditMulti
                                 label={t(langKeys.detail)}
-                                value={row ? (row.quickreply || "") : ""}
                                 className="col-12"
-                            />}
+                                valueDefault={quickreply}
+                                onChange={(value) => setQuickreply(value)}
+                                error={errors?.quickreply?.message}
+                                maxLength={1024}
+                            />
+                            <EmojiPickerZyx
+                                style={{ position: "absolute", bottom: "40px", display: 'flex', justifyContent: 'end', right: 16 }}
+                                onSelect={e => setQuickreply(quickreply + e.native)} />
+
+                        </>
                     </div>
                     <div className="row-zyx">
-                        {edit ?
-                            <FieldSelect
-                                label={t(langKeys.status)}
-                                className="col-12"
-                                valueDefault={row?.status || "ACTIVO"}
-                                onChange={(value) => setValue('status', value ? value.domainvalue : '')}
-                                error={errors?.status?.message}
-                                data={dataStatus}
-                                uset={true}
-                                prefixTranslation="status_"
-                                optionDesc="domaindesc"
-                                optionValue="domainvalue"
-                            />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-12"
-                            />}
+                        <FieldSelect
+                            label={t(langKeys.status)}
+                            className="col-12"
+                            valueDefault={row?.status || "ACTIVO"}
+                            onChange={(value) => setValue('status', value ? value.domainvalue : '')}
+                            error={errors?.status?.message}
+                            data={dataStatus}
+                            uset={true}
+                            prefixTranslation="status_"
+                            optionDesc="domaindesc"
+                            optionValue="domainvalue"
+                        />
                     </div>
 
                 </div>
@@ -516,7 +491,7 @@ const Quickreplies: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.quickreply),
+                Header: t(langKeys.quickresponse),
                 accessor: 'quickreply',
                 NoFilter: true
             },

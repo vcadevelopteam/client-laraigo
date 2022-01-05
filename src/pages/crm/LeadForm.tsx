@@ -1085,7 +1085,6 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                 disabled={loading}
                             />
                             <div style={{ height: 4 }} />
-                            {/* {media && <FilePreview src={media} onClose={handleCleanMediaInput} />} */}
                             {media && <FileCollectionPreview files={media} onCloseFile={deleteMediaFile} />}
                             {media && <div style={{ height: 4 }} />}
                             <input
@@ -1107,7 +1106,7 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                     )}
                                 />
                                 <div style={{ width: '0.5em' }} />
-                                <IconButton onClick={handleInputMedia} color="primary" disabled={/*media !== null || */loading}>
+                                <IconButton onClick={handleInputMedia} color="primary" disabled={loading}>
                                     <AttachFile />
                                 </IconButton>
                             </div>
@@ -1146,7 +1145,6 @@ export const TabPanelLogNote: FC<TabPanelLogNoteProps> = ({ notes, loading, read
                                         <div style={{ height: 4 }} />
                                         <span>{note.description}</span>
                                         {note.media && <div style={{ height: 4 }} />}
-                                        {/* {note.media && <FilePreview src={note.media} />} */}
                                         {note.media && <FileCollectionPreview files={note.media} />}
                                     </div>
                                 </div>
