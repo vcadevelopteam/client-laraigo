@@ -38,7 +38,7 @@ const LabelGo: React.FC<{
     tooltip?: string;
     regressive?: boolean;
     labelOnNegative?: string;
-}> = ({ label, color, dateGo, isTimer, tooltip, regressive = false, labelOnNegative }) => {
+}> = ({ label, color, dateGo, isTimer, tooltip, regressive = false, labelOnNegative = "" }) => {
     const classes = useStyles({ color });
     const isMounted = React.useRef<boolean | null>(null);
     const [time, settime] = useState(isTimer ? getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive) : -1);
@@ -61,7 +61,7 @@ const LabelGo: React.FC<{
     return (
         <Tooltip title={tooltip || ''} arrow placement="top">
             <div style={{ position: 'relative' }}>
-                <div className={classes.label}>{isTimer ? secondsToTime(time || 0) : label}</div>
+                <div className={classes.label}>{isTimer ? (time < 0 ? labelOnNegative : secondsToTime(time || 0)) : label}</div>
                 <div className={classes.backgroundLabel}></div>
             </div>
         </Tooltip>
@@ -94,22 +94,16 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
         }
     }, [multiData, communicationchannelid]);
 
-    console.log(communicationchannelid);
-
     useEffect(() => {
-        if (countnewmessages === 0) {
+        if (countnewmessages === 0 && personlastreplydate) {
             const timeClose = (userType === "AGENT" || agentSelected?.userid !== 3) ? (dictAutoClose?.[communicationchannelid] || 0) : (dictAutoCloseHolding?.[communicationchannelid] || 0);
-            // console.log(timeClose, lastreplyuser)
-            console.log("timeClose", timeClose);
             if (timeClose === 0) {
                 setDateToClose(null)
             } else {
                 const datetmp = convertLocalDate(lastreplyuser);
                 datetmp.setMinutes(datetmp.getMinutes() + timeClose);
-                // console.log(datetmp)
                 setDateToClose(datetmp)
             }
-            // if (lastuser)
         } else {
             setDateToClose(null)
         }
@@ -166,6 +160,7 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             tooltip={t(langKeys.time_to_automatic_closing)}
                             dateGo={dateToClose.toISOString()}
                             color="#4128a7"
+                            labelOnNegative={t(langKeys.ready_to_close)}
                         />
                     }
                 </div>

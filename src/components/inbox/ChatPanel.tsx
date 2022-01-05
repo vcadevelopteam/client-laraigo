@@ -24,6 +24,8 @@ import Rating from '@material-ui/lab/Rating';
 import { Box } from '@material-ui/core';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import StarIcon from '@material-ui/icons/Star';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import PauseIcon from '@material-ui/icons/Pause';
 
 const dataPriority = [
     { option: 'HIGH' },
@@ -91,8 +93,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }, [sendingRes, waitClose])
 
     useEffect(() => {
-        setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-    }, [])
+        setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+    }, [multiData.data])
 
     useEffect(() => {
         if (openModal) {
@@ -548,7 +550,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
-                 <FieldMultiSelect
+                <FieldMultiSelect
                     label={t(langKeys.product_plural)}
                     className="col-12"
                     valueDefault={getValues('products')}
@@ -739,6 +741,20 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
     return (
         <>
             <div className={classes.containerButtonsChat}>
+                {/* {ticketSelected?.status === 'SUSPENDIDO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={closeTicket}>
+                            <PlayArrowIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                }
+                {ticketSelected?.status === 'ASIGNADO' &&
+                    <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
+                        <IconButton onClick={closeTicket}>
+                            <PauseIcon width={24} height={24} fill="#8F92A1" />
+                        </IconButton>
+                    </Tooltip>
+                } */}
                 {ticketSelected?.status !== 'CERRADO' &&
                     <Tooltip title={t(langKeys.close_ticket) + ""} arrow placement="top">
                         <IconButton onClick={closeTicket}>
@@ -798,6 +814,15 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
+                <MenuItem onClick={() => {
+                    setAnchorEl(null)
+                    setOpenModalHSM(true)
+                }}>
+                    <ListItemIcon>
+                        <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}
+                </MenuItem>
                 {ticketSelected?.status !== 'CERRADO' &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)
