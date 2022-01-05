@@ -108,6 +108,31 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
         updatedate: row?.updatedate,
     })
 
+    const [gaugeArcs, setGaugeArcs] = useState([0,0,0]);
+
+    useEffect(() => {
+        if (row) {
+            if (row.target <= row.alertat) {
+                setGaugeArcs(
+                    [
+                        row.cautionat / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
+                        (row.alertat - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10)) 
+                    ]
+                )
+            }
+            else {
+                setGaugeArcs(
+                    [
+                        row.alertat / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
+                        (row.cautionat - row.alertat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)),
+                        ((Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10)) - row.cautionat) / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                    ]
+                )
+            }
+        }
+    }, [row])
+
     React.useEffect(() => {
         register('kpiname', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
         register('description', { validate: (value) => (value && value.length) || t(langKeys.field_required) });
@@ -525,11 +550,20 @@ const DetailKPIManager: React.FC<DetailKPIManagerProps> = ({ data: { row, edit }
                                             <GaugeChart
                                                 style={{width: '150px'}}
                                                 id="gauge-chart"
-                                                nrOfLevels={20}
+                                                arcsLength={gaugeArcs}
+                                                colors={
+                                                    row.target < row.alertat
+                                                    ? ['#5BE12C', '#F5CD19', '#EA4228']
+                                                    : ['#EA4228', '#F5CD19', '#5BE12C']
+                                                }
                                                 textColor="#000000"
                                                 animate={false}
-                                                percent={!!row?.target ? (detaildata?.currentvalue/row?.target > 1 ? 1 : detaildata?.currentvalue/row?.target) : 0}
-                                                formatTextValue={() => !!row?.target ? `${detaildata?.currentvalue/row?.target*100}%` : '0%'} 
+                                                percent={
+                                                    row.target < row.alertat
+                                                    ? detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.alertat * 1.2 / 10) * 10))
+                                                    : detaildata?.currentvalue / (Math.max(detaildata?.currentvalue, Math.ceil(row.target * 1.2 / 10) * 10))
+                                                }
+                                                formatTextValue={() => ``}
                                             /></TableCell>
                                     </TableRow>
                                 </TableBody>
