@@ -26,6 +26,8 @@ export interface TableConfig {
     download?: boolean;
     register?: boolean;
     handleRegister?(param: any): void;
+    calculate?: boolean;
+    handleCalculate?(param: any): void;
     HeadComponent?: () => JSX.Element | null;
     ButtonsElement?: () => JSX.Element | null;
     FiltersElement?: ReactElement;
