@@ -3,7 +3,7 @@ import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 're
 import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import { FieldEditMulti, FieldSelect, Title } from 'components';
-import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate } from 'common/helpers';
+import { getChannelListByPersonBody, getTicketListByPersonBody, getPaginatedPerson, getOpportunitiesByPersonBody, editPersonBody, getReferrerByPersonBody, insPersonUpdateLocked, getPersonExport, exportExcel, templateMaker, uploadExcel, insPersonBody, insPersonCommunicationChannel, array_trimmer, convertLocalDate, getColumnsSel } from 'common/helpers';
 import { Dictionary, IDomain, IObjectState, IPerson, IPersonChannel, IPersonCommunicationChannel, IPersonConversation, IPersonDomains, IPersonImport, IPersonReferrer, IFetchData } from "@types";
 import { Avatar, Box, Divider, Grid, Button, makeStyles, AppBar, Tabs, Tab, Collapse, IconButton, BoxProps, Breadcrumbs, Link, TextField, MenuItem, Paper, InputBase } from '@material-ui/core';
 import clsx from 'clsx';
@@ -33,6 +33,7 @@ import { sendHSM } from 'store/inbox/actions';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { getLeadPhases, resetGetLeadPhases } from 'store/lead/actions';
 const urgencyLevels = [null, 'LOW', 'MEDIUM', 'HIGH']
 
 interface SelectFieldProps {
@@ -400,6 +401,7 @@ export const Person: FC = () => {
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
     const [typeTemplate, setTypeTemplate] = useState('');
+    const phases = useSelector(state => state.lead.leadPhases);
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
     const params = useQueryParams(query);
@@ -410,7 +412,7 @@ export const Person: FC = () => {
             state: person,
         });
     }
-    const columns = [
+    const columns = useMemo(() => ([
         {
             accessor: 'leadid',
             isComponent: true,
@@ -430,13 +432,13 @@ export const Person: FC = () => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("MAIL");
+                            setTypeTemplate("SMS");
                         }}
                         sendMAIL={(e) => {
                             e.stopPropagation();
                             setPersonsSelected([person]);
                             setOpenDialogTemplate(true);
-                            setTypeTemplate("SMS");
+                            setTypeTemplate("MAIL");
                         }}
                     />
                 )
@@ -454,21 +456,6 @@ export const Person: FC = () => {
             Header: t(langKeys.email),
             accessor: 'email',
         },
-        // {
-        //     Header: t(langKeys.name),
-        //     accessor: 'name',
-        // },
-
-        // {
-        //     Header: t(langKeys.firstContactDate),
-        //     accessor: 'firstcontact',
-        //     type: 'date',
-        //     sortType: 'datetime',
-        //     Cell: (props: any) => {
-        //         const row = props.cell.row.original;
-        //         return row.firstcontact ? convertLocalDate(row.firstcontact).toLocaleString() : ""
-        //     }
-        // },
         {
             Header: t(langKeys.lastContactDate),
             accessor: 'lastcontact',
@@ -481,31 +468,16 @@ export const Person: FC = () => {
         },
         {
             Header: t(langKeys.lastuser),
-            accesor: 'lastuser',
+            accessor: 'lastuser',
         },
-        // {
-        //     Header: t(langKeys.lead),
-        //     accessor: 'havelead',
-        //     type: "boolean",
-        //     Cell: (props: any) => {
-        //         const { havelead } = props.cell.row.original;
-        //         if (havelead)
-        //             return <StarIcon fontSize="small" style={{ color: '#ffb400' }} />
-
-        //         return <StarIcon color="action" fontSize="small" />
-        //     }
-        // },
         {
             Header: t(langKeys.lead),
             accessor: 'phasejson',
             type: "select",
-            listSelectFilter: [
-                { key: t(langKeys.new), value: "New" },
-                { key: t(langKeys.qualified), value: "Qualified" },
-                { key: t(langKeys.proposition), value: "Proposition" },
-                { key: t(langKeys.won), value: "Won" },
-                { key: t(langKeys.lost), value: "Lost" },
-            ],
+            listSelectFilter: phases.loading || phases.error ? [] : phases.data.map(x => ({
+                key: x.description,
+                value: `${x.index},${x.description}`,
+            })),
             Cell: (props: any) => {
                 const { phasejson } = props.cell.row.original;
                 if (!phasejson)
@@ -514,7 +486,7 @@ export const Person: FC = () => {
                     <div style={{ display: 'flex', gap: 4, flexDirection: 'column' }}>
                         {Object.entries(phasejson).sort(([aKey], [bKey]) => {
                             const aIndex = Number(aKey.split(',')[0]);
-                            const bIndex = Number(bKey.split(',')[0]); 
+                            const bIndex = Number(bKey.split(',')[0]);
                             return aIndex - bIndex;
                         }).map(([key, value]) => (
                             <CountTicket
@@ -526,44 +498,8 @@ export const Person: FC = () => {
                         ))}
                     </div>
                 )
-
-                // return <StarIcon color="action" fontSize="small" />
             }
         },
-        // {
-        //     Header: t(langKeys.customer),
-        //     accessor: 'email',
-        //     Cell: (props: any) => {
-        //         const { name, email, phone, priority, userlead } = props.cell.row.original;
-        //         return (
-        //             <div >
-        //                 <div>{t(langKeys.name)}: {name}</div>
-        //                 <div>{t(langKeys.email)}: {email}</div>
-        //                 <div>{t(langKeys.phone)}: {phone}</div>
-        //                 {priority &&
-        //                     <>
-        //                         <Rating
-        //                             name="simple-controlled"
-        //                             max={3}
-        //                             defaultValue={urgencyLevels.findIndex(x => x === priority)}
-        //                             readOnly={true}
-        //                         />
-        //                         <div>{t(langKeys.assignedTo)}: {userlead}</div>
-        //                     </>
-        //                 }
-        //             </div>
-        //         )
-        //     }
-        // },
-        // {
-        //     Header: t(langKeys.type),
-        //     accessor: 'type',
-        //     prefixTranslation: 'type_persontype_',
-        //     Cell: (props: any) => {
-        //         const { type } = props.cell.row.original;
-        //         return type ? (t(`type_persontype_${type}`.toLowerCase()) || "").toUpperCase() : "";
-        //     }
-        // },
         {
             Header: t(langKeys.status),
             accessor: 'status',
@@ -586,12 +522,15 @@ export const Person: FC = () => {
                 )
             }
         },
-    ]
+    ]), [phases, t]);
 
     useEffect(() => {
         dispatch(getDomainsByTypename());
+        dispatch(getLeadPhases(getColumnsSel(0, true)));
+
         return () => {
             dispatch(resetGetPersonListPaginated());
+            dispatch(resetGetLeadPhases());
             dispatch(resetAllMain());
         };
     }, [])
@@ -826,21 +765,30 @@ export const Person: FC = () => {
                             optionValue="type"
                             optionDesc="communicationchanneldesc"
                         />
-                        {/* <FieldMultiSelect
-                            onChange={(value) => setFilterAgents(value.map((o: any) => o.userid).join())}
-                            size="small"
-                            label={t(langKeys.user)}
-                            style={{ maxWidth: 300, minWidth: 200 }}
-                            variant="outlined"
-                            loading={domains.loading}
-                            data={domains.value?.agents || []}
-                            optionValue="userid"
-                            optionDesc="fullname"
-                        /> */}
                     </div>
                 </Grid>
                 <Grid item>
                     <div style={{ display: 'flex', gap: 8 }}>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<LockIcon color="secondary" />}
+                            // onClick={handleLock}
+                        >
+                            <Trans i18nKey={langKeys.lock} />
+                        </Button>
+                        <Button
+                            variant="contained"
+                            type="button"
+                            color="primary"
+                            disabled={personList.loading || Object.keys(selectedRows).length === 0}
+                            startIcon={<LockOpenIcon color="secondary" />}
+                            // onClick={handleLock}
+                        >
+                            <Trans i18nKey={langKeys.unlock} />
+                        </Button>
                         <Button
                             variant="contained"
                             color="primary"

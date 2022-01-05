@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector } from 'hooks';
 import Avatar from '@material-ui/core/Avatar';
 import { styled, makeStyles } from '@material-ui/core/styles';
@@ -36,16 +36,19 @@ const LabelGo: React.FC<{
     isTimer?: boolean;
     dateGo?: string;
     tooltip?: string;
-}> = ({ label, color, dateGo, isTimer, tooltip }) => {
+    regressive?: boolean;
+    labelOnNegative?: string;
+}> = ({ label, color, dateGo, isTimer, tooltip, regressive = false, labelOnNegative }) => {
     const classes = useStyles({ color });
     const isMounted = React.useRef<boolean | null>(null);
-    const [time, settime] = useState(isTimer ? getSecondsUntelNow(convertLocalDate(dateGo, true)) : -1);
+    const [time, settime] = useState(isTimer ? getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive) : -1);
 
     React.useEffect(() => {
         isMounted.current = true;
         let timer = !label ? setTimeout(() => {
-            if (isMounted.current)
-                settime(getSecondsUntelNow(convertLocalDate(dateGo, true)))
+            if (isMounted.current) {
+                settime(getSecondsUntelNow(convertLocalDate(dateGo, !regressive), regressive));
+            }
         }, 1000) : null;
 
         return () => {
@@ -72,9 +75,15 @@ const SmallAvatar = styled(Avatar)(() => ({
     fontSize: 11,
 }));
 
-const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid } }) => {
+const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (param: ITicket) => void }> = ({ classes, setTicketSelected, item, item: { personlastreplydate, communicationchanneltype, lastmessage, displayname, imageurldef, ticketnum, firstconversationdate, countnewmessages, status, communicationchannelid, lastreplyuser } }) => {
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
+    const agentSelected = useSelector(state => state.inbox.agentSelected);
+    const userType = useSelector(state => state.inbox.userType);
     const multiData = useSelector(state => state.main.multiData);
+    const [dateToClose, setDateToClose] = useState<Date | null>(null)
+    const dictAutoClose = useSelector(state => state.login.validateToken.user?.properties?.auto_close);
+    const dictAutoCloseHolding = useSelector(state => state.login.validateToken.user?.properties?.auto_close_holding);
+
     const [iconColor, setIconColor] = useState('#7721AD');
     const { t } = useTranslation();
 
@@ -83,7 +92,29 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
             const channelSelected = multiData.data[6].data.find(x => x.communicationchannelid === communicationchannelid);
             setIconColor(channelSelected?.coloricon || '#7721AD');
         }
-    }, [multiData, communicationchannelid])
+    }, [multiData, communicationchannelid]);
+
+    console.log(communicationchannelid);
+
+    useEffect(() => {
+        if (countnewmessages === 0) {
+            const timeClose = (userType === "AGENT" || agentSelected?.userid !== 3) ? (dictAutoClose?.[communicationchannelid] || 0) : (dictAutoCloseHolding?.[communicationchannelid] || 0);
+            // console.log(timeClose, lastreplyuser)
+            console.log("timeClose", timeClose);
+            if (timeClose === 0) {
+                setDateToClose(null)
+            } else {
+                const datetmp = convertLocalDate(lastreplyuser);
+                datetmp.setMinutes(datetmp.getMinutes() + timeClose);
+                // console.log(datetmp)
+                setDateToClose(datetmp)
+            }
+            // if (lastuser)
+        } else {
+            setDateToClose(null)
+        }
+    }, [dictAutoClose, dictAutoCloseHolding, countnewmessages, userType, agentSelected?.userid, communicationchannelid, lastreplyuser])
+
 
     return (
         <div
@@ -126,6 +157,15 @@ const ItemTicket: React.FC<{ classes: any, item: ITicket, setTicketSelected: (pa
                             tooltip={t(langKeys.waiting_person_time)}
                             dateGo={personlastreplydate || new Date().toISOString()}
                             color="#FB5F5F"
+                        />
+                    }
+                    {dateToClose &&
+                        <LabelGo
+                            isTimer={true}
+                            regressive={true}
+                            tooltip={t(langKeys.time_to_automatic_closing)}
+                            dateGo={dateToClose.toISOString()}
+                            color="#4128a7"
                         />
                     }
                 </div>

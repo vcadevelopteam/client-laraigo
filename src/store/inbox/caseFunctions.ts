@@ -416,6 +416,7 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
             newticketList = newticketList.map((x: ITicket) => x.conversationid === data.conversationid ? ({
                 ...x,
                 personlastreplydate: data.usertype === "client" ? new Date().toISOString() : x.personlastreplydate,
+                lastreplyuser: data.usertype === "agent" ? new Date().toISOString() : x.lastreplyuser,
                 countnewmessages: data.usertype === "agent" ? 0 : x.countnewmessages + 1,
                 lastmessage: data.typemessage === "text" ? data.lastmessage : data.typemessage.toUpperCase(),
             }) : x)
@@ -427,6 +428,9 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
                 newTicketSelected!!.isAnswered = true;
             } else if (data.usertype === "client") {
                 newTicketSelected!!.personlastreplydate = new Date().toISOString();
+            }
+            if (data.usertype === "agent")  {
+                newTicketSelected!!.lastreplyuser = new Date().toISOString();
             }
 
             const newInteraction: IInteraction = {

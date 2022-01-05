@@ -360,7 +360,7 @@ const translation: LangKeys = {
     givechannelcolor: "Dale a tu canal un color de icono personalizado",
     enablechatflow: "Flujo conversacional automatizado",
     period: "Período",
-    interval: 'Interval',
+    interval: 'Intervalo',
     finishreg: "FINALIZAR REGISTRO",    
     validnumber: "Por favor inserte un número válido",
     supportplan:"Plan de Soporte",
