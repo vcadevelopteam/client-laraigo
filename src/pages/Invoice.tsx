@@ -4,10 +4,10 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Button from '@material-ui/core/Button';
 import { TemplateIcons, TemplateBreadcrumbs, TitleDetail, FieldView, FieldEdit, FieldSelect, AntTab, FieldMultiSelect, DialogZyx } from 'components';
-import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll } from 'common/helpers';
+import { selInvoice, insInvoice, cancelInvoice, getLocaleDateString, selInvoiceClient, selInvoiceChangePaymentStatus, regenerateInvoice, getBillingPeriodSel, billingPeriodUpd, getPlanSel, getOrgSelList, getCorpSel, getPaymentPlanSel, getBillingPeriodCalcRefreshAll, getBillingPeriodSummarySel, getBillingPeriodSummarySelCorp, billingpersonreportsel, billinguserreportsel, getBillingPeriodCalc, exportExcel } from 'common/helpers';
 import { Dictionary } from "@types";
 import TableZyx from '../components/fields/table-simple';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import SaveIcon from '@material-ui/icons/Save';
 import { useTranslation } from 'react-i18next';
 import { langKeys } from 'lang/keys';
@@ -16,13 +16,15 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { getCollection, getMultiCollection, execute, exportData } from 'store/main/actions';
 import { sendInvoice } from 'store/culqi/actions';
 import { showSnackbar, showBackdrop, manageConfirmation } from 'store/popus/actions';
-import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs } from '@material-ui/core';
+import { Box, FormHelperText, Grid, IconButton, MenuItem, Tabs, TextField } from '@material-ui/core';
 import * as locale from "date-fns/locale";
 import Menu from '@material-ui/core/Menu';
+import { DownloadIcon } from 'icons';
 import {
     Close,
     CloudUpload,
     Search as SearchIcon,
+    Refresh as RefreshIcon,
 } from '@material-ui/icons';
 import PaymentIcon from '@material-ui/icons/Payment';
 import DateFnsUtils from '@date-io/date-fns';
@@ -32,6 +34,14 @@ import MoreVert from '@material-ui/icons/MoreVert';
 import Fab from '@material-ui/core/Fab';
 import CulqiModal from 'components/fields/CulqiModal';
 import { getCountryList } from 'store/signup/actions';
+import TableContainer from '@material-ui/core/TableContainer';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import clsx from 'clsx';
 
 interface RowSelected {
     row: Dictionary | null,
@@ -51,9 +61,36 @@ interface DetailSupportPlanProps2 {
     dataPlan: any;
 }
 
+const StyledTableCell = withStyles((theme) => ({
+    head: {
+      backgroundColor: "#7721ad",
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+}))(TableCell);
+
+const StyledTableRow = withStyles((theme) => ({
+}))(TableRow);
+
+const datatotalize = [{value:1,description: "CORPORATION"},{value:2,description: "ORGANIZATION"}]
+
 const years = [{desc:"2010"},{desc:"2011"},{desc:"2012"},{desc:"2013"},{desc:"2014"},{desc:"2015"},{desc:"2016"},{desc:"2017"},{desc:"2018"},{desc:"2020"},{desc:"2021"},{desc:"2022"},{desc:"2023"},{desc:"2024"},{desc:"2025"}]
 
 const months =[{ val: "01" }, { val: "02" }, { val: "03" }, { val: "04" }, { val: "05" }, { val: "06" }, { val: "07" }, { val: "08" }, { val: "09" }, { val: "10" }, { val: "11" }, { val: "12" },]
+
+function formatNumber(num: number) {
+    if (num)
+        return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0.00"
+}
+
+function formatNumberNoDecimals(num: number) {
+    if (num)
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
+    return "0"
+}
 
 const getImgUrl = (file: File | string | null): string | null => {
     if (!file) return null;
@@ -145,6 +182,9 @@ const useStyles = makeStyles((theme) => ({
     },
     fieldsfilter: {
         width: 220,
+    },
+    transparent: {
+        color:"transparent",
     },
 }));
 
@@ -1119,8 +1159,6 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const executeResult = useSelector(state => state.main.execute);
     const mainResult = useSelector(state => state.main);
 
-    console.log(dataPlan);
-
     const [dataMain, setdataMain] = useState({
         billingplan: "",
         corpid: user?.corpid || 0,
@@ -1835,6 +1873,431 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
     );
 }
 
+const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): void }> = ({ dataPlan, setPageSelected }) => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const classes = useStyles();
+    const dataCorpList = dataPlan.data[2] && dataPlan.data[2].success? dataPlan.data[2].data : [];
+    const dataOrgList = dataPlan.data[1] && dataPlan.data[1].success? dataPlan.data[1].data : [];
+    const executeCalculate = useSelector(state => state.main.execute);
+    const mainResult = useSelector(state => state.main);
+    const resExportData = useSelector(state => state.main.exportData);
+    const user = useSelector(state => state.login.validateToken.user);
+
+    const [dataMain, setdataMain] = useState({
+        datetoshow: `${new Date(new Date().setDate(1)).getFullYear()}-${String(new Date(new Date().setDate(1)).getMonth()+1).padStart(2, '0')}`,
+        year: new Date().getFullYear(),
+        month: new Date().getMonth() + 1,
+        corpid: user?.corpid || 0,
+        orgid: user?.orgid || 0,
+        totalize: 2,
+    });
+    const [datareport, setdatareport] = useState<any>([]);
+    const [requesttipe, setrequesttipe] = useState(2)
+    const [waitCalculate, setWaitCalculate] = useState(false);
+    const [waitExport, setWaitExport] = useState(false);
+
+    function handleDateChange(e: any){
+        if(e!==""){
+            let datetochange = new Date(e+"-02")
+            let mes = datetochange?.getMonth()+1
+            let year = datetochange?.getFullYear()
+            let datetoshow = `${year}-${String(mes).padStart(2, '0')}`
+            setdataMain(prev=>({...prev,datetoshow,year,month:mes}))
+        }
+    }
+
+    function search(){
+        dispatch(showBackdrop(true))
+        setrequesttipe(dataMain.totalize)
+        if(dataMain.totalize===2){
+            dispatch(getCollection(getBillingPeriodSummarySel(dataMain)))
+        }else{
+            dispatch(getCollection(getBillingPeriodSummarySelCorp(dataMain)))
+        }
+    }
+
+    useEffect(() => {
+        search()
+    }, [])
+
+    useEffect(() => {
+        if (!mainResult.mainData.loading){
+            if(mainResult.mainData.data.length){
+                setdatareport(mainResult.mainData.data[0])
+            }
+            dispatch(showBackdrop(false))
+        }
+    }, [mainResult.mainData])
+
+    useEffect(() => {
+        if (waitCalculate) {
+            if (!executeCalculate.loading && !executeCalculate.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                dispatch(showBackdrop(false));
+                setWaitCalculate(false);
+            } else if (executeCalculate.error) {
+                const message = t(executeCalculate.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message }))
+                dispatch(showBackdrop(false));
+                setWaitCalculate(false);
+            }
+        }
+    }, [executeCalculate,waitCalculate])
+
+    const triggerExportDataPerson = () => {
+        dispatch(exportData(billingpersonreportsel(dataMain),"BillingPersonReport","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    const triggerExportDataUser = () => {
+        dispatch(exportData(billinguserreportsel(dataMain),"BillingUserReport","excel",true))
+        dispatch(showBackdrop(true));
+        setWaitExport(true);
+    };
+
+    const goToPayment = () => {
+        setPageSelected(2);
+    };
+
+    const triggerExportDataCalc = () => {
+        dispatch(showBackdrop(true));
+        dispatch(execute(getBillingPeriodCalc(dataMain)))
+        setWaitCalculate(true);
+    };
+
+    useEffect(() => {
+        if (waitExport) {
+            if (!resExportData.loading && !resExportData.error) {
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+                window.open(resExportData.url, '_blank');
+            } else if (resExportData.error) {
+                const errormessage = t(resExportData.code || "error_unexpected_error", { module: t(langKeys.person).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                dispatch(showBackdrop(false));
+                setWaitExport(false);
+            }
+        }
+    }, [resExportData, waitExport]);
+
+    return (
+        <Fragment>
+            <div>
+                <div style={{display: 'flex', gap: 8, flexWrap: 'wrap'}}>
+                    <TextField
+                        id="date"
+                        className={classes.fieldsfilter}
+                        type="month"
+                        variant="outlined"
+                        onChange={(e)=>handleDateChange(e.target.value)}
+                        value={dataMain.datetoshow}
+                        size="small"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.corporation)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.corpid}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,corpid:value?.corpid||0,orgid:0}))}
+                        data={dataCorpList}
+                        optionDesc="description"
+                        optionValue="corpid"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.organization)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.orgid}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,orgid:value?.orgid||0}))}
+                        data={dataOrgList.filter((e:any)=>{return e.corpid===dataMain.corpid})}
+                        optionDesc="orgdesc"
+                        optionValue="orgid"
+                    />
+                    <FieldSelect
+                        label={t(langKeys.totalize)}
+                        className={classes.fieldsfilter}
+                        valueDefault={dataMain.totalize}
+                        variant="outlined"
+                        onChange={(value) => setdataMain(prev=>({...prev,totalize:value?.value||0}))}
+                        data={datatotalize}
+                        optionDesc="description"
+                        optionValue="value"
+                    />
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={mainResult.mainData.loading}
+                        startIcon={<SearchIcon style={{ color: 'white' }} />}
+                        style={{ width: 120, backgroundColor: "#55BD84" }}
+                        onClick={() => search()}
+                    >{t(langKeys.search)}
+                    </Button>
+                    {!mainResult.mainData.loading && mainResult.mainData.data.length &&(
+                        <Fragment>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                startIcon={<RefreshIcon color="secondary" />}
+                                onClick={() => triggerExportDataCalc()}
+                                style={{ backgroundColor: "#55BD84" }}
+                            >{`${t(langKeys.calculate)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => exportExcel(String(t(langKeys.periodreport) || '') + "Report", mainResult.mainData.data)}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.download)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"                            
+                                style={{marginRight: 10}}
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataPerson()}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.uniquecontacts)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => triggerExportDataUser()}
+                                startIcon={<DownloadIcon />}
+                            >{`${t(langKeys.report)} ${t(langKeys.agent_plural)}`}
+                            </Button>
+                            <Button
+                                className={classes.button}
+                                variant="contained"
+                                color="primary"
+                                disabled={resExportData.loading}
+                                onClick={() => goToPayment()}
+                                startIcon={<PaymentIcon />}
+                            >{`${t(langKeys.gotopay)}`}
+                            </Button>
+                        </Fragment>)
+                    }
+                </div>
+            </div>
+            {
+                !mainResult.mainData.loading && (
+                <div style={{width:"100%"}}>
+                    <div className={classes.containerDetail}>
+                        <div className="row-zyx" >
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.client)}
+                                value={requesttipe===2?datareport.orgdesc:datareport.corpdesc}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={"Plan"}
+                                value={datareport.billingplan}
+                            />
+                        </div>
+                        <div className="row-zyx">
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.period)}
+                                value={`${datareport.year}-${String(datareport.month).padStart(2, '0')}`}
+                            />
+                        </div>
+                        <TableContainer component={Paper}>
+                            <Table aria-label="customized table">
+                                <TableHead>
+                                <TableRow>
+                                    <StyledTableCell>Item</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.quantity)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.unitaryprice)}</StyledTableCell>
+                                    <StyledTableCell align="right">{t(langKeys.amount)}</StyledTableCell>
+                                </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <b>{t(langKeys.basecost)}</b>
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell  align="right">
+                                        $ {datareport.basicfee?formatNumber(datareport.basicfee):"0.00"}
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <div><b>{t(langKeys.agent_plural)}</b></div>
+                                            <div>{t(langKeys.contracted)}</div>
+                                            <div>{t(langKeys.additional)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumberNoDecimals(datareport.userfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.useradditionalquantity)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.useradditionalfee?formatNumber(datareport.useradditionalfee):"0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>                                            
+                                            <div>$ {datareport.useradditionalcharge ?formatNumber(datareport.useradditionalcharge):"0.00"}</div>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <div><b>{t(langKeys.channel_plural)}</b></div>
+                                            <div>{t(langKeys.contracted)}</div>
+                                            <div>{t(langKeys.whatsappchannel)}</div>
+                                            <div>{t(langKeys.otherchannels)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelwhatsappquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.channelotherquantity)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.channelwhatsappfee?formatNumber(datareport.channelwhatsappfee):"0.00"}</div>
+                                            <div>$ {datareport.channelotherfee?formatNumber(datareport.channelotherfee):"0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.channelwhatsappcharge?formatNumber(datareport.channelwhatsappcharge):"0.00"}</div>
+                                            <div>$ {datareport.channelothercharge?formatNumber(datareport.channelothercharge):"0.00"}</div>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <div><b>{t(langKeys.uniquecontacts)}</b></div>
+                                            <div>{t(langKeys.freecontacts)}</div>
+                                            <div>{t(langKeys.total)} {t(langKeys.contact_plural)}</div>
+                                            <div>{t(langKeys.additional)} {t(langKeys.contact_plural)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientfreequantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientquantity)}</div>
+                                            <div>{formatNumberNoDecimals(datareport.clientadditionalquantity)}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.clientadditionalfee?formatNumber(datareport.clientadditionalfee):"0.00"}</div>
+                                        </StyledTableCell>
+                                        <StyledTableCell align="right">
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div style={{color:"transparent"}}>.</div>
+                                            <div>$ {datareport.clientadditionalcharge?formatNumber(datareport.clientadditionalcharge):"0.00"}</div>
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <b>{t(langKeys.supportplan)} {datareport.supportplan}</b>
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell  align="right">
+                                            $ {datareport.supportbasicfee?formatNumber(datareport.supportbasicfee):"0.00"}
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    { (datareport.additionalservicefee1>0 || datareport.additionalservicefee2>0 || datareport.additionalservicefee3>0) &&
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            {datareport.additionalservicefee1>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename1===""})}>{datareport.additionalservicename1===""?'.':datareport.additionalservicename1}</div>:""}
+                                            {datareport.additionalservicefee2>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename2===""})}>{datareport.additionalservicename2===""?'.':datareport.additionalservicename2}</div>:""}
+                                            {datareport.additionalservicefee3>0? <div className={clsx({[classes.transparent]: datareport.additionalservicename3===""})}>{datareport.additionalservicename3===""?'.':datareport.additionalservicename3}</div>:""}
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell  align="right">
+                                            {datareport.additionalservicefee1>0? <div>$ {datareport.additionalservicefee1?formatNumber(datareport.additionalservicefee1):"0.00"}</div>:""}
+                                            {datareport.additionalservicefee2>0? <div>$ {datareport.additionalservicefee2?formatNumber(datareport.additionalservicefee2):"0.00"}</div>:""}
+                                            {datareport.additionalservicefee3>0? <div>$ {datareport.additionalservicefee3?formatNumber(datareport.additionalservicefee3):"0.00"}</div>:""}
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                    }
+                                    <StyledTableRow>
+                                        <StyledTableCell >
+                                            <b>{t(langKeys.periodamount)}</b>
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell >
+                                        </StyledTableCell>
+                                        <StyledTableCell  align="right">
+                                        $ {datareport.totalcharge?formatNumber(datareport.totalcharge):"0.00"}
+                                        </StyledTableCell>
+                                    </StyledTableRow>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                        <div style={{paddingTop: 30, fontWeight: "bold", fontSize: "1.5em"}}>{t(langKeys.servicedata)}</div>
+                        <TableContainer component={Paper}>
+                            <Table aria-label="customized table">
+                                <TableHead>
+                                <TableRow>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.clientwhatquantity}</div>
+                                        <div>{t(langKeys.uniquecontacts)} Whatsapp</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.clientquantity - datareport.clientwhatquantity}</div>
+                                        <div>{t(langKeys.uniquecontacts)} {t(langKeys.others)}</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.conversationquantity}</div>
+                                        <div>{t(langKeys.conversation_plural)}</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.interactionquantity}</div>
+                                        <div>{t(langKeys.interaction_plural)}</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.supervisorquantity}</div>
+                                        <div>{t(langKeys.supervisor_plural)}</div>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <div>{datareport.asesorquantity}</div>
+                                        <div>{t(langKeys.assesor_plural)}</div>
+                                    </StyledTableCell>
+                                </TableRow>
+                                </TableHead>
+                            </Table>
+                        </TableContainer>
+                    </div>
+
+                </div>
+                )
+            }
+        </Fragment>
+    )
+}
+
 const Invoice: FC = () => {
     const dispatch = useDispatch();
 
@@ -1847,7 +2310,7 @@ const Invoice: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 1);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 2);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
@@ -1888,6 +2351,9 @@ const Invoice: FC = () => {
                 {user?.roledesc === "SUPERADMIN" && 
                     <AntTab label={t(langKeys.costperperiod)} />
                 }
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
+                    <AntTab label={t(langKeys.periodreport)} />
+                }
                 <AntTab label={t(langKeys.invoice_generation)} />
                 <AntTab label={t(langKeys.invoice)} />
             </Tabs>
@@ -1898,10 +2364,15 @@ const Invoice: FC = () => {
             }
             {pageSelected === 1 &&
                 <div style={{ marginTop: 16 }}>
-                    <InvoiceGeneration />
+                    <PeriodReport dataPlan={multiData} setPageSelected={setPageSelected}/>
                 </div>
             }
             {pageSelected === 2 &&
+                <div style={{ marginTop: 16 }}>
+                    <InvoiceGeneration />
+                </div>
+            }
+            {pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
                     <InvoiceControl />
                 </div>

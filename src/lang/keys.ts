@@ -1743,6 +1743,7 @@ export const langKeys = {
     costcommentary: "costcommentary",
     confirmation_calculate: 'confirmation_calculate',
     successful_calculate: 'successful_calculate',
+    gotopay: 'gotopay',
 };
 
 export type LangKeys = typeof langKeys;

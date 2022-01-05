@@ -902,7 +902,7 @@ const translation: LangKeys = {
     field_afterstart: 'El campo debe ser posterio al inicio.',
     affirmative: 'Si',
     negative: 'No',
-    periodreport: 'Reporte del período',    
+    periodreport: 'Reporte del Período',    
     totalize: 'Totalizar',
     client: "Cliente",
     rate: "Tasa",
@@ -947,7 +947,7 @@ const translation: LangKeys = {
     conversationclientwhatcharge: "Costo por conversaciones WA iniciadas por el cliente",
     conversationquantity: "Cantidad de conversaciones",
     conversationcompanywhatquantity: "Cantidad de conversaciones WA iniciadas por la empresa",
-    uniquecontacts: "Contactos únicos",
+    uniquecontacts: "Contactos Únicos",
     month_01: "Enero",
     month_02: "Febrero",
     month_03: "Marzo",
@@ -1742,6 +1742,7 @@ const translation: LangKeys = {
     costcommentary: "Lista de precios vigente a partir de febrero del 2021",
     confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
     successful_calculate: 'Se calculó satisfactoriamente',
+    gotopay: 'Ir a Pagos',
 };
 
 const esResource: ResourceLanguage = {

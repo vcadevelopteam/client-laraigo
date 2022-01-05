@@ -149,7 +149,7 @@ const translation: LangKeys = {
     email: 'Email',
     with: 'with',
     address: 'Address',
-    periodreport: 'Period report',    
+    periodreport: 'Period Report',    
     totalize: 'Totalize',
     client: "Client",
     rate: "Rate",
@@ -1748,6 +1748,7 @@ const translation: LangKeys = {
     costcommentary: "Price list valid as of February 2021",
     confirmation_calculate: 'Are you sure you want to calculate the data for the current month?',
     successful_calculate: 'Calculated successfully',
+    gotopay: 'Go to Payment',
 };
 
 const enResource: ResourceLanguage = {
