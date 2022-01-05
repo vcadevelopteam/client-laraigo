@@ -1132,6 +1132,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     const [disableSearch, setdisableSearch] = useState(false);
     const [rowSelected, setRowSelected] = useState<RowSelected>({ row: null, edit: false });
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitCalculate, setWaitCalculate] = useState(false);
     const [waitSave, setWaitSave] = useState(false);
 
     function search(){
@@ -1212,7 +1213,13 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
     useEffect(() => {
         if (waitSave) {
             if (!executeResult.loading && !executeResult.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                if (waitCalculate) {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_calculate) }))
+                    setWaitCalculate(false);
+                }
+                else {
+                    dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_delete) }))
+                }
                 fetchData();
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -1223,7 +1230,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 setWaitSave(false);
             }
         }
-    }, [executeResult, waitSave])
+    }, [executeResult, waitSave, waitCalculate])
 
     const handleEdit = (row: Dictionary) => {
         setViewSelected("view-2");
@@ -1234,7 +1241,8 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         const callback = () => {
             dispatch(execute(getBillingPeriodCalcRefreshAll(3.968)));
             dispatch(showBackdrop(true));
-            setWaitSave(true)
+            setWaitSave(true);
+            setWaitCalculate(true);
         }
 
         dispatch(manageConfirmation({
