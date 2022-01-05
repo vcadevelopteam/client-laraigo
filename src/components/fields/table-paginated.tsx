@@ -867,7 +867,7 @@ interface IFilters {
 }
 
 interface IOptions {
-    ignore: string[];
+    ignore?: string[];
 }
 
 export function useQueryParams(query: URLSearchParams, options: IOptions = { ignore: [] }) {
@@ -885,18 +885,22 @@ export function useQueryParams(query: URLSearchParams, options: IOptions = { ign
                 key === "startDate" ||
                 key === "page" ||
                 key.includes('-operator') ||
-                ignore.includes(key)) {
+                (ignore || []).includes(key)) {
                 return;
             }
 
-            map.filters[key] = { value, operator: query.get(`${key}-operator`)! };
+            const name = `${key}-operator`;
+            map.filters[key] = { value, operator: query.get(name)! };
         });
 
         return map;
     }, [query]);
 }
 
-export function buildQueryFilters(filters: ITablePaginatedFilter, init?: string | string[][] | Record<string, string>) {
+export function buildQueryFilters(
+    filters: ITablePaginatedFilter,
+    init?: string | string[][] | Record<string, string>,
+) {
     const params = new URLSearchParams(init);
 
     for (const key in filters) {
