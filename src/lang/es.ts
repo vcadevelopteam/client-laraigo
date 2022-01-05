@@ -980,7 +980,7 @@ const translation: LangKeys = {
     clientfreequantity: "Límite de contactos únicos",
     clientadditionalfee:"PU por contacto adicional",
     allowhsm:"Permite envío de HSM",
-    inputvalidation: "Validación de inputs",
+    inputvalidation: "Validación de entrada de datos",
     hsmfee:"PU por mensaje HSM",
     back: 'Regresar',
     continue: 'Continuar',

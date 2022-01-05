@@ -68,11 +68,11 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
     const dataSupplier = multiData[1] && multiData[1].success ? multiData[1].data : [];
     const dataGroups = multiData[2] && multiData[2].success ? multiData[2].data : [];
     const datachannels = multiData[3] && multiData[3].success ? multiData[3].data : [];
-    console.log(edit)
+
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: edit?(row?.slaid || 0):0,
+            id: row?.slaid || 0,
             description: row?.description || '',
             company: row?.company || '',
             communicationchannelid:  row?.communicationchannelid || '',
@@ -89,7 +89,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
             usertmepercentmax: row?.usertmepercentmax || 0,
 
             organization: row?.organization || '',
-            operation: edit?(row ? "EDIT" : "INSERT"):"INSERT"
+            operation: row ? "EDIT" : "INSERT"
         }
     });
 
@@ -167,6 +167,7 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
+                        {edit &&
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -176,152 +177,153 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.save)}
                         </Button>
+                        }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.organization)} 
-                            className="col-6"
-                            onChange={(value) => setValue('organization', value)}
-                            valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
-                            error={errors?.organization?.message}
-                            disabled={true}
-                        />
-                        <FieldSelect
-                            label={t(langKeys.supplier)} 
-                            className="col-6"
-                            valueDefault={row ? (row.company || "") : ""}
-                            onChange={(value) => setValue('company', value? value.domainvalue: '')}
-                            error={errors?.company?.message}
-                            data={dataSupplier}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
+                            <FieldEdit
+                                label={t(langKeys.organization)} 
+                                className="col-6"
+                                onChange={(value) => setValue('organization', value)}
+                                valueDefault={row ? (row.orgdesc || "") : user?.orgdesc}
+                                error={errors?.organization?.message}
+                                disabled={true}
+                            />
+                            <FieldSelect
+                                label={t(langKeys.supplier)} 
+                                className="col-6"
+                                valueDefault={row ? (row.company || "") : ""}
+                                onChange={(value) => setValue('company', value? value.domainvalue: '')}
+                                error={errors?.company?.message}
+                                data={dataSupplier}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
                     </div>  
                     <div className="row-zyx">
-                        <FieldEdit
-                            label={t(langKeys.description)} //transformar a multiselect
-                            className="col-12"
-                            onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
-                            error={errors?.description?.message}
-                        />
+                            <FieldEdit
+                                label={t(langKeys.description)} //transformar a multiselect
+                                className="col-12"
+                                onChange={(value) => setValue('description', value)}
+                                valueDefault={row ? (row.description || "") : ""}
+                                error={errors?.description?.message}
+                            />
                     </div>
                     <div className="row-zyx">
-                        <FieldMultiSelect
-                            label={t(langKeys.channel_plural)} //transformar a multiselect
-                            className="col-12"
-                            onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
-                            valueDefault={row?.communicationchannelid || ""}
-                            error={errors?.communicationchannelid?.message}
-                            data={datachannels}
-                            optionDesc="communicationchanneldesc"
-                            optionValue="communicationchannelid"
-                        />
+                            <FieldMultiSelect
+                                label={t(langKeys.channel_plural)} //transformar a multiselect
+                                className="col-12"
+                                onChange={(value) => setValue('communicationchannelid', value.map((o: Dictionary) => o.communicationchannelid).join())}
+                                valueDefault={row?.communicationchannelid || ""}
+                                error={errors?.communicationchannelid?.message}
+                                data={datachannels}
+                                optionDesc="communicationchanneldesc"
+                                optionValue="communicationchannelid"
+                            />
                     </div>
                     <div className="row-zyx">
-                        <FieldMultiSelect
-                            label={t(langKeys.group)} 
-                            className="col-6"
-                            onChange={(value) => setValue('usergroup', value.map((o: Dictionary) => o.domainvalue).join())}
-                            valueDefault={row?.usergroup || ""}
-                            error={errors?.usergroup?.message}
-                            data={dataGroups}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
-                        <FieldSelect
-                            label={t(langKeys.status)}
-                            className="col-6"
-                            valueDefault={row?.status || "ACTIVO"}
-                            onChange={(value) => setValue('status', value? value.domainvalue: '')}
-                            error={errors?.status?.message}
-                            uset={true}
-                            prefixTranslation="status_"
-                            data={dataStatus}
-                            optionDesc="domaindesc"
-                            optionValue="domainvalue"
-                        />
+                            <FieldMultiSelect
+                                label={t(langKeys.group)} 
+                                className="col-6"
+                                onChange={(value) => setValue('usergroup', value.map((o: Dictionary) => o.domainvalue).join())}
+                                valueDefault={row?.usergroup || ""}
+                                error={errors?.usergroup?.message}
+                                data={dataGroups}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
+                            <FieldSelect
+                                label={t(langKeys.status)}
+                                className="col-6"
+                                valueDefault={row?.status || "ACTIVO"}
+                                onChange={(value) => setValue('status', value? value.domainvalue: '')}
+                                error={errors?.status?.message}
+                                uset={true}
+                                prefixTranslation="status_"
+                                data={dataStatus}
+                                optionDesc="domaindesc"
+                                optionValue="domainvalue"
+                            />
                     </div>
                     <div style={{ marginBottom: '16px' }}>
                         <div className={classes.title}>{t(langKeys.detail)}</div>
                         <div className="row-zyx">
-                            <FieldEdit
-                            type="time"
-                            label={"TMO total min"} 
-                            className="col-4"
-                            onChange={(value) => setValue('totaltmomin', value)}
-                            valueDefault={row ? (row.totaltmomin || "") : ""}
-                            error={errors?.totaltmomin?.message}
-                            />
-                            <FieldEdit
+                                <FieldEdit
                                 type="time"
-                                label={"TMO total max"} 
+                                label={"TMO total min"} 
                                 className="col-4"
-                                onChange={(value) => setValue('totaltmo', value)}
-                                valueDefault={row ? (row.totaltmo || "") : ""}
-                                error={errors?.totaltmo?.message}
-                            />
-                            <FieldEdit
-                                type="number"
-                                label={t(langKeys.tmopercentobj)} 
-                                className="col-4"
-                                onChange={(value) => setValue('totaltmopercentmax', value)}
-                                valueDefault={row ? (row.totaltmopercentmax || "") : ""}
-                                error={errors?.totaltmopercentmax?.message}
-                            />
+                                onChange={(value) => setValue('totaltmomin', value)}
+                                valueDefault={row ? (row.totaltmomin || "") : ""}
+                                error={errors?.totaltmomin?.message}
+                                />
+                                <FieldEdit
+                                    type="time"
+                                    label={"TMO total max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('totaltmo', value)}
+                                    valueDefault={row ? (row.totaltmo || "") : ""}
+                                    error={errors?.totaltmo?.message}
+                                />
+                                <FieldEdit
+                                    type="number"
+                                    label={t(langKeys.tmopercentobj)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('totaltmopercentmax', value)}
+                                    valueDefault={row ? (row.totaltmopercentmax || "") : ""}
+                                    error={errors?.totaltmopercentmax?.message}
+                                />
                         </div>
                         <div className="row-zyx">
-                            <FieldEdit
+                                <FieldEdit
                                 type="time"
                                 label={"TMO user min"} 
                                 className="col-4"
                                 onChange={(value) => setValue('usertmomin', value)}
                                 valueDefault={row ? (row.usertmomin || "") : ""}
                                 error={errors?.usertmomin?.message}
-                            />
-                            <FieldEdit
-                                type="time"
-                                label={"TMO user max"} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmo', value)}
-                                valueDefault={row ? (row.usertmo || "") : ""}
-                                error={errors?.usertmo?.message}
-                            />
-                            <FieldEdit
-                                type="number"
-                                label={t(langKeys.usertmopercentmax)} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmopercentmax', value)}
-                                valueDefault={row ? (row.usertmopercentmax || "") : ""}
-                                error={errors?.usertmopercentmax?.message}
-                            />
+                                />
+                                <FieldEdit
+                                    type="time"
+                                    label={"TMO user max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmo', value)}
+                                    valueDefault={row ? (row.usertmo || "") : ""}
+                                    error={errors?.usertmo?.message}
+                                />
+                                <FieldEdit
+                                    type="number"
+                                    label={t(langKeys.usertmopercentmax)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmopercentmax', value)}
+                                    valueDefault={row ? (row.usertmopercentmax || "") : ""}
+                                    error={errors?.usertmopercentmax?.message}
+                                />
                         </div>
                         <div className="row-zyx">
-                            <FieldEdit
-                                type="time"
-                                label={"TME user max"} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertme', value)}
-                                valueDefault={row ? (row.usertme || "") : ""}
-                                error={errors?.usertme?.message}
-                            />
-                            <FieldEdit
-                                type="number"
-                                label={t(langKeys.usertmepercentmax)} 
-                                className="col-4"
-                                onChange={(value) => setValue('usertmepercentmax', value)}
-                                valueDefault={row ? (row.usertmepercentmax || "") : ""}
-                                error={errors?.usertmepercentmax?.message}
-                            />
-                            <FieldEdit
-                                label={t(langKeys.productivitybyhour)} 
-                                className="col-4"
-                                onChange={(value) => setValue('productivitybyhour', value)}
-                                valueDefault={row ? (row.productivitybyhour || "") : ""}
-                                error={errors?.productivitybyhour?.message}
-                            />
+                                <FieldEdit
+                                    type="time"
+                                    label={"TME user max"} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertme', value)}
+                                    valueDefault={row ? (row.usertme || "") : ""}
+                                    error={errors?.usertme?.message}
+                                />
+                                <FieldEdit
+                                    type="number"
+                                    label={t(langKeys.usertmepercentmax)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('usertmepercentmax', value)}
+                                    valueDefault={row ? (row.usertmepercentmax || "") : ""}
+                                    error={errors?.usertmepercentmax?.message}
+                                />
+                                <FieldEdit
+                                    label={t(langKeys.productivitybyhour)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('productivitybyhour', value)}
+                                    valueDefault={row ? (row.productivitybyhour || "") : ""}
+                                    error={errors?.productivitybyhour?.message}
+                                />
                         </div>
                         
                     </div>
@@ -354,10 +356,9 @@ const SLA: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            extraOption={t(langKeys.duplicate)}
+                            viewFunction={() => handleView(row)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
-                            extraFunction={() => handleDuplicate(row)}
                         />
                     )
                 }
@@ -378,19 +379,37 @@ const SLA: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.tmototalobj),
+                Header: t(langKeys.tmopercentobj),
                 accessor: 'totaltmopercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totaltmopercentmax } = props.cell.row.original;
+                    return `${(Number(totaltmopercentmax) || 0).toFixed(2)} %`;
+                }
             },
             {
-                Header: t(langKeys.tmoasesorobj),
+                Header: t(langKeys.usertmopercentmax),
                 accessor: 'usertmopercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { usertmopercentmax } = props.cell.row.original;
+                    return `${(Number(usertmopercentmax) || 0).toFixed(2)} %`;
+                }
             },
             {
-                Header: t(langKeys.tmeasesorobj),
+                Header: t(langKeys.usertmepercentmax),
                 accessor: 'usertmepercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { usertmepercentmax } = props.cell.row.original;
+                    return `${(Number(usertmepercentmax) || 0).toFixed(2)} %`;
+                }
             },            
             {
                 Header: t(langKeys.status),
@@ -443,7 +462,7 @@ const SLA: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleDuplicate = (row: Dictionary) => {
+    const handleView = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: false });
     }
