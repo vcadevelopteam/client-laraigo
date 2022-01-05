@@ -149,6 +149,15 @@ export const getValuesFromDomain = (domainname: string, keytmp?: any, orgid?: nu
         orgid: orgid || undefined
     }
 });
+// solo devuelve desc y value, no id (USAR ESTE PARA LOS SELECTS SIMPLES DE DOMINIOS)
+export const getValuesFromDomainLight = (domainname: string, keytmp?: any, orgid?: number | null): IRequestBody => ({
+    method: "UFN_DOMAIN_LST_VALUES_ONLY_DATA",
+    key: "UFN_DOMAIN_LST_VALUES_ONLY_DATA" + (keytmp || ""),
+    parameters: {
+        domainname,
+        orgid: orgid || undefined
+    }
+});
 
 export const getValuesFromDomainCorp = (domainname: string, keytmp?: any, corpid?: number | null, orgid?: number | null): IRequestBody => ({
     method: "UFN_DOMAIN_LST_VALORES",
@@ -601,6 +610,11 @@ export const getMessageTemplateSel = (id: number): IRequestBody => ({
         id: id,
         all: id === 0,
     }
+});
+
+export const getMessageTemplateLst = (): IRequestBody => ({
+    method: "UFN_MESSAGETEMPLATE_LST",
+    parameters: {}
 });
 
 export const insMessageTemplate = (

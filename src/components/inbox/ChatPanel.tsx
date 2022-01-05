@@ -91,8 +91,8 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
     }, [sendingRes, waitClose])
 
     useEffect(() => {
-        setTemplatesList(multiData?.data[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
-    }, [])
+        setTemplatesList(multiData?.data?.[5] && multiData?.data[5].data.filter(x => x.type === "HSM"))
+    }, [multiData.data])
 
     useEffect(() => {
         if (openModal) {
@@ -548,7 +548,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
                 />
-                 <FieldMultiSelect
+                <FieldMultiSelect
                     label={t(langKeys.product_plural)}
                     className="col-12"
                     valueDefault={getValues('products')}
@@ -798,6 +798,15 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         {t(langKeys.send_hsm)}
                     </MenuItem>
                 }
+                <MenuItem onClick={() => {
+                    setAnchorEl(null)
+                    setOpenModalHSM(true)
+                }}>
+                    <ListItemIcon>
+                        <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
+                    </ListItemIcon>
+                    {t(langKeys.send_hsm)}
+                </MenuItem>
                 {ticketSelected?.status !== 'CERRADO' &&
                     <MenuItem onClick={() => {
                         setAnchorEl(null)

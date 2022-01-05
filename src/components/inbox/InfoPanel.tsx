@@ -564,8 +564,8 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
         })}>
             <div ref={el}></div>
             {previewTicketList.data?.map((ticket, index) => (
-                <div>
-                    <div key={index} className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
+                <div key={index}>
+                    <div className={classes.containerPreviewTicket} onClick={() => handleClickOpen(ticket)}>
                         <div className={classes.titlePreviewTicket}>
                             <GetIcon color={ticket.coloricon} channelType={ticket.communicationchanneltype} />
                             <div>{ticket.ticketnum}</div>

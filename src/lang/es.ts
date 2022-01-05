@@ -1569,6 +1569,7 @@ const translation: LangKeys = {
     lastuser: 'Último asesor',
     ticket_number: "Número de ticket",
     total_duration: "Duración total",
+    ready_to_close: 'Listo para cerrar',
     waiting_person_time: "Tiempo de espera de la persona",
     time_to_automatic_closing: "Tiempo restante para cierre automático",
     new: 'Nuevo',

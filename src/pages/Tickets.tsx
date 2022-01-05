@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomain, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -868,12 +868,12 @@ const Tickets = () => {
     useEffect(() => {
         dispatch(getMultiCollection([
             getCommChannelLst(),
-            getValuesFromDomain("GRUPOS"),
-            getValuesFromDomain("MOTIVOCIERRE"),
+            getValuesFromDomainLight("GRUPOS"),
+            getValuesFromDomainLight("MOTIVOCIERRE"),
             getComunicationChannelDelegate(""),
             getClassificationLevel1("TIPIFICACION"),
             getUserSel(0),
-            getValuesFromDomain("GRUPOS"),
+            getValuesFromDomainLight("GRUPOS"),
         ]));
 
         return () => {

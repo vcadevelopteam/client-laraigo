@@ -490,6 +490,7 @@ export const langKeys = {
 
     changePassword: 'changePassword',
     status_history: 'status_history',
+    ready_to_close: 'ready_to_close',
 
     user: 'user',
     user_plural: 'user_plural',
