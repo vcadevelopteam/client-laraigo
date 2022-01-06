@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from 'react'
-import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation } from 'common/helpers';
+import { convertLocalDate, getListUsers, getClassificationLevel1, getCommChannelLst, getComunicationChannelDelegate, getPaginatedTicket, getTicketExport, getValuesFromDomainLight, insConversationClassificationMassive, reassignMassiveTicket, getUserSel, getHistoryStatusConversation, getCampaignLst } from 'common/helpers';
 import { getCollectionPaginated, exportData, getMultiCollection, resetAllMain, execute, getCollectionAux, resetMainAux } from 'store/main/actions';
 import { showSnackbar, showBackdrop } from 'store/popus/actions';
 import TablePaginated from 'components/fields/table-paginated';
@@ -484,7 +484,7 @@ const IconOptions: React.FC<{
                         onHandlerReassign();
                     }}>
                         <ListItemIcon color="inherit">
-                            <ReassignIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <ReassignIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.reassign_ticket)}
                     </MenuItem>
@@ -495,7 +495,7 @@ const IconOptions: React.FC<{
                         onHandlerClassify();
                     }}>
                         <ListItemIcon>
-                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <TipifyIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.tipify_ticket)}
                     </MenuItem>
@@ -506,7 +506,7 @@ const IconOptions: React.FC<{
                         onHandlerClose();
                     }}>
                         <ListItemIcon>
-                            <CloseTicketIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <CloseTicketIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.close_ticket)}
                     </MenuItem>
@@ -517,7 +517,7 @@ const IconOptions: React.FC<{
                         onHandlerShowHistory();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.status_history)}
                     </MenuItem>
@@ -767,6 +767,10 @@ const Tickets = () => {
                 accessor: 'empresa'
             },
             {
+                Header: t(langKeys.campaign),
+                accessor: 'campaign'
+            },
+            {
                 Header: t(langKeys.ticket_tmoasesor),
                 helpText: t(langKeys.ticket_tmoasesor_help),
                 accessor: 'tmoasesor',
@@ -900,6 +904,7 @@ const Tickets = () => {
             getClassificationLevel1("TIPIFICACION"),
             getUserSel(0),
             getValuesFromDomainLight("GRUPOS"),
+            getCampaignLst(),
         ]));
 
         return () => {
@@ -998,7 +1003,6 @@ const Tickets = () => {
                 selectionKey={selectionKey}
                 setSelectedRows={setSelectedRows}
                 filterRangeDate="today"
-
                 FiltersElement={React.useMemo(() => (
                     <>
                         <FieldMultiSelect
@@ -1035,6 +1039,18 @@ const Tickets = () => {
                             data={userList}
                             optionDesc="fullname"
                             optionValue="userid"
+                            disabled={mainPaginated.loading}
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.campaign)}
+                            className={classes.filterComponent}
+                            key="fieldMultiSelect_campaign"
+                            valueDefault={allParameters["campaignid"] || ""}
+                            onChange={(value) => setValue("campaignid", value ? value.map((o: Dictionary) => o.id).join() : '')}
+                            variant="outlined"
+                            data={mainResult?.multiData?.data[7]?.data || []}
+                            optionDesc="title"
+                            optionValue="id"
                             disabled={mainPaginated.loading}
                         />
                     </>

@@ -533,15 +533,17 @@ const TableZyx = React.memo(({
     }
 
     const [dateRange, setdateRange] = useState<Range>({
-        startDate: filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
-        endDate: filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
+        startDate: initialStartDate ? new Date(initialStartDate) : filterRangeDate === "month" ? getFirstDayMonth() : getDateToday(),
+        endDate: initialEndDate ? new Date(initialEndDate) : filterRangeDate === "month" ? getLastDayMonth() : getDateToday(),
         key: 'selection'
     });
 
     const triggertmp = (fromButton: boolean = false) => {
         if (fromButton)
             setPagination(prev => ({ ...prev, pageIndex: 0, trigger: false }));
-        fetchData && fetchData({
+
+        if (!fetchData) return;
+        fetchData({
             ...pagination,
             pageSize,
             pageIndex: fromButton ? 0 : pagination.pageIndex,
@@ -552,6 +554,7 @@ const TableZyx = React.memo(({
         });
         setTFilters(prev => ({
             ...prev,
+            page: fromButton ? 0 : pagination.pageIndex,
             startDate: dateRange.startDate ? (new Date(dateRange.startDate.setHours(10))).getTime() : null,
             endDate: dateRange.endDate ? (new Date(dateRange.endDate.setHours(10))).getTime() : null,
         }));
@@ -729,7 +732,7 @@ const TableZyx = React.memo(({
                                                             </Box>
                                                             {!!column.helpText && (
                                                                 <Tooltip title={column.helpText} arrow placement="top" >
-                                                                    <InfoRoundedIcon color='primary' className={classes.iconHelpText} />
+                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                                                 </Tooltip>
                                                             )}
                                                         </div>

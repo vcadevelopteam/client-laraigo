@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import SaveIcon from '@material-ui/icons/Save';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'hooks';
-import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain } from 'store/lead/actions';
+import { archiveLead, getAdvisers, getLead, getLeadActivities, getLeadHistory, getLeadLogNotes, getLeadPhases, markDoneActivity, resetArchiveLead, resetGetLead, resetGetLeadActivities, resetGetLeadHistory, resetGetLeadLogNotes, resetGetLeadPhases, resetMarkDoneActivity, resetSaveLead, resetSaveLeadActivity, resetSaveLeadLogNote, saveLeadActivity, saveLeadLogNote, saveLeadWithFiles, updateLeadTags, saveLead as saveLeadAction, resetGetLeadProductsDomain, getLeadProductsDomain, getLeadTagsDomain, resetGetLeadTagsDomain } from 'store/lead/actions';
 import { Dictionary, ICrmLead, IcrmLeadActivity, ICrmLeadActivitySave, ICrmLeadHistory, ICrmLeadNote, ICrmLeadNoteSave, ICrmLeadTagsSave, IDomain, IFetchData, IPerson } from '@types';
 import { showSnackbar } from 'store/popus/actions';
 import { Rating, Timeline, TimelineConnector, TimelineContent, TimelineDot, TimelineItem, TimelineSeparator } from '@material-ui/lab';
@@ -128,6 +128,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
     const leadHistory = useSelector(state => state.lead.leadHistory);
     const updateLeadTagProcess = useSelector(state => state.lead.updateLeadTags);
     const leadProductsDomain = useSelector(state => state.lead.leadProductsDomain);
+    const leadTagsDomain = useSelector(state => state.lead.leadTagsDomain);
 
     const { register, handleSubmit, setValue, getValues, formState: { errors }, reset } = useForm<any>({
         defaultValues: {
@@ -219,6 +220,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
         // dispatch(getLeadPhases(getValuesFromDomain("ESTADOSOPORTUNIDAD")));
         dispatch(getLeadPhases(getColumnsSel(0, true)));
         dispatch(getLeadProductsDomain(getValuesFromDomain('OPORTUNIDADPRODUCTOS')));
+        dispatch(getLeadTagsDomain(getValuesFromDomain('OPORTUNIDADETIQUETAS')));
 
         return () => {
             dispatch(resetGetLead());
@@ -232,6 +234,7 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
             dispatch(resetSaveLeadLogNote());
             dispatch(resetGetLeadHistory());
             dispatch(resetGetLeadProductsDomain());
+            dispatch(resetGetLeadTagsDomain());
         };
     }, [edit, match.params.id, dispatch]);
 
@@ -607,8 +610,8 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     label={t(langKeys.tags)}
                                     className={classes.field}
                                     valueDefault={getValues('tags')}
-                                    onChange={(value: ({title: string} | string)[], value2: {action: "create-option" | "remove-option", option: {option: string}}) => {
-                                        const tags = value.map((o: any) => o.title || o).join();
+                                    onChange={(value: ({domaindesc: string} | string)[], value2: {action: "create-option" | "remove-option", option: {option: string}}) => {
+                                        const tags = value.map((o: any) => o.domaindesc || o).join();
                                         setValue('tags', tags);
 
                                         if (value2.action === "create-option") {
@@ -619,9 +622,9 @@ export const LeadForm: FC<{ edit?: boolean }> = ({ edit = false }) => {
                                     }}
                                     error={errors?.tags?.message}
                                     loading={false}
-                                    data={tagsOptions.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (tagsOptions.findIndex(x => x.title === i)) < 0).map((title: any) => ({ title })))}
-                                    optionDesc="title"
-                                    optionValue="title"
+                                    data={leadTagsDomain.data.concat(getValues('tags').split(',').filter((i: any) => i !== '' && (leadTagsDomain.data.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
+                                    optionDesc="domaindesc"
+                                    optionValue="domaindesc"
                                     readOnly={isStatusClosed() || iSProcessLoading()}
                                 />
                                 {(!!getValues('userid') || !edit) &&

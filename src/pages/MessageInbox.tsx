@@ -61,6 +61,7 @@ const MessageInbox: React.FC = () => {
             getCommChannelLst(),
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
             getValuesFromDomainLight("MOTIVOSUSPENSION"),
+            getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
         ]))
         setinitial(false)
         return () => {

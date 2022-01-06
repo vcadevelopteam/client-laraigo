@@ -333,16 +333,16 @@ const filterAboutStatusName = (data: ITicket[], page: number, searchName: string
     if (page === 0 && searchName !== "") {
         return data.filter(item => item.status === "ASIGNADO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
-    if (page === 1 && searchName === "") {
+    if (page === 2 && searchName === "") {
         return data
     }
-    if (page === 1 && searchName !== "") {
+    if (page === 2 && searchName !== "") {
         return data.filter(item => (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
-    if (page === 2 && searchName === "") {
+    if (page === 1 && searchName === "") {
         return data.filter(item => item.status === "SUSPENDIDO");
     }
-    if (page === 2 && searchName !== "") {
+    if (page === 1 && searchName !== "") {
         return data.filter(item => item.status === "SUSPENDIDO" && (item.displayname + item.ticketnum).toLowerCase().includes(searchName.toLowerCase()));
     }
     return data;
@@ -444,8 +444,8 @@ const TicketsPanel: React.FC<{ classes: any, userType: string }> = ({ classes, u
                             onChange={(_, value) => setPageSelected(value)}
                         >
                             <AntTab label={`${t(langKeys.assigned)}${counterTickets.assigned < 0 ? '' : "(" + counterTickets.assigned + ")"}`} />
-                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                             <AntTab label={`${t(langKeys.paused)}${counterTickets.paused < 0 ? '' : "(" + counterTickets.paused + ")"}`} />
+                            <AntTab label={`${t(langKeys.all)}${counterTickets.all < 0 ? '' : "(" + counterTickets.all + ")"}`} />
                         </Tabs>
                         <div style={{ display: 'flex', alignItems: 'center', marginRight: 8 }}>
                             <IconButton size="small" onClick={() => setShowSearch(true)}>

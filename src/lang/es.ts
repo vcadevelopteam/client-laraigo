@@ -97,6 +97,7 @@ const translation: LangKeys = {
     search_result: 'Resultado de búsqueda',
     persons_selected: 'personas seleccionadas',
     without_result: 'Sin resultado',
+    without_files: 'Sin adjuntos',
     information: "Información",
     translationservice: 'Servicio de Traduccion',
     channeltype: 'Tipo Canal',
@@ -329,6 +330,8 @@ const translation: LangKeys = {
     companysize: "Tamaño de la empresa",
     roleincompany: "Tu rol en la empresa",
     submit: 'Enviar',
+    create: 'Crear',
+    send: 'Enviar',
     passwordsmustbeequal: "Las contraseñas deben ser iguales",
     data: "Data",
     firstandlastname: "Nombres y apellidos",
@@ -1367,7 +1370,7 @@ const translation: LangKeys = {
     educationLevel: 'Nivel de educación',
     occupation: 'Ocupación',
     alternativePhone: 'Teléfono alternativo',
-    alternativeEmail: 'Email alternativo',
+    alternativeEmail: 'Correo alternativo',
     referredBy: 'Referido por',
     firstContactDate: 'Fecha de primer contacto',
     lastContactDate: 'Fecha de último contacto',
@@ -1766,6 +1769,7 @@ const translation: LangKeys = {
 
     tmeAgent: 'TME Asesor',
     tmrAgent: 'TMR Asesor',
+    tmrClient: 'TMR Cliente',
     initialAgent: 'Asesor inicial',
     finalAgent: 'Asesor final',
 
