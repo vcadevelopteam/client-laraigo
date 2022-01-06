@@ -1152,6 +1152,7 @@ export const getTagsChatflow = () => ({
 });
 export const getReportTemplateSel = (reporttemplateid = 0) => ({
     method: "UFN_REPORTTEMPLATE_SEL",
+    key: "UFN_REPORTTEMPLATE_SEL",
     parameters: {
         reporttemplateid,
         all: reporttemplateid === 0,

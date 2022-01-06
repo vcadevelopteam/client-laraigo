@@ -69,12 +69,19 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const { t } = useTranslation();
     const classes = useStyles();
     const dispatch = useDispatch();
-    const detailCustomReport = useSelector(state => state.main.mainAux);
+    const mainAux = useSelector(state => state.main.mainAux);
     const [allParameters, setAllParameters] = useState({});
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
+    const [detailCustomReport, setDetailCustomReport] = useState<{
+        loading: boolean;
+        data: Dictionary[]
+    }>({
+        loading: false,
+        data: []
+    })
 
     const columns = React.useMemo(
         () => [
@@ -189,6 +196,12 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     );
 
     useEffect(() => {
+        if (!mainAux.error && !mainAux.loading && mainAux.key === "UFN_REPORT_USERPRODUCTIVITY_SEL") {
+            setDetailCustomReport(mainAux);
+        }
+    }, [mainAux])
+
+    useEffect(() => {
         setAllParameters({
             ...allParameters,
             startdate: dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null,
@@ -287,6 +300,10 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                     color="primary"
                                     style={{ backgroundColor: '#55BD84', width: 120 }}
                                     onClick={() => {
+                                        setDetailCustomReport({
+                                            loading: true,
+                                            data: []
+                                        })
                                         fetchData()
                                     }}
                                 >{t(langKeys.refresh)}
