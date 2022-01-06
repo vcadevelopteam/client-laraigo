@@ -341,6 +341,7 @@ const Supervisor: FC = () => {
             getCommChannelLst(),
             getValuesFromDomainLight("OPORTUNIDADPRODUCTOS"),
             getValuesFromDomainLight("MOTIVOSUSPENSION"),
+            getValuesFromDomainLight("OPORTUNIDADETIQUETAS"),
         ]))
         return () => {
             dispatch(resetAllMain());

@@ -13,7 +13,7 @@ import { getTipificationLevel2, resetGetTipificationLevel2, resetGetTipification
 import { showBackdrop, showSnackbar } from 'store/popus/actions';
 import { changeStatus, insertClassificationConversation, insLeadPerson } from 'common/helpers';
 import { execute } from 'store/main/actions';
-import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect } from 'components'
+import { ReplyPanel, InteractionsPanel, DialogZyx, FieldSelect, FieldEdit, FieldEditArray, FieldEditMulti, FieldView, FieldMultiSelect, FieldMultiSelectFreeSolo } from 'components'
 import { langKeys } from 'lang/keys';
 import { useTranslation } from 'react-i18next';
 import { useForm, useFieldArray } from 'react-hook-form';
@@ -243,10 +243,10 @@ const DialogCloseticket: React.FC<{
     useEffect(() => {
         if (waitOther) {
             if (!changeStatusRes.loading && !changeStatusRes.error) {
-                
+
                 dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
                 dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
-                
+
                 dispatch(emitEvent({
                     event: 'changeStatusTicket',
                     data: {
@@ -471,6 +471,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     const ticketSelected = useSelector(state => state.inbox.ticketSelected);
     const user = useSelector(state => state.login.validateToken.user);
     const personSelected = useSelector(state => state.inbox.person.data);
+    const [tagsDomain, setTagsDomain] = useState<Dictionary[]>([]);
 
     const { register, handleSubmit, setValue, getValues, reset, formState: { errors } } = useForm<{
         description: string;
@@ -481,7 +482,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
         email: string;
         phone: string;
         products: string;
+        tags: string;
     }>();
+
+    useEffect(() => {
+        if (!multiData.error && !multiData.loading) {
+            setTagsDomain(multiData?.data[7] ? multiData?.data[7]?.data : []);
+        }
+    }, [multiData])
 
     useEffect(() => {
         if (waitInsLead) {
@@ -511,6 +519,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                 email: personSelected?.email,
                 phone: personSelected?.phone,
                 products: '',
+                tags: ''
             })
             register('description', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
             register('expected_revenue', { validate: (value) => ((value && value.length) ? true : t(langKeys.field_required) + "") });
@@ -524,7 +533,6 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
     }, [openModal])
 
     const onSubmit = handleSubmit((data) => {
-
         const newLead: ILead = {
             leadid: 0,
             description: data.description,
@@ -532,14 +540,14 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             status: 'ACTIVO',
             expected_revenue: parseFloat(data.expected_revenue),
             date_deadline: null,
-            tags: '',
             personcommunicationchannel: ticketSelected?.personcommunicationchannel!!,
             priority: dataPriority[data.priority].option,
             conversationid: ticketSelected?.conversationid!!,
             columnid: 0,
             index: 0,
             userid: user?.userid || 0,
-            products: data.products
+            products: data.products,
+            tags: data.tags
         }
 
         const { firstname = "", lastname = "", email = "", phone = "" } = data;
@@ -596,6 +604,20 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
                     valueDefault={getValues('description')}
                     error={errors?.description?.message}
                     onChange={(value) => setValue('description', value)}
+                />
+                <FieldMultiSelectFreeSolo
+                    label={t(langKeys.tags)}
+                    className="col-12"
+                    valueDefault={getValues('tags')}
+                    onChange={(value: ({ domaindesc: string } | string)[]) => {
+                        const tags = value.map((o: any) => o.domaindesc || o).join();
+                        setValue('tags', tags);
+                    }}
+                    error={errors?.tags?.message}
+                    loading={false}
+                    data={tagsDomain.concat((getValues('tags') || '').split(',').filter((i: any) => i !== '' && (tagsDomain.findIndex(x => x.domaindesc === i)) < 0).map((domaindesc: any) => ({ domaindesc })))}
+                    optionDesc="domaindesc"
+                    optionValue="domaindesc"
                 />
                 <FieldMultiSelect
                     label={t(langKeys.product_plural)}

@@ -400,3 +400,35 @@ export const getLeadProductsDomainReset = (state: IState): IState => ({
     ...state,
     leadProductsDomain: initialState.leadProductsDomain,
 });
+
+
+
+export const getLeadTagsDomain = (state: IState): IState => ({
+    ...state,
+    leadTagsDomain: { ...state.leadTagsDomain, loading: true, error: false },
+});
+
+export const getLeadTagsDomainSuccess = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadTagsDomain: {
+        data: action.payload.data || [],
+        loading: false,
+        error: false,
+    },
+});
+
+export const getLeadTagsDomainFailure = (state: IState, action: IAction): IState => ({
+    ...state,
+    leadTagsDomain: {
+        ...state.leadTagsDomain,
+        loading: false,
+        error: true,
+        code: action.payload.code || 'getLeadTagsDomainFailure:error',
+        message: action.payload.message || 'Error al objtener el dominio OPORTUNIDADPRODUCTOS',
+    },
+});
+
+export const getLeadTagsDomainReset = (state: IState): IState => ({
+    ...state,
+    leadTagsDomain: initialState.leadTagsDomain,
+});
