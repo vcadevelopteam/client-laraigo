@@ -42,7 +42,7 @@ import {
 } from 'react-table'
 import { Range } from 'react-date-range';
 import { DateRangePicker } from 'components';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, Typography } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
 
@@ -731,7 +731,7 @@ const TableZyx = React.memo(({
                                                                 }
                                                             </Box>
                                                             {!!column.helpText && (
-                                                                <Tooltip title={column.helpText} arrow placement="top" >
+                                                                <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                                                 </Tooltip>
                                                             )}

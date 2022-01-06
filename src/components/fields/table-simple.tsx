@@ -854,7 +854,7 @@ const TableZyx = React.memo(({
                                                                 )}
                                                             </Box>
                                                             {!!column.helpText && (
-                                                                <Tooltip title={column.helpText} arrow placement="top" >
+                                                                <Tooltip title={<div style={{ fontSize: 12 }}>{column.helpText}</div>} arrow placement="top" >
                                                                     <InfoRoundedIcon color="action" className={classes.iconHelpText} />
                                                                 </Tooltip>
                                                             )}

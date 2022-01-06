@@ -18,7 +18,7 @@ import { getDateCleaned } from 'common/helpers/functions'
 
 
 const getArrayBread = (nametmp: string, nameView1: string) => ([
-    { id: "view-1", name: "Reports" },
+    { id: "view-1", name: nameView1 || "Reports" },
     { id: "view-2", name: nametmp }
 ]);
 
