@@ -676,291 +676,6 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
     )
 }
 
-const InvoiceGeneration: FC = () => {
-    const { t } = useTranslation();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
-    const resInvoice = useSelector(state => state.culqi.request);
-    const dispatch = useDispatch();
-    const multiData = useSelector(state => state.main.multiData);
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
-    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
-    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString())
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
-    const [waitSend, setWaitSend] = useState(false);
-    const [functiontrigger, setfunctiontrigger] = useState('');
-
-    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
-    useEffect(() => {
-        fetchData()
-    }, [])
-
-    useEffect(() => {
-        if (waitSave) {
-            if (!executeRes.loading && !executeRes.error) {
-                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
-                dispatch(showSnackbar({ show: true, success: true, message }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-                setViewSelected("view-1")
-            } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSave(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [executeRes, waitSave])
-
-    useEffect(() => {
-        if (waitSend) {
-            if (!resInvoice.loading && !resInvoice.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-            } else if (resInvoice.error) {
-                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSend(false);
-                dispatch(showBackdrop(false));
-            }
-        }
-    }, [resInvoice, waitSend])
-
-    useEffect(() => {
-        if (!multiData.loading && !multiData.error) {
-            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
-            if (invoiceData) {
-                setDataInvoice(invoiceData.data);
-            }
-        }
-    }, [multiData])
-
-    const columns = React.useMemo(
-        () => [
-            {
-                accessor: 'billingsupportid',
-                isComponent: true,
-                minWidth: 60,
-                width: '1%',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-                    const handleClose = () => setAnchorEl(null);
-                    return (
-                        <>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleView(row)}
-                            >
-                                <Visibility style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={(e) => setAnchorEl(e.currentTarget)}
-                            >
-                                <MoreVert style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                getContentAnchorEl={null}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleGenerate(row)
-                                }}>Generar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleSend(row)
-                                }}>Envíar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleCancel(row)
-                                }}>Anular factura</MenuItem>
-                            </Menu>
-                        </>
-                    )
-                }
-            },
-            {
-                Header: "RUC",
-                accessor: 'issuerruc',
-            },
-            {
-                Header: t(langKeys.bussinessname),
-                accessor: 'issuerbusinessname',
-            },
-            {
-                Header: t(langKeys.tradename),
-                accessor: 'issuertradename',
-            },
-            {
-                Header: "Serie",
-                accessor: 'serie',
-            },
-            {
-                Header: t(langKeys.correlative),
-                accessor: 'correlative',
-            },
-            {
-                Header: t(langKeys.dateofissue),
-                accessor: 'invoicedate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.invoicedate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.expirationdate),
-                accessor: 'expirationdate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.expirationdate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
-            },
-            {
-                Header: t(langKeys.amount),
-                accessor: 'totalamount',
-                type: 'number',
-            },
-            {
-                Header: t(langKeys.invoicestatus),
-                accessor: 'invoicestatus',
-            },
-            {
-                Header: t(langKeys.paymentstatus),
-                accessor: 'paymentstatus',
-            },
-        ],
-        []
-    );
-
-    const handleCancel = (row: Dictionary) => {
-        setfunctiontrigger("cancel")
-        const callback = () => {
-            dispatch(execute(cancelInvoice(row.invoiceid)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.cancelinvoice),
-            callback
-        }))
-    }
-    const handleGenerate = (row: Dictionary) => {
-        setfunctiontrigger("generate")
-        const callback = () => {
-            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.regenerateinvoice),
-            callback
-        }))
-    }
-    const handleSend = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(sendInvoice(row.invoiceid));
-            dispatch(showBackdrop(true));
-            setWaitSend(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.sendinvoice),
-            callback
-        }))
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
-    }
-
-    const search = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]))
-
-    if (viewSelected === "view-1") {
-        return (
-            <TableZyx
-                columns={columns}
-                ButtonsElement={() => (
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                        <FieldSelect
-                            label={t(langKeys.year)}
-                            style={{ width: 150 }}
-                            valueDefault={filterYear}
-                            variant="outlined"
-                            onChange={(value) => setFilterYear(value?.desc || "")}
-                            data={YEARS}
-                            optionDesc="desc"
-                            optionValue="desc"
-                        />
-                        <FieldMultiSelect
-                            label={t(langKeys.month)}
-                            style={{ width: 300 }}
-                            valueDefault={filterMonth}
-                            variant="outlined"
-                            onChange={(value) => setFilterMonth(value.map((o: Dictionary) => o.val).join())}
-                            data={MONTHS}
-                            uset={true}
-                            prefixTranslation="month_"
-                            optionDesc="val"
-                            optionValue="val"
-                        />
-                        <Button
-                            disabled={multiData.loading}
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SearchIcon style={{ color: 'white' }} />}
-                            style={{ width: 120, backgroundColor: "#55BD84" }}
-                            onClick={search}
-                        >{t(langKeys.search)}
-                        </Button>
-                    </div>
-                )}
-                data={dataInvoice}
-                filterGeneral={false}
-                loading={multiData.loading}
-                download={true}
-                register={false}
-            />
-        )
-    } else {
-        return (
-            <InvoiceDetail
-                fetchData={fetchData}
-                data={rowSelected}
-                setViewSelected={setViewSelected}
-            />
-        );
-    }
-}
 const InvoiceControl: FC = () => {
     const { t } = useTranslation();
     const [waitSave, setWaitSave] = useState(false);
@@ -2298,6 +2013,297 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     )
 }
 
+const Payments: FC = () => {
+    const dispatch = useDispatch();
+
+    const { t } = useTranslation();
+
+    const executeRes = useSelector(state => state.main.execute);
+    const multiData = useSelector(state => state.main.multiData);
+    const resInvoice = useSelector(state => state.culqi.request);
+
+    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
+    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
+    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+    const [functiontrigger, setfunctiontrigger] = useState('');
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitSend, setWaitSend] = useState(false);
+
+    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+    const search = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+
+    useEffect(() => {
+        fetchData()
+    }, [])
+
+    useEffect(() => {
+        if (waitSave) {
+            if (!executeRes.loading && !executeRes.error) {
+                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
+                dispatch(showSnackbar({ show: true, success: true, message }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+                setViewSelected("view-1")
+            } else if (executeRes.error) {
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSave(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [executeRes, waitSave])
+
+    useEffect(() => {
+        if (waitSend) {
+            if (!resInvoice.loading && !resInvoice.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+            } else if (resInvoice.error) {
+                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSend(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [resInvoice, waitSend])
+
+    useEffect(() => {
+        if (!multiData.loading && !multiData.error) {
+            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
+            if (invoiceData) {
+                setDataInvoice(invoiceData.data);
+            }
+        }
+    }, [multiData])
+
+    const columns = React.useMemo(
+        () => [
+            {
+                accessor: 'billingsupportid',
+                isComponent: true,
+                minWidth: 60,
+                width: '1%',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+                    const handleClose = () => setAnchorEl(null);
+                    return (
+                        <>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={() => handleView(row)}
+                            >
+                                <Visibility style={{ color: '#B6B4BA' }} />
+                            </IconButton>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                            >
+                                <MoreVert style={{ color: '#B6B4BA' }} />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                getContentAnchorEl={null}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleGenerate(row)
+                                }}>Generar factura</MenuItem>
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleSend(row)
+                                }}>Envíar factura</MenuItem>
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleCancel(row)
+                                }}>Anular factura</MenuItem>
+                            </Menu>
+                        </>
+                    )
+                }
+            },
+            {
+                Header: "RUC",
+                accessor: 'issuerruc',
+            },
+            {
+                Header: t(langKeys.bussinessname),
+                accessor: 'issuerbusinessname',
+            },
+            {
+                Header: t(langKeys.tradename),
+                accessor: 'issuertradename',
+            },
+            {
+                Header: "Serie",
+                accessor: 'serie',
+            },
+            {
+                Header: t(langKeys.correlative),
+                accessor: 'correlative',
+            },
+            {
+                Header: t(langKeys.dateofissue),
+                accessor: 'invoicedate',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.invoicedate ? new Date(row.invoicedate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: t(langKeys.expirationdate),
+                accessor: 'expirationdate',
+                Cell: (props: any) => {
+                    const row = props.cell.row.original;
+                    return row.expirationdate ? new Date(row.invoicedate).toLocaleString() : ''
+                }
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+            },
+            {
+                Header: t(langKeys.amount),
+                accessor: 'totalamount',
+                type: 'number',
+            },
+            {
+                Header: t(langKeys.invoicestatus),
+                accessor: 'invoicestatus',
+            },
+            {
+                Header: t(langKeys.paymentstatus),
+                accessor: 'paymentstatus',
+            },
+        ],
+        []
+    );
+
+    const handleCancel = (row: Dictionary) => {
+        setfunctiontrigger("cancel")
+        const callback = () => {
+            dispatch(execute(cancelInvoice(row.invoiceid)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.cancelinvoice),
+            callback
+        }))
+    }
+
+    const handleGenerate = (row: Dictionary) => {
+        setfunctiontrigger("generate")
+        const callback = () => {
+            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.regenerateinvoice),
+            callback
+        }))
+    }
+
+    const handleSend = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(sendInvoice(row.invoiceid));
+            dispatch(showBackdrop(true));
+            setWaitSend(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.sendinvoice),
+            callback
+        }))
+    }
+
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected(row);
+    }
+    
+    if (viewSelected === "view-1") {
+        return (
+            <TableZyx
+                columns={columns}
+                ButtonsElement={() => (
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                        <FieldSelect
+                            label={t(langKeys.year)}
+                            style={{ width: 150 }}
+                            valueDefault={filterYear}
+                            variant="outlined"
+                            onChange={(value) => setFilterYear(value?.desc || "")}
+                            data={YEARS}
+                            optionDesc="desc"
+                            optionValue="desc"
+                        />
+                        <FieldMultiSelect
+                            label={t(langKeys.month)}
+                            style={{ width: 300 }}
+                            valueDefault={filterMonth}
+                            variant="outlined"
+                            onChange={(value) => setFilterMonth(value.map((o: Dictionary) => o.val).join())}
+                            data={MONTHS}
+                            uset={true}
+                            prefixTranslation="month_"
+                            optionDesc="val"
+                            optionValue="val"
+                        />
+                        <Button
+                            disabled={multiData.loading}
+                            variant="contained"
+                            color="primary"
+                            startIcon={<SearchIcon style={{ color: 'white' }} />}
+                            style={{ width: 120, backgroundColor: "#55BD84" }}
+                            onClick={search}
+                        >{t(langKeys.search)}
+                        </Button>
+                    </div>
+                )}
+                data={dataInvoice}
+                filterGeneral={false}
+                loading={multiData.loading}
+                download={true}
+                register={false}
+            />
+        )
+    } else {
+        return (
+            <InvoiceDetail
+                fetchData={fetchData}
+                data={rowSelected}
+                setViewSelected={setViewSelected}
+            />
+        );
+    }
+}
+
 const Invoice: FC = () => {
     const dispatch = useDispatch();
 
@@ -2310,7 +2316,7 @@ const Invoice: FC = () => {
     const [countryList, setcountryList] = useState<any>([]);
     const [dataPaymentPlan, setdataPaymentPlan] = useState<any>([]);
     const [dataPlan, setdataPlan] = useState<any>([]);
-    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 2);
+    const [pageSelected, setPageSelected] = useState(user?.roledesc === "SUPERADMIN" ? 0 : 1);
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
@@ -2354,8 +2360,10 @@ const Invoice: FC = () => {
                 {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
                     <AntTab label={t(langKeys.periodreport)} />
                 }
-                <AntTab label={t(langKeys.invoice_generation)} />
-                <AntTab label={t(langKeys.invoice)} />
+                {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
+                    <AntTab label={t(langKeys.payments)} />
+                }
+                {/*<AntTab label={t(langKeys.invoice)} />*/}
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -2369,14 +2377,14 @@ const Invoice: FC = () => {
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <InvoiceGeneration />
+                    <Payments />
                 </div>
             }
-            {pageSelected === 3 &&
+            {/*pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
                     <InvoiceControl />
                 </div>
-            }
+            */}
         </div>
     );
 }

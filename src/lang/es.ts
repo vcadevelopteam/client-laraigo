@@ -1743,6 +1743,7 @@ const translation: LangKeys = {
     confirmation_calculate: '¿Estas seguro que quieres calcular la data del mes actual?',
     successful_calculate: 'Se calculó satisfactoriamente',
     gotopay: 'Ir a Pagos',
+    payments: 'Pagos',
 };
 
 const esResource: ResourceLanguage = {
