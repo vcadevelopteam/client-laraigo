@@ -437,6 +437,7 @@ export const getPaginatedTicket = ({ skip, take, filters, sorts, startdate, endd
         sorts,
         origin: "ticket",
         channel: allParameters['channel'] ? allParameters['channel'] : "",
+        campaignid: allParameters['campaignid'] ? allParameters['campaignid'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
         lastuserid: allParameters['lastuserid'] ? allParameters['lastuserid'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
@@ -453,8 +454,9 @@ export const getTicketExport = ({ filters, sorts, startdate, enddate, ...allPara
         enddate,
         sorts,
         lastuserid: allParameters['lastuserid'] ? allParameters['lastuserid'] : "",
-        channel: allParameters['channel'] ? allParameters['channel'] : "",
         usergroup: allParameters['usergroup'] ? allParameters['usergroup'] : "",
+        campaignid: allParameters['campaignid'] ? allParameters['campaignid'] : "",
+        channel: allParameters['channel'] ? allParameters['channel'] : "",
         offset: (new Date().getTimezoneOffset() / 60) * -1
     }
 });
