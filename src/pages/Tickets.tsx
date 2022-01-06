@@ -710,11 +710,6 @@ const Tickets = () => {
                 accessor: 'tipocierre'
             },
             {
-                Header: t(langKeys.ticket_duraciontotal),
-                accessor: 'duraciontotal',
-                type: 'time'
-            },
-            {
                 Header: t(langKeys.ticket_duracionreal),
                 accessor: 'duracionreal',
                 type: 'time'
@@ -722,6 +717,11 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_duracionpausa),
                 accessor: 'duracionpausa',
+                type: 'time'
+            },
+            {
+                Header: t(langKeys.ticket_duraciontotal),
+                accessor: 'duraciontotal',
                 type: 'time'
             },
             {
@@ -775,11 +775,11 @@ const Tickets = () => {
                 accessor: 'tiempopromediorespuestaasesor',
                 type: 'time',
             },
-            {
-                Header: t(langKeys.ticket_tiempoprimerarespuesta),
-                accessor: 'tiempoprimerarespuesta',
-                type: 'time'
-            },
+            // {
+            //     Header: t(langKeys.ticket_tiempoprimerarespuesta),
+            //     accessor: 'tiempoprimerarespuesta',
+            //     type: 'time'
+            // },
             {
                 Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
                 accessor: 'tiempoprimerarespuestaasesor',
