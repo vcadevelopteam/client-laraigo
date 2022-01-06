@@ -5,9 +5,8 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getCollectionAux, resetMainAux } from "store/main/actions";
 import { getUserProductivitySel } from "common/helpers/requestBodies";
-import { DateRangePicker, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
-import Switch from "@material-ui/core/Switch/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
 import { Box, Button, Card, CardContent, Grid, Typography } from "@material-ui/core";
 import { CalendarIcon, DownloadIcon, SearchIcon } from "icons";
@@ -30,16 +29,17 @@ interface Assessor {
 const useStyles = makeStyles((theme) => ({
     containerFilter: {
         width: '100%',
-        marginBottom: theme.spacing(2),
+        padding: "10px",
+        marginBottom: "10px",
         display: 'flex',
-        gap: 16,
-        flexWrap: 'wrap'
+        gap: 8,
+        flexWrap: 'wrap',
+        backgroundColor: "white"
     },
     filterComponent: {
         width: '220px'
     },
     containerHeader: {
-        paddingBottom: theme.spacing(2),
         display: 'flex',
         flexWrap: 'wrap',
         gap: 16,
@@ -58,10 +58,10 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
     BackGrRed: {
-        backgroundColor: "red",
+        backgroundColor: "#fb5f5f",
     },
     BackGrGreen: {
-        backgroundColor: "green",
+        backgroundColor: "#55bd84",
     },
 }));
 
@@ -74,6 +74,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
+    const [checkedA, setcheckedA] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -206,6 +207,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const handleChange = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         setValue("bot", event.target.checked);
+        setcheckedA(event.target.checked)
     };
 
     const format = (date: Date) => date.toISOString().split('T')[0];
@@ -241,55 +243,55 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )
                     )
                 }
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                    {t(langKeys.report_userproductivity_filter_includebot)}
-                    <div style={{ display: 'flex', alignItems: 'center' }}> 
-                        {t(langKeys.no)}
-                        <Switch
-                            checked={state.checkedA}
-                            onChange={handleChange}
-                            name="checkedA"
+                <div style={{ alignItems: 'center' }}> 
+                    <div>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
+                        <FormControlLabel
+                            style={{paddingLeft:10}}
+                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                            label={checkedA?t(langKeys.yes):"No"}
                         />
-                        {t(langKeys.yes)}
                     </div>
                 </div>
-                <Box width={1}>
-                    <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" mb={1}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                            <DateRangePicker
-                                open={openDateRangeModal}
-                                setOpen={setOpenDateRangeModal}
-                                range={dateRange}
-                                onSelect={setdateRange}
-                            >
+                <div style={{ display: 'flex'}}>
+                    <Box width={1}>
+                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                <DateRangePicker
+                                    open={openDateRangeModal}
+                                    setOpen={setOpenDateRangeModal}
+                                    range={dateRange}
+                                    onSelect={setdateRange}
+                                >
+                                    <Button
+                                        disabled={detailCustomReport.loading}
+                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)'  }}
+                                        startIcon={<CalendarIcon />}
+                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                    >
+                                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    </Button>
+                                </DateRangePicker>
                                 <Button
                                     disabled={detailCustomReport.loading}
-                                    style={{ border: '2px solid #EBEAED', borderRadius: 4 }}
-                                    startIcon={<CalendarIcon />}
-                                    onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                >
-                                    {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ backgroundColor: '#55BD84', width: 120 }}
+                                    onClick={() => {
+                                        fetchData()
+                                    }}
+                                >{t(langKeys.refresh)}
                                 </Button>
-                            </DateRangePicker>
-                            <Button
-                                disabled={detailCustomReport.loading}
-                                variant="contained"
-                                color="primary"
-                                style={{ backgroundColor: '#55BD84', width: 120 }}
-                                onClick={() => {
-                                    fetchData()
-                                }}
-                            >{t(langKeys.refresh)}
-                            </Button>
-                        </div>
+                            </div>
+                        </Box>
                     </Box>
-                </Box>
+                </div>
             </div>
 
             <Grid container spacing={3}>
                 <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+                    <div>
+                        <Grid container spacing={1} >
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
@@ -341,8 +343,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     </div>
                 </Grid>
                 <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+                    <div>
+                        <Grid container spacing={1}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
@@ -394,8 +396,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     </div>
                 </Grid>
                 <Grid item xs={12} md={4} lg={4}>
-                    <div style={{ padding: 8, border: '2px solid #EAE9E9', borderRadius: '8px' }}>
-                        <Grid container spacing={1} style={{ paddingTop: 12 }}>
+                    <div>
+                        <Grid container spacing={1}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
                                     [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmoasesor < detailCustomReport.data[0]?.tmoasesoresperadogeneral),

@@ -862,34 +862,7 @@ const CRM: FC = () => {
         <div style={{ width: 'inherit' }}>
           <div className={classes.containerFilter}>
             <div style={{ display: 'flex', gap: 8 }}>
-              <FieldSelect
-                  variant="outlined"
-                  label={t(langKeys.user)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.asesorid}
-                  onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
-                  data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
-                  optionDesc={'fullname'}
-                  optionValue={'userid'}
-              />
-              <FieldMultiSelect
-                  variant="outlined"
-                  label={t(langKeys.channel)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.channel}
-                  onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
-                  data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
-                  optionDesc={'communicationchanneldesc'}
-                  optionValue={'communicationchannelid'}
-              />
-              <FieldEdit
-                  size="small"
-                  variant="outlined"
-                  label={t(langKeys.customer)}
-                  className={classes.filterComponent}
-                  valueDefault={allParameters.contact}
-                  onChange={(value) => setAllParameters({...allParameters, contact: value})}
-              />
+              
             </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <Button
@@ -939,6 +912,38 @@ const CRM: FC = () => {
               selectionKey={selectionKey}
               setSelectedRows={setSelectedRows}
               onClickRow={onClickRow}
+              FiltersElement={(
+                <>
+                  <FieldSelect
+                    variant="outlined"
+                    label={t(langKeys.user)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.asesorid}
+                    onChange={(value) => setAllParameters({...allParameters, asesorid: value?.userid})}
+                    data={mainMulti.data[2]?.data?.sort((a, b) => a?.fullname?.toLowerCase() > b?.fullname?.toLowerCase() ? 1 : -1) || []}
+                    optionDesc={'fullname'}
+                    optionValue={'userid'}
+                />
+                <FieldMultiSelect
+                    variant="outlined"
+                    label={t(langKeys.channel)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.channel}
+                    onChange={(value) => setAllParameters({...allParameters, channel: value?.map((o: Dictionary) => o['communicationchannelid']).join(',')})}
+                    data={mainMulti.data[3]?.data?.sort((a, b) => a?.communicationchanneldesc?.toLowerCase() > b?.communicationchanneldesc?.toLowerCase() ? 1 : -1) || []}
+                    optionDesc={'communicationchanneldesc'}
+                    optionValue={'communicationchannelid'}
+                />
+                <FieldEdit
+                    size="small"
+                    variant="outlined"
+                    label={t(langKeys.customer)}
+                    className={classes.filterComponent}
+                    valueDefault={allParameters.contact}
+                    onChange={(value) => setAllParameters({...allParameters, contact: value})}
+                />
+              </>
+              )}
               onFilterChange={f => {
                 console.log('Leads::onFilterChange', f);
                 const params = buildQueryFilters(f);
