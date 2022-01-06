@@ -1776,6 +1776,7 @@ const translation: LangKeys = {
 
     tmeAgent: 'TME Agent',
     tmrAgent: 'TMR Agent',
+    tmrClient: 'TMR Client',
     initialAgent: 'Initial agent',
     finalAgent: 'Final agent',
 

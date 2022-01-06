@@ -1769,6 +1769,7 @@ export const langKeys = {
 
     tmeAgent: 'tmeAgent',
     tmrAgent: 'tmrAgent',
+    tmrClient: 'tmrClient',
     initialAgent: 'initialAgent',
     finalAgent: 'finalAgent',
 
