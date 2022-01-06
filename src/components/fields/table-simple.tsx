@@ -28,7 +28,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Fab from '@material-ui/core/Fab';
 import IconButton from '@material-ui/core/IconButton';
 import BackupIcon from '@material-ui/icons/Backup';
-import { ITablePaginatedFilter, TableConfig } from '@types'
+import { Dictionary, ITablePaginatedFilter, TableConfig } from '@types'
 import { SearchField } from 'components';
 import { DownloadIcon } from 'icons';
 import ListAltIcon from '@material-ui/icons/ListAlt';
@@ -47,6 +47,7 @@ import { Skeleton } from '@material-ui/lab';
 import { FixedSizeList } from 'react-window';
 import DateFnsUtils from '@date-io/date-fns';
 import * as locale from "date-fns/locale";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import {
     MuiPickersUtilsProvider,
     KeyboardTimePicker,
@@ -125,9 +126,27 @@ const useStyles = makeStyles((theme) => ({
         gap: 8,
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
-        },
+        }
+    },
+    containerHeaderColumn: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     }
 }));
+
+declare module "react-table" {
+    // eslint-disable-next-line
+    interface UseTableColumnProps<D extends object> {
+        listSelectFilter: Dictionary;
+        helpText?: string;
+    }
+}
 
 export const stringOptionsMenu = [
     { key: 'equals', value: 'equals' },
@@ -386,9 +405,9 @@ const TableZyx = React.memo(({
 
         useEffect(() => {
             switch (type) {
-                case "number": 
-                case "date": 
-                case "datetime-local": 
+                case "number":
+                case "date":
+                case "datetime-local":
                 case "time":
                 case "select":
                     setoperator("equals");
@@ -814,28 +833,32 @@ const TableZyx = React.memo(({
                                                 {column.isComponent ?
                                                     column.render('Header') :
                                                     (<>
-                                                        <Box
-                                                            component="div"
-                                                            {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
-                                                            style={{
-                                                                whiteSpace: 'nowrap',
-                                                                wordWrap: 'break-word',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                cursor: 'pointer'
-                                                            }}
-                                                        >
-                                                            {column.render('Header')}
-                                                            {column.isSorted ? (
-                                                                column.isSortedDesc ?
-                                                                    <ArrowDownwardIcon className={classes.iconOrder} color="action" />
-                                                                    :
-                                                                    <ArrowUpwardIcon className={classes.iconOrder} color="action" />
-                                                            )
-                                                                :
-                                                                null
-                                                            }
-                                                        </Box>
+                                                        <div className={classes.containerHeaderColumn}>
+                                                            <Box
+                                                                component="div"
+                                                                {...column.getHeaderProps(column.getSortByToggleProps({ title: 'ordenar' }))}
+                                                                style={{
+                                                                    whiteSpace: 'nowrap',
+                                                                    wordWrap: 'break-word',
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                {column.render('Header')}
+                                                                {column.isSorted && (
+                                                                    column.isSortedDesc ?
+                                                                        <ArrowDownwardIcon className={classes.iconOrder} color="action" />
+                                                                        :
+                                                                        <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                                )}
+                                                            </Box>
+                                                            {!!column.helpText && (
+                                                                <Tooltip title={column.helpText} arrow placement="top" >
+                                                                    <InfoRoundedIcon color="action" className={classes.iconHelpText} />
+                                                                </Tooltip>
+                                                            )}
+                                                        </div>
                                                         <div>{!column.NoFilter && column.render('Filter')}</div>
                                                     </>)
                                                 }
