@@ -94,7 +94,14 @@ const selectionKey = 'personid';
 
 const variables = ['firstname', 'lastname', 'displayname', 'email', 'phone', 'documenttype', 'documentnumber', 'dateactivity', 'leadactivity', 'datenote', 'note', 'custom']
 
-const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openModal: boolean, persons: IPerson[], type: string }> = ({ setOpenModal, openModal, persons, type }) => {
+interface DialogSendTemplateProps {
+    setOpenModal: (param: any) => void;
+    openModal: boolean;
+    persons: IPerson[];
+    type: "HSM" | "MAIL" | "SMS";
+}
+
+const DialogSendTemplate: React.FC<DialogSendTemplateProps> = ({ setOpenModal, openModal, persons, type }) => {
     const { t } = useTranslation();
     const dispatch = useDispatch();
     const [waitClose, setWaitClose] = useState(false);
@@ -104,6 +111,15 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     const [bodyMessage, setBodyMessage] = useState('');
     const [personWithData, setPersonWithData] = useState<IPerson[]>([])
     const domains = useSelector(state => state.person.editableDomains);
+
+    const title = useMemo(() => {
+        switch (type) {
+            case "HSM": return t(langKeys.send_hsm);
+            case "SMS": return t(langKeys.send_sms);
+            case "MAIL": return t(langKeys.send_mail);
+            default: return '-';
+        }
+    }, [type]);
 
     const { control, register, handleSubmit, setValue, getValues, trigger, reset, formState: { errors } } = useForm<any>({
         defaultValues: {
@@ -211,7 +227,7 @@ const DialogSendTemplate: React.FC<{ setOpenModal: (param: any) => void, openMod
     return (
         <DialogZyx
             open={openModal}
-            title={t(langKeys.send_hsm).replace("HSM", type)}
+            title={title}
             buttonText1={t(langKeys.cancel)}
             buttonText2={t(langKeys.continue)}
             handleClickButton1={() => setOpenModal(false)}
@@ -399,7 +415,7 @@ export const Person: FC = () => {
     const [openDialogTemplate, setOpenDialogTemplate] = useState(false)
     const [selectedRows, setSelectedRows] = useState<Dictionary>({});
     const [personsSelected, setPersonsSelected] = useState<IPerson[]>([]);
-    const [typeTemplate, setTypeTemplate] = useState('');
+    const [typeTemplate, setTypeTemplate] = useState<"HSM" | "SMS" | "MAIL">('MAIL');
     const phases = useSelector(state => state.lead.leadPhases);
 
     const query = useMemo(() => new URLSearchParams(location.search), [location]);
@@ -1289,21 +1305,21 @@ export const PersonDetail: FC = () => {
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "2" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.audit} />}
+                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
                                     value="2"
                                 />
                             }
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "3" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.conversation} count={2} />}
+                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
                                     value="3"
                                 />
                             }
                             {!!person.personid &&
                                 <Tab
                                     className={clsx(classes.tab, classes.label, tabIndex === "4" && classes.activetab)}
-                                    label={<Trans i18nKey={langKeys.opportunity} count={2} />}
+                                    label={<Trans i18nKey={langKeys.audit} />}
                                     value="4"
                                 />
                             }
@@ -1332,13 +1348,13 @@ export const PersonDetail: FC = () => {
                         />
                     </TabPanel>
                     <TabPanel value="2" index={tabIndex}>
-                        <AuditTab person={person} />
-                    </TabPanel>
-                    <TabPanel value="3" index={tabIndex}>
                         <ConversationsTab person={person} />
                     </TabPanel>
-                    <TabPanel value="4" index={tabIndex}>
+                    <TabPanel value="3" index={tabIndex}>
                         <OpportunitiesTab person={person} />
+                    </TabPanel>
+                    <TabPanel value="4" index={tabIndex}>
+                        <AuditTab person={person} />
                     </TabPanel>
                     {/* <TabPanel value="4" index={tabIndex}>qqq</TabPanel> */}
                 </div>
@@ -1352,14 +1368,15 @@ export const PersonDetail: FC = () => {
                         <Property
                             icon={<TelephoneIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.phone} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.phone)}
-                                    defaultValue={person.phone}
-                                    onChange={e => setValue('phone', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.phone)}
+                            //         defaultValue={person.phone}
+                            //         onChange={e => setValue('phone', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.phone}
                             mt={1}
                             mb={1}
                         />
@@ -1378,48 +1395,51 @@ export const PersonDetail: FC = () => {
                             mb={1} />
                         <Property
                             icon={<DocTypeIcon fill="inherit" stroke="inherit" width={20} height={20} />}
-                            title={<Trans i18nKey={langKeys.document} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.documenttype}
-                                    onChange={(value) => {
-                                        setValue('documenttype', value);
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.docTypes || []}
-                                />
-                            )}
+                            title={<Trans i18nKey={langKeys.documenttype} />}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.documenttype}
+                            //         onChange={(value) => {
+                            //             setValue('documenttype', value);
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.docTypes || []}
+                            //     />
+                            // )}
+                            subtitle={person.documenttype}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<DocNumberIcon fill="inherit" stroke="inherit" width={20} height={20} />}
                             title={<Trans i18nKey={langKeys.docNumber} />}
-                            subtitle={(
-                                <TextField
-                                    fullWidth
-                                    placeholder={t(langKeys.docNumber)}
-                                    defaultValue={person.documentnumber}
-                                    onChange={e => setValue('documentnumber', e.target.value)}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <TextField
+                            //         fullWidth
+                            //         placeholder={t(langKeys.docNumber)}
+                            //         defaultValue={person.documentnumber}
+                            //         onChange={e => setValue('documentnumber', e.target.value)}
+                            //     />
+                            // )}
+                            subtitle={person.documentnumber}
                             mt={1}
                             mb={1}
                         />
                         <Property
                             icon={<GenderIcon />}
                             title={<Trans i18nKey={langKeys.gender} />}
-                            subtitle={(
-                                <DomainSelectField
-                                    defaultValue={person.gender}
-                                    onChange={(value, desc) => {
-                                        setValue('gender', value);
-                                        setValue('genderdesc', desc)
-                                    }}
-                                    loading={domains.loading}
-                                    data={domains.value?.genders || []}
-                                />
-                            )}
+                            // subtitle={(
+                            //     <DomainSelectField
+                            //         defaultValue={person.gender}
+                            //         onChange={(value, desc) => {
+                            //             setValue('gender', value);
+                            //             setValue('genderdesc', desc)
+                            //         }}
+                            //         loading={domains.loading}
+                            //         data={domains.value?.genders || []}
+                            //     />
+                            // )}
+                            subtitle={person.gender}
                             mt={1}
                             mb={1}
                         />
@@ -1637,7 +1657,7 @@ const GeneralInformationTab: FC<GeneralInformationTabProps> = ({ person, getValu
                         </Grid>
                         <Grid item xs={12} sm={12} md={6} lg={6} xl={6}>
                             <Property
-                                title={<Trans i18nKey={langKeys.document} />}
+                                title={<Trans i18nKey={langKeys.documenttype} />}
                                 subtitle={(
                                     <FieldSelect
                                         uset={true}
@@ -2334,7 +2354,6 @@ const ConversationItem: FC<ConversationItemProps> = ({ conversation, person }) =
         setOpenModal(true);
         setRowSelected({ ...row, displayname: person.name, ticketnum: row.ticketnum })
     }, [mainResult]);
-console.log(conversation);
 
     return (
         <div className={classes.root}>
@@ -2424,7 +2443,8 @@ console.log(conversation);
                                     <Grid container direction="row">
                                         <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
                                             <label className={classes.infoLabel}>
-                                                <Trans i18nKey={langKeys.avgResponseTimeOfClient} />
+                                                {/* <Trans i18nKey={langKeys.avgResponseTimeOfClient} /> */}
+                                                <Trans i18nKey={langKeys.tmrClient} />
                                             </label>
                                         </Grid>
                                         <Grid item xs={12} sm={6} md={8} lg={9} xl={10}>
@@ -2503,11 +2523,11 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
     const dispatch = useDispatch();
     const leads = useSelector(state => state.person.personLeadList);
     const { t } = useTranslation();
-    const history = useHistory();
+    // const history = useHistory();
 
-    const goToLead = (lead: Dictionary) => {
-        history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
-    }
+    // const goToLead = (lead: Dictionary) => {
+    //     history.push({ pathname: paths.CRM_EDIT_LEAD.resolve(lead.leadid), });
+    // }
 
     const columns = React.useMemo(
         () => [
@@ -2549,6 +2569,23 @@ const OpportunitiesTab: FC<OpportunitiesTabProps> = ({ person }) => {
             {
                 Header: t(langKeys.status),
                 accessor: 'status'
+            },
+            {
+                Header: t(langKeys.product, { count: 2 }),
+                accessor: 'leadproduct',
+                Cell: (props: any) => {
+                    const { leadproduct } = props.cell.row.original;
+                    if (!leadproduct) return null;
+                    return leadproduct.split(",").map((t: string, i: number) => (
+                        <span key={`leadproduct${i}`} style={{
+                            backgroundColor: '#7721AD',
+                            color: '#fff',
+                            borderRadius: '20px',
+                            padding: '2px 5px',
+                            margin: '2px'
+                        }}>{t}</span>
+                    ))
+                }
             },
             {
                 Header: t(langKeys.tags),

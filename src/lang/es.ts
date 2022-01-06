@@ -1367,7 +1367,7 @@ const translation: LangKeys = {
     educationLevel: 'Nivel de educación',
     occupation: 'Ocupación',
     alternativePhone: 'Teléfono alternativo',
-    alternativeEmail: 'Email alternativo',
+    alternativeEmail: 'Correo alternativo',
     referredBy: 'Referido por',
     firstContactDate: 'Fecha de primer contacto',
     lastContactDate: 'Fecha de último contacto',
@@ -1766,6 +1766,7 @@ const translation: LangKeys = {
 
     tmeAgent: 'TME Asesor',
     tmrAgent: 'TMR Asesor',
+    tmrClient: 'TMR Cliente',
     initialAgent: 'Asesor inicial',
     finalAgent: 'Asesor final',
 
