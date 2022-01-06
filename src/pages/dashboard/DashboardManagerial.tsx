@@ -1875,7 +1875,7 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgtickethourdeschour}</div>
                                 </div>
                             </div>
-                            <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>                        
+                            <ArrowDropUpIcon style={{color:"#55bd84",marginTop: "23px"}}/>                        
                         </div>
                         <div style={{display: "flex",  width: "100%"}}>
                             <div style={{width: "100%"}}>
@@ -1888,7 +1888,7 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgtickethourdeschour}</div>
                                 </div>
                             </div>
-                            <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
+                            <ArrowDropDownIcon style={{color:"#fb5f5f",marginTop: "43px"}}/>                        
                         </div>
                     </Box>)}
                     { (resaux.loading && fieldToFilter==="averageconversationsattendedbytheadvisorbyhour")?(<Box  className={classes.itemCard} style={{display: "flex", alignItems: 'center', justifyContent: "center"}}><CircularProgress/> </Box>):
@@ -1912,7 +1912,7 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.maxavgticketasesorhourdeschour}</div>
                                 </div>
                             </div>
-                            <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>                        
+                            <ArrowDropUpIcon style={{color:"#55bd84",marginTop: "23px"}}/>                        
                         </div>
                         <div style={{display: "flex",  width: "100%"}}>
                             <div style={{width: "100%"}}>
@@ -1925,7 +1925,7 @@ const DashboardManagerial: FC = () => {
                                     <div style={{ width: "50%", textAlign: "end" }}>{dataSummary.minavgticketasesorhourdeschour}</div>
                                 </div>
                             </div>
-                            <ArrowDropDownIcon style={{color:"red",marginTop: "43px"}}/>                        
+                            <ArrowDropDownIcon style={{color:"#fb5f5f",marginTop: "43px"}}/>                        
                         </div>
                     </Box>)}
                     <Box
@@ -1965,7 +1965,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             {
                                 dataDASHBOARD.iconconversationsattendedasesor?
-                                    <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"red",marginTop: "23px"}}/>
+                                    <ArrowDropUpIcon style={{color:"#55bd84",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"#fb5f5f",marginTop: "23px"}}/>
 
                             }
                         </div>
@@ -1977,7 +1977,7 @@ const DashboardManagerial: FC = () => {
                             </div>
                             {
                                 dataDASHBOARD.iconconversationsattendedbot?
-                                    <ArrowDropUpIcon style={{color:"green",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"red",marginTop: "23px"}}/>
+                                    <ArrowDropUpIcon style={{color:"#55bd84",marginTop: "23px"}}/>:<ArrowDropDownIcon style={{color:"#fb5f5f",marginTop: "23px"}}/>
 
                             }
                         </div>

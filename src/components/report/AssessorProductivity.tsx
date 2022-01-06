@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'hooks';
 import { getCollectionAux, resetMainAux } from "store/main/actions";
 import { getUserProductivitySel } from "common/helpers/requestBodies";
-import { DateRangePicker, FieldMultiSelect, FieldSelect } from "components";
+import { DateRangePicker, FieldMultiSelect, FieldSelect, IOSSwitch } from "components";
 import { makeStyles } from '@material-ui/core/styles';
 import Switch from "@material-ui/core/Switch/Switch";
 import FormControlLabel from "@material-ui/core/FormControlLabel/FormControlLabel";
@@ -58,10 +58,10 @@ const useStyles = makeStyles((theme) => ({
         textTransform: 'initial'
     },
     BackGrRed: {
-        backgroundColor: "red",
+        backgroundColor: "#fb5f5f",
     },
     BackGrGreen: {
-        backgroundColor: "green",
+        backgroundColor: "#55bd84",
     },
 }));
 
@@ -74,6 +74,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [dateRange, setdateRange] = useState<Range>({ startDate: new Date(new Date().setDate(0)), endDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0), key: 'selection' });
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
+    const [checkedA, setcheckedA] = useState(false);
 
     const columns = React.useMemo(
         () => [
@@ -206,6 +207,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const handleChange = (event: any) => {
         setState({ ...state, [event.target.name]: event.target.checked });
         setValue("bot", event.target.checked);
+        setcheckedA(event.target.checked)
     };
 
     const format = (date: Date) => date.toISOString().split('T')[0];
@@ -241,16 +243,14 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     )
                     )
                 }
-                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-                    {t(langKeys.report_userproductivity_filter_includebot)}
-                    <div style={{ display: 'flex', alignItems: 'center' }}> 
-                        {t(langKeys.no)}
-                        <Switch
-                            checked={state.checkedA}
-                            onChange={handleChange}
-                            name="checkedA"
+                <div style={{ display: 'flex', alignItems: 'center' }}> 
+                    <div style={{ paddingBottom: '3px' }}>
+                        <Box fontWeight={500} lineHeight="18px" fontSize={14} mb={2} color="textPrimary">{t(langKeys.report_userproductivity_filter_includebot)}</Box>
+                        <FormControlLabel
+                            style={{paddingLeft:10}}
+                            control={<IOSSwitch checked={checkedA} onChange={handleChange} />}
+                            label={checkedA?t(langKeys.yes):"No"}
                         />
-                        {t(langKeys.yes)}
                     </div>
                 </div>
                 <Box width={1}>
