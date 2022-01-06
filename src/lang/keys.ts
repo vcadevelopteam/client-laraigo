@@ -353,6 +353,8 @@ export const langKeys = {
     reason_marketing: "marketing",
     laraigouse: "laraigouse",
     submit: 'submit',
+    create: 'create',
+    send: 'send',
     twittertitle: "twittertitle",
     twittertitle2: "twittertitle2",
     devenvironment: "devenvironment",
@@ -855,6 +857,7 @@ export const langKeys = {
     changeDate: 'changeDate',
     search_result: 'search_result',
     without_result: 'without_result',
+    without_files: 'without_files',
 
     edit: 'edit',
     delete: 'delete',
@@ -1766,6 +1769,7 @@ export const langKeys = {
 
     tmeAgent: 'tmeAgent',
     tmrAgent: 'tmrAgent',
+    tmrClient: 'tmrClient',
     initialAgent: 'initialAgent',
     finalAgent: 'finalAgent',
 

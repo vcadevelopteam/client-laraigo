@@ -470,7 +470,7 @@ const Reports: FC = () => {
             <div className={classes.container}>
                 <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center" style={{ marginBottom: 8 }}>
                     <span className={classes.title}>
-                        {t(langKeys.report_plural)}
+                        {t(langKeys.report_plural)} ({allReportsToShow.length})
                     </span>
                 </Box>
                 {(reportsResult.mainData.loading || reportsResult.mainAux.loading) ? (

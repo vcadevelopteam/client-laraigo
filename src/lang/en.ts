@@ -57,6 +57,7 @@ const translation: LangKeys = {
     companyrole_regionalleader: "Regional Leader",
 
     without_result: 'Without result',
+    without_files: 'Without attachments',
 
 
     client_message: 'Client Messages',
@@ -721,6 +722,8 @@ const translation: LangKeys = {
     signupstep1title2: 'Complete Personal and Business Information',
     show: 'Show',
     submit: 'Submit',
+    create: 'Create',
+    send: 'Send',
     firstandlastname: "First and last name",
     companybusinessname: "Company or Business name",
     campaign: 'Campaign',
@@ -1298,7 +1301,7 @@ const translation: LangKeys = {
     report_tipification_classificationlevel3: 'Classification level 3',
 
     report_userproductivityhours: 'Hourly agent productivity',
-    report_userproductivityhours_datehour: 'Date - Hour',
+    report_userproductivityhours_datehour: 'Date',
     report_userproductivityhours_agent: 'Agent',
     report_userproductivityhours_hoursrange: 'Range of hour',
     report_userproductivityhours_worktime: 'Time worked',
@@ -1773,6 +1776,7 @@ const translation: LangKeys = {
 
     tmeAgent: 'TME Agent',
     tmrAgent: 'TMR Agent',
+    tmrClient: 'TMR Client',
     initialAgent: 'Initial agent',
     finalAgent: 'Final agent',
 

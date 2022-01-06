@@ -484,7 +484,7 @@ const IconOptions: React.FC<{
                         onHandlerReassign();
                     }}>
                         <ListItemIcon color="inherit">
-                            <ReassignIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <ReassignIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.reassign_ticket)}
                     </MenuItem>
@@ -495,7 +495,7 @@ const IconOptions: React.FC<{
                         onHandlerClassify();
                     }}>
                         <ListItemIcon>
-                            <TipifyIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <TipifyIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.tipify_ticket)}
                     </MenuItem>
@@ -506,7 +506,7 @@ const IconOptions: React.FC<{
                         onHandlerClose();
                     }}>
                         <ListItemIcon>
-                            <CloseTicketIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <CloseTicketIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.close_ticket)}
                     </MenuItem>
@@ -517,7 +517,7 @@ const IconOptions: React.FC<{
                         onHandlerShowHistory();
                     }}>
                         <ListItemIcon>
-                            <HistoryIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <HistoryIcon width={18} style={{ fill: '#7721AD' }} />
                         </ListItemIcon>
                         {t(langKeys.status_history)}
                     </MenuItem>
