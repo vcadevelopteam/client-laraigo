@@ -296,12 +296,13 @@ export const changeStatusTicket = (state: IState, action: IAction): IState => ({
         ...state.ticketSelected!!,
         status: action.payload.status
     },
-    ticketList: { 
+    ticketList: {
         ...state.ticketList,
         data: state.ticketList.data.map((x: ITicket) => x.conversationid === action.payload.conversationid ? {
             ...x,
             status: action.payload.status
-        } : x) },
+        } : x)
+    },
 })
 
 
@@ -437,13 +438,13 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         }
 
         if (ticketSelected?.conversationid === data.conversationid) {
-        
+
             if (data.usertype === "agent" && data.ticketWasAnswered) {
                 newTicketSelected!!.isAnswered = true;
             } else if (data.usertype === "client") {
                 newTicketSelected!!.personlastreplydate = new Date().toISOString();
             }
-            if (data.usertype === "agent")  {
+            if (data.usertype === "agent") {
                 newTicketSelected!!.lastreplyuser = new Date().toISOString();
             }
 
@@ -478,6 +479,33 @@ export const newMessageFromClient = (state: IState, action: IAction): IState => 
         interactionList: {
             data: newInteractionList,
             count: action.payload.count,
+            loading: false,
+            error: false,
+        },
+    };
+}
+
+export const changeStatusTicketWS = (state: IState, action: IAction): IState => {
+    const { userid, status, isanswered }: Dictionary = action.payload;
+
+    let newAgentList = [...state.agentList.data];
+
+    const { agentList: { data }, userType } = state;
+
+    if (userType === 'SUPERVISOR') {
+        newAgentList = data.map(x => x.userid === userid ? {
+            ...x,
+            countPaused: status === "SUSPENDIDO" ? x.countPaused + 1 : x.countPaused - 1,
+            countAnswered: isanswered ? x.countAnwsered + (status === "ASIGNADO" ? 1 : -1) : x.countAnwsered,
+            countNotAnwsered: !isanswered ? (x.countNotAnwsered || 0) + (status === "ASIGNADO" ? 1 : -1) : x.countNotAnwsered,
+        } : x)
+    }
+
+    return {
+        ...state,
+        agentList: {
+            data: newAgentList,
+            count: newAgentList.length,
             loading: false,
             error: false,
         },
@@ -524,6 +552,7 @@ export const deleteTicket = (state: IState, action: IAction): IState => {
         },
     };
 }
+
 // CLEAN_ALERT
 export const cleanAlerts = (state: IState): IState => ({
     ...state,

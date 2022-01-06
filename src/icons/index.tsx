@@ -146,3 +146,4 @@ export { ReactComponent as LaraigoRecienteIcon } from './Laraigo-emojis_reciente
 export { ReactComponent as LaraigoBlockedIcon } from './Laraigo-emojis_blocked.svg';
 export { ReactComponent as CRMIcon } from './crm.svg';
 export { ReactComponent as LeadIcon } from './Laraigo-emojis_blocked.svg';
+export { ReactComponent as HistoryIcon } from './historyStatus.svg';

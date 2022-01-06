@@ -62,6 +62,8 @@ export const langKeys = {
     month_12: "month_12",
     companyinformation: "companyinformation",
 
+    agent: 'agent',
+
     billinginformation:"billinginformation",
     highestTMO: "highestTMO",
     currency: "currency",
@@ -1461,7 +1463,6 @@ export const langKeys = {
     creationDate: 'creationDate',
     modifiedBy: 'modifiedBy',
     modificationDate: 'modificationDate',
-    agent: 'agent',
     advisor: 'advisor',
     startDate: 'startDate',
     endDate: 'endDate',

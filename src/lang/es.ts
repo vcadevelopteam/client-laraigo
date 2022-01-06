@@ -939,7 +939,8 @@ const translation: LangKeys = {
     useradditionalfee: "PU por agente adicional",
     channelothercharge: "Costo otros canales",
     useradditionalcharge: "Costo por agentes adicionales",
-    agent_plural: "Agentes",
+    agent_plural: "Asesores",
+    agent: 'Asesor',
     channelwhatsappcharge: "Costo de canales WhatsApp",
     numberofactivesupervisors: "Cantidad de supervisores activos",
     numberofactiveadvisers: "Cantidad de agentes activos",
@@ -1363,7 +1364,7 @@ const translation: LangKeys = {
     creationDate: 'Fecha de creación',
     modifiedBy: 'Modificado por',
     modificationDate: 'Fecha de modificación',
-    agent: 'Asesor',
+    
     advisor: 'Asesor',
     startDate: 'Fecha de inicio',
     endDate: 'Fecha de fin',

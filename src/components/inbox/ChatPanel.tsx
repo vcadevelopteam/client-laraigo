@@ -247,6 +247,16 @@ const DialogCloseticket: React.FC<{
                 dispatch(showSnackbar({ show: true, success: true, message: status === "SUSPENDIDO" ? t(langKeys.successful_suspend_ticket) : t(langKeys.successful_reactivate_ticket) }))
                 dispatch(changeStatusTicket(ticketSelected?.conversationid!!, status));
                 
+                dispatch(emitEvent({
+                    event: 'changeStatusTicket',
+                    data: {
+                        conversationid: ticketSelected?.conversationid,
+                        status: status,
+                        isanswered: ticketSelected?.isAnswered,
+                        userid: userType === "AGENT" ? 0 : agentSelected?.userid,
+                    }
+                }));
+
                 setOpenModal(false);
                 dispatch(showBackdrop(false));
                 setWaitOther(false);
@@ -851,7 +861,7 @@ const ButtonsManageTicket: React.FC<{ classes: any }> = ({ classes }) => {
                         setOpenModalHSM(true)
                     }}>
                         <ListItemIcon>
-                            <HSMIcon width={18} style={{ fill: '#2E2C34' }} />
+                            <HSMIcon />
                         </ListItemIcon>
                         {t(langKeys.send_hsm)}
                     </MenuItem>

@@ -10,6 +10,7 @@ const eventsListeners = [
     { event: 'newMessageFromBot', type: typesInbox.NEW_MESSAGE_FROM_CLIENT, extra: {} },
     { event: 'personSawChat', type: typesInbox.PERSON_SAW_CHAT, extra: {} },
     { event: 'forceddisconnect', type: typesInbox.FORCEDDISCONECTION },
+    { event: 'changeStatusTicket', type: typesInbox.CHANGE_STATUS_TICKET_WS },
 ]
 
 let socket = io(apiUrls.WS_URL, {
