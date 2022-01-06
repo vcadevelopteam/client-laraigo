@@ -373,7 +373,7 @@ const Reports: FC = () => {
         }
     }, [reportsResult.mainAux, reportsResult.mainData, waitSave])
     useEffect(() => {
-        let temparray = allReports.filter((el: any) => String(el.reportname).toLowerCase().includes(searchValue.toLowerCase()))
+        let temparray = allReports.filter((el: any) => String(t((langKeys as any)[`report_${el.origin}`])).toLowerCase().includes(searchValue.toLowerCase()))
         setallReportsToShow(temparray)
     }, [searchValue]);
 
@@ -490,6 +490,46 @@ const Reports: FC = () => {
                         <div className={classes.containerDetails}>
                             <Grid container spacing={3} >
                                 {allReportsToShow.filter(x => !!x.image).map((report, index) => (
+                                    report.reportname === 'HEATMAP' ?
+                                    <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                        <Card >
+                                            <CardActionArea onClick={() => handleSelectedString("heatmap")}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="140"
+                                                    className={classes.media}
+                                                    image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
+                                                    title={t(langKeys.heatmap)}
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">
+                                                        {t(langKeys.heatmap)}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    </Grid>
+                                    :
+                                    report.reportname === 'RECORDHSMREPORT' ?
+                                    <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
+                                        <Card >
+                                            <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
+                                                <CardMedia
+                                                    component="img"
+                                                    height="140"
+                                                    className={classes.media}
+                                                    image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
+                                                    title={t(langKeys.recordhsmreport)}
+                                                />
+                                                <CardContent>
+                                                    <Typography gutterBottom variant="h6" component="div">
+                                                        {t(langKeys.recordhsmreport)}
+                                                    </Typography>
+                                                </CardContent>
+                                            </CardActionArea>
+                                        </Card>
+                                    </Grid>
+                                    :
                                     <Grid item key={"report_" + report.reportid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card >
                                             <CardActionArea onClick={() => handleSelected(report, report.filters)}>
@@ -509,42 +549,6 @@ const Reports: FC = () => {
                                         </Card>
                                     </Grid>
                                 ))}
-                                {t(langKeys.heatmap).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"heatmap"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelectedString("heatmap")}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image={'https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/01mapadecalor.png'}
-                                                title={t(langKeys.heatmap)}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t(langKeys.heatmap)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>}
-                                {t(langKeys.recordhsmreport).toLowerCase().includes(searchValue.toLowerCase()) && <Grid item key={"recordhsmreport"} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
-                                    <Card >
-                                        <CardActionArea onClick={() => handleSelectedString("recordhsmreport")}>
-                                            <CardMedia
-                                                component="img"
-                                                height="140"
-                                                className={classes.media}
-                                                image="https://staticfileszyxme.s3.us-east.cloud-object-storage.appdomain.cloud/02reportehsm.png"
-                                                title={t(langKeys.recordhsmreport)}
-                                            />
-                                            <CardContent>
-                                                <Typography gutterBottom variant="h6" component="div">
-                                                    {t(langKeys.recordhsmreport)}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>}
                                 {allReportsToShow.filter(x => !x.image).map((report, index) => (
                                     <Grid item key={"report_" + report.reporttemplateid + "_" + index} xs={12} md={4} lg={3} style={{ minWidth: 360 }}>
                                         <Card style={{ position: 'relative' }}>

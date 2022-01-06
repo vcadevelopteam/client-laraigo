@@ -413,14 +413,15 @@ export const getEmojiSel = (emojidec: string): IRequestBody => ({
     }
 })
 
-export const insEmoji = ({ ...allParameters }: Dictionary): IRequestBody => ({
+export const insEmoji = ({ favorite,restricted,...allParameters }: Dictionary): IRequestBody => ({
     method: "UFN_EMOJI_INS",
     key: "UFN_EMOJI_INS",
     parameters: {
         ...allParameters,
-        favoritechannels: allParameters['favoritechannels'] === undefined ? 'undefined' : allParameters['favoritechannels'],
-        restrictedchannels: allParameters['restrictedchannels'] === undefined ? 'undefined' : allParameters['restrictedchannels'],
-        orgid: allParameters['orgid'] ? allParameters['orgid'] : 0
+        favoritechannels: "",
+        restrictedchannels: "",
+        favorite,
+        restricted,
     }
 })
 

@@ -253,6 +253,7 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
                 ...emoji,
                 communicationchannel: "",
                 favorite,
+                restricted,
                 allchannels: true
             })));
 
@@ -291,6 +292,7 @@ const Emoji: FC<{ emoji: Dictionary, setOpenDialog: (openDialog: boolean) => voi
                 open={Boolean(anchorEl)}
                 onClose={handleOnClose}
             >
+                <MenuItem key={"menu_item_x_" + emoji?.emojidec} style={{textAlign: "center"}}>{emoji?.description}</MenuItem>
                 {category==="FAVORITES"?
                     <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(false,false)}>{t(langKeys.emoji_removefavorites)}</MenuItem>
                     : <MenuItem key={"menu_item_1_" + emoji?.emojidec} onClick={() => handleExecution(true,false)}>{t(langKeys.emoji_favorites)}</MenuItem>
@@ -325,6 +327,7 @@ const EmojiDetails: React.FC<ModalProps> = React.memo(({ fetchData, setOpenModal
                     ...allParameters,
                     communicationchannel: datachannels?.data[0]?.data.map((o: Dictionary) => o.domainvalue).join(),
                     favorite: false,
+                    restricted: false,
                     allchannels: false
                 })));
 

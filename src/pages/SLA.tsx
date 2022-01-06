@@ -182,7 +182,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                 </div>
                 <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        {edit ?
                             <FieldEdit
                                 label={t(langKeys.organization)} 
                                 className="col-6"
@@ -191,12 +190,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 error={errors?.organization?.message}
                                 disabled={true}
                             />
-                            : <FieldView
-                                label={t(langKeys.organization)}
-                                value={row ? (row.organization || "") : ""}
-                                className="col-6"
-                            />}
-                        {edit ?
                             <FieldSelect
                                 label={t(langKeys.supplier)} 
                                 className="col-6"
@@ -207,14 +200,8 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
-                            : <FieldView
-                                label={t(langKeys.company)}
-                                value={row ? (row.company || "") : ""}
-                                className="col-6"
-                            />}
                     </div>  
                     <div className="row-zyx">
-                        {edit ?
                             <FieldEdit
                                 label={t(langKeys.description)} //transformar a multiselect
                                 className="col-12"
@@ -222,14 +209,8 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 valueDefault={row ? (row.description || "") : ""}
                                 error={errors?.description?.message}
                             />
-                            : <FieldView
-                                label={t(langKeys.description)}
-                                value={row ? (row.description || "") : ""}
-                                className="col-6"
-                            />}
                     </div>
                     <div className="row-zyx">
-                        {edit ?
                             <FieldMultiSelect
                                 label={t(langKeys.channel_plural)} //transformar a multiselect
                                 className="col-12"
@@ -240,14 +221,8 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 optionDesc="communicationchanneldesc"
                                 optionValue="communicationchannelid"
                             />
-                            : <FieldView
-                                label={t(langKeys.channel_plural)}
-                                value={row ? (row.communicationchannelid || "") : ""}
-                                className="col-6"
-                            />}
                     </div>
                     <div className="row-zyx">
-                        {edit ?
                             <FieldMultiSelect
                                 label={t(langKeys.group)} 
                                 className="col-6"
@@ -258,11 +233,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
-                            : <FieldView
-                                label={t(langKeys.usergroup)}
-                                value={row ? row.usergroup : ""}
-                            />}
-                        {edit ?
                             <FieldSelect
                                 label={t(langKeys.status)}
                                 className="col-6"
@@ -275,16 +245,10 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 optionDesc="domaindesc"
                                 optionValue="domainvalue"
                             />
-                            : <FieldView
-                                label={t(langKeys.status)}
-                                value={row ? (row.status || "") : ""}
-                                className="col-6"
-                            />}
                     </div>
                     <div style={{ marginBottom: '16px' }}>
                         <div className={classes.title}>{t(langKeys.detail)}</div>
                         <div className="row-zyx">
-                            {edit ?
                                 <FieldEdit
                                 type="time"
                                 label={"TMO total min"} 
@@ -293,12 +257,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 valueDefault={row ? (row.totaltmomin || "") : ""}
                                 error={errors?.totaltmomin?.message}
                                 />
-                                : <FieldView
-                                label={"TMO total min"} 
-                                value={row ? (row.totaltmomin || "") : ""}
-                                className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
                                     type="time"
                                     label={"TMO total max"} 
@@ -307,12 +265,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.totaltmo || "") : ""}
                                     error={errors?.totaltmo?.message}
                                 />
-                                : <FieldView
-                                    label={"TMO total max"}
-                                    value={row ? (row.totaltmo || "") : ""}
-                                    className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
                                     type="number"
                                     label={t(langKeys.tmopercentobj)} 
@@ -321,14 +273,8 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.totaltmopercentmax || "") : ""}
                                     error={errors?.totaltmopercentmax?.message}
                                 />
-                                : <FieldView
-                                    label={t(langKeys.tmopercentobj)}
-                                    value={row ? (row.totaltmopercentmax || "") : ""}
-                                    className="col-4"
-                                />}
                         </div>
                         <div className="row-zyx">
-                            {edit ?
                                 <FieldEdit
                                 type="time"
                                 label={"TMO user min"} 
@@ -337,12 +283,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                 valueDefault={row ? (row.usertmomin || "") : ""}
                                 error={errors?.usertmomin?.message}
                                 />
-                                : <FieldView
-                                label={"TMO user min"} 
-                                value={row ? (row.usertmomin || "") : ""}
-                                className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
                                     type="time"
                                     label={"TMO user max"} 
@@ -351,12 +291,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.usertmo || "") : ""}
                                     error={errors?.usertmo?.message}
                                 />
-                                : <FieldView
-                                    label={"TMO total max"}
-                                    value={row ? (row.usertmo || "") : ""}
-                                    className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
                                     type="number"
                                     label={t(langKeys.usertmopercentmax)} 
@@ -365,15 +299,8 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.usertmopercentmax || "") : ""}
                                     error={errors?.usertmopercentmax?.message}
                                 />
-                                : <FieldView
-                                    label={t(langKeys.usertmopercentmax)}
-                                    value={row ? (row.usertmopercentmax || "") : ""}
-                                    className="col-4"
-                                />}
                         </div>
                         <div className="row-zyx">
-                            
-                            {edit ?
                                 <FieldEdit
                                     type="time"
                                     label={"TME user max"} 
@@ -382,12 +309,6 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.usertme || "") : ""}
                                     error={errors?.usertme?.message}
                                 />
-                                : <FieldView
-                                    label={"TME total max"}
-                                    value={row ? (row.usertme || "") : ""}
-                                    className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
                                     type="number"
                                     label={t(langKeys.usertmepercentmax)} 
@@ -396,24 +317,13 @@ const DetailSLA: React.FC<DetailSLAProps> = ({ data: { row, edit }, setViewSelec
                                     valueDefault={row ? (row.usertmepercentmax || "") : ""}
                                     error={errors?.usertmepercentmax?.message}
                                 />
-                                : <FieldView
-                                    label={t(langKeys.usertmepercentmax)}
-                                    value={row ? (row.usertmepercentmax || "") : ""}
-                                    className="col-4"
-                                />}
-                            {edit ?
                                 <FieldEdit
-                                label={t(langKeys.productivitybyhour)} 
-                                className="col-4"
-                                onChange={(value) => setValue('productivitybyhour', value)}
-                                valueDefault={row ? (row.productivitybyhour || "") : ""}
-                                error={errors?.productivitybyhour?.message}
+                                    label={t(langKeys.productivitybyhour)} 
+                                    className="col-4"
+                                    onChange={(value) => setValue('productivitybyhour', value)}
+                                    valueDefault={row ? (row.productivitybyhour || "") : ""}
+                                    error={errors?.productivitybyhour?.message}
                                 />
-                                : <FieldView
-                                label={"TME user min"} 
-                                value={row ? (row.productivitybyhour || "") : ""}
-                                className="col-4"
-                                />}
                         </div>
                         
                     </div>
@@ -469,19 +379,37 @@ const SLA: FC = () => {
                 NoFilter: true
             },
             {
-                Header: t(langKeys.tmototalobj),
+                Header: t(langKeys.tmopercentobj),
                 accessor: 'totaltmopercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { totaltmopercentmax } = props.cell.row.original;
+                    return `${(Number(totaltmopercentmax) || 0).toFixed(2)} %`;
+                }
             },
             {
-                Header: t(langKeys.tmoasesorobj),
+                Header: t(langKeys.usertmopercentmax),
                 accessor: 'usertmopercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { usertmopercentmax } = props.cell.row.original;
+                    return `${(Number(usertmopercentmax) || 0).toFixed(2)} %`;
+                }
             },
             {
-                Header: t(langKeys.tmeasesorobj),
+                Header: t(langKeys.usertmepercentmax),
                 accessor: 'usertmepercentmax',
-                NoFilter: true
+                NoFilter: true,
+                type: 'number',
+                sortType: 'number',
+                Cell: (props: any) => {
+                    const { usertmepercentmax } = props.cell.row.original;
+                    return `${(Number(usertmepercentmax) || 0).toFixed(2)} %`;
+                }
             },            
             {
                 Header: t(langKeys.status),

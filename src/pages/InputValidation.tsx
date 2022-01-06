@@ -25,10 +25,6 @@ interface DetailInputValidationProps {
     setViewSelected: (view: string) => void;
     fetchData: () => void
 }
-const arrayBread = [
-    { id: "view-1", name: "Input Validation" },
-    { id: "view-2", name: "Input Validation Detail" }
-];
 
 const useStyles = makeStyles((theme) => ({
     containerDetail: {
@@ -54,10 +50,10 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
     const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             type: 'NINGUNO',
-            id: row?.inputvalidationid || 0,
-            description: row?.description || "",
+            id: edit?(row?.inputvalidationid || 0):0,
+            description: edit?(row?.description || ""):"",
             inputvalue: row?.inputvalue || '',
-            operation: row ? "EDIT" : "INSERT",
+            operation: edit?(row ? "EDIT" : "INSERT"):"INSERT",
             status: "ACTIVO",
         }
     });
@@ -77,7 +73,7 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
             } else if (executeRes.error) {
-                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                const errormessage = t(executeRes.code || "error_unexpected_error", { module: t(langKeys.inputvalidation).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 setWaitSave(false);
                 dispatch(showBackdrop(false));
@@ -98,7 +94,11 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
             callback
         }))
     });
-
+    
+    const arrayBread = [
+        { id: "view-1", name: t(langKeys.inputvalidation) },
+        { id: "view-2", name: `${t(langKeys.inputvalidation)} ${t(langKeys.detail)}` }
+    ];
     return (
         <div style={{width: '100%'}}>
             <form onSubmit={onSubmit}>
@@ -109,7 +109,7 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             handleClick={setViewSelected}
                         />
                         <TitleDetail
-                            title={row ? `${row.description}` : t(langKeys.newinputvalidation)}
+                            title={edit?(row ? `${row.description}` : t(langKeys.newinputvalidation)): t(langKeys.newinputvalidation)}
                         />
                     </div>
                     <div style={{ display: 'flex', gap: '10px', alignItems: 'center'  }}>
@@ -121,7 +121,6 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             style={{ backgroundColor: "#FB5F5F" }}
                             onClick={() => setViewSelected("view-1")}
                         >{t(langKeys.back)}</Button>
-                        {edit &&
                         <Button
                             className={classes.button}
                             variant="contained"
@@ -131,7 +130,6 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             style={{ backgroundColor: "#55BD84" }}
                         >{t(langKeys.save)}
                         </Button>
-                        }
                     </div>
                 </div>
                 <div className={classes.containerDetail}>
@@ -140,14 +138,14 @@ const DetailInputValidation: React.FC<DetailInputValidationProps> = ({ data: { r
                             label={t(langKeys.description)} 
                             className="col-6"
                             onChange={(value) => setValue('description', value)}
-                            valueDefault={row ? (row.description || "") : ""}
+                            valueDefault={edit?(row?.description || "") : ""}
                             error={errors?.description?.message}
                         />
                         <FieldEdit
                             label={t(langKeys.value)} 
                             className="col-6"
                             onChange={(value) => setValue('inputvalue', value)}
-                            valueDefault={row ? (row.inputvalue || "") : ""}
+                            valueDefault={row?.inputvalue || ""}
                             error={errors?.inputvalue?.message}
                         />
                     </div>
@@ -179,10 +177,11 @@ const InputValidation: FC = () => {
                     const row = props.cell.row.original;
                     return (
                         <TemplateIcons
-                            viewFunction={() => handleView(row)}
+                            extraOption={t(langKeys.duplicate)}
                             // viewFunction={() => history.push(`/properties/${row.GroupConfigid}`)}
                             deleteFunction={() => handleDelete(row)}
                             editFunction={() => handleEdit(row)}
+                            extraFunction={() => handleDuplicate(row)}
                         />
                     )
                 }
@@ -219,7 +218,7 @@ const InputValidation: FC = () => {
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
             } else if (executeResult.error) {
-                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.whitelist).toLocaleLowerCase() })
+                const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.inputvalidation).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
                 setWaitSave(false);
@@ -232,7 +231,7 @@ const InputValidation: FC = () => {
         setRowSelected({ row: null, edit: true });
     }
 
-    const handleView = (row: Dictionary) => {
+    const handleDuplicate = (row: Dictionary) => {
         setViewSelected("view-2");
         setRowSelected({ row, edit: false });
     }
