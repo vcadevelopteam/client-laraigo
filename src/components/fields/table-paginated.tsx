@@ -13,12 +13,12 @@ import Input from '@material-ui/core/Input';
 import { makeStyles } from '@material-ui/core/styles';
 import { TableConfig, Pagination, Dictionary, ITablePaginatedFilter } from '@types'
 import { Trans } from 'react-i18next';
+import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import { langKeys } from 'lang/keys';
 import { DownloadIcon, CalendarIcon } from 'icons';
 import BackupIcon from '@material-ui/icons/Backup';
 import { Skeleton } from '@material-ui/lab';
-
 import {
     FirstPage,
     LastPage,
@@ -30,7 +30,7 @@ import {
     ArrowUpward as ArrowUpwardIcon,
     MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
-// import RefreshIcon from "@material-ui/icons/Refresh";
+import InfoRoundedIcon from '@material-ui/icons/InfoRounded';
 import Menu from '@material-ui/core/Menu';
 
 import {
@@ -45,12 +45,12 @@ import { DateRangePicker } from 'components';
 import { Checkbox } from '@material-ui/core';
 import { BooleanOptionsMenuComponent, DateOptionsMenuComponent, SelectFilterTmp, OptionsMenuComponent, TimeOptionsMenuComponent } from './table-simple';
 import { getDateToday, getFirstDayMonth, getLastDayMonth, getDateCleaned } from 'common/helpers';
-import { useLocation } from 'react-router-dom';
 
 declare module "react-table" {
     // eslint-disable-next-line
     interface UseTableColumnProps<D extends object> {
         listSelectFilter: Dictionary;
+        helpText?: string;
     }
 }
 
@@ -119,6 +119,16 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('sm')]: {
             display: 'flex',
         },
+    },
+    containerHeaderColumn: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    iconHelpText: {
+        width: 15,
+        height: 15,
+        cursor: 'pointer',
     }
 }));
 
@@ -510,8 +520,7 @@ const TableZyx = React.memo(({
         if (newsorts[column] === "desc") {
             delete newsorts[column]
         }
-        else
-        {
+        else {
             if (newsorts[column] === "asc") {
                 newsorts[column] = "desc";
             }
@@ -699,31 +708,36 @@ const TableZyx = React.memo(({
                                                     column.render('Header')
                                                     :
                                                     (<>
-                                                        <Box
-                                                            component="div"
-                                                            {...column.getHeaderProps()}
-                                                            onClick={() => !column.NoSort && handleClickSort(column.id)}
-                                                            style={{
-                                                                whiteSpace: 'nowrap',
-                                                                wordWrap: 'break-word',
-                                                                display: 'flex',
-                                                                cursor: 'pointer',
-                                                                alignItems: 'center',
-                                                            }}
-                                                        >
-                                                            {column.render('Header')}
-                                                            {pagination.sorts[column.id]
-                                                                && (pagination.sorts[column.id] === "asc"
-                                                                    ? <ArrowUpwardIcon className={classes.iconOrder} color="action" />
+                                                        <div className={classes.containerHeaderColumn}>
+                                                            <Box
+                                                                component="div"
+                                                                {...column.getHeaderProps()}
+                                                                onClick={() => !column.NoSort && handleClickSort(column.id)}
+                                                                style={{
+                                                                    whiteSpace: 'nowrap',
+                                                                    wordWrap: 'break-word',
+                                                                    display: 'flex',
+                                                                    cursor: 'pointer',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                {column.render('Header')}
+                                                                {pagination.sorts[column.id] && (pagination.sorts[column.id] === "asc" ?
+                                                                    <ArrowUpwardIcon className={classes.iconOrder} color="action" />
                                                                     : <ArrowDownwardIcon className={classes.iconOrder} color="action" />)
-                                                            }
-                                                        </Box>
+                                                                }
+                                                            </Box>
+                                                            {!!column.helpText && (
+                                                                <Tooltip title={column.helpText} arrow placement="top" >
+                                                                    <InfoRoundedIcon color='primary' className={classes.iconHelpText} />
+                                                                </Tooltip>
+                                                            )}
+                                                        </div>
                                                         {!column.NoFilter &&
                                                             <DefaultColumnFilter
                                                                 header={column.id}
                                                                 listSelectFilter={column.listSelectFilter || []}
                                                                 type={column.type}
-                                                                // firstvalue={data && data.length > 0 ? data[0][column.id] : null}
                                                                 filters={pagination.filters}
                                                                 setFilters={(filters: any, page: number) => {
                                                                     setFilters(filters, page);
@@ -733,7 +747,6 @@ const TableZyx = React.memo(({
                                                                         page,
                                                                     }));
                                                                 }}
-                                                            // setFilters={setFilters}
                                                             />
                                                         }
                                                     </>)

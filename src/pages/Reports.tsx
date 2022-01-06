@@ -47,8 +47,8 @@ interface ItemProps {
 }
 
 
-const getArrayBread = (nametmp: string) => ([
-    { id: "view-1", name: "Reports" },
+const getArrayBread = (nametmp: string, nameView1: string) => ([
+    { id: "view-1", name: nameView1 || "Reports" },
     { id: "view-2", name: nametmp }
 ]);
 
@@ -270,7 +270,7 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(t('report_' + row?.origin))}
+                breadcrumbs={getArrayBread(t('report_' + row?.origin), t(langKeys.report_plural))}
                 handleClick={handleSelected}
             />
             <div style={{ height: 10 }}></div>
@@ -657,7 +657,7 @@ const Reports: FC = () => {
             <Fragment>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_heatmap'))}
+                        breadcrumbs={getArrayBread(t('report_heatmap'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
                     />
                     <Heatmap />
@@ -669,7 +669,7 @@ const Reports: FC = () => {
             <>
                 <div style={{ width: '100%' }}>
                     <TemplateBreadcrumbs
-                        breadcrumbs={getArrayBread(t('report_recordhsmreport'))}
+                        breadcrumbs={getArrayBread(t('report_recordhsmreport'), t(langKeys.report_plural))}
                         handleClick={handleSelectedString}
                     />
                     <RecordHSMRecord />

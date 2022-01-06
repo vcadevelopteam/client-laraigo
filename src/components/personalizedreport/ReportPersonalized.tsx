@@ -17,7 +17,7 @@ import { Range } from 'react-date-range';
 import { getDateCleaned } from 'common/helpers/functions'
 
 
-const getArrayBread = (nametmp: string) => ([
+const getArrayBread = (nametmp: string, nameView1: string) => ([
     { id: "view-1", name: "Reports" },
     { id: "view-2", name: nametmp }
 ]);
@@ -150,7 +150,7 @@ const PersonalizedReport: FC<DetailReportProps> = ({ setViewSelected, multiData,
     return (
         <div style={{ width: '100%' }}>
             <TemplateBreadcrumbs
-                breadcrumbs={getArrayBread(description)}
+                breadcrumbs={getArrayBread(description, t(langKeys.report_plural))}
                 handleClick={setViewSelected}
             />
             <div className={classes.containerFilters}>

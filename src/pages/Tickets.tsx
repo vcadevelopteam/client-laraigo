@@ -675,7 +675,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_name),
-                accessor: 'name'
+                accessor: 'name',
             },
             {
                 Header: t(langKeys.ticket_phone),
@@ -712,20 +712,25 @@ const Tickets = () => {
             {
                 Header: t(langKeys.ticket_duracionreal),
                 accessor: 'duracionreal',
+                helpText: t(langKeys.ticket_help_duracionreal),
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duracionpausa),
                 accessor: 'duracionpausa',
+                helpText: t(langKeys.ticket_duracionpausa_help),
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_duraciontotal),
+                helpText: t(langKeys.ticket_duraciontotal_help),
                 accessor: 'duraciontotal',
+
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_fechahandoff),
+                helpText: t(langKeys.ticket_fechahandoff_help),
                 accessor: 'fechahandoff',
                 type: 'date',
                 sortType: 'datetime',
@@ -736,6 +741,7 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_fechaultimaconversacion),
+                helpText: t(langKeys.ticket_fechaultimaconversacion_help),
                 accessor: 'fechaultimaconversacion',
                 type: 'date',
                 sortType: 'datetime',
@@ -762,36 +768,37 @@ const Tickets = () => {
             },
             {
                 Header: t(langKeys.ticket_tmoasesor),
+                helpText: t(langKeys.ticket_tmoasesor_help),
                 accessor: 'tmoasesor',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuesta),
+                helpText: t(langKeys.ticket_tiempopromediorespuesta_help),
                 accessor: 'tiempopromediorespuesta',
                 type: 'time',
             },
             {
                 Header: t(langKeys.ticket_tiempopromediorespuestaasesor),
+                helpText: t(langKeys.ticket_tiempopromediorespuestaasesor_help),
                 accessor: 'tiempopromediorespuestaasesor',
                 type: 'time',
             },
-            // {
-            //     Header: t(langKeys.ticket_tiempoprimerarespuesta),
-            //     accessor: 'tiempoprimerarespuesta',
-            //     type: 'time'
-            // },
             {
                 Header: t(langKeys.ticket_tiempoprimerarespuestaasesor),
+                helpText: t(langKeys.ticket_tiempoprimerarespuestaasesor_help),
                 accessor: 'tiempoprimerarespuestaasesor',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tiempoprimeraasignacion),
+                helpText: t(langKeys.ticket_tiempoprimeraasignacion_help),
                 accessor: 'tiempoprimeraasignacion',
                 type: 'time'
             },
             {
                 Header: t(langKeys.ticket_tdatime),
+                helpText: t(langKeys.ticket_tdatime_help),
                 accessor: 'tdatime',
                 type: 'time'
             },
