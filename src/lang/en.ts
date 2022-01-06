@@ -1750,6 +1750,10 @@ const translation: LangKeys = {
     successful_calculate: 'Calculated successfully',
     gotopay: 'Go to Payment',
     payments: 'Payments',
+    gotoreport: 'Get Report',
+    xmldocument: 'Get XML',
+    cdrdocument: 'Get CDR',
+    pendingpayment: 'Pending Payment',
 };
 
 const enResource: ResourceLanguage = {

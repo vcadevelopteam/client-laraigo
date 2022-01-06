@@ -676,19 +676,27 @@ const InvoiceDetail: FC<DetailProps> = ({ data, setViewSelected, fetchData }) =>
     )
 }
 
-const InvoiceControl: FC = () => {
-    const { t } = useTranslation();
-    const [waitSave, setWaitSave] = useState(false);
-    const executeRes = useSelector(state => state.main.execute);
+const PaymentsTwo: FC = () => {
     const dispatch = useDispatch();
-    const multiData = useSelector(state => state.main.multiData);
-    const [viewSelected, setViewSelected] = useState("view-1");
-    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
-    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
-    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString())
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
 
-    const fetchData = () => dispatch(getMultiCollection([selInvoiceClient(parseInt(filterYear), filterMonth)]));
+    const { t } = useTranslation();
+
+    const executeRes = useSelector(state => state.main.execute);
+    const multiData = useSelector(state => state.main.multiData);
+    const resInvoice = useSelector(state => state.culqi.request);
+
+    const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
+    const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
+    const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+    const [functiontrigger, setfunctiontrigger] = useState('');
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
+    const [viewSelected, setViewSelected] = useState("view-1");
+    const [waitSave, setWaitSave] = useState(false);
+    const [waitSend, setWaitSend] = useState(false);
+
+    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+    const search = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+
     useEffect(() => {
         fetchData()
     }, [])
@@ -696,7 +704,8 @@ const InvoiceControl: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.invoicesuccessfullyvoided) }))
+                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
+                dispatch(showSnackbar({ show: true, success: true, message }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -710,8 +719,23 @@ const InvoiceControl: FC = () => {
     }, [executeRes, waitSave])
 
     useEffect(() => {
+        if (waitSend) {
+            if (!resInvoice.loading && !resInvoice.error) {
+                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
+                fetchData && fetchData();
+                dispatch(showBackdrop(false));
+            } else if (resInvoice.error) {
+                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
+                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
+                setWaitSend(false);
+                dispatch(showBackdrop(false));
+            }
+        }
+    }, [resInvoice, waitSend])
+
+    useEffect(() => {
         if (!multiData.loading && !multiData.error) {
-            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SELCLIENT");
+            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
             if (invoiceData) {
                 setDataInvoice(invoiceData.data);
             }
@@ -721,46 +745,113 @@ const InvoiceControl: FC = () => {
     const columns = React.useMemo(
         () => [
             {
-                NoFilter: true,
+                accessor: 'billingsupportid',
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
-                accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    if (row.paymentstatus !== "PENDING")
-                        return null;
+                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+                    const handleClose = () => setAnchorEl(null);
                     return (
-
-                        <CulqiModal
-                            type="CHARGE"
-                            invoiceid={row.invoiceid}
-                            title={t(row.docnumber)}
-                            description=""
-                            currency={row.currency}
-                            amount={row.totalamount * 100}
-                        ></CulqiModal>
+                        <>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={() => handleView(row)}
+                            >
+                                <Visibility style={{ color: '#B6B4BA' }} />
+                            </IconButton>
+                            <IconButton
+                                aria-label="more"
+                                aria-controls="long-menu"
+                                aria-haspopup="true"
+                                size="small"
+                                onClick={(e) => setAnchorEl(e.currentTarget)}
+                            >
+                                <MoreVert style={{ color: '#B6B4BA' }} />
+                            </IconButton>
+                            <Menu
+                                anchorEl={anchorEl}
+                                getContentAnchorEl={null}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'right',
+                                }}
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                open={Boolean(anchorEl)}
+                                onClose={handleClose}
+                            >
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleGenerate(row)
+                                }}>Generar factura</MenuItem>
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleSend(row)
+                                }}>Envíar factura</MenuItem>
+                                <MenuItem onClick={(e) => {
+                                    setAnchorEl(null)
+                                    handleCancel(row)
+                                }}>Anular factura</MenuItem>
+                            </Menu>
+                        </>
                     )
                 }
             },
             {
-                Header: t(langKeys.documentnumber),
-                accessor: 'docnumber',
-                Cell: (props: any) => {
-                    const urlpdf = props.cell.row.original.urlpdf;
-                    const docnumber = props.cell.row.original.docnumber;
-                    return (
-                        <Fragment>
-                            <div>
-                                <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
-                            </div>
-                        </Fragment>
-                    )
-                }
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
             },
             {
-                Header: t(langKeys.concept),
-                accessor: 'concept',
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
+            },
+            {
+                Header: t(langKeys.year),
+                accessor: 'year',
+            },
+            {
+                Header: t(langKeys.month),
+                accessor: 'month',
+            },
+            {
+                Header: t(langKeys.currency),
+                accessor: 'currency',
+            },
+            {
+                Header: t(langKeys.amount),
+                accessor: 'totalamount',
+                type: 'number',
+            },
+            {
+                Header: t(langKeys.paymentstatus),
+                accessor: 'paymentstatus',
+            },
+            {
+                Header: "RUC",
+                accessor: 'issuerruc',
+            },
+            {
+                Header: t(langKeys.bussinessname),
+                accessor: 'issuerbusinessname',
+            },
+            {
+                Header: t(langKeys.tradename),
+                accessor: 'issuertradename',
+            },
+            {
+                Header: "Serie",
+                accessor: 'serie',
+            },
+            {
+                Header: t(langKeys.correlative),
+                accessor: 'correlative',
             },
             {
                 Header: t(langKeys.dateofissue),
@@ -771,36 +862,71 @@ const InvoiceControl: FC = () => {
                 }
             },
             {
-                Header: t(langKeys.amounttopay),
-                accessor: 'totalamount',
-                type: "number",
-                sortType: 'number',
+                Header: t(langKeys.expirationdate),
+                accessor: 'expirationdate',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    return row.totalamount ? (row.totalamount).toFixed(2) : '0.00'
+                    return row.expirationdate ? new Date(row.invoicedate).toLocaleString() : ''
                 }
-            },
-            {
-                Header: t(langKeys.currency),
-                accessor: 'currency',
             },
             {
                 Header: t(langKeys.invoicestatus),
                 accessor: 'invoicestatus',
             },
-            {
-                Header: t(langKeys.paymentstatus),
-                accessor: 'paymentstatus',
-            }
+            
         ],
         []
     );
 
-    const search = () => dispatch(getMultiCollection([
-        selInvoice(parseInt(filterYear), filterMonth),
-        selInvoiceClient(parseInt(filterYear), filterMonth),
-    ]))
+    const handleCancel = (row: Dictionary) => {
+        setfunctiontrigger("cancel")
+        const callback = () => {
+            dispatch(execute(cancelInvoice(row.invoiceid)));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
 
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.cancelinvoice),
+            callback
+        }))
+    }
+
+    const handleGenerate = (row: Dictionary) => {
+        setfunctiontrigger("generate")
+        const callback = () => {
+            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
+            dispatch(showBackdrop(true));
+            setWaitSave(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.regenerateinvoice),
+            callback
+        }))
+    }
+
+    const handleSend = (row: Dictionary) => {
+        const callback = () => {
+            dispatch(sendInvoice(row.invoiceid));
+            dispatch(showBackdrop(true));
+            setWaitSend(true)
+        }
+
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.sendinvoice),
+            callback
+        }))
+    }
+
+    const handleView = (row: Dictionary) => {
+        setViewSelected("view-2");
+        setRowSelected(row);
+    }
+    
     if (viewSelected === "view-1") {
         return (
             <TableZyx
@@ -840,7 +966,6 @@ const InvoiceControl: FC = () => {
                         </Button>
                     </div>
                 )}
-                // titlemodule={t(langKeys.billingplan, { count: 2 })}
                 data={dataInvoice}
                 filterGeneral={false}
                 loading={multiData.loading}
@@ -980,6 +1105,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
                 const errormessage = t(executeResult.code || "error_unexpected_error", { module: t(langKeys.billingplan).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
                 dispatch(showBackdrop(false));
+                setWaitCalculate(false);
                 setWaitSave(false);
             }
         }
@@ -992,7 +1118,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
 
     const handleCalculate = () => {
         const callback = () => {
-            dispatch(execute(getBillingPeriodCalcRefreshAll(3.968)));
+            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
             dispatch(showBackdrop(true));
             setWaitSave(true);
             setWaitCalculate(true);
@@ -1109,7 +1235,7 @@ const CostPerPeriod: React.FC <{ dataPlan: any}> = ({ dataPlan }) => {
         return null;
 }
 
-const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData,dataPlan }) => {
+const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, edit }, setViewSelected, fetchData, dataPlan }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
@@ -1126,6 +1252,10 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
         { id: "view-1", name: t(langKeys.costperperiod) },
         { id: "view-2", name: t(langKeys.costperperioddetail) }
     ];
+
+    if (row?.year !== new Date().getFullYear() || row?.month !== new Date().getMonth() + 1) {
+        edit = false;
+    }
 
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {            
@@ -1309,7 +1439,7 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldSelect
+                        { edit ? <FieldSelect
                             label={t(langKeys.contractedplan)}
                             className="col-6"
                             valueDefault={getValues("billingplan")}
@@ -1319,8 +1449,14 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.billingplan?.message}
                             optionDesc="plan"
                             optionValue="plan"
-                        />
-                        <FieldSelect
+                        /> : 
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.contractedplan)}
+                            value={getValues("billingplan")}
+                            />
+                        }
+                        { edit ? <FieldSelect
                             label={t(langKeys.supportplan)}
                             className="col-6"
                             valueDefault={getValues("supportplan")}
@@ -1330,25 +1466,44 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                             error={errors?.supportplan?.message}
                             optionDesc="description"
                             optionValue="description"
-                        />
+                        /> :
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.supportplan)}
+                            value={getValues("supportplan")}
+                            />
+                        }
+                        
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.costbasedonthecontractedplan)}
                             onChange={(value) => setValue('basicfee', value)}
                             valueDefault={getValues('basicfee')}
                             error={errors?.basicfee?.message}
                             type="number"
                             className="col-6"
-                        />
-                        <FieldEdit
+                        /> :
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.costbasedonthecontractedplan)}
+                            value={getValues('basicfee')}
+                            />
+                        }
+                        { edit ? <FieldEdit
                             label={t(langKeys.costbasedonthesupportplan)}
                             onChange={(value) => setValue('supportbasicfee', value)}
                             valueDefault={getValues('supportbasicfee')}
                             error={errors?.supportbasicfee?.message}
                             type="number"
                             className="col-6"
-                        />
+                        />:
+                            <FieldView
+                            className="col-6"
+                            label={t(langKeys.costbasedonthesupportplan)}
+                            value={getValues('supportbasicfee').toFixed(2)}
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
                         <FieldView
@@ -1360,14 +1515,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 1 && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.numberofagentshired)}
                             onChange={(value) => setValue('userfreequantity', value)}
                             valueDefault={getValues('userfreequantity')}
                             error={errors?.userfreequantity?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.numberofagentshired)}
+                                value={String(getValues('userfreequantity'))}
+                            />
+                        }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.numberofactiveadvisers)}
@@ -1387,14 +1548,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.useradditionalfee)}
                             onChange={(value) => setValue('useradditionalfee', value)}
                             valueDefault={getValues('useradditionalfee')}
                             error={errors?.useradditionalfee?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.useradditionalfee)}
+                                value={getValues('useradditionalfee').toFixed(2)}
+                            />
+                        }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.useradditionalcharge)}
@@ -1404,22 +1571,34 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 2  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.channelfreequantity)}
                             onChange={(value) => setValue('channelfreequantity', value)}
                             valueDefault={getValues('channelfreequantity')}
                             error={errors?.channelfreequantity?.message}
                             type="number"
                             className="col-6"
-                        />
-                        <FieldEdit
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.channelfreequantity)}
+                                value={getValues('channelfreequantity').toFixed(2)}
+                            />
+                        }
+                        { edit ? <FieldEdit
                             label={t(langKeys.channelwhatsappfee)}
                             onChange={(value) => setValue('channelwhatsappfee', value)}
                             valueDefault={getValues('channelwhatsappfee')}
                             error={errors?.channelwhatsappfee?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.channelwhatsappfee)}
+                                value={getValues('channelwhatsappfee').toFixed(2)}
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
                         <FieldView
@@ -1500,14 +1679,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 4  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.clientfreequantity)}
                             onChange={(value) => setValue('clientfreequantity', value)}
                             valueDefault={getValues('clientfreequantity')}
                             error={errors?.clientfreequantity?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.clientfreequantity)}
+                                value={getValues("clientfreequantity").toString()}
+                            />
+                        }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientquantity)}
@@ -1515,14 +1700,20 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                         />
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={t(langKeys.clientadditionalfee)}
                             onChange={(value) => setValue('clientadditionalfee', value)}
                             valueDefault={getValues('clientadditionalfee')}
                             error={errors?.clientadditionalfee?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={t(langKeys.clientadditionalfee)}
+                                value={getValues("clientadditionalfee").toFixed(2)}
+                            />
+                        }
                         <FieldView
                             className="col-6"
                             label={t(langKeys.clientadditionalcharge)}
@@ -1532,55 +1723,91 @@ const DetailCostPerPeriod: React.FC<DetailSupportPlanProps2> = ({ data: { row, e
                 </div>}
                 {pageSelected === 5  && <div className={classes.containerDetail}>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 1`}
                             onChange={(value) => setValue('additionalservicename1', value)}
                             valueDefault={getValues('additionalservicename1')}
                             error={errors?.additionalservicename1?.message}
                             className="col-6"
-                        />
-                        <FieldEdit
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicename)} 1`}
+                                value={getValues("additionalservicename1")}
+                            />
+                        }
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 1`}
                             onChange={(value) => setValue('additionalservicefee1', value)}
                             valueDefault={getValues('additionalservicefee1')}
                             error={errors?.additionalservicefee1?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicefee)} 1`}
+                                value={getValues("additionalservicefee1").toFixed(2)}
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 2`}
                             onChange={(value) => setValue('additionalservicename2', value)}
                             valueDefault={getValues('additionalservicename2')}
                             error={errors?.additionalservicename2?.message}
                             className="col-6"
-                        />
-                        <FieldEdit
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicename)} 2`}
+                                value={getValues("additionalservicename2")}
+                            />
+                        }
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 2`}
                             onChange={(value) => setValue('additionalservicefee2', value)}
                             valueDefault={getValues('additionalservicefee2')}
                             error={errors?.additionalservicefee2?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicefee)} 2`}
+                                value={getValues("additionalservicefee2").toFixed(2)}
+                            />
+                        }
                     </div>
                     <div className="row-zyx">
-                        <FieldEdit
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicename)} 3`}
                             onChange={(value) => setValue('additionalservicename3', value)}
                             valueDefault={getValues('additionalservicename3')}
                             error={errors?.additionalservicename3?.message}
                             className="col-6"
-                        />
-                        <FieldEdit
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicename)} 3`}
+                                value={getValues("additionalservicename3")}
+                            />
+                        }
+                        { edit ? <FieldEdit
                             label={`${t(langKeys.additionalservicefee)} 3`}
                             onChange={(value) => setValue('additionalservicefee3', value)}
                             valueDefault={getValues('additionalservicefee3')}
                             error={errors?.additionalservicefee3?.message}
                             type="number"
                             className="col-6"
-                        />
+                        /> :
+                            <FieldView
+                                className="col-6"
+                                label={`${t(langKeys.additionalservicefee)} 3`}
+                                value={getValues("additionalservicefee3").toFixed(2)}
+                            />
+                        }
                     </div>
                 </div>}
             </form>
@@ -1650,9 +1877,10 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     useEffect(() => {
         if (waitCalculate) {
             if (!executeCalculate.loading && !executeCalculate.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.success) }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.successful_calculate) }))
                 dispatch(showBackdrop(false));
                 setWaitCalculate(false);
+                search();
             } else if (executeCalculate.error) {
                 const message = t(executeCalculate.code || "error_unexpected_error", { module: t(langKeys.tipification).toLocaleLowerCase() })
                 dispatch(showSnackbar({ show: true, success: false, message }))
@@ -1660,7 +1888,7 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
                 setWaitCalculate(false);
             }
         }
-    }, [executeCalculate,waitCalculate])
+    }, [executeCalculate, waitCalculate])
 
     const triggerExportDataPerson = () => {
         dispatch(exportData(billingpersonreportsel(dataMain),"BillingPersonReport","excel",true))
@@ -1674,15 +1902,19 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
         setWaitExport(true);
     };
 
-    const goToPayment = () => {
-        setPageSelected(2);
-    };
+    const handleCalculate = () => {
+        const callback = () => {
+            dispatch(execute(getBillingPeriodCalcRefreshAll(0)));
+            dispatch(showBackdrop(true));
+            setWaitCalculate(true);
+        }
 
-    const triggerExportDataCalc = () => {
-        dispatch(showBackdrop(true));
-        dispatch(execute(getBillingPeriodCalc(dataMain)))
-        setWaitCalculate(true);
-    };
+        dispatch(manageConfirmation({
+            visible: true,
+            question: t(langKeys.confirmation_calculate),
+            callback
+        }))
+    }
 
     useEffect(() => {
         if (waitExport) {
@@ -1759,7 +1991,7 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
                                 color="primary"
                                 disabled={resExportData.loading}
                                 startIcon={<RefreshIcon color="secondary" />}
-                                onClick={() => triggerExportDataCalc()}
+                                onClick={() => handleCalculate()}
                                 style={{ backgroundColor: "#55BD84" }}
                             >{`${t(langKeys.calculate)}`}
                             </Button>
@@ -1790,15 +2022,6 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
                                 onClick={() => triggerExportDataUser()}
                                 startIcon={<DownloadIcon />}
                             >{`${t(langKeys.report)} ${t(langKeys.agent_plural)}`}
-                            </Button>
-                            <Button
-                                className={classes.button}
-                                variant="contained"
-                                color="primary"
-                                disabled={resExportData.loading}
-                                onClick={() => goToPayment()}
-                                startIcon={<PaymentIcon />}
-                            >{`${t(langKeys.gotopay)}`}
                             </Button>
                         </Fragment>)
                     }
@@ -2013,26 +2236,29 @@ const PeriodReport: React.FC <{ dataPlan: any, setPageSelected (param: any): voi
     )
 }
 
-const Payments: FC = () => {
+const Payments: React.FC <{ dataPlan: any, setPageSelected (param: any): void }> = ({ dataPlan, setPageSelected }) => {
     const dispatch = useDispatch();
 
     const { t } = useTranslation();
 
     const executeRes = useSelector(state => state.main.execute);
-    const multiData = useSelector(state => state.main.multiData);
-    const resInvoice = useSelector(state => state.culqi.request);
+    const mainResult = useSelector(state => state.main);
+    //const multiData = useSelector(state => state.main.multiData);
 
     const [dataInvoice, setDataInvoice] = useState<Dictionary[]>([]);
     const [filterMonth, setFilterMonth] = useState((new Date().getMonth() + 1).toString());
     const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
-    const [functiontrigger, setfunctiontrigger] = useState('');
-    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [viewSelected, setViewSelected] = useState("view-1");
+    const [rowSelected, setRowSelected] = useState<Dictionary | null>(null);
     const [waitSave, setWaitSave] = useState(false);
-    const [waitSend, setWaitSend] = useState(false);
 
-    const fetchData = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
-    const search = () => dispatch(getMultiCollection([selInvoice(parseInt(filterYear), filterMonth)]));
+    const fetchData = () => dispatch(getCollection(selInvoiceClient(parseInt(filterYear), filterMonth)));
+
+    const search = () => dispatch(getCollection(selInvoiceClient(parseInt(filterYear), filterMonth)));
+
+    const goToReport = () => {
+        setPageSelected(1);
+    }
 
     useEffect(() => {
         fetchData()
@@ -2041,8 +2267,7 @@ const Payments: FC = () => {
     useEffect(() => {
         if (waitSave) {
             if (!executeRes.loading && !executeRes.error) {
-                const message = functiontrigger === 'generate' ? "La factura se generó correctamente." : "Factura anulada correctamente";
-                dispatch(showSnackbar({ show: true, success: true, message }))
+                dispatch(showSnackbar({ show: true, success: true, message: t(langKeys.invoicesuccessfullyvoided) }))
                 fetchData && fetchData();
                 dispatch(showBackdrop(false));
                 setViewSelected("view-1")
@@ -2056,197 +2281,135 @@ const Payments: FC = () => {
     }, [executeRes, waitSave])
 
     useEffect(() => {
-        if (waitSend) {
-            if (!resInvoice.loading && !resInvoice.error) {
-                dispatch(showSnackbar({ show: true, success: true, message: "Factura enviada correctamente" }))
-                fetchData && fetchData();
-                dispatch(showBackdrop(false));
-            } else if (resInvoice.error) {
-                const errormessage = t(resInvoice.code || "error_unexpected_error", { module: t(langKeys.organization_plural).toLocaleLowerCase() })
-                dispatch(showSnackbar({ show: true, success: false, message: errormessage }))
-                setWaitSend(false);
-                dispatch(showBackdrop(false));
-            }
+        if (!mainResult.mainData.loading && !mainResult.mainData.error) {
+            setDataInvoice(mainResult.mainData.data);
         }
-    }, [resInvoice, waitSend])
-
-    useEffect(() => {
-        if (!multiData.loading && !multiData.error) {
-            const invoiceData = multiData.data.find(x => x.key === "UFN_INVOICE_SEL");
-            if (invoiceData) {
-                setDataInvoice(invoiceData.data);
-            }
-        }
-    }, [multiData])
+    }, [mainResult])
 
     const columns = React.useMemo(
         () => [
             {
-                accessor: 'billingsupportid',
+                NoFilter: true,
                 isComponent: true,
                 minWidth: 60,
                 width: '1%',
+                accessor: 'orgid',
                 Cell: (props: any) => {
                     const row = props.cell.row.original;
-                    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-                    const handleClose = () => setAnchorEl(null);
+                    if (row.paymentstatus !== "PENDING")
+                        return null;
                     return (
-                        <>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={() => handleView(row)}
-                            >
-                                <Visibility style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <IconButton
-                                aria-label="more"
-                                aria-controls="long-menu"
-                                aria-haspopup="true"
-                                size="small"
-                                onClick={(e) => setAnchorEl(e.currentTarget)}
-                            >
-                                <MoreVert style={{ color: '#B6B4BA' }} />
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                getContentAnchorEl={null}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleGenerate(row)
-                                }}>Generar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleSend(row)
-                                }}>Envíar factura</MenuItem>
-                                <MenuItem onClick={(e) => {
-                                    setAnchorEl(null)
-                                    handleCancel(row)
-                                }}>Anular factura</MenuItem>
-                            </Menu>
-                        </>
+                        <CulqiModal
+                            type="CHARGE"
+                            invoiceid={row.invoiceid}
+                            title={t(row.docnumber)}
+                            description=""
+                            currency={row.currency}
+                            amount={row.totalamount * 100}
+                        ></CulqiModal>
                     )
                 }
             },
             {
-                Header: "RUC",
-                accessor: 'issuerruc',
+                Header: t(langKeys.corporation),
+                accessor: 'corpdesc',
             },
             {
-                Header: t(langKeys.bussinessname),
-                accessor: 'issuerbusinessname',
+                Header: t(langKeys.organization),
+                accessor: 'orgdesc',
             },
             {
-                Header: t(langKeys.tradename),
-                accessor: 'issuertradename',
+                Header: t(langKeys.year),
+                accessor: 'year',
             },
             {
-                Header: "Serie",
-                accessor: 'serie',
-            },
-            {
-                Header: t(langKeys.correlative),
-                accessor: 'correlative',
-            },
-            {
-                Header: t(langKeys.dateofissue),
-                accessor: 'invoicedate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.invoicedate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
-            },
-            {
-                Header: t(langKeys.expirationdate),
-                accessor: 'expirationdate',
-                Cell: (props: any) => {
-                    const row = props.cell.row.original;
-                    return row.expirationdate ? new Date(row.invoicedate).toLocaleString() : ''
-                }
+                Header: t(langKeys.month),
+                accessor: 'month',
             },
             {
                 Header: t(langKeys.currency),
                 accessor: 'currency',
             },
             {
-                Header: t(langKeys.amount),
+                Header: t(langKeys.totalamount),
                 accessor: 'totalamount',
-                type: 'number',
-            },
-            {
-                Header: t(langKeys.invoicestatus),
-                accessor: 'invoicestatus',
             },
             {
                 Header: t(langKeys.paymentstatus),
                 accessor: 'paymentstatus',
             },
+            {
+                Header: t(langKeys.gotoreport),
+                accessor: 'invoiceid',
+                Cell: (props: any) => {
+                    return (
+                        <Fragment>
+                            <div>
+                                {<span onClick={goToReport} style={{ display: "block", cursor: "pointer", color: "blue", textDecoration: "underline" }}>{t(langKeys.gotoreport)}</span>}
+                            </div>
+                        </Fragment>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.documentnumber),
+                accessor: 'docnumber',
+                Cell: (props: any) => {
+                    const urlpdf = props.cell.row.original.urlpdf;
+                    const docnumber = props.cell.row.original.docnumber;
+                    return (
+                        <Fragment>
+                            <div>
+                                { (urlpdf ?
+                                    <a href={urlpdf} target="_blank" style={{ display: "block" }} rel="noreferrer">{docnumber}</a>
+                                    :
+                                    <b style={{ display: "block" }}>{`${docnumber}0000`}</b>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.xmldocument),
+                accessor: 'urlxml',
+                Cell: (props: any) => {
+                    const urlxml = props.cell.row.original.urlxml;
+                    return (
+                        <Fragment>
+                            <div>
+                                { (urlxml ?
+                                    <a href={urlxml} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.xmldocument)}</a>
+                                    :
+                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
+            },
+            {
+                Header: t(langKeys.cdrdocument),
+                accessor: 'urlcdr',
+                Cell: (props: any) => {
+                    const urlcdr = props.cell.row.original.urlcdr;
+                    return (
+                        <Fragment>
+                            <div>
+                                { (urlcdr ?
+                                    <a href={urlcdr} target="_blank" style={{ display: "block" }} rel="noreferrer">{t(langKeys.cdrdocument)}</a>
+                                    :
+                                    <b style={{ display: "block" }}>{t(langKeys.pendingpayment)}</b>)
+                                }
+                            </div>
+                        </Fragment>
+                    )
+                }
+            },
         ],
         []
     );
 
-    const handleCancel = (row: Dictionary) => {
-        setfunctiontrigger("cancel")
-        const callback = () => {
-            dispatch(execute(cancelInvoice(row.invoiceid)));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.cancelinvoice),
-            callback
-        }))
-    }
-
-    const handleGenerate = (row: Dictionary) => {
-        setfunctiontrigger("generate")
-        const callback = () => {
-            dispatch(execute(regenerateInvoice({ invoiceid: row.invoiceid })));
-            dispatch(showBackdrop(true));
-            setWaitSave(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.regenerateinvoice),
-            callback
-        }))
-    }
-
-    const handleSend = (row: Dictionary) => {
-        const callback = () => {
-            dispatch(sendInvoice(row.invoiceid));
-            dispatch(showBackdrop(true));
-            setWaitSend(true)
-        }
-
-        dispatch(manageConfirmation({
-            visible: true,
-            question: t(langKeys.sendinvoice),
-            callback
-        }))
-    }
-
-    const handleView = (row: Dictionary) => {
-        setViewSelected("view-2");
-        setRowSelected(row);
-    }
-    
     if (viewSelected === "view-1") {
         return (
             <TableZyx
@@ -2276,7 +2439,7 @@ const Payments: FC = () => {
                             optionValue="val"
                         />
                         <Button
-                            disabled={multiData.loading}
+                            disabled={mainResult.mainData.loading}
                             variant="contained"
                             color="primary"
                             startIcon={<SearchIcon style={{ color: 'white' }} />}
@@ -2286,9 +2449,10 @@ const Payments: FC = () => {
                         </Button>
                     </div>
                 )}
+                // titlemodule={t(langKeys.billingplan, { count: 2 })}
                 data={dataInvoice}
                 filterGeneral={false}
-                loading={multiData.loading}
+                loading={mainResult.mainData.loading}
                 download={true}
                 register={false}
             />
@@ -2320,10 +2484,10 @@ const Invoice: FC = () => {
     const [sentfirstinfo, setsentfirstinfo] = useState(false);
 
     useEffect(() => {
-        if(!multiData.loading && sentfirstinfo){
-            setsentfirstinfo(false)
-            setdataPlan(multiData.data[0] && multiData.data[0].success? multiData.data[0].data : [])
-            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : [])
+        if(!multiData.loading && sentfirstinfo) {
+            setsentfirstinfo(false);
+            setdataPlan(multiData.data[0] && multiData.data[0].success? multiData.data[0].data : []);
+            setdataPaymentPlan(multiData.data[3] && multiData.data[3].success? multiData.data[3].data : []);
         }
     }, [multiData])
 
@@ -2363,7 +2527,9 @@ const Invoice: FC = () => {
                 {(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
                     <AntTab label={t(langKeys.payments)} />
                 }
-                {/*<AntTab label={t(langKeys.invoice)} />*/}
+                {/*(user?.roledesc === "SUPERADMIN" || user?.roledesc === "ADMIN") && 
+                    <AntTab label={t(langKeys.payments)} />
+                */}
             </Tabs>
             {pageSelected === 0 &&
                 <div style={{ marginTop: 16 }}>
@@ -2377,12 +2543,12 @@ const Invoice: FC = () => {
             }
             {pageSelected === 2 &&
                 <div style={{ marginTop: 16 }}>
-                    <Payments />
+                    <Payments dataPlan={multiData} setPageSelected={setPageSelected}/>
                 </div>
             }
             {/*pageSelected === 3 &&
                 <div style={{ marginTop: 16 }}>
-                    <InvoiceControl />
+                    <PaymentsTwo />
                 </div>
             */}
         </div>

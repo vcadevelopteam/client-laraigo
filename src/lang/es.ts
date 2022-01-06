@@ -1744,6 +1744,10 @@ const translation: LangKeys = {
     successful_calculate: 'Se calculó satisfactoriamente',
     gotopay: 'Ir a Pagos',
     payments: 'Pagos',
+    gotoreport: 'Ver Reporte',
+    xmldocument: 'Ver XML',
+    cdrdocument: 'Ver CDR',
+    pendingpayment: 'Pendiente a Pago',
 };
 
 const esResource: ResourceLanguage = {
