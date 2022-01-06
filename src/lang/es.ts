@@ -1209,7 +1209,7 @@ const translation: LangKeys = {
     report_productivity_email: 'Correo',
     report_productivity_phone: 'Teléfono',
     report_productivity_swingingtimes: 'N° balanceo',
-    report_productivity_tmoagent: 'TMO agente',
+    report_productivity_tmoagent: 'TMO asesor',
     report_productivity_holdingholdtime: 'Tiempo de espera en holding',
 
     report_tipification: 'Reporte de Clasificaciones',
@@ -1224,7 +1224,7 @@ const translation: LangKeys = {
     report_tipification_classificationlevel3: 'Clasificación nivel 3',
 
     report_userproductivityhours: 'Productividad de asesores hora',
-    report_userproductivityhours_datehour: 'Fecha - Hora',
+    report_userproductivityhours_datehour: 'Fecha',
     report_userproductivityhours_agent: 'Asesor',
     report_userproductivityhours_hoursrange: 'Rango de horas',
     report_userproductivityhours_worktime: 'Tiempo trabajado',
@@ -1251,7 +1251,7 @@ const translation: LangKeys = {
     report_userproductivity_user: 'Usuario',
     report_userproductivity_fullname: 'Nombre del asesor',
     report_userproductivity_hourfirstlogin: 'Primer logueo',
-    report_userproductivity_totaltickets: 'Cantidad de ticket',
+    report_userproductivity_totaltickets: 'Cantidad de tickets',
     report_userproductivity_closedtickets: 'Cerrados',
     report_userproductivity_asignedtickets: 'Asignados',
     report_userproductivity_suspendedtickets: 'Suspendidos',

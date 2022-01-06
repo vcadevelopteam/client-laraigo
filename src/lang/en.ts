@@ -1298,7 +1298,7 @@ const translation: LangKeys = {
     report_tipification_classificationlevel3: 'Classification level 3',
 
     report_userproductivityhours: 'Hourly agent productivity',
-    report_userproductivityhours_datehour: 'Date - Hour',
+    report_userproductivityhours_datehour: 'Date',
     report_userproductivityhours_agent: 'Agent',
     report_userproductivityhours_hoursrange: 'Range of hour',
     report_userproductivityhours_worktime: 'Time worked',
