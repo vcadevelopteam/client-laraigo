@@ -215,6 +215,29 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     return (
         <>
             <div className={classes.containerFilter}>
+                <div style={{ display: 'flex'}}>
+                    <Box width={1}>
+                        <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                <DateRangePicker
+                                    open={openDateRangeModal}
+                                    setOpen={setOpenDateRangeModal}
+                                    range={dateRange}
+                                    onSelect={setdateRange}
+                                >
+                                    <Button
+                                        disabled={detailCustomReport.loading}
+                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)'  }}
+                                        startIcon={<CalendarIcon />}
+                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
+                                    >
+                                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
+                                    </Button>
+                                </DateRangePicker>
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
                 {
                     allFilters.map(filtro => (
                         (filtro.values[0].multiselect ?
@@ -257,21 +280,6 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                     <Box width={1}>
                         <Box className={classes.containerHeader} justifyContent="space-between" alignItems="center">
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                                <DateRangePicker
-                                    open={openDateRangeModal}
-                                    setOpen={setOpenDateRangeModal}
-                                    range={dateRange}
-                                    onSelect={setdateRange}
-                                >
-                                    <Button
-                                        disabled={detailCustomReport.loading}
-                                        style={{ border: '1px solid #bfbfc0', borderRadius: 4, color: 'rgb(143, 146, 161)'  }}
-                                        startIcon={<CalendarIcon />}
-                                        onClick={() => setOpenDateRangeModal(!openDateRangeModal)}
-                                    >
-                                        {format(dateRange.startDate!) + " - " + format(dateRange.endDate!)}
-                                    </Button>
-                                </DateRangePicker>
                                 <Button
                                     disabled={detailCustomReport.loading}
                                     variant="contained"
