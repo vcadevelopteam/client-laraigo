@@ -36,15 +36,18 @@ interface CulqiModalProps {
 
 const publickey = apiUrls.CULQIKEY;
 
-/*
-<CulqiModal
+
+{/* <CulqiModal
     type="CHARGE"
     title="Basic plan"
     description=""
     currency="USD"
     amount={10000}
-></CulqiModal>
-*/
+    callbackOnSuccess={() => {
+        ....
+    }}
+></CulqiModal> */}
+
 
 const CulqiModal: FC<CulqiModalProps> = ({
     invoiceid,
