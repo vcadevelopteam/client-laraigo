@@ -14,6 +14,7 @@ import { convertLocalDate, getValuesFromDomain, insPersonBody } from 'common/hel
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
 import { Dictionary } from '@types';
+import { FileIcon } from 'icons';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
 import { useForm } from 'react-hook-form';
@@ -105,6 +106,18 @@ const useStyles = makeStyles((theme) => ({
     },
     orderDefault: {
         flexDirection: 'column'
+    },
+    containerAttachment: {
+        display: 'flex',
+        gap: 16,
+        alignItems: 'center',
+        borderBottom: '1px solid #e1e1e1',
+        padding: theme.spacing(1),
+        paddingLeft: 16,
+        cursor: 'pointer',
+        '&:hover': {
+            backgroundColor: '#ececec'
+        }
     }
 }));
 
@@ -534,10 +547,10 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
 
     useEffect(() => {
         // setTimeout(() => {
-            if (order === 1)
-                el1.current?.scrollIntoView();
-            else 
-                el?.current?.scrollIntoView();
+        if (order === 1)
+            el1.current?.scrollIntoView();
+        else
+            el?.current?.scrollIntoView();
         // }, 1000);
     }, [order])
 
@@ -551,7 +564,7 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
 
     if (previewTicketList.data.length === 0) {
         return (
-            <div style={{ padding: 8, flex: 1 }}>
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
                 {t(langKeys.without_result)}
             </div>
         )
@@ -593,6 +606,53 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
     )
 }
 
+const Attachments: React.FC = () => {
+    const classes = useStyles();
+    const [listFiles, setListFiles] = useState<Dictionary[]>([]);
+    const interactionList = useSelector(state => state.inbox.interactionList.data);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        console.log(interactionList)
+        setListFiles(interactionList.reduce<Dictionary[]>((acc, item) => [
+            ...acc,
+            ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
+                url: x.interactiontext,
+                filename: x.interactiontext.split("/").pop()?.split(".")[0],
+                extension: (x.interactiontext.split("/").pop() || "").split(".").pop(),
+                date: convertLocalDate(x.createdate).toLocaleString(),
+            }))
+        ], []));
+    }, [])
+
+    if (listFiles.length === 0) {
+        return (
+            <div className={classes.label} style={{ padding: 8, flex: 1 }}>
+                {t(langKeys.without_files)}
+            </div>
+        )
+    }
+
+    return (
+        <div className={`scroll-style-go`} style={{ overflowY: 'auto', flex: 1, backgroundColor: 'transparent' }}>
+            {listFiles.map((file, index) => (
+                <div
+                    key={index}
+                    className={classes.containerAttachment}
+                    onClick={() => window.open(file.url, "_blank")}
+                >
+                    <FileIcon width="20" height="20" />
+                    <div>
+                        <div>{file.filename}</div>
+                        <div className={classes.label}>{file.date}</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}
+
+
 const InfoPanel: React.FC = () => {
     const classes = useStyles();
     const [pageSelected, setPageSelected] = useState(0);
@@ -618,6 +678,7 @@ const InfoPanel: React.FC = () => {
             </Tabs>
             {pageSelected === 0 && <InfoTab />}
             {pageSelected === 1 && <PreviewTickets order={order} />}
+            {pageSelected === 2 && <Attachments />}
             {pageSelected === 3 && <Variables />}
         </div>
     );

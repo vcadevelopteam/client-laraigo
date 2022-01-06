@@ -57,6 +57,7 @@ const translation: LangKeys = {
     companyrole_regionalleader: "Regional Leader",
 
     without_result: 'Without result',
+    without_files: 'Without attachments',
 
 
     client_message: 'Client Messages',
@@ -721,6 +722,8 @@ const translation: LangKeys = {
     signupstep1title2: 'Complete Personal and Business Information',
     show: 'Show',
     submit: 'Submit',
+    create: 'Create',
+    send: 'Send',
     firstandlastname: "First and last name",
     companybusinessname: "Company or Business name",
     campaign: 'Campaign',

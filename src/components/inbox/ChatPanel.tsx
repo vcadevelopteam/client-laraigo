@@ -156,7 +156,7 @@ const DialogSendHSM: React.FC<{ setOpenModal: (param: any) => void, openModal: b
             open={openModal}
             title={t(langKeys.send_hsm)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
+            buttonText2={t(langKeys.send)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -553,7 +553,7 @@ const DialogLead: React.FC<{ setOpenModal: (param: any) => void, openModal: bool
             open={openModal}
             title={t(langKeys.newlead)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.save)}
+            buttonText2={t(langKeys.create)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
@@ -731,7 +731,7 @@ const DialogTipifications: React.FC<{ setOpenModal: (param: any) => void, openMo
             open={openModal}
             title={t(langKeys.tipify_ticket)}
             buttonText1={t(langKeys.cancel)}
-            buttonText2={t(langKeys.continue)}
+            buttonText2={t(langKeys.save)}
             handleClickButton1={() => setOpenModal(false)}
             handleClickButton2={onSubmit}
             button2Type="submit"
