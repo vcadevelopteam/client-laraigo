@@ -1134,8 +1134,8 @@ const translation: LangKeys = {
 
     report_loginhistory: 'Conexión de usuario',
     report_loginhistory_datehour: 'Fecha - Hora',
-    report_loginhistory_user: 'Usuario',
-    report_loginhistory_username: 'Nombre del usuario',
+    report_loginhistory_user: 'Nombre del usuario',
+    report_loginhistory_username: 'Usuario',
     report_loginhistory_status: 'Estado',
     report_loginhistory_type: 'Tipo',
 

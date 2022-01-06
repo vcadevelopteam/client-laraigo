@@ -706,6 +706,7 @@ const TableZyx = React.memo(({
                                                             style={{
                                                                 whiteSpace: 'nowrap',
                                                                 wordWrap: 'break-word',
+                                                                display: 'flex',
                                                                 cursor: 'pointer',
                                                                 alignItems: 'center',
                                                             }}
