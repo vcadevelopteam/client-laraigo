@@ -1804,6 +1804,7 @@ const translation: LangKeys = {
     pendingpayment: 'Pending Payment',
     emissorinvoice: 'INVOICE',
     emissorticket: 'TICKET',
+    regulatepayment: 'Regulate Payment',
     chatimages: "Chat images",
 };
 

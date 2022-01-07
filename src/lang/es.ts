@@ -1795,6 +1795,7 @@ const translation: LangKeys = {
     pendingpayment: 'Pendiente a Pago',
     emissorinvoice: 'FACTURA',
     emissorticket: 'BOLETA',
+    regulatepayment: 'Regularizar Pago',
     notedescription: 'Descripción de la nota',
     activitydescription: 'Descripción de la actividad',
 };
