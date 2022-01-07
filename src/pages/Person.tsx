@@ -350,7 +350,7 @@ export const TemplateIcons: React.FC<{
                 aria-controls="long-menu"
                 aria-haspopup="true"
                 size="small"
-                
+
                 onClick={(e) => {
                     e.stopPropagation();
                     setAnchorEl(e.currentTarget);
@@ -781,9 +781,11 @@ export const Person: FC = () => {
 
     return (
         <div style={{ height: '100%', width: 'inherit' }}>
-            <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
-            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4}}>
-                <div style={{ flexGrow: 1 }} />
+
+            <div style={{ display: 'flex', gap: 8, flexDirection: 'row', marginBottom: 12, marginTop: 4 }}>
+                <div style={{ flexGrow: 1 }} >
+                    <Title><Trans i18nKey={langKeys.person} count={2} /></Title>
+                </div>
                 <Button
                     variant="contained"
                     type="button"
