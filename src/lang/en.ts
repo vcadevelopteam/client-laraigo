@@ -1756,6 +1756,7 @@ const translation: LangKeys = {
     pendingpayment: 'Pending Payment',
     emissorinvoice: 'INVOICE',
     emissorticket: 'TICKET',
+    regulatepayment: 'Regulate Payment',
 };
 
 const enResource: ResourceLanguage = {
