@@ -1784,6 +1784,15 @@ export const langKeys = {
 
     notedescription: 'notedescription',
     activitydescription: 'activitydescription',
+    successful_calculate: 'successful_calculate',
+    gotopay: 'gotopay',
+    payments: 'payments',
+    gotoreport: 'gotoreport',
+    xmldocument: 'xmldocument',
+    cdrdocument: 'cdrdocument',
+    pendingpayment: 'pendingpayment',
+    emissorinvoice: 'emissorinvoice',
+    emissorticket: 'emissorticket',
 };
 
 export type LangKeys = typeof langKeys;
