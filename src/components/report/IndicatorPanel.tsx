@@ -21,7 +21,7 @@ const IndicatorPanel: FC<Indicator> = ({ title, value,value2 }) => {
                     {value}
                 </Typography>
                 <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
-                    <div>&nbsp;</div>{value2}
+                    {value2}
                 </Typography>
             </CardContent>
         </Card>

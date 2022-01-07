@@ -75,6 +75,8 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     const [openDateRangeModal, setOpenDateRangeModal] = useState(false);
     const [state, setState] = useState({ checkedA: false, checkedB: false });
     const [checkedA, setcheckedA] = useState(false);
+    const [isday, setisday] = useState(false);
+    
 
     const columns = React.useMemo(
         () => [
@@ -88,11 +90,11 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 accessor: 'fullname',
                 NoFilter: false
             },
-            {
+            ...(isday?[{
                 Header: t(langKeys.report_userproductivity_hourfirstlogin),
                 accessor: 'hourfirstlogin',
-                NoFilter: false
-            },
+                NoFilter: false,
+            }]:[]),
             {
                 Header: t(langKeys.report_userproductivity_totaltickets),
                 accessor: 'totaltickets',
@@ -184,7 +186,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                 NoFilter: false
             }
         ],
-        []
+        [isday]
     );
 
     useEffect(() => {
@@ -196,6 +198,9 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
     }, [dateRange]);
 
     const fetchData = () => {
+        let stardate = dateRange.startDate ? new Date(dateRange.startDate.setHours(10)).toISOString().substring(0, 10) : null
+        let enddate = dateRange.endDate ? new Date(dateRange.endDate.setHours(10)).toISOString().substring(0, 10) : null
+        setisday(stardate === enddate)
         dispatch(resetMainAux());
         dispatch(getCollectionAux(getUserProductivitySel({ ...allParameters })));
     };
@@ -297,13 +302,13 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             </div>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} md={4} lg={4}>
+                <Grid item xs={12} md={6} lg={6}>
                     <div>
                         <Grid container spacing={1} >
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme > detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtme >= detailCustomReport.data[0]?.tmeesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtme < detailCustomReport.data[0]?.tmeesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -314,7 +319,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmeexpected)} ${detailCustomReport.data[0]?.tmeesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtme <= detailCustomReport.data[0]?.tmeesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -330,7 +335,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tme)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtme}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmeuser?`#${detailCustomReport.data[0]?.cardmaxmaxtmeticket} (${detailCustomReport.data[0]?.cardmaxmaxtmeuser})`:undefined}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
@@ -344,19 +349,19 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tme)}
                                     value={detailCustomReport.data[0]?.cardminmintme}
-                                    value2={detailCustomReport.data[0]?.cardminmintmeuser}
+                                    value2={detailCustomReport.data[0]?.cardminmintmeuser?`#${detailCustomReport.data[0]?.cardminmintmeticket} (${detailCustomReport.data[0]?.cardminmintmeuser})`:undefined}
                                 />
                             </Grid>
                         </Grid>
                     </div>
                 </Grid>
-                <Grid item xs={12} md={4} lg={4}>
+                <Grid item xs={12} md={6} lg={6}>
                     <div>
                         <Grid container spacing={1}>
                             <Grid item xs={12} md={12} lg={12}>
                                 <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo > detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmo >= detailCustomReport.data[0]?.tmoesperadogeneral),
+                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmo < detailCustomReport.data[0]?.tmoesperadogeneral),
                                 })} style={{color: "white"}}>
                                     <CardContent style={{paddingBottom: 10}}>
                                         <Typography variant="h5">
@@ -367,7 +372,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                         </Typography>
                                         <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
                                             {`${t(langKeys.tmoexpected)} ${detailCustomReport.data[0]?.tmoesperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
+                                            { (detailCustomReport.data[0]?.cardavgavgtmo <= detailCustomReport.data[0]?.tmoesperadogeneral) ? (<ThumbDownIcon/>) : (<ThumbUpIcon/>)}
                                         </Typography>
                                     </CardContent>
                                 </Card>
@@ -383,7 +388,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardmaxmax_tmo)}
                                     value={detailCustomReport.data[0]?.cardmaxmaxtmo}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser}
+                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmouser?`#${detailCustomReport.data[0]?.cardmaxmaxtmoticket} (${detailCustomReport.data[0]?.cardmaxmaxtmouser})`:undefined}
                                 />
                             </Grid>
                             <Grid item xs={12} md={12} lg={6}>
@@ -397,60 +402,7 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
                                 <IndicatorPanel
                                     title={t(langKeys.report_userproductivity_cardminmin_tmo)}
                                     value={detailCustomReport.data[0]?.cardminmintmo}
-                                    value2={detailCustomReport.data[0]?.cardminmintmouser}
-                                />
-                            </Grid>
-                        </Grid>
-                    </div>
-                </Grid>
-                <Grid item xs={12} md={4} lg={4}>
-                    <div>
-                        <Grid container spacing={1}>
-                            <Grid item xs={12} md={12} lg={12}>
-                                <Card className={clsx({
-                                    [classes.BackGrGreen]: (detailCustomReport.data[0]?.cardavgavgtmoasesor < detailCustomReport.data[0]?.tmoasesoresperadogeneral),
-                                    [classes.BackGrRed]: (detailCustomReport.data[0]?.cardavgavgtmoasesor > detailCustomReport.data[0]?.tmoasesoresperadogeneral),
-                                })} style={{color: "white"}}>
-                                    <CardContent style={{paddingBottom: 10}}>
-                                        <Typography variant="h5">
-                                            {t(langKeys.report_userproductivity_cardtmoadviser)}
-                                        </Typography>
-                                        <Typography variant="h5" component="div" align="center">
-                                            {detailCustomReport.data[0]?.cardavgavgtmoasesor}
-                                        </Typography>
-                                        <Typography variant="subtitle2" style={{display: "flex",width: "100%", paddingTop: 5, justifyContent: "space-between"}}>
-                                            {`${t(langKeys.tmoadviserexpected)} ${detailCustomReport.data[0]?.tmoasesoresperadogeneral||""}`}
-                                            { (detailCustomReport.data[0]?.cardavgavgtmoasesor <= detailCustomReport.data[0]?.tmoasesoresperadogeneral) ? (<ThumbUpIcon/>) : (<ThumbDownIcon/>)}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmax_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardavgmaxtmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardavgmaxtmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardmaxmax_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardmaxmaxtmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardmaxmaxtmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardavgmin_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardavgmintmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardavgmintmoasesoruser}
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={6}>
-                                <IndicatorPanel
-                                    title={t(langKeys.report_userproductivity_cardminmin_tmoagent)}
-                                    value={detailCustomReport.data[0]?.cardminmintmoasesor}
-                                    value2={detailCustomReport.data[0]?.cardminmintmoasesoruser}
+                                    value2={detailCustomReport.data[0]?.cardminmintmouser?`#${detailCustomReport.data[0]?.cardminmintmoticket} (${detailCustomReport.data[0]?.cardminmintmouser})`:undefined}
                                 />
                             </Grid>
                         </Grid>
@@ -459,29 +411,49 @@ const AssessorProductivity: FC<Assessor> = ({ row, multiData, allFilters }) => {
             </Grid>
 
             <Grid container spacing={3} className={classes.containerDetails}>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_totalclosedtickets)}
-                        value={detailCustomReport.data[0]?.totalclosedtickets}
-                    />
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
+                            <div style={{flex: 1}}>
+                                <Typography variant="h6">
+                                    N° {t(langKeys.report_userproductivity_totalclosedtickets)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.totalclosedtickets}
+                                </Typography>
+                            </div>
+                            <div style={{flex: 1}}>
+                                <Typography variant="subtitle1" >
+                                    {detailCustomReport.data[0]?.cardavgmaxtmouser} ({detailCustomReport.data[0]?.totalclosedtickets})
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {detailCustomReport.data[0]?.cardavgmaxtmouser} ({detailCustomReport.data[0]?.totalclosedtickets})
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_holdingtickets)}
-                        value={detailCustomReport.data[0]?.holdingtickets}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={t(langKeys.report_userproductivity_asesortickets)}
-                        value={detailCustomReport.data[0]?.asesortickets}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4} lg={3}>
-                    <IndicatorPanel
-                        title={`${t(langKeys.report_userproductivity_usersconnected)} ${new Date().toLocaleDateString(undefined, {year: "numeric", month: "2-digit", day: "2-digit", hour: "numeric", minute: "numeric", second: "numeric"})}`}
-                        value={detailCustomReport.data[0]?.usersconnected}
-                    />
+                <Grid item xs={12} md={6} lg={6}>
+                    <Card>
+                        <CardContent style={{paddingBottom: 10, display: "flex"}}>
+                            <div style={{flex: 1}}>
+                                <Typography variant="h6">
+                                    N° {t(langKeys.report_userproductivity_usersconnected)}
+                                </Typography>
+                                <Typography variant="h5" component="div" align="center">
+                                    {detailCustomReport.data[0]?.usersconnected}
+                                </Typography>
+                            </div>
+                            <div style={{flex: 1}}>
+                                <Typography variant="subtitle1">
+                                    {detailCustomReport.data[0]?.cardavgmaxtmouser} ({detailCustomReport.data[0]?.totalclosedtickets})
+                                </Typography>
+                                <Typography variant="subtitle1">
+                                    {detailCustomReport.data[0]?.cardavgmaxtmouser} ({detailCustomReport.data[0]?.totalclosedtickets})
+                                </Typography>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid>
 
