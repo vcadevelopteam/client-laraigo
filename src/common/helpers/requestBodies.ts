@@ -2021,8 +2021,8 @@ export const heatmappage1 = ({ communicationchannel, startdate, enddate, closedb
     }
 });
 export const heatmappage1detail = ({ communicationchannel, startdate, enddate, closedby, horanum }: Dictionary): IRequestBody => ({
-    key: "UFN_REPORT_HEATMAP_DATE_DETAIL_SEL",
-    method: "UFN_REPORT_HEATMAP_DATE_DETAIL_SEL",
+    key: "UFN_REPORT_HEATMAP_PAGE1_DATE_DETAIL_SEL",
+    method: "UFN_REPORT_HEATMAP_PAGE1_DATE_DETAIL_SEL",
     parameters: {
         communicationchannel,
         startdate,
