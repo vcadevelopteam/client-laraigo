@@ -5,7 +5,7 @@ import { useSelector } from 'hooks';
 import { useDispatch } from 'react-redux';
 import Tabs from '@material-ui/core/Tabs';
 import Avatar from '@material-ui/core/Avatar';
-import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon, DocumentIcon } from 'icons';
+import { EMailInboxIcon, PhoneIcon, DocIcon, FileIcon1 as FileIcon, PdfIcon, PptIcon, TxtIcon, XlsIcon } from 'icons';
 import { getTicketsPerson, showInfoPanel, updatePerson } from 'store/inbox/actions';
 import { GetIcon, FieldEdit, FieldSelect, DialogInteractions, AntTab, FieldEditMulti } from 'components'
 import { langKeys } from 'lang/keys';
@@ -108,7 +108,7 @@ const useStyles = makeStyles((theme) => ({
     },
     containerAttachment: {
         display: 'flex',
-        gap: 16,
+        gap: 8,
         alignItems: 'center',
         borderBottom: '1px solid #e1e1e1',
         padding: theme.spacing(1),
@@ -608,11 +608,13 @@ const PreviewTickets: React.FC<{ order: number }> = ({ order }) => {
 const Attachments: React.FC = () => {
     const classes = useStyles();
     const [listFiles, setListFiles] = useState<Dictionary[]>([]);
-    const interactionList = useSelector(state => state.inbox.interactionList.data);
+    const interactionList = useSelector(state => state.inbox.interactionList);
     const { t } = useTranslation();
 
+    
     useEffect(() => {
-        setListFiles(interactionList.reduce<Dictionary[]>((acc, item) => [
+        console.log("interactionList", interactionList)
+        setListFiles(interactionList.data.reduce<Dictionary[]>((acc, item) => [
             ...acc,
             ...(item.interactions?.filter((x) => ["file", "video"].includes(x.interactiontype)) || []).map(x => ({
                 url: x.interactiontext,
@@ -621,7 +623,7 @@ const Attachments: React.FC = () => {
                 date: convertLocalDate(x.createdate).toLocaleString(),
             }))
         ], []));
-    }, [])
+    }, [interactionList])
 
     if (listFiles.length === 0) {
         return (
@@ -643,7 +645,7 @@ const Attachments: React.FC = () => {
                         <PdfIcon width="30" height="30" />
                     ) :  (extension === "doc" || extension === "docx") ? (
                         <DocIcon width="30" height="30" />
-                    ) : (extension === "xls" || extension === "xlsx") ? (
+                    ) : (extension === "xls" || extension === "xlsx" || extension === "csv") ? (
                         <XlsIcon width="30" height="30" />
                     ) : (extension === "ppt" || extension === "pptx") ? (
                         <PptIcon width="30" height="30" />
