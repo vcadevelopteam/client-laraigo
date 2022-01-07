@@ -682,7 +682,7 @@ const DetailOrganization: React.FC<DetailOrganizationProps> = ({ data: { row, ed
                                 <Grid container direction="row">
                                     <Grid item xs={12} sm={3} md={3} lg={3} xl={3}>
                                         <label className={classes.text}>
-                                            <Trans i18nKey={langKeys.botButton} />
+                                            <Trans i18nKey={langKeys.clienticon} />
                                         </label>
                                     </Grid>
                                     <Grid item xs={12} sm={9} md={9} lg={9} xl={9}>

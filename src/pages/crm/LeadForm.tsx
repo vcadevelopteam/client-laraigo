@@ -1710,6 +1710,13 @@ const useFilePreviewStyles = makeStyles(theme => ({
         justifyContent: 'center',
         color: 'lightgrey',
     },
+    filename: {
+        fontWeight: 'bold',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        maxWidth: 190,
+        whiteSpace: 'nowrap',
+    },
 }));
 
 const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
@@ -1727,9 +1734,9 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
 
     const getFileExt = useCallback(() => {
         if (isUrl()) {
-            return (src as string).split('.').pop()?.toUpperCase() || "-";
+            return (src as string).split('.').pop() || "-";
         }
-        return (src as File).name.split('.').pop()?.toUpperCase() || "-";
+        return (src as File).name.split('.').pop() || "-";
     }, [isUrl, src]);
 
     return (
@@ -1738,7 +1745,10 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
             <div style={{ width: '0.5em' }} />
             <div className={classes.infoContainer}>
                 <div>
-                    <div style={{ fontWeight: 'bold', textOverflow: 'ellipsis', overflow: 'hidden', maxWidth: 190, whiteSpace: 'nowrap' }}>{getFileName()}</div>{getFileExt()}
+                    <div className={classes.filename}>
+                        {getFileName()}
+                    </div>
+                        {getFileExt().toUpperCase()}
                 </div>
             </div>
             <div style={{ width: '0.5em' }} />
@@ -1750,7 +1760,12 @@ const FilePreview: FC<FilePreviewProps> = ({ src, onClose }) => {
                 )}
                 {isUrl() && <div style={{ height: '10%' }} />}
                 {isUrl() && (
-                    <a href={src as string} target="_blank" rel="noreferrer" download={`${getFileName()}.${getFileExt()}`}>
+                    <a
+                        href={src as string}
+                        target="_blank"
+                        rel="noreferrer"
+                        download={`${getFileName()}.${getFileExt()}`}
+                    >
                         <IconButton size="small">
                             <GetApp />
                         </IconButton>

@@ -363,7 +363,7 @@ const Settings: FC = () => {
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                 <ItemTile
                                     title={<Trans i18nKey={langKeys.corporation} count={2} />}
-                                    subtitle={<SubtitleText value={1} i18nKey={langKeys.corporation} />}
+                                    subtitle={<SubtitleText value={value?.num_corp} i18nKey={langKeys.corporation} />}
                                     icon={<Corporation2Icon />}
                                     helpText={
                                         <HelpText
