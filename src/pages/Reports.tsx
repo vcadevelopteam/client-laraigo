@@ -159,6 +159,28 @@ const ReportItem: React.FC<ItemProps> = ({ setViewSelected, setSearchValue, row,
                         }
                     });
                     break;
+                case "date":
+                        columns.push({
+                            Header: t('report_' + row?.origin + '_' + x.proargnames || ''),
+                            accessor: x.proargnames,
+                            type: "date",
+                            Cell: (props: any) => {
+                                const column = props.cell.column;
+                                const row = props.cell.row.original;
+                                return (<div>
+                                    {new Date(
+                                        row[column.id].split('-')[0],
+                                        row[column.id].split('-')[1]-1,
+                                        row[column.id].split('-')[2]
+                                    ).toLocaleString(undefined, {
+                                        year: "numeric",
+                                        month: "2-digit",
+                                        day: "2-digit"
+                                    })}
+                                </div>)
+                            }
+                        });
+                        break;
                 default:
                     switch (row?.origin) {
                         case "loginhistory":
